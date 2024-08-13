@@ -7,7 +7,6 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from copy import deepcopy
 from os.path import join
-from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -19,11 +18,9 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import AMPLITUDE, ERR, EXT, IMAG, PHASE, REAL
 from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import df_diff
+from omc3.optics_measurements.tune import TuneDict
 from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
-
-if TYPE_CHECKING:
-    from omc3.optics_measurements.tune import TuneDict
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
