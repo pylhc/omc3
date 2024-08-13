@@ -7,6 +7,7 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from copy import deepcopy
 from os.path import join
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -21,8 +22,12 @@ from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
 
+if TYPE_CHECKING:
+    from omc3.optics_measurements.tune import TuneDict
+
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
+
 
 def _generate_plane_rdts(order):
     """
@@ -63,7 +68,12 @@ def _generate_plane_rdts(order):
 
 
 def calculate(
-    measure_input: dict, input_files: InputFiles, tunes, phases, invariants, header: dict
+    measure_input: dict,
+    input_files: InputFiles,
+    tunes: TuneDict,
+    phases,
+    invariants: dict[str, pd.DataFrame],
+    header: dict,
 ) -> None:
     """
     Computes the RDTs for the given input files and settings up to the magnet
@@ -72,8 +82,11 @@ def calculate(
     Args:
         measure_input: `OpticsInput` object containing analysis settings.
         input_files: `InputFiles` object containing frequency spectra files (linx/y).
-        tunes:
-        invariants:
+        tunes: `TuneDict` object mapping planes to tunes, as given by
+            :func:`omc3.optics_measurements.tune.calculate`.
+        phases:
+        invariants (dict[str, pd.DataFrame]): dictionnary mapping planes to dataframes
+            of actions/errors per kick, e.g. from :func:`omc3.optics_measurements.kick.calculate`.
         header: headers to include to the written result files.
     """
     LOGGER.info("Start of RDT analysis")
