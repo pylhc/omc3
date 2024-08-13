@@ -6,9 +6,6 @@ build-backend = "hatchling.build"
 path = "omc3/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-include = [
-  "/omc3",
-]
 exclude = [
   "/.github",
   "/doc",
