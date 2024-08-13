@@ -203,11 +203,11 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
         df.loc[:, "ERRMEAS"].to_numpy()[:, np.newaxis], comp_coeffs1, comp_coeffs2)
     rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase)
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
-    df[f"{PHASE}"] = rdt_angles
+    df[PHASE] = rdt_angles
     df[f"{ERR}{PHASE}"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
     df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    df[f"{REAL}"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
-    df[f"{IMAG}"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[REAL] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[IMAG] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
     # in old files there was "EAMP" and "PHASE_STD"
     return df.loc[:, ["S", "COUNT", AMPLITUDE, f"{ERR}{AMPLITUDE}", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 
