@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### IN PROGRESS - v0.16.0 - _fesoubel_, _jdilly_
+
+- Fixed:
+  - Restored compatibility with `numpy 2.x`.
+
 #### 2024-07-08 - v0.15.0 - _jdilly_
 
 - PINNING NUMPY TO < 2.0.0
