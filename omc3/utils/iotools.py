@@ -58,7 +58,7 @@ def copy_item(src_item, dest):
         LOG.error(f"Could not copy item because of IOError. Item: '{src_item}'")
 
 
-def glob_regex(path: Path, pattern: str) -> Sequence[str]:
+def glob_regex(path: Path, pattern: str) -> filter:
     """ Do a glob on the given `path` based on the regular expression `pattern`.
     Returns only the matching filenames (as strings).
 
