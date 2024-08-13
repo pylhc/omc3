@@ -45,7 +45,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "numpy >= 1.24",
+  "numpy >= 1.24, <2.0",  # TODO: allow 2.x as soon as pytables has a compatible version
   "scipy >= 1.10",
   "pandas >= 2.1",
   "tfs-pandas >= 3.8",
