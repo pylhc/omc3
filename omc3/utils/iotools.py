@@ -9,7 +9,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Any, Callable, Sequence, Union
+from typing import Any, Callable, Iterator, Union
 
 from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
@@ -58,7 +58,7 @@ def copy_item(src_item, dest):
         LOG.error(f"Could not copy item because of IOError. Item: '{src_item}'")
 
 
-def glob_regex(path: Path, pattern: str) -> filter:
+def glob_regex(path: Path, pattern: str) -> Iterator[str]:
     """ Do a glob on the given `path` based on the regular expression `pattern`.
     Returns only the matching filenames (as strings).
 
@@ -66,6 +66,8 @@ def glob_regex(path: Path, pattern: str) -> filter:
         path (Path): Folder path to look in.
         pattern (str): Pattern to match.
 
+    Returns:
+        Iterator[str]: Matching filenames
     """
     return filter(re.compile(pattern).match, (p.name for p in path.glob("*")))
 
@@ -244,4 +246,3 @@ def get_check_suffix_func(suffix: str) -> Callable[[Path],bool]:
     def check_suffix(path: Path) -> bool:
         return path.suffix == suffix
     return check_suffix
-
