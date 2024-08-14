@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2024-08-14 - v0.16.0 - _fesoubel_
+#### 2024-08-14 - v0.15.1 - _fesoubel_
 
 - Fixed:
   - The package is now fully compatible with `numpy 2.x` on `Python >= 3.10` thanks to a `pytables` compatibility release.
