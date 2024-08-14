@@ -4,8 +4,6 @@ PS Model Creator
 
 This module provides convenience functions for model creation of the ``PS``.
 """
-import logging
-import shutil
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.accelerators.psbooster import PsBase

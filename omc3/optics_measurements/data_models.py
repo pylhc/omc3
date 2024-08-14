@@ -105,7 +105,7 @@ class InputFiles(dict):
         if dpp_amp:
             frames_to_join = [df for df in frames_to_join if df.DPPAMP > 0]
         if len(frames_to_join) == 0:
-            raise ValueError(f"No data found for non-zero |dp/p|")
+            raise ValueError("No data found for non-zero |dp/p|")
         joined_frame = pd.DataFrame(frames_to_join[0]).reindex(columns=columns, fill_value=np.nan)
         if len(frames_to_join) > 1:
             for i, df in enumerate(frames_to_join[1:]):

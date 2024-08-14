@@ -146,22 +146,16 @@ def fit_prec(x, beta_av):
     return dQ
 
 
-np.vectorize(fit_prec)
-
-
 def fit_approx(x, beta_av):
     dQ = beta_av*x[0]/(4*np.pi)
     return dQ
 
 
-np.vectorize(fit_approx)
-
-
-def average_beta_from_Tune(Q, TdQ, l, Dk):
+def average_beta_from_Tune(Q, TdQ, length, Dk):
     """Calculates average beta function in quadrupole from tune change ``TdQ`` and ``delta K``."""
 
     beta_av = 2 * (1 / np.tan(2 * np.pi * Q) *
-              (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (l * Dk)
+              (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (length * Dk)
     return abs(beta_av)
 
 
@@ -177,9 +171,6 @@ def average_beta_focussing_quadrupole(b, w, L, K, Lstar):
     return average_beta
 
 
-np.vectorize(average_beta_focussing_quadrupole)
-
-
 def average_beta_defocussing_quadrupole(b, w, L, K, Lstar):
     beta0 = b + ((Lstar - w) ** 2 / b)
     alpha0 = -(Lstar - w) / b
@@ -189,9 +180,6 @@ def average_beta_defocussing_quadrupole(b, w, L, K, Lstar):
                    (((np.sinh(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L)) - 1)
 
     return average_beta
-
-
-np.vectorize(average_beta_defocussing_quadrupole)
 
 
 def calc_tune(magnet_df):

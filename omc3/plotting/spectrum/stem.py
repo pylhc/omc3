@@ -20,7 +20,7 @@ LOG = logging_tools.getLogger(__name__)
 
 def create_stem_plots(figures: dict, opt: DotDict) -> None:
     """ Main loop for stem-plot creation. """
-    LOG.debug(f"  ...creating Stem Plots")
+    LOG.debug("  ...creating Stem Plots")
     for fig_id, fig_cont in figures.items():
         LOG.debug(f'   Plotting Figure: {fig_id}.')
         fig_cont.fig.canvas.manager.set_window_title(fig_id)

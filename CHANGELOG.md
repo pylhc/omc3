@@ -1,5 +1,11 @@
 # OMC3 Changelog
 
+#### 2024-08-14 - v0.15.1 - _fesoubel_
+
+- Fixed:
+  - The package is now fully compatible with `numpy 2.x` on `Python >= 3.10` thanks to a `pytables` compatibility release.
+  - The package still limits to `numpy < 2` on `Python 3.9` due to the lack of compatibility from `pytables` on this versions.
+
 #### 2024-07-08 - v0.15.0 - _jdilly_
 
 - PINNING NUMPY TO < 2.0.0

@@ -198,7 +198,6 @@ from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
 from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
-                                          LOG,
                                           FigureCollector, get_unique_filenames,
                                           filter_amps, get_bpms, get_stem_id,
                                           get_waterfall_id, get_data_for_bpm,

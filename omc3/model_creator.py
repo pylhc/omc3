@@ -12,7 +12,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER, OPTICS_SUBDIR
+from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, OPTICS_SUBDIR
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
     LhcCouplingCreator,
@@ -24,7 +24,6 @@ from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs, PathOrStr, save_config
 from omc3.utils import logging_tools
 from omc3.utils.parsertools import print_help, require_param
-from generic_parser.tools import silence
 from omc3.model.model_creators import abstract_model_creator
 
 LOGGER = logging_tools.get_logger(__name__)

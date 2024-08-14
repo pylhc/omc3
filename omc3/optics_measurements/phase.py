@@ -5,7 +5,6 @@ Phase Advance
 This module contains phase calculation functionality of ``optics_measurements``.
 It provides functions to compute betatron phase advances and structures to store them.
 """
-from os.path import join
 from pathlib import Path
 from typing import Dict, Tuple
 
@@ -16,7 +15,6 @@ from numpy.typing import ArrayLike
 
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 

@@ -478,7 +478,7 @@ def _create_model_and_write_diff_to_measurements(
             list(PLANES)
     )
     diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
-    LOG.debug(f"Differences to nominal model calculated.")
+    LOG.debug("Differences to nominal model calculated.")
 
      # Create new "measurement" with additional columns
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)

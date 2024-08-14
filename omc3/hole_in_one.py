@@ -33,7 +33,7 @@ import os
 from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime
-from os.path import abspath, basename, dirname, join, splitext
+from os.path import abspath, basename, dirname, join
 from typing import Generator, Tuple
 
 import turn_by_turn as tbt
@@ -471,7 +471,7 @@ def harpy_params():
     params.add_parameter(name="model", help="Model for BPM locations")
     params.add_parameter(name="unit", type=str, default=HARPY_DEFAULTS["unit"],
                          choices=("m", "cm", "mm", "um"),
-                         help=f"A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
+                         help="A unit of TbT BPM orbit data. All cuts and output are in 'm'.")
     params.add_parameter(name="turns", type=int, nargs=2, default=HARPY_DEFAULTS["turns"],
                          help="Turn index to start and first turn index to be ignored.")
     params.add_parameter(name="bunch_ids", type=int, nargs="+",

@@ -82,7 +82,7 @@ def beta_from_amplitude(meas_input, input_files, plane, tunes):
 
 def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
     phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
-    driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
+    driven_tune, _free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
     phases_meas = phases_meas + phase_corr[np.newaxis, :]

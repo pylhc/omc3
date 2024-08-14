@@ -15,13 +15,16 @@ from scipy.optimize import curve_fit
 from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE
+from omc3.optics_measurements.constants import AMPLITUDE, ERR, EXT, IMAG, PHASE, REAL
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import df_diff
+from omc3.optics_measurements.tune import TuneDict
 from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
+
 
 def _generate_plane_rdts(order):
     """
@@ -43,7 +46,7 @@ def _generate_plane_rdts(order):
     single_plane = {'X': [], 'Y': []}
     double_plane = {'X': [], 'Y': []}
     # Iterate through our RDTs and classify them depending on what plane they act
-    for (j,k,l,m) in all_rdts:
+    for (j,k,l,m) in all_rdts:  # noqa: E741
         if j == 0 and l == 0:  # the RDT can't be seen on any plane
             continue
         if l+m == 0 and j != 0:  # The line where the RDT is seen is a multiple of the Qx line
@@ -61,19 +64,29 @@ def _generate_plane_rdts(order):
     return single_plane, double_plane
 
 
-def calculate(measure_input, input_files, tunes, phases, invariants, header):
+def calculate(
+    measure_input: dict,
+    input_files: InputFiles,
+    tunes: TuneDict,
+    phases,
+    invariants: dict[str, pd.DataFrame],
+    header: dict,
+) -> None:
     """
+    Computes the RDTs for the given input files and settings up to the magnet
+    order given in the inputs, and writes the results to file.
 
     Args:
-        measure_input:
-        input_files:
-        tunes:
-        invariants:
-        header:
-
-    Returns:
+        measure_input: `OpticsInput` object containing analysis settings.
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
+        tunes: `TuneDict` object mapping planes to tunes, as given by
+            :func:`omc3.optics_measurements.tune.calculate`.
+        phases:
+        invariants (dict[str, pd.DataFrame]): dictionnary mapping planes to dataframes
+            of actions/errors per kick, e.g. from :func:`omc3.optics_measurements.kick.calculate`.
+        header: headers to include to the written result files.
     """
-    LOGGER.info(f"Start of RDT analysis")
+    LOGGER.info("Start of RDT analysis")
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
     LOGGER.info(f"Calculating RDTs up to magnet order {meas_input['rdt_magnet_order']}")
@@ -111,12 +124,12 @@ def write(df, header, meas_input, plane, rdt):
 
 
 def _rdt_to_str(rdt):
-    j, k, l, m = rdt
+    j, k, l, m = rdt  # noqa: E741
     return f"{j}{k}{l}{m}"
 
 
 def _rdt_to_order_and_type(rdt):
-    j, k, l, m = rdt
+    j, k, l, m = rdt  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
     orders = dict(((1, "dipole"), 
                    (2, "quadrupole"), 
@@ -152,7 +165,7 @@ def _get_n_upper_diagonals(n, shape):
 
 
 def _determine_line(rdt, plane):
-    j, k, l, m = rdt
+    j, k, l, m = rdt  # noqa: E741
     lines = dict(X=(1 - j + k, m - l, 0),
                  Y=(k - j, 1 - l + m, 0))
     return lines[plane]
@@ -187,11 +200,11 @@ def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
         df.loc[:, "ERRMEAS"].to_numpy()[:, np.newaxis], comp_coeffs1, comp_coeffs2)
     rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase)
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
-    df[f"PHASE"] = rdt_angles
-    df[f"{ERR}PHASE"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
+    df[PHASE] = rdt_angles
+    df[f"{ERR}{PHASE}"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
     df[AMPLITUDE], df[f"{ERR}{AMPLITUDE}"] = _fit_rdt_amplitudes(invariants, line_amp, plane, rdt)
-    df[f"REAL"] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
-    df[f"IMAG"] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[REAL] = np.cos(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
+    df[IMAG] = np.sin(2 * np.pi * rdt_angles) * df.loc[:, AMPLITUDE].to_numpy()
     # in old files there was "EAMP" and "PHASE_STD"
     return df.loc[:, ["S", "COUNT", AMPLITUDE, f"{ERR}{AMPLITUDE}", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 
@@ -236,7 +249,7 @@ def get_linearized_problem(invs, plane, rdt):
     2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
     we use sqrt(2J): unit is sqrt(m).
     """
-    j, k, l, m = rdt
+    j, k, l, m = rdt  # noqa: E741
     act_x = invs["X"].T[0]
     act_y = invs["Y"].T[0]
     if plane == "X":

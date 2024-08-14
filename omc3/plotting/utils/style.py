@@ -7,7 +7,6 @@ Helper functions to style plots.
 from typing import Dict, Any, Sequence, Union
 
 import matplotlib
-from generic_parser.entry_datatypes import get_instance_faker_meta
 from matplotlib import pyplot as plt
 from pathlib import Path
 

@@ -19,7 +19,7 @@ LOG = logging_tools.getLogger(__name__)
 
 def create_waterfall_plots(figures: dict, opt: DotDict) -> None:
     """ Main loop for waterfall plot creation. """
-    LOG.debug(f"  ...creating Waterfall Plot")
+    LOG.debug("  ...creating Waterfall Plot")
 
     for fig_id, fig_cont in figures.items():
         LOG.debug(f'   Plotting Figure: {fig_id}.')

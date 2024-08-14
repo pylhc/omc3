@@ -645,8 +645,8 @@ def _format_axes_3d(
             va='bottom',
             transform=ax.transAxes,
         )
-    h, l = get_labels_with_odr_labels(ax, odr_labels)
-    ax.legend(h, l, loc='upper left', bbox_to_anchor=(1.2, 0.98), prop={'size': 'small'})
+    handles, labels = get_labels_with_odr_labels(ax, odr_labels)
+    ax.legend(handles, labels, loc='upper left', bbox_to_anchor=(1.2, 0.98), prop={'size': 'small'})
     ax.zaxis._axinfo['juggled'] = (1, 2, 0)  # move tune axis to the other side
     # tight layout so that the legend fits
     ax.figure.tight_layout()
@@ -700,18 +700,18 @@ def _get_scaled_labels(val, std, scale):
 
 
 def get_labels_with_odr_labels(ax, odr_labels):
-    h, l = ax.get_legend_handles_labels()
+    handles, labels = ax.get_legend_handles_labels()
     if odr_labels is None:
-        return h, l
+        return handles, labels
 
     empty = Line2D([0], [0], ls='none', marker='', label='')
     h_new, l_new = [], []
-    for handle, label, odr in zip(h, l, odr_labels):
+    for handle, label, odr_label in zip(handles, labels, odr_labels):
         h_new.append(handle)
         l_new.append(label)
-        if odr is not None:
+        if odr_label is not None:
             h_new.append(empty)
-            l_new.append("\n".join(odr.values()))
+            l_new.append("\n".join(odr_label.values()))
     return h_new, l_new
 
 

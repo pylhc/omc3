@@ -1,10 +1,6 @@
 # Runs all tests and pushes coverage report to codeclimate
 name: Coverage
 
-defaults:
-  run:
-    shell: bash
-
 on:  # Runs on all push events to master branch and any push related to a pull request
   push:
     branches:
@@ -13,56 +9,8 @@ on:  # Runs on all push events to master branch and any push related to a pull r
 
 jobs:
   coverage:
-    name: ${{ matrix.os }} / ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:  # only a single supported Python on latest ubuntu
-        os: [ubuntu-latest]
-        python-version: [3.9]
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: '**/setup.py'
-
-      - name: Upgrade pip, setuptools and wheel
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install package
-        run: python -m pip install '.[test]'
-
-      - name: Set up env for CodeClimate (push)
-        run: |
-          echo "GIT_BRANCH=${GITHUB_REF/refs\/heads\//}" >> $GITHUB_ENV
-          echo "GIT_COMMIT_SHA=$GITHUB_SHA" >> $GITHUB_ENV
-        if: github.event_name == 'push'
-
-      - name: Set up env for CodeClimate (pull_request)
-        env:
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          echo "GIT_BRANCH=$GITHUB_HEAD_REF" >> $GITHUB_ENV
-          echo "GIT_COMMIT_SHA=$PR_HEAD_SHA" >> $GITHUB_ENV
-        if: github.event_name == 'pull_request'
-
-      - name: Prepare CodeClimate binary
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        run: |
-          curl -LSs 'https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64' >./cc-test-reporter;
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter before-build
-
-      - name: Run all tests
-        run: python -m pytest -m "not cern_network" --cov-report xml --cov=omc3
-
-      - name: Push Coverage to CodeClimate
-        if: ${{ success() }}  # only if tests were successful
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        run: ./cc-test-reporter after-build
+      uses: pylhc/.github/.github/workflows/coverage.yml@master
+      with:
+        src-dir: omc3
+        pytest-options: -m "not cern_network"
+      secrets: inherit

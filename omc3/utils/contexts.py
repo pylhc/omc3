@@ -5,9 +5,7 @@ Contexts
 Provides contexts managers to use.
 """
 import os
-import shutil
 import sys
-import tempfile
 import time
 import warnings
 from contextlib import contextmanager

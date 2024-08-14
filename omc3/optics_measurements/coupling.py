@@ -14,7 +14,7 @@ from typing import Callable, Dict, List, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 import tfs
-from numpy import cos, exp, ndarray, sin, sqrt, tan
+from numpy import cos, exp, sin, sqrt, tan
 from optics_functions.coupling import coupling_via_cmatrix
 
 from omc3.definitions.constants import PI2, PI2I

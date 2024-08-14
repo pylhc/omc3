@@ -5,7 +5,6 @@ Handler
 This module contains high-level functions to manage most functionality of the corrections calculations.
 """
 import datetime
-import os
 import time
 from pathlib import Path
 from typing import Callable, Dict, List, Sequence, Tuple, Union
@@ -20,8 +19,7 @@ import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss
 from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, F1001,
                                                 F1010, NORM_DISPERSION, PHASE, TUNE,
-                                                DISPERSION_NAME, EXT, REAL, IMAG,
-                                                NORM_DISP_NAME, PHASE_NAME, NAME
+                                                DISPERSION_NAME, EXT, NORM_DISP_NAME, PHASE_NAME, NAME
                                                 )
 from omc3.correction.constants import ERROR, VALUE, WEIGHT, DIFF
 from omc3.correction.model_appenders import add_coupling_to_model

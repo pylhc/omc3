@@ -16,7 +16,7 @@ from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE, MDL, PHASE, 
 from omc3.utils import iotools, logging_tools
 from omc3.utils.stats import circular_nanmean, circular_nanerror
 from omc3.definitions.constants import PLANES, PI2
-from omc3.harpy.constants import COL_AMP, COL_PHASE, COL_ERR
+from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_ERR
 from omc3.optics_measurements.rdt import get_line_sign_and_suffix
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -89,7 +89,7 @@ def calculate(measure_input, input_files, invariants, header):
 
 def generic_dataframe(input_files, measure_input, bpm_names):
     result_df = pd.DataFrame(measure_input.accelerator.model).loc[bpm_names, ["S", "MUX", "MUY"]]
-    result_df.rename(columns={f"MUX": f"MUX{MDL}", f"MUY": f"MUY{MDL}"}, inplace=True)
+    result_df.rename(columns={f"{COL_MU}X": f"{COL_MU}X{MDL}", f"{COL_MU}Y": f"{COL_MU}Y{MDL}"}, inplace=True)
     for plane in PLANES:
         result_df = pd.merge(
             result_df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"], dpp_value=0),

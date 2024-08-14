@@ -60,7 +60,6 @@ from generic_parser import EntryPoint
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
     AccExcitationMode,
-    Accelerator,
 )
 from omc3.utils.parsertools import require_param
 from omc3.model.constants import MODIFIER_TAG, PLANE_TO_HV
