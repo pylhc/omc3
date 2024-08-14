@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.beta_from_amplitude &mdash; omc3 0.15.0 documentation</title>
+  <title>omc3.optics_measurements.beta_from_amplitude &mdash; omc3 0.15.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=ef97403f"></script>
+        <script src="../../../_static/documentation_options.js?v=4befc426"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -295,7 +295,7 @@
 
 <span class="k">def</span> <span class="nf">_compensate_by_equation</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">tunes</span><span class="p">):</span>
     <span class="n">phases_meas</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">beam_direction</span>
-    <span class="n">driven_tune</span><span class="p">,</span> <span class="n">free_tune</span><span class="p">,</span> <span class="n">ac2bpmac</span> <span class="o">=</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;Q&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;ac2bpm&quot;</span><span class="p">]</span>
+    <span class="n">driven_tune</span><span class="p">,</span> <span class="n">_free_tune</span><span class="p">,</span> <span class="n">ac2bpmac</span> <span class="o">=</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;Q&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;ac2bpm&quot;</span><span class="p">]</span>
     <span class="n">k_bpmac</span> <span class="o">=</span> <span class="n">ac2bpmac</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">phase_corr</span> <span class="o">=</span> <span class="n">ac2bpmac</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">phases_meas</span><span class="p">[</span><span class="n">k_bpmac</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">driven_tune</span><span class="p">)</span>
     <span class="n">phases_meas</span> <span class="o">=</span> <span class="n">phases_meas</span> <span class="o">+</span> <span class="n">phase_corr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>

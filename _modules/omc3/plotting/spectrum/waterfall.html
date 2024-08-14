@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.spectrum.waterfall &mdash; omc3 0.15.0 documentation</title>
+  <title>omc3.plotting.spectrum.waterfall &mdash; omc3 0.15.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=ef97403f"></script>
+        <script src="../../../../_static/documentation_options.js?v=4befc426"></script>
         <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -231,7 +231,7 @@
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.waterfall.create_waterfall_plots">[docs]</a>
 <span class="k">def</span> <span class="nf">create_waterfall_plots</span><span class="p">(</span><span class="n">figures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Main loop for waterfall plot creation. &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ...creating Waterfall Plot&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  ...creating Waterfall Plot&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">fig_id</span><span class="p">,</span> <span class="n">fig_cont</span> <span class="ow">in</span> <span class="n">figures</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;   Plotting Figure: </span><span class="si">{</span><span class="n">fig_id</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>

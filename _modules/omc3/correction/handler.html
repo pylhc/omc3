@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.handler &mdash; omc3 0.15.0 documentation</title>
+  <title>omc3.correction.handler &mdash; omc3 0.15.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=ef97403f"></script>
+        <script src="../../../_static/documentation_options.js?v=4befc426"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -215,7 +215,6 @@
 <span class="sd">This module contains high-level functions to manage most functionality of the corrections calculations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
@@ -230,8 +229,7 @@
 <span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span>
 <span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span>
                                                 <span class="n">F1010</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span>
-                                                <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span>
-                                                <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">NAME</span>
+                                                <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">NAME</span>
                                                 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span><span class="p">,</span> <span class="n">DIFF</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.model_appenders</span> <span class="kn">import</span> <span class="n">add_coupling_to_model</span>

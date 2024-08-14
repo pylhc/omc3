@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.manager &mdash; omc3 0.15.0 documentation</title>
+  <title>omc3.model.manager &mdash; omc3 0.15.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=ef97403f"></script>
+        <script src="../../../_static/documentation_options.js?v=4befc426"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -217,11 +217,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span>
 <span class="kn">from</span> <span class="nn">omc3.model.accelerators</span> <span class="kn">import</span> <span class="n">lhc</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">esrf</span><span class="p">,</span> <span class="n">psbooster</span><span class="p">,</span> <span class="n">skekb</span><span class="p">,</span> <span class="n">petra</span><span class="p">,</span> <span class="n">iota</span>
-<span class="kn">from</span> <span class="nn">generic_parser.dict_parser</span> <span class="kn">import</span> <span class="n">ArgumentError</span>
-<span class="kn">from</span> <span class="nn">generic_parser.tools</span> <span class="kn">import</span> <span class="n">silence</span>
 
 <span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.parsertools</span> <span class="kn">import</span> <span class="n">print_help</span>
 
 <span class="n">ACCELS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="p">,</span>

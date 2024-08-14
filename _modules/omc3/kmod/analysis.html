@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.kmod.analysis &mdash; omc3 0.15.0 documentation</title>
+  <title>omc3.kmod.analysis &mdash; omc3 0.15.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=ef97403f"></script>
+        <script src="../../../_static/documentation_options.js?v=4befc426"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -359,24 +359,18 @@
     <span class="k">return</span> <span class="n">dQ</span>
 
 
-<span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">fit_prec</span><span class="p">)</span>
-
-
 <span class="k">def</span> <span class="nf">fit_approx</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">beta_av</span><span class="p">):</span>
     <span class="n">dQ</span> <span class="o">=</span> <span class="n">beta_av</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dQ</span>
 
 
-<span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">fit_approx</span><span class="p">)</span>
-
-
 <div class="viewcode-block" id="average_beta_from_Tune">
 <a class="viewcode-back" href="../../../modules/kmod.html#omc3.kmod.analysis.average_beta_from_Tune">[docs]</a>
-<span class="k">def</span> <span class="nf">average_beta_from_Tune</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">TdQ</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">Dk</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">average_beta_from_Tune</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">TdQ</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">Dk</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates average beta function in quadrupole from tune change ``TdQ`` and ``delta K``.&quot;&quot;&quot;</span>
 
     <span class="n">beta_av</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">Q</span><span class="p">)</span> <span class="o">*</span>
-              <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">TdQ</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">TdQ</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span> <span class="n">Dk</span><span class="p">)</span>
+              <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">TdQ</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">TdQ</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">length</span> <span class="o">*</span> <span class="n">Dk</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">beta_av</span><span class="p">)</span></div>
 
 
@@ -393,9 +387,6 @@
     <span class="k">return</span> <span class="n">average_beta</span>
 
 
-<span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">average_beta_focussing_quadrupole</span><span class="p">)</span>
-
-
 <span class="k">def</span> <span class="nf">average_beta_defocussing_quadrupole</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">Lstar</span><span class="p">):</span>
     <span class="n">beta0</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="p">((</span><span class="n">Lstar</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span>
     <span class="n">alpha0</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">Lstar</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">/</span> <span class="n">b</span>
@@ -405,9 +396,6 @@
                    <span class="p">(((</span><span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">K</span><span class="p">))</span> <span class="o">*</span> <span class="n">L</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">K</span><span class="p">))</span> <span class="o">*</span> <span class="n">L</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">average_beta</span>
-
-
-<span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">average_beta_defocussing_quadrupole</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">calc_tune</span><span class="p">(</span><span class="n">magnet_df</span><span class="p">):</span>
