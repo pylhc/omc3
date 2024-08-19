@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2024-08-14 - v0.15.2 - _fesoubel_, _jdilly_
+
+- Fixed:
+  - Numpy's `ComplexWarning` was not part of main namespace in v2.0, so we import it directly
+
 #### 2024-08-14 - v0.15.1 - _fesoubel_
 
 - Fixed:
