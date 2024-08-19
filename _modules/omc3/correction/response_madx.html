@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.response_madx &mdash; omc3 0.15.1 documentation</title>
+  <title>omc3.correction.response_madx &mdash; omc3 0.15.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=4befc426"></script>
+        <script src="../../../_static/documentation_options.js?v=7c174e4c"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -231,11 +231,12 @@
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">numpy.exceptions</span> <span class="kn">import</span> <span class="n">ComplexWarning</span>
 <span class="kn">from</span> <span class="nn">optics_functions.coupling</span> <span class="kn">import</span> <span class="n">coupling_via_cmatrix</span>
 
 <span class="kn">import</span> <span class="nn">omc3.madx_wrapper</span> <span class="k">as</span> <span class="nn">madx_wrapper</span>
 <span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span>
-                                       <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">)</span>
+                                                <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">INCR</span>
 <span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AccElementTypes</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
@@ -367,7 +368,7 @@
 
 <span class="k">def</span> <span class="nf">_load_madx_results</span><span class="p">(</span>
     <span class="n">variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">process_pool</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">,</span>
+    <span class="n">process_pool</span><span class="p">,</span>
     <span class="n">incr_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
@@ -426,7 +427,7 @@
     <span class="n">resp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span><span class="n">resp</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">INCR</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)])</span>
     <span class="n">Q_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">resp</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">resp</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span><span class="o">.</span><span class="n">T</span>
  
-    <span class="k">with</span> <span class="n">suppress_warnings</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ComplexWarning</span><span class="p">):</span>  <span class="c1"># raised as everything is complex-type now</span>
+    <span class="k">with</span> <span class="n">suppress_warnings</span><span class="p">(</span><span class="n">ComplexWarning</span><span class="p">):</span>  <span class="c1"># raised as everything is complex-type now</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">)],</span> <span class="n">index</span><span class="o">=</span><span class="n">bpms</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="n">columns</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">)],</span> <span class="n">index</span><span class="o">=</span><span class="n">bpms</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">keys</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
