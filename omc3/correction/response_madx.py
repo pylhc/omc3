@@ -21,11 +21,12 @@ import numpy as np
 import zipfile
 import pandas as pd
 import tfs
+from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
-                                       NORM_DISPERSION, PHASE_ADV, TUNE)
+                                                NORM_DISPERSION, PHASE_ADV, TUNE)
 from omc3.correction.constants import INCR
 from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.utils import logging_tools
@@ -154,7 +155,7 @@ def _clean_up(temp_dir: Path, num_proc: int) -> None:
 
 def _load_madx_results(
     variables: List[str],
-    process_pool: multiprocessing.Pool,
+    process_pool,
     incr_dict: dict,
     temp_dir: Path
 ) -> Dict[str, tfs.TfsDataFrame]:
@@ -213,7 +214,7 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
     resp = np.divide(resp,resp[columns.index(f"{INCR}")])
     Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T
  
-    with suppress_warnings(np.ComplexWarning):  # raised as everything is complex-type now
+    with suppress_warnings(ComplexWarning):  # raised as everything is complex-type now
         return {
             f"{PHASE_ADV}X": pd.DataFrame(data=resp[columns.index(f"{PHASE_ADV}X")], index=bpms, columns=keys).astype(np.float64),
             f"{PHASE_ADV}Y": pd.DataFrame(data=resp[columns.index(f"{PHASE_ADV}Y")], index=bpms, columns=keys).astype(np.float64),
