@@ -126,7 +126,7 @@ class InputFiles(dict):
 
     def calibrate(self, calibs: Dict[str, pd.DataFrame]):
         """
-        Use calibration data to rescale amplitude and amplitude error.
+        Use calibration data to rescale amplitude and amplitude error (if present).
 
         Args:
             calibs (Dict): Plane-Dictionary with DataFrames of calibration data.
@@ -145,13 +145,14 @@ class InputFiles(dict):
                     value={CALIBRATION: 1.})  # ERR_CALIBRATION is relative, NaN filled with absolute value below
 
                 # Scale amplitude with the calibration
-                self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:, CALIBRATION]
+                self[plane][i][f"{AMPLITUDE}{plane}"] = self[plane][i].loc[:, f"{AMPLITUDE}{plane}"] * data.loc[:, CALIBRATION]
 
-                # Sum Amplitude Error (absolute) and Calibration Error (relative)
-                self[plane][i][f"{ERR}{AMPLITUDE}{plane}"] = np.sqrt(
-                    self[plane][i][f"{ERR}{AMPLITUDE}{plane}"]**2 +
-                    ((self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION]).fillna(bpm_resolution))**2
-                )
+                if f"{ERR}{AMPLITUDE}{plane}" in self[plane][i].columns: 
+                    # Sum Amplitude Error (absolute) and Calibration Error (relative)
+                    self[plane][i][f"{ERR}{AMPLITUDE}{plane}"] = np.sqrt(
+                        self[plane][i][f"{ERR}{AMPLITUDE}{plane}"]**2 +
+                        ((self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION]).fillna(bpm_resolution))**2
+                    )
 
     @ staticmethod
     def get_columns(frame, column):
