@@ -164,7 +164,6 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
         df_twiss = tfs.read(tmp_path / twiss_name, index=NAME)
         assert any(df_twiss.index.str.match(r"BPM.+_DOROS$"))
 
-
     # checks that should fail
 
     with pytest.raises(AcceleratorDefinitionError) as excinfo:
