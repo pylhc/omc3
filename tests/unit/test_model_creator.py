@@ -4,12 +4,14 @@ import copy
 from pathlib import Path
 
 import pytest
+import tfs
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, PATHFETCHER
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
 from omc3.model.model_creators.lhc_model_creator import LhcModelCreator
+from omc3.optics_measurements.constants import NAME
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 LHC_30CM_MODIFIERS = [Path("R2023a_A30cmC30cmA10mL200cm.madx")]
@@ -155,6 +157,13 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+
+    # quick check for DOROS BPMs 
+    
+    for twiss_name in (TWISS_DAT, TWISS_ELEMENTS_DAT):
+        df_twiss = tfs.read(tmp_path / twiss_name, index=NAME)
+        assert any(df_twiss.index.str.match(r"BPM.+_DOROS$"))
+
 
     # checks that should fail
 
