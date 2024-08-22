@@ -244,7 +244,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                              'BPM2',
                              f'BPM_PHASE{plane}',
                              f'BPM_{ERR}PHASE{plane}',]
-    special_phase_df = pd.DataFrame(columns=special_phase_columns)
+    special_phase_df = pd.DataFrame()
     
     for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
@@ -260,8 +260,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
         ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
         model_value = (model_value * bd) % 1
-        new_row = pd.DataFrame(
-            dict(zip(special_phase_columns, [
+        new_row = pd.DataFrame([[
                 elem1,
                 elem2,
                 ph_result % 1,
@@ -274,8 +273,8 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                 minmu2,
                 bpm_phase_advance,
                 elems_to_bpms,
-            ])),
-            index=[0]
+            ]], 
+            columns=special_phase_columns,
         )
 
         special_phase_df = pd.concat([special_phase_df, new_row], axis="index", ignore_index=True)

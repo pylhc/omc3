@@ -5,7 +5,6 @@ Kick
 This module contains kick functionality of ``optics_measurements``.
 It provides functions to compute kick actions.
 """
-from collections import OrderedDict
 from contextlib import suppress
 from os.path import join
 
@@ -63,7 +62,8 @@ def _get_kick(measure_input, files, plane):
     load_columns, calc_columns, column_types = _get_column_mapping(plane)
     kick_frame = pd.DataFrame(data=0.,
                               index=range(len(files[plane])),
-                              columns=list(load_columns.keys()) + calc_columns)
+                              columns=list(column_types.keys()))
+    kick_frame = kick_frame.astype(column_types)
 
     for i, df in enumerate(files[plane]):
         # load data directly from file
@@ -131,7 +131,7 @@ def _get_model_arc_betas(measure_input, plane):
 
 def _get_column_mapping(plane):
     plane_number = PLANE_TO_NUM[plane]
-    load_columns = OrderedDict([
+    load_columns = dict([
         (TIME,                      "TIME"),
         (DPP,                       DPP),
         (DPPAMP,                    DPPAMP),
