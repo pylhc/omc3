@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2024-08-14 - v0.15.3 - _jdilly_
+
+- Fixed:
+  - Add DOROS BPMs to `twiss.dat`.
+
 #### 2024-08-14 - v0.15.2 - _fesoubel_, _jdilly_
 
 - Fixed:
