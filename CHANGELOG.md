@@ -4,7 +4,7 @@
 
 - Fixed:
   - Add DOROS BPMs to `twiss.dat`.
-  - Pandas `FutureWarning`s
+  - Pandas some `FutureWarning`s and `DeprecationWarning`s
 
 #### 2024-08-14 - v0.15.2 - _fesoubel_, _jdilly_
 

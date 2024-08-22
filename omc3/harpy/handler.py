@@ -184,29 +184,34 @@ def _get_output_path_without_suffix(output_dir, file_path):
     return join(output_dir, basename(file_path))
 
 
-def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
+def _rescale_amps_to_main_line_and_compute_noise(df, plane):
     """
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
-    cols = [col for col in panda.columns.to_numpy() if col.startswith(COL_AMP)]
+    cols = [col for col in df.columns.to_numpy() if col.startswith(COL_AMP)]
     cols.remove(f"{COL_AMP}{plane}")
-    panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"{COL_AMP}{plane}"], axis="index")
-    amps = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy()
+    df.loc[:, cols] = df.loc[:, cols].div(df.loc[:, f"{COL_AMP}{plane}"], axis="index")
+    amps = df.loc[:, f"{COL_AMP}{plane}"].to_numpy()
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
     # TODO  later remove
-    panda[f"{COL_AMP}{plane}"] = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy() / 2
-    if f"{COL_NATAMP}{plane}" in panda.columns:
-        panda[f"{COL_NATAMP}{plane}"] = panda.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
+    df[f"{COL_AMP}{plane}"] = df.loc[:, f"{COL_AMP}{plane}"].to_numpy() / 2
+    if f"{COL_NATAMP}{plane}" in df.columns:
+        df[f"{COL_NATAMP}{plane}"] = df.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
 
-    if np.max(panda.loc[:, 'NOISE'].to_numpy()) == 0.0:
-        return panda  # Do not calculated errors when no noise was calculated
-    noise_scaled = panda.loc[:, 'NOISE'] / amps
-    panda.loc[:, "NOISE_SCALED"] = noise_scaled
-    panda.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = panda.loc[:, 'NOISE']
-    if f"{COL_NATTUNE}{plane}" in panda.columns:
-        panda.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = panda.loc[:, 'NOISE']
-    for col in cols:
-        this_amp = panda.loc[:, col]
-        panda.loc[:, f"{COL_ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
-    return panda
+    if np.max(df.loc[:, 'NOISE'].to_numpy()) == 0.0:
+        return df  # Do not calculated errors when no noise was calculated
+    noise_scaled = df.loc[:, 'NOISE'] / amps
+    df.loc[:, "NOISE_SCALED"] = noise_scaled
+    df.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = df.loc[:, 'NOISE']
+    if f"{COL_NATTUNE}{plane}" in df.columns:
+        df.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = df.loc[:, 'NOISE']
+    
+    # create temporary error-dataframe to speed up the DataFrame building
+    df_amp = pd.DataFrame(
+        data={f"{COL_ERR}{col}": noise_scaled * np.sqrt(1 + np.square(df.loc[:, col])) for col in cols},
+        index=df.index, 
+        dtype=pd.Float64Dtype()
+    )
+    df.loc[:, df_amp.columns] = df_amp
+    return df

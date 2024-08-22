@@ -144,7 +144,7 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[p
 
     try:
         # 'interpolate' fills nan based on index/values of neighbours
-        data = data.interpolate("index").fillna(method="bfill").fillna(method="ffill")
+        data = data.interpolate("index").bfill().ffill()
     except TypeError as e:
         raise TypeError("Interpolation failed. "
                         "Usually due to a dtype format that is not properly recognized.") from e
@@ -152,12 +152,10 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[p
     shift = -int((length-1)/2)  # Shift average to middle value
 
     # calculate mean and fill NaNs at the ends
-    data_mav = data.rolling(length).mean().shift(shift).fillna(
-        method="bfill").fillna(method="ffill")
+    data_mav = data.rolling(length).mean().shift(shift).bfill().ffill()
 
     # calculate deviation to the moving average and fill NaNs at the ends
-    std_mav = np.sqrt(((data-data_mav)**2).rolling(length).mean().shift(shift).fillna(
-        method="bfill").fillna(method="ffill"))
+    std_mav = np.sqrt(((data-data_mav)**2).rolling(length).mean().shift(shift).bfill().ffill())
     err_mav = std_mav / np.sqrt(length)
 
     if is_datetime_index:

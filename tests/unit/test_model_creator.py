@@ -10,7 +10,6 @@ from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_E
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
-from omc3.model.model_creators.lhc_model_creator import LhcModelCreator
 from omc3.optics_measurements.constants import NAME
 
 INPUTS = Path(__file__).parent.parent / "inputs"
