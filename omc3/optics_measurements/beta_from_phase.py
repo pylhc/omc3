@@ -321,7 +321,7 @@ def _assign_uncertainties(twiss_full, errordefspath):
     """
     LOGGER.debug("Start creating uncertainty information")
     errdefs = tfs.read(errordefspath)
-    twiss_full = twiss_full.assign(UNC=False, dK1=0, KdS=0, mKdS=0, dX=0, BPMdS=0)
+    twiss_full = twiss_full.assign(UNC=False, dK1=0.0, KdS=0.0, mKdS=0.0, dX=0.0, BPMdS=0.0)
     # loop over uncertainty definitions, fill the respective columns, set UNC to true
     for indx in errdefs.index:
         patt = errdefs.loc[indx, "PATTERN"]
