@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.rdt &mdash; omc3 0.15.2 documentation</title>
+  <title>omc3.optics_measurements.rdt &mdash; omc3 0.15.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=7c174e4c"></script>
+        <script src="../../../_static/documentation_options.js?v=d86fca55"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -453,7 +453,8 @@
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bpm_rdt_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line_amp</span><span class="p">):</span>
         <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">fitting</span><span class="p">,</span> <span class="n">kick_data</span><span class="p">,</span> <span class="n">bpm_rdt_data</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">guess</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">amps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">err_amps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pcov</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pcov</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">else</span> <span class="mf">0.</span> <span class="c1"># if single file is used, the error is reported as Inf, which is then overwritten with 0</span>
+        <span class="n">sqrt_pcov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pcov</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">err_amps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sqrt_pcov</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">sqrt_pcov</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.</span> <span class="c1"># if single file is used, the error is reported as Inf, which is then overwritten with 0</span>
     <span class="k">return</span> <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span>
 
 

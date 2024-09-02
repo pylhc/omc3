@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.kick &mdash; omc3 0.15.2 documentation</title>
+  <title>omc3.optics_measurements.kick &mdash; omc3 0.15.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=7c174e4c"></script>
+        <script src="../../../_static/documentation_options.js?v=d86fca55"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -215,7 +215,6 @@
 <span class="sd">This module contains kick functionality of ``optics_measurements``.</span>
 <span class="sd">It provides functions to compute kick actions.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
 
@@ -276,7 +275,8 @@
     <span class="n">load_columns</span><span class="p">,</span> <span class="n">calc_columns</span><span class="p">,</span> <span class="n">column_types</span> <span class="o">=</span> <span class="n">_get_column_mapping</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
     <span class="n">kick_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
                               <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="n">plane</span><span class="p">])),</span>
-                              <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">load_columns</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="n">calc_columns</span><span class="p">)</span>
+                              <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">column_types</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">kick_frame</span> <span class="o">=</span> <span class="n">kick_frame</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">column_types</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="n">plane</span><span class="p">]):</span>
         <span class="c1"># load data directly from file</span>
@@ -344,7 +344,7 @@
 
 <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="n">plane</span><span class="p">):</span>
     <span class="n">plane_number</span> <span class="o">=</span> <span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
-    <span class="n">load_columns</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([</span>
+    <span class="n">load_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span>
         <span class="p">(</span><span class="n">TIME</span><span class="p">,</span>                      <span class="s2">&quot;TIME&quot;</span><span class="p">),</span>
         <span class="p">(</span><span class="n">DPP</span><span class="p">,</span>                       <span class="n">DPP</span><span class="p">),</span>
         <span class="p">(</span><span class="n">DPPAMP</span><span class="p">,</span>                    <span class="n">DPPAMP</span><span class="p">),</span>
