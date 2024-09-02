@@ -244,8 +244,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                              'BPM2',
                              f'BPM_PHASE{plane}',
                              f'BPM_{ERR}PHASE{plane}',]
-    special_phase_df = pd.DataFrame()
-    
+    to_concat_rows = []
     for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
@@ -276,8 +275,9 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
             ]], 
             columns=special_phase_columns,
         )
+        to_concat_rows.append(new_row)
 
-        special_phase_df = pd.concat([special_phase_df, new_row], axis="index", ignore_index=True)
+    special_phase_df = pd.concat(to_concat_rows, axis="index", ignore_index=True)
 
     tfs.write(Path(meas_input.outputdir) / f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}", special_phase_df)
 

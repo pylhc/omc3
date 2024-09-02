@@ -184,7 +184,7 @@ def _get_output_path_without_suffix(output_dir, file_path):
     return join(output_dir, basename(file_path))
 
 
-def _rescale_amps_to_main_line_and_compute_noise(df, plane):
+def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -> pd.DataFrame:
     """
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
@@ -207,7 +207,8 @@ def _rescale_amps_to_main_line_and_compute_noise(df, plane):
     if f"{COL_NATTUNE}{plane}" in df.columns:
         df.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = df.loc[:, 'NOISE']
     
-    # create temporary error-dataframe to speed up the DataFrame building
+    # Create dedicated dataframe with error columns to assign later (cleaner
+    # and faster than assigning individual columns)
     df_amp = pd.DataFrame(
         data={f"{COL_ERR}{col}": noise_scaled * np.sqrt(1 + np.square(df.loc[:, col])) for col in cols},
         index=df.index, 

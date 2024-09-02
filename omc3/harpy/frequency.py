@@ -9,9 +9,7 @@ This calculation is done using a combination of SVD decomposition zero_padded `f
 analysis.
 Also searches for resonances in the calculated spectra.
 """
-from collections import OrderedDict
 from numbers import Number
-from typing import List
 
 import numpy as np
 import pandas as pd
@@ -146,7 +144,7 @@ def find_resonances(tunes, nturns, plane, spectra, order_resonances):
         max_coefs, max_freqs = _search_highest_coefs(resonances_freqs[resonance], tolerance,
                                                      spectra["FREQS"], spectra["COEFFS"])
         resstr = _get_resonance_suffix(resonance)
-        columns=[f"{COL_FREQ}{resstr}", f"{COL_AMP}{resstr}", f"{COL_PHASE}{resstr}"]
+        columns = [f"{COL_FREQ}{resstr}", f"{COL_AMP}{resstr}", f"{COL_PHASE}{resstr}"]
         df_resonance = _get_freqs_amps_phases(max_freqs, max_coefs, resonances_freqs[resonance])
         df_resonance.columns = columns
         df.loc[:, columns] = df_resonance

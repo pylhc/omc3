@@ -157,8 +157,7 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
 
-    # quick check for DOROS BPMs 
-    
+    # quick check for DOROS BPMs
     for twiss_name in (TWISS_DAT, TWISS_ELEMENTS_DAT):
         df_twiss = tfs.read(tmp_path / twiss_name, index=NAME)
         assert any(df_twiss.index.str.match(r"BPM.+_DOROS$"))
