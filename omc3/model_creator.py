@@ -18,6 +18,7 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcCouplingCreator,
     LhcModelCreator,
 )
+from omc3.model.model_creators.petra_model_creator import PetraModelCreator
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
 from omc3.model.model_creators.segment_creator import SegmentCreator
@@ -38,6 +39,7 @@ CREATORS = {
                   "segment": SegmentCreator},
     "ps": {"nominal": PsModelCreator,
            "segment": SegmentCreator},
+    "petra": {"nominal": PetraModelCreator},
 }
 
 

@@ -63,7 +63,7 @@ def estimate_tunes(harpy_input, usvs):
 
 def _estimate_tune(sv_mat, window, q_s=False):
     upper_power = int(np.power(2, np.ceil(np.log2(sv_mat.shape[1]))))
-    synchro_limit = int(upper_power / 16)  # 0.03125: synchrotron tunes are lower, betatron higher
+    synchro_limit = int(upper_power / 8)  # 0.0625: synchrotron tunes are lower, betatron higher
     coefs = np.abs(np.fft.rfft(np.mean(sv_mat, axis=0) * windowing(sv_mat.shape[1], window),
                                n=2 * upper_power))
     if q_s:

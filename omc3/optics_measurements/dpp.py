@@ -10,8 +10,8 @@ import logging
 import numpy as np
 import pandas as pd
 
-DPP_TOLERANCE = 1e-4
-AMP_DPP_TOLERANCE = 1e-5
+DPP_TOLERANCE = 2e-4
+AMP_DPP_TOLERANCE = 1e-6
 LOGGER = logging.getLogger(__name__)
 
 

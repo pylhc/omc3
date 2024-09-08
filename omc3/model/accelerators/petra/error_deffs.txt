@@ -6,5 +6,5 @@
 *   PATTERN dK1 	dX     dS 		MAINFIELD
 $   %s      %le     %le    %le      %s
     ^Q	    10.0e-4 0 	   0.005 	QUAD
-    ^S      0       0.003  0        SEXT
+    ^S      0       0.00002  0        SEXT
     ^BPM      0       0.000  0        BPM
