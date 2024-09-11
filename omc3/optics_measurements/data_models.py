@@ -4,6 +4,7 @@ Data Models
 
 Models used in optics measurements to store and pass around data.
 """
+from pathlib import Path
 from typing import Dict
 
 import numpy as np
@@ -29,7 +30,7 @@ class InputFiles(dict):
     """
     def __init__(self, files_to_analyse, optics_opt):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
-        read_files = isinstance(files_to_analyse[0], str)
+        read_files = isinstance(files_to_analyse[0], (str, Path))
         for file_in in files_to_analyse:
             for plane in PLANES:
                 df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME", drop=False)
@@ -131,7 +132,7 @@ class InputFiles(dict):
 
     def calibrate(self, calibs: Dict[str, pd.DataFrame]):
         """
-        Use calibration data to rescale amplitude and amplitude error.
+        Use calibration data to rescale amplitude and amplitude error (if present).
 
         Args:
             calibs (Dict): Plane-Dictionary with DataFrames of calibration data.
@@ -150,13 +151,14 @@ class InputFiles(dict):
                     value={CALIBRATION: 1.})  # ERR_CALIBRATION is relative, NaN filled with absolute value below
 
                 # Scale amplitude with the calibration
-                self[plane][i][f"AMP{plane}"] = self[plane][i].loc[:, f"AMP{plane}"] * data.loc[:, CALIBRATION]
+                self[plane][i][f"{AMPLITUDE}{plane}"] = self[plane][i].loc[:, f"{AMPLITUDE}{plane}"] * data.loc[:, CALIBRATION]
 
-                # Sum Amplitude Error (absolute) and Calibration Error (relative)
-                self[plane][i][f"{ERR}{AMPLITUDE}{plane}"] = np.sqrt(
-                    self[plane][i][f"{ERR}{AMPLITUDE}{plane}"]**2 +
-                    ((self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION]).fillna(bpm_resolution))**2
-                )
+                if f"{ERR}{AMPLITUDE}{plane}" in self[plane][i].columns: 
+                    # Sum Amplitude Error (absolute) and Calibration Error (relative)
+                    self[plane][i][f"{ERR}{AMPLITUDE}{plane}"] = np.sqrt(
+                        self[plane][i][f"{ERR}{AMPLITUDE}{plane}"]**2 +
+                        ((self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION]).fillna(bpm_resolution))**2
+                    )
 
     @ staticmethod
     def get_columns(frame, column):

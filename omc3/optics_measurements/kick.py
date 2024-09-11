@@ -100,10 +100,16 @@ def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
 
     if meas_input.accelerator.excitation:
         amps = frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy()
-        err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
+        try:
+            err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
+        except KeyError:
+            err_amps = np.zeros_like(amps)
     else:
         amps = frame.loc[:, PEAK2PEAK].to_numpy() / 2.0
-        err_amps = frame.loc[:, f"{CLOSED_ORBIT}{RMS}"].to_numpy()
+        try:
+            err_amps = frame.loc[:, f"{CLOSED_ORBIT}{RMS}"].to_numpy()
+        except KeyError:
+            err_amps = np.zeros_like(amps)
 
     # sqrt(2J) ---
     sqrt_beta = np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
