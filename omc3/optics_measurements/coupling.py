@@ -11,6 +11,7 @@ from functools import partial, reduce
 from pathlib import Path
 from typing import Callable, Dict, List, Sequence, Tuple, Union
 
+from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
@@ -39,6 +40,7 @@ from omc3.optics_measurements.constants import (
     MDL,
     DELTA, F1010_NAME, F1001_NAME
 )
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import logging_tools, stats
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -49,8 +51,8 @@ CUTOFF: int = 5
 
 
 def calculate_coupling(
-    meas_input: dict,
-    input_files: dict,
+    meas_input: DotDict,
+    input_files: InputFiles,
     phase_dict: Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], Sequence[tfs.TfsDataFrame]]],
     tune_dict: Dict[str, float],
     header_dict: OrderedDict,
@@ -118,29 +120,29 @@ def calculate_coupling(
 
     LOGGER.debug("Computing complex lines from spectra")
     A01: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_X] * exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
+        joined[SECONDARY_AMPLITUDE_X] * np.exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
     B10: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_Y] * exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
+        joined[SECONDARY_AMPLITUDE_Y] * np.exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
     A0_1: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_X] * exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
+        joined[SECONDARY_AMPLITUDE_X] * np.exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
     B_10: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_Y] * exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
+        joined[SECONDARY_AMPLITUDE_Y] * np.exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
 
     q1001_from_A = -np.angle(A01) + (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1001_from_B = np.angle(B10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
-    eq_1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
+    eq_1001 = np.exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
 
     q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1010_from_B = -np.angle(B_10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
-    eq_1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
+    eq_1010 = np.exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
 
     LOGGER.debug("Computing average of coupling RDTs")
-    f1001: np.ndarray = -0.5 * sqrt(np.abs(A01 * B10)) * eq_1001 / abs(eq_1001)
-    f1010: np.ndarray = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq_1010 / abs(eq_1010)
+    f1001: np.ndarray = -0.5 * np.sqrt(np.abs(A01 * B10)) * eq_1001 / np.abs(eq_1001)
+    f1010: np.ndarray = 0.5 * np.sqrt(np.abs(A0_1 * B_10)) * eq_1010 / np.abs(eq_1010)
 
     LOGGER.debug("Getting tune separation from measurements")
     tune_separation = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
@@ -285,9 +287,7 @@ def _get_complex_line(
     spectral_lines = np.array(spectral_lines)  # make sure we avoid any inplace modification of data
     deltas = np.array(deltas)
     pairs = np.array(pairs)
-    return np.array((1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
-        pairs
-    ], dtype=np.complex_)
+    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[pairs]
 
 
 def _rdt_to_output_df(
@@ -370,7 +370,7 @@ def _rdt_to_output_df(
     return df.sort_values(by=S)
 
 
-def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
+def _joined_frames(input_files: InputFiles) -> tfs.TfsDataFrame:
     """
     Merges spectrum data from the two planes from all the input files.
 
@@ -402,7 +402,7 @@ def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
     reduced = reduced.rename(
         columns={f"{PHASE_ADV}X_X_0": f"{PHASE_ADV}X", f"{PHASE_ADV}Y_Y_0": f"{PHASE_ADV}Y"}
     )
-    return tfs.TfsDataFrame(reduced)
+    return tfs.TfsDataFrame(reduced, dtype=np.float64)
 
 
 def rename_col(plane: str, index: int) -> Callable:

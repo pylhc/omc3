@@ -8,6 +8,7 @@ It provides functions to compute kick actions.
 from contextlib import suppress
 from os.path import join
 
+from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
@@ -20,10 +21,11 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 RES,
                                                 RESCALE_FACTOR, RMS,
                                                 SQRT_ACTION, TIME, TUNE, S, CLOSED_ORBIT)
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils.stats import weighted_mean, weighted_error
 
 
-def calculate(measure_input, input_files, scale, header_dict, plane):
+def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict, plane):
     """
 
     Args:

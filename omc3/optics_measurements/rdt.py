@@ -8,6 +8,7 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 from copy import deepcopy
 from os.path import join
 
+from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
@@ -65,7 +66,7 @@ def _generate_plane_rdts(order):
 
 
 def calculate(
-    measure_input: dict,
+    measure_input: DotDict,
     input_files: InputFiles,
     tunes: TuneDict,
     phases,
@@ -179,7 +180,7 @@ def add_freq_to_header(header, plane, rdt):
     return mod_header
 
 
-def _process_rdt(meas_input, input_files, phase_data, invariants, plane, rdt):
+def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invariants, plane, rdt):
     df = pd.DataFrame(phase_data)
     second_bpms = df.loc[:, "NAME2"].to_numpy()
     df["S2"] = df.loc[second_bpms, "S"].to_numpy()

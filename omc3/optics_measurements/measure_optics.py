@@ -11,6 +11,7 @@ import sys
 from collections import OrderedDict
 from copy import deepcopy
 
+from generic_parser import DotDict
 import numpy as np
 
 import tfs
@@ -29,7 +30,7 @@ LOGGER = logging_tools.get_logger(__name__)
 LOG_FILE = "measure_optics.log"
 
 
-def measure_optics(input_files: InputFiles, measure_input):
+def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
     """
     Main function to compute various lattice optics parameters from frequency spectra.
 
@@ -50,7 +51,7 @@ def measure_optics(input_files: InputFiles, measure_input):
     for plane in PLANES:
         phase_dict[plane], out_dfs = phase.calculate(measure_input, input_files, tune_dict, plane)
         phase.write(out_dfs, [common_header]*4, measure_input.outputdir, plane)
-        # phase.write_special(measure_input, phase_dict[plane]['free'], tune_dict[plane]["QF"], plane)
+        phase.write_special(measure_input, phase_dict[plane]['free'], tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
             continue
         beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_dict[plane], common_header, plane)
