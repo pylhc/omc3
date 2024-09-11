@@ -285,9 +285,9 @@ def _get_complex_line(
     spectral_lines = np.array(spectral_lines)  # make sure we avoid any inplace modification of data
     deltas = np.array(deltas)
     pairs = np.array(pairs)
-    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
+    return np.array((1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
         pairs
-    ]
+    ], dtype=np.complex_)
 
 
 def _rdt_to_output_df(
