@@ -152,8 +152,8 @@ def fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariant, err_crdt_i
 
     fit_model = scipy.odr.Model(fun)
     data_model = scipy.odr.RealData(
-        x=crdt_invariant.astype(np.float_),
-        y=lineamplitudes.astype(np.float_),
+        x=crdt_invariant,
+        y=lineamplitudes,
         sx=err_crdt_invariant,
         sy=None if all(err == 0. for err in err_lineamplitudes) else err_lineamplitudes,
     )
