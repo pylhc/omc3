@@ -43,6 +43,7 @@ from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters, 
 
 from omc3.definitions import formats
 from omc3.harpy import handler
+from omc3.harpy.constants import LINFILES_SUBFOLDER
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.optics_measurements.measure_optics import InputFiles
@@ -329,7 +330,7 @@ def _get_suboptions(opt, rest):
             rest = add_to_arguments(rest, entry_params=optics_params(),
                                     files=harpy_opt.files,
                                     outputdir=harpy_opt.outputdir)
-            harpy_opt.outputdir = join(harpy_opt.outputdir, 'lin_files')
+            harpy_opt.outputdir = join(harpy_opt.outputdir, LINFILES_SUBFOLDER)
             if harpy_opt.model is not None:
                 rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
                                         model_dir=dirname(abspath(harpy_opt.model)))

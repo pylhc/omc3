@@ -10,6 +10,8 @@ FILE_AMPS_EXT = ".amps{plane}"
 FILE_FREQS_EXT = ".freqs{plane}"
 FILE_LIN_EXT = ".lin{plane}"
 
+LINFILES_SUBFOLDER = "lin_files"
+
 # Column Names -----------------------------------------------------------------
 # TODO use these everywhere (jdilly)
 
