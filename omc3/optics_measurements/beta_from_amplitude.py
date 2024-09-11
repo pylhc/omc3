@@ -7,16 +7,18 @@ It provides functions to calculate beta functions from amplitude data.
 """
 from os.path import join
 
+from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
 
 from omc3.optics_measurements.constants import (AMP_BETA_NAME, DELTA, ERR, EXT,
                                                 MDL, RES)
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
 
-def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane):
+def calculate(meas_input: DotDict, input_files: InputFiles, tune_dict, beta_phase, header_dict, plane):
     """
     Calculates beta and fills the following `TfsFiles`: ``f"{AMP_BETA_NAME}{plane.lower()}{EXT}"``
 

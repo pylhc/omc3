@@ -8,11 +8,13 @@ It provides functions to compute combined resonance driving terms following the 
 https://arxiv.org/pdf/1402.1461.pdf.
 """
 from pathlib import Path
+from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
 import scipy.odr
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE, MDL, PHASE, REAL, IMAG
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.stats import circular_nanmean, circular_nanerror
 from omc3.definitions.constants import PLANES, PI2
@@ -47,7 +49,7 @@ CRDTS = [
 ]
 
 
-def calculate(measure_input, input_files, invariants, header):
+def calculate(measure_input: DotDict, input_files: InputFiles, invariants, header):
 
     LOGGER.info("Start of CRDT analysis")
     assert len(input_files['X']) == len(input_files['Y'])
