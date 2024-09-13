@@ -4,6 +4,7 @@ Tune
 This module contains tune calculations functionality of ``optics_measurements``.
 It provides functions to compute betatron tunes and structures to store them.
 """
+from __future__ import annotations
 import numpy as np
 import pandas as pd
 
@@ -14,7 +15,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING: 
     from omc3.optics_measurements.data_models import InputFiles
-    
+
 
 def calculate(measure_input, input_files: InputFiles):
     tune_d = TuneDict()

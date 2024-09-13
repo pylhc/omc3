@@ -6,7 +6,6 @@ This module contains high-level functions to manage most functionality of ``harp
 Tools are provided to handle the cleaning, frequency analysis and resonance search for a
 single-bunch `TbtData`.
 """
-from collections import OrderedDict
 from os.path import basename, join
 
 import numpy as np
@@ -95,10 +94,20 @@ def _scale_to_meters(bpm_data, unit):
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
-    lin_frame = pd.DataFrame(index=bpm_data.index.to_numpy(),
-                             data=OrderedDict([(COL_NAME, bpm_data.index.to_numpy()),
-                                               ("S", np.arange(bpm_data.index.size) if model is None
-                                               else model.loc[bpm_data.index])]))
+    lin_frame = pd.DataFrame(
+        index=bpm_data.index.to_numpy(),
+        data=dict(
+            [
+                (COL_NAME, bpm_data.index.to_numpy()),
+                (
+                    "S",
+                    np.arange(bpm_data.index.size)
+                    if model is None
+                    else model.loc[bpm_data.index],
+                ),
+            ]
+        ),
+    )
     lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
     with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
         lin_frame = _get_orbit_data(lin_frame, bpm_data)
@@ -150,7 +159,7 @@ def _sync_phase(lin_frame, plane):
 
 
 def _compute_headers(panda, date=None):
-    headers = OrderedDict()
+    headers = {}
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
             try:

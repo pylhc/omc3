@@ -7,6 +7,7 @@ This module contains combined resonance driving terms calculations functionality
 It provides functions to compute combined resonance driving terms following the derivations in
 https://arxiv.org/pdf/1402.1461.pdf.
 """
+from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
 import numpy as np

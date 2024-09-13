@@ -5,6 +5,7 @@ Dispersion
 This module contains dispersion calculations related functionality of ``optics_measurements``.
 It provides functions to compute orbit, dispersion and normalised dispersion.
 """
+from __future__ import annotations
 from os.path import join
 
 import numpy as np

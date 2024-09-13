@@ -4,6 +4,7 @@ Data Models
 
 Models used in optics measurements to store and pass around data.
 """
+from __future__ import annotations
 from pathlib import Path
 from collections.abc import Sequence
 

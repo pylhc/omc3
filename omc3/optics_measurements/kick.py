@@ -5,6 +5,7 @@ Kick
 This module contains kick functionality of ``optics_measurements``.
 It provides functions to compute kick actions.
 """
+from __future__ import annotations
 from contextlib import suppress
 from os.path import join
 

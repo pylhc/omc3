@@ -5,6 +5,7 @@ Measure Optics
 This module contains high-level functions to manage most functionality of ``optics_measurements``.
 It provides functions to compute various lattice optics parameters from frequency spectra.
 """
+from __future__ import annotations
 import datetime
 import os
 import sys

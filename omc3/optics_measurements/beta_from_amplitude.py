@@ -5,6 +5,7 @@ Beta from Amplitude
 This module contains some of the beta calculation related functionality of ``optics_measurements``.
 It provides functions to calculate beta functions from amplitude data.
 """
+from __future__ import annotations
 from os.path import join
 
 import numpy as np
