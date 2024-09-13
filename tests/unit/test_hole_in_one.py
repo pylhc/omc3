@@ -15,6 +15,9 @@ one of the following reasons:
 
     - Pandas to numpy dtype conversions for the lin files went wrong and numpy had 'obj' arrays.
     https://github.com/pylhc/omc3/issues/453
+    
+    - RDT and CRDT dimensions mismatch when off-momentum files were analysed.
+    https://github.com/pylhc/omc3/issues/456
 
 """
 from __future__ import annotations
@@ -78,7 +81,7 @@ def test_hole_in_one(tmp_path, clean, which_files):
         accel="lhc",
         year="2022",
         model_dir=MODEL_DIR,
-        files=sdds_files,
+        files=[analysis_output / sdds_file.name for sdds_file in sdds_files],
         nonlinear=['rdt', 'crdt'],
         outputdir=optics_output,
     )

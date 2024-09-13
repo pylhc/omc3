@@ -18,6 +18,8 @@ from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
 
+DPP_TOLERANCE = 1e-6
+
 class InputFiles(dict):
     """
     Stores the input files, provides methods to gather quantity specific data
@@ -75,12 +77,20 @@ class InputFiles(dict):
         return np.array([df.DPP for df in self[plane]])
 
     def dpp_frames(self, plane, dpp_value):
-        dpp_dfs = []
-        for i in np.argwhere(np.abs(self.dpps(plane) - dpp_value) < 1e-6).T[0]:
-            dpp_dfs.append(self[plane][i])
+        if dpp_value is None:
+            return self._all_frames(plane)
+
+        dpp_dfs = [self[plane][i] for i in self.dpp_frames_indices(plane, dpp_value)]
         if len(dpp_dfs) == 0:
             raise ValueError(f"No data found for dp/p {dpp}")
         return dpp_dfs
+    
+    def dpp_frames_indices(self, plane, dpp_value):
+        """ Return the indices of the frames that match the dpp. """
+        if dpp_value is None:
+            return list(range(len(self[plane])))
+
+        return np.argwhere(np.abs(self.dpps(plane) - dpp_value) < DPP_TOLERANCE).T[0]
 
     def _all_frames(self, plane):
         return self[plane]
@@ -101,15 +111,20 @@ class InputFiles(dict):
                    or to `None` to avoid conversion.
 
         Returns:
-            A merged `DataFrame` from `InputFiles`.
+            A merged `TfsDataFrame` from `InputFiles`.
         """
         if how not in ['inner', 'outer']:
             raise RuntimeWarning("'how' should be either 'inner' or 'outer', 'inner' will be used.")
-        frames_to_join = self.dpp_frames(plane, dpp_value) if dpp_value is not None else self._all_frames(plane)
+        
+        # select frames ---
+        frames_to_join = self.dpp_frames(plane, dpp_value)
         if dpp_amp:
             frames_to_join = [df for df in frames_to_join if df.DPPAMP > 0]
+
         if len(frames_to_join) == 0:
             raise ValueError("No data found for non-zero |dp/p|")
+        
+        # join frames ---
         joined_frame = frames_to_join[0].reindex(columns=columns, fill_value=np.nan)
         if len(frames_to_join) > 1:
             for i, df in enumerate(frames_to_join[1:]):
