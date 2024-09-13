@@ -51,7 +51,7 @@ from omc3.harpy import handler
 from omc3.harpy.constants import LINFILES_SUBFOLDER
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
-from omc3.optics_measurements.measure_optics import InputFiles
+from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
 
