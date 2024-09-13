@@ -9,18 +9,22 @@ https://arxiv.org/pdf/1402.1461.pdf.
 """
 from collections.abc import Sequence
 from pathlib import Path
-from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
 import scipy.odr
 from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE, MDL, PHASE, REAL, IMAG
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.stats import circular_nanmean, circular_nanerror
 from omc3.definitions.constants import PLANES, PI2
 from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_ERR
 from omc3.optics_measurements.rdt import get_line_sign_and_suffix
+
+from typing import TYPE_CHECKING 
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -50,15 +54,13 @@ CRDTS = [
 
 
 def calculate(measure_input: DotDict, input_files: InputFiles, invariants, header):
-    """ Calculate the CRDT values. 
-    
-    Todo: https://github.com/pylhc/omc3/issues/456 
-    """
+    """ Calculate the CRDT values. """
     LOGGER.info("Start of CRDT analysis")
     
-    # Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see #456
+    # Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see https://github.com/pylhc/omc3/issues/456
+    # For now: use only the actions belonging to the current dpp value!
     dpp_value = 0  
-    invariants = {plane: inv[input_files.dpp_frames_indices(plane, dpp_value)] for plane, inv in invariants.items()}
+    invariants = {plane: inv[input_files.dpp_frames_indices(plane, dpp_value)] for plane, inv in invariants.items()}  
 
     assert len(input_files['X']) == len(input_files['Y'])
     bpm_names = input_files.bpms(dpp_value=0)

@@ -8,7 +8,6 @@ It provides functions to compute kick actions.
 from contextlib import suppress
 from os.path import join
 
-from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
@@ -21,8 +20,13 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 RES,
                                                 RESCALE_FACTOR, RMS,
                                                 SQRT_ACTION, TIME, TUNE, S, CLOSED_ORBIT)
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils.stats import weighted_mean, weighted_error
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict
+    from omc3.optics_measurements.data_models import InputFiles
 
 
 def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict, plane):
@@ -100,7 +104,7 @@ def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
 
     if meas_input.accelerator.excitation:
         amps = frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy()
-        try:
+        try:  # only created when using cleaning in harpy
             err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
         except KeyError:
             err_amps = np.zeros_like(amps)

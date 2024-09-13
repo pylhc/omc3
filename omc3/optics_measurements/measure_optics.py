@@ -8,10 +8,8 @@ It provides functions to compute various lattice optics parameters from frequenc
 import datetime
 import os
 import sys
-from collections import OrderedDict
 from copy import deepcopy
 
-from generic_parser import DotDict
 import numpy as np
 
 import tfs
@@ -23,8 +21,14 @@ from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
 from omc3.optics_measurements.constants import (
     CHROM_BETA_NAME, EXT, CALIBRATION_FILE, NAME
 )
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
+
+from typing import TYPE_CHECKING 
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
+
 
 LOGGER = logging_tools.get_logger(__name__)
 LOG_FILE = "measure_optics.log"
@@ -78,7 +82,7 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
         chromatic_beating(input_files, measure_input, tune_dict)
 
 
-def chromatic_beating(input_files, measure_input, tune_dict):
+def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict):
     """
     Main function to compute chromatic optics beating.
 
@@ -98,7 +102,7 @@ def chromatic_beating(input_files, measure_input, tune_dict):
             dpp_meas_input = deepcopy(measure_input)
             dpp_meas_input["dpp"] = dpp_val
             phase_dict, out_dfs = phase.calculate(dpp_meas_input, input_files, tune_dict, plane)
-            beta_df, _ = beta_from_phase.calculate(dpp_meas_input, tune_dict, phase_dict, OrderedDict(), plane)
+            beta_df, _ = beta_from_phase.calculate(dpp_meas_input, tune_dict, phase_dict, {}, plane)
             betas.append(beta_df)
         output_df = chromatic.calculate_w_and_phi(betas, dpps, input_files, measure_input, plane)
         tfs.write(os.path.join(measure_input.outputdir, f"{CHROM_BETA_NAME}{plane.lower()}{EXT}"), output_df, {}, save_index="NAME")
@@ -106,14 +110,14 @@ def chromatic_beating(input_files, measure_input, tune_dict):
 
 def _get_header(meas_input, tune_dict):
     compensation = {'model': "by model", 'equation': "by equation", 'none': "None"}
-    return OrderedDict([('Measure_optics:version', VERSION),
-                        ('Command', f"{sys.executable} {' '.join(sys.argv)}"),
-                        ('CWD', os.getcwd()),
-                        ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
-                        ('Model_directory', meas_input.accelerator.model_dir),
-                        ('Compensation', compensation[meas_input.compensation]),
-                        ('Q1', tune_dict["X"]["QF"]),
-                        ('Q2', tune_dict["Y"]["QF"])])
+    return dict([('Measure_optics:version', VERSION),
+                 ('Command', f"{sys.executable} {' '.join(sys.argv)}"),
+                 ('CWD', os.getcwd()),
+                 ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
+                 ('Model_directory', meas_input.accelerator.model_dir),
+                 ('Compensation', compensation[meas_input.compensation]),
+                 ('Q1', tune_dict["X"]["QF"]),
+                 ('Q2', tune_dict["Y"]["QF"])])
 
 
 def copy_calibration_files(outputdir, calibrationdir):

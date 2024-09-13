@@ -5,7 +5,7 @@ Data Models
 Models used in optics measurements to store and pass around data.
 """
 from pathlib import Path
-from typing import Dict
+from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
@@ -15,6 +15,11 @@ from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import dpp, iforest
 from omc3.optics_measurements.constants import BPM_RESOLUTION, AMPLITUDE, CALIBRATION, ERR, ERR_CALIBRATION
 from omc3.utils import logging_tools
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -30,7 +35,7 @@ class InputFiles(dict):
         - ``get_columns`` (frame, column)
         - ``get_data`` (frame, column)
     """
-    def __init__(self, files_to_analyse, optics_opt):
+    def __init__(self, files_to_analyse: Sequence[str|Path|tfs.TfsDataFrame], optics_opt: DotDict):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
         read_files = isinstance(files_to_analyse[0], (str, Path))
         for file_in in files_to_analyse:
@@ -53,7 +58,7 @@ class InputFiles(dict):
             self[plane] = dpp.append_amp_dpp(self[plane], amp_dpp_values)
 
     @staticmethod  # TODO later remove
-    def _repair_backwards_compatible_frame(df, plane):
+    def _repair_backwards_compatible_frame(df, plane: str):
         """
         Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones.
         This is for backwards compatibility with Drive,
@@ -76,7 +81,7 @@ class InputFiles(dict):
         """
         return np.array([df.DPP for df in self[plane]])
 
-    def dpp_frames(self, plane, dpp_value):
+    def dpp_frames(self, plane: str, dpp_value: float | None):
         if dpp_value is None:
             return self._all_frames(plane)
 
@@ -85,17 +90,24 @@ class InputFiles(dict):
             raise ValueError(f"No data found for dp/p {dpp}")
         return dpp_dfs
     
-    def dpp_frames_indices(self, plane, dpp_value):
+    def dpp_frames_indices(self, plane: str, dpp_value: float | None):
         """ Return the indices of the frames that match the dpp. """
         if dpp_value is None:
             return list(range(len(self[plane])))
 
         return np.argwhere(np.abs(self.dpps(plane) - dpp_value) < DPP_TOLERANCE).T[0]
 
-    def _all_frames(self, plane):
+    def _all_frames(self, plane: str):
         return self[plane]
 
-    def joined_frame(self, plane, columns, dpp_value=None, dpp_amp=False, how='inner', dtype = np.float64):
+    def joined_frame(self, 
+        plane: str, 
+        columns: Sequence[str], 
+        dpp_value: float | None = None, 
+        dpp_amp: bool = False, 
+        how: str = 'inner', 
+        dtype: np.dtype = np.float64
+    ) -> pd.DataFrame:
         """
         Constructs merged DataFrame from InputFiles.
 
@@ -145,12 +157,12 @@ class InputFiles(dict):
             indices[0] = indices[0].intersection(ind)
         return indices[0]
 
-    def calibrate(self, calibs: Dict[str, pd.DataFrame]):
+    def calibrate(self, calibs: dict[str, pd.DataFrame]):
         """
         Use calibration data to rescale amplitude and amplitude error (if present).
 
         Args:
-            calibs (Dict): Plane-Dictionary with DataFrames of calibration data.
+            calibs (dict): Plane-Dictionary with DataFrames of calibration data.
 
         """
         if calibs is None:

@@ -8,9 +8,13 @@ import numpy as np
 import pandas as pd
 
 from omc3.definitions.constants import PLANES, PLANE_TO_NUM
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import stats
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING: 
+    from omc3.optics_measurements.data_models import InputFiles
+    
 
 def calculate(measure_input, input_files: InputFiles):
     tune_d = TuneDict()

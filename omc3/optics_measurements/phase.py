@@ -5,28 +5,33 @@ Phase Advance
 This module contains phase calculation functionality of ``optics_measurements``.
 It provides functions to compute betatron phase advances and structures to store them.
 """
+from __future__ import annotations
 from pathlib import Path
-from typing import Dict, Tuple
 
-from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
-from numpy.typing import ArrayLike
 
-from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
+
+from typing import TYPE_CHECKING 
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
+    from omc3.model.accelerators.accelerator import Accelerator
+    from numpy.typing import ArrayLike
+
 
 LOGGER = logging_tools.get_logger(__name__)
 
 
 def calculate(
     meas_input: DotDict, input_files: InputFiles, tunes, plane, no_errors=False
-) -> Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
+) -> dict[str, tuple[dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
     """
     Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
     dictionary combining the results for each transverse plane.
@@ -229,7 +234,8 @@ def _get_square_data_frame(data, index):
     return pd.DataFrame(data=data, index=index, columns=index)
 
 
-def write_special(meas_input: DotDict, phase_advances, plane_tune, plane):
+def write_special(meas_input: DotDict, phase_advances: pd.DataFrame, plane_tune: float, plane: str):
+    """ Writes out the special phase advances, if any given by the accelerator class. """
     # TODO REFACTOR AND SIMPLIFY
     accel: Accelerator = meas_input.accelerator
 

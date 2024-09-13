@@ -29,17 +29,22 @@ by a different set of files:
 
 To run either of the two or both steps, see options ``--harpy`` and ``--optics``.
 """
+from __future__ import annotations
 import os
-from collections import OrderedDict
+from collections.abc import Generator
 from copy import deepcopy
-from datetime import datetime
+from datetime import UTC, datetime
 from os.path import abspath, basename, dirname, join
-from typing import Generator, Tuple
 
 import turn_by_turn as tbt
 from generic_parser import DotDict
-from generic_parser.entrypoint_parser import (EntryPoint, EntryPointParameters, add_to_arguments,
-                                              entrypoint, save_options_to_config)
+from generic_parser.entrypoint_parser import (
+    EntryPoint,
+    EntryPointParameters,
+    add_to_arguments,
+    entrypoint,
+    save_options_to_config,
+)
 
 from omc3.definitions import formats
 from omc3.harpy import handler
@@ -351,13 +356,13 @@ def _get_suboptions(opt, rest):
 
 def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
     """Write the parsed options into a config file for later use."""
-    all_opt = OrderedDict()
+    all_opt = {}
     if harpy_opt is not None:
         all_opt["harpy"] = True
-        all_opt.update(OrderedDict(sorted(harpy_opt.items())))
+        all_opt.update(sorted(harpy_opt.items()))
 
     if optics_opt is not None:
-        optics_opt = OrderedDict(sorted(optics_opt.items()))
+        optics_opt = dict(sorted(optics_opt.items()))
         optics_opt.pop('accelerator')
 
         all_opt["optics"] = True
@@ -365,7 +370,7 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
         all_opt.update(sorted(accelerator_opt.items()))
 
     out_dir = all_opt["outputdir"]
-    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
+    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.now(UTC).strftime(formats.TIME))
     iotools.create_dirs(out_dir)
 
     save_options_to_config(os.path.join(out_dir, file_name), all_opt)
@@ -393,7 +398,7 @@ def _replicate_harpy_options_per_file(options):
 
 
 def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
-    ) -> Generator[Tuple[tbt.TbtData, DotDict], None, None]:
+    ) -> Generator[tuple[tbt.TbtData, DotDict], None, None]:
     # hint: options.files is now a single file because of _replicate_harpy_options_per_file
     # it is also only used here to define the output name, as the tbt-data is already loaded.
 

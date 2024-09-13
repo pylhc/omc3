@@ -9,7 +9,6 @@ from __future__ import annotations
 from copy import deepcopy
 from os.path import join
 
-from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
@@ -19,11 +18,16 @@ from contextlib import contextmanager
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import AMPLITUDE, ERR, EXT, IMAG, PHASE, REAL
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.optics_measurements.tune import TuneDict
 from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
+
+from typing import TYPE_CHECKING 
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
@@ -197,7 +201,8 @@ def add_freq_to_header(header, plane, rdt):
 
 
 def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invariants, plane, rdt: RDTTuple):
-    # Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see #456
+    # Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see https://github.com/pylhc/omc3/issues/456 
+    # For now: use only the actions belonging to the current dpp value!
     dpp_value = 0  
     invariants = {plane: inv[input_files.dpp_frames_indices(plane, dpp_value)] for plane, inv in invariants.items()}
 

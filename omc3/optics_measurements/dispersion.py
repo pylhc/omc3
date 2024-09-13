@@ -7,7 +7,6 @@ It provides functions to compute orbit, dispersion and normalised dispersion.
 """
 from os.path import join
 
-from generic_parser import DotDict
 import numpy as np
 import pandas as pd
 import tfs
@@ -16,8 +15,13 @@ from omc3.definitions.constants import PI2I
 from omc3.optics_measurements.constants import (DELTA, DISPERSION_NAME, ERR,
                                                 EXT, MDL, NORM_DISP_NAME,
                                                 ORBIT_NAME)
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import stats
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict
+    from omc3.optics_measurements.data_models import InputFiles
 
 
 def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header, plane):
