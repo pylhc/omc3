@@ -33,7 +33,7 @@ from __future__ import annotations
 import os
 from collections.abc import Generator
 from copy import deepcopy
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from os.path import abspath, basename, dirname, join
 
 import turn_by_turn as tbt
@@ -370,7 +370,7 @@ def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
         all_opt.update(sorted(accelerator_opt.items()))
 
     out_dir = all_opt["outputdir"]
-    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.now(UTC).strftime(formats.TIME))
+    file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.now(timezone.utc).strftime(formats.TIME))
     iotools.create_dirs(out_dir)
 
     save_options_to_config(os.path.join(out_dir, file_name), all_opt)
