@@ -49,7 +49,7 @@ SDDS_FILES = {
 
 @pytest.mark.exteded
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
-@pytest.mark.parametrize("clean", (True, False))
+@pytest.mark.parametrize("clean", (True, False), ids=lambda val : f"clean={val}")
 def test_hole_in_one(tmp_path, clean, which_files):
     """
     Test that is closely related to how actual analysis are done.
@@ -93,7 +93,7 @@ def test_hole_in_one(tmp_path, clean, which_files):
 
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
-@pytest.mark.parametrize("clean", (True, False))
+@pytest.mark.parametrize("clean", (True, False), ids=lambda val : f"clean={val}")
 def test_hole_in_one_in_one(tmp_path, clean, which_files):
     """
     This test runs harpy, optics and optics analysis in one.
@@ -103,7 +103,7 @@ def test_hole_in_one_in_one(tmp_path, clean, which_files):
     hole_in_one_entrypoint(
         harpy=True,
         optics=True,
-        clean=True,
+        clean=clean,
         output_bits=8,
         turn_bits=10,
         autotunes="transverse",
