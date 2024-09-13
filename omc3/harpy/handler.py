@@ -8,17 +8,29 @@ single-bunch `TbtData`.
 """
 from collections import OrderedDict
 from os.path import basename, join
+from warnings import warn
 
 import numpy as np
 import pandas as pd
 import tfs
 
 from omc3.definitions import formats
-from omc3.definitions.constants import PLANES, PLANE_TO_NUM as P2N
+from omc3.definitions.constants import PLANE_TO_NUM as P2N
+from omc3.definitions.constants import PLANES
 from omc3.harpy import clean, frequency, kicker
-from omc3.harpy.constants import (FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT,
-                                  COL_NAME, COL_TUNE, COL_AMP, COL_MU,
-                                  COL_NATTUNE, COL_NATAMP, COL_PHASE, COL_ERR)
+from omc3.harpy.constants import (
+    COL_AMP,
+    COL_ERR,
+    COL_MU,
+    COL_NAME,
+    COL_NATAMP,
+    COL_NATTUNE,
+    COL_PHASE,
+    COL_TUNE,
+    FILE_AMPS_EXT,
+    FILE_FREQS_EXT,
+    FILE_LIN_EXT,
+)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
@@ -38,9 +50,15 @@ def run_per_bunch(tbt_data, harpy_input):
     Returns:
         Dictionary with a `TfsDataFrame` per plane.
     """
+    try:
+        harpy_input.file
+    except AttributeError:
+        warn("The use of `harpy_input.files` is deprecated. Use `harpy_input.file` instead.", DeprecationWarning)
+        harpy_input.file = harpy_input.files   # backwards compatibility
+
     model = None if harpy_input.model is None else tfs.read(harpy_input.model, index=COL_NAME).loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
-    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
+    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.file)
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
         bpm_data = _scale_to_meters(bpm_data, harpy_input.unit)

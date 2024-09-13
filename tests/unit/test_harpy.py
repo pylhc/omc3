@@ -80,7 +80,8 @@ def test_input_suffix_and_multibunch(suffix, bunches):
 @pytest.mark.extended
 @pytest.mark.parametrize("suffix", ("_my_suffix", None))
 @pytest.mark.parametrize("bunches", (None, (1, 15)))
-def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
+@pytest.mark.parametrize("write_tbt", (True, False), ids=lambda val : f"write_tbt={val}")
+def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches, write_tbt):
     """ Runs harpy and checks that the right files are created. 
     
     Only with bunchID as we have enough tests in the accuracy tests, 
@@ -91,7 +92,11 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
 
     # Mock some TbT data ---
     model = _get_model_dataframe()
-    tbt.write(tbt_file, create_tbt_data(model=model, bunch_ids=all_bunches))
+    tbt_data = create_tbt_data(model=model, bunch_ids=all_bunches)
+    if write_tbt:
+        tbt.write(tbt_file, tbt_data)
+    else:
+        tbt_file = tbt_data
 
     # Run harpy ---
     hole_in_one_entrypoint(harpy=True,

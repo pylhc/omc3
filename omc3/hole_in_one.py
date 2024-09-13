@@ -29,12 +29,13 @@ by a different set of files:
 
 To run either of the two or both steps, see options ``--harpy`` and ``--optics``.
 """
+from __future__ import annotations
 import os
 from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime
-from os.path import abspath, basename, dirname, join
-from typing import Generator, Tuple
+from collections.abc import Generator
+from pathlib import Path
 
 import turn_by_turn as tbt
 from generic_parser import DotDict
@@ -330,10 +331,10 @@ def _get_suboptions(opt, rest):
             rest = add_to_arguments(rest, entry_params=optics_params(),
                                     files=harpy_opt.files,
                                     outputdir=harpy_opt.outputdir)
-            harpy_opt.outputdir = join(harpy_opt.outputdir, LINFILES_SUBFOLDER)
+            harpy_opt.outputdir = Path(harpy_opt.outputdir) /  LINFILES_SUBFOLDER
             if harpy_opt.model is not None:
                 rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
-                                        model_dir=dirname(abspath(harpy_opt.model)))
+                                        model_dir=Path(harpy_opt.model).parent)
     else:
         harpy_opt = None
 
@@ -376,35 +377,42 @@ def _run_harpy(harpy_options):
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
         all_options = _replicate_harpy_options_per_file(harpy_options)
-        tbt_datas = [(tbt.read_tbt(option.files, datatype=option.tbt_datatype), option) for option in all_options]
+        tbt_datas = [(_read_or_return_tbt(option.file, datatype=option.tbt_datatype), option) for option in all_options]
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
                          for bunch_data, bunch_options in _add_suffix_and_iter_bunches(tbt_data, option)])
     return lins
 
 
+def _read_or_return_tbt(tbt_file, datatype):
+    if isinstance(tbt_file, tbt.TbtData):
+        return tbt_file
+    return tbt.read_tbt(tbt_file, datatype=datatype)
+
+
 def _replicate_harpy_options_per_file(options):
+    list_of_files = options.files
+    del options.files  # do not deepcopy below
+
     list_of_options = []
-    for input_file in options.files:
+    for input_file in list_of_files:
         new_options = deepcopy(options)
-        new_options.files = input_file
+        new_options.file = input_file
         list_of_options.append(new_options)
+
     return list_of_options
 
 
 def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
-    ) -> Generator[Tuple[tbt.TbtData, DotDict], None, None]:
+    ) -> Generator[tuple[tbt.TbtData, DotDict], None, None]:
     # hint: options.files is now a single file because of _replicate_harpy_options_per_file
     # it is also only used here to define the output name, as the tbt-data is already loaded.
-
-    dir_name = dirname(options.files)
-    file_name = basename(options.files)
     suffix = options.suffix or ""
 
     # Single bunch ---
     if tbt_data.nbunches == 1:
         if suffix:
-            options.files = join(dir_name, f"{file_name}{suffix}")
+            options.file = options.file.parent / f"{options.file.name}{suffix}"
         yield tbt_data, options
         return
 
@@ -413,7 +421,7 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
         unknown_bunches = set(options.bunch_ids) - set(tbt_data.bunch_ids)
         if unknown_bunches:
             LOGGER.warning(
-                f"Bunch IDs {unknown_bunches} not present in multi-bunch file {options.files}."
+                f"Bunch IDs {unknown_bunches} not present in multi-bunch file {options.file}."
             )
 
     for index in range(tbt_data.nbunches):
@@ -423,7 +431,7 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
 
         new_options = deepcopy(options)
         bunch_id_str = f"_bunchID{bunch_id}"
-        new_options.files = join(dir_name, f"{file_name}{bunch_id_str}{suffix}")
+        new_options.file = options.file.parent / f"{options.file.name}{bunch_id_str}{suffix}"
         yield (
             tbt.TbtData([tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns), 
             new_options
