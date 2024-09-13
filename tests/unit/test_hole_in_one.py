@@ -47,7 +47,7 @@ SDDS_FILES = {
 }
 
 
-@pytest.mark.exteded
+@pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
 @pytest.mark.parametrize("clean", (True, False), ids=lambda val : f"clean={val}")
 def test_hole_in_one(tmp_path, clean, which_files):
