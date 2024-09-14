@@ -138,7 +138,7 @@ def _check_amp_error(rdt: RDTTuple):
         error_str = str(e)
         message  = f"RDT calculation failed for {jklm2str(*rdt)}."
 
-        if "AMP_" not in error_str:  # raise unexpected Value errors 
+        if "AMP" not in error_str:  # raise unexpected Value errors 
             raise ValueError(message) from e
             
         LOGGER.warning(f"{message}: {error_str}")  
