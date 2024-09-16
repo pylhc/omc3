@@ -7,6 +7,8 @@ This module contains combined resonance driving terms calculations functionality
 It provides functions to compute combined resonance driving terms following the derivations in
 https://arxiv.org/pdf/1402.1461.pdf.
 """
+from __future__ import annotations
+from collections.abc import Sequence
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -19,10 +21,15 @@ from omc3.definitions.constants import PLANES, PI2
 from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_ERR
 from omc3.optics_measurements.rdt import get_line_sign_and_suffix
 
+from typing import TYPE_CHECKING 
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
+
 LOGGER = logging_tools.get_logger(__name__)
 
 CRDT_COLUMNS = [AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}']
-
 
 CRDTS = [
     {'order': "skew_quadrupole", 'term': "F_XY", 'plane': 'X', 'line': [0, 1]},
@@ -47,14 +54,20 @@ CRDTS = [
 ]
 
 
-def calculate(measure_input, input_files, invariants, header):
-
+def calculate(measure_input: DotDict, input_files: InputFiles, invariants, header):
+    """ Calculate the CRDT values. """
     LOGGER.info("Start of CRDT analysis")
+    
+    # Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see https://github.com/pylhc/omc3/issues/456
+    # For now: use only the actions belonging to the current dpp value!
+    dpp_value = 0  
+    invariants = {plane: inv[input_files.dpp_frames_indices(plane, dpp_value)] for plane, inv in invariants.items()}  
+
     assert len(input_files['X']) == len(input_files['Y'])
     bpm_names = input_files.bpms(dpp_value=0)
     for crdt in CRDTS:
         LOGGER.debug(f"Processing CRDT {crdt['term']}")
-        result_df = generic_dataframe(input_files, measure_input, bpm_names)
+        result_df = generic_dataframe(input_files, measure_input, bpm_names, dpp_value=dpp_value)
         phase_sign, line_suffix = get_line_sign_and_suffix(crdt["line"], input_files, crdt["plane"])
         lines_and_phases = get_column_names(line_suffix)
         nqx, nqy = crdt['line']
@@ -62,8 +75,11 @@ def calculate(measure_input, input_files, invariants, header):
         # don't know the exact way to get to this via line indices so for now only via hacky way
         signflip = -1 if crdt['term'] in ("F_NO2", "F_NO1") else 1
 
-        result_df = pd.merge(result_df, input_files.joined_frame(crdt["plane"], lines_and_phases.values()),
-                             how='inner', left_index=True, right_index=True)
+        result_df = pd.merge(
+            result_df, 
+            input_files.joined_frame(crdt["plane"], lines_and_phases.values(), dpp_value=dpp_value),
+            how='inner', left_index=True, right_index=True
+        )
 
         amplitudes = input_files.get_data(result_df, lines_and_phases[AMPLITUDE])
         err_amplitudes = input_files.get_data(result_df, lines_and_phases[f"{ERR}{AMPLITUDE}"])
@@ -87,12 +103,13 @@ def calculate(measure_input, input_files, invariants, header):
               add_line_and_freq_to_header(header, crdt), measure_input, crdt['order'], crdt['term'])
 
 
-def generic_dataframe(input_files, measure_input, bpm_names):
+def generic_dataframe(input_files: InputFiles, measure_input: DotDict, bpm_names: Sequence[str], dpp_value: int = 0):
+    """ Generate a dataframe based on the MU-MDL columns from each measuement. """
     result_df = pd.DataFrame(measure_input.accelerator.model).loc[bpm_names, ["S", "MUX", "MUY"]]
     result_df.rename(columns={f"{COL_MU}X": f"{COL_MU}X{MDL}", f"{COL_MU}Y": f"{COL_MU}Y{MDL}"}, inplace=True)
     for plane in PLANES:
         result_df = pd.merge(
-            result_df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"], dpp_value=0),
+            result_df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"], dpp_value=dpp_value),
             how='inner', left_index=True, right_index=True)
     return result_df
 

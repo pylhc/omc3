@@ -5,6 +5,7 @@ Dispersion
 This module contains dispersion calculations related functionality of ``optics_measurements``.
 It provides functions to compute orbit, dispersion and normalised dispersion.
 """
+from __future__ import annotations
 from os.path import join
 
 import numpy as np
@@ -17,8 +18,14 @@ from omc3.optics_measurements.constants import (DELTA, DISPERSION_NAME, ERR,
                                                 ORBIT_NAME)
 from omc3.utils import stats
 
+from typing import TYPE_CHECKING
 
-def calculate_orbit(meas_input, input_files, header, plane):
+if TYPE_CHECKING: 
+    from generic_parser import DotDict
+    from omc3.optics_measurements.data_models import InputFiles
+
+
+def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header, plane):
     """
     Calculates orbit.
 
@@ -40,7 +47,7 @@ def calculate_orbit(meas_input, input_files, header, plane):
     return output_df
 
 
-def calculate_dispersion(meas_input, input_files, header_dict, plane):
+def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_dict, plane):
     """
     Calculates dispersion.
 
@@ -58,7 +65,7 @@ def calculate_dispersion(meas_input, input_files, header_dict, plane):
     return _calculate_dispersion_2d(meas_input, input_files, header_dict, plane)
 
 
-def calculate_normalised_dispersion(meas_input, input_files, beta, header_dict):
+def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles, beta, header_dict):
     """
     Calculates normalised dispersion.
 
@@ -76,7 +83,7 @@ def calculate_normalised_dispersion(meas_input, input_files, beta, header_dict):
     return _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header_dict)
 
 
-def _calculate_dispersion_2d(meas_input, input_files, header, plane):
+def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, header, plane):
     order = 2 if meas_input.second_order_dispersion else 1
     dpps = input_files.dpps(plane)
     if np.max(dpps) - np.min(dpps) == 0.0:
@@ -101,7 +108,7 @@ def _calculate_dispersion_2d(meas_input, input_files, header, plane):
     return output_df
 
 
-def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
+def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, header_dict, plane):
     """Computes dispersion from 3D kicks."""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.model
@@ -121,7 +128,7 @@ def _calculate_dispersion_3d(meas_input, input_files, header_dict, plane):
     return output_df
 
 
-def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
+def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputFiles, beta, header):
     # TODO there are no errors from orbit
     order = 2 if meas_input.second_order_dispersion else 1
     plane = "X"
@@ -157,7 +164,7 @@ def _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header):
     return output_df
 
 
-def _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header):
+def _calculate_normalised_dispersion_3d(meas_input: DotDict, input_files: InputFiles, beta, header):
     """
     Computes horizontal normalised dispersion from 3D kicks, and performs model-based
     compensation, i.e. as in _free2 files.

@@ -5,6 +5,7 @@ Kick
 This module contains kick functionality of ``optics_measurements``.
 It provides functions to compute kick actions.
 """
+from __future__ import annotations
 from contextlib import suppress
 from os.path import join
 
@@ -22,8 +23,14 @@ from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
                                                 SQRT_ACTION, TIME, TUNE, S, CLOSED_ORBIT)
 from omc3.utils.stats import weighted_mean, weighted_error
 
+from typing import TYPE_CHECKING
 
-def calculate(measure_input, input_files, scale, header_dict, plane):
+if TYPE_CHECKING: 
+    from generic_parser import DotDict
+    from omc3.optics_measurements.data_models import InputFiles
+
+
+def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict, plane):
     """
 
     Args:
@@ -98,10 +105,16 @@ def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
 
     if meas_input.accelerator.excitation:
         amps = frame.loc[:, f"{AMPLITUDE}{plane}"].to_numpy()
-        err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
+        try:  # only created when using cleaning in harpy
+            err_amps = frame.loc[:, f"{ERR}{AMPLITUDE}{plane}"].to_numpy()
+        except KeyError:
+            err_amps = np.zeros_like(amps)
     else:
         amps = frame.loc[:, PEAK2PEAK].to_numpy() / 2.0
-        err_amps = frame.loc[:, f"{CLOSED_ORBIT}{RMS}"].to_numpy()
+        try:
+            err_amps = frame.loc[:, f"{CLOSED_ORBIT}{RMS}"].to_numpy()
+        except KeyError:
+            err_amps = np.zeros_like(amps)
 
     # sqrt(2J) ---
     sqrt_beta = np.sqrt(frame.loc[:, f"{BETA}{plane}"].to_numpy())
