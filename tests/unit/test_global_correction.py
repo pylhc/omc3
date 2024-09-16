@@ -105,4 +105,4 @@ def test_lhc_global_correct_methods(tmp_path, model_inj_beams, method):
         assert len(correction.index) == n_correctors
 
     if method == "pinv":
-        pass
+        assert len(correction.index) > n_correctors  # unless by accident
