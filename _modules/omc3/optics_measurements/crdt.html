@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.optics_measurements.crdt &mdash; omc3 0.15.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=13e65a98"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#run-kmod">Run Kmod</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/kmod.html">Kmod</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/kmod.html#helper">Helper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.optics_measurements.crdt</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.optics_measurements.crdt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Combined RDTs</span>
+<span class="sd">-------------</span>
+
+<span class="sd">This module contains combined resonance driving terms calculations functionality of</span>
+<span class="sd">``optics_measurements``.</span>
+<span class="sd">It provides functions to compute combined resonance driving terms following the derivations in</span>
+<span class="sd">https://arxiv.org/pdf/1402.1461.pdf.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">import</span> <span class="nn">scipy.odr</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">MDL</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.stats</span> <span class="kn">import</span> <span class="n">circular_nanmean</span><span class="p">,</span> <span class="n">circular_nanerror</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">PI2</span>
+<span class="kn">from</span> <span class="nn">omc3.harpy.constants</span> <span class="kn">import</span> <span class="n">COL_AMP</span><span class="p">,</span> <span class="n">COL_MU</span><span class="p">,</span> <span class="n">COL_PHASE</span><span class="p">,</span> <span class="n">COL_ERR</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.rdt</span> <span class="kn">import</span> <span class="n">get_line_sign_and_suffix</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span> 
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
+    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span> 
+    <span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="n">InputFiles</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">CRDT_COLUMNS</span> <span class="o">=</span> <span class="p">[</span><span class="n">AMPLITUDE</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+
+<span class="n">CRDTS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;skew_quadrupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_XY&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;skew_quadrupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_YX&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]},</span>
+
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NS3&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NS2&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NS1&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NS0&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]},</span>
+
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;skew_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_SS3&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;skew_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_SS2&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;skew_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_SS1&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;skew_sextupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_SS0&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]},</span>
+
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_octupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NO5&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_octupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NO4&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_octupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NO3&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_octupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NO2&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_octupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NO1&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s2">&quot;normal_octupole&quot;</span><span class="p">,</span> <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="s2">&quot;F_NO0&quot;</span><span class="p">,</span> <span class="s1">&#39;plane&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]},</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="calculate">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.calculate">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the CRDT values. &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start of CRDT analysis&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see https://github.com/pylhc/omc3/issues/456</span>
+    <span class="c1"># For now: use only the actions belonging to the current dpp value!</span>
+    <span class="n">dpp_value</span> <span class="o">=</span> <span class="mi">0</span>  
+    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{</span><span class="n">plane</span><span class="p">:</span> <span class="n">inv</span><span class="p">[</span><span class="n">input_files</span><span class="o">.</span><span class="n">dpp_frames_indices</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)]</span> <span class="k">for</span> <span class="n">plane</span><span class="p">,</span> <span class="n">inv</span> <span class="ow">in</span> <span class="n">invariants</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span>
+    <span class="n">bpm_names</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">bpms</span><span class="p">(</span><span class="n">dpp_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">crdt</span> <span class="ow">in</span> <span class="n">CRDTS</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing CRDT </span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;term&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">result_df</span> <span class="o">=</span> <span class="n">generic_dataframe</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">bpm_names</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">)</span>
+        <span class="n">phase_sign</span><span class="p">,</span> <span class="n">line_suffix</span> <span class="o">=</span> <span class="n">get_line_sign_and_suffix</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;line&quot;</span><span class="p">],</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;plane&quot;</span><span class="p">])</span>
+        <span class="n">lines_and_phases</span> <span class="o">=</span> <span class="n">get_column_names</span><span class="p">(</span><span class="n">line_suffix</span><span class="p">)</span>
+        <span class="n">nqx</span><span class="p">,</span> <span class="n">nqy</span> <span class="o">=</span> <span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">]</span>
+        <span class="n">crdt_order</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">nqx</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">nqy</span><span class="p">)</span>
+        <span class="c1"># don&#39;t know the exact way to get to this via line indices so for now only via hacky way</span>
+        <span class="n">signflip</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;term&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;F_NO2&quot;</span><span class="p">,</span> <span class="s2">&quot;F_NO1&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+
+        <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+            <span class="n">result_df</span><span class="p">,</span> 
+            <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;plane&quot;</span><span class="p">],</span> <span class="n">lines_and_phases</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">),</span>
+            <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">lines_and_phases</span><span class="p">[</span><span class="n">AMPLITUDE</span><span class="p">])</span>
+        <span class="n">err_amplitudes</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">lines_and_phases</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+        <span class="n">result_df</span><span class="p">[</span><span class="n">AMPLITUDE</span><span class="p">],</span> <span class="n">result_df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_crdt_amplitude</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">err_amplitudes</span><span class="p">)</span>
+
+        <span class="n">phases</span> <span class="o">=</span> <span class="p">((</span><span class="n">phase_sign</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">lines_and_phases</span><span class="p">[</span><span class="n">PHASE</span><span class="p">])</span> <span class="o">-</span>
+                  <span class="n">nqx</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="s2">&quot;MUX&quot;</span><span class="p">)</span> <span class="o">-</span>
+                  <span class="n">nqy</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="s2">&quot;MUY&quot;</span><span class="p">)</span> <span class="o">-</span>
+                  <span class="n">signflip</span> <span class="o">*</span> <span class="mf">0.75</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">crdt_order</span><span class="p">)</span><span class="o">//</span><span class="mi">3</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">err_phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">lines_and_phases</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                             <span class="p">(</span><span class="n">nqx</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="s2">&quot;ERRMUX&quot;</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                             <span class="p">(</span><span class="n">nqy</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="s2">&quot;ERRMUY&quot;</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">result_df</span><span class="p">[</span><span class="n">PHASE</span><span class="p">]</span> <span class="o">=</span> <span class="n">circular_nanmean</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">err_phases</span><span class="p">)</span>
+        <span class="n">result_df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">circular_nanerror</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">err_phases</span><span class="p">)</span>
+
+        <span class="n">result_df</span><span class="p">[</span><span class="n">REAL</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">PI2</span> <span class="o">*</span> <span class="n">result_df</span><span class="p">[</span><span class="n">PHASE</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="o">*</span> <span class="n">result_df</span><span class="p">[</span><span class="n">AMPLITUDE</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">result_df</span><span class="p">[</span><span class="n">IMAG</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">PI2</span> <span class="o">*</span> <span class="n">result_df</span><span class="p">[</span><span class="n">PHASE</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="o">*</span> <span class="n">result_df</span><span class="p">[</span><span class="n">AMPLITUDE</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+        <span class="n">write</span><span class="p">(</span><span class="n">result_df</span><span class="o">.</span> <span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">]],</span>
+              <span class="n">add_line_and_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">crdt</span><span class="p">),</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">],</span> <span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;term&#39;</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="generic_dataframe">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.generic_dataframe">[docs]</a>
+<span class="k">def</span> <span class="nf">generic_dataframe</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">bpm_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Generate a dataframe based on the MU-MDL columns from each measuement. &quot;&quot;&quot;</span>
+    <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_names</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;MUX&quot;</span><span class="p">,</span> <span class="s2">&quot;MUY&quot;</span><span class="p">]]</span>
+    <span class="n">result_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">X</span><span class="si">{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">Y</span><span class="si">{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+            <span class="n">result_df</span><span class="p">,</span> <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">MU</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">),</span>
+            <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result_df</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">add_line_and_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">crdt</span><span class="p">):</span>
+    <span class="n">mod_header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">mod_header</span><span class="p">[</span><span class="s2">&quot;LINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;plane&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">]</span><span class="nd">@np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;Q1&#39;</span><span class="p">],</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;Q2&#39;</span><span class="p">]]),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">mod_header</span><span class="p">[</span><span class="s2">&quot;FREQ&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq</span> <span class="k">if</span> <span class="n">freq</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">freq</span>
+    <span class="k">return</span> <span class="n">mod_header</span>
+
+
+<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">crdt</span><span class="p">):</span>
+    <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span><span class="o">/</span><span class="s2">&quot;crdt&quot;</span><span class="o">/</span><span class="n">order</span>
+    <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">outputdir</span><span class="o">/</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crdt</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_column_names</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">CRDT_COLUMNS</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]))</span>
+
+
+<span class="k">def</span> <span class="nf">get_crdt_invariant</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])}</span>
+    <span class="n">exp</span><span class="p">[</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;plane&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">exp</span><span class="p">[</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;plane&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># to compensate for the normalization with tune line</span>
+
+    <span class="n">crdt_invariant</span> <span class="o">=</span> <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="n">exp</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="n">exp</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span>
+    <span class="n">err_crdt_invariant</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">exp</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">crdt_invariant</span> <span class="o">/</span> <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span>
+                                 <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                                 <span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">crdt_invariant</span> <span class="o">/</span> <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span>
+                                 <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">crdt_invariant</span><span class="p">,</span> <span class="n">err_crdt_invariant</span>
+
+
+<span class="k">def</span> <span class="nf">get_crdt_amplitude</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">line_amps</span><span class="p">,</span> <span class="n">line_amp_errors</span><span class="p">):</span>
+    <span class="n">crdt_invariants</span><span class="p">,</span> <span class="n">err_crdt_invariants</span> <span class="o">=</span> <span class="n">get_crdt_invariant</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
+    <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_amps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_amps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_amps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">amps</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">err_amps</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit_amplitude</span><span class="p">(</span><span class="n">line_amps</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                                                 <span class="n">line_amp_errors</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                                                 <span class="n">crdt_invariants</span><span class="p">,</span>
+                                                 <span class="n">err_crdt_invariants</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span>
+
+
+<span class="k">def</span> <span class="nf">fit_amplitude</span><span class="p">(</span><span class="n">lineamplitudes</span><span class="p">,</span> <span class="n">err_lineamplitudes</span><span class="p">,</span> <span class="n">crdt_invariant</span><span class="p">,</span> <span class="n">err_crdt_invariant</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">p</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># factor 2 to get to complex amplitudes again</span>
+
+    <span class="n">fit_model</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">odr</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span>
+    <span class="n">data_model</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">odr</span><span class="o">.</span><span class="n">RealData</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">crdt_invariant</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">lineamplitudes</span><span class="p">,</span>
+        <span class="n">sx</span><span class="o">=</span><span class="n">err_crdt_invariant</span><span class="p">,</span>
+        <span class="n">sy</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">err</span> <span class="o">==</span> <span class="mf">0.</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">err_lineamplitudes</span><span class="p">)</span> <span class="k">else</span> <span class="n">err_lineamplitudes</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">odr</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">odr</span><span class="o">.</span><span class="n">ODR</span><span class="p">(</span><span class="n">data_model</span><span class="p">,</span> <span class="n">fit_model</span><span class="p">,</span> <span class="n">beta0</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">lineamplitudes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">crdt_invariant</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">odr_output</span> <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">odr_output</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">odr_output</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

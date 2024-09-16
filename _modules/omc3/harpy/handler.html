@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.handler &mdash; omc3 0.15.3 documentation</title>
+  <title>omc3.harpy.handler &mdash; omc3 0.15.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=d86fca55"></script>
+        <script src="../../../_static/documentation_options.js?v=13e65a98"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -216,7 +216,6 @@
 <span class="sd">Tools are provided to handle the cleaning, frequency analysis and resonance search for a</span>
 <span class="sd">single-bunch `TbtData`.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">join</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -308,10 +307,20 @@
 
 
 <span class="k">def</span> <span class="nf">_closed_orbit_analysis</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">bpm_res</span><span class="p">):</span>
-    <span class="n">lin_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
-                             <span class="n">data</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="n">COL_NAME</span><span class="p">,</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()),</span>
-                                               <span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span>
-                                               <span class="k">else</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="p">])]))</span>
+    <span class="n">lin_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">index</span><span class="o">=</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="n">COL_NAME</span><span class="p">,</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()),</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;S&quot;</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
+                <span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
     <span class="n">lin_frame</span><span class="p">[</span><span class="s1">&#39;BPM_RES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">bpm_res</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">bpm_res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">lin_frame</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
     <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time for orbit_analysis: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
         <span class="n">lin_frame</span> <span class="o">=</span> <span class="n">_get_orbit_data</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">)</span>
@@ -363,7 +372,7 @@
 
 
 <span class="k">def</span> <span class="nf">_compute_headers</span><span class="p">(</span><span class="n">panda</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">ALL_PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;NAT&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>

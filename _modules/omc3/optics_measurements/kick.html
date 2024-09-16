@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.kick &mdash; omc3 0.15.3 documentation</title>
+  <title>omc3.optics_measurements.kick &mdash; omc3 0.15.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=d86fca55"></script>
+        <script src="../../../_static/documentation_options.js?v=13e65a98"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -215,6 +215,7 @@
 <span class="sd">This module contains kick functionality of ``optics_measurements``.</span>
 <span class="sd">It provides functions to compute kick actions.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
 
@@ -232,10 +233,16 @@
                                                 <span class="n">SQRT_ACTION</span><span class="p">,</span> <span class="n">TIME</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">CLOSED_ORBIT</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.stats</span> <span class="kn">import</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="n">weighted_error</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
+    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="n">InputFiles</span>
+
 
 <div class="viewcode-block" id="calculate">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.kick.calculate">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Args:</span>
@@ -311,10 +318,16 @@
 
     <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">excitation</span><span class="p">:</span>
         <span class="n">amps</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-        <span class="n">err_amps</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>  <span class="c1"># only created when using cleaning in harpy</span>
+            <span class="n">err_amps</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">err_amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">amps</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">amps</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">PEAK2PEAK</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">/</span> <span class="mf">2.0</span>
-        <span class="n">err_amps</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CLOSED_ORBIT</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">err_amps</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CLOSED_ORBIT</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">err_amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">amps</span><span class="p">)</span>
 
     <span class="c1"># sqrt(2J) ---</span>
     <span class="n">sqrt_beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
