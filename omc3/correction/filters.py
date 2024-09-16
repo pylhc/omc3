@@ -105,7 +105,7 @@ def _get_filtered_generic(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt
     #     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()), portion=0.95)
     if f"{PHASE}" in col:
         new[NAME2] = meas.loc[:, NAME2].to_numpy()
-        second_bpm_exists = np.in1d(new.loc[:, NAME2].to_numpy(), new.index.to_numpy())
+        second_bpm_exists = np.isin(new.loc[:, NAME2].to_numpy(), new.index.to_numpy())
         good_bpms = error_mask & model_mask & second_bpm_exists
         good_bpms[-1] = False  # TODO not sure why, ask Lukas? (jdilly)
     else:
