@@ -10,8 +10,7 @@ This module generates the .linx/y (both on-momentum and off-momentum) from two t
 for free motion and for driven motion. The twisses should contain the chromatic functions as well.
 
 """
-from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -119,5 +118,5 @@ def _get_header(tunes, nattunes, plane):
         f"Q{PLANE_TO_NUM[plane]}RMS": 1e-7,
         f"NATQ{PLANE_TO_NUM[plane]}": nattunes[plane],
         f"NATQ{PLANE_TO_NUM[plane]}RMS": 1e-6,
-        "TIME": datetime.utcnow().strftime(formats.TIME),
+        "TIME": datetime.now(timezone.utc).strftime(formats.TIME),
     }
