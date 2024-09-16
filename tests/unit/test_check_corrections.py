@@ -34,12 +34,13 @@ from omc3.plotting.plot_checked_corrections import (
 )
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from tests.accuracy.test_global_correction import get_normal_params, get_skew_params
+from tests.conftest import ids_str
 
 
 class TestFullRun:
     @pytest.mark.basic
     @pytest.mark.parametrize('orientation', ('skew', 'normal',))
-    @pytest.mark.parametrize('use_filter', (True, False,))
+    @pytest.mark.parametrize('use_filter', (True, False,), ids=ids_str("filter={}"))
     def test_lhc_corrections(self, tmp_path, model_inj_beams, orientation, use_filter):
         """ Checks that correction_test_entrypoint runs and that all the output
         data is there. Very simple test. """
@@ -160,7 +161,7 @@ class TestMeasurementFilter:
         assert not mask
 
     @pytest.mark.basic
-    @pytest.mark.parametrize('which_cut', ('model', 'error', 'modelerror'))
+    @pytest.mark.parametrize('which_cut', ('model', 'error', 'modelerror'), ids=ids_str("cut={}"))
     @pytest.mark.parametrize('beta_filename', ('beta_amplitude', 'beta_phase', 'beta_kmod'))
     def test_filter_data(self, tmp_path, which_cut, beta_filename):
         for param in get_normal_params(beam=1).optics_params + get_skew_params(beam=1).optics_params:

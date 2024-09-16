@@ -32,6 +32,7 @@ from omc3.optics_measurements.constants import (
     BETA_NAME, AMP_BETA_NAME, F1001_NAME, F1010_NAME, PHASE_NAME, TOTAL_PHASE_NAME, KICK_NAME, ORBIT_NAME,
     DISPERSION_NAME, NORM_DISP_NAME,
 )
+from tests.conftest import ids_str
 
 INPUT_DIR = Path(__file__).parent.parent / 'inputs'
 
@@ -49,7 +50,7 @@ SDDS_FILES = {
 
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
-@pytest.mark.parametrize("clean", (True, False), ids=lambda val : f"clean={val}")
+@pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
 def test_hole_in_two(tmp_path, clean, which_files):
     """
     Test that is closely related to how actual analysis are done.
@@ -93,7 +94,7 @@ def test_hole_in_two(tmp_path, clean, which_files):
 
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
-@pytest.mark.parametrize("clean", (True, False), ids=lambda val : f"clean={val}")
+@pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
 def test_hole_in_one(tmp_path, clean, which_files):
     """
     This test runs harpy, optics and optics analysis in one.
