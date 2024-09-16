@@ -285,8 +285,11 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
         exporting_columns=['LABEL', f'{BETA}{STAR}X', f'{ERR}{BETA}{STAR}X', f'{BETA}{STAR}Y', f'{ERR}{BETA}{STAR}Y']
         lsa_results_df=results_df[exporting_columns].rename(columns=dict(zip(exporting_columns, LSA_COLUMNS)))
     if instruments_found:
-        lsa_results_df = pd.concat([lsa_results_df, instrument_beta_df],
-                                   axis="index", sort=False, ignore_index=True)
+        # We first make sure we don't try a concat operation if a df is empty
+        # (otherwise pandas complains with a FutureWarning since 2.1.1)
+        dfs_to_concat = [lsa_results_df, instrument_beta_df]
+        dfs_to_concat = list(filter(lambda df: not df.empty, dfs_to_concat))
+        lsa_results_df = pd.concat(dfs_to_concat, axis="index", sort=False, ignore_index=True)
 
     if not lsa_results_df.empty:
         tfs.write(output_dir / f'{LSA_FILE_NAME}{EXT}', lsa_results_df)
