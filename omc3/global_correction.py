@@ -165,9 +165,8 @@ Possible problems and notes (lmalina, 2020):
 
 """
 from pathlib import Path
-from typing import Dict
+from typing import TYPE_CHECKING
 
-from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 from omc3.correction import handler
 from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
@@ -175,6 +174,9 @@ from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
 from omc3.model import manager
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -316,7 +318,7 @@ def _add_hardcoded_paths(opt: DotDict) -> DotDict:  # acts inplace...
 
 
 # Define functions here, to new optics params
-def _get_default_values() -> Dict[str, Dict[str, float]]:
+def _get_default_values() -> dict[str, dict[str, float]]:
     return {
         "modelcut": {
             f"{PHASE}X": 0.05,

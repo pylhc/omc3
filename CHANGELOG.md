@@ -1,5 +1,13 @@
 # OMC3 Changelog
 
+#### 2024-09-16 - v0.15.5 - _jdilly_
+
+- Fixed:
+  - Orthogonal Matching Pursuit (`omp`) in global correction runs again ([#448](https://github.com/pylhc/omc3/issues/448))
+
+- Added:
+  - Tests for running `global_correction` with `omp` and `pinv` correction methods.
+
 #### 2024-09-16 - v0.15.4 - _jdilly_
 
 - Fixed:
