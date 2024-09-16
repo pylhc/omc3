@@ -59,7 +59,7 @@ class TestLHCKnobs:
         assert all(q in vars_mqy_q for q in vars_q)
 
         vars_mqy_extra = accel_lhcb1.get_variables(classes=["MQY", "test1", "test2"])
-        assert all(mqy in vars_mqy_q for mqy in vars_mqy)
+        assert all(mqy in vars_mqy_extra for mqy in vars_mqy)
         assert "test1" in vars_mqy_extra
         assert "test2" in vars_mqy_extra
 
