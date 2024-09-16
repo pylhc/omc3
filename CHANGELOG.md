@@ -1,5 +1,17 @@
 # OMC3 Changelog
 
+#### 2024-09-16 - v0.15.4 - _jdilly_
+
+- Fixed:
+  - Measure optics skips now using the ERRAMP column, when not present, i.e. when cleaning deactivated ([#451](https://github.com/pylhc/omc3/issues/451))
+  - `hole_in_one` now allows `pathlib.Path` objects in addition to `str` ([#452](https://github.com/pylhc/omc3/issues/452))
+  - Pandas to numpy dtype conversions bug ([#453](https://github.com/pylhc/omc3/issues/453)).
+  - Special phases writing now skipped when accelerator has no special phases ([#454](https://github.com/pylhc/omc3/issues/454)).
+  - RDT/CRDT calculation now not crashing when also giving off-momentum files; but only calculated from on on-momentum files ([#456](https://github.com/pylhc/omc3/issues/456)).
+
+- Added:
+  - Tests for full runs `hole_in_one` with on-momentum and off-momentum files.
+
 #### 2024-08-14 - v0.15.3 - _jdilly_
 
 - Fixed:
@@ -34,7 +46,8 @@
 - Fixed:
   - LHC Knobs: Fixed typo "MQSOR" to "MQSORG" in LHC Beam 2 coupling knobs.
 
-- CI: Dropped python 3.8
+- CI:
+  - Dropped python 3.8
 
 #### 2024-03-18 - v0.14.0 - _jdilly_
 
@@ -53,26 +66,27 @@
 #### 2023-12-07 - v0.13.0 - _awegsche_
 
 - Added:
- - complete overhaul of model creation, uses now `acc-models` for LHC, PS and PSB and prints
-   useful information about available model parameters. Can load from either a user defined path
-   (`--path <PATH>`) or from the afs copy of acc-models (`--afs`)
+  - complete overhaul of model creation, uses now `acc-models` for LHC, PS and PSB and prints
+    useful information about available model parameters. Can load from either a user defined path
+    (`--path <PATH>`) or from the afs copy of acc-models (`--afs`)
 
 #### 2023-11-29 - v0.12.1 - _jdilly_
 
 - Fixed:
- - `tbt_converter` now also passes given output format to writer when running without noise.
+  - `tbt_converter` now also passes given output format to writer when running without noise.
 
 #### 2023-11-29 - v0.12.0 - _jdilly_
 
 - Added to harmonic analysis:
-    - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file 
+  - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file 
     with different parameters without overwriting it.
-    - `bunch_ids` input parameter: in case of multibunch-files only analyse these bunches.
+  - `bunch_ids` input parameter: in case of multibunch-files only analyse these bunches.
     If not given, all bunches will be analysed, as before.
 
 #### 2023-09-20 - v0.11.4 - _fscarlier_, _awegsche_
+
 - Fixed:
-    - bug in beta from phase (3BPM method) that calculated too high errors for first and last BPMs
+  - bug in beta from phase (3BPM method) that calculated too high errors for first and last BPMs
 
 #### 2023-09-20 - v0.11.3 - _jdilly_, _awegsche_
 
@@ -87,25 +101,25 @@
   - Plot Optics: making normalized dispersion plot a special case.
 
 - Added:
- - Plot Optics: optional input "--labels" to manually set the legend-labels. 
+  - Plot Optics: optional input "--labels" to manually set the legend-labels. 
 
 #### 2023-06-16 - v0.11.1 - _jdilly_
 
 - Fixed:
- - OptionalString: 'None' as input is converted to None.
- - Missing Kerberos config added to MANIFEST for packaging.
- - Plot Optics plots now correct error-column, e.g. for beta-beating.
- - Added warnings/errors for too few bpms in N-BPM/3-BPM methods. 
- - Added navbar to sphinx documentation.
+  - OptionalString: 'None' as input is converted to None.
+  - Missing Kerberos config added to MANIFEST for packaging.
+  - Plot Optics plots now correct error-column, e.g. for beta-beating.
+  - Added warnings/errors for too few bpms in N-BPM/3-BPM methods. 
+  - Added navbar to sphinx documentation.
 
 - Tests:
- - Added test for the classes in omc3.plotting.utils.windows
+  - Added test for the classes in omc3.plotting.utils.windows
 
 #### 2023-06-05 - v0.11.0 - _jdilly_
 
 - Added:
- - `omc3.plotting.utils.windows`: Qt-based windows and widgets for matplotlib-figure organization.
- - Using the new windows in `omc3.plotting.plot_checked_corrections` and `omc3.plotting.plot_tfs`
+  - `omc3.plotting.utils.windows`: Qt-based windows and widgets for matplotlib-figure organization.
+  - Using the new windows in `omc3.plotting.plot_checked_corrections` and `omc3.plotting.plot_tfs`
 
 #### 2023-05-15 - v0.10.0 - _jdilly_
 
@@ -128,13 +142,13 @@
 
 #### 2023-04-20 - v0.8.0 - _jdilly_
 
-- Fix:
+- Fixed:
   - Changed all `pandas`/`tfs-pandas` `append()` and `join()` to `concat()`
   - Moved `InputFiles` into separate module
 
 #### 2023-03-16 - v0.7.2 - _jdilly_
 
-- Fix: 
+- Fixed:
   - Added missing columns to coupling in BBS-OMC3 converter
 
 #### 2023-01-20 - v0.7.1 - _jdilly_
@@ -142,7 +156,7 @@
 - Added:
   - Amplitude Detuning plots: Switch to plot only with/without BBQ correction 
 
-- Fix: 
+- Fixed:
   - Second Order Amplitude Detuning fit now working
   - Correct print/calculation of second order direct terms for forced 
     kicks in plot-labels.
@@ -169,19 +183,22 @@
 
 #### 2022-10-12 - v0.6.4
 
-- Fixed the phase filtering for coupling calculation to not forget columns.
+- Fixed:
+  - phase filtering for coupling calculation will not forget columns
 
 #### 2022-09-27 - v0.6.3
 
-- Pandafied `knob_extractor` internally and python output.
+- Added:
+  - pandafied `knob_extractor` internally and python output
 
 #### 2022-09-22 - v0.6.2
 
-- Cleaned logging in `knob_extractor`
+- Added:
+  - cleaned logging in `knob_extractor`
 
 #### 2022-09-21 - v0.6.1
 
-- Added: 
+- Added:
   - tbt output datatype for converter.
 
 #### 2022-09-20 - v0.6.0
@@ -200,7 +217,8 @@
 
 #### 2022-09-12 - v0.5.1
 
-- Updated to turn_by_turn v0.4.0: Includes SPS reader
+- Added:
+  - updated to turn_by_turn v0.4.0: Includes SPS reader
 
 #### 2022-07-25 - v0.5.0 - _Mael-Le-Garrec_
 
@@ -217,7 +235,7 @@
 
 #### 2022-05-30 - v0.4.0 - _jdilly_
 
-- Added: 
+- Added:
   - 2D amplitude detuning analysis and 3D plotting of the results
   - Converter for amp.det. analysis from bbs to omc3
   - general typehinting/doc/unification of entrypoint parameters/saving
@@ -282,11 +300,10 @@
   - introducing pathlib.Path in some places
   - output-paths in model job-files are relative
   
-- Fixes:
+- Fixed:
   - Matplotlib warnings for `set_window_title`
   - excluded Windows and MacOS py3.9 from normal testing, due to installation issues of pyTables
   - model creation accepts relative and absolute paths
-
 
 #### 2020-09-30
 
@@ -304,31 +321,31 @@
 #### 2020-03-04
 
 - Added:
-   - lin-file natural tune updater
+  - lin-file natural tune updater
 
 #### 2020-02-24
 
 - Added:
-   - amplitude detuning analysis
-   - amplitude detuning and bbq plotting
-   - time tools
-   - plotting helpers
+  - amplitude detuning analysis
+  - amplitude detuning and bbq plotting
+  - time tools
+  - plotting helpers
 - Distinction between `BasicTests` and `Extended Tests`
 
 #### Before 2020-02
 
 - Updated and moved main functionalities from python 2.7
-    - Madx wrapper
-    - Frequency Analysis of turn by turn
-    - Optics measurement analysis scripts
-    - Accelerator class and Model Creator
-    - K-mod
-    - Spectrum Plotting
-    - Turn-by-Turn Converter
+  - Madx wrapper
+  - Frequency Analysis of turn by turn
+  - Optics measurement analysis scripts
+  - Accelerator class and Model Creator
+  - K-mod
+  - Spectrum Plotting
+  - Turn-by-Turn Converter
 
 - `setup.py` and packaging functionality 
 - Automated CI
-    - Multiple versions of python
-    - Accuracy tests
-    - Unit tests
-    - Release automation
+  - Multiple versions of python
+  - Accuracy tests
+  - Unit tests
+  - Release automation
