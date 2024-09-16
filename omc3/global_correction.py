@@ -164,6 +164,8 @@ Possible problems and notes (lmalina, 2020):
  * Missing a part that treats the output from LSA
 
 """
+from __future__ import annotations
+
 from pathlib import Path
 from typing import TYPE_CHECKING
 

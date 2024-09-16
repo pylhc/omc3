@@ -14,6 +14,7 @@ i.e. beta, phase etc. In this implementation most of it is handled by
 the `_get_filtered_generic` function.
 """
 from __future__ import annotations
+
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
