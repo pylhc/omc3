@@ -5,6 +5,7 @@ Analysis
 This module contains the analysis functionality of ``kmod``.
 It provides functions to calculate beta functions at different locations from K-modulation data.
 """
+
 import datetime
 
 import numpy as np
@@ -335,7 +336,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
         foc_magnet_df.headers['LSTAR'] +
         sign[2] * kmod_input_params.misalignment) -
         foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"])/(def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] + foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"])/2.0) ** 2 +
+        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) / (def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] + foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) / 2.0) ** 2 +
         ((average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
         sign[4] * kmod_input_params.errorL, def_magnet_df.headers[K] +
         sign[5] * kmod_input_params.errorK * def_magnet_df.headers[K],
