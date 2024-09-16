@@ -113,8 +113,13 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
 
 def _get_data_without_slope(mask, x, y):
     """ Remove the slope on the data by performing a linear fit. """
-    m, b = np.polyfit(x[mask], y[mask], 1)
-    return y[mask] - b - m * x[mask], y - b - m * x
+    import warnings
+    from numpy.exceptions import RankWarning
+    # We filter out the "Polyfit may be poorly conditioned" warning
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RankWarning)
+        m, b = np.polyfit(x[mask], y[mask], 1)
+        return y[mask] - b - m * x[mask], y - b - m * x
 
 
 def _get_significance_cut_from_length(length):

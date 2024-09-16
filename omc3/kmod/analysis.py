@@ -6,6 +6,7 @@ This module contains the analysis functionality of ``kmod``.
 It provides functions to calculate beta functions at different locations from K-modulation data.
 """
 import datetime
+from token import OP
 
 import numpy as np
 import scipy.optimize
@@ -208,6 +209,9 @@ def return_fit_input(magnet_df, plane):
 
 
 def do_fit(magnet_df, plane, use_approx=False):
+    import warnings
+    from scipy.optimize import OptimizeWarning
+
     if not use_approx:
         fun = fit_prec
     elif use_approx:
@@ -217,15 +221,18 @@ def do_fit(magnet_df, plane, use_approx=False):
     if not np.any(sigma):
         sigma = 1.E-22 * np.ones(len(sigma))
 
-    av_beta, av_beta_err = scipy.optimize.curve_fit(
-        fun,
-        xdata=return_fit_input(magnet_df, plane),
-        ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
-            f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
-        sigma=sigma,
-        absolute_sigma=True,
-        p0=1
-    )
+    # We filter out the "Covariance of the parameters could not be estimated" warning
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=OptimizeWarning)
+        av_beta, av_beta_err = scipy.optimize.curve_fit(
+            fun,
+            xdata=return_fit_input(magnet_df, plane),
+            ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
+                f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
+            sigma=sigma,
+            absolute_sigma=True,
+            p0=1
+        )
     return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
 
 
