@@ -6,7 +6,6 @@ This module contains the analysis functionality of ``kmod``.
 It provides functions to calculate beta functions at different locations from K-modulation data.
 """
 import datetime
-from token import OP
 
 import numpy as np
 import scipy.optimize
@@ -16,10 +15,9 @@ from tfs import tools as tfstools
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE, \
-    SEQUENCES_PATH
+from omc3.kmod.constants import AVERAGE, BETA, CLEANED, ERR, PHASEADV, SEQUENCES_PATH, STAR, TUNE, WAIST, K
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import PHASE_NAME, EXT
+from omc3.optics_measurements.constants import EXT, PHASE_NAME
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -38,7 +36,6 @@ def return_sign_for_err(n):
     Columns corresponds to error, i.e. first column for `dQ` etc.
     """
     sign = np.zeros((2*n+1, n))
-
     sign[1::2] = np.eye(n)
     sign[2::2] = -np.eye(n)
     return sign
@@ -210,6 +207,7 @@ def return_fit_input(magnet_df, plane):
 
 def do_fit(magnet_df, plane, use_approx=False):
     import warnings
+
     from scipy.optimize import OptimizeWarning
 
     if not use_approx:
