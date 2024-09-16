@@ -32,12 +32,10 @@ from omc3.optics_measurements.constants import (
     BETA_NAME, AMP_BETA_NAME, F1001_NAME, F1010_NAME, PHASE_NAME, TOTAL_PHASE_NAME, KICK_NAME, ORBIT_NAME,
     DISPERSION_NAME, NORM_DISP_NAME,
 )
-from tests.conftest import ids_str
+from tests.conftest import INPUTS, ids_str
 
-INPUT_DIR = Path(__file__).parent.parent / 'inputs'
-
-MODEL_DIR = INPUT_DIR / "models" / "2022_inj_b1_acd"
-SDDS_DIR = INPUT_DIR / "lhcb1_tbt_inj_on_off_mom"
+MODEL_DIR = INPUTS / "models" / "2022_inj_b1_acd"
+SDDS_DIR = INPUTS / "lhcb1_tbt_inj_on_off_mom"
 
 # These are 2024 injection optics files from Beam1, should work with the 2022 model as well.
 SDDS_FILES = {

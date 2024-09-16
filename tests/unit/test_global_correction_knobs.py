@@ -3,10 +3,14 @@ Tests for the definition files of the global correction knobs.
 """
 import json
 
-from omc3.model.accelerators.lhc import LHC_DIR
+import pytest
+
+from omc3.model.accelerators.lhc import LHC_DIR, Lhc
+from tests.conftest import INPUTS
+
 
 CORRECTORS_DIR = LHC_DIR / "2012" / "correctors"
-
+MODELS_DIR = INPUTS / "models"
 
 class TestLHCKnobs:
     @staticmethod
@@ -29,7 +33,6 @@ class TestLHCKnobs:
         for file in ["triplet"]:
             knobs = self.load_knobs_file(file)
             assert knobs
-            
 
     def test_both_beams_have_all_knobs(self):
         """ Check if all knobs are present in both beams. """
@@ -37,3 +40,45 @@ class TestLHCKnobs:
             knobs_b1 = self.load_knobs_file(file, beam=1)
             knobs_b2 = self.load_knobs_file(file, beam=2)
             assert set(knobs_b1.keys()) == set(knobs_b2.keys())
+
+    def test_variables_logic(self, accel_lhcb1: Lhc):
+        """ Tests that the variables getting logic works. """
+        vars_none = accel_lhcb1.get_variables(classes=[])
+        assert not len(vars_none)
+
+        vars_all = accel_lhcb1.get_variables(classes=None)
+        assert len(vars_all)
+
+        vars_mqy = accel_lhcb1.get_variables(classes=["MQY"])
+        assert len(vars_mqy) < len(vars_all)
+        assert all(mqy in vars_all for mqy in vars_mqy)
+        
+        vars_q = accel_lhcb1.get_variables(classes=["Q"])
+        vars_mqy_q = accel_lhcb1.get_variables(classes=["MQY", "Q"])
+        assert all(mqy in vars_mqy_q for mqy in vars_mqy)
+        assert all(q in vars_mqy_q for q in vars_q)
+
+        vars_mqy_extra = accel_lhcb1.get_variables(classes=["MQY", "test1", "test2"])
+        assert all(mqy in vars_mqy_q for mqy in vars_mqy)
+        assert "test1" in vars_mqy_extra
+        assert "test2" in vars_mqy_extra
+
+        kq4_name = "kq4.l8b1"
+        vars_mqy_extra_and_minus = accel_lhcb1.get_variables(classes=["MQY", "test1", "test2", "-test2", f"-{kq4_name}"])
+        assert kq4_name in vars_mqy
+        assert kq4_name in vars_mqy_extra
+        assert kq4_name not in vars_mqy_extra_and_minus
+        assert "test1" in vars_mqy_extra_and_minus
+        assert "test2" not in vars_mqy_extra_and_minus
+
+
+# Helpers ------------------------------------------------------------------------------------------
+
+@pytest.fixture
+def accel_lhcb1():
+    lhc = Lhc(
+        year="2022",
+        beam=1,
+        model_dir=MODELS_DIR / "2022_inj_b1_acd"
+    )
+    return lhc

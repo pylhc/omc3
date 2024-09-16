@@ -218,21 +218,25 @@ class Lhc(Accelerator):
             correctors_dir / f"correctors_b{self.beam}" / "coupling_correctors.json",
             self._get_triplet_correctors_file(),
         )
-        if classes is None:
-            classes = all_vars_by_class.keys()
 
-        known_classes = [c for c in classes if c in all_vars_by_class]
-        unknown_classes = [c for c  in classes if c not in all_vars_by_class]
-        if unknown_classes:
-            LOGGER.debug("The following classes are not found as corrector/variable classes and "
-                         f"are assumed to be the variable names directly instead:\n{str(unknown_classes)}")
+        if classes is not None:
+            known_classes = [c for c in classes if c in all_vars_by_class]
+            unknown_classes = [c for c  in classes if c not in all_vars_by_class]
 
-        vars = list( set(
-            _flatten_list(
-                all_vars_by_class[corr_cls]
-                    for corr_cls in known_classes))
-            )
-        vars = vars + unknown_classes
+            add_knobs = set(knob for knob in unknown_classes if knob[0] != "-")
+            if add_knobs:
+                LOGGER.info("The following names are not found as corrector/variable classes and "
+                            f"are assumed to be the variable names directly instead:\n{str(add_knobs)}")
+
+            remove_knobs = set(knob[1:] for knob in unknown_classes if knob[0] == "-")
+            if remove_knobs:
+                LOGGER.info(f"The following names will not be used as correctors, as requested:\n{str(remove_knobs)}")
+            
+            vars = set(_flatten_list(all_vars_by_class[corr_cls] for corr_cls in known_classes))
+            vars = list((vars | add_knobs) - remove_knobs)
+        
+        else:
+            vars = list(set(_flatten_list([vars_ for vars_ in all_vars_by_class.values()])))
 
         # Sort variables by S (nice for comparing different files)
         return self.sort_variables_by_location(vars, frm, to)
