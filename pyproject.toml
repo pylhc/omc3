@@ -82,8 +82,8 @@ test = [
   "pytest-timeout >= 1.4",
   "gitpython >= 3.1",  # imported as 'git', used for acc-models fixture
 ]
-ci = [  # extras to help around our workflows, which don't run on great machines
-  "pytest-xdist >= 1.3",  # parallelize our tests
+ci = [
+  "pytest-xdist >= 1.3",  # parallelize tests to speedup GA workflows
 ]
 doc = [
   "sphinx >= 7.0",
