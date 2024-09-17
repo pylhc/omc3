@@ -111,6 +111,8 @@ Provides the plotting function for amplitude detuning analysis
 
 
 """
+from logging import warn
+import warnings
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
@@ -648,9 +650,14 @@ def _format_axes_3d(
     handles, labels = get_labels_with_odr_labels(ax, odr_labels)
     ax.legend(handles, labels, loc='upper left', bbox_to_anchor=(1.2, 0.98), prop={'size': 'small'})
     ax.zaxis._axinfo['juggled'] = (1, 2, 0)  # move tune axis to the other side
-    # tight layout so that the legend fits
-    ax.figure.tight_layout()
-    ax.figure.tight_layout()
+
+    # tight layout so that the legend fits in figure
+    # We catch and ignore 'UserWarning: The figure layout has changed to tight'
+    # because it is something we did on purpose, let's not pollute the output.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        ax.figure.tight_layout()
+        ax.figure.tight_layout()
 
 
 # Labels -----------------------------------------------------------------------
