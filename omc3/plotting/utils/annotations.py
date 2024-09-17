@@ -7,7 +7,6 @@ Helper functions to create annotations, legends as well as style labels in plots
 from __future__ import annotations
 
 import itertools
-from logging import warn, warning
 import re
 import warnings
 from typing import TYPE_CHECKING
