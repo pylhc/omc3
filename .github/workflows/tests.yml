@@ -22,4 +22,4 @@ jobs:
     uses: pylhc/.github/.github/workflows/tests.yml@master
     with:
       extra-dependencies: "test,ci"
-      pytest-options: -m "extended and not cern_network" -n auto -v
+      pytest-options: -m "extended and not cern_network" -n 2 -v
