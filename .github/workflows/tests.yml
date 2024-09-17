@@ -14,8 +14,7 @@ jobs:
   basic_tests:
     uses: pylhc/.github/.github/workflows/tests.yml@master
     with:
-      extra-dependencies: "test,ci"
-      pytest-options: -m "not extended and not cern_network" -n auto -v
+      pytest-options: -m "not extended and not cern_network"
 
   extended_tests:
     needs: basic_tests
