@@ -5,7 +5,6 @@ Model Creator
 Entrypoint to run the model creator for LHC, PSBooster and PS models.
 """
 from pathlib import Path
-from typing import Union
 
 from generic_parser import EntryPointParameters, entrypoint
 
