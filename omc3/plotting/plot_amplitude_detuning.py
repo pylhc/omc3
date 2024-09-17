@@ -521,9 +521,9 @@ def _plot_detuning_3d(ax: Axes, data: Dict[str, AmpDetData], label: str, color=N
 
     # plot errorbars
     for idx in np.arange(0, len(tune)):
-        x, dx = jx[idx], jx_err[idx]
-        y, dy = jy[idx], jy_err[idx]
-        z, dz = tune[idx], tune_err[idx]
+        x, dx = jx.iloc[idx], jx_err.iloc[idx]
+        y, dy = jy.iloc[idx], jy_err.iloc[idx]
+        z, dz = tune.iloc[idx], tune_err.iloc[idx]
 
         ax.plot([x+dx, x-dx], [y, y], [z, z], ls="-", marker="_", color=color)
         ax.plot([x, x], [y+dy, y-dy], [z, z], ls="-", marker="_", color=color)
