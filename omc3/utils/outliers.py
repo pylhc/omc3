@@ -114,10 +114,13 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
 def _get_data_without_slope(mask, x, y):
     """ Remove the slope on the data by performing a linear fit. """
     import warnings
-    from numpy.exceptions import RankWarning
+    try:
+        from numpy.exceptions import RankWarning as IgnoredWarning
+    except ImportError:  # it does not exist on numpy versions supporting 3.9
+        IgnoredWarning = Warning
     # We filter out the "Polyfit may be poorly conditioned" warning
     with warnings.catch_warnings():
-        warnings.simplefilter("ignore", category=RankWarning)
+        warnings.simplefilter("ignore", category=IgnoredWarning)
         m, b = np.polyfit(x[mask], y[mask], 1)
         return y[mask] - b - m * x[mask], y - b - m * x
 
