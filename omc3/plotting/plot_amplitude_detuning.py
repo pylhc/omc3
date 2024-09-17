@@ -111,7 +111,6 @@ Provides the plotting function for amplitude detuning analysis
 
 
 """
-from logging import warn
 import warnings
 from dataclasses import dataclass
 from functools import partial
@@ -119,26 +118,30 @@ from pathlib import Path
 from typing import Dict, Sequence
 
 import numpy as np
-from matplotlib.figure import Figure
-
-from generic_parser import entrypoint, EntryPointParameters, DotDict
+from generic_parser import DotDict, EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
-from matplotlib import colors as mcolors, MatplotlibDeprecationWarning
+from matplotlib import MatplotlibDeprecationWarning
+from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
 from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from numpy.typing import ArrayLike
 from scipy import odr
 from tfs.tools import significant_digits
 
-from omc3.definitions.constants import UNIT_IN_METERS, PLANES
-from omc3.plotting.utils import colors as pcolors, annotations as pannot, style as pstyle
-from omc3.tune_analysis import constants as const, kick_file_modifiers as kick_mod, fitting_tools
+from omc3.definitions.constants import PLANES, UNIT_IN_METERS
+from omc3.plotting.utils import annotations as pannot
+from omc3.plotting.utils import colors as pcolors
+from omc3.plotting.utils import style as pstyle
+from omc3.tune_analysis import constants as const
+from omc3.tune_analysis import fitting_tools
+from omc3.tune_analysis import kick_file_modifiers as kick_mod
 from omc3.tune_analysis.kick_file_modifiers import AmpDetData
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings
-from omc3.utils.iotools import PathOrStr, save_config, UnionPathStr
+from omc3.utils.iotools import PathOrStr, UnionPathStr, save_config
 
 LOG = logging_tools.get_logger(__name__)
 
