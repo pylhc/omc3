@@ -10,4 +10,5 @@ jobs:
     tests:
       uses: pylhc/.github/.github/workflows/cron.yml@master
       with:
-        pytest-options: -m "not cern_network"
+        extra-dependencies: "test,ci"
+        pytest-options: -m "not cern_network" -n auto
