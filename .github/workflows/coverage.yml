@@ -13,5 +13,5 @@ jobs:
       with:
         src-dir: omc3
         extra-dependencies: "test,ci"
-        pytest-options: -m "not cern_network" -n auto
+        pytest-options: -m "not cern_network" -n auto -v
       secrets: inherit
