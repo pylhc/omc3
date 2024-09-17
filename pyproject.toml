@@ -91,7 +91,6 @@ all = [
   "omc3[cern]",
   "omc3[optional]",
   "omc3[test]",
-  "omc3[ci]",
   "omc3[doc]",
 ]
 
