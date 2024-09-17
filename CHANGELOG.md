@@ -1,7 +1,7 @@
 # OMC3 Changelog
 
 #### IN PROGRESS - v0.15.5 - _fsoubelet_
-g
+
 - Fixed:
   - Fixed `DepracationWarning`s related datetime operations.
   - Fixed `DeprecationWarning` occuring due to the use of old `numpy` functions.
