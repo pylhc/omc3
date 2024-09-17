@@ -222,16 +222,19 @@ class Lhc(Accelerator):
         )
         if classes is not None:
             if isinstance(classes, str):
-                classes = [classes]  # should be avoided, but just in case
+                # if not checked, lead to each char being treates as a knob. 
+                raise TypeError(f"Classes must be an iterable, not a string: {classes}")  
 
             known_classes = [c for c in classes if c in all_vars_by_class]
             unknown_classes = [c for c  in classes if c not in all_vars_by_class]
 
+            # names without the prefix '-' are simply added to the list
             add_knobs = set(knob for knob in unknown_classes if knob[0] != "-")
             if add_knobs:
                 LOGGER.info("The following names are not found as corrector/variable classes and "
                             f"are assumed to be the variable names directly instead:\n{str(add_knobs)}")
 
+            # if the correction variable name is prepended with '-' it is taken out of the ones we use
             remove_knobs = set(knob[1:] for knob in unknown_classes if knob[0] == "-")
             if remove_knobs:
                 LOGGER.info(f"The following names will not be used as correctors, as requested:\n{str(remove_knobs)}")
