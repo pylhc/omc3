@@ -1,5 +1,22 @@
 # OMC3 Changelog
 
+#### IN PROGRESS - v0.15.5 - _fsoubelet_
+g
+- Fixed:
+  - Fixed `DepracationWarning`s related datetime operations.
+  - Fixed `DeprecationWarning` occuring due to the use of old `numpy` functions.
+  - Fixed `FutureWarning` happening during edge-cases of dataframe concatenation by performing checks ahead of time.
+  - Fixed `FutureWarning`s occuring due to deprecated `pandas.Series` accesses.
+  - Fixed `UserWarning` occuring when wrongly setting ticks and labels for correction plots.
+
+- Changed:
+  - Masked `RankWarning` which can happen during a `polyfit` of data.
+  - Masked `OptimizeWarning` happening when the covariance parameters could not be estimated in `kmod` analysis.
+  - Masked `OptimizeWarning` happening when the covariance parameters could not be estimated in `rdt` analysis.
+  - Masked `NaturalNameWarning`s happening during HDF5 tables operations, as the use of names such as `kq4.r8b2` is not avoidable and `pandas` properly handles access operations for us.
+  - Masked `UserWarning`s happening during plotting for operations that are explicitely demanded.
+  - Masked `UserWarning` happening when ignored / no labels are given to correction plots.
+
 #### 2024-09-16 - v0.15.4 - _jdilly_
 
 - Fixed:
