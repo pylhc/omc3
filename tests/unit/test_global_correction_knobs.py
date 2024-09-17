@@ -5,17 +5,15 @@ import json
 
 import pytest
 
-from omc3.model.accelerators.lhc import LHC_DIR, Lhc
+from omc3.model.accelerators.lhc import Lhc
 from tests.conftest import INPUTS
 
-
-CORRECTORS_DIR = LHC_DIR / "2012" / "correctors"
 MODELS_DIR = INPUTS / "models"
 
 class TestLHCKnobs:
     @staticmethod
     def load_knobs_file(name: str, beam: int = None):
-        correctors_dir = CORRECTORS_DIR
+        correctors_dir = Lhc.DEFAULT_CORRECTORS_DIR 
         if beam is not None:
             correctors_dir = correctors_dir / f"correctors_b{beam}"
 
@@ -70,6 +68,17 @@ class TestLHCKnobs:
         assert kq4_name not in vars_mqy_extra_and_minus
         assert "test1" in vars_mqy_extra_and_minus
         assert "test2" not in vars_mqy_extra_and_minus
+    
+    def test_default_and_specific_variables(self, accel_lhcb1: Lhc, accel_lhcb2: Lhc):
+        """ Tests if both json files are loaded correctly. This specific test only works
+        with 2022-lhc models, as only here the MQM_TOP_2024 and MQM_INJ_2024 classes are implemented."""
+
+        for accel in [accel_lhcb1, accel_lhcb2]:
+            mqm_all = accel.get_variables(classes=["MQM_ALL"])  # from default json
+            for mqm_class in ["MQM_TOP_2024", "MQM_INJ_2024"]:
+                mqm_2024 = accel.get_variables(classes=[mqm_class])
+                assert all(mqm in mqm_all for mqm in mqm_2024)
+                assert any(mqm not in mqm_2024 for mqm in mqm_all)
 
 
 # Helpers ------------------------------------------------------------------------------------------
@@ -79,6 +88,15 @@ def accel_lhcb1():
     lhc = Lhc(
         year="2022",
         beam=1,
+        model_dir=MODELS_DIR / "2022_inj_b1_acd"
+    )
+    return lhc
+
+@pytest.fixture
+def accel_lhcb2():
+    lhc = Lhc(
+        year="2022",
+        beam=2,
         model_dir=MODELS_DIR / "2022_inj_b1_acd"
     )
     return lhc
