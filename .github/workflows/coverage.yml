@@ -12,5 +12,5 @@ jobs:
       uses: pylhc/.github/.github/workflows/coverage.yml@master
       with:
         src-dir: omc3
-        pytest-options: -m "not cern_network"
+        pytest-options: -m "not cern_network" --cov-report term-missing
       secrets: inherit
