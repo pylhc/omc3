@@ -142,7 +142,8 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
             accel_class = manager.get_accelerator_class(accel_opt)
             print(f"---- Accelerator {accel_class.__name__}  | Usage ----\n")
             print_help(accel_class.get_parameters())
-        except:
+        except Exception as e:
+            LOGGER.debug(f"An error occurred: {e}")
             pass
 
         print("---- Model Creator | Usage ----\n")
