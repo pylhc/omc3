@@ -519,22 +519,43 @@ class Lhc(Accelerator):
         if it exists, or the default directory. """
         return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
     
-    def _get_corrector_files(self, file_name: str | Path) -> tuple[Path]:
+    def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
         """ Get the corrector files from the default directory AND 
-        the instance's specific directory if it exists, in that order. """
-        default_file = Lhc.DEFAULT_CORRECTORS_DIR / file_name
-        specific_file = self._get_accel_file(Path(Lhc.DEFAULT_CORRECTORS_DIR.name) / file_name)
+        the instance's specific directory if it exists AND the model directroy if it exists, 
+        in that order. 
+        See also discussion in https://github.com/pylhc/omc3/pull/458#discussion_r1764829247 .
+        """
 
-        if specific_file.exists():
-            LOGGER.debug(
-                f"Corrector file found for {file_name} in {specific_file.parent} and default directory."
-            )
-            return (default_file, specific_file)
+        # add file from the default directory (i.e. "model/accelerators/lhc/correctors")
+        default_file = Lhc.DEFAULT_CORRECTORS_DIR / file_name
+        if not default_file.exists():
+            msg = (f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
+                  "Something went wrong with the variables getting logic.")
+            raise FileNotFoundError(msg)
         
         LOGGER.debug(
-            f"No corrector file found for {file_name} in {specific_file.parent}. Using default only."
+            f"No corrector file found for {file_name} in {default_file.parent}."
         )
-        return (default_file,)
+        corrector_files = [default_file]
+
+        # add file from the accelerator directory (e.g. "model/accelerators/lhc/2024/correctors")
+        accel_dir_file = self._get_accel_file(Path(Lhc.DEFAULT_CORRECTORS_DIR.name) / file_name)
+        if accel_dir_file.exists():
+            LOGGER.debug(
+                f"Corrector file found for {file_name} in {accel_dir_file.parent}."
+            )
+            corrector_files.append(accel_dir_file)
+
+        # add file from the model directory (without "correctors" and subfolders) - bit of a hidden feature
+        if self.model_dir is not None:
+            model_dir_file = Path(self.model_dir) / Path(file_name).name
+            if model_dir_file.exists():
+                LOGGER.info(
+                    f"Corrector file found for {file_name} in {model_dir_file.parent}."
+                )
+                corrector_files.append(model_dir_file)
+        
+        return corrector_files
     
     def _get_call_main(self) -> str:
         call_main = f"call, file = '{self._get_accel_file('main.seq')}';\n"

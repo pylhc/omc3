@@ -3,6 +3,7 @@ Tests for the definition files of the global correction knobs.
 """
 import json
 
+import numpy as np
 import pytest
 
 from omc3.model.accelerators.lhc import Lhc
@@ -69,9 +70,14 @@ class TestLHCKnobs:
         assert "test1" in vars_mqy_extra_and_minus
         assert "test2" not in vars_mqy_extra_and_minus
     
-    def test_default_and_specific_variables(self, accel_lhcb1: Lhc, accel_lhcb2: Lhc):
+    def test_default_and_specific_variables(self, tmp_path, accel_lhcb1: Lhc, accel_lhcb2: Lhc):
         """ Tests if both json files are loaded correctly. This specific test only works
         with 2022-lhc models, as only here the MQM_TOP_2024 and MQM_INJ_2024 classes are implemented."""
+        
+        my_class = "MY_CLASS"
+        my_dict = {my_class: ["A", "B", "C"]}
+        user_json = tmp_path / "beta_correctors.json"
+        user_json.write_text(json.dumps(my_dict))
 
         for accel in [accel_lhcb1, accel_lhcb2]:
             mqm_all = accel.get_variables(classes=["MQM_ALL"])  # from default json
@@ -79,6 +85,15 @@ class TestLHCKnobs:
                 mqm_2024 = accel.get_variables(classes=[mqm_class])
                 assert all(mqm in mqm_all for mqm in mqm_2024)
                 assert any(mqm not in mqm_2024 for mqm in mqm_all)
+
+            my_vars = accel.get_variables(classes=["MY_CLASS"])  # not present
+            assert len(my_vars) == 1
+            assert my_vars[0] == "MY_CLASS"
+
+            accel.model_dir = tmp_path
+            my_vars = accel.get_variables(classes=["MY_CLASS"])  # from user json
+            assert len(my_vars) == len(my_dict[my_class])
+            assert np.all(np.array(my_vars) == np.array(my_dict[my_class]))
 
 
 # Helpers ------------------------------------------------------------------------------------------

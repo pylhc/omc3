@@ -5,7 +5,7 @@
 - Added:
   - Global Correction for LHC:
     - The correction variables in the LHC accelerator class are now handled differently internally,
-      allowing new variable classes to be added to each lhc-year.
+      allowing new variable classes to be added to each lhc-year and user-given files in the model-directory.
     - Variable categories `MQM_ALL` added to all LHC years.
     - Variable categories `MQM_INJ_2024` and `MQM_TOP_2024` added to LHC 2024.
     - Adding a "-" in front of a given correction variable name removes this variable from the correction. Does not work for whole variable categories.
