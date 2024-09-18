@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.handler &mdash; omc3 0.15.4 documentation</title>
+  <title>omc3.correction.handler &mdash; omc3 0.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=13e65a98"></script>
+        <script src="../../../_static/documentation_options.js?v=7de89ed4"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -214,29 +214,34 @@
 
 <span class="sd">This module contains high-level functions to manage most functionality of the corrections calculations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
-<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">OrthogonalMatchingPursuit</span>
 
 <span class="kn">import</span> <span class="nn">omc3.madx_wrapper</span> <span class="k">as</span> <span class="nn">madx_wrapper</span>
 <span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span>
-                                                <span class="n">F1010</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span>
-                                                <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">NAME</span>
-                                                <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span><span class="p">,</span> <span class="n">DIFF</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.model_appenders</span> <span class="kn">import</span> <span class="n">add_coupling_to_model</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.response_io</span> <span class="kn">import</span> <span class="n">read_fullresponse</span>
 <span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span>
+                                                <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+                                                <span class="n">PHASE</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.stats</span> <span class="kn">import</span> <span class="n">rms</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -352,8 +357,8 @@
         <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">meas_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">beta_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">w_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]]:</span>
+        <span class="n">w_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Loads all measurements defined by `keys` into a dictionary. &quot;&quot;&quot;</span>
     <span class="n">measurement</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">filtered_keys</span> <span class="o">=</span> <span class="n">keys</span>
@@ -427,7 +432,7 @@
     <span class="k">return</span> <span class="n">model</span>
 
 
-<span class="k">def</span> <span class="nf">_create_corrected_model</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">change_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_create_corrected_model</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">change_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Use the calculated deltas in changeparameters.madx to create a corrected model &quot;&quot;&quot;</span>
     <span class="n">madx_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_update_correction_script</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">change_params</span><span class="p">)</span>
     <span class="n">twiss_out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">)</span>
@@ -484,7 +489,7 @@
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">n_correctors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_correctors setting needed for orthogonal matching pursuit.&quot;</span><span class="p">)</span>
 
-    <span class="n">res</span> <span class="o">=</span> <span class="n">OrthogonalMatchingPursuit</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">n_correctors</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">response_mat</span><span class="p">,</span> <span class="n">diff_vec</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">OrthogonalMatchingPursuit</span><span class="p">(</span><span class="n">n_nonzero_coefs</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">n_correctors</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">response_mat</span><span class="p">,</span> <span class="n">diff_vec</span><span class="p">)</span>
     <span class="n">coef</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">coef_</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Orthogonal Matching Pursuit Results: </span><span class="se">\n</span><span class="s2">&quot;</span>
               <span class="sa">f</span><span class="s2">&quot;  Chosen variables: </span><span class="si">{</span><span class="n">response_mat</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="n">coef</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>

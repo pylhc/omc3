@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.filters &mdash; omc3 0.15.4 documentation</title>
+  <title>omc3.correction.filters &mdash; omc3 0.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=13e65a98"></script>
+        <script src="../../../_static/documentation_options.js?v=7de89ed4"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -223,8 +223,10 @@
 <span class="sd">i.e. beta, phase etc. In this implementation most of it is handled by</span>
 <span class="sd">the `_get_filtered_generic` function.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -232,10 +234,24 @@
 <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">NAME2</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span>
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">REAL</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AMPLITUDE</span><span class="p">,</span>
+    <span class="n">DELTA</span><span class="p">,</span>
+    <span class="n">ERR</span><span class="p">,</span>
+    <span class="n">F1001</span><span class="p">,</span>
+    <span class="n">F1010</span><span class="p">,</span>
+    <span class="n">IMAG</span><span class="p">,</span>
+    <span class="n">NAME2</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span>
+    <span class="n">REAL</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">stats</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -246,7 +262,7 @@
 <div class="viewcode-block" id="filter_measurement">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_measurement">[docs]</a>
 <span class="k">def</span> <span class="nf">filter_measurement</span><span class="p">(</span>
-    <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">meas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span>
+    <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">meas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Filters measurements in `keys` based on the dict-entries (keys as in `keys`)</span>
 <span class="sd">    in `opt.errorcut`, `opt.modelcut` and `opt.weights` and unifies the</span>
@@ -316,9 +332,9 @@
 
     <span class="c1"># if opt.automatic_model_cut:  # TODO automated model cut</span>
     <span class="c1">#     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f&quot;{DELTA}{col}&quot;].to_numpy()), portion=0.95)</span>
-    <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">col</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">PHASE</span> <span class="ow">in</span> <span class="n">col</span><span class="p">:</span>
         <span class="n">new</span><span class="p">[</span><span class="n">NAME2</span><span class="p">]</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">NAME2</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-        <span class="n">second_bpm_exists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">NAME2</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">new</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+        <span class="n">second_bpm_exists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">NAME2</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">new</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
         <span class="n">good_bpms</span> <span class="o">=</span> <span class="n">error_mask</span> <span class="o">&amp;</span> <span class="n">model_mask</span> <span class="o">&amp;</span> <span class="n">second_bpm_exists</span>
         <span class="n">good_bpms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># TODO not sure why, ask Lukas? (jdilly)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -377,7 +393,7 @@
 
 <div class="viewcode-block" id="filter_response_index">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.filters.filter_response_index">[docs]</a>
-<span class="k">def</span> <span class="nf">filter_response_index</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">filter_response_index</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Filters the index of the response matrices `response` by the respective entries in `measurement`.&quot;&quot;&quot;</span>
     <span class="c1"># rename MU to PHASE as we create a PHASE-Response afterwards</span>
     <span class="c1"># easier to do here, than to check eveywhere below. (jdilly)</span>
@@ -398,7 +414,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_response_filters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_get_response_filters</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a dict with the respective `_get_*_response` functions that defaults</span>
 <span class="sd">    to `_get_generic_response`.</span>

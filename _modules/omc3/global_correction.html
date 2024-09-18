@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.global_correction &mdash; omc3 0.15.4 documentation</title>
+  <title>omc3.global_correction &mdash; omc3 0.16.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=13e65a98"></script>
+        <script src="../../_static/documentation_options.js?v=7de89ed4"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -374,10 +374,11 @@
 <span class="sd"> * Missing a part that treats the output from LSA</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
 <span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 <span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">handler</span>
 <span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span>
@@ -385,6 +386,9 @@
 <span class="kn">from</span> <span class="nn">omc3.model</span> <span class="kn">import</span> <span class="n">manager</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -529,7 +533,7 @@
 
 
 <span class="c1"># Define functions here, to new optics params</span>
-<span class="k">def</span> <span class="nf">_get_default_values</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="k">def</span> <span class="nf">_get_default_values</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;modelcut&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
