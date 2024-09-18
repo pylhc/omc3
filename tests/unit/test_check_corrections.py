@@ -6,25 +6,41 @@ import tfs
 from generic_parser import DotDict
 from matplotlib.figure import Figure
 
-from omc3.check_corrections import (_get_measurement_filter,
-                                    correction_test_entrypoint)
+from omc3.check_corrections import _get_measurement_filter, correction_test_entrypoint
 from omc3.correction.constants import MODEL_MATCHED_FILENAME
 from omc3.correction.handler import get_filename_from_parameter
 from omc3.correction.model_appenders import add_coupling_to_model
-from omc3.definitions.optics import (FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING,
-                                     TUNE_COLUMN, ColumnsAndLabels)
+from omc3.definitions.optics import (
+    FILE_COLUMN_MAPPING,
+    RDT_COLUMN_MAPPING,
+    TUNE_COLUMN,
+    ColumnsAndLabels,
+)
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import (EXT, MDL, NAME, NAME2, PHASE,
-                                                PHASE_ADV, TUNE, S)
-from omc3.plotting.plot_checked_corrections import SPLIT_ID, show_plots
+from omc3.optics_measurements.constants import (
+    EXT,
+    MDL,
+    NAME,
+    NAME2,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+    S,
+)
+from omc3.plotting.plot_checked_corrections import (
+    SINGLE_PLANE_FILES,
+    SPLIT_ID,
+    show_plots,
+)
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
-from tests.accuracy.test_global_correction import (get_normal_params, get_skew_params)
+from tests.accuracy.test_global_correction import get_normal_params, get_skew_params
+from tests.conftest import ids_str
 
 
 class TestFullRun:
     @pytest.mark.basic
     @pytest.mark.parametrize('orientation', ('skew', 'normal',))
-    @pytest.mark.parametrize('use_filter', (True, False,))
+    @pytest.mark.parametrize('use_filter', (True, False,), ids=ids_str("filter={}"))
     def test_lhc_corrections(self, tmp_path, model_inj_beams, orientation, use_filter):
         """ Checks that correction_test_entrypoint runs and that all the output
         data is there. Very simple test. """
@@ -145,7 +161,7 @@ class TestMeasurementFilter:
         assert not mask
 
     @pytest.mark.basic
-    @pytest.mark.parametrize('which_cut', ('model', 'error', 'modelerror'))
+    @pytest.mark.parametrize('which_cut', ('model', 'error', 'modelerror'), ids=ids_str("cut={}"))
     @pytest.mark.parametrize('beta_filename', ('beta_amplitude', 'beta_phase', 'beta_kmod'))
     def test_filter_data(self, tmp_path, which_cut, beta_filename):
         for param in get_normal_params(beam=1).optics_params + get_skew_params(beam=1).optics_params:
@@ -261,7 +277,50 @@ class TestPlotting:
                     assert plottab.title == "param1"
                 else:
                     assert plottab.title == "param 2"
+    
+    @pytest.mark.basic
+    def test_single_plane_files(self, monkeypatch):
+        single_name = SINGLE_PLANE_FILES[0]  # so far only one anyway
 
+        figure_dict = {
+            f"correction1{SPLIT_ID}{single_name}x": Figure(),
+            f"correction1{SPLIT_ID}param_2_x": Figure(),
+            f"correction1{SPLIT_ID}param_2_y": Figure(),
+            f"correction2{SPLIT_ID}{single_name}x": Figure(),
+            f"correction2{SPLIT_ID}param_2_x": Figure(),
+            f"correction2{SPLIT_ID}param_2_y": Figure(),
+            f"{single_name}x_PARAM1X": Figure(),
+            "param_2_x_PARAM2X": Figure(),
+            "param_2_y_PARAM2Y": Figure(),
+        }
+
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.TabWidget", MockTabAndWindow)
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.PlotWidget", MockPlotWidget)
+        window = MockTabAndWindow("")
+        monkeypatch.setattr("omc3.plotting.plot_checked_corrections.VerticalTabWindow", window)
+
+        show_plots(figure_dict)
+
+        assert window.title != ""  # set to something else
+        assert window.shown
+
+        assert len(window.tabs) == 3  # 1 for all, 2 for correction[12]
+        for idx_tab, tab in enumerate(window.tabs):
+            if idx_tab:
+                assert tab.title == f"correction{idx_tab}"
+
+            assert len(tab.tabs) == 2  # two params
+
+            for idx, plottab in enumerate(tab.tabs):
+                assert isinstance(plottab, MockPlotWidget)
+                if idx == 0:
+                    assert plottab.title == single_name.replace("_"," ").strip()
+                    assert isinstance(plottab.fig1, Figure)
+                    assert plottab.fig2 is None
+                else:
+                    assert plottab.title == "param 2"
+                    assert isinstance(plottab.fig1, Figure)
+                    assert isinstance(plottab.fig2, Figure)
 
     @pytest.mark.basic
     def test_rdt_params(self, monkeypatch):
@@ -353,8 +412,8 @@ class MockTabAndWindow:
 @dataclass
 class MockPlotWidget:
     fig1: Figure
-    fig2: Figure
-    title: str
+    fig2: Figure = None
+    title: str = ""
 
 
 def _create_fake_measurement(tmp_path, model_path, twiss_path):
