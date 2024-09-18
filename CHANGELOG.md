@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### IN PROGRESS - v0.16.1 - _fsoubelet_
+#### 2024-09-19 - v0.16.1 - _fsoubelet_
 
 - Fixed:
   - Fixed `DepracationWarning`s related datetime operations.
@@ -10,12 +10,11 @@
   - Fixed `UserWarning` occuring when wrongly setting ticks and labels for correction plots.
 
 - Changed:
-  - Masked `RankWarning` which can happen during a `polyfit` of data.
-  - Masked `OptimizeWarning` happening when the covariance parameters could not be estimated in `kmod` analysis.
-  - Masked `OptimizeWarning` happening when the covariance parameters could not be estimated in `rdt` analysis.
   - Masked `NaturalNameWarning`s happening during HDF5 tables operations, as the use of names such as `kq4.r8b2` is not avoidable and `pandas` properly handles access operations for us.
   - Masked `UserWarning`s happening during plotting for operations that are explicitely demanded.
-  - Masked `UserWarning` happening when ignored / no labels are given to correction plots.
+  - Intercept `RankWarning` which can happen during a `polyfit` of data and re-emit as log message.
+  - Intercept `OptimizeWarning` happening when the covariance parameters could not be estimated in `kmod` analysis and re-emit as log message.
+  - Intercept `OptimizeWarning` happening when the covariance parameters could not be estimated in `rdt` analysis and re-emit as log message.
 
 #### 2024-09-18 - v0.16.0 - _jdilly_
 
