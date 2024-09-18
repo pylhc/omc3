@@ -24,7 +24,7 @@ from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
 from omc3.optics_measurements.data_models import InputFiles, check_and_warn_about_offmomentum_data, filter_for_dpp
 
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING: 
     from generic_parser import DotDict 
@@ -33,8 +33,8 @@ if TYPE_CHECKING:
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
 
-RDTTuple: TypeAlias = tuple[int, int, int, int]
-LineTuple: TypeAlias = tuple[int, int, int]
+RDTTuple = tuple[int, int, int, int]
+LineTuple = tuple[int, int, int]
 
 
 def _generate_plane_rdts(order: int) -> tuple[dict[str, list[RDTTuple]], dict[str, list[RDTTuple]]]:
