@@ -90,7 +90,11 @@ def response_params():
         default=CORRECTION_DEFAULTS["variable_categories"],
         help="List of the variables classes to use.",
     )
-    params.add_parameter(name="outfile_path", type=PathOrStr, help="Name of fullresponse file.")
+    params.add_parameter(
+        name="outfile_path",
+        type=PathOrStr,
+        help="Name of fullresponse file.",
+    )
     params.add_parameter(
         name="delta_k",
         type=float,
