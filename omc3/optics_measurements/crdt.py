@@ -8,24 +8,38 @@ It provides functions to compute combined resonance driving terms following the 
 https://arxiv.org/pdf/1402.1461.pdf.
 """
 from __future__ import annotations
+
 from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pandas as pd
-import tfs
 import scipy.odr
-from omc3.optics_measurements.constants import ERR, EXT, AMPLITUDE, MDL, PHASE, REAL, IMAG
-from omc3.utils import iotools, logging_tools
-from omc3.utils.stats import circular_nanmean, circular_nanerror
-from omc3.definitions.constants import PLANES, PI2
-from omc3.harpy.constants import COL_AMP, COL_MU, COL_PHASE, COL_ERR
-from omc3.optics_measurements.rdt import get_line_sign_and_suffix
+import tfs
 
-from typing import TYPE_CHECKING 
+from omc3.definitions.constants import PI2, PLANES
+from omc3.harpy.constants import COL_AMP, COL_ERR, COL_MU, COL_PHASE
+from omc3.optics_measurements.constants import (
+    AMPLITUDE,
+    ERR,
+    EXT,
+    IMAG,
+    MDL,
+    PHASE,
+    REAL,
+)
+from omc3.optics_measurements.data_models import (
+    InputFiles,
+    check_and_warn_about_offmomentum_data,
+    filter_for_dpp,
+)
+from omc3.optics_measurements.rdt import get_line_sign_and_suffix
+from omc3.utils import iotools, logging_tools
+from omc3.utils.stats import circular_nanerror, circular_nanmean
 
 if TYPE_CHECKING: 
-    from generic_parser import DotDict 
-    from omc3.optics_measurements.data_models import InputFiles
+    from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -57,11 +71,12 @@ CRDTS = [
 def calculate(measure_input: DotDict, input_files: InputFiles, invariants, header):
     """ Calculate the CRDT values. """
     LOGGER.info("Start of CRDT analysis")
-    
-    # Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see https://github.com/pylhc/omc3/issues/456
-    # For now: use only the actions belonging to the current dpp value!
-    dpp_value = 0  
-    invariants = {plane: inv[input_files.dpp_frames_indices(plane, dpp_value)] for plane, inv in invariants.items()}  
+    dpp_value = measure_input.analyse_dpp
+    if dpp_value is None:
+        for plane in PLANES:
+            check_and_warn_about_offmomentum_data(input_files, plane, id_="CRDT calculation")
+    else:
+        invariants = filter_for_dpp(invariants, input_files, dpp_value)
 
     assert len(input_files['X']) == len(input_files['Y'])
     bpm_names = input_files.bpms(dpp_value=0)

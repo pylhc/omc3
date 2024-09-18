@@ -22,17 +22,19 @@ from omc3.optics_measurements.toolbox import df_diff
 from omc3.optics_measurements.tune import TuneDict
 from omc3.utils import iotools, logging_tools, stats
 from optics_functions.rdt import get_all_to_order, jklm2str
+from omc3.optics_measurements.data_models import InputFiles, check_and_warn_about_offmomentum_data, filter_for_dpp
 
-from typing import TYPE_CHECKING 
+from typing import TYPE_CHECKING, TypeAlias
 
 if TYPE_CHECKING: 
     from generic_parser import DotDict 
-    from omc3.optics_measurements.data_models import InputFiles
+    from numpy.typing import ArrayLike
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
 
-RDTTuple = tuple[int, int, int, int]
+RDTTuple: TypeAlias = tuple[int, int, int, int]
+LineTuple: TypeAlias = tuple[int, int, int]
 
 
 def _generate_plane_rdts(order: int) -> tuple[dict[str, list[RDTTuple]], dict[str, list[RDTTuple]]]:
@@ -99,10 +101,17 @@ def calculate(
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = "none"
     LOGGER.info(f"Calculating RDTs up to magnet order {meas_input['rdt_magnet_order']}")
+    
+    dpp_value = meas_input.analyse_dpp
+    if dpp_value is None:
+        for plane in PLANES:
+            check_and_warn_about_offmomentum_data(input_files, plane, id_="RDT calculation")
+    else:
+        invariants = filter_for_dpp(invariants, input_files, dpp_value)
 
     single_plane_rdts, double_plane_rdts = _generate_plane_rdts(meas_input["rdt_magnet_order"])
     for plane in PLANES:
-        bpm_names = input_files.bpms(plane=plane, dpp_value=0)
+        bpm_names = input_files.bpms(plane=plane, dpp_value=dpp_value)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:,'MEAS'].mean()}")
         for rdt in single_plane_rdts[plane]:
@@ -110,7 +119,7 @@ def calculate(
                 df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
                 write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
     for plane in PLANES:
-        bpm_names = input_files.bpms(dpp_value=0)
+        bpm_names = input_files.bpms(dpp_value=dpp_value)
         for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
         LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, 'MEAS'].mean()}")
         for rdt in double_plane_rdts[plane]:
@@ -185,7 +194,7 @@ def _get_n_upper_diagonals(n, shape):
     return diags(np.ones((n, shape[0])), np.arange(n)+1, shape=shape).toarray()
 
 
-def _determine_line(rdt: RDTTuple, plane: str):
+def _determine_line(rdt: RDTTuple, plane: str) -> dict[str, tuple[int, int, int]]:
     j, k, l, m = rdt  # noqa: E741
     lines = dict(X=(1 - j + k, m - l, 0),
                  Y=(k - j, 1 - l + m, 0))
@@ -201,10 +210,7 @@ def add_freq_to_header(header, plane, rdt):
 
 
 def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invariants, plane, rdt: RDTTuple):
-    # Todo: only on-momentum required? If not, remove this or set `dpp_value=None`, see https://github.com/pylhc/omc3/issues/456 
-    # For now: use only the actions belonging to the current dpp value!
-    dpp_value = 0  
-    invariants = {plane: inv[input_files.dpp_frames_indices(plane, dpp_value)] for plane, inv in invariants.items()}
+    dpp_value = meas_input.analyse_dpp 
 
     df = pd.DataFrame(phase_data)
     second_bpms = df.loc[:, "NAME2"].to_numpy()
@@ -220,14 +226,16 @@ def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invar
     # Multiples of tunes needs to be added to phase at second BPM if that is in second turn
     comp_coeffs2 = to_complex(
         df_all_amps.loc[second_bpms, :], 
-        _add_tunes_if_in_second_turn(df, input_files, line, df_all_phases.loc[second_bpms, :].to_numpy())
+        _add_tunes_if_in_second_turn(
+            df, input_files, line, df_all_phases.loc[second_bpms, :].to_numpy(), dpp_value
+        )
     )
 
     # Get amplitude and phase of the line from linx/liny file
     line_amp, line_phase, line_amp_e, line_phase_e = complex_secondary_lines(  # TODO use the errors
         df.loc[:, "MEAS"].to_numpy()[:, np.newaxis] * meas_input.accelerator.beam_direction,
         df.loc[:, "ERRMEAS"].to_numpy()[:, np.newaxis], comp_coeffs1, comp_coeffs2)
-    rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase)
+    rdt_phases_per_file = _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase, dpp_value)
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
     df[PHASE] = rdt_angles
     df[f"{ERR}{PHASE}"] = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
@@ -238,20 +246,20 @@ def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invar
     return df.loc[:, ["S", "COUNT", AMPLITUDE, f"{ERR}{AMPLITUDE}", "PHASE", f"{ERR}PHASE", "REAL", "IMAG"]]
 
 
-def _add_tunes_if_in_second_turn(df, input_files, line, phase2):
+def _add_tunes_if_in_second_turn(df: pd.DataFrame, input_files: InputFiles, line, phase2, dpp_value):
     mask = df_diff(df, "S", "S2") > 0
-    tunes = np.empty((2, len(input_files.dpp_frames("X", 0))))
+    tunes = np.empty((2, len(input_files.dpp_frames("X", dpp_value))))
     for i, plane in enumerate(PLANES):
-        tunes[i] = np.array([lin.headers[f"Q{i+1}"] for lin in input_files.dpp_frames(plane, 0)])
+        tunes[i] = np.array([lin.headers[f"Q{i+1}"] for lin in input_files.dpp_frames(plane, dpp_value)])
     phase2[mask, :] = phase2[mask, :] + line[0] * tunes[0] + line[1] * tunes[1]
     return phase2
 
 
-def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase):
-    phases = np.zeros((2, df.index.size, len(input_files.dpp_frames("X", 0))))
+def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase, dpp_value):
+    phases = np.zeros((2, df.index.size, len(input_files.dpp_frames("X", dpp_value))))
     for i, plane in enumerate(PLANES):
         if line[i] != 0:
-            phases[i] = input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0).loc[df.index, :].to_numpy() % 1
+            phases[i] = input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=dpp_value).loc[df.index, :].to_numpy() % 1
     return line_phase - line[0] * phases[0] - line[1] * phases[1] + 0.25
 
 
@@ -287,7 +295,7 @@ def get_linearized_problem(invs: dict[str, np.ndarray], plane: str, rdt: RDTTupl
     return 2 * l * act_x ** (j + k) * act_y ** (l + m - 2)
 
 
-def get_line_sign_and_suffix(line, input_files, plane):
+def get_line_sign_and_suffix(line: LineTuple, input_files: InputFiles, plane: str):
     suffix = f"{line[0]}{line[1]}".replace("-", "_")
     conj_suffix = f"{-line[0]}{-line[1]}".replace("-", "_")
     if f"AMP{suffix}" in input_files[plane][0].columns:
@@ -301,7 +309,7 @@ def get_line_sign_and_suffix(line, input_files, plane):
     raise ValueError(msg)
 
 
-def complex_secondary_lines(phase_adv, err_padv, sig1, sig2):
+def complex_secondary_lines(phase_adv: ArrayLike[float], err_padv: ArrayLike[float], sig1: ArrayLike[complex], sig2: ArrayLike[complex]):
     """
 
     Args:
@@ -323,7 +331,7 @@ def complex_secondary_lines(phase_adv, err_padv, sig1, sig2):
             np.abs(esig), (np.angle(esig) / tp) % 1)
 
 
-def to_complex(amplitudes, phases, period=1):
+def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1):
     try:
         amplitudes = amplitudes.to_numpy()
     except AttributeError:

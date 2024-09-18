@@ -610,6 +610,8 @@ def optics_params():
                          help="Calculate second order dispersion")
     params.add_parameter(name="chromatic_beating", action="store_true",
                          help="Calculate chromatic beatings: W, PHI and coupling")
+    params.add_parameter(name="analyse_dpp", type=iotools.OptionalFloat, default=OPTICS_DEFAULTS["analyse_dpp"],
+                        help="Filter files to analyse by this value (phase advance, rdt, crdt).")
     return params
 
 
@@ -637,6 +639,7 @@ OPTICS_DEFAULTS = {
         "range_of_bpms": 11,
         "compensation": "model",
         "rdt_magnet_order": 4,
+        "analyse_dpp": 0,
 }
 
 

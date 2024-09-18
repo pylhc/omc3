@@ -6,31 +6,49 @@ This module contains phase calculation functionality of ``optics_measurements``.
 It provides functions to compute betatron phase advances and structures to store them.
 """
 from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
-                                                TOTAL_PHASE_NAME)
+from omc3.optics_measurements.constants import (
+    DELTA,
+    ERR,
+    EXT,
+    MDL,
+    PHASE_NAME,
+    SPECIAL_PHASE_NAME,
+    TOTAL_PHASE_NAME,
+)
+from omc3.optics_measurements.data_models import (
+    InputFiles,
+    check_and_warn_about_offmomentum_data,
+)
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
-from typing import TYPE_CHECKING 
-
 if TYPE_CHECKING: 
-    from generic_parser import DotDict 
-    from omc3.optics_measurements.data_models import InputFiles
-    from omc3.model.accelerators.accelerator import Accelerator
+    from collections.abc import Sequence
+
+    from generic_parser import DotDict
     from numpy.typing import ArrayLike
+
+    from omc3.model.accelerators.accelerator import Accelerator
+    from omc3.optics_measurements.tune import TuneDict
 
 
 LOGGER = logging_tools.get_logger(__name__)
 
 
 def calculate(
-    meas_input: DotDict, input_files: InputFiles, tunes, plane, no_errors=False
+    meas_input: DotDict,
+    input_files: InputFiles,
+    tunes: TuneDict,
+    plane: str,
+    no_errors: bool = False,
 ) -> dict[str, tuple[dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
     """
     Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
@@ -48,32 +66,30 @@ def calculate(
         is a dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
         the location of the output ``TfsDataFrames`` for the phases.
     """
+    phase_advances, dfs = _calculate_with_compensation(
+        meas_input,
+        input_files,
+        tunes,
+        plane,
+        meas_input.accelerator.model,
+        meas_input.compensation,
+        no_errors,
+    )
+
     if meas_input.compensation == "none":
-        phase_advances, dfs = _calculate_with_compensation(meas_input,
-                                                           input_files,
-                                                           tunes,
-                                                           plane,
-                                                           meas_input.accelerator.model,
-                                                           'none',
-                                                           no_errors)
         uncompensated_phase_advances = phase_advances
     else:
-        phase_advances, free_dfs = _calculate_with_compensation(meas_input,
-                                                                input_files,
-                                                                tunes,
-                                                                plane,
-                                                                meas_input.accelerator.model,
-                                                                meas_input.compensation,
-                                                                no_errors)
         LOGGER.info("-- Run uncompensated")
-        uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(meas_input,
-                                                                             input_files,
-                                                                             tunes,
-                                                                             plane,
-                                                                             meas_input.accelerator.model_driven,
-                                                                             'none',
-                                                                             no_errors)
-        dfs = free_dfs + drv_dfs
+        uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(
+            meas_input,
+            input_files,
+            tunes,
+            plane,
+            meas_input.accelerator.model_driven,
+            "none",
+            no_errors,
+        )
+        dfs = dfs + drv_dfs
 
 
     if len(phase_advances["MEAS"].index) < 3:
@@ -90,7 +106,15 @@ def calculate(
 
 
 
-def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df, compensation='none', no_errors=False):
+def _calculate_with_compensation(
+    meas_input: DotDict,
+    input_files: InputFiles,
+    tunes: TuneDict,
+    plane: str,
+    model_df: pd.DataFrame,
+    compensation: str = "none",
+    no_errors: bool = False,
+):
     """
     Calculates phase advances.
 
@@ -129,7 +153,11 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
 
     df = model_df.loc[:, ["S", f"MU{plane}"]]
     how = 'outer' if meas_input.union else 'inner'
-    dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
+
+    dpp_value = meas_input.analyse_dpp
+    if dpp_value is None:
+        check_and_warn_about_offmomentum_data(input_files, plane, id_="Phase calculations")
+
     df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
                                                dpp_value=dpp_value, how=how),
                   how='inner', left_index=True, right_index=True)
@@ -170,7 +198,7 @@ def _calculate_with_compensation(meas_input, input_files, tunes, plane, model_df
                             _create_output_df(phase_advances, df, plane, tot=True)]
 
 
-def _compensate_by_equation(phases_meas: ArrayLike, plane, tunes):
+def _compensate_by_equation(phases_meas: ArrayLike, plane: str, tunes: TuneDict) -> ArrayLike:
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
@@ -183,7 +211,7 @@ def _compensate_by_equation(phases_meas: ArrayLike, plane, tunes):
     return phases_meas
 
 
-def _compensate_by_model(input_files, meas_input, df, plane):
+def _compensate_by_model(input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str):
     df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"MU{plane}"]]),
                   how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
     phase_compensation = df_diff(df, f"MU{plane}", f"MU{plane}comp")
@@ -192,7 +220,7 @@ def _compensate_by_model(input_files, meas_input, df, plane):
     return df
 
 
-def write(dfs, headers, output, plane):
+def write(dfs: Sequence[pd.DataFrame], headers: Sequence[dict[str, Any]], output: str | Path, plane: str):
     LOGGER.info(f"Writing phases: {len(dfs)}")
     for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME, PHASE_NAME+"driven_", TOTAL_PHASE_NAME+"driven_")):
         tfs.write(Path(output) / f"{name}{plane.lower()}{EXT}", df, head)
@@ -230,7 +258,7 @@ def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike = None):
     return (phases_a[np.newaxis, :] - phases_b[:, np.newaxis]) % 1.0
 
 
-def _get_square_data_frame(data, index):
+def _get_square_data_frame(data, index) -> pd.DataFrame:
     return pd.DataFrame(data=data, index=index, columns=index)
 
 

@@ -23,6 +23,7 @@ one of the following reasons:
 from __future__ import annotations
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from omc3.hole_in_one import hole_in_one_entrypoint, DEFAULT_CONFIG_FILENAME, LINFILES_SUBFOLDER
@@ -49,7 +50,8 @@ SDDS_FILES = {
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
 @pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
-def test_hole_in_two(tmp_path, clean, which_files):
+@pytest.mark.parametrize("dpp", (0, None), ids=ids_str("dpp={}"))
+def test_hole_in_two(tmp_path, clean, which_files, dpp, caplog):
     """
     Test that is closely related to how actual analysis are done.
     """
@@ -89,11 +91,14 @@ def test_hole_in_two(tmp_path, clean, which_files):
     _check_nonlinear_optics_files(optics_output, "rdt")
     _check_nonlinear_optics_files(optics_output, "crdt")
 
+    _check_caplog_for_rdt_warnings(caplog, to_be_found=(which_files == "all") and (dpp is None))
+
 
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
 @pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
-def test_hole_in_one(tmp_path, clean, which_files):
+@pytest.mark.parametrize("dpp", (0, None), ids=ids_str("dpp={}"))
+def test_hole_in_one(tmp_path, clean, which_files, dpp, caplog):
     """
     This test runs harpy, optics and optics analysis in one.
     """
@@ -119,6 +124,7 @@ def test_hole_in_one(tmp_path, clean, which_files):
         accel="lhc",
         year="2022",
         model_dir=MODEL_DIR,
+        analyse_dpp=dpp,
     )
 
     for sdds_file in files:
@@ -127,6 +133,8 @@ def test_hole_in_one(tmp_path, clean, which_files):
     _check_linear_optics_files(output, off_momentum=(which_files == "all"))
     _check_nonlinear_optics_files(output, "rdt")
     _check_nonlinear_optics_files(output, "crdt")
+    
+    _check_caplog_for_rdt_warnings(caplog, to_be_found=(which_files == "all") and (dpp is None))
 
 
 # Helper -----------------------------------------------------------------------
@@ -176,6 +184,22 @@ def _check_nonlinear_optics_files(outputdir: Path, type_: str):
             magnet_dir = nonlin_dir / full_manget_name
             assert magnet_dir.is_dir()
             assert len(list(magnet_dir.glob(f"*{EXT}"))) > 0
+
+
+def _check_caplog_for_rdt_warnings(caplog, to_be_found: bool = False):
+    found = {"RDT": 0, "CRDT": 0, "Tune": 0, "Phase": 0}
+
+    for record in caplog.records:
+        for key in found.keys():
+            if f"included in the {key} calculation" in record.msg:
+                assert to_be_found, "Warnings still present, but should not have been!"
+                assert "Off-momentum files for analysis found!" in record.msg
+                assert record.levelname == "WARNING"
+                found[key] += 1  # should be twice, once per plane
+        if np.all(np.array(found.values()) == 2):
+            break
+    else:
+        assert not to_be_found, "Expected warnings not found!"
 
 
 def _get_sdds_files(which: str) -> list[Path]:

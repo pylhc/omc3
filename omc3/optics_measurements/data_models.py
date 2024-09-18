@@ -24,8 +24,6 @@ if TYPE_CHECKING:
 
 LOGGER = logging_tools.get_logger(__name__)
 
-DPP_TOLERANCE = 1e-6
-
 class InputFiles(dict):
     """
     Stores the input files, provides methods to gather quantity specific data
@@ -96,7 +94,7 @@ class InputFiles(dict):
         if dpp_value is None:
             return list(range(len(self[plane])))
 
-        return np.argwhere(np.abs(self.dpps(plane) - dpp_value) < DPP_TOLERANCE).T[0]
+        return np.argwhere(np.abs(self.dpps(plane) - dpp_value) < dpp.DPP_TOLERANCE).T[0]
 
     def _all_frames(self, plane: str):
         return self[plane]
@@ -219,3 +217,40 @@ class InputFiles(dict):
         """
         columns = InputFiles.get_columns(frame, column)
         return frame.loc[:, columns].to_numpy(dtype=np.float64)
+
+
+# DPP Filtering related functions ------------------------------------------------------------------
+
+def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, id_: str = None):
+    """ A helper function to check if off-momentum data is present in the input files, 
+    but no dpp-value is given by the user. 
+    
+    See https://github.com/pylhc/omc3/issues/456 .
+    """
+    on_momentum_files = input_files.dpp_frames_indices(plane, dpp_value=0)
+    if len(on_momentum_files) == len(input_files[plane]):
+        return  # no off-momentum data, nothing to warn
+
+    msg = (
+        "Off-momentum files for analysis found!\n"
+        "They will be included"
+    )
+    
+    if id_ is not None:
+        msg += f" in the {id_}, which "
+
+    msg += (
+        ", which can make the results more inaccurate.\n"
+        "To avoid, specify `analyse_dpp` or run the analysis only on on-momentum files"
+    )
+    
+    if id_ is not None:
+        msg += f" or possibly deactivate the {id_}"
+    
+    msg += "."
+    LOGGER.warning(msg)
+
+
+def filter_for_dpp(to_filter: dict[str, Sequence], input_files: InputFiles, dpp_value: float):
+    """ Filter the given data for the given dpp-value. """
+    return {plane: values[input_files.dpp_frames_indices(plane, dpp_value)] for plane, values in to_filter.items()}
