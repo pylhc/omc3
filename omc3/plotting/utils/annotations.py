@@ -318,18 +318,18 @@ def make_top_legend(
     # It is possible that no labels are given to the legend commands, or they are
     # given with a leading underscore, which will get them ignored. In this case
     # matplotlib issues a UserWarning which we will suppress here
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", UserWarning)
-        leg = ax.legend(
-            handles=handles,
-            labels=labels,
-            loc="lower right",
-            bbox_to_anchor=(1.0, 1.0+pad),
-            fancybox=frame,
-            shadow=frame,
-            frameon=frame,
-            ncol=ncol,
-        )
+    # with warnings.catch_warnings():
+    #     warnings.simplefilter("ignore", UserWarning)
+    leg = ax.legend(
+        handles=handles,
+        labels=labels,
+        loc="lower right",
+        bbox_to_anchor=(1.0, 1.0+pad),
+        fancybox=frame,
+        shadow=frame,
+        frameon=frame,
+        ncol=ncol,
+    )
 
     leg.axes.figure.canvas.draw()
     legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
