@@ -289,6 +289,11 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
         # (otherwise pandas complains with a FutureWarning since 2.1.1)
         dfs_to_concat = [lsa_results_df, instrument_beta_df]
         dfs_to_concat = [df for df in dfs_to_concat if not df.empty()]
+
+        # We will raise for the user if there is no data in the DFs
+        if not len(dfs_to_concat):
+            msg = "All dfs are empty! Check your Kmod inputs."
+            raise ValueError(msg)
         lsa_results_df = pd.concat(dfs_to_concat, axis="index", sort=False, ignore_index=True)
 
     if not lsa_results_df.empty:
