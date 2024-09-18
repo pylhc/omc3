@@ -221,7 +221,9 @@ def do_fit(magnet_df, plane, use_approx=False):
         sigma = 1.E-22 * np.ones(len(sigma))
 
     # We filter out the "Covariance of the parameters could not be estimated" warning
-    with warnings.catch_warnings():
+    # If the warning is issued we relay it as a logged message, which allows us to
+    # avoid polluting the stderr and allows the user to not see it depending on log level
+    with warnings.catch_warnings(record=True) as records:
         warnings.simplefilter("ignore", category=OptimizeWarning)
         av_beta, av_beta_err = scipy.optimize.curve_fit(
             fun,
@@ -232,6 +234,8 @@ def do_fit(magnet_df, plane, use_approx=False):
             absolute_sigma=True,
             p0=1
         )
+        for warning in records:
+            LOG.warning(f"Curve fit warning: {warning.message}")
     return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
 
 
