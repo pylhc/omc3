@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import itertools
 import re
-import warnings
 from typing import TYPE_CHECKING
 
 import matplotlib
@@ -315,11 +314,9 @@ def make_top_legend(
     if transposed:
         handles, labels = transpose_legend_order(ncol, handles, labels, ax)
 
-    # It is possible that no labels are given to the legend commands, or they are
-    # given with a leading underscore, which will get them ignored. In this case
-    # matplotlib issues a UserWarning which we will suppress here
-    # with warnings.catch_warnings():
-    #     warnings.simplefilter("ignore", UserWarning)
+    # It is possible that no labels are given to the legend commands,
+    # or they are given with a leading underscore, which will get them
+    # ignored. In this case matplotlib issues a UserWarning here
     leg = ax.legend(
         handles=handles,
         labels=labels,
