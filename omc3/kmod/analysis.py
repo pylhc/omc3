@@ -234,8 +234,11 @@ def do_fit(magnet_df, plane, use_approx=False):
             absolute_sigma=True,
             p0=1
         )
+
+        # We log any captured warning at warning level
         for warning in records:
             LOG.warning(f"Curve fit warning: {warning.message}")
+
     return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
 
 

@@ -269,13 +269,19 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
 
     for i, bpm_rdt_data in enumerate(line_amp):
         # Catch the potential 'OptimizeWarning: Covariance of the parameters could not be estimated'
-        # that can happen during the curve_fit
-        with warnings.catch_warnings():
+        # that can happen during the curve_fit. We relay it as a logged message, which allows us to
+        # avoid polluting the stderr and allows the user to not see it depending on log level
+        with warnings.catch_warnings(record=True) as records:
             warnings.simplefilter("ignore", OptimizeWarning)
             popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
             amps[i] = popt[0]
             sqrt_pcov = np.sqrt(pcov).flat[0]
             err_amps[i] = sqrt_pcov if np.isfinite(sqrt_pcov) else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
+
+            # We log any captured warning at warning level
+            for warning in records:
+                LOGGER.warning(f"Curve fit warning: {warning.message}")
+
     return amps, err_amps
 
 
