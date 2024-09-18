@@ -288,7 +288,7 @@ def create_lsa_results_file(betastar_required, instruments_found, results_df, in
         # We first make sure we don't try a concat operation if a df is empty
         # (otherwise pandas complains with a FutureWarning since 2.1.1)
         dfs_to_concat = [lsa_results_df, instrument_beta_df]
-        dfs_to_concat = list(filter(lambda df: not df.empty, dfs_to_concat))
+        dfs_to_concat = [df for df in dfs_to_concat if not df.empty()]
         lsa_results_df = pd.concat(dfs_to_concat, axis="index", sort=False, ignore_index=True)
 
     if not lsa_results_df.empty:
