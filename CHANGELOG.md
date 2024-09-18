@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### IN PROGRESS - v0.15.5 - _fsoubelet_
+#### IN PROGRESS - v0.16.1 - _fsoubelet_
 
 - Fixed:
   - Fixed `DepracationWarning`s related datetime operations.
