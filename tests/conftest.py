@@ -11,6 +11,7 @@ import string
 import sys
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any, Callable
 import git
 
 import pytest
@@ -74,10 +75,19 @@ def random_string(length: int,
             charset = charset + chars
     return ''.join(random.choice(charset) for _ in range(length))
 
+
+def ids_str(template: str) -> Callable[[Any], str]:
+    """ Function generator that can be used for parametrized fixtures,
+    to assign the value to a readable string. """
+    def to_string(val: Any):
+        return template.format(val)
+    return to_string
+
+
 # Model fixtures from /inputs/models -------------------------------------------
 # Hint: Before adding 25cm models, update files (see inj model folders, jdilly 2021)
 
-@pytest.fixture(scope="module", params=[1, 2])
+@pytest.fixture(scope="module", params=[1, 2], ids=ids_str("beam{}"))
 def model_inj_beams(request, tmp_path_factory):
     """ Fixture for inj model for both beams"""
     return tmp_model(tmp_path_factory, beam=request.param, id_='inj')

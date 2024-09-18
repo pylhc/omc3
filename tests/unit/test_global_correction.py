@@ -1,9 +1,11 @@
+import numpy as np
 import pytest
 from pandas.testing import assert_frame_equal
+import tfs
 
 from omc3.correction.constants import VALUE
 from omc3.correction.handler import get_measurement_data
-from omc3.global_correction import OPTICS_PARAMS_CHOICES
+from omc3.global_correction import OPTICS_PARAMS_CHOICES, CORRECTION_DEFAULTS, global_correction_entrypoint as global_correction
 from omc3.optics_measurements.constants import (BETA, DISPERSION, NORM_DISPERSION, F1001, F1010,
                                                 DISPERSION_NAME, BETA_NAME, PHASE_NAME,
                                                 NORM_DISP_NAME, F1010_NAME, TUNE, PHASE,
@@ -58,3 +60,49 @@ def test_read_measurement_data(tmp_path, model_inj_beams, orientation):
             res_df = meas_fake[FILENAME_MAP[key]]
             assert len(df.columns)
             assert_frame_equal(df, res_df.loc[:, df.columns])
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize('method', ('pinv', 'omp'))
+def test_lhc_global_correct_methods(tmp_path, model_inj_beams, method):
+    """Creates a fake measurement from a modfied model-twiss with
+    quadrupole errors and runs global correction on this measurement.
+    Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
+    beam = model_inj_beams.beam
+    correction_params = get_normal_params(beam)
+
+    # create and load fake measurement
+    n_correctors = 5
+
+    meas_fake = fake_measurement(
+        model=model_inj_beams.model_dir / "twiss.dat",
+        twiss=correction_params.twiss,
+        randomize=[],
+        relative_errors=[0.1],
+        outputdir=tmp_path,
+    )
+
+    # Perform global correction
+    global_correction(
+        **model_inj_beams,
+        # correction params
+        meas_dir=tmp_path,
+        variable_categories=correction_params.variables,
+        fullresponse_path=model_inj_beams.model_dir / correction_params.fullresponse,
+        optics_params=correction_params.optics_params,
+        output_dir=tmp_path,
+        weights=correction_params.weights,
+        svd_cut=0.01,
+        method=method,
+        n_correctors=n_correctors,
+    )
+
+    correction = tfs.read(tmp_path / f"{CORRECTION_DEFAULTS['output_filename']}.tfs", index="NAME")
+    assert not np.any(correction["DELTA"].isna())
+    assert not correction["DELTA"].isin([np.inf, -np.inf]).any()
+
+    if method == "omp":
+        assert len(correction.index) == n_correctors
+
+    if method == "pinv":
+        assert len(correction.index) > n_correctors  # unless by accident

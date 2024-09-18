@@ -152,42 +152,65 @@ Create plots for the correction tests performed with `omc3.scripts.correction_te
 
 
 """
+from __future__ import annotations
+
 import re
 from pathlib import Path
-from typing import Dict, Iterable, Set, Union
+from typing import TYPE_CHECKING
 
+import tfs
+from generic_parser import EntryPointParameters, entrypoint
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
-import tfs
-from generic_parser import DotDict, EntryPointParameters, entrypoint
 from omc3.correction.constants import (
-    CORRECTED_LABEL, UNCORRECTED_LABEL, CORRECTION_LABEL, EXPECTED_LABEL,
-    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX
+    CORRECTED_LABEL,
+    CORRECTION_LABEL,
+    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX,
+    EXPECTED_LABEL,
+    UNCORRECTED_LABEL,
 )
 from omc3.definitions.optics import (
-    FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING, RDT_PHASE_COLUMN, 
-    RDT_IMAG_COLUMN, RDT_REAL_COLUMN, RDT_AMPLITUDE_COLUMN
+    FILE_COLUMN_MAPPING,
+    RDT_AMPLITUDE_COLUMN,
+    RDT_COLUMN_MAPPING,
+    RDT_IMAG_COLUMN,
+    RDT_PHASE_COLUMN,
+    RDT_REAL_COLUMN,
+    ColumnsAndLabels,
+    NORM_DISP_NAME,
 )
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.plot_optics_measurements import (
-    _get_x_axis_column_and_label, _get_ip_positions,
-    get_optics_style_params, get_plottfs_style_params
+    _get_ip_positions,
+    _get_x_axis_column_and_label,
+    get_optics_style_params,
+    get_plottfs_style_params,
 )
-from omc3.plotting.plot_tfs import plot as plot_tfs, get_full_output_path
-from omc3.plotting.utils.windows import (
-    PlotWidget, TabWidget, VerticalTabWindow, 
-    log_no_qtpy_many_windows, create_pyplot_window_from_fig
-)
+from omc3.plotting.plot_tfs import get_full_output_path
+from omc3.plotting.plot_tfs import plot as plot_tfs
 from omc3.plotting.utils import annotations as pannot
+from omc3.plotting.utils.windows import (
+    PlotWidget,
+    TabWidget,
+    VerticalTabWindow,
+    create_pyplot_window_from_fig,
+    log_no_qtpy_many_windows,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from generic_parser import DotDict
+
+
 LOG = logging_tools.get_logger(__name__)
 
-SPLIT_ID = "#_#"  # will appear in the figure ID, but should be fine to read
-PREFIX = "plot_corrections"
+SPLIT_ID: str = "#_#"  # will appear in the figure ID, but should be fine to read
+PREFIX: str = "plot_corrections"
 
+SINGLE_PLANE_FILES = (NORM_DISP_NAME,)
 
 def get_plotting_params() -> EntryPointParameters:
     params = EntryPointParameters()
@@ -241,7 +264,7 @@ def plot_checked_corrections(opt: DotDict):
         save_config(opt.output_dir, opt, __file__)
 
     # Preparations -------------------------------------------------------------
-    correction_dirs: Dict[str, Path] = {}
+    correction_dirs: dict[str, Path] = {}
     if len(opt.corrections) == 1 and not opt.corrections[0]:
         correction_dirs[CORRECTED_LABEL] = opt.input_dir
         opt.individual_to_input = False  # we save into output directory
@@ -316,10 +339,10 @@ def plot_checked_corrections(opt: DotDict):
 def _create_correction_plots_per_filename(
         filename: str, 
         measurements: Path, 
-        correction_dirs: Dict[str, Path], 
+        correction_dirs: dict[str, Path], 
         x_colmap: ColumnsAndLabels, 
         y_colmap: ColumnsAndLabels, 
-        ip_positions: Union[str, Dict[str, float], Path], 
+        ip_positions: str | dict[str, float] | Path, 
         opt: DotDict
     ):
     """ Plot measurements and all different correction scenarios into a single plot. """
@@ -402,7 +425,7 @@ def _create_correction_plots_per_filename(
     return figs
 
 
-def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path = None):
+def save_plots(output_dir: Path, figure_dict: dict[str, Figure], input_dir: Path = None):
     """ Save the plots. """
     for figname, fig in figure_dict.items():
         outdir = output_dir
@@ -434,7 +457,7 @@ def save_plots(output_dir: Path, figure_dict: Dict[str, Figure], input_dir: Path
         LOG.info(f"Saved all correction plots in '{output_dir}'.")
 
 
-def show_plots(figure_dict: Dict[str, Figure]):
+def show_plots(figure_dict: dict[str, Figure]):
     """Displays the provided figures.
     If `qtpy` is installed, they are shown in a single window.
     The individual corrections are sorted into vertical tabs,
@@ -457,13 +480,14 @@ def show_plots(figure_dict: Dict[str, Figure]):
         RDT_AMPLITUDE_COLUMN.text_label: RDT_PHASE_COLUMN,
     }
 
-    correction_names = sorted(set([k.split(SPLIT_ID)[0] for k in figure_dict.keys() if SPLIT_ID in k]))
+    figure_names = tuple(figure_dict.keys())
+    correction_names = sorted(set([k.split(SPLIT_ID)[0] for k in figure_names if SPLIT_ID in k]))
     for correction_name in [None] + list(correction_names):
         if not correction_name:
-            parameter_names = iter(sorted(k for k in figure_dict.keys() if SPLIT_ID not in k))
+            parameter_names = iter(sorted(k for k in figure_names if SPLIT_ID not in k))
             correction_tab_name = "All Corrections"
         else:
-            parameter_names = iter(sorted(k for k in figure_dict.keys() if correction_name in k))
+            parameter_names = iter(sorted(k for k in figure_names if correction_name in k))
             correction_tab_name = correction_name
 
         current_tab = TabWidget(title=correction_tab_name)
@@ -490,6 +514,7 @@ def show_plots(figure_dict: Dict[str, Figure]):
                 else:
                     name_y = "_".join(name_x.split("_")[:-1] + [complement_column.text_label,])
 
+                tab_figs = (figure_dict[name_x], figure_dict[name_y])
                 tab_name = f"{rdt} {column[0].upper()}/{complement_column.text_label[0].upper()}"
 
             else:
@@ -497,18 +522,16 @@ def show_plots(figure_dict: Dict[str, Figure]):
                 # is x and the following column is y. They are added to the tab, which 
                 # is named by the optics parameter without plane.
                 tab_name = " ".join(tab_prename.split("_")[:-1 if correction_name else -2])  # remove plane (and column-name)
-                name_y = next(parameter_names)
+                tab_figs = [figure_dict[name_x]]
+                if not any(file_name in name_x for file_name in SINGLE_PLANE_FILES):
+                    name_y = next(parameter_names)
+                    tab_figs.append(figure_dict[name_y])
 
-            new_tab = PlotWidget(
-                figure_dict[name_x],
-                figure_dict[name_y],
-                title=tab_name,
-            )
-            current_tab.add_tab(new_tab)
+            current_tab.add_tab(PlotWidget(*tab_figs, title=tab_name))
     window.show()
 
 
-def _get_corrected_measurement_names(correction_dirs: Iterable[Path]) -> Set[str]:
+def _get_corrected_measurement_names(correction_dirs: Iterable[Path]) -> set[str]:
     """ Check all the corrections dirs for common tfs files."""
     tfs_files = None
     for idx, correction in enumerate(correction_dirs):
