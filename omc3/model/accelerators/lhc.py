@@ -534,7 +534,7 @@ class Lhc(Accelerator):
             raise FileNotFoundError(msg)
         
         LOGGER.debug(
-            f"No corrector file found for {file_name} in {default_file.parent}."
+            f"Default corrector file {file_name} found in {default_file.parent}."
         )
         corrector_files = [default_file]
 
@@ -542,7 +542,8 @@ class Lhc(Accelerator):
         accel_dir_file = self._get_accel_file(Path(Lhc.DEFAULT_CORRECTORS_DIR.name) / file_name)
         if accel_dir_file.exists():
             LOGGER.debug(
-                f"Corrector file found for {file_name} in {accel_dir_file.parent}."
+                f"Corrector file {file_name} found in {accel_dir_file.parent}. "
+                "Contents will take precedence over defaults."
             )
             corrector_files.append(accel_dir_file)
 
@@ -551,7 +552,8 @@ class Lhc(Accelerator):
             model_dir_file = Path(self.model_dir) / Path(file_name).name
             if model_dir_file.exists():
                 LOGGER.info(
-                    f"Corrector file found for {file_name} in {model_dir_file.parent}."
+                    f"Corrector file {file_name} found in {model_dir_file.parent}. "
+                    "Contents will take precedence over omc3-given defaults."
                 )
                 corrector_files.append(model_dir_file)
         
