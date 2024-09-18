@@ -1,13 +1,15 @@
 # OMC3 Changelog
 
-#### 2024-09-17 - v0.16.0 - _jdilly_
+#### 2024-09-18 - v0.16.0 - _jdilly_
 
 - Added:
-  - LHC variable categories `MQM_ALL`, `MQM_INJ_2024` and `MQM_TOP_2024`.
-  - Global Corrections: Adding a "-" in front of a correction variable name removes this variable from the correction. Does not work for whole variable categories.
+  - Global Correction for LHC:
+    - The correction variables in the LHC accelerator class are now handled differently internally,
+      allowing new variable classes to be added to each lhc-year.
+    - Variable categories `MQM_ALL` added to all LHC years.
+    - Variable categories `MQM_INJ_2024` and `MQM_TOP_2024` added to LHC 2024.
+    - Adding a "-" in front of a given correction variable name removes this variable from the correction. Does not work for whole variable categories.
   - Tests for running `global_correction` with `omp` and `pinv` correction methods.
-  - The correction variables in the LHC accelerator class are now handled differently internally, 
-    allowing new variable classes to be added to each lhc-year.
 
 - Fixed:
   - Orthogonal Matching Pursuit (`omp`) in global correction runs again ([#448](https://github.com/pylhc/omc3/issues/448))

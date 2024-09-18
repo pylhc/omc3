@@ -86,7 +86,7 @@ class TestLHCKnobs:
 @pytest.fixture
 def accel_lhcb1():
     lhc = Lhc(
-        year="2022",
+        year="2024",
         beam=1,
         model_dir=MODELS_DIR / "2022_inj_b1_acd"
     )
@@ -95,7 +95,7 @@ def accel_lhcb1():
 @pytest.fixture
 def accel_lhcb2():
     lhc = Lhc(
-        year="2022",
+        year="2024",
         beam=2,
         model_dir=MODELS_DIR / "2022_inj_b1_acd"
     )
