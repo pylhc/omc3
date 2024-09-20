@@ -63,7 +63,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, DotDict
 
 from omc3.correction import response_madx, response_twiss
 from omc3.correction.response_io import write_fullresponse
@@ -117,7 +117,7 @@ def response_params():
 
 
 @entrypoint(response_params())
-def create_response_entrypoint(opt: dict, other_opt) -> dict[str, pd.DataFrame]:
+def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFrame]:
     """Entry point for creating pandas-based response matrices.
 
     The response matrices can be either created by response_madx or TwissResponse.
