@@ -6,7 +6,7 @@ Top-level script to convert turn-by-turn files from various formats to ``LHC`` b
 Optionally, it can replicate files with added noise.
 """
 import copy
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence, Union
 
@@ -107,7 +107,7 @@ def converter_entrypoint(opt):
     save_options_to_config(
         str(
             Path(opt.outputdir)
-            / DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME))
+            / DEFAULT_CONFIG_FILENAME.format(time=datetime.now(timezone.utc).strftime(formats.TIME))
         ),
         dict(sorted(opt.items())),
     )

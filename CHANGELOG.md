@@ -1,5 +1,21 @@
 # OMC3 Changelog
 
+#### 2024-09-20 - v0.16.1 - _fsoubelet_
+
+- Fixed:
+  - Fixed `DepracationWarning`s related datetime operations.
+  - Fixed `DeprecationWarning` occuring due to the use of old `numpy` functions.
+  - Fixed `FutureWarning` happening during edge-cases of dataframe concatenation by performing checks ahead of time.
+  - Fixed `FutureWarning`s occuring due to deprecated `pandas.Series` accesses.
+  - Fixed `UserWarning` occuring when wrongly setting ticks and labels for correction plots.
+
+- Changed:
+  - Masked `NaturalNameWarning`s happening during HDF5 tables operations, as the use of names such as `kq4.r8b2` is not avoidable and `pandas` properly handles access operations for us.
+  - Masked `UserWarning`s happening during plotting for operations that are explicitely demanded.
+  - Intercept `RankWarning` which can happen during a `polyfit` of data and re-emit as log message.
+  - Intercept `OptimizeWarning` happening when the covariance parameters could not be estimated in `kmod` analysis and re-emit as log message.
+  - Intercept `OptimizeWarning` happening when the covariance parameters could not be estimated in `rdt` analysis and re-emit as log message.
+
 #### 2024-09-18 - v0.16.0 - _jdilly_
 
 - Added:
@@ -94,7 +110,7 @@
 #### 2023-11-29 - v0.12.0 - _jdilly_
 
 - Added to harmonic analysis:
-  - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file 
+  - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file
     with different parameters without overwriting it.
   - `bunch_ids` input parameter: in case of multibunch-files only analyse these bunches.
     If not given, all bunches will be analysed, as before.
@@ -117,7 +133,7 @@
   - Plot Optics: making normalized dispersion plot a special case.
 
 - Added:
-  - Plot Optics: optional input "--labels" to manually set the legend-labels. 
+  - Plot Optics: optional input "--labels" to manually set the legend-labels.
 
 #### 2023-06-16 - v0.11.1 - _jdilly_
 
@@ -125,7 +141,7 @@
   - OptionalString: 'None' as input is converted to None.
   - Missing Kerberos config added to MANIFEST for packaging.
   - Plot Optics plots now correct error-column, e.g. for beta-beating.
-  - Added warnings/errors for too few bpms in N-BPM/3-BPM methods. 
+  - Added warnings/errors for too few bpms in N-BPM/3-BPM methods.
   - Added navbar to sphinx documentation.
 
 - Tests:
@@ -170,12 +186,11 @@
 #### 2023-01-20 - v0.7.1 - _jdilly_
 
 - Added:
-  - Amplitude Detuning plots: Switch to plot only with/without BBQ correction 
+  - Amplitude Detuning plots: Switch to plot only with/without BBQ correction.
 
 - Fixed:
   - Second Order Amplitude Detuning fit now working
-  - Correct print/calculation of second order direct terms for forced 
-    kicks in plot-labels.
+  - Correct print/calculation of second order direct terms for forced kicks in plot-labels.
 
 #### 2022-11-08 - v0.7.0 - _jdilly_
 
@@ -187,14 +202,14 @@
   
 #### 2022-11-01 - v0.6.6
 
-- Bugfixes 
+- Bugfixes:
   - correction: fullresponse is converted to Path.
-  - fake measurement from model: dont randomize errors and values by default. 
+  - fake measurement from model: dont randomize errors and values by default.
 
 #### 2022-10-15 - v0.6.5
 
 - Added to `knob_extractor`:
-  - proper state extraction. 
+  - proper state extraction.
   - IP2 and IP8 separation/crossing variables.
 
 #### 2022-10-12 - v0.6.4
@@ -264,7 +279,7 @@
 #### 2022-05-19 - v0.3.0 - _jdilly_
 
 - Added:
-  - Linfile cleaning script. 
+  - Linfile cleaning script.
 
 #### 2022-04-25 - v0.2.7 - _awegshe_
 
@@ -359,7 +374,7 @@
   - Spectrum Plotting
   - Turn-by-Turn Converter
 
-- `setup.py` and packaging functionality 
+- `setup.py` and packaging functionality
 - Automated CI
   - Multiple versions of python
   - Accuracy tests
