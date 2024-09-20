@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2024-09-19 - v0.16.1 - _fsoubelet_
+#### 2024-09-20 - v0.16.1 - _fsoubelet_
 
 - Fixed:
   - Fixed `DepracationWarning`s related datetime operations.
