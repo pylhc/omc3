@@ -20,8 +20,16 @@ from omc3.optics_measurements.constants import (
     EXT,
     MDL,
     PHASE_NAME,
+    DRIVEN_PHASE_NAME,
     SPECIAL_PHASE_NAME,
     TOTAL_PHASE_NAME,
+    DRIVEN_TOTAL_PHASE_NAME,
+    NAME,
+    PHASE,
+    PHASE_ADV,
+    S,
+    MEASUREMENT, 
+    MODEL,
 )
 from omc3.optics_measurements.data_models import (
     InputFiles,
@@ -41,6 +49,15 @@ if TYPE_CHECKING:
 
 
 LOGGER = logging_tools.get_logger(__name__)
+
+class CompensationMode:
+    NONE: str = "none"
+    MODEL: str = "model"
+    EQUATION: str = "equation"
+    
+    @classmethod
+    def all(cls) -> list[str]:
+        return [cls.NONE, cls.MODEL, cls.EQUATION]
 
 
 def calculate(
@@ -66,6 +83,13 @@ def calculate(
         is a dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
         the location of the output ``TfsDataFrames`` for the phases.
     """
+    # Clean up compensation mode
+    if meas_input.compensation is None:
+        meas_input.compensation = CompensationMode.NONE
+    else:
+        meas_input.compensation = meas_input.compensation.lower()
+
+    LOGGER.info("-- Run on free model")
     phase_advances, dfs = _calculate_with_compensation(
         meas_input,
         input_files,
@@ -76,23 +100,31 @@ def calculate(
         no_errors,
     )
 
-    if meas_input.compensation == "none":
+    if meas_input.compensation == CompensationMode.NONE:
         uncompensated_phase_advances = phase_advances
     else:
-        LOGGER.info("-- Run uncompensated")
+        LOGGER.info("-- Run on driven model")
+
+        # TODO:Verify this is correct (that's how it was implemented before)
+        driven_compensation = (
+            CompensationMode.EQUATION 
+            if meas_input.compensation == CompensationMode.EQUATION else 
+            CompensationMode.NONE
+        )
+
         uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(
             meas_input,
             input_files,
             tunes,
             plane,
             meas_input.accelerator.model_driven,
-            "none",
+            driven_compensation, 
             no_errors,
         )
         dfs = dfs + drv_dfs
 
 
-    if len(phase_advances["MEAS"].index) < 3:
+    if len(phase_advances[MEASUREMENT].index) < 3:
         LOGGER.warning("Less than 3 non-NaN phase-advances found. "
                        "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
                        "Common issues to check:\n\n"
@@ -105,14 +137,13 @@ def calculate(
     return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
 
 
-
 def _calculate_with_compensation(
     meas_input: DotDict,
     input_files: InputFiles,
     tunes: TuneDict,
     plane: str,
     model_df: pd.DataFrame,
-    compensation: str = "none",
+    compensation: str = CompensationMode.NONE,
     no_errors: bool = False,
 ):
     """
@@ -123,6 +154,7 @@ def _calculate_with_compensation(
         input_files: includes measurement tfs.
         tunes: `TunesDict` object containing measured and model tunes and ac2bpm object
         plane: marking the horizontal or vertical plane, **X** or **Y**.
+        compensation: compensation mode to use
         no_errors: if ``True``, measured errors shall not be propagated (only their spread).
 
     Returns:
@@ -151,33 +183,37 @@ def _calculate_with_compensation(
     LOGGER.info("Calculating phase advances")
     LOGGER.info(f"Measured tune in plane {plane} = {tunes[plane]['Q']}")
 
-    df = model_df.loc[:, ["S", f"MU{plane}"]]
+    df = model_df.loc[:, [S, f"{PHASE_ADV}{plane}"]]
     how = 'outer' if meas_input.union else 'inner'
 
     dpp_value = meas_input.analyse_dpp
     if dpp_value is None:
         check_and_warn_about_offmomentum_data(input_files, plane, id_="Phase calculations")
 
-    df = pd.merge(df, input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"],
-                                               dpp_value=dpp_value, how=how),
-                  how='inner', left_index=True, right_index=True)
-    df[input_files.get_columns(df, f"MU{plane}")] = (input_files.get_data(df, f"MU{plane}")
-                                                     * meas_input.accelerator.beam_direction
-                                                     )
-    phases_mdl = df.loc[:, f"MU{plane}"].to_numpy()
-    phase_advances = {"MODEL": _get_square_data_frame(_get_all_phase_diff(phases_mdl), df.index)}
-    if compensation == "model":
+    joined_df = input_files.joined_frame(plane, [f"{PHASE_ADV}{plane}", f"{ERR}{PHASE_ADV}{plane}"], dpp_value=dpp_value, how=how)
+    df = pd.merge(df, joined_df, how='inner', left_index=True, right_index=True)
+
+    direction = meas_input.accelerator.beam_direction
+    df[input_files.get_columns(df, f"{PHASE_ADV}{plane}")] = direction * input_files.get_data(df, f"{PHASE_ADV}{plane}")     
+    
+    phases_mdl = df.loc[:, f"{PHASE_ADV}{plane}"].to_numpy()
+    phase_advances = {MODEL: _get_square_data_frame(_get_all_phase_diff(phases_mdl), df.index)}
+    
+    if compensation == CompensationMode.MODEL:
         df = _compensate_by_model(input_files, meas_input, df, plane)
-    phases_meas = input_files.get_data(df, f"MU{plane}")
-    if meas_input.compensation == "equation":
+
+    phases_meas = input_files.get_data(df, f"{PHASE_ADV}{plane}")
+
+    if compensation == CompensationMode.EQUATION:
         phases_meas = _compensate_by_equation(phases_meas, plane, tunes)
 
-    phases_errors = input_files.get_data(df, f"{ERR}MU{plane}")
+    phases_errors = input_files.get_data(df, f"{ERR}{PHASE_ADV}{plane}")
     if phases_meas.ndim < 2:
-        phase_advances["MEAS"] = _get_square_data_frame(_get_all_phase_diff(phases_meas), df.index)
-        phase_advances["ERRMEAS"] = _get_square_data_frame(
+        phase_advances[MEASUREMENT] = _get_square_data_frame(_get_all_phase_diff(phases_meas), df.index)
+        phase_advances[f"{ERR}{MEASUREMENT}"] = _get_square_data_frame(
                 np.zeros((len(phases_meas), len(phases_meas))), df.index)
         return phase_advances
+    
     if meas_input.union:
         mask = np.isnan(phases_meas)
         phases_meas[mask], phases_errors[mask] = 0.0, np.inf
@@ -186,13 +222,14 @@ def _calculate_with_compensation(
     elif no_errors:
         phases_errors = None
     phases_3d = phases_meas[np.newaxis, :, :] - phases_meas[:, np.newaxis, :]
+    
     if phases_errors is not None:
         errors_3d = phases_errors[np.newaxis, :, :] + phases_errors[:, np.newaxis, :]
     else:
         errors_3d = None
-    phase_advances["MEAS"] = _get_square_data_frame(stats.circular_mean(
+    phase_advances[MEASUREMENT] = _get_square_data_frame(stats.circular_mean(
             phases_3d, period=1, errors=errors_3d, axis=2) % 1.0, df.index)
-    phase_advances["ERRMEAS"] = _get_square_data_frame(stats.circular_error(
+    phase_advances[f"{ERR}{MEASUREMENT}"] = _get_square_data_frame(stats.circular_error(
             phases_3d, period=1, errors=errors_3d, axis=2), df.index)
     return phase_advances, [_create_output_df(phase_advances, df, plane),
                             _create_output_df(phase_advances, df, plane, tot=True)]
@@ -212,43 +249,50 @@ def _compensate_by_equation(phases_meas: ArrayLike, plane: str, tunes: TuneDict)
 
 
 def _compensate_by_model(input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str):
-    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"MU{plane}"]]),
+    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"{PHASE_ADV}{plane}"]]),
                   how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
-    phase_compensation = df_diff(df, f"MU{plane}", f"MU{plane}comp")
-    df[input_files.get_columns(df, f"MU{plane}")] = ang_sum(
-        input_files.get_data(df, f"MU{plane}"), phase_compensation[:, np.newaxis])
+    phase_compensation = df_diff(df, f"{PHASE_ADV}{plane}", f"{PHASE_ADV}{plane}comp")
+    df[input_files.get_columns(df, f"{PHASE_ADV}{plane}")] = ang_sum(
+        input_files.get_data(df, f"{PHASE_ADV}{plane}"), phase_compensation[:, np.newaxis])
     return df
 
 
-def write(dfs: Sequence[pd.DataFrame], headers: Sequence[dict[str, Any]], output: str | Path, plane: str):
+def write(
+    dfs: Sequence[pd.DataFrame], 
+    headers: Sequence[dict[str, Any]] | dict[str, Any], 
+    output: str | Path, plane: str
+    ):
     LOGGER.info(f"Writing phases: {len(dfs)}")
-    for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME, PHASE_NAME+"driven_", TOTAL_PHASE_NAME+"driven_")):
+    if isinstance(headers, dict):
+        headers = [headers] * len(dfs)
+
+    for head, df, name in zip(headers, dfs, (PHASE_NAME, TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, DRIVEN_TOTAL_PHASE_NAME)):
         tfs.write(Path(output) / f"{name}{plane.lower()}{EXT}", df, head)
         LOGGER.info(f"Phase advance beating in {name}{plane.lower()}{EXT} = "
-                    f"{stats.weighted_rms(df.loc[:, f'{DELTA}PHASE{plane}'])}")
+                    f"{stats.weighted_rms(df.loc[:, f'{DELTA}{PHASE}{plane}'])}")
 
 
 def _create_output_df(phase_advances, model, plane, tot=False):
-    meas = phase_advances["MEAS"]
-    mod = phase_advances["MODEL"]
-    err = phase_advances["ERRMEAS"]
+    meas = phase_advances[MEASUREMENT]
+    mod = phase_advances[MODEL]
+    err = phase_advances[f"{ERR}{MEASUREMENT}"]
     if tot:
-        output_data = model.loc[:, ["S", f"MU{plane}"]].iloc[:, :]
-        output_data["NAME"] = output_data.index
-        output_data = output_data.assign(S2=model.at[model.index[0], "S"], NAME2=model.index[0])
-        output_data[f"PHASE{plane}"] = meas.to_numpy()[0, :]
-        output_data[f"{ERR}PHASE{plane}"] = err.to_numpy()[0, :]
-        output_data[f"PHASE{plane}{MDL}"] = mod.to_numpy()[0, :]
+        output_data = model.loc[:, [S, f"{PHASE_ADV}{plane}"]].iloc[:, :]
+        output_data[NAME] = output_data.index
+        output_data = output_data.assign(S2=model.at[model.index[0], S], NAME2=model.index[0])
+        output_data[f"{PHASE}{plane}"] = meas.to_numpy()[0, :]
+        output_data[f"{ERR}{PHASE}{plane}"] = err.to_numpy()[0, :]
+        output_data[f"{PHASE}{plane}{MDL}"] = mod.to_numpy()[0, :]
     else:
-        output_data = model.loc[:, ["S", f"MU{plane}"]].iloc[:-1, :]
-        output_data["NAME"] = output_data.index
-        output_data = output_data.assign(S2=model.loc[:, "S"].to_numpy()[1:], NAME2=model.index[1:].to_numpy())
-        output_data[f"PHASE{plane}"] = np.diag(meas.to_numpy(), k=1)
-        output_data[f"{ERR}PHASE{plane}"] = np.diag(err.to_numpy(), k=1)
-        output_data[f"PHASE{plane}{MDL}"] = np.diag(mod.to_numpy(), k=1)
-    output_data.rename(columns={f"MU{plane}": f"MU{plane}{MDL}"}, inplace=True)
-    output_data[f"{DELTA}PHASE{plane}"] = df_ang_diff(output_data, f"PHASE{plane}", f"PHASE{plane}{MDL}")
-    output_data[f"{ERR}{DELTA}PHASE{plane}"] = output_data.loc[:, f"{ERR}PHASE{plane}"].to_numpy()
+        output_data = model.loc[:, [S, f"{PHASE_ADV}{plane}"]].iloc[:-1, :]
+        output_data[NAME] = output_data.index
+        output_data = output_data.assign(S2=model.loc[:, S].to_numpy()[1:], NAME2=model.index[1:].to_numpy())
+        output_data[f"{PHASE}{plane}"] = np.diag(meas.to_numpy(), k=1)
+        output_data[f"{ERR}{PHASE}{plane}"] = np.diag(err.to_numpy(), k=1)
+        output_data[f"{PHASE}{plane}{MDL}"] = np.diag(mod.to_numpy(), k=1)
+    output_data.rename(columns={f"{PHASE_ADV}{plane}": f"{PHASE_ADV}{plane}{MDL}"}, inplace=True)
+    output_data[f"{DELTA}{PHASE}{plane}"] = df_ang_diff(output_data, f"{PHASE}{plane}", f"{PHASE}{plane}{MDL}")
+    output_data[f"{ERR}{DELTA}{PHASE}{plane}"] = output_data.loc[:, f"{ERR}{PHASE}{plane}"].to_numpy()
     return output_data
 
 
@@ -271,33 +315,33 @@ def write_special(meas_input: DotDict, phase_advances: pd.DataFrame, plane_tune:
     if not important_phase_advances:
         return
 
-    meas = phase_advances["MEAS"]
+    meas = phase_advances[MEASUREMENT]
     beam_direction = accel.beam_direction
     elements = accel.elements
     special_phase_columns = ['ELEMENT1',
                              'ELEMENT2',
-                             f'PHASE{plane}',
-                             f'{ERR}PHASE{plane}',
-                             f'PHASE{plane}_DEG',
-                             f'{ERR}PHASE{plane}_DEG',
-                             f'PHASE{plane}{MDL}',
-                             f'PHASE{plane}{MDL}_DEG',
+                             f'{PHASE}{plane}',
+                             f'{ERR}{PHASE}{plane}',
+                             f'{PHASE}{plane}_DEG',
+                             f'{ERR}{PHASE}{plane}_DEG',
+                             f'{PHASE}{plane}{MDL}',
+                             f'{PHASE}{plane}{MDL}_DEG',
                              'BPM1',
                              'BPM2',
                              f'BPM_PHASE{plane}',
-                             f'BPM_{ERR}PHASE{plane}',]
+                             f'BPM_{ERR}{PHASE}{plane}',]
     to_concat_rows = []
     for elem1, elem2 in accel.important_phase_advances():
-        mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
+        mus1 = elements.loc[elem1, f"{PHASE_ADV}{plane}"] - elements.loc[:, f"{PHASE_ADV}{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
-        mus2 = elements.loc[:, f"MU{plane}"] - elements.loc[elem2, f"MU{plane}"]
+        mus2 = elements.loc[:, f"{PHASE_ADV}{plane}"] - elements.loc[elem2, f"{PHASE_ADV}{plane}"]
         minmu2 = abs(mus2.loc[meas.index]).idxmin()
         bpm_phase_advance = meas.loc[minmu1, minmu2]
-        model_value = elements.loc[elem2, f"MU{plane}"] - elements.loc[elem1, f"MU{plane}"]
-        if (elements.loc[elem1, "S"] - elements.loc[elem2, "S"]) * beam_direction > 0.0:
+        model_value = elements.loc[elem2, f"{PHASE_ADV}{plane}"] - elements.loc[elem1, f"{PHASE_ADV}{plane}"]
+        if (elements.loc[elem1, S] - elements.loc[elem2, S]) * beam_direction > 0.0:
             bpm_phase_advance += plane_tune
             model_value += plane_tune
-        bpm_err = phase_advances["ERRMEAS"].loc[minmu1, minmu2]
+        bpm_err = phase_advances[f"{ERR}{MEASUREMENT}"].loc[minmu1, minmu2]
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
         ph_result = ((bpm_phase_advance + elems_to_bpms) * beam_direction)
         model_value = (model_value * beam_direction) % 1

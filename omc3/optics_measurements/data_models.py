@@ -237,7 +237,7 @@ def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, i
     )
     
     if id_ is not None:
-        msg += f" in the {id_}, which "
+        msg += f" in the {id_}"
 
     msg += (
         ", which can make the results more inaccurate.\n"

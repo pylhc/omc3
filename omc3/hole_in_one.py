@@ -50,7 +50,7 @@ from omc3.definitions import formats
 from omc3.harpy import handler
 from omc3.harpy.constants import LINFILES_SUBFOLDER
 from omc3.model import manager
-from omc3.optics_measurements import measure_optics
+from omc3.optics_measurements import measure_optics, phase
 from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
@@ -301,6 +301,12 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--union**
         Action: ``store_true``
+
+      - **analyse_dpp** *(float)*: Filter files to analyse by this value 
+        (in analysis for tune, phase, rdt and crdt)..
+
+        Flags: **--analyse_dpp**
+        Default: ``0``
 
 
     Accelerator Kwargs:
@@ -600,7 +606,7 @@ def optics_params():
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")
     params.add_parameter(name="compensation", type=str, default=OPTICS_DEFAULTS["compensation"],
-                         choices=("model", "equation", "none"),
+                         choices=phase.CompensationMode.all(),
                          help="Mode of compensation for the analysis after driven beam excitation")
     params.add_parameter(name="three_d_excitation", action="store_true",
                          help="Use 3D kicks to calculate dispersion")
@@ -611,7 +617,7 @@ def optics_params():
     params.add_parameter(name="chromatic_beating", action="store_true",
                          help="Calculate chromatic beatings: W, PHI and coupling")
     params.add_parameter(name="analyse_dpp", type=iotools.OptionalFloat, default=OPTICS_DEFAULTS["analyse_dpp"],
-                        help="Filter files to analyse by this value (phase advance, rdt, crdt).")
+                        help="Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt).")
     return params
 
 
