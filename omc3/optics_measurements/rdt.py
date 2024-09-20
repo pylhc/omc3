@@ -12,7 +12,7 @@ from os.path import join
 import numpy as np
 import pandas as pd
 import tfs
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, OptimizeWarning
 from scipy.sparse import diags
 from contextlib import contextmanager
 
@@ -267,6 +267,7 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     """
     Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.
     """
+    import warnings
     amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
     kick_data = get_linearized_problem(invariants, plane, rdt)  # corresponding to actions in meters
     guess = np.mean(line_amp / kick_data, axis=1)
@@ -275,10 +276,20 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
         return f * x
 
     for i, bpm_rdt_data in enumerate(line_amp):
-        popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
-        amps[i] = popt[0]
-        sqrt_pcov = np.sqrt(pcov).flat[0]
-        err_amps[i] = sqrt_pcov if np.isfinite(sqrt_pcov) else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
+        # Catch the potential 'OptimizeWarning: Covariance of the parameters could not be estimated'
+        # that can happen during the curve_fit. We relay it as a logged message, which allows us to
+        # avoid polluting the stderr and allows the user to not see it depending on log level
+        with warnings.catch_warnings(record=True) as records:
+            warnings.simplefilter("ignore", OptimizeWarning)
+            popt, pcov = curve_fit(fitting, kick_data, bpm_rdt_data, p0=guess[i])
+            amps[i] = popt[0]
+            sqrt_pcov = np.sqrt(pcov).flat[0]
+            err_amps[i] = sqrt_pcov if np.isfinite(sqrt_pcov) else 0. # if single file is used, the error is reported as Inf, which is then overwritten with 0
+
+            # We log any captured warning at warning level
+            for warning in records:
+                LOGGER.warning(f"Curve fit warning: {warning.message}")
+
     return amps, err_amps
 
 
