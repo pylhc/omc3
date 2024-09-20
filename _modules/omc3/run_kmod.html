@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.run_kmod &mdash; omc3 0.16.0 documentation</title>
+  <title>omc3.run_kmod &mdash; omc3 0.16.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7de89ed4"></script>
+        <script src="../../_static/documentation_options.js?v=d9901acd"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -498,8 +498,16 @@
         <span class="n">exporting_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LABEL&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">STAR</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">STAR</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">STAR</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">STAR</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">]</span>
         <span class="n">lsa_results_df</span><span class="o">=</span><span class="n">results_df</span><span class="p">[</span><span class="n">exporting_columns</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">exporting_columns</span><span class="p">,</span> <span class="n">LSA_COLUMNS</span><span class="p">)))</span>
     <span class="k">if</span> <span class="n">instruments_found</span><span class="p">:</span>
-        <span class="n">lsa_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">lsa_results_df</span><span class="p">,</span> <span class="n">instrument_beta_df</span><span class="p">],</span>
-                                   <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># We first make sure we don&#39;t try a concat operation if a df is empty</span>
+        <span class="c1"># (otherwise pandas complains with a FutureWarning since 2.1.1)</span>
+        <span class="n">dfs_to_concat</span> <span class="o">=</span> <span class="p">[</span><span class="n">lsa_results_df</span><span class="p">,</span> <span class="n">instrument_beta_df</span><span class="p">]</span>
+        <span class="n">dfs_to_concat</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs_to_concat</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">]</span>
+
+        <span class="c1"># We will raise for the user if there is no data in the DFs</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs_to_concat</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;All dfs are empty! Check your Kmod inputs.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">lsa_results_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs_to_concat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">lsa_results_df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">LSA_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">lsa_results_df</span><span class="p">)</span>

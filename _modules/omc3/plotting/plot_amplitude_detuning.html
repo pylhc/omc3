@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.plot_amplitude_detuning &mdash; omc3 0.16.0 documentation</title>
+  <title>omc3.plotting.plot_amplitude_detuning &mdash; omc3 0.16.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=7de89ed4"></script>
+        <script src="../../../_static/documentation_options.js?v=d9901acd"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -321,32 +321,37 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
-
-<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">DotDict</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 <span class="kn">from</span> <span class="nn">generic_parser.entry_datatypes</span> <span class="kn">import</span> <span class="n">DictAsString</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">mcolors</span><span class="p">,</span> <span class="n">MatplotlibDeprecationWarning</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">MatplotlibDeprecationWarning</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">mcolors</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
 <span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">odr</span>
 <span class="kn">from</span> <span class="nn">tfs.tools</span> <span class="kn">import</span> <span class="n">significant_digits</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">UNIT_IN_METERS</span><span class="p">,</span> <span class="n">PLANES</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">pcolors</span><span class="p">,</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span><span class="p">,</span> <span class="n">style</span> <span class="k">as</span> <span class="n">pstyle</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">const</span><span class="p">,</span> <span class="n">kick_file_modifiers</span> <span class="k">as</span> <span class="n">kick_mod</span><span class="p">,</span> <span class="n">fitting_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">UNIT_IN_METERS</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">pcolors</span>
+<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">style</span> <span class="k">as</span> <span class="n">pstyle</span>
+<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">const</span>
+<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">fitting_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">kick_file_modifiers</span> <span class="k">as</span> <span class="n">kick_mod</span>
 <span class="kn">from</span> <span class="nn">omc3.tune_analysis.kick_file_modifiers</span> <span class="kn">import</span> <span class="n">AmpDetData</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.contexts</span> <span class="kn">import</span> <span class="n">suppress_warnings</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span><span class="p">,</span> <span class="n">UnionPathStr</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">UnionPathStr</span><span class="p">,</span> <span class="n">save_config</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -734,9 +739,9 @@
 
     <span class="c1"># plot errorbars</span>
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tune</span><span class="p">)):</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">jx</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">jx_err</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">y</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">jy</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">jy_err</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">z</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="n">tune</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">tune_err</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">jx</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">jx_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">jy</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">jy_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">z</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="n">tune</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">tune_err</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="o">+</span><span class="n">dx</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">dx</span><span class="p">],</span> <span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">y</span><span class="o">+</span><span class="n">dy</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">dy</span><span class="p">],</span> <span class="p">[</span><span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
@@ -870,9 +875,14 @@
     <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">get_labels_with_odr_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">),</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="s1">&#39;small&#39;</span><span class="p">})</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">zaxis</span><span class="o">.</span><span class="n">_axinfo</span><span class="p">[</span><span class="s1">&#39;juggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># move tune axis to the other side</span>
-    <span class="c1"># tight layout so that the legend fits</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="c1"># tight layout so that the legend fits in figure</span>
+    <span class="c1"># We catch and ignore &#39;UserWarning: The figure layout has changed to tight&#39;</span>
+    <span class="c1"># because it is something we did on purpose, let&#39;s not pollute the output.</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
 
 <span class="c1"># Labels -----------------------------------------------------------------------</span>

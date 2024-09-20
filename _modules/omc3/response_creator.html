@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.response_creator &mdash; omc3 0.16.0 documentation</title>
+  <title>omc3.response_creator &mdash; omc3 0.16.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
@@ -15,7 +15,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7de89ed4"></script>
+        <script src="../../_static/documentation_options.js?v=d9901acd"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -267,12 +267,13 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
-<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">DotDict</span>
 
 <span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">response_madx</span><span class="p">,</span> <span class="n">response_twiss</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.response_io</span> <span class="kn">import</span> <span class="n">write_fullresponse</span>
@@ -286,42 +287,49 @@
 
 <span class="k">def</span> <span class="nf">response_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;creator&quot;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;madx&quot;</span><span class="p">,</span> <span class="s2">&quot;twiss&quot;</span><span class="p">),</span>
-                         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;madx&quot;</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Create either with madx or analytically from twiss file.&quot;</span>
-                         <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">,</span>
-                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of the variables classes to use.&quot;</span>
-                         <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outfile_path&quot;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of fullresponse file.&quot;</span>
-                         <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta_k&quot;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="mf">0.00002</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delta K1 to be applied to quads for sensitivity matrix (madx-only).&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;optics_params&quot;</span><span class="p">,</span>
-                         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-                         <span class="n">choices</span><span class="o">=</span><span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of parameters to correct upon (e.g. BBX BBY; twiss-only).&quot;</span><span class="p">,</span>
-                         <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print debug information.&quot;</span><span class="p">,</span>
-                         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">,</span>
-                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-                         <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;creator&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;madx&quot;</span><span class="p">,</span> <span class="s2">&quot;twiss&quot;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;madx&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Create either with madx or analytically from twiss file.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of the variables classes to use.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outfile_path&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of fullresponse file.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta_k&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.00002</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delta K1 to be applied to quads for sensitivity matrix (madx-only).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;optics_params&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of parameters to correct upon (e.g. BBX BBY; twiss-only).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print debug information.&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
 
 <div class="viewcode-block" id="create_response_entrypoint">
 <a class="viewcode-back" href="../../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">response_params</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">create_response_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">create_response_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry point for creating pandas-based response matrices.</span>
 
 <span class="sd">    The response matrices can be either created by response_madx or TwissResponse.</span>
@@ -332,15 +340,13 @@
 
     <span class="n">accel_inst</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">other_opt</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span> <span class="o">==</span> <span class="s2">&quot;madx&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;madx&quot;</span><span class="p">:</span>
         <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_madx</span><span class="o">.</span><span class="n">create_fullresponse</span><span class="p">(</span>
             <span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">delta_k</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">delta_k</span>
         <span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span> <span class="o">==</span> <span class="s2">&quot;twiss&quot;</span><span class="p">:</span>
-        <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span>
-            <span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span>
-        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;twiss&quot;</span><span class="p">:</span>
+        <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">write_fullresponse</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span><span class="p">,</span> <span class="n">fullresponse</span><span class="p">)</span>
