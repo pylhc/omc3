@@ -314,9 +314,6 @@ def make_top_legend(
     if transposed:
         handles, labels = transpose_legend_order(ncol, handles, labels, ax)
 
-    # It is possible that no labels are given to the legend commands,
-    # or they are given with a leading underscore, which will get them
-    # ignored. In this case matplotlib issues a UserWarning here
     leg = ax.legend(
         handles=handles,
         labels=labels,
