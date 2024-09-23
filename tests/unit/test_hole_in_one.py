@@ -27,6 +27,7 @@ import pytest
 
 from omc3.hole_in_one import hole_in_one_entrypoint, DEFAULT_CONFIG_FILENAME, LINFILES_SUBFOLDER
 from omc3.harpy.constants import FILE_LIN_EXT, FILE_AMPS_EXT, FILE_FREQS_EXT
+from omc3.optics_measurements import phase
 from omc3.optics_measurements.constants import (
     EXT, 
     BETA_NAME, AMP_BETA_NAME, F1001_NAME, F1010_NAME, PHASE_NAME, TOTAL_PHASE_NAME, KICK_NAME, ORBIT_NAME,
@@ -49,7 +50,7 @@ SDDS_FILES = {
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
 @pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
-def test_hole_in_two(tmp_path, clean, which_files):
+def test_hole_in_two(tmp_path, clean, which_files, caplog):
     """
     Test that is closely related to how actual analysis are done.
     """
@@ -73,27 +74,39 @@ def test_hole_in_two(tmp_path, clean, which_files):
         _check_all_harpy_files(analysis_output, sdds_file)
 
     # Run optics on the analysis output
-    optics_output = tmp_path / "optics_output"
-    hole_in_one_entrypoint(
-        beam=1,
-        optics=True,
-        accel="lhc",
-        year="2022",
-        model_dir=MODEL_DIR,
-        files=[analysis_output / sdds_file.name for sdds_file in sdds_files],
-        nonlinear=['rdt', 'crdt'],
-        outputdir=optics_output,
-    )
+    for dpp in (None, 0):
+        for compensation in phase.CompensationMode.all():
+            caplog.clear()
 
-    _check_linear_optics_files(optics_output, off_momentum=(which_files == "all"))
-    _check_nonlinear_optics_files(optics_output, "rdt")
-    _check_nonlinear_optics_files(optics_output, "crdt")
+            optics_output = tmp_path / f"optics_output_dpp-{dpp}_comp-{compensation}"
+            hole_in_one_entrypoint(
+                beam=1,
+                optics=True,
+                accel="lhc",
+                year="2022",
+                model_dir=MODEL_DIR,
+                files=[analysis_output / sdds_file.name for sdds_file in sdds_files],
+                compensation=compensation,
+                nonlinear=['rdt', 'crdt'],
+                outputdir=optics_output,
+                analyse_dpp=dpp,
+            )
+
+            _check_linear_optics_files(optics_output, off_momentum=(which_files == "all"))
+            _check_nonlinear_optics_files(optics_output, "rdt")
+            _check_nonlinear_optics_files(optics_output, "crdt")
+
+            _check_caplog_for_rdt_warnings(
+                caplog, 
+                to_be_found=(which_files == "all") and (dpp is None), 
+                phase_compensation=compensation != phase.CompensationMode.NONE, 
+            )
 
 
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
 @pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
-def test_hole_in_one(tmp_path, clean, which_files):
+def test_hole_in_one(tmp_path, clean, which_files, caplog):
     """
     This test runs harpy, optics and optics analysis in one.
     """
@@ -111,7 +124,7 @@ def test_hole_in_one(tmp_path, clean, which_files):
         model=MODEL_DIR / "twiss_elements.dat",
         to_write=["lin", "spectra", "bpm_summary"],
         window="hann",
-        compensation="model",
+        compensation=phase.CompensationMode.NONE,
         coupling_method=2,
         nonlinear=['rdt', 'crdt'],
         unit="mm",
@@ -119,6 +132,7 @@ def test_hole_in_one(tmp_path, clean, which_files):
         accel="lhc",
         year="2022",
         model_dir=MODEL_DIR,
+        analyse_dpp=0,
     )
 
     for sdds_file in files:
@@ -127,6 +141,12 @@ def test_hole_in_one(tmp_path, clean, which_files):
     _check_linear_optics_files(output, off_momentum=(which_files == "all"))
     _check_nonlinear_optics_files(output, "rdt")
     _check_nonlinear_optics_files(output, "crdt")
+    
+    _check_caplog_for_rdt_warnings(
+        caplog, 
+        to_be_found=False,  # no warnings should be present, as dpp is set to 0 
+        phase_compensation=False,  # phase compensation set to "none" above
+    )
 
 
 # Helper -----------------------------------------------------------------------
@@ -176,6 +196,23 @@ def _check_nonlinear_optics_files(outputdir: Path, type_: str):
             magnet_dir = nonlin_dir / full_manget_name
             assert magnet_dir.is_dir()
             assert len(list(magnet_dir.glob(f"*{EXT}"))) > 0
+
+
+def _check_caplog_for_rdt_warnings(caplog, to_be_found: bool = False, phase_compensation: bool = False):
+    found = {"RDT": 0, "CRDT": 0, "Tune": 0, "Phase": 0}
+    required = {"RDT": 2, "CRDT": 2, "Tune": 2, "Phase": 2 * (1 + phase_compensation)}  # per plane; phase: also per compensation
+
+    for record in caplog.records:
+        for key in found.keys():
+            if f"included in the {key} calculation" in record.msg:
+                assert to_be_found, "Warnings still present, but should not have been!"
+                assert "Off-momentum files for analysis found!" in record.msg
+                assert record.levelname == "WARNING"
+                found[key] += 1  # should be twice, once per plane
+        if all(v == required[k] for k, v in found.items()):
+            break
+    else:
+        assert not to_be_found, f"Not the exact amount of expected warnings not found! {str(found)}"
 
 
 def _get_sdds_files(which: str) -> list[Path]:

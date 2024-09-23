@@ -59,6 +59,9 @@ CLOSED_ORBIT: str = "CO"
 DISPERSION: str = "D"
 NORM_DISPERSION: str = "ND"
 
+MEASUREMENT: str = "MEAS"
+MODEL: str = "MODEL"
+
 SECONDARY_AMPLITUDE_X: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum
 SECONDARY_FREQUENCY_X: str = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
