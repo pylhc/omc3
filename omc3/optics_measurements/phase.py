@@ -47,6 +47,8 @@ if TYPE_CHECKING:
     from omc3.model.accelerators.accelerator import Accelerator
     from omc3.optics_measurements.tune import TuneDict
 
+    PhaseDict = dict[str, dict[str, pd.DataFrame]]
+    
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -66,7 +68,7 @@ def calculate(
     tunes: TuneDict,
     plane: str,
     no_errors: bool = False,
-) -> dict[str, tuple[dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
+) -> tuple[dict[str, PhaseDict], list[pd.DataFrame, pd.DataFrame]]:
     """
     Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
     dictionary combining the results for each transverse plane.
@@ -145,7 +147,7 @@ def _calculate_with_compensation(
     model_df: pd.DataFrame,
     compensation: str = CompensationMode.NONE,
     no_errors: bool = False,
-):
+) -> tuple[PhaseDict, list[pd.DataFrame, pd.DataFrame]]:
     """
     Calculates phase advances.
 
@@ -158,27 +160,30 @@ def _calculate_with_compensation(
         no_errors: if ``True``, measured errors shall not be propagated (only their spread).
 
     Returns:
-        A `dictionary` of `TfsDataFrames` indexed (BPMi x BPMj) yielding phase advance `phi_ij`.
+        A tuple of 
+        - a `dictionary` of `TfsDataFrames` indexed (BPMi x BPMj) yielding phase advance `phi_ij`.
 
-         - "MEAS": measured phase advances,
-         - "ERRMEAS": errors of measured phase advances,
-         - "MODEL": model phase advances.
+            - "MEAS": measured phase advances,
+            - "ERRMEAS": errors of measured phase advances,
+            - "MODEL": model phase advances.
 
-        +------++--------+--------+--------+--------+
-        |      ||  BPM1  |  BPM2  |  BPM3  |  BPM4  |
-        +======++========+========+========+========+
-        | BPM1 ||   0    | phi_12 | phi_13 | phi_14 |
-        +------++--------+--------+--------+--------+
-        | BPM2 || phi_21 |    0   | phi_23 | phi_24 |
-        +------++--------+--------+--------+--------+
-        | BPM3 || phi_31 | phi_32 |   0    | phi_34 |
-        +------++--------+--------+--------+--------+
-        | BPM4 || phi_41 | phi_42 | phi_43 |    0   |
-        +------++--------+--------+--------+--------+
+            +------++--------+--------+--------+--------+
+            |      ||  BPM1  |  BPM2  |  BPM3  |  BPM4  |
+            +======++========+========+========+========+
+            | BPM1 ||   0    | phi_12 | phi_13 | phi_14 |
+            +------++--------+--------+--------+--------+
+            | BPM2 || phi_21 |    0   | phi_23 | phi_24 |
+            +------++--------+--------+--------+--------+
+            | BPM3 || phi_31 | phi_32 |   0    | phi_34 |
+            +------++--------+--------+--------+--------+
+            | BPM4 || phi_41 | phi_42 | phi_43 |    0   |
+            +------++--------+--------+--------+--------+
 
-        The phase advance between BPM_i and BPM_j can be obtained via:
-        phase_advances["MEAS"].loc[BPMi,BPMj]
-        list of output data frames(for files)
+            The phase advance between BPM_i and BPM_j can be obtained via:
+            phase_advances["MEAS"].loc[BPMi,BPMj]
+        - a list of output data frames (for tfs-files to be written out);
+          the first one contains the phase advances between the BPMs, the
+          second one contains the total phase advances.
     """
     LOGGER.info("Calculating phase advances")
     LOGGER.info(f"Measured tune in plane {plane} = {tunes[plane]['Q']}")
@@ -236,6 +241,10 @@ def _calculate_with_compensation(
 
 
 def _compensate_by_equation(phases_meas: ArrayLike, plane: str, tunes: TuneDict) -> ArrayLike:
+    """ Compensate the measured phases by equation.
+    
+    TODO: Reference!
+     """
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
@@ -248,10 +257,16 @@ def _compensate_by_equation(phases_meas: ArrayLike, plane: str, tunes: TuneDict)
     return phases_meas
 
 
-def _compensate_by_model(input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str):
-    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"{PHASE_ADV}{plane}"]]),
-                  how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
+def _compensate_by_model(input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str) -> pd.DataFrame:
+    """ Compensate the measured phase advances by comparing the driven model with the used model."""
+    # add column from driven model to df (and merge indices)
+    df_driven = pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"{PHASE_ADV}{plane}"]])
+    df = pd.merge(df, df_driven, how='inner', left_index=True, right_index=True, suffixes=("", "comp"))
+
+    # phase compensation = difference between driven model and used model
     phase_compensation = df_diff(df, f"{PHASE_ADV}{plane}", f"{PHASE_ADV}{plane}comp")
+
+    # add the compensated phase to the measured data
     df[input_files.get_columns(df, f"{PHASE_ADV}{plane}")] = ang_sum(
         input_files.get_data(df, f"{PHASE_ADV}{plane}"), phase_compensation[:, np.newaxis])
     return df
@@ -262,6 +277,7 @@ def write(
     headers: Sequence[dict[str, Any]] | dict[str, Any], 
     output: str | Path, plane: str
     ):
+    """ Write out the phase advance data into TFS-files."""
     LOGGER.info(f"Writing phases: {len(dfs)}")
     if isinstance(headers, dict):
         headers = [headers] * len(dfs)
@@ -272,7 +288,20 @@ def write(
                     f"{stats.weighted_rms(df.loc[:, f'{DELTA}{PHASE}{plane}'])}")
 
 
-def _create_output_df(phase_advances, model, plane, tot=False):
+def _create_output_df(phase_advances: PhaseDict, model: pd.DataFrame, plane: str, tot: bool = False) -> pd.DataFrame:
+    """ Create the DataFrames to be written out into TFS-files.
+
+    Args:
+        phase_advances (PhaseDict): Dictionary of phase-advance DataFrames 
+                                    as described in :func:`calculate_with_compensation`. 
+        model (pd.DataFrame): Model DataFrame (i.e. columns from twiss_elements + compensation). 
+        plane (str): Plane we are using ("X" or "Y").
+        tot (bool, optional): Create DataFrame for the total phase advance or BPM phase advances. 
+                              Defaults to False.
+
+    Returns:
+        pd.DataFrame: Frame as would be expected in the output files (the .tfs to be written out).
+    """
     meas = phase_advances[MEASUREMENT]
     mod = phase_advances[MODEL]
     err = phase_advances[f"{ERR}{MEASUREMENT}"]
@@ -296,7 +325,7 @@ def _create_output_df(phase_advances, model, plane, tot=False):
     return output_data
 
 
-def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike = None):
+def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike = None) -> ArrayLike:
     if phases_b is None:
         phases_b = phases_a
     return (phases_a[np.newaxis, :] - phases_b[:, np.newaxis]) % 1.0
@@ -367,7 +396,8 @@ def write_special(meas_input: DotDict, phase_advances: pd.DataFrame, plane_tune:
     tfs.write(Path(meas_input.outputdir) / f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}", special_phase_df)
 
 
-def _to_deg(phase):  # -90 to 90 degrees
+def _to_deg(phase: ArrayLike | float) -> ArrayLike | float:
+    """ Convert from tune units (radians [2pi]) to -90 to +90 degrees. """
     phase = phase % 0.5 * 360
     if phase < 90:
         return phase

@@ -108,7 +108,19 @@ class InputFiles(dict):
         dtype: np.dtype = np.float64
     ) -> pd.DataFrame:
         """
-        Constructs merged DataFrame from InputFiles.
+        Constructs merged DataFrame from collected DataFrames in InputFiles,
+        i.e. from the harpy output of the given measurements.
+
+        The input parameters to this function determine which data will be present in the 
+        joined frame:
+        which `plane` to use, the `columns` to be included, 
+        a `dpp_value` filter (with tolerance from :data:`omc3.optics_measurements.dpp.DPP_TOLERANCE`) 
+        and `how` to perform the merge.
+
+        You can also specify what `dtype` the resulting data will have, this should normally be `float64`.
+
+        The columns in the resulting Dataframe will be suffixed by `__#`, starting from `0`
+        with increasing integers for each of the input files.    
 
         Args:
             plane: marking the horizontal or vertical plane, **X** or **Y**.
@@ -141,7 +153,7 @@ class InputFiles(dict):
             for i, df in enumerate(frames_to_join[1:]):
                 joined_frame = pd.merge(joined_frame, df.reindex(columns=columns, fill_value=np.nan),
                                         how=how, left_index=True,
-                                        right_index=True, suffixes=('', '__' + str(i + 1)))
+                                        right_index=True, suffixes=('', f'__{i+1}'))
         joined_frame = joined_frame.rename(columns={column: column + '__0' for column in columns})
         if dtype is not None:
             joined_frame = joined_frame.astype(dtype)
