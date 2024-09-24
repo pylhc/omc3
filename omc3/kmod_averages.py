@@ -113,6 +113,15 @@ def get_average_bpm_betas_results(opt):
 
 def plot_results(opt, results):
     """
+    Function to plot the resulting beta-beating and waist.
+    """
+    plot_betas(opt, results)
+    plot_waist(opt, results)
+    plt.show()
+
+
+def plot_betas(opt, results):
+    """
     Function to plot the resulting average beta functions.
 
     Parameters:
@@ -141,8 +150,38 @@ def plot_results(opt, results):
     ax.axhline(0, color='gray', linestyle='--', linewidth=0.5)
     ax.axvline(0, color='gray', linestyle='--', linewidth=0.5)
     ax.legend(fontsize=14)
-    fig.savefig(f'{opt.output_dir}/ip{opt.ip}.png', dpi=400)
-    plt.show()
+    fig.savefig(f'{opt.output_dir}/ip{opt.ip}_betas.png', dpi=400)
+
+
+def plot_waist(opt, results):
+    """
+    Function to plot the resulting average waist.
+
+    Parameters:
+    - opt: input options
+    - results: the calculated average waist
+
+    Returns:
+    None
+    """
+    fig, ax = set_square_axes()
+    results = results.set_index('BEAM')
+    for beam in [1,2]:
+        ax.errorbar(results.loc[beam, 'WAISTX'], results.loc[beam, 'WAISTY'],
+                    xerr=results.loc[beam, 'ERRWAISTX'], yerr=results.loc[beam, 'ERRWAISTY'],
+                    fmt='o:', color=f'C{beam-1}',
+                    label=f'B{beam} IP{opt.ip}')
+
+    ax.set_xlabel(r'Waist x [m]', fontsize=14)
+    ax.set_ylabel(r'Waist y [m]', fontsize=14)
+    all_ticks = np.concatenate([plt.gca().get_xticks() , plt.gca().get_yticks()])
+    max_tick = np.max(np.abs(all_ticks))
+    ax.set_xlim(-max_tick, max_tick)
+    ax.set_ylim(-max_tick, max_tick)
+    ax.axhline(0, color='gray', linestyle='--', linewidth=0.5)
+    ax.axvline(0, color='gray', linestyle='--', linewidth=0.5)
+    ax.legend(fontsize=14)
+    fig.savefig(f'{opt.output_dir}/ip{opt.ip}_waist.png', dpi=400)
 
 
 def set_square_axes(figsize=(6,6), axes_loc=[0.17, 0.15, 0.8, 0.7]):
