@@ -26,3 +26,7 @@ AVERAGE = "AVERAGE"
 RESULTS_FILE_NAME = 'results'
 LSA_FILE_NAME = 'lsa_results'
 INSTRUMENTS_FILE_NAME = 'beta_instrument'
+
+# For importing
+BETA_FILENAME = 'beta_kmod_'
+
