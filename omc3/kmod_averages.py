@@ -1,13 +1,41 @@
-import tfs
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+""" 
+Average K-Modulation Results
+---------------------------
+
+Average muliple K-Modulation results into a single file/dataframe.
+"""
+from __future__ import annotations
 
 from pathlib import Path
-from generic_parser import DotDict
+from typing import TYPE_CHECKING
+
+import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+from omc3.plotting.plot_kmod_results import plot_results
+
+from omc3.kmod.constants import (
+    BEAM,
+    BEAM_DIR,
+    BETA,
+    BETASTAR,
+    ERR,
+    EXT,
+    LABEL,
+    LSA_FILE_NAME,
+    MDL,
+    RESULTS_FILE_NAME,
+    TIME,
+    AVERAGED_BETASTAR_FILENAME,
+    AVERAGED_BPM_FILENAME
+)
+from omc3.optics_measurements.constants import NAME
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -20,72 +48,117 @@ def kmod_average_params():
     params.add_parameter(name="meas_paths",
                          required=True,
                          nargs='+',
+                         type=PathOrStr,
                          help="Directories of Kmod results to import")
     params.add_parameter(name="ip",
                          required=True,
                          type=int,
                          help="Specific ip to average over")
-    params.add_parameter(name="beta",
+    params.add_parameter(name="betastar",
                          required=True,
                          type=float,
-                         help="Model beta of measurements")
+                         help="Model beta-star value of measurements")
     params.add_parameter(name="output_dir",
-                         required=True,
                          type=PathOrStr,
                          help="Path to the directory where to write the output files.")
+    params.add_parameter(name="plot",
+                         action="store_true",
+                         help="Plot the avaeraged results.")
     return params
 
 
 @entrypoint(kmod_average_params(), strict=True)
-def average_kmod_results_entrypoint(opt: DotDict) -> None:
-    opt.meas_paths = [Path(m) for m in opt.meas_paths]
-    opt.output_dir = Path(opt.output_dir)
-    opt.output_dir.mkdir(exist_ok=True)
-    averaged_results = get_average_betastar_results(opt)
-    averaged_bpm_results = get_average_bpm_betas_results(opt)
-    plot_results(opt, averaged_results)
-
-
-def get_average_betastar_results(opt):
+def average_kmod_results_entrypoint(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
     """
-    Calculate the average betastar results for the given parameters.
+    Reads kmod results and averages over the different measurements.
 
     Args:
-        opt: The parameters for calculation.
+        meas_paths (Sequence[Path|str]):
+            A sequence of kmod BPM results files to import. This can include either single 
+            measurements (e.g., 'lsa_results.tfs') or averaged results 
+            (e.g., 'averaged_bpm_beam1_ip1_beta0.22m.tfs').
+
+        ip (int):
+            The specific IP to average over.
+
+        betastar (float):
+            The model beta-star value of the measurements.
+
+        output_dir (Path|str):
+            Path to the output directory to write out the averaged results. Optional.
+
+        plot (bool):
+            If True, plots the averaged results. Default: False.
 
     Returns:
-        The final results as a DataFrame.
+        Dictionary of averaged kmod-result DataFrames by beams for the 
+        bpm-data and with key `0` for the beta-star data.
+    """
+    LOG.info("Starting Kmod averaging.")
+    meas_paths = [Path(m) for m in opt.meas_paths]
+
+    averaged_results = get_average_betastar_results(meas_paths, opt.betastar)
+    averaged_bpm_results = get_average_bpm_betas_results(meas_paths)
+
+    if opt.output_dir is not None:
+        opt.output_dir = Path(opt.output_dir)
+        opt.output_dir.mkdir(exist_ok=True)
+
+        filename = AVERAGED_BETASTAR_FILENAME.format(ip=opt.ip, betastar=opt.betastar)
+        tfs.write(opt.output_dir / f'{filename}{EXT}', averaged_results, save_index=BEAM)
+        
+        for beam, df in averaged_bpm_results.items():
+            filename = AVERAGED_BPM_FILENAME.format(beam=beam, ip=opt.ip, betastar=opt.betastar)
+            tfs.write( opt.output_dir / f'{filename}{EXT}', df, save_index=NAME)
+
+    if opt.plot:
+        plot_results(opt, averaged_results)
+
+    averaged_bpm_results[0] = averaged_results
+    return averaged_bpm_results
+
+
+def get_average_betastar_results(meas_paths: Sequence[Path], betastar: float) -> tfs.TfsDataFrame:
+    """
+    Calculate the average betastar results for the given measurements.
+
+    Args:
+        meas_paths: The paths to the measurements.
+        betastar: The model betastar value.
+
+    Returns:
+        The final results as a DataFrame; both beams merged.
     """
     final_results = []
     for beam in [1, 2]:
-        all_dfs = []
-        for mpath in opt.meas_paths:
-            print(mpath)
-            all_dfs.append(tfs.read(mpath / f'B{beam}' / 'results.tfs').drop(columns=['LABEL', 'TIME']))
+        all_dfs = [
+            tfs.read(dir_path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}").drop(
+                columns=[LABEL, TIME]
+            )
+            for dir_path in meas_paths
+        ]
 
-        panel = np.array(all_dfs)
-        # Calculate mean and std along the new axis (axis=0)
-        mean_df = pd.DataFrame(panel.mean(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
-        std_df = pd.DataFrame(panel.std(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
+        grouped = tfs.concat(all_dfs, axis=0).groupby(level=0)  # append rows, group by index
+        mean_df = grouped.mean()
+        std_df = grouped.std()
 
         for column in mean_df.columns:
-            if not column.startswith('ERR'):
-                mean_df[f'ERR{column}'] = std_df[column]
+            if not column.startswith(ERR):
+                mean_df[f'{ERR}{column}'] = std_df[column]  # TODO: maybe add KMOD errors?
 
-        mean_df['BETSTARMDL'] = opt.beta
-        mean_df['BEAM'] = beam
+        mean_df[f'{BETASTAR}{MDL}'] = betastar
+        mean_df[BEAM] = beam
         final_results.append(mean_df)
-    final_results = pd.concat(final_results)
-    tfs.write(opt.output_dir / f'averaged_ip{opt.ip}_beta{opt.beta}m.tfs', final_results)
+    final_results = tfs.concat(final_results).set_index(BEAM)
     return final_results
 
 
-def get_average_bpm_betas_results(opt):
+def get_average_bpm_betas_results(meas_paths: Sequence[Path]) -> dict[int, tfs.TfsDataFrame]:
     """
-    Calculate the average bpm betas results for the given parameters.
+    Calculate the average bpm betas results for the given measurements.
 
     Args:
-        opt: The parameters for the calculation.
+        meas_paths: The paths to the measurements.
 
     Returns:
         final_results: A dictionary containing the average bpm betas results for each beam.
@@ -93,104 +166,19 @@ def get_average_bpm_betas_results(opt):
     final_results = {}
 
     for beam in [1, 2]:
-        all_dfs = []
-        for mpath in opt.meas_paths:
-            all_dfs.append(tfs.read(mpath / f'B{beam}' / 'lsa_results.tfs').set_index('NAME'))
+        all_dfs = [
+            tfs.read(dir_path / f"{BEAM_DIR}{beam}" / f"{LSA_FILE_NAME}{EXT}", index=NAME)
+            for dir_path in meas_paths
+        ]
 
-        panel = np.array(all_dfs)
-        # Calculate mean and std along the new axis (axis=0)
-        mean_df = pd.DataFrame(panel.mean(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
-        std_df = pd.DataFrame(panel.std(axis=0), index=all_dfs[0].index, columns=all_dfs[0].columns)
+        grouped = tfs.concat(all_dfs, axis=0).groupby(level=0)  # append rows, group by index
+        mean_df = grouped.mean()
+        std_df = grouped.std()
 
-        mean_df['ERRBETX'] = std_df['BETX']
-        mean_df['ERRBETY'] = std_df['BETY']
-        mean_df = mean_df.reset_index()
+        for plane in "XY":
+            mean_df[f'{ERR}{BETA}{plane}'] = std_df[f'{BETA}{plane}']
         final_results[beam] = mean_df
-        tfs.write(opt.output_dir / f'averaged_bpm_beam{beam}_ip{opt.ip}_beta{opt.beta}m.tfs', mean_df)
-
     return final_results
-
-
-def plot_results(opt, results):
-    """
-    Function to plot the resulting beta-beating and waist.
-    """
-    plot_betas(opt, results)
-    plot_waist(opt, results)
-
-
-def plot_betas(opt, results):
-    """
-    Function to plot the resulting average beta functions.
-
-    Parameters:
-    - opt: input options
-    - results: the calculated average betas
-
-    Returns:
-    None
-    """
-    fig, ax = set_square_axes()
-    results = results.set_index('BEAM')
-    for beam in [1,2]:
-        ax.errorbar((results.loc[beam, 'BETSTARX']-results.loc[beam, 'BETSTARMDL'])/results.loc[beam, 'BETSTARMDL']*100,
-                    (results.loc[beam, 'BETSTARY']-results.loc[beam, 'BETSTARMDL'])/results.loc[beam, 'BETSTARMDL']*100,
-                    xerr=results.loc[beam, 'ERRBETSTARX']/results.loc[beam, 'BETSTARMDL']*100,
-                    yerr=results.loc[beam, 'ERRBETSTARY']/results.loc[beam, 'BETSTARMDL']*100,
-                    fmt='o:', color=f'C{beam-1}',
-                    label=f'B{beam} IP{opt.ip}')
-
-    ax.set_xlabel(r'$\Delta\beta_x/\beta_x$ %', fontsize=14)
-    ax.set_ylabel(r'$\Delta\beta_y/\beta_y$ %', fontsize=14)
-    all_ticks = np.concatenate([plt.gca().get_xticks() , plt.gca().get_yticks()])
-    max_tick = np.max(np.abs(all_ticks))
-    ax.set_xlim(-max_tick, max_tick)
-    ax.set_ylim(-max_tick, max_tick)
-    ax.axhline(0, color='gray', linestyle='--', linewidth=0.5)
-    ax.axvline(0, color='gray', linestyle='--', linewidth=0.5)
-    ax.legend(fontsize=14)
-    fig.savefig(f'{opt.output_dir}/ip{opt.ip}_betas.png', dpi=400)
-
-
-def plot_waist(opt, results):
-    """
-    Function to plot the resulting average waist.
-
-    Parameters:
-    - opt: input options
-    - results: the calculated average waist
-
-    Returns:
-    None
-    """
-    fig, ax = set_square_axes()
-    results = results.set_index('BEAM')
-    for beam in [1,2]:
-        ax.errorbar(results.loc[beam, 'WAISTX'], results.loc[beam, 'WAISTY'],
-                    xerr=results.loc[beam, 'ERRWAISTX'], yerr=results.loc[beam, 'ERRWAISTY'],
-                    fmt='o:', color=f'C{beam-1}',
-                    label=f'B{beam} IP{opt.ip}')
-
-    ax.set_xlabel(r'Waist x [m]', fontsize=14)
-    ax.set_ylabel(r'Waist y [m]', fontsize=14)
-    all_ticks = np.concatenate([plt.gca().get_xticks() , plt.gca().get_yticks()])
-    max_tick = np.max(np.abs(all_ticks))
-    ax.set_xlim(-max_tick, max_tick)
-    ax.set_ylim(-max_tick, max_tick)
-    ax.axhline(0, color='gray', linestyle='--', linewidth=0.5)
-    ax.axvline(0, color='gray', linestyle='--', linewidth=0.5)
-    ax.legend(fontsize=14)
-    fig.savefig(f'{opt.output_dir}/ip{opt.ip}_waist.png', dpi=400)
-
-
-def set_square_axes(figsize=(6,6), axes_loc=[0.17, 0.15, 0.8, 0.7]):
-    fig = plt.figure(figsize=figsize)
-    fig.patch.set_facecolor('white')
-    ax = plt.axes(axes_loc)
-    ax.set_aspect('equal')
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    return fig, ax
 
 
 if __name__ == "__main__":

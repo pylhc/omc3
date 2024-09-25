@@ -4,94 +4,29 @@ import pytest
 import tfs
 import pandas.testing as pdt
 from omc3.kmod_averages import average_kmod_results_entrypoint
+from tests.conftest import INPUTS, ids_str
 
-INPUT_DIR = Path(__file__).parent.parent / "inputs/kmod_averaging"
-IP1_1_OUTPUTS = INPUT_DIR / "single_ip1_meas1"
-IP1_2_OUTPUTS = INPUT_DIR / "single_ip1_meas2"
-IP5_1_OUTPUTS = INPUT_DIR / "single_ip5_meas1"
-IP5_2_OUTPUTS = INPUT_DIR / "single_ip5_meas2"
-IP1_RESULTS_OUTPUTS = INPUT_DIR / "ip1_averaged"
-IP5_RESULTS_OUTPUTS = INPUT_DIR / "ip5_averaged"
-IP1_SINGLE_RESULTS_OUTPUTS = INPUT_DIR / "ip1_averaged_single"
-IP5_SINGLE_RESULTS_OUTPUTS = INPUT_DIR / "ip5_averaged_single"
+KMOD_INPUT_DIR = INPUTS / "kmod_averaging"
 
-
-# ----- Tests ----- #
-def test_kmod_averaging_1_file_ip1(tmp_path):
-    ip = 1
+@pytest.mark.parametrize("ip", [1, 5], ids=ids_str("ip{}"))
+@pytest.mark.parametrize("n_files", [1, 2], ids=ids_str("{}files"))
+def test_kmod_averaging(tmp_path, ip, n_files):
     beta = 0.22
-    average_kmod_results_entrypoint(meas_paths=[IP1_1_OUTPUTS], output_dir=str(tmp_path), ip=ip, beta=beta)
+    meas_paths = [KMOD_INPUT_DIR / f"single_ip{ip}_meas{i+1}" for i in range(n_files)]
+    ref_output_dir = KMOD_INPUT_DIR / f"ip{ip}_averaged{'_single' if n_files == 1 else ''}"
+
+    average_kmod_results_entrypoint(meas_paths=meas_paths, output_dir=tmp_path, ip=ip, betastar=beta)
     _assert_correct_files_are_present(tmp_path, ip, beta)
 
-    bpm_b1 = tfs.read(tmp_path / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2 = tfs.read(tmp_path / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res = tfs.read(tmp_path / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    bpm_b1_ref = tfs.read(IP1_SINGLE_RESULTS_OUTPUTS / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2_ref = tfs.read(IP1_SINGLE_RESULTS_OUTPUTS / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res_ref = tfs.read(IP1_SINGLE_RESULTS_OUTPUTS / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    pdt.assert_frame_equal(bpm_b1_ref, bpm_b1)
-    pdt.assert_frame_equal(bpm_b2_ref, bpm_b2)
-    pdt.assert_frame_equal(ip_res_ref, ip_res)
-
-
-def test_kmod_averaging_1_file_ip5(tmp_path):
-    ip = 5
-    beta = 0.22
-    average_kmod_results_entrypoint(meas_paths=[IP5_1_OUTPUTS], output_dir=str(tmp_path), ip=ip, beta=beta)
-    _assert_correct_files_are_present(tmp_path, ip, beta)
-
-    bpm_b1 = tfs.read(tmp_path / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2 = tfs.read(tmp_path / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res = tfs.read(tmp_path / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    bpm_b1_ref = tfs.read(IP5_SINGLE_RESULTS_OUTPUTS / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2_ref = tfs.read(IP5_SINGLE_RESULTS_OUTPUTS / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res_ref = tfs.read(IP5_SINGLE_RESULTS_OUTPUTS / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    pdt.assert_frame_equal(bpm_b1_ref, bpm_b1)
-    pdt.assert_frame_equal(bpm_b2_ref, bpm_b2)
-    pdt.assert_frame_equal(ip_res_ref, ip_res)
-
-
-def test_kmod_averaging_2_files_ip1(tmp_path):
-    ip = 1
-    beta = 0.22
-    average_kmod_results_entrypoint(meas_paths=[IP1_1_OUTPUTS, IP1_2_OUTPUTS], output_dir=str(tmp_path), ip=ip, beta=beta)
-    _assert_correct_files_are_present(tmp_path, ip, beta)
-
-    bpm_b1 = tfs.read(tmp_path / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2 = tfs.read(tmp_path / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res = tfs.read(tmp_path / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    bpm_b1_ref = tfs.read(IP1_RESULTS_OUTPUTS / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2_ref = tfs.read(IP1_RESULTS_OUTPUTS / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res_ref = tfs.read(IP1_RESULTS_OUTPUTS / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    pdt.assert_frame_equal(bpm_b1_ref, bpm_b1)
-    pdt.assert_frame_equal(bpm_b2_ref, bpm_b2)
-    pdt.assert_frame_equal(ip_res_ref, ip_res)
-
-
-def test_kmod_averaging_2_files_ip5(tmp_path):
-    ip = 5
-    beta = 0.22
-    average_kmod_results_entrypoint(meas_paths=[IP5_1_OUTPUTS, IP5_2_OUTPUTS], output_dir=str(tmp_path), ip=ip, beta=beta)
-    _assert_correct_files_are_present(tmp_path, ip, beta)
-
-    bpm_b1 = tfs.read(tmp_path / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2 = tfs.read(tmp_path / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res = tfs.read(tmp_path / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    bpm_b1_ref = tfs.read(IP5_RESULTS_OUTPUTS / f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs")
-    bpm_b2_ref = tfs.read(IP5_RESULTS_OUTPUTS / f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs")
-    ip_res_ref = tfs.read(IP5_RESULTS_OUTPUTS / f"averaged_ip{ip}_beta{beta}m.tfs")
-
-    pdt.assert_frame_equal(bpm_b1_ref, bpm_b1)
-    pdt.assert_frame_equal(bpm_b2_ref, bpm_b2)
-    pdt.assert_frame_equal(ip_res_ref, ip_res)
-
+    output_files = [
+        f"averaged_bpm_beam1_ip{ip}_beta{beta}m.tfs",
+        f"averaged_bpm_beam2_ip{ip}_beta{beta}m.tfs",
+        f"averaged_ip{ip}_beta{beta}m.tfs",
+    ]
+    for out_name in output_files:
+        out_file = tfs.read(tmp_path / out_name)
+        ref_file = tfs.read(ref_output_dir / out_name)
+        pdt.assert_frame_equal(out_file, ref_file)
 
 
 def _assert_correct_files_are_present(outputdir: Path, ip: int, beta: float) -> None:

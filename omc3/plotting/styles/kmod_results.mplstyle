@@ -1,0 +1,11 @@
+figure.figsize: 6, 6
+lines.linestyle: :
+xtick.labelsize: 12
+ytick.labelsize: 12
+figure.subplot.left:   0.17
+figure.subplot.bottom: 0.15 
+figure.subplot.width:  0.8 
+figure.subplot.height: 0.7  
+figure.facecolor:   white
+legend.fontsize: 14
+axes.labelsize: 14
