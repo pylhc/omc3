@@ -117,7 +117,6 @@ def plot_results(opt, results):
     """
     plot_betas(opt, results)
     plot_waist(opt, results)
-    plt.show()
 
 
 def plot_betas(opt, results):

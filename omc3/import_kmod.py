@@ -14,7 +14,21 @@ LOG = logging_tools.get_logger(__name__)
 
 def kmod_output_params():
     """
-    A function to create and return the parameters for the kmod_output function.
+    Creates and returns the parameters for the kmod_output function.
+    
+    Returns:
+    --------
+    meas_paths : list of str
+        A list of kmod BPM results files to import. This can include either single 
+        measurements (e.g., 'lsa_results.tfs') or averaged results 
+        (e.g., 'averaged_bpm_beam1_ip1_beta0.22m.tfs').
+    
+    model : str
+        Path to the model Twiss file.
+    
+    output_dir : str
+        Path to the analysis directory where the output files for global correction input 
+        will be written.
     """
     params = EntryPointParameters()
     params.add_parameter(name="meas_paths",

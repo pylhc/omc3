@@ -20,11 +20,11 @@ def kmod_luminosity_params():
     params.add_parameter(name="ip1_path",
                          required=True,
                          type=PathOrStr,
-                         help="Path to the directory where to write the output files.")
+                         help="Path to the beta star results of IP1.")
     params.add_parameter(name="ip5_path",
                          required=True,
                          type=PathOrStr,
-                         help="Path to the directory where to write the output files.")
+                         help="Path to the beta star results of IP5.")
     params.add_parameter(name="output_dir",
                          required=True,
                          type=PathOrStr,
@@ -36,6 +36,7 @@ def kmod_luminosity_params():
 def calculate_lumi_imbalance_entrypoint(opt: DotDict) -> None:
     opt.ip1_path = Path(opt.ip1_path)
     opt.ip5_path = Path(opt.ip5_path)
+    opt.output_dir = Path(opt.output_dir)
     get_lumi_imbalance(opt)
 
 
@@ -52,7 +53,6 @@ def get_lumi_imbalance(opt):
     df_ip1 = tfs.read(opt.ip1_path).set_index('BEAM')
     df_ip5 = tfs.read(opt.ip5_path).set_index('BEAM')
     betastar = df_ip1.loc[1, 'BETSTARMDL']
-    
     ip1, ip1_err = get_conv_beta_star_w_err(df_ip1)
     ip5, ip5_err = get_conv_beta_star_w_err(df_ip5)
 
@@ -70,7 +70,7 @@ def get_lumi_imbalance(opt):
     eff_betas['LUMI_IMB_ERR'] = lumi_imb_err
     
     eff_betas = pd.DataFrame([eff_betas])
-    tfs.write(opt.output_dir / f'effective_betas_{betastar}m.tfs', eff_betas)
+    tfs.write(opt.output_dir / f"effective_betas_{betastar}m.tfs", eff_betas)
 
 
 def get_imbalance_w_err(ip5, ip1, ip5_err, ip1_err):
