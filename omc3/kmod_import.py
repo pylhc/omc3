@@ -47,7 +47,7 @@ from omc3.optics_measurements.constants import (  # using opitcs constants as we
     S,
 )
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr
+from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
     from generic_parser import DotDict
@@ -104,6 +104,7 @@ def import_kmod_data(opt: DotDict) -> None:
     if opt.output_dir is not None:
         opt.output_dir = Path(opt.output_dir)
         opt.output_dir.mkdir(exist_ok=True)
+        save_config(opt.output_dir, opt, __file__)
 
     # read data
     df_model = tfs.read(opt.model, index=NAME)
