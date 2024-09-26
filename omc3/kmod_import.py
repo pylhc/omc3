@@ -61,18 +61,24 @@ def _get_params():
     
     """
     params = EntryPointParameters()
-    params.add_parameter(name="meas_paths",
-                         required=True,
-                         nargs='+',
-                         type=PathOrStr,
-                         help="Kmod results files to import.")
-    params.add_parameter(name="model",
-                         required=True,
-                         type=PathOrStr,
-                         help="Path to the model.")
-    params.add_parameter(name="output_dir",
-                         type=PathOrStr,
-                         help="Path to the directory where to write the output files.")
+    params.add_parameter(
+        name="meas_paths",
+        required=True,
+        nargs='+',
+        type=PathOrStr,
+        help="Kmod results files to import."
+    )
+    params.add_parameter(
+        name="model",
+        required=True,
+        type=PathOrStr,
+        help="Path to the model."
+    )
+    params.add_parameter(
+        name="output_dir",
+        type=PathOrStr,
+        help="Path to the directory where to write the output files."
+    )
     return params
 
 

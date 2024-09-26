@@ -1,6 +1,6 @@
 """ 
 Average K-Modulation Results
----------------------------
+----------------------------
 
 Average muliple K-Modulation results into a single file/dataframe.
 
@@ -87,28 +87,40 @@ def _get_params():
     A function to create and return EntryPointParameters for Kmod average.
     """
     params = EntryPointParameters()
-    params.add_parameter(name="meas_paths",
-                         required=True,
-                         nargs='+',
-                         type=PathOrStr,
-                         help="Directories of Kmod results to import.")
-    params.add_parameter(name="ip",
-                         required=True,
-                         type=int,
-                         help="Specific ip to average over.")
-    params.add_parameter(name="betastar",
-                         required=True,
-                         type=float,
-                         help="Model beta-star value of measurements.")
-    params.add_parameter(name="output_dir",
-                         type=PathOrStr,
-                         help="Path to the directory where to write the output files.")
-    params.add_parameter(name="plot",
-                         action="store_true",
-                         help="Plot the averaged results.")
-    params.add_parameter(name="show_plots",
-                         action="store_true",
-                         help="Show the plots.")
+    params.add_parameter(
+        name="meas_paths",
+        required=True,
+        nargs="+",
+        type=PathOrStr,
+        help="Directories of Kmod results to import.",
+    )
+    params.add_parameter(
+        name="ip", 
+        required=True, 
+        type=int, 
+        help="Specific ip to average over."
+    )
+    params.add_parameter(
+        name="betastar",
+        required=True,
+        type=float,
+        help="Model beta-star value of measurements.",
+    )
+    params.add_parameter(
+        name="output_dir",
+        type=PathOrStr,
+        help="Path to the directory where to write the output files.",
+    )
+    params.add_parameter(
+        name="plot", 
+        action="store_true", 
+        help="Plot the averaged results."
+    )
+    params.add_parameter(
+        name="show_plots", 
+        action="store_true", 
+        help="Show the plots."
+    )
     return params
 
 

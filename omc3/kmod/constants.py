@@ -18,8 +18,12 @@ K: str = "K"
 TUNE: str = "TUNE"
 ERR: str = "ERR"
 MDL: str = "MDL"
+EFFECTIVE: str = "EFF"
+LUMINOSITY: str = "LUMI"
+IMBALACE: str = "IMB"
 
 BEAM: str = "BEAM"
+IP: str = "IP"
 
 BETA: str = "BET"
 STAR: str = "STAR"
@@ -42,4 +46,5 @@ INSTRUMENTS_FILE_NAME: str = 'beta_instrument'
 BETA_FILENAME: str = 'beta_kmod_'
 AVERAGED_BETASTAR_FILENAME: str = 'averaged_ip{ip}_beta{betastar}m'
 AVERAGED_BPM_FILENAME: str = 'averaged_bpm_beam{beam}_ip{ip}_beta{betastar}m'
+EFFECTIVE_BETAS_FILENAME: str = 'effective_betas_beta{betastar}m'
 
