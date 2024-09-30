@@ -61,6 +61,19 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 
 
 """
+
+####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ##################################
+# Move `/mcr/bin` to the end of the Path.
+# This ia a hack, please remove at the earliers convenience. Fixes:
+# 'Error: Could not find or load main class (...) aircompressor-0.26.jar'
+import os
+if "PATH" in os.environ and "/mcr/bin" in os.environ["PATH"]:
+    parts = os.environ["PATH"].split(":")
+    parts.remove("/mcr/bin")
+    parts.append("/mcr/bin")  # probably not neccesary
+    os.environ["PATH"] = ":".join(parts)
+################################################################################
+
 import argparse
 import logging
 import math
