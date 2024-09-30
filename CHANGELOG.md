@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2024-09-30 - v0.16.2 - _jdilly_
+
+- Fixed:
+  - Temporary hack to fix `knob_extractor` in CCC.
+
 #### 2024-09-20 - v0.16.1 - _fsoubelet_
 
 - Fixed:
