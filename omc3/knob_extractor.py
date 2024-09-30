@@ -283,7 +283,9 @@ def get_params():
 )
 def main(opt) -> tfs.TfsDataFrame:
     """ Main knob extracting function. """
-    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR)
+    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR, 
+                             sparkprops={"spark.ui.showConsoleProgress", "false"}
+    )
     time = _parse_time(opt.time, opt.timedelta)
 
     if opt.state:
