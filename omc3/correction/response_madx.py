@@ -200,21 +200,15 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
         resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
     )
 
-    # calculate the individual phase advances -----------------------------------
-    phase_advs = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]
-    mdl_mus = var_to_twiss[  "0"  ][phase_advs]
-    res_mus = var_to_twiss["deltp"][phase_advs]
-    mdl_initial_mux = [var_to_twiss[  "0"  ].headers["Q1"], var_to_twiss[  "0"  ].headers["Q2"]] - mdl_mus.iloc[-1]
-    res_initial_mux = [var_to_twiss["deltp"].headers["Q1"], var_to_twiss["deltp"].headers["Q2"]] - res_mus.iloc[-1]
+    # calculate the phase advance between each BPM ------------------------------
+    mdl_mus = var_to_twiss[  "0"  ][[f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]]
+    res_mus = var_to_twiss["deltp"][[f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]]
     
-    mdl_advance = mdl_mus - mdl_mus.shift(1, fill_value=0) # shift to get the advance
-    res_advance = res_mus - res_mus.shift(1, fill_value=0)
+    mdl_advance = (mdl_mus.shift(-1) - mdl_mus).dropna() # shift to get the phase between BPMs
+    res_advance = (res_mus.shift(-1) - res_mus).dropna() # dropna to remove last BPM (Not in measurement anyway)
     
-    mdl_advance.iloc[0] += mdl_initial_mux # add the initial phase advance (from last BPM to 0)
-    res_advance.iloc[0] += res_initial_mux
-
-    DPP_df = (res_advance - mdl_advance).divide(var_to_twiss["deltp"][INCR], axis=0)
-    DPP_df.columns = ["DPPX", "DPPY"]
+    DPP_df = (res_advance - mdl_advance).div(var_to_twiss["deltp"][INCR][:-1], axis=0)
+    DPP_df = pd.concat([DPP_df[f"{PHASE_ADV}X"], DPP_df[f"{PHASE_ADV}Y"]], keys=[f"X", f"Y"], axis=0)
     # ---------------------------------------------------------------------------
 
     # subtracting nominal model from data
@@ -248,8 +242,7 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
             f"{F1010}R": pd.DataFrame(data=resp[columns.index(f"{F1010}R")], index=bpms, columns=keys).astype(np.float64),
             f"{F1010}I": pd.DataFrame(data=resp[columns.index(f"{F1010}I")], index=bpms, columns=keys).astype(np.float64),
             f"{TUNE}": pd.DataFrame(data=Q_arr, index=[f"{TUNE}1", f"{TUNE}2"], columns=keys).astype(np.float64),
-            f"DPPX": DPP_df[f"DPPX"].astype(np.float64),
-            f"DPPY": DPP_df[f"DPPY"].astype(np.float64),
+            f"DPP": DPP_df,
         }
 
 
