@@ -314,11 +314,11 @@ def _calculate_delta(
 def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
     """ Prints current RMS status """
     f_str = "{:>20s} : {:.5e}"
-    LOG.debug("RMS Measure - Model (before correction, w/o weigths):")
+    LOG.debug("RMS Measure - Model (before correction, w/o weights):")
     for key in meas:
         LOG.debug(f_str.format(key, rms(meas[key].loc[:, DIFF].to_numpy())))
 
-    LOG.info("RMS Measure - Model (before correction, w/ weigths):")
+    LOG.info("RMS Measure - Model (before correction, w/ weights):")
     for key in meas:
         LOG.info(f_str.format(key, rms(meas[key].loc[:, DIFF].to_numpy() * meas[key].loc[:, WEIGHT].to_numpy())))
 

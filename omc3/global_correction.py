@@ -16,7 +16,7 @@ which creates a pseudo-inverse via svd is used).
 The response matrices are hereby merged into one matrix for all observables to solve for all
 :math:`\delta var` at the same time.
 
-To normalize the observables to another ``weigths`` (W) can be applied.
+To normalize the observables to another ``weights`` (W) can be applied.
 
 Furthermore, an ``errorcut``, specifying the maximum errorbar for a BPM to be used, and
 ``modelcut``, specifying the maximum distance between measurement and model for a BPM to be used,
