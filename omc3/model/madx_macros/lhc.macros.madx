@@ -633,12 +633,12 @@ coupling_knob_ats(beam_number): macro = {
 * @param nqx: The horizontal tune to use.
 * @param nqy: The vertical tune to use.
 * @param beam_number: The beam to use either 1 or 2.
-* @param file_name: The file name to store the output file.
+* @param filename: The file name to store the output file.
 */
-find_deltp_response(nqx, nqy, beam_number, file_name): macro = {
-    twiss, deltap=0.0001; ! Should the deltap be a variable?
+find_deltp_response(nqx, nqy, beam_number, newdpp, filename): macro = {
+    twiss, deltap=newdpp;
     correct, mode=svd; 
     exec, match_tunes(nqx, nqy, beam_number);
-    twiss, deltap=0.0001, file=file_name;
+    twiss, deltap=newdpp, file=filename;
 };
 
