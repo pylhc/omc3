@@ -205,8 +205,6 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
         resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
     )
 
-    # ---------------------------------------------------------------------------
-
     # subtracting nominal model from data
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
     NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])
