@@ -27,7 +27,7 @@ from optics_functions.coupling import coupling_via_cmatrix
 import omc3.madx_wrapper as madx_wrapper
 from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
                                                 NORM_DISPERSION, PHASE_ADV, TUNE)
-from omc3.correction.constants import INCR
+from omc3.correction.constants import INCR, DELTAP_NAME
 from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
@@ -86,7 +86,9 @@ def _generate_madx_jobs(
 ) -> Dict[str, float]:
     """ Generates madx job-files """
     LOG.debug("Generating MADX jobfiles.")
-    incr_dict = {'0': 0.0, 'deltp': 1e-4}
+    incr_dict = {'0': 0.0}
+    dodeltap = accel_inst.NAME == 'lhc' and DELTAP_NAME in variables
+    variables = [var for var in variables if var != DELTAP_NAME]
     vars_per_proc = int(np.ceil(len(variables) / num_proc))
 
     madx_job = _get_madx_job(accel_inst)
@@ -107,8 +109,11 @@ def _generate_madx_jobs(
 
         if proc_idx == num_proc - 1:
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}';\n"
-            if accel_inst.NAME == 'lhc':
-                current_job += f"exec, find_deltp_response({accel_inst.nat_tunes[0]}, {accel_inst.nat_tunes[1]}, {accel_inst.beam}, '{str(temp_dir/'twiss.deltp')}');\n"
+            if dodeltap:
+                # Overwrite the deltap twiss file with one that includes matching and correction
+                # Note: do not do delta_k:+.15e in a macro input - MADX will not like it
+                incr_dict[DELTAP_NAME] = delta_k
+                current_job += f"exec, find_deltp_response({accel_inst.nat_tunes[0]:2.2f}, {accel_inst.nat_tunes[1]:2.2f},{accel_inst.beam},{delta_k:.15e}, '{str(temp_dir/f'twiss.{DELTAP_NAME}')}');\n"
 
         jobfile_path.write_text(current_job)
     return incr_dict
@@ -164,7 +169,7 @@ def _load_madx_results(
     """ Load the madx results in parallel and return var-tfs dictionary """
     LOG.debug("Loading Madx Results.")
     vars_and_paths = []
-    for value in variables + ['deltp', '0']:
+    for value in variables + ['0']:
         vars_and_paths.append((value, temp_dir))
     var_to_twiss = {}
     for var, tfs_data in process_pool.map(_load_and_remove_twiss, vars_and_paths):
@@ -200,15 +205,6 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
         resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
     )
 
-    # calculate the phase advance between each BPM ------------------------------
-    mdl_mus = var_to_twiss[  "0"  ][[f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]]
-    res_mus = var_to_twiss["deltp"][[f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]]
-    
-    mdl_advance = (mdl_mus.shift(-1) - mdl_mus).dropna() # shift to get the phase between BPMs
-    res_advance = (res_mus.shift(-1) - res_mus).dropna() # dropna to remove last BPM (Not in measurement anyway)
-    
-    DPP_df = (res_advance - mdl_advance).div(var_to_twiss["deltp"][INCR][:-1], axis=0)
-    DPP_df = pd.concat([DPP_df[f"{PHASE_ADV}X"], DPP_df[f"{PHASE_ADV}Y"]], keys=[f"X", f"Y"], axis=0)
     # ---------------------------------------------------------------------------
 
     # subtracting nominal model from data
@@ -242,7 +238,6 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
             f"{F1010}R": pd.DataFrame(data=resp[columns.index(f"{F1010}R")], index=bpms, columns=keys).astype(np.float64),
             f"{F1010}I": pd.DataFrame(data=resp[columns.index(f"{F1010}I")], index=bpms, columns=keys).astype(np.float64),
             f"{TUNE}": pd.DataFrame(data=Q_arr, index=[f"{TUNE}1", f"{TUNE}2"], columns=keys).astype(np.float64),
-            f"DPP": DPP_df,
         }
 
 
