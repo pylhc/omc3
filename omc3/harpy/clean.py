@@ -64,7 +64,7 @@ def _cut_cleaning(harpy_input, bpm_data, model):
     _report_clean_stats(original_bpms.size, bpm_data.index.size)
     bpm_data = _fix_polarity(harpy_input.wrong_polarity_bpms, bpm_data)
     if model is not None and harpy_input.first_bpm is not None:
-        bpm_data = _resync_bpms(harpy_input, bpm_data, model)
+        bpm_data = resync_bpms(harpy_input, bpm_data, model)
     return bpm_data, bad_bpms_with_reasons
 
 
@@ -161,14 +161,29 @@ def _fix_polarity(wrong_polarity_names, bpm_data):
     return bpm_data
 
 
-def _resync_bpms(harpy_input, bpm_data, model):
-    """Resynchronizes BPMs between the injection point and start of the lattice."""
+def resync_bpms(first_bpm: str, bpm_data: pd.DataFrame, model: pd.DataFrame, opposite_direction: bool) -> pd.DataFrame:
+    """Resynchronizes BPMs between the injection point and start of the lattice.
+    
+    This function takes all BPMs after (or before, in case of oppsite direction) 
+    the injection point and shifts their tbt data by minus one turn.
+    The last turn in the data is then dropped. 
+
+    Args:
+        first_bpm: name of the first BPM after injection
+        bpm_data: DataFrame of BPM tunr-by-turn data
+        model: DataFrame of model
+        opposite_direction: Circulation direction of beam. 
+                            True for opposite direction as given in model.
+    """
     LOGGER.debug("Will resynchronize BPMs")
-    bpm_pos = model.index.get_loc(harpy_input.first_bpm)
-    if harpy_input.opposite_direction:
-        mask = np.array([x in model.index[bpm_pos::-1] for x in bpm_data.index])
+    
+    bpm_pos = model.index.get_loc(first_bpm)
+    if opposite_direction:
+        selected_indices = model.index[:bpm_pos]
     else:
-        mask = np.array([x in model.index[bpm_pos:] for x in bpm_data.index])
+        selected_indices = model.index[bpm_pos:]
+
+    mask = bpm_data.index.isin(selected_indices)
     bpm_data.loc[mask] = np.roll(bpm_data.loc[mask], -1, axis=1)
     return bpm_data.iloc[:, :-1]
 

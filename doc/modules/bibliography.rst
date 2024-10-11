@@ -24,3 +24,9 @@ Bibliography
     `Local correction of quadrupole errors at LHC interaction regions using action and phase jump analysis on turn-by-turn beam position data`,
     Phys. Rev. ST Accel. Beams 20, 111004 (2017).
     https://link.aps.org/doi/10.1103/PhysRevAccelBeams.20.111004
+
+.. [CardonaCalibrationBeamPosition2021]
+    J. Cardona,
+    `Calibration of beam position monitors for high energy accelerators based on average trajectories`,
+    arxiv 2103.03964 (2021).
+    http://arxiv.org/abs/2103.03964
