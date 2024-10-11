@@ -110,10 +110,13 @@ def _generate_madx_jobs(
         if proc_idx == num_proc - 1:
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}';\n"
             if dodeltap:
-                # Overwrite the deltap twiss file with one that includes matching and correction
-                # Note: do not do delta_k:+.15e in a macro input - MADX will not like it
                 incr_dict[DELTAP_NAME] = delta_k
-                current_job += f"exec, find_deltp_response({accel_inst.nat_tunes[0]:2.2f}, {accel_inst.nat_tunes[1]:2.2f},{accel_inst.beam},{delta_k:.15e}, '{str(temp_dir/f'twiss.{DELTAP_NAME}')}');\n"
+                current_job += f"""
+                    twiss, deltap={delta_k:+.15e};
+                    correct, mode=svd;
+                    exec, match_tunes({accel_inst.nat_tunes[0]:2.2f}, {accel_inst.nat_tunes[1]:2.2f}, {accel_inst.beam});
+                    twiss, deltap={delta_k:+.15e}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';
+                """
 
         jobfile_path.write_text(current_job)
     return incr_dict
