@@ -39,7 +39,7 @@ from omc3.optics_measurements.constants import (
     MEASUREMENT,
     DELTA, F1010_NAME, F1001_NAME
 )
-from omc3.optics_measurements.phase import PhaseDict, CompensationMode, UNCOMPENSATED, COMPENSATED
+from omc3.optics_measurements.phase import CompensationMode, UNCOMPENSATED, COMPENSATED
 from omc3.utils import logging_tools, stats
 
 from typing import TYPE_CHECKING 
@@ -47,6 +47,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING: 
     from generic_parser import DotDict 
     from omc3.optics_measurements.data_models import InputFiles
+    from omc3.optics_measurements.phase import PhaseDict
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -58,7 +59,7 @@ CUTOFF: int = 5
 def calculate_coupling(
     meas_input: DotDict,
     input_files: InputFiles,
-    phase_dict: dict[str, tuple[PhaseDict, Sequence[tfs.TfsDataFrame]]],
+    phase_results: dict[str, tuple[PhaseDict, Sequence[tfs.TfsDataFrame]]],
     tune_dict: dict[str, float],
     header_dict: dict,
 ) -> None:
@@ -78,7 +79,7 @@ def calculate_coupling(
         meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
         input_files (dict): `InputFiles` (dict) object containing frequency spectra files (linx/y) for
             each transverse plane (as keys).
-        phase_dict (dict[str, tuple[PhaseDict, tfs.TfsDataFrame]]): dictionary containing
+        phase_results (dict[str, tuple[PhaseDict, tfs.TfsDataFrame]]): dictionary containing
             the measured phase advances, with an entry for each transverse plane. In said entry is a
             dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
             the location of the output ``TfsDataFrames`` for the phases.
@@ -99,13 +100,13 @@ def calculate_coupling(
     joined: tfs.TfsDataFrame = _joined_frames(input_files)  # merge transverse input frames
     joined_index: pd.Index = (
         meas_input.accelerator.model.index.intersection(joined.index)
-        .intersection(phase_dict["X"][compensation][MEASUREMENT].index)
-        .intersection(phase_dict["Y"][compensation][MEASUREMENT].index)
+        .intersection(phase_results["X"][compensation][MEASUREMENT].index)
+        .intersection(phase_results["Y"][compensation][MEASUREMENT].index)
     )
     joined = joined.loc[joined_index].copy()
 
-    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
-    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
+    phases_x: tfs.TfsDataFrame = phase_results["X"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
+    phases_y: tfs.TfsDataFrame = phase_results["Y"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:

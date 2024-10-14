@@ -8,7 +8,7 @@ It provides functions to compute betatron phase advances and structures to store
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -47,9 +47,9 @@ if TYPE_CHECKING:
     from omc3.model.accelerators.accelerator import Accelerator
     from omc3.optics_measurements.tune import TuneDict
 
-    PhaseDict: TypeAlias = dict[str, dict[str, pd.DataFrame]]
-    
-
+PhaseDict = TypedDict(
+    'PhaseDict', {MODEL: pd.DataFrame, MEASUREMENT: pd.DataFrame, f'{ERR}{MEASUREMENT}': pd.DataFrame}
+)
 LOGGER = logging_tools.get_logger(__name__)
 
 class CompensationMode:
@@ -83,9 +83,11 @@ def calculate(
         no_errors (bool): if ``True``, measured errors shall not be propagated (only their spread).
 
     Returns:
-        A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry
-        is a dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
-        the location of the output ``TfsDataFrames`` for the phases.
+        A tuple of a dictionary and a list of corresponding phase DataFrames.
+        The dictionary contains the compensated and uncompensated results in `PhaseDict` form, 
+        i.e. a dictionary of DataFrames with the phase models, measured and errors.
+        The list contains the DataFrames with the phase advances between BPMs and the total phase advances,
+        for both compensated and uncompensated cases.
     """
     # Clean up compensation mode
     if meas_input.compensation is None:
@@ -105,9 +107,9 @@ def calculate(
     )
 
     if meas_input.compensation == CompensationMode.NONE:
-        uncompensated_phase_advances = phase_advances
+        uncompensated_phase_advances = None 
     else:
-        LOGGER.info("-- Run phase calculation without uncompensated")
+        LOGGER.info("-- Run phase calculation without compensation")
 
         uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(
             meas_input,
@@ -119,7 +121,7 @@ def calculate(
             no_errors,
         )
         dfs = dfs + drv_dfs
-
+    
     if len(phase_advances[MEASUREMENT].index) < 3:
         LOGGER.warning("Less than 3 non-NaN phase-advances found. "
                        "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
