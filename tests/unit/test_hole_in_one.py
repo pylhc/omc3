@@ -55,6 +55,7 @@ def test_hole_in_two(tmp_path, clean, which_files, caplog):
     Test that is closely related to how actual analysis are done.
     """
     # Run harpy on the SDDS file
+    rdt_order = 3
     analysis_output = tmp_path / "analysis_output"
     sdds_files = _get_sdds_files(which_files)
     hole_in_one_entrypoint(
@@ -62,6 +63,7 @@ def test_hole_in_two(tmp_path, clean, which_files, caplog):
         clean=clean,
         output_bits=8,
         turn_bits=10,
+        resonances=rdt_order,
         autotunes="transverse",
         outputdir=analysis_output,
         files=sdds_files,
@@ -88,13 +90,14 @@ def test_hole_in_two(tmp_path, clean, which_files, caplog):
                 files=[analysis_output / sdds_file.name for sdds_file in sdds_files],
                 compensation=compensation,
                 nonlinear=['rdt', 'crdt'],
+                rdt_magnet_order=rdt_order,
                 outputdir=optics_output,
                 analyse_dpp=dpp,
             )
 
             _check_linear_optics_files(optics_output, off_momentum=(which_files == "all"))
-            _check_nonlinear_optics_files(optics_output, "rdt")
-            _check_nonlinear_optics_files(optics_output, "crdt")
+            _check_nonlinear_optics_files(optics_output, "rdt", order=rdt_order)
+            _check_nonlinear_optics_files(optics_output, "crdt", order=rdt_order)
 
             _check_caplog_for_rdt_warnings(
                 caplog, 
@@ -110,6 +113,7 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
     """
     This test runs harpy, optics and optics analysis in one.
     """
+    rdt_order = 3
     output = tmp_path / "output"
     files = _get_sdds_files(which_files)
     hole_in_one_entrypoint(
@@ -118,6 +122,7 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         clean=clean,
         output_bits=8,
         turn_bits=10,
+        resonances=rdt_order,
         autotunes="transverse",
         outputdir=output,
         files=files,
@@ -127,6 +132,7 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         compensation=phase.CompensationMode.NONE,
         coupling_method=2,
         nonlinear=['rdt', 'crdt'],
+        rdt_magnet_order=rdt_order,
         unit="mm",
         beam=1,
         accel="lhc",
@@ -139,8 +145,8 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         _check_all_harpy_files(output / LINFILES_SUBFOLDER, sdds_file)
 
     _check_linear_optics_files(output, off_momentum=(which_files == "all"))
-    _check_nonlinear_optics_files(output, "rdt")
-    _check_nonlinear_optics_files(output, "crdt")
+    _check_nonlinear_optics_files(output, "rdt", order=rdt_order)
+    _check_nonlinear_optics_files(output, "crdt", order=rdt_order)
     
     _check_caplog_for_rdt_warnings(
         caplog, 
@@ -179,12 +185,12 @@ def _check_linear_optics_files(outputdir: Path, off_momentum: bool = False):
 
 
 
-def _check_nonlinear_optics_files(outputdir: Path, type_: str):
+def _check_nonlinear_optics_files(outputdir: Path, type_: str, order: int):
     assert outputdir.is_dir()
     nonlin_dir = outputdir / type_
     assert nonlin_dir.is_dir()
 
-    magnets = ["octupole", "sextupole", "quadrupole"]
+    magnets = ["quadrupole", "sextupole", "octupole"][:order-1]
     for magnet in magnets:
         for orientation in ("normal", "skew"):
             full_manget_name = f"{orientation}_{magnet}"
