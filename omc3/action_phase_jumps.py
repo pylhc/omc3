@@ -53,11 +53,6 @@ class ActionPhaseData:
         """ Function to check if the given elements should be used for action and phase calculations. """
         raise NotImplementedError
 
-    def cycle_model(self, model: tfs.TfsDataFrame, start_element: str) -> tfs.TfsDataFrame:
-        """ Cycles the model so that the first element is the given start_element. """
-        LOG.warning("Cycle model not implemented for this ActionPhaseData class. Returning model as is.")
-        return model
-
 
 class LHCActionPhaseData(ActionPhaseData):
     
@@ -101,7 +96,6 @@ def cycle_model(model: tfs.TfsDataFrame, start_element: str) -> tfs.TfsDataFrame
     cycled_model = tfs.TfsDataFrame(cycled_model, headers=model.headers)
 
     start_values = cycled_model.loc[start_element, :]
-    
 
     cycled_model[S] = (cycled_model[S] - start_values[S]) % cycled_model.headers[LENGTH]
     for q, plane in zip((QX, QY), PLANES):
@@ -111,7 +105,8 @@ def cycle_model(model: tfs.TfsDataFrame, start_element: str) -> tfs.TfsDataFrame
     return cycled_model
 
 
-def get_action_phase_from_two_bpms(df_data: pd.DataFrame, 
+def get_action_phase_from_two_bpms(
+    df_data: pd.DataFrame, 
     plane: str, 
     bpm1: ArrayLikeStr, 
     bpm2: ArrayLikeStr,
@@ -316,21 +311,6 @@ def calculate_error_kick_strengths(
     return np.sign(sign) * magnitude
 
 
-def name_tbd(orbit_data: pd.DataFrame, model: tfs.TfsDataFrame) -> pd.DataFrame:
-    
-
-    for plane in PLANES:
-        data = model.loc[orbit_data.index, [S, f"{BETA}{plane}", f"{PHASE_ADV}{plane}"]]
-        data.loc[:, plane] = orbit_data[f"{AVERAGED}{MAX}{plane}"]
-
-        action, phase = get_action_phase_from_two_bpms(data, plane, data.index[:-1], data.index[1:])
-
-        # sort into left and right BPMs, use only BPMs allowed (lhc = even bpms)
-        # calculate action and phases
-        # calculate average action and average phase on filtered data 
-
-
-
 def filter_data(data: Sequence[float], n_sigma: float = 2) -> Sequence[float]:
     """ Filter data within the n-sigma range around the mean. 
     Before sigma calculation, the data is also filtered for outliers.
@@ -347,10 +327,27 @@ def filter_data(data: Sequence[float], n_sigma: float = 2) -> Sequence[float]:
     return data[(data < mean + n_sigma * std) & (data > mean - n_sigma * std)]
 
 
-def estimate_orbit(model: tfs.TfsDataFrame, location: ArrayLikeStr, reference: ArrayLikeStr, phase: float, plane: str) -> ArrayLikeNumber:
+def estimate_orbit(
+    model: tfs.TfsDataFrame, 
+    location: ArrayLikeStr, 
+    reference: ArrayLikeStr, 
+    phase: float, 
+    plane: str
+    ) -> ArrayLikeNumber:
     """ Estimate the orbit at a certain location, given lattice functions and orbit close by.
     This is Eq. 14 in [CardonaCalibrationBeamPosition2021]_ , of which the simplified form is also 
     given as Eq. 10 in [CardonaLocalCorrectionQuadrupole2017]_ .
+
+    Args:
+        model (tfs.TfsDataFrame): TfsDataFrame with lattice functions.
+        location (ArrayLikeStr): Location to estimate orbit at.
+        reference (ArrayLikeStr): Location to use as reference orbit.
+        phase (float): Phase (delta) at the location.
+        plane (str): 'X' or 'Y'.
+
+    Returns:
+        ArrayLikeNumber: Estimated orbit.    
+
     """
     beta_ratio = (
         model.loc[location, f"{BETA}{plane}"] / 
@@ -361,6 +358,21 @@ def estimate_orbit(model: tfs.TfsDataFrame, location: ArrayLikeStr, reference: A
         np.sin(2 * np.pi * model.loc[reference, f"{PHASE_ADV}{plane}" - phase])
     )
     return model.loc[location, plane] * np.sqrt(beta_ratio) * sin_ratio
+
+
+def name_tbd(orbit_data: pd.DataFrame, model: tfs.TfsDataFrame) -> pd.DataFrame:
+    
+
+    for plane in PLANES:
+        data = model.loc[orbit_data.index, [S, f"{BETA}{plane}", f"{PHASE_ADV}{plane}"]]
+        data.loc[:, plane] = orbit_data[f"{AVERAGED}{MAX}{plane}"]
+
+        action, phase = get_action_phase_from_two_bpms(data, plane, data.index[:-1], data.index[1:])
+
+        # sort into left and right BPMs, use only BPMs allowed (lhc = even bpms)
+        # calculate action and phases
+        # calculate average action and average phase on filtered data 
+
 
 
 def action_phase_jumps(accel, beam, ip):
