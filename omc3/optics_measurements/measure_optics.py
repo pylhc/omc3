@@ -6,29 +6,42 @@ This module contains high-level functions to manage most functionality of ``opti
 It provides functions to compute various lattice optics parameters from frequency spectra.
 """
 from __future__ import annotations
+
 import datetime
 import os
-from pathlib import Path
 import sys
 from copy import deepcopy
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
-
 import tfs
+
 from omc3 import __version__ as VERSION
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements import (beta_from_amplitude, beta_from_phase,
-                                      chromatic, dispersion, interaction_point, kick, phase, rdt,
-                                      tune, crdt, coupling)
+from omc3.optics_measurements import (
+    beta_from_amplitude,
+    beta_from_phase,
+    chromatic,
+    coupling,
+    crdt,
+    dispersion,
+    interaction_point,
+    kick,
+    phase,
+    rdt,
+    tune,
+)
 from omc3.optics_measurements.constants import (
-    CHROM_BETA_NAME, EXT, CALIBRATION_FILE, NAME
+    CALIBRATION_FILE,
+    CHROM_BETA_NAME,
+    EXT,
+    NAME,
 )
 from omc3.utils import iotools, logging_tools
 
-from typing import TYPE_CHECKING 
-
 if TYPE_CHECKING: 
-    from generic_parser import DotDict 
+    from generic_parser import DotDict
     from omc3.optics_measurements.data_models import InputFiles
 
 

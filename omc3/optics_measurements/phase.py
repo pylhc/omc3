@@ -16,20 +16,20 @@ import tfs
 
 from omc3.optics_measurements.constants import (
     DELTA,
+    DRIVEN_PHASE_NAME,
+    DRIVEN_TOTAL_PHASE_NAME,
     ERR,
     EXT,
     MDL,
-    PHASE_NAME,
-    DRIVEN_PHASE_NAME,
-    SPECIAL_PHASE_NAME,
-    TOTAL_PHASE_NAME,
-    DRIVEN_TOTAL_PHASE_NAME,
+    MEASUREMENT,
+    MODEL,
     NAME,
     PHASE,
     PHASE_ADV,
+    PHASE_NAME,
+    SPECIAL_PHASE_NAME,
+    TOTAL_PHASE_NAME,
     S,
-    MEASUREMENT, 
-    MODEL,
 )
 from omc3.optics_measurements.data_models import (
     InputFiles,
@@ -48,7 +48,11 @@ if TYPE_CHECKING:
     from omc3.optics_measurements.tune import TuneDict
 
 PhaseDict = TypedDict(
-    'PhaseDict', {MODEL: pd.DataFrame, MEASUREMENT: pd.DataFrame, f'{ERR}{MEASUREMENT}': pd.DataFrame}
+    'PhaseDict', {
+        MODEL: pd.DataFrame, 
+        MEASUREMENT: pd.DataFrame, 
+        f'{ERR}{MEASUREMENT}': pd.DataFrame
+    }
 )
 LOGGER = logging_tools.get_logger(__name__)
 
