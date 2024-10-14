@@ -8,7 +8,7 @@ It provides functions to compute betatron phase advances and structures to store
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, TypeAlias, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -121,7 +121,7 @@ def calculate(
             no_errors,
         )
         dfs = dfs + drv_dfs
-    
+
     if len(phase_advances[MEASUREMENT].index) < 3:
         LOGGER.warning("Less than 3 non-NaN phase-advances found. "
                        "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
