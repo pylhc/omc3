@@ -114,7 +114,7 @@ def calculate(measure_input: DotDict, input_files: InputFiles, invariants, heade
         result_df[REAL] = np.cos(PI2 * result_df[PHASE].to_numpy()) * result_df[AMPLITUDE].to_numpy()
         result_df[IMAG] = np.sin(PI2 * result_df[PHASE].to_numpy()) * result_df[AMPLITUDE].to_numpy()
 
-        write(result_df. loc[:, ["S", AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}', REAL, IMAG]],
+        write(result_df.loc[:, ["S", AMPLITUDE, f'{ERR}{AMPLITUDE}', PHASE, f'{ERR}{PHASE}', REAL, IMAG]],
               add_line_and_freq_to_header(header, crdt), measure_input, crdt['order'], crdt['term'])
 
 
@@ -138,7 +138,7 @@ def add_line_and_freq_to_header(header, crdt):
 
 
 def write(df, header, meas_input, order, crdt):
-    outputdir = Path(meas_input.outputdir)/"crdt"/order
+    outputdir = Path(meas_input.outputdir) / "crdt" / order
     iotools.create_dirs(outputdir)
     tfs.write(str(outputdir/f"{crdt}{EXT}"), df, header, save_index='NAME')
 

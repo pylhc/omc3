@@ -8,7 +8,7 @@ It provides functions to compute betatron phase advances and structures to store
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 import numpy as np
 import pandas as pd
@@ -47,7 +47,7 @@ if TYPE_CHECKING:
     from omc3.model.accelerators.accelerator import Accelerator
     from omc3.optics_measurements.tune import TuneDict
 
-    PhaseDict = dict[str, dict[str, pd.DataFrame]]
+    PhaseDict: TypeAlias = dict[str, dict[str, pd.DataFrame]]
     
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -61,6 +61,8 @@ class CompensationMode:
     def all(cls) -> list[str]:
         return [cls.NONE, cls.MODEL, cls.EQUATION]
 
+UNCOMPENSATED: str = "uncompensated"
+COMPENSATED: str = "compensated"
 
 def calculate(
     meas_input: DotDict,
@@ -68,17 +70,17 @@ def calculate(
     tunes: TuneDict,
     plane: str,
     no_errors: bool = False,
-) -> tuple[dict[str, PhaseDict], list[pd.DataFrame, pd.DataFrame]]:
+) -> tuple[dict[str, PhaseDict], list[pd.DataFrame]]:
     """
     Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
     dictionary combining the results for each transverse plane.
 
     Args:
-        meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
-        input_files (dict): `InputFiles` object containing frequency spectra files (linx/y).
-        tunes:
-        plane:
-        no_errors:
+        meas_input (DotDict): `OpticsInput` object containing analysis settings from the command-line.
+        input_files (InputFiles): `InputFiles` object containing frequency spectra files (linx/y).
+        tunes (TuneDict): `TuneDict` contains measured tunes.
+        plane (str): marking the horizontal or vertical plane, **X** or **Y**.
+        no_errors (bool): if ``True``, measured errors shall not be propagated (only their spread).
 
     Returns:
         A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry
@@ -91,7 +93,7 @@ def calculate(
     else:
         meas_input.compensation = meas_input.compensation.lower()
 
-    LOGGER.info("-- Run on free model")
+    LOGGER.info("-- Run phase calculation with compensation")
     phase_advances, dfs = _calculate_with_compensation(
         meas_input,
         input_files,
@@ -105,14 +107,7 @@ def calculate(
     if meas_input.compensation == CompensationMode.NONE:
         uncompensated_phase_advances = phase_advances
     else:
-        LOGGER.info("-- Run on driven model")
-
-        # TODO:Verify this is correct (that's how it was implemented before)
-        driven_compensation = (
-            CompensationMode.EQUATION 
-            if meas_input.compensation == CompensationMode.EQUATION else 
-            CompensationMode.NONE
-        )
+        LOGGER.info("-- Run phase calculation without uncompensated")
 
         uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(
             meas_input,
@@ -120,11 +115,10 @@ def calculate(
             tunes,
             plane,
             meas_input.accelerator.model_driven,
-            driven_compensation, 
+            CompensationMode.NONE, 
             no_errors,
         )
         dfs = dfs + drv_dfs
-
 
     if len(phase_advances[MEASUREMENT].index) < 3:
         LOGGER.warning("Less than 3 non-NaN phase-advances found. "
@@ -136,7 +130,7 @@ def calculate(
                        "- are you using a machine with less than 3 BPMs? Oh dear."
         )
 
-    return {'free': phase_advances, 'uncompensated': uncompensated_phase_advances}, dfs
+    return {COMPENSATED: phase_advances, UNCOMPENSATED: uncompensated_phase_advances}, dfs
 
 
 def _calculate_with_compensation(
