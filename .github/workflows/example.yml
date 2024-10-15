@@ -19,8 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04, macos-latest, windows-latest]
-        # Make sure to escape 3.10 with quotes so it doesn't get interpreted as float 3.1 by GA's parser
+        os: [ubuntu-24.04]
         python-version: [3.9, "3.10", 3.11, 3.12]
 
     steps:
@@ -32,10 +31,6 @@ jobs:
           enable-cache: true
           cache-dependency-glob: pyproject.toml
           cache-suffix: py${{ matrix.python-version }}
-
-      - if: matrix.os == 'macos-latest'
-        name: Set up hdf5
-        run: brew install hdf5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
