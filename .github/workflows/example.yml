@@ -1,0 +1,50 @@
+# Runs all tests 
+name: All Tests
+
+defaults:
+  run:
+    shell: bash
+
+on:  # Runs on any push event to any branch except master (the coverage workflow takes care of that)
+  push:
+    branches-ignore:
+      - 'master'
+
+env:
+  UV_SYSTEM_PYTHON: 1  # so that uv pip installs in the system python installed by actions/setup-python
+
+jobs:
+  uv-example: 
+    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, macos-latest, windows-latest]
+        # Make sure to escape 3.10 with quotes so it doesn't get interpreted as float 3.1 by GA's parser
+        python-version: [3.9, "3.10", 3.11, 3.12]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - if: matrix.os == 'macos-latest'
+        name: Set up hdf5
+        run: brew install hdf5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install project package
+        run: uv pip install '.[test]'
+
+#       - name: Run Tests
+#         run: python -m pytest
+
+      - name: Minimize uv cache
+        run: uv cache prune --ci
