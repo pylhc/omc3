@@ -141,14 +141,13 @@ def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict
 
 
 def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict):
-    compensation = "None" if meas_input.compensation == phase.CompensationMode.NONE else f"by {meas_input.compensation}"
     return {
         "Measure_optics:version": VERSION,
         "Command": f"{sys.executable} {' '.join(sys.argv)}",
         "CWD": Path.cwd().absolute(),
         "Date": datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S"),
         "Model_directory": meas_input.accelerator.model_dir,
-        "Compensation": compensation,
+        "Compensation": meas_input.compensation,
         "Q1": tune_dict["X"]["QF"],
         "Q2": tune_dict["Y"]["QF"],
     }
