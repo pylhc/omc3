@@ -38,5 +38,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install project package
-        run: uv pip install '.[test]' -v
-
+        run: uv pip install '.[test]'
