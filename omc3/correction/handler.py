@@ -17,14 +17,14 @@ import tfs
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction import filters, model_appenders, response_twiss
+from omc3.correction import filters, model_appenders, response_twiss, response_madx
 from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
                                                 F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
-                                                PHASE, PHASE_NAME, TUNE)
+                                                PHASE, PHASE_NAME, TUNE, DELTAP_NAME)
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
 
@@ -92,7 +92,11 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                 # please look away for the next two lines.
                 accel_inst._model = corr_model
                 accel_inst._elements = corr_model_elements
-                resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
+                if DELTAP_NAME in opt.variable_categories:
+                    accel_inst.dpp = delta[DELTA][DELTAP_NAME]
+                    resp_dict = response_madx.create_fullresponse(accel_inst, opt.variable_categories)
+                else:
+                    resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
