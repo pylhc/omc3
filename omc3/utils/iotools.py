@@ -4,12 +4,14 @@ IO Tools
 
 Helper functions for input/output issues.
 """
-import os
+from __future__ import annotations
+
 import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Any, Callable, Iterator, Union
+from typing import Any
+from collections.abc import Callable, Iterator
 
 from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
@@ -170,7 +172,7 @@ def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
     return dict_
 
 
-def replace_in_path(path: Path, old: Union[Path, str], new: Union[Path, str]) -> Path:
+def replace_in_path(path: Path, old: Path | str, new: Path | str) -> Path:
     """ Replace a part of a path with a new path. 
     Useful for example to replace the original path with a path to a symlink or vice versa.
 
@@ -214,7 +216,7 @@ def maybe_add_command(opt: dict, script: str) -> dict:
 
 
 def save_config(output_dir: Path, opt: dict, script: str,
-                unknown_opt: Union[dict, list] = None):
+                unknown_opt: dict | list = None):
     """
     Quick wrapper for ``save_options_to_config``.
 
