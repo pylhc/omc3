@@ -30,7 +30,7 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-          cache-dependency-glob: project/pyproject.toml.jinja
+          cache-dependency-glob: pyproject.toml
           cache-suffix: py${{ matrix.python-version }}
 
       - if: matrix.os == 'macos-latest'
