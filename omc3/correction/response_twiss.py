@@ -117,7 +117,7 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
     https://cds.cern.ch/record/2632945/
 
 """
-from typing import Dict, List, Sequence
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -801,7 +801,7 @@ def upper(list_of_strings: Sequence[str]) -> Sequence[str]:
     return [item.upper() for item in list_of_strings]
 
 
-def get_phase_advances(twiss_df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+def get_phase_advances(twiss_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     """
     Calculate phase advances between all elements
 
@@ -840,7 +840,7 @@ def tau(data, q):
 def create_response(
     accel_inst: Accelerator,
     vars_categories: Sequence[str],
-    optics_params: List[str],
+    optics_params: list[str],
 ) -> dict:
     """ Wrapper to create response via TwissResponse """
     LOG.debug("Creating response via TwissResponse.")

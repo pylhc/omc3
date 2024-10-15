@@ -358,7 +358,7 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
             correction_files,
             accel_inst,
             meas_masks,
-            opt.variable_categories,
+            [], # Empty variable categories
         )
 
     if opt.plot:
