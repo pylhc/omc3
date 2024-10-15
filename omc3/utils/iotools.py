@@ -21,37 +21,38 @@ from omc3.utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 
-def copy_content_of_dir(src_dir, dst_dir):
+def copy_content_of_dir(src_dir: Path, dst_dir: Path):
     """Copies all files and directories from ``src_dir`` to ``dst_dir``."""
-    if not os.path.isdir(src_dir):
+    if not src_dir.is_dir():
+        LOG.warning(f"Cannot copy content of {src_dir}, as it is not a directory.")
         return
 
     create_dirs(dst_dir)
 
-    for item in os.listdir(src_dir):
-        src_item = os.path.join(src_dir, item)
-        dst_item = os.path.join(dst_dir, item)
-        copy_item(src_item, dst_item)
+    for item in src_dir.glob("*"):
+        copy_item(src_dir / item, dst_dir / item)
 
 
-def create_dirs(path_to_dir):
-    """Creates all dirs to ``path_to_dir`` if not exists."""
+def create_dirs(path_to_dir: str | Path):
+    """Creates all dirs to ``path_to_dir`` if not exists.
+    TODO: Change all calls to use only Path.
+    """
     path_to_dir = Path(path_to_dir)
     if not path_to_dir.exists():
         path_to_dir.mkdir(parents=True)
         LOG.debug(f"Created directory structure: '{path_to_dir}'")
 
 
-def copy_item(src_item, dest):
+def copy_item(src_item: Path, dst_item: Path):
     """
     Copies a file or a directory to ``dest``, which may be a directory.
     If ``src_item`` is a directory then all containing files and dirs will be copied into ``dest``.
     """
     try:
-        if os.path.isfile(src_item):
-            shutil.copy2(src_item, dest)
-        elif os.path.isdir(src_item):
-            copy_content_of_dir(src_item, dest)
+        if src_item.is_file():
+            shutil.copy2(src_item, dst_item)
+        elif src_item.is_dir():
+            copy_content_of_dir(src_item, dst_item)
         else:
             raise IOError
     except IOError:

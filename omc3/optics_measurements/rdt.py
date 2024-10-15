@@ -20,7 +20,7 @@ from scipy.optimize import OptimizeWarning, curve_fit
 from scipy.sparse import diags
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import COL_AMP
+from omc3.harpy.constants import COL_AMP, COL_PHASE
 from omc3.optics_measurements.constants import (
     AMPLITUDE,
     COUNT,
@@ -249,7 +249,7 @@ def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invar
     phase_sign, suffix = get_line_sign_and_suffix(line, input_files, plane)
 
     df_all_amps = input_files.joined_frame(plane, [f"{COL_AMP}{suffix}"], dpp_value=dpp_value)
-    df_all_phases = phase_sign * input_files.joined_frame(plane, [f"{PHASE}{suffix}"], dpp_value=dpp_value)
+    df_all_phases = phase_sign * input_files.joined_frame(plane, [f"{COL_PHASE}{suffix}"], dpp_value=dpp_value)
 
     comp_coeffs1 = to_complex(df_all_amps.loc[df.index, :], df_all_phases.loc[df.index, :])
     # Multiples of tunes needs to be added to phase at second BPM if that is in second turn

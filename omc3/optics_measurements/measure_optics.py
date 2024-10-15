@@ -134,30 +134,36 @@ def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict
             dpp_meas_input = deepcopy(measure_input)
             dpp_meas_input["dpp"] = dpp_val
             phase_res, out_dfs = phase.calculate(dpp_meas_input, input_files, tune_dict, plane)
-            beta_df, _ = beta_from_phase.calculate(dpp_meas_input, tune_dict, phase_res["free"], {}, plane)
+            beta_df, _ = beta_from_phase.calculate(dpp_meas_input, tune_dict, phase_res[phase.COMPENSATED], {}, plane)
             betas.append(beta_df)
         output_df = chromatic.calculate_w_and_phi(betas, dpps, input_files, measure_input, plane)
-        tfs.write(os.path.join(measure_input.outputdir, f"{CHROM_BETA_NAME}{plane.lower()}{EXT}"), output_df, {}, save_index="NAME")
+        output_path = Path(measure_input.outputdir) / f"{CHROM_BETA_NAME}{plane.lower()}{EXT}"
+        tfs.write(output_path, output_df, save_index=NAME)
 
 
-def _get_header(meas_input, tune_dict):
-    compensation = {'model': "by model", 'equation': "by equation", 'none': "None"}
-    return dict([('Measure_optics:version', VERSION),
-                 ('Command', f"{sys.executable} {' '.join(sys.argv)}"),
-                 ('CWD', os.getcwd()),
-                 ('Date', datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S")),
-                 ('Model_directory', meas_input.accelerator.model_dir),
-                 ('Compensation', compensation[meas_input.compensation]),
-                 ('Q1', tune_dict["X"]["QF"]),
-                 ('Q2', tune_dict["Y"]["QF"])])
+def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict):
+    compensation = "None" if meas_input.compensation == phase.CompensationMode.NONE else f"by {meas_input.compensation}"
+    return {
+        "Measure_optics:version": VERSION,
+        "Command": f"{sys.executable} {' '.join(sys.argv)}",
+        "CWD": os.getcwd(),
+        "Date": datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S"),
+        "Model_directory": meas_input.accelerator.model_dir,
+        "Compensation": compensation,
+        "Q1": tune_dict["X"]["QF"],
+        "Q2": tune_dict["Y"]["QF"],
+    }
 
 
-def copy_calibration_files(outputdir, calibrationdir):
+def copy_calibration_files(outputdir: str|Path, calibrationdir: str|Path):
     if calibrationdir is None:
         return None
     calibs = {}
+    calibrationdir = Path(calibrationdir)
+    outputdir = Path(outputdir)
+
     for plane in PLANES:
         cal_file = CALIBRATION_FILE.format(plane=plane.lower())
-        iotools.copy_item(os.path.join(calibrationdir, cal_file), os.path.join(outputdir, cal_file))
-        calibs[plane] = tfs.read(os.path.join(outputdir, cal_file)).set_index(NAME)
+        iotools.copy_item(calibrationdir / cal_file, outputdir / cal_file)
+        calibs[plane] = tfs.read(outputdir / cal_file, index=NAME)
     return calibs
