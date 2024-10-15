@@ -39,3 +39,4 @@ jobs:
 
       - name: Install project package
         run: uv pip install '.[test]' -v
+
