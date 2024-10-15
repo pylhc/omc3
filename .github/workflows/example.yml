@@ -45,8 +45,5 @@ jobs:
       - name: Install project package
         run: uv pip install '.[test]'
 
-#       - name: Run Tests
-#         run: python -m pytest
-
       - name: Minimize uv cache
         run: uv cache prune --ci
