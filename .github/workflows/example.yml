@@ -39,6 +39,3 @@ jobs:
 
       - name: Install project package
         run: uv pip install '.[test]' -v
-
-      - name: Minimize uv cache
-        run: uv cache prune --ci
