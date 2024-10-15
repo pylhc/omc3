@@ -30,7 +30,8 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-          cache-dependency-glob: "uv.lock"
+          cache-dependency-glob: project/pyproject.toml.jinja
+          cache-suffix: py${{ matrix.python-version }}
 
       - if: matrix.os == 'macos-latest'
         name: Set up hdf5
