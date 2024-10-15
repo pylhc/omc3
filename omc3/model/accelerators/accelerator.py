@@ -317,7 +317,7 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
+    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]], variable_categories: Sequence[str]) -> str:
         """
         Returns job (string) to create an updated model from changeparameters input (used in
         iterative correction).
@@ -327,6 +327,13 @@ class Accelerator:
     def get_base_madx_script(self, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.
+        """
+        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+    
+    def get_update_deltap_script(self) -> str:
+        """
+        Returns job (string) to change the magnets for a given deltap (dpp). 
+        i.e. updating the orbit and matching the tunes.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 

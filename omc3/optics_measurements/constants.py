@@ -24,7 +24,7 @@ IP_NAME: str = "interaction_point_"
 CALIBRATION_FILE: str = "calibration_{plane}.out"
 F1001_NAME: str = "f1001"
 F1010_NAME: str = "f1010"
-DELTAP_NAME: str = "deltap"
+DELTAP_NAME: str = "dpp"
 
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe

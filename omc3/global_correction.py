@@ -62,7 +62,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 - **fullresponse_path**:
 
-    Path to the fullresponse binary file.If not given, calculates the
+    Path to the fullresponse binary file. If not given, calculates the
     response analytically.
 
 

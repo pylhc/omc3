@@ -87,7 +87,7 @@ def _generate_madx_jobs(
     """ Generates madx job-files """
     LOG.debug("Generating MADX jobfiles.")
     incr_dict = {'0': 0.0}
-    dodeltap = accel_inst.NAME == 'lhc' and DELTAP_NAME in variables
+    dodeltap = DELTAP_NAME in variables
     variables = [var for var in variables if var != DELTAP_NAME]
     vars_per_proc = int(np.ceil(len(variables) / num_proc))
 
@@ -109,14 +109,12 @@ def _generate_madx_jobs(
 
         if proc_idx == num_proc - 1:
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}';\n"
-            if dodeltap:
+            if dodeltap: # If DELTAP_NAME is in variables, we run this in the last iteration
+                # Due to the match and correction of the orbit, this needs to be run at the end of the process (here is as good as any)
                 incr_dict[DELTAP_NAME] = delta_k
-                current_job += f"""
-                    twiss, deltap={delta_k:+.15e};
-                    correct, mode=svd;
-                    exec, match_tunes({accel_inst.nat_tunes[0]:2.2f}, {accel_inst.nat_tunes[1]:2.2f}, {accel_inst.beam});
-                    twiss, deltap={delta_k:+.15e}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';
-                """
+                current_job += f"{DELTAP_NAME} = {DELTAP_NAME}{delta_k:+.15e};\n"
+                current_job += accel_inst.get_update_deltap_script()
+                current_job += f"twiss, deltap={DELTAP_NAME}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';\n"
 
         jobfile_path.write_text(current_job)
     return incr_dict

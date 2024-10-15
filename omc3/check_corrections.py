@@ -358,6 +358,7 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
             correction_files,
             accel_inst,
             meas_masks,
+            opt.variable_categories,
         )
 
     if opt.plot:
@@ -462,7 +463,7 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> dict[s
 
 def _create_model_and_write_diff_to_measurements(
         output_dir: Path, measurement: OpticsMeasurement, correction_name: str, correction_files: Sequence[Path],
-        accel_inst: Accelerator, rms_masks: dict) -> OpticsMeasurement:
+        accel_inst: Accelerator, rms_masks: dict, variable_categories: Sequence[str]) -> OpticsMeasurement:
     """ Create a new model with the corrections (well, the "matchings") applied and calculate
     the difference to the nominal model, i.e. the expected improvement of the measurements
     (for detail see main docstring in this file).
@@ -473,7 +474,7 @@ def _create_model_and_write_diff_to_measurements(
 
     # Created matched model
     corr_model_path = output_dir / MODEL_MATCHED_FILENAME
-    corr_model_elements = global_correction._create_corrected_model(corr_model_path, correction_files, accel_inst)  # writes out twiss file!
+    corr_model_elements = global_correction._create_corrected_model(corr_model_path, correction_files, accel_inst, variable_categories)  # writes out twiss file!
     corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, measurement)
     LOG.debug(f"Matched model created in {str(corr_model_path.absolute())}.")
 

@@ -101,6 +101,8 @@ from omc3.model.constants import (
     MACROS_DIR,
     MODIFIER_TAG,
 )
+from omc3.optics_measurements.constants import DELTAP_NAME
+
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
@@ -486,12 +488,26 @@ class Lhc(Accelerator):
                 "has to be specified (--lhcmode option missing?)."
             )
 
-    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str]) -> str:
+    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], variable_categories: Sequence[str]) -> str:
         madx_script = self.get_base_madx_script()
         for corr_file in corr_files:
             madx_script += f"call, file = '{str(corr_file)}';\n"
-        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
+        
+        # Set the dpp in the twiss to the one in the model
+        dpp = self.dpp
+        if DELTAP_NAME in variable_categories: # If the dpp is a variable in the corrections, do twiss, correct, match
+            madx_script += self.get_update_deltap_script()
+            dpp = DELTAP_NAME # Set the dpp to the variable name (this seems the best way to include the update in the corrector script)
+        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {dpp});\n"
         return madx_script
+    
+    def get_update_deltap_script(self) -> str:
+        return f"""
+            {DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e};
+            twiss, deltap={DELTAP_NAME};
+            correct, mode=svd;
+            exec, match_tunes({self.nat_tunes[0]:2.2f}, {self.nat_tunes[1]:2.2f}, {self.beam});
+        """
 
     # Private Methods ##########################################################
 

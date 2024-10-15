@@ -79,7 +79,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             LOG.debug("Updating model via MADX.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst)
+            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, opt.variable_categories)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
@@ -216,9 +216,9 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _create_corrected_model(twiss_out: Path | str, change_params: Sequence[Path], accel_inst: Accelerator) -> tfs.TfsDataFrame:
+def _create_corrected_model(twiss_out: Path | str, change_params: Sequence[Path], accel_inst: Accelerator, variable_categories: Sequence[str]) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params)
+    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params, variable_categories)
     twiss_out_path = Path(twiss_out)
     madx_script = f"! Based on model '{accel_inst.model_dir}'\n" + madx_script
     madx_wrapper.run_string(
