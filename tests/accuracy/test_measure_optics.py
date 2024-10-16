@@ -8,8 +8,9 @@ import tfs
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
-from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME
+from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME, PHASE, ALPHA, BETA, DISPERSION, NORM_DISPERSION
 from omc3.optics_measurements.data_models import InputFiles
+from omc3.optics_measurements.phase import CompensationMode
 from omc3.utils import logging_tools
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
@@ -19,11 +20,11 @@ LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__')  # debugging
 
 LIMITS = {
-    'PHASE': 1e-4,
-    'ALF': 6e-3,
-    'BET': 3e-3,
-    'D': 1.1e-2,
-    'ND': 5e-3,
+    PHASE: 1e-4,
+    ALPHA: 6e-3,
+    BETA: 3e-3,
+    DISPERSION: 1.1e-2,
+    NORM_DISPERSION: 5e-3,
     '': 5e-3  # orbit
 }
 BASE_PATH = Path(__file__).parent.parent / "results"
@@ -32,7 +33,7 @@ INPUTS = Path(__file__).parent.parent / 'inputs'
 DPPS = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]  # defines the slicing
 
 MEASURE_OPTICS_SETTINGS = dict(
-    compensation=["model", "equation", "none"],
+    compensation=CompensationMode.all(),
     coupling_method=[2],
     range_of_bpms=[11],
     three_bpm_method=[False],
