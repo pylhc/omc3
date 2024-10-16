@@ -108,12 +108,18 @@ def _generate_madx_jobs(
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}';\n"
+            if dodeltap and abs(accel_inst.dpp) > 0: # This is here only for multiple iteration of the global correction
+                # By including dpp here, it means that if deltap is in variables and dpp is not 0, the reference (twiss.0) changes 
+                if len(variables) > 0: # To ensure someone is not calculating response matrix of knobs with a twiss.0 that includes dpp
+                    raise NotImplementedError(f"{DELTAP_NAME} and dpp != 0, with additional variables is not implemented.")
+                current_job += accel_inst.get_update_deltap_script() 
+            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}', deltap={DELTAP_NAME};\n"
+            
             if dodeltap: # If DELTAP_NAME is in variables, we run this in the last iteration
-                # Due to the match and correction of the orbit, this needs to be run at the end of the process (here is as good as any)
+                # Due to the match and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[DELTAP_NAME] = delta_k
-                current_job += f"{DELTAP_NAME} = {DELTAP_NAME}{delta_k:+.15e};\n"
-                current_job += accel_inst.get_update_deltap_script()
+                current_job += f"{DELTAP_NAME} = {delta_k:.15e};\n" # Set deltap to delta_k
+                current_job += accel_inst.get_update_deltap_script() # This will add accel_inst.dpp to deltap and do twiss, correct, match
                 current_job += f"twiss, deltap={DELTAP_NAME}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';\n"
 
         jobfile_path.write_text(current_job)
