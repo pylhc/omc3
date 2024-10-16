@@ -502,12 +502,29 @@ class Lhc(Accelerator):
         return madx_script
     
     def get_update_deltap_script(self) -> str:
+        if self._uses_run3_macros():
+            knobx = f"dQx.b{self.beam}_op"
+            knoby = f"dQy.b{self.beam}_op"
+        elif int(self.year) == 2018: # This is very annoying - is there another way?
+            knobx = f"dQx.b{self.beam}"
+            knoby = f"dQy.b{self.beam}"
+        else:
+            knobx = f"KQTD.B{self.beam}"
+            knoby = f"KQTF.B{self.beam}"
         return f"""
-            {DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e};
-            twiss, deltap={DELTAP_NAME};
-            correct, mode=svd;
-            exec, match_tunes({self.nat_tunes[0]:2.2f}, {self.nat_tunes[1]:2.2f}, {self.beam});
-        """
+{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e};
+twiss, deltap={DELTAP_NAME};
+correct, mode=svd;
+
+! The same as match_tunes, but instead, deltap is included in the matching
+exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});
+match, deltap={DELTAP_NAME};
+vary, name={knobx};
+vary, name={knoby};
+constraint, range=#E, mux=total_qx, muy=total_qy;
+lmdif;
+endmatch;
+        """ # Better way to do this and keep correct tabs?
 
     # Private Methods ##########################################################
 
