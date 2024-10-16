@@ -93,8 +93,11 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                 accel_inst._model = corr_model
                 accel_inst._elements = corr_model_elements
                 if DELTAP_NAME in opt.variable_categories:
+                    # Update dpp and create response around this dpp, then reset dpp (So _create_corrected_model is unaffected)
+                    old_dpp = accel_inst.dpp
                     accel_inst.dpp = delta[DELTA][DELTAP_NAME]
                     resp_dict = response_madx.create_fullresponse(accel_inst, opt.variable_categories)
+                    accel_inst.dpp = old_dpp
                 else:
                     resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
