@@ -13,7 +13,8 @@ from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import global_correction_entrypoint as global_correction
 from omc3.optics_measurements.constants import (
     NAME, AMPLITUDE, IMAG, REAL, BETA, DISPERSION,
-    NORM_DISPERSION, F1001, F1010, TUNE, PHASE, ERR, DELTA)
+    NORM_DISPERSION, F1001, F1010, TUNE, PHASE, ERR, DELTA, DELTAP_NAME)
+from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
@@ -157,6 +158,54 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
         diff_rms_prev = diff_rms
 
 
+@pytest.mark.basic
+@pytest.mark.parametrize('dpp', (-2e-4, -1e-4, 1e-4, 7.5e-4))
+def test_lhc_global_correct_dpp(tmp_path, model_inj_beams, dpp):
+    response_path = tmp_path / "full_response_dpp.h5"
+    response_dict = create_response(
+        outfile_path = response_path,
+        variable_categories=[DELTAP_NAME],
+        delta_k=2e-5,
+        **model_inj_beams,
+    )
+
+    # Basic check if response was created correctly
+    for key in response_dict.keys():
+        assert DELTAP_NAME in response_dict[key].columns
+
+    # create and load fake measurement
+    dpp_path = run_dpp(tmp_path, dpp, model_inj_beams.beam)
+    model_df = tfs.read(dpp_path, index=NAME)
+    fake_measurement(
+        twiss = model_df,
+        parameters = [f"{PHASE}X", f"{PHASE}Y"],
+        outputdir = tmp_path,
+    )
+
+    # See if the simulated dpp can be recreated
+    for update_response in [True, False]:
+        diff = np.inf
+        for iteration in range(1, 4): # Must be at least 3 to test convergence
+            global_correction(
+                meas_dir = tmp_path,
+                output_dir = tmp_path,
+                fullresponse_path = response_path,
+                variable_categories=[DELTAP_NAME],
+                optics_params = [f"{PHASE}X", f"{PHASE}Y"],
+                iterations=iteration,
+                update_response=update_response,
+                **model_inj_beams,
+            )
+            result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
+            
+            # Check if the output is correct within 5% (Beam 2 is not as accurate)
+            rtol = 5e-2 if iteration == 1 else 2e-2
+            assert np.isclose(dpp, -result[DELTA][DELTAP_NAME], rtol=rtol), f"Expected {dpp}, got {result[DELTA][DELTAP_NAME]}, diff: {dpp + result[DELTA][DELTAP_NAME]}, iteration: {iteration}"
+
+            # Check if the result is converging or has converged (within 0.1%)
+            rel_diff = np.abs(dpp + result[DELTA][DELTAP_NAME]) / np.abs(dpp)
+            assert diff > rel_diff or np.isclose(diff, rel_diff, atol=1e-3), f"Convergence not reached, diff: {diff} <= {rel_diff}, iteration: {iteration}"
+            diff = rel_diff
 # Helper -----------------------------------------------------------------------
 
 
@@ -195,3 +244,52 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics
             meas[ERROR] = meas.loc[:, f"{ERR}{col}"].to_numpy()
         meas[WEIGHT] = 1.
     return twiss_df, model_df, meas_dict
+
+# Is the following better placed in a folder with reference files, 
+# or to be generated on the fly?
+from omc3 import madx_wrapper
+from omc3.optics_measurements.constants import PHASE_ADV
+def run_dpp(tmp_path, offset, beam):
+    Qx = 62.28001034
+    Qy = 60.31000965
+    script = f"""
+    option, -echo;
+    call, file = 'omc3/model/madx_macros/general.macros.madx';
+    call, file = 'omc3/model/madx_macros/lhc.macros.madx';
+    call, file = 'omc3/model/accelerators/lhc/2018/main.seq';
+    option, echo;
+    exec, cycle_sequences();
+    exec, define_nominal_beams();
+    set, format = '.15e';
+    call, file = 'tests/inputs/models/inj_beam{beam}/opticsfile.1'; !@modifier
+
+    select, flag = twiss, pattern = 'BPM.*B[12]$', column = name, s, {PHASE_ADV}x, {PHASE_ADV}y;
+    use, sequence = LHCB{beam};
+
+    ! Match the tunes initially
+    match, deltap = {offset};
+    vary, name=dQx.b{beam};
+    vary, name=dQy.b{beam};
+    constraint, range = '#E', mux = {Qx}, muy = {Qy};
+    lmdif, tolerance = 1.0e-10;
+    endmatch;
+
+    ! Run a twiss with the offset to get orbit
+    twiss, deltap = {offset};
+
+    ! Correct the orbit
+    correct, mode = svd;
+
+    ! Match the tunes back to normal
+    match, deltap = {offset};
+    vary, name=dQx.b{beam};
+    vary, name=dQy.b{beam};
+    constraint, range = '#E', mux = {Qx}, muy = {Qy};
+    lmdif, tolerance = 1.0e-10;
+    endmatch;
+
+    ! Run the final twiss to get the off-orbit response
+    twiss, deltap = {offset}, file = '{tmp_path}/twiss_dpp_{offset:.1e}_B{beam}.dat';
+    """
+    madx_wrapper.run_string(script)
+    return tmp_path / f"twiss_dpp_{offset:.1e}_B{beam}.dat"
