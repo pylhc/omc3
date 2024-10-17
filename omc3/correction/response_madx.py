@@ -92,7 +92,10 @@ def _generate_madx_jobs(
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
 
     madx_job = _get_madx_job(accel_inst)
-
+    if compute_deltap and abs(accel_inst.dpp) > 0: # This is here only for multiple iteration of the global correction
+        # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
+        # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
+        madx_job += accel_inst.get_update_deltap_script() 
     for proc_idx in range(num_proc):
         jobfile_path = _get_jobfiles(temp_dir, proc_idx)
 
@@ -104,15 +107,10 @@ def _generate_madx_jobs(
             var = no_dpp_vars[var_idx]
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
-            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}';\n"
+            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}', deltap={DELTAP_NAME};\n"
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            if compute_deltap and abs(accel_inst.dpp) > 0: # This is here only for multiple iteration of the global correction
-                # By including dpp here, it means that if deltap is in variables and dpp is not 0, the reference (twiss.0) changes 
-                if len(no_dpp_vars) > 0: # To ensure someone is not calculating response matrix of knobs with a twiss.0 that includes dpp
-                    raise NotImplementedError(f"{DELTAP_NAME} and dpp != 0, with additional variables is not implemented.")
-                current_job += accel_inst.get_update_deltap_script() 
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}', deltap={DELTAP_NAME};\n"
             
             if compute_deltap: # If DELTAP_NAME is in variables, we run this in the last iteration
@@ -175,6 +173,7 @@ def _load_madx_results(
 ) -> Dict[str, tfs.TfsDataFrame]:
     """ Load the madx results in parallel and return var-tfs dictionary """
     LOG.debug("Loading Madx Results.")
+    input(" Press Enter to continue...")
     vars_and_paths = []
     for value in variables + ['0']:
         vars_and_paths.append((value, temp_dir))
