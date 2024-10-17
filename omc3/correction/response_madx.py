@@ -173,7 +173,6 @@ def _load_madx_results(
 ) -> Dict[str, tfs.TfsDataFrame]:
     """ Load the madx results in parallel and return var-tfs dictionary """
     LOG.debug("Loading Madx Results.")
-    input(" Press Enter to continue...")
     vars_and_paths = []
     for value in variables + ['0']:
         vars_and_paths.append((value, temp_dir))
