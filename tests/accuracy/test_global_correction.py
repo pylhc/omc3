@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
+from typing import Literal, Sequence
 
+from generic_parser.tools import DotDict
 import numpy as np
 import pytest
 
@@ -83,7 +84,7 @@ def get_normal_params(beam):
 
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
+def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientation: Literal['skew'] | Literal['normal']):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
