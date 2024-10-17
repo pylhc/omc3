@@ -92,6 +92,9 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                 # please look away for the next two lines.
                 accel_inst._model = corr_model
                 accel_inst._elements = corr_model_elements
+
+                #If we are to compute the response including the DPP, then we have to do so from MAD-X (We do not have the analytical formulae), 
+                # otherwise we go through the other way of computing the response.
                 if DELTAP_NAME in opt.variable_categories:
                     # Update dpp and create response around this dpp, then reset dpp (So _create_corrected_model is unaffected)
                     old_dpp = accel_inst.dpp
@@ -100,6 +103,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                     accel_inst.dpp = old_dpp
                 else:
                     resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
+
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
