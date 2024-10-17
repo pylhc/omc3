@@ -250,6 +250,13 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics
 from omc3 import madx_wrapper
 from omc3.optics_measurements.constants import PHASE_ADV
 def run_dpp(tmp_path, offset, beam):
+    """
+    Run a twiss on a 2018 LHC model with a given dpp offset. Then, correct and match before 
+    writing the final twiss to a file, which only contains select BPMs, and the phase advances and s.
+    This is used by the test_lhc_global_correct_dpp to verify that the global correction can
+    calculate the dpp offset input in the fake measurement.
+    """
+
     Qx = 62.28001034
     Qy = 60.31000965
     script = f"""
