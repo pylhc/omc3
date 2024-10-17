@@ -84,7 +84,7 @@ def get_normal_params(beam):
 
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientation: Literal['skew'] | Literal['normal']):
+def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientation: Literal['skew', 'normal']):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
@@ -297,7 +297,7 @@ def run_dpp(tmp_path, offset, beam):
     endmatch;
 
     ! Run the final twiss to get the off-orbit response
-    twiss, deltap = {offset}, file = '{tmp_path}/twiss_dpp_{offset:.1e}_B{beam}.tfs';
+    twiss, deltap = {offset}, file = '{tmp_path}/twiss_dpp_{offset:.1e}_B{beam}.dat';
     """
     madx_wrapper.run_string(script)
-    return tmp_path / f"twiss_dpp_{offset:.1e}_B{beam}.tfs"
+    return tmp_path / f"twiss_dpp_{offset:.1e}_B{beam}.dat"
