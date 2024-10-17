@@ -88,8 +88,8 @@ def _generate_madx_jobs(
     LOG.debug("Generating MADX jobfiles.")
     incr_dict = {'0': 0.0}
     compute_deltap: bool = DELTAP_NAME in variables
-    variables = [var for var in variables if var != DELTAP_NAME]
-    vars_per_proc = int(np.ceil(len(variables) / num_proc))
+    no_dpp_vars = [var for var in variables if var != DELTAP_NAME]
+    vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
 
     madx_job = _get_madx_job(accel_inst)
 
@@ -99,9 +99,9 @@ def _generate_madx_jobs(
         current_job = madx_job
         for i in range(vars_per_proc):
             var_idx = proc_idx * vars_per_proc + i
-            if var_idx >= len(variables):
+            if var_idx >= len(no_dpp_vars):
                 break
-            var = variables[var_idx]
+            var = no_dpp_vars[var_idx]
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
             current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}';\n"
@@ -110,7 +110,7 @@ def _generate_madx_jobs(
         if proc_idx == num_proc - 1:
             if compute_deltap and abs(accel_inst.dpp) > 0: # This is here only for multiple iteration of the global correction
                 # By including dpp here, it means that if deltap is in variables and dpp is not 0, the reference (twiss.0) changes 
-                if len(variables) > 0: # To ensure someone is not calculating response matrix of knobs with a twiss.0 that includes dpp
+                if len(no_dpp_vars) > 0: # To ensure someone is not calculating response matrix of knobs with a twiss.0 that includes dpp
                     raise NotImplementedError(f"{DELTAP_NAME} and dpp != 0, with additional variables is not implemented.")
                 current_job += accel_inst.get_update_deltap_script() 
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}', deltap={DELTAP_NAME};\n"
