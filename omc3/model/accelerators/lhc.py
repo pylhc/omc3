@@ -493,12 +493,11 @@ class Lhc(Accelerator):
         for corr_file in corr_files:
             madx_script += f"call, file = '{str(corr_file)}';\n"
         
-        # Set the dpp in the twiss to the one in the model
-        dpp = self.dpp
         if DELTAP_NAME in variable_categories: # If the dpp is a variable in the corrections, do twiss, correct, match
             madx_script += self.get_update_deltap_script()
-            dpp = DELTAP_NAME # Set the dpp to the variable name (this seems the best way to include the update in the corrector script)
-        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {dpp});\n"
+        else: # Else, just set the dpp and do twiss
+            madx_script += f"{DELTAP_NAME} = {self.dpp:.15e};\n"
+        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {DELTAP_NAME});\n"
         return madx_script
     
     def get_update_deltap_script(self) -> str:
@@ -512,7 +511,7 @@ class Lhc(Accelerator):
             knobx = f"KQTD.B{self.beam}"
             knoby = f"KQTF.B{self.beam}"
         return f"""
-{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e};
+{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e}; ! Add the dpp specified in the accelerator definition
 twiss, deltap={DELTAP_NAME};
 correct, mode=svd;
 
@@ -522,7 +521,7 @@ match, deltap={DELTAP_NAME};
 vary, name={knobx};
 vary, name={knoby};
 constraint, range=#E, mux=total_qx, muy=total_qy;
-lmdif;
+lmdif, tolerance=1e-10;
 endmatch;
         """ # Better way to do this and keep correct tabs?
 
