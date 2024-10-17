@@ -160,7 +160,7 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
 
 @pytest.mark.basic
 @pytest.mark.parametrize('dpp', (-2e-4, -1e-4, 1e-4, 7.5e-4))
-def test_lhc_global_correct_dpp(tmp_path, model_inj_beams, dpp):
+def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: float):
     response_path = tmp_path / "full_response_dpp.h5"
     response_dict = create_response(
         outfile_path = response_path,
