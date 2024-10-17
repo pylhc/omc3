@@ -289,7 +289,7 @@ def run_dpp(tmp_path, offset, beam):
     endmatch;
 
     ! Run the final twiss to get the off-orbit response
-    twiss, deltap = {offset}, file = '{tmp_path}/twiss_dpp_{offset:.1e}_B{beam}.dat';
+    twiss, deltap = {offset}, file = '{tmp_path}/twiss_dpp_{offset:.1e}_B{beam}.tfs';
     """
     madx_wrapper.run_string(script)
-    return tmp_path / f"twiss_dpp_{offset:.1e}_B{beam}.dat"
+    return tmp_path / f"twiss_dpp_{offset:.1e}_B{beam}.tfs"
