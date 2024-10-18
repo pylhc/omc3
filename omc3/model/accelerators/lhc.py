@@ -501,29 +501,30 @@ class Lhc(Accelerator):
         return madx_script
     
     def get_update_deltap_script(self) -> str:
+        madx_script = (
+            f"{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e}; ! Add the dpp specified in the accelerator definition\n"
+            f"twiss, deltap={DELTAP_NAME};\n"
+            "correct, mode=svd;\n\n"
+            
+            "! The same as match_tunes, but instead, deltap is included in the matching\n"
+            f"exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            f"match, deltap={DELTAP_NAME};\n"
+        ) # Works better when split up
+        madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
+        madx_script += (
+            "constraint, range=#E, mux=total_qx, muy=total_qy;\n"
+            "lmdif, tolerance=1e-10;\n"
+            "endmatch;\n"
+        )
+        return madx_script
+    
+    def get_tune_knobs(self) -> tuple[str, str]:
         if self._uses_run3_macros():
-            knobx = f"dQx.b{self.beam}_op"
-            knoby = f"dQy.b{self.beam}_op"
-        elif int(self.year) == 2018: # This is very annoying - is there another way?
-            knobx = f"dQx.b{self.beam}"
-            knoby = f"dQy.b{self.beam}"
+            return f"dQx.b{self.beam}_op", f"dQy.b{self.beam}_op"
+        elif self._uses_ats_knobs():
+            return f"dQx.b{self.beam}", f"dQy.b{self.beam}"
         else:
-            knobx = f"KQTD.B{self.beam}"
-            knoby = f"KQTF.B{self.beam}"
-        return f"""
-{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e}; ! Add the dpp specified in the accelerator definition
-twiss, deltap={DELTAP_NAME};
-correct, mode=svd;
-
-! The same as match_tunes, but instead, deltap is included in the matching
-exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});
-match, deltap={DELTAP_NAME};
-vary, name={knobx};
-vary, name={knoby};
-constraint, range=#E, mux=total_qx, muy=total_qy;
-lmdif, tolerance=1e-10;
-endmatch;
-        """ # Better way to do this and keep correct tabs?
+            return f"KQTD.B{self.beam}", f"KQTF.B{self.beam}"
 
     # Private Methods ##########################################################
 
