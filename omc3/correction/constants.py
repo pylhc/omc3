@@ -11,6 +11,7 @@ from omc3.optics_measurements.constants import (
     F1010_NAME,
     F1001,
     F1010,
+    DELTAP_NAME,
 )
 
 # Column Names -----------------------------------------------------------------

@@ -101,6 +101,8 @@ from omc3.model.constants import (
     MACROS_DIR,
     MODIFIER_TAG,
 )
+from omc3.optics_measurements.constants import DELTAP_NAME
+
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
@@ -486,12 +488,43 @@ class Lhc(Accelerator):
                 "has to be specified (--lhcmode option missing?)."
             )
 
-    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str]) -> str:
+    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False) -> str:
         madx_script = self.get_base_madx_script()
         for corr_file in corr_files:
             madx_script += f"call, file = '{str(corr_file)}';\n"
-        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
+        
+        if update_dpp: # If the dpp is a variable in the corrections, do twiss, correct, match
+            madx_script += self.get_update_deltap_script()
+        else: # Else, just set the dpp and do twiss
+            madx_script += f"{DELTAP_NAME} = {self.dpp:.15e};\n"
+        madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {DELTAP_NAME});\n"
         return madx_script
+    
+    def get_update_deltap_script(self) -> str:
+        madx_script = (
+            f"{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e}; ! Add the dpp specified in the accelerator definition\n"
+            f"twiss, deltap={DELTAP_NAME};\n"
+            "correct, mode=svd;\n\n"
+            
+            "! The same as match_tunes, but instead, deltap is included in the matching\n"
+            f"exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
+            f"match, deltap={DELTAP_NAME};\n"
+        ) # Works better when split up
+        madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
+        madx_script += (
+            "constraint, range=#E, mux=total_qx, muy=total_qy;\n"
+            "lmdif, tolerance=1e-10;\n"
+            "endmatch;\n"
+        )
+        return madx_script
+    
+    def get_tune_knobs(self) -> tuple[str, str]:
+        if self._uses_run3_macros():
+            return f"dQx.b{self.beam}_op", f"dQy.b{self.beam}_op"
+        elif self._uses_ats_knobs():
+            return f"dQx.b{self.beam}", f"dQy.b{self.beam}"
+        else:
+            return f"KQTD.B{self.beam}", f"KQTF.B{self.beam}"
 
     # Private Methods ##########################################################
 
