@@ -502,13 +502,12 @@ class Lhc(Accelerator):
     
     def get_update_deltap_script(self) -> str:
         madx_script = (
-            f"{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e}; ! Add the dpp specified in the accelerator definition\n"
-            f"twiss, deltap={DELTAP_NAME};\n"
+            f"twiss, deltap={self.dpp:.15e};\n"
             "correct, mode=svd;\n\n"
             
-            "! The same as match_tunes, but instead, deltap is included in the matching\n"
+            "! The same as match_tunes, but include deltap in the matching\n"
             f"exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-            f"match, deltap={DELTAP_NAME};\n"
+            f"match, deltap={self.dpp:.15e};\n"
         ) # Works better when split up
         madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
         madx_script += (
