@@ -96,10 +96,11 @@ def _generate_madx_jobs(
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
 
     madx_job = _get_madx_job(accel_inst)
-    if compute_deltap and abs(accel_inst.dpp) > 0: # This is here only for multiple iteration of the global correction
-        # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
-        # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
+    delta_p_command = ""
+    if compute_deltap: 
         madx_job += accel_inst.get_update_deltap_script() 
+        delta_p_command = f", deltap={accel_inst.dpp:.15e}"
+
     for proc_idx in range(num_proc):
         jobfile_path = _get_jobfiles(temp_dir, proc_idx)
 
@@ -111,18 +112,19 @@ def _generate_madx_jobs(
             var = no_dpp_vars[var_idx]
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
-            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}', deltap={DELTAP_NAME};\n"
+            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}'{delta_p_command};\n"
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}', deltap={DELTAP_NAME};\n"
+            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}'{delta_p_command};\n"
             
             if compute_deltap: # If DELTAP_NAME is in variables, we run this in the last iteration
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[DELTAP_NAME] = delta_k
-                current_job += f"{DELTAP_NAME} = {delta_k:.15e};\n" # Set deltap to delta_k
+                accel_inst.dpp += delta_k
                 current_job += accel_inst.get_update_deltap_script() # This will add accel_inst.dpp to deltap and do twiss, correct, match
                 current_job += f"twiss, deltap={DELTAP_NAME}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';\n"
+                accel_inst.dpp -= delta_k
 
         jobfile_path.write_text(current_job)
     return incr_dict

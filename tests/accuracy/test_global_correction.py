@@ -117,6 +117,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientatio
     )
 
     # Test if corrected model is closer to model used to create measurement
+    diff_rms_prev = None
     for iter_step in range(iterations):
         if iter_step == 0:
             model_iter_df = model_df
@@ -141,7 +142,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientatio
         # continue
         # ########################################
 
-        if iter_step > 0:
+        if diff_rms_prev is not None:
             # assert RMS after correction smaller than tolerances
             for param in correction_params.optics_params:
                 assert diff_rms[param] < RMS_TOL_DICT[param], (
@@ -175,7 +176,7 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
         assert DELTAP_NAME in response_dict[key].columns
 
     # create fake measurement from previously created model
-    dpp_path = f"tests/inputs/correction/deltap/twiss_dpp_{dpp:.1e}_B{model_inj_beams.beam}.dat"
+    dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{model_inj_beams.beam}.dat"
     model_df = tfs.read(dpp_path, index=NAME)
     fake_measurement(
         twiss = model_df,

@@ -78,7 +78,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 
         # ######### Update Model and Response ######### #
         if iteration > 0:
-            LOG.debug("Updating model via MADX.")
+            LOG.debug("Updating model via MAD-X.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
             corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
@@ -90,19 +90,18 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             meas_dict = model_appenders.add_differences_to_model_to_measurements(corr_model, meas_dict)
 
             if opt.update_response:
-                LOG.debug("Updating response.")
                 # please look away for the next two lines.
                 accel_inst._model = corr_model
                 accel_inst._elements = corr_model_elements
-
-                #If we are to compute the response including the DPP, then we have to do so from MAD-X (We do not have the analytical formulae), 
-                # otherwise we go through the other way of computing the response.
                 if update_deltap:
-                    LOG.warning("Computing response for dpp. Switched to MAD-X response computation.")
-                    resp_dict = _compute_response_around_dpp(accel_inst, delta[DELTA][DELTAP_NAME], opt.variable_categories)
-                else:
-                    resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
+                    LOG.debug("Updating response via MAD-X because of DPP change requested.")
+                    accel_inst.dpp += delta.loc[DELTAP_NAME, DELTA]
+                    resp_dict = response_madx.create_fullresponse(accel_inst, opt.variable_categories)
 
+                else:
+                    LOG.debug("Updating response analytically.")
+                    resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
+                
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
@@ -261,13 +260,6 @@ def _filter_by_strength(delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_stre
     """ Remove too small correctors """
     delta = delta.loc[delta[DELTA].abs() > min_strength]
     return delta, resp_matrix.loc[:, delta.index], delta.index.to_numpy()
-
-def _compute_response_around_dpp(accel_inst: Accelerator, dpp: float, variable_categories: list[str]) -> dict[str, pd.DataFrame]:
-    """Compute the response around the given dpp"""
-    accel_inst.dpp += dpp # Add the delta dpp to the accelerator instance
-    resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories)
-    accel_inst.dpp -= dpp # Reset the dpp
-    return resp_dict
 
 
 # Optimization -----------------------------------------------------------------
