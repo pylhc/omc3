@@ -12,10 +12,11 @@ For now, the response matrix is stored in a hdf5 file.
 
 :author: Lukas Malina, Joschua Dilly, Jaime (...) Coello de Portugal
 """
+from __future__ import annotations
 import copy
 import multiprocessing
 from pathlib import Path
-from typing import Dict, Sequence, Tuple, List
+from typing import TYPE_CHECKING
 
 import numpy as np
 import zipfile
@@ -34,6 +35,9 @@ from omc3.utils.contexts import suppress_warnings, timeit
 
 LOG = logging_tools.get_logger(__name__)
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 
 # Full Response Mad-X ##########################################################
 
@@ -44,7 +48,7 @@ def create_fullresponse(
     delta_k: float = 2e-5,
     num_proc: int = multiprocessing.cpu_count(),
     temp_dir: Path = None
-) -> Dict[str, pd.DataFrame]:
+) -> dict[str, pd.DataFrame]:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
 
@@ -83,7 +87,7 @@ def _generate_madx_jobs(
     delta_k: float,
     num_proc: int,
     temp_dir: Path
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """ Generates madx job-files """
     LOG.debug("Generating MADX jobfiles.")
     incr_dict = {'0': 0.0}
@@ -166,11 +170,11 @@ def _clean_up(temp_dir: Path, num_proc: int) -> None:
 
 
 def _load_madx_results(
-    variables: List[str],
+    variables: list[str],
     process_pool,
     incr_dict: dict,
     temp_dir: Path
-) -> Dict[str, tfs.TfsDataFrame]:
+) -> dict[str, tfs.TfsDataFrame]:
     """ Load the madx results in parallel and return var-tfs dictionary """
     LOG.debug("Loading Madx Results.")
     vars_and_paths = []
@@ -183,7 +187,7 @@ def _load_madx_results(
     return var_to_twiss
 
 
-def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) -> Dict[str, pd.DataFrame]:
+def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) -> dict[str, pd.DataFrame]:
     """ Convert var-tfs dictionary to fullresponse dictionary. """
     var_to_twiss = _add_coupling(var_to_twiss)
     keys = list(var_to_twiss.keys())
@@ -255,7 +259,7 @@ def _launch_single_job(inputfile_path: Path) -> None:
     madx_wrapper.run_file(inputfile_path, log_file=log_file, cwd=inputfile_path.parent)
 
 
-def _load_and_remove_twiss(var_and_path: Tuple[str, Path]) -> Tuple[str, tfs.TfsDataFrame]:
+def _load_and_remove_twiss(var_and_path: tuple[str, Path]) -> tuple[str, tfs.TfsDataFrame]:
     """ Function for pool to retrieve results """
     (var, path) = var_and_path
     twissfile = path / f"twiss.{var}"
@@ -266,14 +270,14 @@ def _load_and_remove_twiss(var_and_path: Tuple[str, Path]) -> Tuple[str, tfs.Tfs
     return var, tfs_data
 
 
-def _add_coupling(dict_of_tfs: Dict[str, tfs.TfsDataFrame]) -> Dict[str, tfs.TfsDataFrame]:
+def _add_coupling(dict_of_tfs: dict[str, tfs.TfsDataFrame]) -> dict[str, tfs.TfsDataFrame]:
     """
     For each TfsDataFrame in the input dictionary, computes the coupling RDTs and adds a column for
     the real and imaginary parts of the computed coupling RDTs. Returns a copy of the input dictionary with
     the aforementioned computed columns added for each TfsDataFrame.
 
     Args:
-        dict_of_tfs (Dict[str, tfs.TfsDataFrame]): dictionary of Twiss dataframes.
+        dict_of_tfs (dict[str, tfs.TfsDataFrame]): dictionary of Twiss dataframes.
 
     Returns:
         An identical dictionary of Twiss dataframes, with the computed columns added.
