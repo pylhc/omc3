@@ -117,7 +117,8 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
     https://cds.cern.ch/record/2632945/
 
 """
-from typing import Sequence
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -130,6 +131,9 @@ from omc3.optics_measurements.constants import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 LOG = logging_tools.get_logger(__name__)
 
