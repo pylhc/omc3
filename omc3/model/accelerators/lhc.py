@@ -488,12 +488,12 @@ class Lhc(Accelerator):
                 "has to be specified (--lhcmode option missing?)."
             )
 
-    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], variable_categories: Sequence[str]) -> str:
+    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False) -> str:
         madx_script = self.get_base_madx_script()
         for corr_file in corr_files:
             madx_script += f"call, file = '{str(corr_file)}';\n"
         
-        if DELTAP_NAME in variable_categories: # If the dpp is a variable in the corrections, do twiss, correct, match
+        if update_dpp: # If the dpp is a variable in the corrections, do twiss, correct, match
             madx_script += self.get_update_deltap_script()
         else: # Else, just set the dpp and do twiss
             madx_script += f"{DELTAP_NAME} = {self.dpp:.15e};\n"

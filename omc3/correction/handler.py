@@ -48,6 +48,8 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     method_options = opt.get_subdict(["svd_cut", "n_correctors"])
     # read data from files
     vars_list = _get_varlist(accel_inst, opt.variable_categories)
+    update_deltap = DELTAP_NAME in vars_list
+    
     optics_params, meas_dict = get_measurement_data(
         opt.optics_params,
         opt.meas_dir,
@@ -79,7 +81,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             LOG.debug("Updating model via MADX.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, opt.variable_categories)
+            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
@@ -95,12 +97,9 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 
                 #If we are to compute the response including the DPP, then we have to do so from MAD-X (We do not have the analytical formulae), 
                 # otherwise we go through the other way of computing the response.
-                if DELTAP_NAME in opt.variable_categories:
-                    # Update dpp and create response around this dpp, then reset dpp (So _create_corrected_model is unaffected)
-                    old_dpp = accel_inst.dpp
-                    accel_inst.dpp = delta[DELTA][DELTAP_NAME]
-                    resp_dict = response_madx.create_fullresponse(accel_inst, opt.variable_categories)
-                    accel_inst.dpp = old_dpp
+                if update_deltap:
+                    LOG.warning("Computing response for dpp. Switched to MAD-X response computation.")
+                    resp_dict = _compute_response_around_dpp(accel_inst, delta[DELTA][DELTAP_NAME], opt.variable_categories)
                 else:
                     resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
 
@@ -227,9 +226,9 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _create_corrected_model(twiss_out: Path | str, change_params: Sequence[Path], accel_inst: Accelerator, variable_categories: Sequence[str]) -> tfs.TfsDataFrame:
+def _create_corrected_model(twiss_out: Path | str, change_params: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params, variable_categories)
+    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params, update_dpp)
     twiss_out_path = Path(twiss_out)
     madx_script = f"! Based on model '{accel_inst.model_dir}'\n" + madx_script
     madx_wrapper.run_string(
@@ -262,6 +261,13 @@ def _filter_by_strength(delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_stre
     """ Remove too small correctors """
     delta = delta.loc[delta[DELTA].abs() > min_strength]
     return delta, resp_matrix.loc[:, delta.index], delta.index.to_numpy()
+
+def _compute_response_around_dpp(accel_inst: Accelerator, dpp: float, variable_categories: list[str]) -> dict[str, pd.DataFrame]:
+    """Compute the response around the given dpp"""
+    accel_inst.dpp += dpp # Add the delta dpp to the accelerator instance
+    resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories)
+    accel_inst.dpp -= dpp # Reset the dpp
+    return resp_dict
 
 
 # Optimization -----------------------------------------------------------------
