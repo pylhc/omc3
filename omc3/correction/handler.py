@@ -80,6 +80,9 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         if iteration > 0:
             LOG.debug("Updating model via MAD-X.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
+            if update_deltap:
+                # update dpp here, as it does not have a MAD-X knob.
+                accel_inst.dpp += delta.loc[DELTAP_NAME, DELTA]
 
             corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
@@ -95,7 +98,6 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                 accel_inst._elements = corr_model_elements
                 if update_deltap:
                     LOG.debug("Updating response via MAD-X because of DPP change requested.")
-                    accel_inst.dpp += delta.loc[DELTAP_NAME, DELTA]
                     resp_dict = response_madx.create_fullresponse(accel_inst, opt.variable_categories)
 
                 else:
