@@ -98,8 +98,8 @@ def _generate_madx_jobs(
     madx_job = _get_madx_job(accel_inst)
     delta_p_command = ""
     if compute_deltap: 
-        madx_job += accel_inst.get_update_deltap_script() 
-        delta_p_command = f", deltap={accel_inst.dpp:.15e}"
+        madx_job += accel_inst.get_update_deltap_script()  # This will do twiss, correct, match at the initial dpp
+        delta_p_command = f", deltap={accel_inst.dpp:.15e}"  # use inital dpp in all twiss commands
 
     for proc_idx in range(num_proc):
         jobfile_path = _get_jobfiles(temp_dir, proc_idx)
@@ -122,7 +122,7 @@ def _generate_madx_jobs(
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[DELTAP_NAME] = delta_k
                 accel_inst.dpp += delta_k
-                current_job += accel_inst.get_update_deltap_script() # This will add accel_inst.dpp to deltap and do twiss, correct, match
+                current_job += accel_inst.get_update_deltap_script() # This will do twiss, correct, match at the updated dpp
                 current_job += f"twiss, deltap={DELTAP_NAME}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';\n"
                 accel_inst.dpp -= delta_k
 
