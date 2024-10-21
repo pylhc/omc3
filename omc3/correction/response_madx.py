@@ -27,7 +27,7 @@ from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction.constants import DELTAP_NAME, INCR
+from omc3.correction.constants import ORBIT_DPP, INCR
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
 from omc3.optics_measurements.constants import (
     BETA,
@@ -98,10 +98,10 @@ def _generate_madx_jobs(
     temp_dir: Path
 ) -> dict[str, float]:
     """ Generates madx job-files """
-    LOG.debug("Generating MADX jobfiles.")
+    LOG.debug("Generating MAD-X jobfiles.")
     incr_dict = {'0': 0.0}
-    compute_deltap: bool = DELTAP_NAME in variables
-    no_dpp_vars = [var for var in variables if var != DELTAP_NAME]
+    compute_deltap: bool = ORBIT_DPP in variables
+    no_dpp_vars = [var for var in variables if var != ORBIT_DPP]
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
 
     madx_job = _get_madx_job(accel_inst)
@@ -112,10 +112,10 @@ def _generate_madx_jobs(
         # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
 
-        madx_job += f"{DELTAP_NAME} = 0;\n" # Set deltap to 0
+        madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n" # Set deltap to 0
 
-        madx_job += accel_inst.get_update_deltap_script()
-        deltap_twiss = f", deltap={DELTAP_NAME}"
+        madx_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP)
+        deltap_twiss = f", deltap={ORBIT_DPP}"
 
     for proc_idx in range(num_proc):
         jobfile_path = _get_jobfiles(temp_dir, proc_idx)
@@ -134,12 +134,12 @@ def _generate_madx_jobs(
         if proc_idx == num_proc - 1:
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
             
-            if compute_deltap: # If DELTAP_NAME is in variables, we run this in the last iteration
+            if compute_deltap: # If ORBIT_DPP is in variables, we run this in the last iteration
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
-                incr_dict[DELTAP_NAME] = delta_k
-                current_job += f"{DELTAP_NAME} = {accel_inst.dpp:.15e}{delta_k:+.15e};\n"
-                current_job += accel_inst.get_update_deltap_script(deltap=DELTAP_NAME) # Do twiss, correct, match
-                current_job += f"twiss, deltap={DELTAP_NAME}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';\n"
+                incr_dict[ORBIT_DPP] = delta_k
+                current_job += f"{ORBIT_DPP} = {ORBIT_DPP}{delta_k:+.15e};\n"
+                current_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
+                current_job += f"twiss, deltap={ORBIT_DPP}, file='{str(temp_dir/f'twiss.{ORBIT_DPP}')}';\n"
         jobfile_path.write_text(current_job)
     return incr_dict
 

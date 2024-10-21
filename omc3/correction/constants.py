@@ -11,7 +11,6 @@ from omc3.optics_measurements.constants import (
     F1010_NAME,
     F1001,
     F1010,
-    DELTAP_NAME,
 )
 
 # Column Names -----------------------------------------------------------------
@@ -29,6 +28,7 @@ COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX = {  # I know, I know ... (jdilly, 2023)
 
 # For FullResponse
 INCR: str = "incr"
+ORBIT_DPP: str = "orbit_dpp"
 
 # Correction Test Constants ----------------------------------------------------
 MODEL_NOMINAL_FILENAME: str = "twiss_nominal.tfs"  # using twiss from model for now

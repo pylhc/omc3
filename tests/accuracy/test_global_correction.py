@@ -7,14 +7,14 @@ import numpy as np
 import pytest
 
 import tfs
-from omc3.correction.constants import VALUE, ERROR, WEIGHT
+from omc3.correction.constants import VALUE, ERROR, WEIGHT, ORBIT_DPP
 from omc3.correction.handler import get_measurement_data
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import global_correction_entrypoint as global_correction
 from omc3.optics_measurements.constants import (
     NAME, AMPLITUDE, IMAG, REAL, BETA, DISPERSION,
-    NORM_DISPERSION, F1001, F1010, TUNE, PHASE, ERR, DELTA, DELTAP_NAME)
+    NORM_DISPERSION, F1001, F1010, TUNE, PHASE, ERR, DELTA)
 from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
@@ -166,14 +166,14 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
     response_path = tmp_path / "full_response_dpp.h5"
     response_dict = create_response(
         outfile_path = response_path,
-        variable_categories=[DELTAP_NAME],
+        variable_categories=[ORBIT_DPP],
         delta_k=2e-5,
         **model_inj_beams,
     )
 
     # Basic check if response was created correctly
     for key in response_dict.keys():
-        assert DELTAP_NAME in response_dict[key].columns
+        assert ORBIT_DPP in response_dict[key].columns
 
     # create fake measurement from previously created model
     dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{model_inj_beams.beam}.dat"
@@ -192,7 +192,7 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
                 meas_dir = tmp_path,
                 output_dir = tmp_path,
                 fullresponse_path = response_path,
-                variable_categories=[DELTAP_NAME],
+                variable_categories=[ORBIT_DPP],
                 optics_params = [f"{PHASE}X", f"{PHASE}Y"],
                 iterations=iteration,
                 update_response=update_response,
@@ -202,10 +202,10 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
             
             # Check if the output is correct within 5% (Beam 2 is not as accurate)
             rtol = 5e-2 if iteration == 1 else 2e-2
-            assert np.isclose(dpp, -result[DELTA][DELTAP_NAME], rtol=rtol), f"Expected {dpp}, got {result[DELTA][DELTAP_NAME]}, diff: {dpp + result[DELTA][DELTAP_NAME]}, iteration: {iteration}"
+            assert np.isclose(dpp, -result[DELTA][ORBIT_DPP], rtol=rtol), f"Expected {dpp}, got {result[DELTA][ORBIT_DPP]}, diff: {dpp + result[DELTA][ORBIT_DPP]}, iteration: {iteration}"
 
             # Check if the result is converging or has converged (within 0.1%)
-            rel_diff = np.abs(dpp + result[DELTA][DELTAP_NAME]) / np.abs(dpp)
+            rel_diff = np.abs(dpp + result[DELTA][ORBIT_DPP]) / np.abs(dpp)
             assert diff > rel_diff or np.isclose(diff, rel_diff, atol=1e-3), f"Convergence not reached, diff: {diff} <= {rel_diff}, iteration: {iteration}"
             diff = rel_diff
 # Helper -----------------------------------------------------------------------

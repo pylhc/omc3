@@ -18,13 +18,13 @@ from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss, response_madx
-from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT
+from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT, ORBIT_DPP
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
                                                 F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
-                                                PHASE, PHASE_NAME, TUNE, DELTAP_NAME)
+                                                PHASE, PHASE_NAME, TUNE)
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
 
@@ -48,7 +48,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     method_options = opt.get_subdict(["svd_cut", "n_correctors"])
     # read data from files
     vars_list = _get_varlist(accel_inst, opt.variable_categories)
-    update_deltap = DELTAP_NAME in vars_list
+    update_deltap = ORBIT_DPP in vars_list
     
     optics_params, meas_dict = get_measurement_data(
         opt.optics_params,
@@ -80,6 +80,10 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         if iteration > 0:
             LOG.debug("Updating model via MAD-X.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
+
+            if update_deltap:
+                # update dpp here, as it does not have a MAD-X knob.
+                update_deltap = delta.loc[ORBIT_DPP, DELTA]
 
             corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
@@ -141,17 +145,17 @@ def _update_response(
     but that would require a proper copy implementation of the class, I think (jdilly 2024)
     """
     # update model, not nice as "private" elements, but will be reset later
-    original_model = accel_inst._model 
-    original_elements = accel_inst._elements
+    original_model = accel_inst.model 
+    original_elements = accel_inst.elements
 
     accel_inst._model = corrected_model
     accel_inst._elements = corrected_elements
     
-    update_dpp = DELTAP_NAME in delta.index
+    update_dpp = ORBIT_DPP in delta.index
 
     if update_dpp:
         LOG.info("Updating response via MAD-X, due to delta dpp requested.")
-        dpp = delta.loc[DELTAP_NAME, DELTA]
+        dpp = delta.loc[ORBIT_DPP, DELTA]
         accel_inst.dpp += dpp # Add the delta dpp to be used in the twisses of the FR creation
         resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories)
         accel_inst.dpp -= dpp # Reset the dpp
