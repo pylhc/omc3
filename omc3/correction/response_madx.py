@@ -96,10 +96,17 @@ def _generate_madx_jobs(
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
 
     madx_job = _get_madx_job(accel_inst)
-    if compute_deltap and abs(accel_inst.dpp) > 0: # This is here only for multiple iteration of the global correction
+    deltap_twiss = ""
+
+    if compute_deltap and abs(accel_inst.dpp) > 0: 
+        # This is here only for multiple iteration of the global correction
         # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
-        madx_job += accel_inst.get_update_deltap_script() 
+
+        madx_job += f"{DELTAP_NAME} = 0;\n" # Set deltap to 0
+        madx_job += accel_inst.get_update_deltap_script()  # this will set the DELTAP_NAME variable in MAD-X
+        deltap_twiss = f", deltap={DELTAP_NAME}"
+
     for proc_idx in range(num_proc):
         jobfile_path = _get_jobfiles(temp_dir, proc_idx)
 
@@ -111,11 +118,11 @@ def _generate_madx_jobs(
             var = no_dpp_vars[var_idx]
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
-            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}', deltap={DELTAP_NAME};\n"
+            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}{deltap_twiss}';\n"
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}', deltap={DELTAP_NAME};\n"
+            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
             
             if compute_deltap: # If DELTAP_NAME is in variables, we run this in the last iteration
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
