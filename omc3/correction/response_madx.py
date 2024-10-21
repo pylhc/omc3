@@ -13,23 +13,32 @@ For now, the response matrix is stored in a hdf5 file.
 :author: Lukas Malina, Joschua Dilly, Jaime (...) Coello de Portugal
 """
 from __future__ import annotations
+
 import copy
 import multiprocessing
+import zipfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-import zipfile
 import pandas as pd
 import tfs
 from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
-                                                NORM_DISPERSION, PHASE_ADV, TUNE)
-from omc3.correction.constants import INCR, DELTAP_NAME
-from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
+from omc3.correction.constants import DELTAP_NAME, INCR
+from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
+from omc3.optics_measurements.constants import (
+    BETA,
+    DISPERSION,
+    F1001,
+    F1010,
+    NAME,
+    NORM_DISPERSION,
+    PHASE_ADV,
+    TUNE,
+)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
 
@@ -104,7 +113,8 @@ def _generate_madx_jobs(
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
 
         madx_job += f"{DELTAP_NAME} = 0;\n" # Set deltap to 0
-        madx_job += accel_inst.get_update_deltap_script()  # this will set the DELTAP_NAME variable in MAD-X
+
+        madx_job += accel_inst.get_update_deltap_script()
         deltap_twiss = f", deltap={DELTAP_NAME}"
 
     for proc_idx in range(num_proc):
@@ -127,10 +137,9 @@ def _generate_madx_jobs(
             if compute_deltap: # If DELTAP_NAME is in variables, we run this in the last iteration
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[DELTAP_NAME] = delta_k
-                current_job += f"{DELTAP_NAME} = {delta_k:.15e};\n" # Set deltap to delta_k
-                current_job += accel_inst.get_update_deltap_script() # This will add accel_inst.dpp to deltap and do twiss, correct, match
+                current_job += f"{DELTAP_NAME} = {accel_inst.dpp:.15e}{delta_k:+.15e};\n"
+                current_job += accel_inst.get_update_deltap_script(deltap=DELTAP_NAME) # Do twiss, correct, match
                 current_job += f"twiss, deltap={DELTAP_NAME}, file='{str(temp_dir/f'twiss.{DELTAP_NAME}')}';\n"
-
         jobfile_path.write_text(current_job)
     return incr_dict
 
@@ -270,7 +279,7 @@ def _load_and_remove_twiss(var_and_path: tuple[str, Path]) -> tuple[str, tfs.Tfs
     """ Function for pool to retrieve results """
     (var, path) = var_and_path
     twissfile = path / f"twiss.{var}"
-    tfs_data = tfs.read(twissfile, index="NAME")
+    tfs_data = tfs.read(twissfile, index=NAME)
     tfs_data[f"{TUNE}1"] = tfs_data.Q1
     tfs_data[f"{TUNE}2"] = tfs_data.Q2
     twissfile.unlink()

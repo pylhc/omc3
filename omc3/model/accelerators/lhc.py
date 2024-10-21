@@ -500,15 +500,20 @@ class Lhc(Accelerator):
         madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {DELTAP_NAME});\n"
         return madx_script
     
-    def get_update_deltap_script(self) -> str:
+    def get_update_deltap_script(self, deltap: float | str | None) -> str:
+        if deltap is None: 
+            deltap = self.dpp 
+        
+        if not isinstance(deltap, str):
+            deltap = f"{deltap:.15e}"
+
         madx_script = (
-            f"{DELTAP_NAME} = {DELTAP_NAME}{self.dpp:+.15e}; ! Add the dpp specified in the accelerator definition\n"
-            f"twiss, deltap={DELTAP_NAME};\n"
+            f"twiss, deltap={deltap};\n"
             "correct, mode=svd;\n\n"
             
             "! The same as match_tunes, but instead, deltap is included in the matching\n"
             f"exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-            f"match, deltap={DELTAP_NAME};\n"
+            f"match, deltap={deltap};\n"
         ) # Works better when split up
         madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
         madx_script += (
