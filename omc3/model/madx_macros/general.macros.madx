@@ -56,11 +56,11 @@ select_elements(): macro = {
 * @param sequence: name of the sequence to use.
 * @param output_file: path to the file to write, it has to be input in "" to
 * preserve upper case characters.
-* @param dpp: delta p / p to use in the twiss command.
+* @param this_is_the_dpp: delta p / p to use in the twiss command. (Complicated name to prevent filename change)
 */
-do_twiss_monitors(use_sequence, output_file, dpp): macro = {
+do_twiss_monitors(use_sequence, output_file, this_is_the_dpp): macro = {
     exec, select_monitors();
-    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+    twiss, chrom, sequence=use_sequence, deltap=this_is_the_dpp, file=output_file;
 };
 
 
@@ -69,7 +69,7 @@ do_twiss_monitors(use_sequence, output_file, dpp): macro = {
 * @param sequence: name of the sequence to use.
 * @param output_file: path to the file to write, it has to be input in "" to
 * preserve upper case characters.
-* @param dpp: delta p / p to use in the twiss command.
+* @param this_is_the_dpp: delta p / p to use in the twiss command. (Complicated name to prevent filename change)
 */
 do_twiss_monitors_and_ips(use_sequence, output_file, this_is_the_dpp): macro = {
     exec, select_monitors();
@@ -87,7 +87,7 @@ do_twiss_monitors_and_ips(use_sequence, output_file, this_is_the_dpp): macro = {
 * @param sequence: name of the sequence to use.
 * @param output_file: path to the file to write, it has to be input in "" to
 * preserve upper case characters.
-* @param dpp: delta p / p to use in the twiss command.
+* @param this_is_the_dpp: delta p / p to use in the twiss command. (Complicated name to prevent filename change)
 */
 do_twiss_elements(use_sequence, output_file, this_is_the_dpp): macro = {
     exec, select_elements();
