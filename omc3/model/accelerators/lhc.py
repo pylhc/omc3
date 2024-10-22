@@ -497,14 +497,14 @@ class Lhc(Accelerator):
         for corr_file in corr_files:  # Load the corrections, can also update ORBIT_DPP
             madx_script += f"call, file = '{str(corr_file)}';\n"
         
-        if update_dpp: # If we are doing orbit correction, we need to ensure that a correct and matching is done (in get_update_deltap_script)
+        if update_dpp: # If we are doing orbit correction, we need to ensure that a correct and a match is done (in get_update_deltap_script)
             madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
 
         madx_script += f'exec, do_twiss_elements(LHCB{self.beam}, "{str(outpath)}", {ORBIT_DPP});\n'
         return madx_script
     
     def get_update_deltap_script(self, deltap: float | str) -> str:
-        if not isinstance(deltap, str):
+        if isinstance(deltap, (int, float)):
             deltap = f"{deltap:.15e}"
 
         madx_script = (
