@@ -124,7 +124,7 @@ def _update_response(
     optics_params: Sequence[str], 
     variable_categories: Sequence[str], 
     update_response: bool | str,
-    ):
+    ) -> dict[str, pd.DataFrame]:
     """ Create an updated response matrix.
     
     If we are to compute the response including the DPP, then we have to do so from MAD-X, 
