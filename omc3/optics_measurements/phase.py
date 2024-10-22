@@ -65,8 +65,8 @@ class CompensationMode:
     def all(cls) -> list[str]:
         return [cls.NONE, cls.MODEL, cls.EQUATION]
 
+COMPENSATED: str = "compensated"  # former 'free'
 UNCOMPENSATED: str = "uncompensated"
-COMPENSATED: str = "compensated"
 
 def calculate(
     meas_input: DotDict,
@@ -76,8 +76,8 @@ def calculate(
     no_errors: bool = False,
 ) -> tuple[dict[str, PhaseDict], list[pd.DataFrame]]:
     """
-    Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
-    dictionary combining the results for each transverse plane.
+    Calculate phases for 'compensated' (aka 'free') and 'uncompensated' cases from the measurement files, 
+    and return a dictionary combining the results for each transverse plane.
 
     Args:
         meas_input (DotDict): `OpticsInput` object containing analysis settings from the command-line.
