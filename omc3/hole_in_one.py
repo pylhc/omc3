@@ -489,7 +489,7 @@ def harpy_params():
     params.add_parameter(name="bunch_ids", type=int, nargs="+",
                          help="Bunches to process in multi-bunch file. "
                          "If not specified, all bunches are processed.")
-    params.add_parameter(name="to_write", nargs='+', default=HARPY_DEFAULTS["to_write"],
+    params.add_parameter(name="to_write", nargs='*', default=HARPY_DEFAULTS["to_write"],
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output.")
     params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],

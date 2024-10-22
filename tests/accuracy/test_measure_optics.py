@@ -62,7 +62,7 @@ def test_3_onmom_files_single_input(tmp_path, input_data):
 def test_measure_optics(
         tmp_path, input_data, lin_slice,
         compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    data = input_data["free" if compensation == 'none' else "driven"]
+    data = input_data["free" if compensation == CompensationMode.NONE else "driven"]
     lins, optics_opt = data['lins'], data['optics_opt']
     optics_opt.update(
         outputdir=tmp_path,
@@ -112,7 +112,7 @@ def input_data(request, tmp_path_factory):
         output_path = tmp_path_factory.mktemp(f"input_{motion}_b{beam}")
 
         opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
-                        model_dir=INPUTS / "models" / f"25cm_beam{beam}",
+                        model_dir=INPUTS / "models" / f"2018_col_b{beam}_25cm",
                         outputdir=output_path)
         optics_opt, rest = _optics_entrypoint(opt_dict)
         optics_opt.accelerator = manager.get_accelerator(rest)

@@ -66,7 +66,7 @@ class CompensationMode:
         return [cls.NONE, cls.MODEL, cls.EQUATION]
 
 COMPENSATED: str = "compensated"  # former 'free'
-UNCOMPENSATED: str = "uncompensated"
+UNCOMPENSATED: str = "uncompensated"  # former 'driven'
 
 def calculate(
     meas_input: DotDict,
@@ -76,7 +76,7 @@ def calculate(
     no_errors: bool = False,
 ) -> tuple[dict[str, PhaseDict], list[pd.DataFrame]]:
     """
-    Calculate phases for 'compensated' (aka 'free') and 'uncompensated' cases from the measurement files, 
+    Calculate phases for 'compensated' (aka 'free') and 'uncompensated' (aka 'driven') cases from the measurement files, 
     and return a dictionary combining the results for each transverse plane.
 
     Args:
@@ -99,54 +99,55 @@ def calculate(
     else:
         meas_input.compensation = meas_input.compensation.lower()
 
-    LOGGER.info("-- Run phase calculation with compensation")
-    phase_advances, dfs = _calculate_with_compensation(
-        meas_input,
-        input_files,
-        tunes,
-        plane,
-        meas_input.accelerator.model,
-        meas_input.compensation,
-        no_errors,
+    LOGGER.info("-- Run phase calculation with requested compensation")
+    phase_advances, dfs = _calculate_phase_advances(
+        meas_input=meas_input,
+        input_files=input_files,
+        tunes=tunes,
+        plane=plane,
+        model_df=meas_input.accelerator.model,
+        compensation=meas_input.compensation,
+        no_errors=no_errors,
     )
 
     if meas_input.compensation == CompensationMode.NONE:
-        uncompensated_phase_advances = None 
+        uncompensated_phase_advances = None
     else:
         LOGGER.info("-- Run phase calculation without compensation")
 
-        uncompensated_phase_advances, drv_dfs = _calculate_with_compensation(
-            meas_input,
-            input_files,
-            tunes,
-            plane,
-            meas_input.accelerator.model_driven,
-            CompensationMode.NONE, 
-            no_errors,
+        uncompensated_phase_advances, drv_dfs = _calculate_phase_advances(
+            meas_input=meas_input,
+            input_files=input_files,
+            tunes=tunes,
+            plane=plane,
+            model_df=meas_input.accelerator.model_driven,
+            compensation=CompensationMode.NONE, 
+            no_errors=no_errors,
         )
         dfs = dfs + drv_dfs
 
     if len(phase_advances[MEASUREMENT].index) < 3:
-        LOGGER.warning("Less than 3 non-NaN phase-advances found. "
-                       "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
-                       "Common issues to check:\n\n"
-                       "- did you pass the correct tunes to harpy? Possibly also too small tolerance window?\n"
-                       "- did excitation trigger in both planes? BPMs might be cleaned if only found in one plane.\n"
-                       "- are cleaning settings (peak-to-peak, singular-value-cut) too agressive?\n"
-                       "- are you using a machine with less than 3 BPMs? Oh dear."
+        LOGGER.warning(
+            "Less than 3 non-NaN phase-advances found. "
+            "This will most likely lead to errors later on in the N-BPM or 3-BPM methods.\n"
+            "Common issues to check:\n"
+            "- Did you pass the correct tunes to harpy? Possibly also too small tolerance window?\n"
+            "- Did excitation trigger in both planes? BPMs might be cleaned if only found in one plane.\n"
+            "- Are cleaning settings (peak-to-peak, singular-value-cut) too agressive?\n"
+            "- Are you using a machine with less than 3 BPMs? Oh dear."
         )
 
     return {COMPENSATED: phase_advances, UNCOMPENSATED: uncompensated_phase_advances}, dfs
 
 
-def _calculate_with_compensation(
+def _calculate_phase_advances(
     meas_input: DotDict,
     input_files: InputFiles,
     tunes: TuneDict,
     plane: str,
     model_df: pd.DataFrame,
-    compensation: str = CompensationMode.NONE,
-    no_errors: bool = False,
+    compensation: str,
+    no_errors: bool,
 ) -> tuple[PhaseDict, list[pd.DataFrame, pd.DataFrame]]:
     """
     Calculates phase advances.
@@ -195,7 +196,9 @@ def _calculate_with_compensation(
     if dpp_value is None:
         check_and_warn_about_offmomentum_data(input_files, plane, id_="Phase calculations")
 
-    joined_df = input_files.joined_frame(plane, [f"{PHASE_ADV}{plane}", f"{ERR}{PHASE_ADV}{plane}"], dpp_value=dpp_value, how=how)
+    joined_df = input_files.joined_frame(
+        plane, [f"{PHASE_ADV}{plane}", f"{ERR}{PHASE_ADV}{plane}"], dpp_value=dpp_value, how=how
+    )
     df = pd.merge(df, joined_df, how='inner', left_index=True, right_index=True)
 
     direction = meas_input.accelerator.beam_direction

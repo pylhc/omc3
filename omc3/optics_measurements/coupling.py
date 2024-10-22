@@ -165,7 +165,7 @@ def calculate_coupling(
     header_dict["Cminus_exact"] = C_exact
     LOGGER.info(f"|C-| (exact)  = {C_exact:.5f}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
-    if meas_input.compensation == "model":
+    if meas_input.compensation == CompensationMode.MODEL:
         LOGGER.debug("Compensating coupling RDT values by model")
         f1001, f1010 = compensate_rdts_by_model(f1001, f1010, tune_dict)
 
