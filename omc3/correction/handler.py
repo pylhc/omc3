@@ -81,10 +81,6 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             LOG.debug("Updating model via MAD-X.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            if update_deltap:
-                # update dpp here, as it does not have a MAD-X knob.
-                update_deltap = delta.loc[ORBIT_DPP, DELTA]
-
             corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
