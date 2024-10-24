@@ -44,7 +44,7 @@ INSTRUMENTS_FILE_NAME: str = 'beta_instrument'
 
 # file names for omc3
 BETA_FILENAME: str = 'beta_kmod_'
-AVERAGED_BETASTAR_FILENAME: str = 'averaged_ip{ip}_beta{betastar}m'
-AVERAGED_BPM_FILENAME: str = 'averaged_bpm_beam{beam}_ip{ip}_beta{betastar}m'
-EFFECTIVE_BETAS_FILENAME: str = 'effective_betas_beta{betastar}m'
+AVERAGED_BETASTAR_FILENAME: str = 'averaged_ip{ip}_beta{betastar_x}m{betastar_y}m'
+AVERAGED_BPM_FILENAME: str = 'averaged_bpm_beam{beam}_ip{ip}_beta{betastar_x}m{betastar_y}m'
+EFFECTIVE_BETAS_FILENAME: str = 'effective_betas_beta{betastar_x}m{betastar_y}m'
 
