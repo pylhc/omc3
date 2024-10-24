@@ -135,22 +135,25 @@ def calculate(
         invariants = filter_for_dpp(invariants, input_files, dpp_value)
 
     single_plane_rdts, double_plane_rdts = _generate_plane_rdts(meas_input["rdt_magnet_order"])
-    for plane in PLANES:
-        bpm_names = input_files.bpms(plane=plane, dpp_value=dpp_value)
-        for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
-        LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, MEASUREMENT].mean()}")
-        for rdt in single_plane_rdts[plane]:
-            with _check_amp_error(rdt):
-                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-                write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
-    for plane in PLANES:
-        bpm_names = input_files.bpms(dpp_value=dpp_value)
-        for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
-        LOGGER.info(f"Average phase advance between BPM pairs: {for_rdts.loc[:, MEASUREMENT].mean()}")
-        for rdt in double_plane_rdts[plane]:
-            with _check_amp_error(rdt):
-                df = _process_rdt(meas_input, input_files, for_rdts, invariants, plane, rdt)
-                write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
+    single, double = "Single", "Double"
+
+    for rdts, plane_str  in ((single_plane_rdts, single), (double_plane_rdts, double)):
+        for plane in PLANES:
+            bpm_names = input_files.bpms(
+                plane=plane if (plane_str == single) else None, 
+                dpp_value=dpp_value
+            )
+
+            phases_for_rdts = _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane)
+            LOGGER.info(
+                f"{plane_str} Plane RDTs: "
+                f"Average phase advance between BPM pairs: {phases_for_rdts.loc[:, MEASUREMENT].mean()}"
+            )
+
+            for rdt in rdts[plane]:
+                with _check_amp_error(rdt):
+                    df = _process_rdt(meas_input, input_files, phases_for_rdts, invariants, plane, rdt)
+                    write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
 
 def write(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, plane: str, rdt: RDTTuple):
@@ -202,6 +205,7 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
     if phase_dict is None:
         phase_dict = phases[plane][COMPENSATED]
 
+    bpm_names = phase_dict[MEASUREMENT].index.intersection(bpm_names)  # removes BPMs that are not in model
     filtered = phase_dict[MEASUREMENT].loc[bpm_names, bpm_names]
     phase_meas = pd.concat((filtered % 1, (filtered.iloc[:, :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1), axis=1)
     second_bmps = np.abs(phase_meas * _get_n_upper_diagonals(NBPMS_FOR_90, phase_meas.shape) - 0.25).idxmin(axis=1)
