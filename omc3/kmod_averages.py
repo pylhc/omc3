@@ -50,6 +50,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
@@ -71,8 +72,9 @@ from omc3.kmod.constants import (
     AVERAGED_BETASTAR_FILENAME,
     AVERAGED_BPM_FILENAME
 )
-from omc3.optics_measurements.constants import NAME
+from omc3.optics_measurements.constants import NAME, S
 from omc3.utils import logging_tools
+from omc3.utils.stats import weighted_mean, weighted_error
 from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
@@ -215,12 +217,8 @@ def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[floa
             LOG.warning(f"Could not find all results for beam {beam}. Skipping.", exc_info=e)
             continue
 
-        mean_df, std_df =  _get_mean_and_std(all_dfs)
+        mean_df =  _get_averaged_df(all_dfs)
         
-        for column in mean_df.columns:
-            if not column.startswith(ERR):
-                mean_df[f'{ERR}{column}'] = std_df[column]  # TODO: maybe add KMOD errors?
-
         for plane, bstar in zip(PLANES, betastar):
             mean_df[f'{BETASTAR}{plane}{MDL}'] = bstar
 
@@ -252,20 +250,62 @@ def get_average_bpm_betas_results(meas_paths: Sequence[Path]) -> dict[int, tfs.T
             LOG.warning(f"Could not find all results for beam {beam}. Skipping.", exc_info=e)
             continue
         
-        mean_df, std_df =  _get_mean_and_std(all_dfs)
-
-        for plane in PLANES:
-            mean_df[f'{ERR}{BETA}{plane}'] = std_df[f'{BETA}{plane}']
-        final_results[beam] = mean_df
+        final_results[beam] = _get_averaged_df(all_dfs)
     return final_results
 
 
-def _get_mean_and_std(dfs: Sequence[pd.DataFrame]) -> tuple[pd.DataFrame, pd.DataFrame]:
-    grouped = tfs.concat(dfs, axis=0).groupby(level=0)  # append rows, group by index
-    mean_df = grouped.mean()
-    std_df = grouped.std(ddof=0)  # ddof=0 is default in numpy, ddof=1 is default in pandas
+def _get_averaged_df(dfs: Sequence[pd.DataFrame]) -> pd.DataFrame:
+    """ Calculate the average over the data in the given dfs.
+    
+    This function calculates the means and errors over the given dataframes, 
+    using the weighted_mean and weighted_error functions from the `stats` module,
+    which takes the standard deviation of the data and their errors into account.
+    If no error column is present, 
+
+    It is assumed the same columns are present in all dataframes, 
+    and the average is only done on rows, that are common.
+    The order of rows and columns is irrelevant, assuming unique indices.
+
+    In case only a single dataframe is given, this frame is returned, instead of doing calculations.
+    """
+    if len(dfs) == 1:
+        LOG.warning("Only single DataFrame given for averaging -> Returning it.")
+        return dfs[0]
+
+    # Clear indices and determine order:
+    index = dfs[0].index
+    for df in dfs[1:]:
+        index = index.intersection(df.index)
+
+    no_average_columns = [S]  # keep as is
+    drop_columns = [TIME]  # remove
+    columns = dfs[0].columns
+
+    data_cols = [
+        col for col in columns 
+        if (not col.startswith(ERR)) and (col not in no_average_columns + drop_columns)
+    ]
+
+    # Create a new DataFrame for the results
+    avg_df = dfs[0].loc[index, no_average_columns]
+
+    # Compute the weighted mean and weighted error for each column 
+    for data_col in data_cols:
+        err_col = f"{ERR}{data_col}"
+        if err_col not in columns:
+            err_col = None
+
+        # Select data to average
+        data = np.array([df.loc[index, data_col].values for df in dfs])
+        errors = None
+        if err_col is not None:
+            errors = np.array([df.loc[index, err_col].values for df in dfs])
         
-    return mean_df, std_df
+        # Compute weighted mean and error
+        avg_df[data_col] = weighted_mean(data, errors, axis=0)
+        avg_df[err_col] = weighted_error(data, errors, axis=0, t_value_corr=False)
+
+    return avg_df
 
 
 if __name__ == "__main__":
