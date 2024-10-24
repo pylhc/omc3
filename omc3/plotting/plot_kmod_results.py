@@ -229,7 +229,7 @@ def _get_waist_and_err(results: tfs.TfsDataFrame, beam: int, plane: str) -> tupl
 
 
 def _get_beat_and_err(results: tfs.TfsDataFrame, beam: int, plane: str) -> tuple[float, float]:
-    model = results.loc[beam, f'{BETASTAR}{MDL}']  # TODO: f'{BETASTAR}{plane}{MDL}' ??
+    model = results.loc[beam, f'{BETASTAR}{plane}{MDL}']
     beat = (results.loc[beam, f'{BETASTAR}{plane}'] - model) / model * 100
     err = results.loc[beam, f'{ERR}{BETASTAR}{plane}'] / model * 100
     return beat, err

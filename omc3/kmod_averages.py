@@ -60,7 +60,6 @@ from omc3.plotting.plot_kmod_results import plot_kmod_results
 from omc3.kmod.constants import (
     BEAM,
     BEAM_DIR,
-    BETA,
     BETASTAR,
     ERR,
     EXT,
@@ -84,6 +83,8 @@ if TYPE_CHECKING:
 
 LOG = logging_tools.get_logger(__name__)
 
+COLUMNS_TO_DROP: tuple[str, ...] = (TIME, )
+COLUMNS_NO_AVERAGE: tuple[str, ...] = (S, )
 
 def _get_params():
     """
@@ -166,12 +167,12 @@ def average_kmod_results_entrypoint(opt: DotDict) -> dict[int, tfs.TfsDataFrame]
         save_config(opt.output_dir, opt, __file__)
 
     if len(opt.betastar) == 1:
-        opt.betastar = [opt.betastar, opt.betastar]
+        opt.betastar = [opt.betastar[0], opt.betastar[0]]
 
     meas_paths = [Path(m) for m in opt.meas_paths]
 
     averaged_results = get_average_betastar_results(meas_paths, opt.betastar)
-    averaged_bpm_results = get_average_bpm_betas_results(meas_paths)
+    averaged_bpm_results = get_average_bpm_results(meas_paths)
 
     if opt.output_dir is not None:
         filename = AVERAGED_BETASTAR_FILENAME.format(ip=opt.ip, betastar_x=opt.betastar[0], betastar_y=opt.betastar[1])
@@ -204,13 +205,12 @@ def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[floa
     Returns:
         The final results as a DataFrame; both beams merged.
     """
-    final_results = []
+    LOG.debug("Averaging beta-star results.")
+    final_results = {}
     for beam in [1, 2]:
         try:
             all_dfs = [
-                tfs.read(dir_path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}").drop(
-                    columns=[LABEL, TIME]
-                )
+                tfs.read(dir_path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}", index=LABEL)
                 for dir_path in meas_paths
             ]
         except FileNotFoundError as e:
@@ -223,14 +223,15 @@ def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[floa
             mean_df[f'{BETASTAR}{plane}{MDL}'] = bstar
 
         mean_df[BEAM] = beam
-        final_results.append(mean_df)
-    final_results = tfs.concat(final_results).set_index(BEAM)
-    return final_results
+        mean_df = mean_df.reset_index()  # put label back as column
+        final_results[beam] = mean_df
+    final_df = tfs.concat(final_results.values()).set_index(BEAM)
+    return final_df
 
 
-def get_average_bpm_betas_results(meas_paths: Sequence[Path]) -> dict[int, tfs.TfsDataFrame]:
+def get_average_bpm_results(meas_paths: Sequence[Path]) -> dict[int, tfs.TfsDataFrame]:
     """
-    Calculate the average bpm betas results for the given measurements.
+    Calculate the average results for BPMs/IPs for the given measurements.
 
     Args:
         meas_paths: The paths to the measurements.
@@ -238,6 +239,7 @@ def get_average_bpm_betas_results(meas_paths: Sequence[Path]) -> dict[int, tfs.T
     Returns:
         final_results: A dictionary containing the average bpm betas results for each beam.
     """
+    LOG.debug("Averaging bpm results.")
     final_results = {}
 
     for beam in [1, 2]:
@@ -263,33 +265,39 @@ def _get_averaged_df(dfs: Sequence[pd.DataFrame]) -> pd.DataFrame:
     If no error column is present, 
 
     It is assumed the same columns are present in all dataframes, 
-    and the average is only done on rows, that are common.
-    The order of rows and columns is irrelevant, assuming unique indices.
+    and the average is only done on rows, that have common indices.
+    The order of rows and columns is irrelevant.
 
     In case only a single dataframe is given, this frame is returned, instead of doing calculations.
     """
+    # Select columns for averaging, determines column order of output
+    columns = dfs[0].columns
+    no_average_cols = list(columns.intersection(COLUMNS_NO_AVERAGE))
+    drop_cols = list(columns.intersection(COLUMNS_TO_DROP))
+
+    # Check if we actually need to average
     if len(dfs) == 1:
         LOG.warning("Only single DataFrame given for averaging -> Returning it.")
-        return dfs[0]
+        return dfs[0].drop(columns=drop_cols)
 
-    # Clear indices and determine order:
+    # Check indices, which also determines row order of output
     index = dfs[0].index
     for df in dfs[1:]:
         index = index.intersection(df.index)
 
-    no_average_columns = [S]  # keep as is
-    drop_columns = [TIME]  # remove
-    columns = dfs[0].columns
+    if not len(index):
+        msg = "Cannot perform averaging as the files all have no common indices."
+        raise KeyError(msg)
+
 
     data_cols = [
         col for col in columns 
-        if (not col.startswith(ERR)) and (col not in no_average_columns + drop_columns)
+        if (not col.startswith(ERR)) and (col not in no_average_cols + drop_cols)
     ]
 
-    # Create a new DataFrame for the results
-    avg_df = dfs[0].loc[index, no_average_columns]
-
     # Compute the weighted mean and weighted error for each column 
+    avg_df = dfs[0].loc[index, no_average_cols]
+
     for data_col in data_cols:
         err_col = f"{ERR}{data_col}"
         if err_col not in columns:
@@ -302,8 +310,8 @@ def _get_averaged_df(dfs: Sequence[pd.DataFrame]) -> pd.DataFrame:
             errors = np.array([df.loc[index, err_col].values for df in dfs])
         
         # Compute weighted mean and error
-        avg_df[data_col] = weighted_mean(data, errors, axis=0)
-        avg_df[err_col] = weighted_error(data, errors, axis=0, t_value_corr=False)
+        avg_df.loc[index, data_col] = weighted_mean(data, errors, axis=0)
+        avg_df.loc[index, err_col] = weighted_error(data, errors, axis=0, t_value_corr=False)
 
     return avg_df
 

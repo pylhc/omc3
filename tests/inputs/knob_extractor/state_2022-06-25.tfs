@@ -1,7 +1,0 @@
-@ EXTRACTION_TIME      %s "2022-06-25 00:20:00+00:00"
-* NAME                                value                  lsa
-$ %s                                     %s                   %s
-  "Optics"             "R2022a_A30cmC30cmA10mL200cm"          "opticName"
-  "Beam Process"       "SQUEEZE-6.8TeV-60cm-30cm_V1_FMD1@337_[END]"        "beamProcess"
-  "Optics ID"                      "6923.0"            "opticId"
-  "HyperCycle"            "6.8TeV_2022_MD1"         "hyperCycle"
