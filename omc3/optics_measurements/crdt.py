@@ -22,10 +22,12 @@ from omc3.definitions.constants import PI2, PLANES
 from omc3.harpy.constants import COL_AMP, COL_ERR, COL_MU, COL_PHASE
 from omc3.optics_measurements.constants import (
     AMPLITUDE,
+    CRDT_FOLDER,
     ERR,
     EXT,
     IMAG,
     MDL,
+    NAME,
     PHASE,
     REAL,
 )
@@ -138,9 +140,9 @@ def add_line_and_freq_to_header(header, crdt):
 
 
 def write(df, header, meas_input, order, crdt):
-    outputdir = Path(meas_input.outputdir) / "crdt" / order
+    outputdir = Path(meas_input.outputdir) / CRDT_FOLDER / order
     iotools.create_dirs(outputdir)
-    tfs.write(str(outputdir/f"{crdt}{EXT}"), df, header, save_index='NAME')
+    tfs.write(str(outputdir/f"{crdt}{EXT}"), df, header, save_index=NAME)
 
 
 def get_column_names(line):

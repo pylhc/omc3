@@ -25,6 +25,9 @@ CALIBRATION_FILE: str = "calibration_{plane}.out"
 F1001_NAME: str = "f1001"
 F1010_NAME: str = "f1010"
 
+RDT_FOLDER: str = "rdt"
+CRDT_FOLDER: str = "crdt"
+
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe
 ERR: str = "ERR"  # Error of the measurement
