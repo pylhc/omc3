@@ -1,9 +1,10 @@
-from pathlib import Path
 import numpy as np
 import pytest
 import tfs
+
 from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements import crdt
+from tests.conftest import INPUTS, MODELS
 
 # accuracy limits of crdt to ptc, octupole is relaxed as single octupole with a nonideal WP gives weak CRDT
 ACCURACY_LIMIT = dict(
@@ -38,11 +39,11 @@ MEASURE_OPTICS_SETTINGS = dict(
     ats=True,
     beam=1,
     dpp=0.0,
-    model_dir=Path(__file__).parent.parent / "inputs" / "models" / "inj_beam1",
+    model_dir=MODELS / "2018_inj_b1_11m",
     year="2018",
 )
 
-LIN_DIR = Path(__file__).parent.parent / "inputs" / "crdt"
+LIN_DIR = INPUTS / "crdt"
 
 ORDERS = ['skew_quadrupole', 'normal_sextupole', 'skew_sextupole', 'normal_octupole']
 

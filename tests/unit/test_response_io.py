@@ -8,7 +8,7 @@ import pytest
 
 
 INPUT_DIR = Path(__file__).parent.parent / "inputs"
-INJ_BEAM1_MODEL = INPUT_DIR / "models" / "inj_beam1"
+INJ_BEAM1_MODEL = INPUT_DIR / "models" / "2018_inj_b1_11m"
 FULLRESPONSE_PATH = INJ_BEAM1_MODEL / "fullresponse_MQY.h5"
 VARMAP_PATH = INJ_BEAM1_MODEL / "varmap_MQY.h5"
 

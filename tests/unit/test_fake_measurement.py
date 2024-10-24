@@ -38,8 +38,8 @@ from omc3.scripts.fake_measurement_from_model import (
     ERRORS,
 )
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
+from tests.conftest import INPUTS
 
-INPUT_DIR = Path(__file__).parent.parent / "inputs"
 
 EPS = 1e-12  # allowed machine precision errors
 
@@ -225,7 +225,7 @@ def test_parameter(beam, parameter):
     As the default beam1 and beam2 do not include coupling,
     the model with skew quads is used as well.
     """
-    twiss_path = beam1_coupling_path() if "coupling" in beam else beam_path(beam)
+    twiss_path = beam1_coupling_path() if "coupling" in beam else beam_path(beam[-1])
     relative_error = 0.1
     randomize = [VALUES, ERRORS]
 
@@ -378,27 +378,27 @@ def _gaussian_distribution_test(value, mean, std=None):
 
 # Fixtures ------
 
-@pytest.fixture(params=["beam1", "beam2"])  # doesn't really add much, but tests are quick anyway
+@pytest.fixture(params=["1", "2"])  # doesn't really add much, but tests are quick anyway
 def both_beams_path(request):
     return beam_path(request.param)
 
 
 @pytest.fixture
 def beam1_path():
-    return beam_path("beam1")
+    return beam_path("1")
 
 
 @pytest.fixture
 def beam2_path():
-    return beam_path("beam2")
+    return beam_path("2")
 
 
 def beam1_coupling_path():
-    return INPUT_DIR / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
+    return INPUTS / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
 
 
 def beam_path(beam):
-    return INPUT_DIR / "models" / f"25cm_{beam}" / "twiss.dat"
+    return INPUTS / "models" / f"2018_col_b{beam}_25cm" / "twiss.dat"
 
 
 # Helper -----

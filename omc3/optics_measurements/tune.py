@@ -9,21 +9,27 @@ import numpy as np
 import pandas as pd
 
 from omc3.definitions.constants import PLANES, PLANE_TO_NUM
+from omc3.optics_measurements.data_models import check_and_warn_about_offmomentum_data
 from omc3.utils import stats
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING: 
+    from generic_parser import DotDict
     from omc3.optics_measurements.data_models import InputFiles
 
 
-def calculate(measure_input, input_files: InputFiles):
+def calculate(measure_input: DotDict, input_files: InputFiles):
     tune_d = TuneDict()
     accelerator = measure_input.accelerator
     for plane in PLANES:
+        dpp_value = measure_input.analyse_dpp
+        if dpp_value is None:
+            check_and_warn_about_offmomentum_data(input_files, plane, id_="Tune calculations")
+
         tune_d[plane]["QM"] = accelerator.model.headers[f"Q{PLANE_TO_NUM[plane]}"]
-        tune_list = [df.headers[f"Q{PLANE_TO_NUM[plane]}"] for df in input_files.dpp_frames(plane, 0)]
-        tune_rms_list = [df.headers[f"Q{PLANE_TO_NUM[plane]}RMS"] for df in input_files.dpp_frames(plane, 0)]
+        tune_list = [df.headers[f"Q{PLANE_TO_NUM[plane]}"] for df in input_files.dpp_frames(plane, dpp_value)]
+        tune_rms_list = [df.headers[f"Q{PLANE_TO_NUM[plane]}RMS"] for df in input_files.dpp_frames(plane, dpp_value)]
         measured_tune = stats.weighted_mean(np.array(tune_list), errors=np.array(tune_rms_list))
         tune_d[plane]["Q"], tune_d[plane]["QF"] = measured_tune, measured_tune
         tune_d[plane]["QFM"] = accelerator.nat_tunes[PLANE_TO_NUM[plane] - 1]
@@ -32,7 +38,7 @@ def calculate(measure_input, input_files: InputFiles):
             tune_d[plane]["QF"] = tune_d[plane]["Q"] - tune_d[plane]["QM"] + tune_d[plane]["QFM"]
             if measure_input.compensation == "equation":
                 tune_d[plane]["ac2bpm"] = tune_d.phase_ac2bpm(
-                    input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=0, how='inner'),
+                    input_files.joined_frame(plane, [f"MU{plane}"], dpp_value=dpp_value, how='inner'),
                     plane, measure_input.accelerator)
     return tune_d
 

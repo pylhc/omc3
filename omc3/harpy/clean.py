@@ -136,7 +136,7 @@ def _get_bad_bpms_summary(harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes,
 
 def _report_clean_stats(n_total_bpms, n_good_bpms):
     LOGGER.debug("Filtering done:")
-    if n_total_bpms == 0:
+    if n_good_bpms == 0:
         raise ValueError("Total Number of BPMs after filtering is zero.")
     n_bad_bpms = n_total_bpms - n_good_bpms
     LOGGER.debug(f"(Statistics for file reading) Total BPMs: {n_total_bpms}, "

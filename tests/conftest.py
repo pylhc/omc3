@@ -20,6 +20,9 @@ from generic_parser import DotDict
 from omc3 import model
 
 INPUTS = Path(__file__).parent / 'inputs'
+MODELS = INPUTS / "models"
+MADX_MACROS = Path(model.__file__).parent / "madx_macros"
+GITLAB_REPO_ACC_MODELS = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
 
 
 @contextmanager
@@ -90,67 +93,71 @@ def ids_str(template: str) -> Callable[[Any], str]:
 @pytest.fixture(scope="module", params=[1, 2], ids=ids_str("beam{}"))
 def model_inj_beams(request, tmp_path_factory):
     """ Fixture for inj model for both beams"""
-    return tmp_model(tmp_path_factory, beam=request.param, id_='inj')
+    return tmp_model(tmp_path_factory, beam=request.param, year="2018", tunes="inj", beta="11m")
 
 
 @pytest.fixture(scope="module")
 def model_inj_beam1(request, tmp_path_factory):
     """ Fixture for inj beam 1 model"""
-    return tmp_model(tmp_path_factory, beam=1, id_='inj')
+    return tmp_model(tmp_path_factory, beam=1, year="2018", tunes="inj", beta="11m")
 
 
 @pytest.fixture(scope="module")
 def model_inj_beam2(request, tmp_path_factory):
     """ Fixture for inj beam 2 model"""
-    return tmp_model(tmp_path_factory, beam=2, id_='inj')
+    return tmp_model(tmp_path_factory, beam=2, year="2018", tunes="inj", beta="11m")
 
 
 @pytest.fixture(scope="module")
 def model_25cm_beam1(request, tmp_path_factory):
     """ Fixture for 25cm beam 1 model"""
-    return tmp_model(tmp_path_factory, beam=1, id_='25cm')
+    return tmp_model(tmp_path_factory, beam=1, year="2018", tunes="col", beta="25cm")
 
 
 @pytest.fixture(scope="module")
 def model_25cm_beam2(request, tmp_path_factory):
     """ Fixture for 25cm beam 2 model"""
-    return tmp_model(tmp_path_factory, beam=2, id_='25cm')
+    return tmp_model(tmp_path_factory, beam=2, year="2018", tunes="col", beta="25cm")
 
 
-def tmp_model(factory, beam: int, id_: str):
+def tmp_model(factory, year: str, beam: int, tunes: str, beta: str, suffix: str = ""):
     """Creates a temporary model directory based on the input/models/model_inj_beam#
     but with the addition of a macros/ directory containing the macros from
     the omc3/models/madx_macros.
 
     Args:
         factory: tmp_path_factory
+        year (str): Year of the model
         beam (int): Beam to use
-        id_ (str): Model identifyier. `inj` or `25cm`
+        tunes (str): inj or col tunes
+        beta (str): beta-star value at IP1/IP5
+        suffix (str): other suffixes (e.g. `_adt`)
 
     Returns:
         A DotDict with the attributes ``path``, the path to the model directory
         and ``settings``, the accelerator class settings for this model.
     """
-    tmp_model_path = factory.mktemp(f"model_{id_}_beam{beam}")
+    model_name = f"{year}_{tunes}_b{beam}_{beta}{suffix}"
+    tmp_model_path = factory.mktemp(f"model_{model_name}")
     tmp_model_path.rmdir()  # otherwise copytree will complain
 
-    shutil.copytree(INPUTS / "models" / f"{id_}_beam{beam}", tmp_model_path)  # creates tmp_path dir
+    shutil.copytree(MODELS / model_name, tmp_model_path)  # creates tmp_path dir
 
     macros_path = tmp_model_path / "macros"
-    shutil.copytree(Path(model.__file__).parent / "madx_macros", macros_path)
+    shutil.copytree(MADX_MACROS, macros_path)
 
     return DotDict(
         ats=True,
         beam=beam,
         model_dir=tmp_model_path,
-        year="2018",
+        year=year,
         accel="lhc",
-        energy=0.45 if id_ == 'inj' else 6.5,
-        driven_excitation=None if id_ == 'inj' else 'acd'
+        energy=0.45 if beta == '11m' else 6.5,
+        driven_excitation=None if beta == '11m' else 'acd'
     )
 
 
-GITLAB_REPO_ACC_MODELS = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
+# Acc-Models Fixtures ---
 
 @pytest.fixture(scope="session")
 def acc_models_lhc_2023(tmp_path_factory):
@@ -173,6 +180,7 @@ def acc_models_ps_2021(tmp_path_factory):
     return acc_models_lhc(tmp_path_factory, "ps", 2021)
 
 def acc_models_lhc(tmp_path_factory, accel: str, year: int):
+    """ Clone the acc-models directory for the specified accelerator from github into a temporary directory. """
     tmp_path = tmp_path_factory.mktemp(f"acc-models-{accel}-{year}")
     git.Repo.clone_from(GITLAB_REPO_ACC_MODELS.format(accel), tmp_path, branch=str(year)) 
     return tmp_path

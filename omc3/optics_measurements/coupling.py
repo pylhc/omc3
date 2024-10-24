@@ -36,8 +36,10 @@ from omc3.optics_measurements.constants import (
     ERR,
     EXT,
     MDL,
+    MEASUREMENT,
     DELTA, F1010_NAME, F1001_NAME
 )
+from omc3.optics_measurements.phase import CompensationMode, UNCOMPENSATED, COMPENSATED
 from omc3.utils import logging_tools, stats
 
 from typing import TYPE_CHECKING 
@@ -45,6 +47,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING: 
     from generic_parser import DotDict 
     from omc3.optics_measurements.data_models import InputFiles
+    from omc3.optics_measurements.phase import PhaseDict
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -56,7 +59,7 @@ CUTOFF: int = 5
 def calculate_coupling(
     meas_input: DotDict,
     input_files: InputFiles,
-    phase_dict: dict[str, tuple[dict[str, tfs.TfsDataFrame], Sequence[tfs.TfsDataFrame]]],
+    phase_results: dict[str, tuple[PhaseDict, Sequence[tfs.TfsDataFrame]]],
     tune_dict: dict[str, float],
     header_dict: dict,
 ) -> None:
@@ -76,7 +79,7 @@ def calculate_coupling(
         meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
         input_files (dict): `InputFiles` (dict) object containing frequency spectra files (linx/y) for
             each transverse plane (as keys).
-        phase_dict (dict[str, tuple[dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]): dictionary containing
+        phase_results (dict[str, tuple[PhaseDict, tfs.TfsDataFrame]]): dictionary containing
             the measured phase advances, with an entry for each transverse plane. In said entry is a
             dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
             the location of the output ``TfsDataFrames`` for the phases.
@@ -87,7 +90,7 @@ def calculate_coupling(
     """
     LOGGER.info("Calculating coupling")
     bd = meas_input.accelerator.beam_direction
-    compensation = "uncompensated" if meas_input.compensation == "model" else "free"
+    compensation = UNCOMPENSATED if meas_input.compensation == CompensationMode.MODEL else COMPENSATED
 
     # We need vertical and horizontal spectra, so we have to intersect first all inputs with X and Y phase
     # output furthermore the output has to be rearranged in the order of the model (important for e.g. LHC
@@ -97,13 +100,13 @@ def calculate_coupling(
     joined: tfs.TfsDataFrame = _joined_frames(input_files)  # merge transverse input frames
     joined_index: pd.Index = (
         meas_input.accelerator.model.index.intersection(joined.index)
-        .intersection(phase_dict["X"][compensation]["MEAS"].index)
-        .intersection(phase_dict["Y"][compensation]["MEAS"].index)
+        .intersection(phase_results["X"][compensation][MEASUREMENT].index)
+        .intersection(phase_results["Y"][compensation][MEASUREMENT].index)
     )
     joined = joined.loc[joined_index].copy()
 
-    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
-    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
+    phases_x: tfs.TfsDataFrame = phase_results["X"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
+    phases_y: tfs.TfsDataFrame = phase_results["Y"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
@@ -162,7 +165,7 @@ def calculate_coupling(
     header_dict["Cminus_exact"] = C_exact
     LOGGER.info(f"|C-| (exact)  = {C_exact:.5f}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
-    if meas_input.compensation == "model":
+    if meas_input.compensation == CompensationMode.MODEL:
         LOGGER.debug("Compensating coupling RDT values by model")
         f1001, f1010 = compensate_rdts_by_model(f1001, f1010, tune_dict)
 
@@ -231,7 +234,6 @@ def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
             tries to find the best candidate. If a value ``n>=1`` is given,
             then takes the n-th following BPM downstream for the pairing.
     """
-
     if mode == 0:
         return _find_candidate(phases)
     else:
@@ -335,40 +337,40 @@ def _rdt_to_output_df(
 
     LOGGER.debug("Computing RDT amplitude values")
     df[AMPLITUDE] = np.abs(fterm)
-    df[AMPLITUDE + MDL] = np.abs(fterm_mdl)
+    df[f"{AMPLITUDE}{MDL}"] = np.abs(fterm_mdl)
 
     LOGGER.debug("Computing phase values")
     df[PHASE] = (np.angle(fterm) / PI2) % 1
-    df[PHASE + MDL] = (np.angle(fterm_mdl) / PI2) % 1
+    df[f"{PHASE}{MDL}"] = (np.angle(fterm_mdl) / PI2) % 1
 
     LOGGER.debug("Computing deviation from model")
-    df[DELTA + AMPLITUDE] = df[AMPLITUDE] - df[AMPLITUDE + MDL]
-    df[DELTA + PHASE] = df[PHASE] - df[PHASE + MDL]
+    df[f"{DELTA}{AMPLITUDE}"] = df[AMPLITUDE] - df[f"{AMPLITUDE}{MDL}"]
+    df[f"{DELTA}{PHASE}"] = df[PHASE] - df[f"{PHASE}{MDL}"]
 
     LOGGER.debug("Computing error values")
-    df[ERR + AMPLITUDE] = 0  # TODO: will need to implement this calculation later
-    df[ERR + PHASE] = 0
-    df[ERR + DELTA + AMPLITUDE] = df[ERR + AMPLITUDE]
-    df[ERR + DELTA + PHASE] = df[ERR + PHASE]
+    df[f"{ERR}{AMPLITUDE}"] = 0  # TODO: will need to implement this calculation later
+    df[f"{ERR}{PHASE}"] = 0
+    df[f"{ERR}{DELTA}{AMPLITUDE}"] = df[f"{ERR}{AMPLITUDE}"]
+    df[f"{ERR}{DELTA}{PHASE}"] = df[f"{ERR}{PHASE}"]
 
     LOGGER.debug("Adding real and imaginary parts columns")
     df[REAL] = np.real(fterm)
-    df[REAL + MDL] = np.real(fterm_mdl)
-    df[ERR + REAL] = 0  # TODO: same
+    df[f"{REAL}{MDL}"] = np.real(fterm_mdl)
+    df[f"{ERR}{REAL}"] = 0  # TODO: same
     # These following columns are needed in the correction calculation later on
     # Most of the time model has 0 coupling so the DELTA is just the REAL / IMAG but let's
     # not neglect that we might want to have weird coupled models sometimes
     # For now error on delta is just the error on REAL / IMAG but in the future
     # we might want to change this for a fancier calculation
-    df[DELTA + REAL] = df[REAL] - df[REAL + MDL]
-    df[ERR + DELTA + REAL] = df[ERR + REAL]
+    df[f"{DELTA}{REAL}"] = df[REAL] - df[f"{REAL}{MDL}"]
+    df[f"{ERR}{DELTA}" + REAL] = df[f"{ERR}{REAL}"]
 
     df[IMAG] = np.imag(fterm)
-    df[IMAG + MDL] = np.imag(fterm_mdl)
-    df[ERR + IMAG] = 0  # TODO: same
+    df[f"{IMAG}{MDL}"] = np.imag(fterm_mdl)
+    df[f"{ERR}{IMAG}"] = 0  # TODO: same
     # See comment above, same thing here for IMAG
-    df[DELTA + IMAG] = df[IMAG] - df[IMAG + MDL]
-    df[ERR + DELTA + IMAG] = df[ERR + IMAG]
+    df[f"{DELTA}{IMAG}"] = df[IMAG] - df[f"{IMAG}{MDL}"]
+    df[f"{ERR}{DELTA}" + IMAG] = df[f"{ERR}{IMAG}"]
 
     return df.sort_values(by=S)
 

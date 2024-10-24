@@ -25,6 +25,9 @@ CALIBRATION_FILE: str = "calibration_{plane}.out"
 F1001_NAME: str = "f1001"
 F1010_NAME: str = "f1010"
 
+RDT_FOLDER: str = "rdt"
+CRDT_FOLDER: str = "crdt"
+
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe
 ERR: str = "ERR"  # Error of the measurement
@@ -38,11 +41,13 @@ MASKED: str = "MASKED"
 
 # Names
 S: str = "S"
+S2: str = f"{S}2"
 NAME: str = "NAME"
 NAME2: str = f"{NAME}2"
 TUNE: str = "Q"
 NAT_TUNE: str = "NATQ"
 PEAK2PEAK: str = "PK2PK"
+COUNT: str = "COUNT"
 ALPHA: str = "ALF"
 BETA: str = "BET"
 DPP: str = "DPP"
@@ -58,6 +63,9 @@ ORBIT: str = ""  # Column is plane (X or Y) in files
 CLOSED_ORBIT: str = "CO"
 DISPERSION: str = "D"
 NORM_DISPERSION: str = "ND"
+
+MEASUREMENT: str = "MEAS"
+MODEL: str = "MODEL"
 
 SECONDARY_AMPLITUDE_X: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum

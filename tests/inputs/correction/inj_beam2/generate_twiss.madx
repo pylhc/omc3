@@ -5,7 +5,7 @@ call, file = '../../../../omc3/model/accelerators/lhc/2018/main.seq';
 option, echo;
 
 exec, define_nominal_beams();
-call, file = '../../models/inj_beam2/opticsfile.1'; !@modifier
+call, file = '../../models/2018_inj_b2_11m/opticsfile.1'; !@modifier
 exec, cycle_sequences();
 exec, set_default_crossing_scheme();
 #exec, set_crossing_scheme_ON();

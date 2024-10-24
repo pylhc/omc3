@@ -12,9 +12,11 @@ from omc3.optics_measurements.constants import (
     NAME, DELTA, BETA, TUNE, NORM_DISPERSION, DISPERSION, PHASE_ADV, PHASE
 )
 
+from tests.conftest import INPUTS, MODELS
+
 INPUTS = Path(__file__).parent.parent / 'inputs'
 
-MODEL_INJ_BEAM1 = INPUTS / "models" / "inj_beam1" / "twiss.dat"
+MODEL_INJ_BEAM1 = MODELS / "2018_inj_b1_11m" / "twiss.dat"
 MODEL_INJ_BEAM1_MQ_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_quadrupole_error.dat"
 MODEL_INJ_BEAM1_MQS_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
 
