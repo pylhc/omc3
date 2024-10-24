@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import re
-from typing import Any, TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias
 from collections.abc import Sequence
 import numpy as np
 import pandas as pd
 import tfs
 from omc3.definitions.constants import PLANES, UNIT_IN_METERS
 from omc3.harpy import clean
+from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
+from omc3.model.accelerators.lhc import Lhc
 from omc3.utils import logging_tools
 from omc3.optics_measurements.constants import BETA, PHASE_ADV, S
 import turn_by_turn as tbt
@@ -46,22 +48,32 @@ BoolOrSeries: TypeAlias = bool | pd.Series[bool]
 
 class ActionPhaseData:
     
-    def __init__(self):
-        pass
+    def __init__(self, accel: Accelerator):
+        self.accel = accel
 
-    def use_bpm(self, name: ArrayLikeStr) -> BoolOrSeries:
-        """ Function to check if the given elements should be used for action and phase calculations. """
+    # def use_bpm(self, name: ArrayLikeStr) -> BoolOrSeries:
+    #     """ Check if the given elements should be used for action and phase calculations. """
+    #     raise NotImplementedError
+    
+    def get_points_of_interest(self) -> tuple[str, ...]:
+        """ Return the points of interest for the action and phase calculations. """
+        raise NotImplementedError
+    
+    def get_bpms_at_point_of_interest(self, point_of_interest: str, plane: str, side: str) -> tuple[str, ...]:
+        """ Return the BPMs to use for the action and phase calculations at the given point of interest. """
         raise NotImplementedError
 
 
+
+
 class LHCActionPhaseData(ActionPhaseData):
-    
-    def __init__(self):
-        pass
+    if TYPE_CHECKING:
+        accel: Lhc
 
-
-    def use_bpm(self, name: ArrayLikeStr) -> BoolOrSeries:
-        """ In the LHC only even-numbered BPMs are used."""
+    def _use_bpm(self, name: ArrayLikeStr) -> BoolOrSeries:
+        """ In the LHC only even-numbered BPMs are used.
+        TODO: Why? To get specific phase-advances?
+        """
         pattern = r"B.+\.(\d+)[LR]\d\."
 
         if isinstance(name, str):
@@ -73,6 +85,36 @@ class LHCActionPhaseData(ActionPhaseData):
             return int(match.group(1)) % 2 == 0
         
         return name.str.extract(pattern).astype(int) % 2 == 0
+    
+    def get_points_of_interest(self) -> tuple[str, ...]:
+        """ Return the points of interest for the action and phase calculations. 
+        In case of the LHC these are the IPs.
+        """
+        return tuple(ip for ip in self.accel.get_ips())
+    
+
+    def get_bpms_at_point_of_interest(self, point_of_interest: str, plane: str, side: str) -> tuple[str, ...]:
+        """ Return the BPMs to use for the action and phase calculations at the given point of interest. """
+        ip = int(point_of_interest[-1])
+        if side == "L":
+            from_ip, to_ip = self._get_previous_ip(ip), ip
+        elif side == "R":
+            from_ip, to_ip = ip, self._get_next_ip(ip)
+        else:
+            raise ValueError(f"Invalid side '{side}'")
+        
+        lhc = self.accel
+        all_bpms = lhc._elements.index[lhc.get_element_types_mask(lhc._elements.index, AccElementTypes.BPMS)]
+        mask_octant = all_bpms.str.match(fr".+\d+L{from_ip}|R{to_ip}")  # TODO: Check for exceptions
+        mask_arc = lhc.get_element_types_mask(all_bpms, AccElementTypes.ARC_BPMS)
+        arc_bpms = all_bpms[mask_octant & mask_arc]
+        return tuple(arc_bpms)  # TODO: CHECK type
+
+    def _get_next_ip(self, ip: int | str) -> int:
+        return (int(ip) + 1) % 9 or 1
+    
+    def _get_previous_ip(self, ip: int | str) -> int:
+        return (int(ip) - 1) % 9 or 8
 
 
 def cycle_model(model: tfs.TfsDataFrame, start_element: str) -> tfs.TfsDataFrame:
@@ -369,8 +411,8 @@ def name_tbd(orbit_data: pd.DataFrame, model: tfs.TfsDataFrame) -> pd.DataFrame:
 
         action, phase = get_action_phase_from_two_bpms(data, plane, data.index[:-1], data.index[1:])
 
+
         # sort into left and right BPMs, use only BPMs allowed (lhc = even bpms)
-        # calculate action and phases
         # calculate average action and average phase on filtered data 
 
 
