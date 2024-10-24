@@ -139,7 +139,7 @@ def get_imbalance_w_err(ip1_beta: float, ip1_beta_err: float, ip5_beta: float, i
 def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
     """ Calculates the effective beta*, 
     i.e. the denominator of the luminosity (e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf)
-    without any constants (apart from a division by two, but no idea why - jdilly), as we only need it for the ratio anyway.  
+    without any constants, as we only need it for the ratio anyway.  
     """
     b1x, b1y, b2x, b2y = _get_betastar_beams(df_ip)
     db1x, db2x, db1y, db2y = _get_betastar_beams(df_ip, errors=True) 
@@ -147,7 +147,7 @@ def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
     # Effective beta:
     sqrt_x = np.sqrt(b1x + b2x)
     sqrt_y = np.sqrt(b1y + b2y)
-    beta = 0.5 * sqrt_x * sqrt_y
+    beta = 0.5 * sqrt_x * sqrt_y  # TODO: find out why also divided by two? jdilly 2024
 
     # Error propagation:
     dbeta_db1x = dbeta_db2x = 0.25 * sqrt_y / sqrt_x
