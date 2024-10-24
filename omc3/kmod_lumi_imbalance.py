@@ -85,23 +85,24 @@ def calculate_lumi_imbalance_entrypoint(opt: DotDict) -> tfs.TfsDataFrame:
     if output_path is not None:
         output_path = Path(output_path)
         output_path.mkdir(parents=True, exist_ok=True)
-        if isinstance(opt.ip1, (Path, str)):
+        if isinstance(opt.ip1, (Path, str)) and isinstance(opt.ip5, (Path, str)):
             save_config(output_path, opt, __file__)
 
-    if isinstance(opt.ip1, (Path, str)):
-        df_ip1 = tfs.read(opt.ip1, index=BEAM)
-    else:
-        df_ip1 = opt.ip1
-    if isinstance(opt.ip5, (Path, str)):
-        df_ip5 = tfs.read(opt.ip5, index=BEAM)
-    else:
-        df_ip5 = opt.ip5
+    dfs = {}
+    for ip in ("ip1", "ip5"):
+        df = opt[ip]
+        if isinstance(df, (Path, str)):
+            df = tfs.read(df, index=BEAM)
+        dfs[f"df_{ip}"] = df
 
-    df = get_lumi_imbalance(df_ip1, df_ip5)
-    betastar = df_ip1.loc[1, f'{BETASTAR}{MDL}']
+    df = get_lumi_imbalance(**dfs)
+    betastar_x, betastar_y = dfs["df_ip1"].loc[1, [f'{BETASTAR}X{MDL}', f'{BETASTAR}Y{MDL}']].values
 
     if output_path is not None:
-        tfs.write(output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar=betastar)}{EXT}", df, save_index=IP)
+        tfs.write(
+            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=betastar_x, betastar_y=betastar_y)}{EXT}", df, 
+            save_index=IP
+        )
     
     return df
 
@@ -118,10 +119,13 @@ def get_lumi_imbalance(df_ip1: tfs.TfsDataFrame, df_ip5: tfs.TfsDataFrame) -> tf
         tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.
     """
     df_effective_betas = tfs.TfsDataFrame()
-    df_effective_betas.loc[1, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df_ip1)
-    df_effective_betas.loc[5, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df_ip5)
+    for ip, df in ((1, df_ip1), (5, df_ip5)):
+        df_effective_betas.loc[ip, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df)
     
-    lumi_imb, lumi_imb_err = get_imbalance_w_err(*tuple(df_effective_betas.loc[1, :]), *tuple(df_effective_betas.loc[5, :]))
+    lumi_imb, lumi_imb_err = get_imbalance_w_err(
+        *tuple(df_effective_betas.loc[1, :]), 
+        *tuple(df_effective_betas.loc[5, :])
+    )
     df_effective_betas.headers[f'{LUMINOSITY}{IMBALACE}'] = lumi_imb
     df_effective_betas.headers[f'{ERR}{LUMINOSITY}{IMBALACE}'] = lumi_imb_err
     return df_effective_betas

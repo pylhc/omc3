@@ -3,8 +3,9 @@ from pathlib import Path
 import pytest
 import tfs
 import pandas.testing as pdt
-from omc3.kmod_import import import_kmod_data, BETA_FILENAME, EXT
-from omc3.kmod.constants import AVERAGED_BPM_FILENAME, BETA_FILENAME
+from omc3.kmod_import import import_kmod_data
+from omc3.kmod.constants import AVERAGED_BPM_FILENAME, BETA_FILENAME, EXT
+from tests.unit.test_kmod_averaging import _get_reference_dir
 from tests.conftest import INPUTS
 
 INPUT_DIR_KMOD = INPUTS / "kmod"
@@ -44,8 +45,9 @@ def _assert_correct_files_are_present(outputdir: Path) -> None:
 def _get_model_path(beam: int) -> Path:
     return INPUT_DIR_KMOD / f"b{beam}_twiss_22cm.dat"
 
+
 def _get_input_path(beam: int, ip: int, beta: float) -> Path:
-    return REFERENCE_DIR / f"ip{ip}_averaged_2files" / f"{AVERAGED_BPM_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=1)}{EXT}"
+    return _get_reference_dir(ip=ip, n_files=2) / f"{AVERAGED_BPM_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=beam)}{EXT}"
 
 
 def _get_referece_path(beam: int, plane: str) -> Path:
