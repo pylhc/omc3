@@ -1,0 +1,6 @@
+@ Q1                   %le  0.28000000000000114
+@ Q2                   %le   0.3100000000000023
+* NAME                                    S              BETYMDL                 BETY              ERRBETY         DELTABETYMDL            DELTABETY         ERRDELTABETY
+$ %s                                    %le                  %le                  %le                  %le                  %le                  %le                  %le
+
+

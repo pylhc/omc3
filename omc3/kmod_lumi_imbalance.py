@@ -147,7 +147,7 @@ def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
     # Effective beta:
     sqrt_x = np.sqrt(b1x + b2x)
     sqrt_y = np.sqrt(b1y + b2y)
-    beta = 0.5 * sqrt_x * sqrt_y  # TODO: find out why also divided by two? jdilly 2024
+    beta = 0.5 * sqrt_x * sqrt_y  # division by 2 because of averaging, see Eq. 16 -> Eq. 17 in reference
 
     # Error propagation:
     dbeta_db1x = dbeta_db2x = 0.25 * sqrt_y / sqrt_x
