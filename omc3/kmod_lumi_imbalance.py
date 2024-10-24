@@ -118,8 +118,8 @@ def get_lumi_imbalance(df_ip1: tfs.TfsDataFrame, df_ip5: tfs.TfsDataFrame) -> tf
         tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.
     """
     df_effective_betas = tfs.TfsDataFrame()
-    df_effective_betas.loc[1, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_conv_beta_star_w_err(df_ip1)
-    df_effective_betas.loc[5, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_conv_beta_star_w_err(df_ip5)
+    df_effective_betas.loc[1, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df_ip1)
+    df_effective_betas.loc[5, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df_ip5)
     
     lumi_imb, lumi_imb_err = get_imbalance_w_err(*tuple(df_effective_betas.loc[1, :]), *tuple(df_effective_betas.loc[5, :]))
     df_effective_betas.headers[f'{LUMINOSITY}{IMBALACE}'] = lumi_imb
@@ -127,28 +127,33 @@ def get_lumi_imbalance(df_ip1: tfs.TfsDataFrame, df_ip5: tfs.TfsDataFrame) -> tf
     return df_effective_betas
 
 
-def get_imbalance_w_err(ip1: float, ip1_err: float, ip5: float, ip5_err: float) -> tuple[float, float]:
+def get_imbalance_w_err(ip1_beta: float, ip1_beta_err: float, ip5_beta: float, ip5_beta_err: float) -> tuple[float, float]:
     """
-    Calculate the luminosity imbalance and its error.
+    Calculate the luminosity imbalance IP1 / IP5  and its error.
     """
-    result = ip5 / ip1
-    err = result * np.sqrt((ip5_err/ip5)**2 + (ip1_err/ip1)**2)
+    result = ip5_beta / ip1_beta  # due to beta in the denominator for lumi
+    err = result * np.sqrt((ip5_beta_err/ip5_beta)**2 + (ip1_beta_err/ip1_beta)**2)
     return result, err
 
 
-def get_conv_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
+def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
+    """ Calculates the effective beta*, 
+    i.e. the denominator of the luminosity (e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf)
+    without any constants (apart from a division by two, but no idea why - jdilly), as we only need it for the ratio anyway.  
+    """
     b1x, b1y, b2x, b2y = _get_betastar_beams(df_ip)
     db1x, db2x, db1y, db2y = _get_betastar_beams(df_ip, errors=True) 
 
-    beta = np.sqrt(b1x + b2x) * np.sqrt(b1y + b2y) / 2
+    # Effective beta:
+    sqrt_x = np.sqrt(b1x + b2x)
+    sqrt_y = np.sqrt(b1y + b2y)
+    beta = 0.5 * sqrt_x * sqrt_y
 
     # Error propagation:
-    dbeta_dx = np.sqrt(b1y + b2y) / (4 * np.sqrt(b1x + b2x))
-    dbeta_dy = np.sqrt(b1y + b2y) / (4 * np.sqrt(b1x + b2x))
-    dbeta_dw = np.sqrt(b1x + b2x) / (4 * np.sqrt(b1y + b2y))
-    dbeta_dz = np.sqrt(b1x + b2x) / (4 * np.sqrt(b1y + b2y))
-    sigma = np.sqrt((dbeta_dx * db1x) ** 2 + (dbeta_dy * db1y) ** 2 +
-                    (dbeta_dw * db2x) ** 2 + (dbeta_dz * db2y) ** 2)
+    dbeta_db1x = dbeta_db2x = 0.25 * sqrt_y / sqrt_x
+    dbeta_db1y = dbeta_db2y = 0.25 * sqrt_x / sqrt_y 
+    sigma = np.sqrt((dbeta_db1x * db1x) ** 2 + (dbeta_db1y * db1y) ** 2 +
+                    (dbeta_db2x * db2x) ** 2 + (dbeta_db2y * db2y) ** 2)
     return beta, sigma
 
 

@@ -5,11 +5,7 @@ Constants
 Specific constants to be used in ``kmod``, to help with consistency.
 """
 from __future__ import annotations
-from pathlib import Path
-
-SEQUENCES_PATH: Path = Path(__file__).parent / 'sequences'
 EXT: str = ".tfs"
-FIT_PLOTS_NAME: str = 'fit_plots.pdf'
 
 SIDES: tuple[str, str] = ("L", "R")
 

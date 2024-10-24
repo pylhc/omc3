@@ -215,7 +215,7 @@ def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[floa
             LOG.warning(f"Could not find all results for beam {beam}. Skipping.", exc_info=e)
             continue
 
-        mean_df, std_df =  _get_mean_df(all_dfs)
+        mean_df, std_df =  _get_mean_and_std(all_dfs)
         
         for column in mean_df.columns:
             if not column.startswith(ERR):
@@ -252,7 +252,7 @@ def get_average_bpm_betas_results(meas_paths: Sequence[Path]) -> dict[int, tfs.T
             LOG.warning(f"Could not find all results for beam {beam}. Skipping.", exc_info=e)
             continue
         
-        mean_df, std_df =  _get_mean_df(all_dfs)
+        mean_df, std_df =  _get_mean_and_std(all_dfs)
 
         for plane in PLANES:
             mean_df[f'{ERR}{BETA}{plane}'] = std_df[f'{BETA}{plane}']
@@ -260,16 +260,11 @@ def get_average_bpm_betas_results(meas_paths: Sequence[Path]) -> dict[int, tfs.T
     return final_results
 
 
-def _get_mean_df(dfs: Sequence[pd.DataFrame]) -> tuple[pd.DataFrame, pd.DataFrame]:
-    if len(dfs) == 1:
-        LOG.warning("Only single KMod file provided, DataFrame is returned without averaging.")
-        return dfs[0]
-
+def _get_mean_and_std(dfs: Sequence[pd.DataFrame]) -> tuple[pd.DataFrame, pd.DataFrame]:
     grouped = tfs.concat(dfs, axis=0).groupby(level=0)  # append rows, group by index
     mean_df = grouped.mean()
     std_df = grouped.std(ddof=0)  # ddof=0 is default in numpy, ddof=1 is default in pandas
-    
-    
+        
     return mean_df, std_df
 
 
