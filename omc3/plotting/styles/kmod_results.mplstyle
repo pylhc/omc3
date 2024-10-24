@@ -1,0 +1,13 @@
+figure.figsize: 6, 6
+lines.linestyle: :
+markers.fillstyle: full
+xtick.labelsize: 12
+ytick.labelsize: 12
+figure.subplot.left:   0.17
+figure.subplot.bottom: 0.15 
+figure.subplot.right: 0.87  
+figure.subplot.top:  0.97 
+figure.facecolor:   white
+legend.fontsize: 14
+axes.labelsize: 14
+# savefig.format: png  # stick with pdf, but you can change it via manual_style 

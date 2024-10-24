@@ -4,25 +4,43 @@ Constants
 
 Specific constants to be used in ``kmod``, to help with consistency.
 """
-from pathlib import Path
+from __future__ import annotations
+EXT: str = ".tfs"
 
-SEQUENCES_PATH = Path(__file__).parent / 'sequences'
-EXT = ".tfs"
-FIT_PLOTS_NAME = 'fit_plots.pdf'
+SIDES: tuple[str, str] = ("L", "R")
 
-SIDES = ("L", "R")
+# columns
+K: str = "K"
+TUNE: str = "TUNE"
+ERR: str = "ERR"
+MDL: str = "MDL"
+EFFECTIVE: str = "EFF"
+LUMINOSITY: str = "LUMI"
+IMBALACE: str = "IMB"
 
-K = "K"
-TUNE = "TUNE"
-ERR = "ERR"
+BEAM: str = "BEAM"
+IP: str = "IP"
 
-BETA = "BET"
+BETA: str = "BET"
+STAR: str = "STAR"
+BETASTAR: str = f"{BETA}{STAR}"
+WAIST: str = "WAIST"
+BETAWAIST: str = f"{BETA}{WAIST}"
+CLEANED: str = "CLEANED_"
+PHASEADV: str = "PHASEADV"
+AVERAGE: str = "AVERAGE"
+LABEL: str = "LABEL"
+TIME: str = "TIME"
 
-STAR = "STAR"
-WAIST = "WAIST"
-CLEANED = "CLEANED_"
-PHASEADV = "PHASEADV"
-AVERAGE = "AVERAGE"
-RESULTS_FILE_NAME = 'results'
-LSA_FILE_NAME = 'lsa_results'
-INSTRUMENTS_FILE_NAME = 'beta_instrument'
+# file names from kmod-application
+BEAM_DIR: str = 'B'
+RESULTS_FILE_NAME: str = 'results'
+LSA_FILE_NAME: str = 'lsa_results'
+INSTRUMENTS_FILE_NAME: str = 'beta_instrument'
+
+# file names for omc3
+BETA_FILENAME: str = 'beta_kmod_'
+AVERAGED_BETASTAR_FILENAME: str = 'averaged_ip{ip}_beta{betastar_x}m{betastar_y}m'
+AVERAGED_BPM_FILENAME: str = 'averaged_bpm_beam{beam}_ip{ip}_beta{betastar_x}m{betastar_y}m'
+EFFECTIVE_BETAS_FILENAME: str = 'effective_betas_beta{betastar_x}m{betastar_y}m'
+

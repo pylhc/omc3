@@ -1,5 +1,15 @@
 # OMC3 Changelog
 
+#### 2024-10-24 - v0.17.0 - _fscarlier_, _jdilly_
+
+- Added K-Modulation tools:
+  - `kmod_averages`: Combine k-modulation results into a single file
+  - `kmod_lumi_imbalance`: Calculate the luminosity imbalance IP1 / IP5 from k-modulation results
+  - `kmod_import`: Import k-modulation results into an `optics_measurements` directory as `beta_kmod_().tfs` file.
+
+- Removed:
+  - Old k-modulation scripts: Functionality is either in k-mod GUI or in newly added scripts.
+
 #### 2024-09-20 - v0.16.1 - _fsoubelet_
 
 - Fixed:
