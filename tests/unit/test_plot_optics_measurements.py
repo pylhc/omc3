@@ -77,7 +77,7 @@ def test_orbit_ip_positions_location_manual(tmp_path):
     _default_test(
         "orbit",
         x_axis="location",
-        ip_positions=MODELS / "2018_inj_b1_25cm" / "twiss_elements.dat",
+        ip_positions=MODELS / "2018_col_b1_25cm" / "twiss_elements.dat",
         output_dir=tmp_path,
     )
 
