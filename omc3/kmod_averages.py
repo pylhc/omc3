@@ -83,7 +83,7 @@ if TYPE_CHECKING:
 
 LOG = logging_tools.get_logger(__name__)
 
-COLUMNS_TO_DROP: tuple[str, ...] = (TIME, )
+COLUMNS_TO_DROP: tuple[str, ...] = (TIME, LABEL, )
 COLUMNS_NO_AVERAGE: tuple[str, ...] = (S, )
 
 def _get_params():
@@ -210,7 +210,7 @@ def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[floa
     for beam in [1, 2]:
         try:
             all_dfs = [
-                tfs.read(dir_path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}", index=LABEL)
+                tfs.read(dir_path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}")
                 for dir_path in meas_paths
             ]
         except FileNotFoundError as e:
@@ -223,7 +223,6 @@ def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[floa
             mean_df[f'{BETASTAR}{plane}{MDL}'] = bstar
 
         mean_df[BEAM] = beam
-        mean_df = mean_df.reset_index()  # put label back as column
         final_results[beam] = mean_df
     final_df = tfs.concat(final_results.values()).set_index(BEAM)
     return final_df
