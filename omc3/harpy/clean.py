@@ -170,10 +170,9 @@ def _get_bad_bpms_summary(harpy_input, **kwargs):
 def _report_clean_stats(n_total_bpms, n_good_bpms, bad_bpms_with_reasons):
     LOGGER.debug("Filtering done:")
     
-    bad_bpms_message = (
-        "Bad BPMs found:\n"
-        "\n".join(bad_bpms_with_reasons)
-    )  # as this is not written out yet, this will provide more info in case of raising errors.
+    # As it not written out yet, provide more info in case of raising errors:
+    bad_bpms_message = "Bad BPMs found:\n"
+    bad_bpms_message += "\n".join(bad_bpms_with_reasons)
     
     # If all BPMs have been bad ---
     if n_total_bpms == 0:
