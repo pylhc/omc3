@@ -185,7 +185,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
 
 def get_elements_with_errors(meas_input, plane):
     if meas_input.accelerator.error_defs_file is None:
-        raise IOError(f"Error definition file could not be found")
+        raise IOError("Error definition file could not be found")
     elements = meas_input.accelerator.elements.loc[:, ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
     LOGGER.debug("Accelerator Error Definition")
     elements = _assign_uncertainties(elements, meas_input.accelerator.error_defs_file)
@@ -321,7 +321,7 @@ def _assign_uncertainties(twiss_full, errordefspath):
     """
     LOGGER.debug("Start creating uncertainty information")
     errdefs = tfs.read(errordefspath)
-    twiss_full = twiss_full.assign(UNC=False, dK1=0, KdS=0, mKdS=0, dX=0, BPMdS=0)
+    twiss_full = twiss_full.assign(UNC=False, dK1=0.0, KdS=0.0, mKdS=0.0, dX=0.0, BPMdS=0.0)
     # loop over uncertainty definitions, fill the respective columns, set UNC to true
     for indx in errdefs.index:
         patt = errdefs.loc[indx, "PATTERN"]

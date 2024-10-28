@@ -9,7 +9,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Callable, Iterator, Union
 
 from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
@@ -58,7 +58,7 @@ def copy_item(src_item, dest):
         LOG.error(f"Could not copy item because of IOError. Item: '{src_item}'")
 
 
-def glob_regex(path: Path, pattern: str) -> "filter object":
+def glob_regex(path: Path, pattern: str) -> Iterator[str]:
     """ Do a glob on the given `path` based on the regular expression `pattern`.
     Returns only the matching filenames (as strings).
 
@@ -66,6 +66,8 @@ def glob_regex(path: Path, pattern: str) -> "filter object":
         path (Path): Folder path to look in.
         pattern (str): Pattern to match.
 
+    Returns:
+        Iterator[str]: Matching filenames
     """
     return filter(re.compile(pattern).match, (p.name for p in path.glob("*")))
 
@@ -167,6 +169,21 @@ def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
     return dict_
 
 
+def replace_in_path(path: Path, old: Union[Path, str], new: Union[Path, str]) -> Path:
+    """ Replace a part of a path with a new path. 
+    Useful for example to replace the original path with a path to a symlink or vice versa.
+
+    Args:
+        path (Path): Path object to replace the subpath in 
+        old (Union[Path, str]): Subpath to be replaced
+        new (Union[Path, str]): Subpath to replace with
+
+    Returns:
+        Path: New Path object with the replacement in.
+    """
+    return Path(str(path).replace(str(old), str(new)))
+
+
 def remove_none_dict_entries(dict_: dict) -> dict:
     """
     Removes ``None`` entries from dict. This can be used as a workaround to
@@ -216,3 +233,16 @@ def save_config(output_dir: Path, opt: dict, script: str,
         dict(sorted(opt.items())),
         unknown=unknown_opt
     )
+
+
+def always_true(*args, **kwargs) -> bool:
+    """ A function that is always True. """
+    return True
+
+
+def get_check_suffix_func(suffix: str) -> Callable[[Path],bool]:
+    """ Returns a function that checks the suffix of a given path agains 
+    the suffix. """
+    def check_suffix(path: Path) -> bool:
+        return path.suffix == suffix
+    return check_suffix

@@ -77,10 +77,11 @@ Model Creation Keyword Args:
 
 
 """
+from __future__ import annotations
+
 import json
-from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, Iterator, List, Sequence, Tuple, Union, Iterable
+from typing import TYPE_CHECKING
 
 import tfs
 from generic_parser import EntryPoint
@@ -102,6 +103,9 @@ from omc3.model.constants import (
 )
 from omc3.utils import logging_tools
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator, Sequence, Iterable
+
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
 LHC_DIR = CURRENT_DIR / "lhc"
@@ -114,7 +118,7 @@ class Lhc(Accelerator):
 
     NAME = "lhc"
     REPOSITORY = "acc-models-lhc"
-    RE_DICT: Dict[str, str] = {
+    RE_DICT: dict[str, str] = {
         AccElementTypes.BPMS: r"BPM",
         AccElementTypes.MAGNETS: r"M",
         AccElementTypes.ARC_BPMS: r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]",
@@ -123,6 +127,7 @@ class Lhc(Accelerator):
     LHC_IPS = ("1", "2", "5", "8")
     NORMAL_IP_BPMS = "BPMSW.1{side}{ip}.B{beam}"
     DOROS_IP_BPMS = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
+    DEFAULT_CORRECTORS_DIR = LHC_DIR / "correctors"
 
     @staticmethod
     def get_parameters():
@@ -156,13 +161,10 @@ class Lhc(Accelerator):
         parser = EntryPoint(self.get_parameters(), strict=True)
         opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
-        self.correctors_dir = "2012"
         self.year = opt.year
         self.ats = opt.ats
         self.b2_errors = opt.b2_errors
         self.list_b2_errors = opt.list_b2_errors
-        if self.year == "hllhc1.3":
-            self.correctors_dir = "hllhc1.3"
         self.beam = opt.beam
         beam_to_beam_direction = {1: 1, 2: -1}
         self.beam_direction = beam_to_beam_direction[self.beam]
@@ -212,32 +214,41 @@ class Lhc(Accelerator):
         return LHC_DIR / "systematic_errors"
 
     def get_variables(self, frm: float = None, to: float = None, classes: Iterable[str] = None):
-        correctors_dir = LHC_DIR / "2012" / "correctors"
-        all_vars_by_class = _merge_jsons(
-            correctors_dir / f"correctors_b{self.beam}" / "beta_correctors.json",
-            correctors_dir / f"correctors_b{self.beam}" / "coupling_correctors.json",
-            self._get_triplet_correctors_file(),
+        corrector_beam_dir = Path(f"correctors_b{self.beam}")
+        all_vars_by_class = _load_jsons(
+            *self._get_corrector_files(corrector_beam_dir / "beta_correctors.json"),
+            *self._get_corrector_files(corrector_beam_dir / "coupling_correctors.json"),
+            *self._get_corrector_files("triplet_correctors.json"),
         )
-        if classes is None:
-            classes = all_vars_by_class.keys()
+        if classes is not None:
+            if isinstance(classes, str):
+                # if not checked, lead to each char being treates as a knob. 
+                raise TypeError(f"Classes must be an iterable, not a string: {classes}")  
 
-        known_classes = [c for c in classes if c in all_vars_by_class]
-        unknown_classes = [c for c  in classes if c not in all_vars_by_class]
-        if unknown_classes:
-            LOGGER.debug("The following classes are not found as corrector/variable classes and "
-                         f"are assumed to be the variable names directly instead:\n{str(unknown_classes)}")
+            known_classes = [c for c in classes if c in all_vars_by_class]
+            unknown_classes = [c for c  in classes if c not in all_vars_by_class]
 
-        vars = list( set(
-            _flatten_list(
-                all_vars_by_class[corr_cls]
-                    for corr_cls in known_classes))
-            )
-        vars = vars + unknown_classes
+            # names without the prefix '-' are simply added to the list
+            add_knobs = set(knob for knob in unknown_classes if knob[0] != "-")
+            if add_knobs:
+                LOGGER.info("The following names are not found as corrector/variable classes and "
+                            f"are assumed to be the variable names directly instead:\n{str(add_knobs)}")
+
+            # if the correction variable name is prepended with '-' it is taken out of the ones we use
+            remove_knobs = set(knob[1:] for knob in unknown_classes if knob[0] == "-")
+            if remove_knobs:
+                LOGGER.info(f"The following names will not be used as correctors, as requested:\n{str(remove_knobs)}")
+            
+            vars = set(_flatten_list(all_vars_by_class[corr_cls] for corr_cls in known_classes))
+            vars = list((vars | add_knobs) - remove_knobs)
+        
+        else:
+            vars = list(set(_flatten_list([vars_ for vars_ in all_vars_by_class.values()])))
 
         # Sort variables by S (nice for comparing different files)
         return self.sort_variables_by_location(vars, frm, to)
 
-    def sort_variables_by_location(self, variables: Iterable[str], frm: float = None, to: str = None) -> List[str]:
+    def sort_variables_by_location(self, variables: Iterable[str], frm: float = None, to: str = None) -> list[str]:
         """ Sorts the variables by location and filters them between `frm` and `to`.
         If `frm` is larger than `to` it loops back around to the start the accelerator.
         This is a useful function for the LHC that's why it is "public"
@@ -272,7 +283,7 @@ class Lhc(Accelerator):
             sorted_vars = sorted_vars + unknown_vars
         return sorted_vars
 
-    def get_ips(self) -> Iterator[Tuple[str]]:
+    def get_ips(self) -> Iterator[tuple[str]]:
         """
         Returns an iterable with this accelerator's IPs.
 
@@ -311,31 +322,8 @@ class Lhc(Accelerator):
         LOGGER.info(f"> Driven Tune X     [{self.drv_tunes[0]:10.3f}]")
         LOGGER.info(f"> Driven Tune Y     [{self.drv_tunes[1]:10.3f}]")
 
-    def load_main_seq_madx(self) -> str:
-        if self.acc_model_path is not None:
-            main_call = f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
-            if self.year.startswith('hl'):
-                main_call += f'\ncall, file = \'{self.acc_model_path / "hllhc_sequence.madx"}\';'
-            return main_call
-        try:
-            return _get_call_main_for_year(self.year)
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, mode "
-                "has to be specified (--lhcmode option missing?)."
-            )
 
-    # Private Methods ##########################################################
-
-    def _get_triplet_correctors_file(self) -> Path:
-        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
-        return correctors_dir / "triplet_correctors.json"
-
-    def _get_corrector_elems(self) -> Path:
-        correctors_dir = LHC_DIR / self.correctors_dir / "correctors"
-        return correctors_dir / f"corrector_elems_b{self.beam}.tfs"
-
-    def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
+    def get_exciter_bpm(self, plane: str, commonbpms: list[str]):
         beam = self.beam
         adt = "H.C" if plane == "X" else "V.B"
         l_r = "L" if ((beam == 1) != (plane == "Y")) else "R"
@@ -359,7 +347,7 @@ class Lhc(Accelerator):
                 "not found in the common BPMs. Maybe cleaned?"
             ) from e
 
-    def important_phase_advances(self) -> List[List[str]]:
+    def important_phase_advances(self) -> list[list[str]]:
         if "hl" in self.year.lower(): 
             # skip if HiLumi, TODO: insert phase advances when they are finalised
             return []
@@ -376,30 +364,11 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
-    def _get_madx_script_info_comments(self) -> str:
-        info_comments = (
-            f'title, "LHC Model created by omc3";\n'
-            f"! Model directory: {Path(self.model_dir).absolute()}\n"
-            f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
-            f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
-            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'OK':>10s}]\n"
-        )
-        if self.excitation == AccExcitationMode.FREE:
-            info_comments += f"! Excitation             [{'NO':>10s}]\n\n"
-            return info_comments
-        else:
-            info_comments += (
-                f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
-                f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
-                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n\n"
-            )
-        return info_comments
+    # MAD-X Methods ############################################################
 
-    def get_base_madx_script(self, best_knowledge: bool = False) -> str:
-        ats_md = False
-        high_beta = False
+    def get_base_madx_script(self, best_knowledge: bool = False, ats_md: bool = False, high_beta: bool = False) -> str:
         madx_script = (
-            f"{self._get_madx_script_info_comments()}"
+            f"{self._get_madx_script_info_comments()}\n\n"
             f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
         )
@@ -413,10 +382,12 @@ class Lhc(Accelerator):
                 f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
             )
 
-        madx_script += "! ----- Calling Sequence and Optics -----\n"
+        madx_script += "\n! ----- Calling Sequence -----\n"
         madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
-        madx_script += self.load_main_seq_madx()
-        madx_script += "\n\n"
+        madx_script += self._get_madx_main_sequence_loading()
+        madx_script += "\noption, echo;  ! re-enable output to see the optics settings\n"
+        
+        madx_script += "\n! ---- Call optics and other modifiers ----\n"
 
         if self.modifiers is not None:
             madx_script += "".join(
@@ -426,6 +397,7 @@ class Lhc(Accelerator):
 
         if self.year in ['2012', '2015', '2016', '2017', '2018', '2021', 'hllhc1.3']:
             # backwards compatibility with pre acc-models optics
+            # WARNING: This might override values extracted via the knob-extractor.
             madx_script += (
                 f"\n! ----- Defining Configuration Specifics -----\n"
                 f"xing_angles = {'1' if self.xing else '0'};\n"
@@ -435,14 +407,13 @@ class Lhc(Accelerator):
                 f"    exec, set_default_crossing_scheme();\n"
                 f"}}\n"
             )
-        else:
-            madx_script += 'call, file="knobs.madx";\n\n'
 
         madx_script += (
+            "\n! ----- Finalize Sequence -----\n"
             "exec, cycle_sequences();\n"
             f"use, sequence = LHCB{self.beam};\n"
-            f"option, echo;\n"
         )
+
         if best_knowledge:
             # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
             madx_script += (
@@ -451,10 +422,11 @@ class Lhc(Accelerator):
                 f"seterr, table=errtab;\n"
                 f"call, file = '{self.model_dir / B2_SETTINGS_MADX}';\n"
             )
+            
         if high_beta:
             madx_script += "exec, high_beta_matcher();\n"
 
-        madx_script += f"\n! ----- Matching Knobs and Output Files -----\n"
+        madx_script += "\n! ----- Matching Knobs and Output Files -----\n"
 
         # in the best knowledge case, all knobs are loaded from actual knowledge
         if not best_knowledge:
@@ -472,13 +444,48 @@ class Lhc(Accelerator):
             madx_script += "exec, full_response_ats();\n"
 
         return madx_script
+        
+    def _get_madx_script_info_comments(self) -> str:
+        info_comments = (
+            f'title, "LHC Model created by omc3";\n'
+            f"! Model directory: {Path(self.model_dir).absolute()}\n"
+            f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
+            f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
+            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'YES':>10s}]\n"
+        )
+        if self.excitation == AccExcitationMode.FREE:
+            info_comments += f"! Excitation             [{'NO':>10s}]\n"
+        else:
+            info_comments += (
+                f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
+                f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
+                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n"
 
-    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
+            )
+        return info_comments
+
+    def _get_madx_main_sequence_loading(self) -> str:
+        if self.acc_model_path is not None:
+            main_call = f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
+            if self.year.startswith('hl'):
+                main_call += f'\ncall, file = \'{self.acc_model_path / "hllhc_sequence.madx"}\';'
+            return main_call
+        try:
+            return self._get_call_main()
+        except AttributeError:
+            raise AcceleratorDefinitionError(
+                "The accelerator definition is incomplete, mode "
+                "has to be specified (--lhcmode option missing?)."
+            )
+
+    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str]) -> str:
         madx_script = self.get_base_madx_script()
         for corr_file in corr_files:
             madx_script += f"call, file = '{str(corr_file)}';\n"
         madx_script += f"exec, do_twiss_elements(LHCB{self.beam}, '{str(outpath)}', {self.dpp});\n"
         return madx_script
+
+    # Private Methods ##########################################################
 
     def _uses_ats_knobs(self) -> bool:
         """
@@ -493,50 +500,90 @@ class Lhc(Accelerator):
             return False
 
     def _uses_run3_macros(self) -> bool:
-        """Returns wether the Run 3 macros should be called, based on the instance's year."""
+        """Returns whether the Run 3 macros should be called, based on the instance's year."""
         try:
             return int(self.year) >= 2022  # self.year is always a string
         except ValueError:  # if a "hllhc1.x" year is given
             return False
 
+    def _get_corrector_elems(self) -> Path:
+        """ Return the corrector elements file, either from the instance's specific directory,
+        if it exists, or the default directory. """
+        return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
+    
+    def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
+        """ Get the corrector files from the default directory AND 
+        the instance's specific directory if it exists AND the model directroy if it exists, 
+        in that order. 
+        See also discussion in https://github.com/pylhc/omc3/pull/458#discussion_r1764829247 .
+        """
+
+        # add file from the default directory (i.e. "model/accelerators/lhc/correctors")
+        default_file = Lhc.DEFAULT_CORRECTORS_DIR / file_name
+        if not default_file.exists():
+            msg = (f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
+                  "Something went wrong with the variables getting logic.")
+            raise FileNotFoundError(msg)
+        
+        LOGGER.debug(
+            f"Default corrector file {file_name} found in {default_file.parent}."
+        )
+        corrector_files = [default_file]
+
+        # add file from the accelerator directory (e.g. "model/accelerators/lhc/2024/correctors")
+        accel_dir_file = self._get_accel_file(Path(Lhc.DEFAULT_CORRECTORS_DIR.name) / file_name)
+        if accel_dir_file.exists():
+            LOGGER.debug(
+                f"Corrector file {file_name} found in {accel_dir_file.parent}. "
+                "Contents will take precedence over defaults."
+            )
+            corrector_files.append(accel_dir_file)
+
+        # add file from the model directory (without "correctors" and subfolders) - bit of a hidden feature
+        if self.model_dir is not None:
+            model_dir_file = Path(self.model_dir) / Path(file_name).name
+            if model_dir_file.exists():
+                LOGGER.info(
+                    f"Corrector file {file_name} found in {model_dir_file.parent}. "
+                    "Contents will take precedence over omc3-given defaults."
+                )
+                corrector_files.append(model_dir_file)
+        
+        return corrector_files
+    
+    def _get_call_main(self) -> str:
+        call_main = f"call, file = '{self._get_accel_file('main.seq')}';\n"
+        if self.year == "2012":
+            call_main += (
+                f"call, file = '{self._get_accel_file('install_additional_elements.madx')}';\n"
+            )
+        if self.year == "hllhc1.3":
+            call_main += f"call, file = '{self._get_accel_file('main_update.seq')}';\n"
+        return call_main
+
+    def _get_accel_file(self, filename: str | Path) -> Path:
+        return LHC_DIR / self.year / filename
+        
 
 # General functions ##########################################################
 
-
-def _get_call_main_for_year(year: str) -> str:
-    call_main = f"call, file = '{_get_file_for_year(year, 'main.seq')}';\n"
-    if year == "2012":
-        call_main += (
-            f"call, file = '{LHC_DIR / '2012' / 'install_additional_elements.madx'}';\n"
-        )
-    if year == "hllhc1.3":
-        call_main += f"call, file = '{LHC_DIR / 'hllhc1.3' / 'main_update.seq'}';\n"
-    return call_main
-
-
-def _get_file_for_year(year: str, filename: str) -> Path:
-    return LHC_DIR / year / filename
-
-
-def _merge_jsons(*files) -> dict:
+def _load_jsons(*files) -> dict:
     full_dict = {}
     for json_file in files:
         with open(json_file, "r") as json_data:
-            json_dict = json.load(json_data)
-            for key in json_dict.keys():
-                full_dict[key] = json_dict[key]
+            full_dict.update(json.load(json_data))
     return full_dict
 
 
-def _flatten_list(my_list: Iterable) -> List:
+def _flatten_list(my_list: Iterable) -> list:
     return [item for sublist in my_list for item in sublist]
 
 
-def _remove_dups_keep_order(my_list: List) -> List:
-    return list(OrderedDict.fromkeys(my_list))
+def _remove_dups_keep_order(my_list: list) -> list:
+    return list(dict.fromkeys(my_list))
 
 
-def _list_intersect_keep_order(primary_list: Iterable, secondary_list: Iterable) -> List:
+def _list_intersect_keep_order(primary_list: Iterable, secondary_list: Iterable) -> list:
     return [elem for elem in primary_list if elem in secondary_list]
 
 

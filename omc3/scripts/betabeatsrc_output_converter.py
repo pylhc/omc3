@@ -9,8 +9,7 @@ Good to know: in ``BetaBeat.src`` the ``_free`` files correspond to AC dipole (o
 compensation by analytic equation while ``_free2`` corresponds to compensation via effective model. It is
 written in GetLLM (at least once) here: https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606
 """
-from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Union
 
@@ -89,8 +88,8 @@ def converter_entrypoint(opt: DotDict) -> None:
     """
     iotools.create_dirs(Path(opt.outputdir))
     save_options_to_config(
-        Path(opt.outputdir) / DEFAULT_CONFIG_FILENAME.format(time=datetime.utcnow().strftime(formats.TIME)),
-        OrderedDict(sorted(opt.items())),
+        Path(opt.outputdir) / DEFAULT_CONFIG_FILENAME.format(time=datetime.now(timezone.utc).strftime(formats.TIME)),
+        dict(sorted(opt.items())),
     )
     LOGGER.warning("Be aware that the input units in the BetaBeat.src outputs may not be SI")
     convert_old_directory_to_new(opt)

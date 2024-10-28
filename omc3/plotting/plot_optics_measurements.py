@@ -176,7 +176,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
-from omc3.optics_measurements.constants import EXT, AMPLITUDE, NORM_DISP_NAME, PHASE, REAL, IMAG
+from omc3.optics_measurements.constants import EXT, AMPLITUDE, NORM_DISP_NAME, REAL, IMAG
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
 from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT)
 from omc3.plotting.plot_tfs import plot as plot_tfs, OptionalFloat
@@ -418,12 +418,12 @@ def _plot_rdt(optics_parameter, files, file_labels, x_column, x_label, ip_positi
         if combine_planes:
             y_labels = [optics_parameter.upper()]
             if opt.suppress_column_legend:
-                column_labels = [l.format('F') for l in columns['y_labels'][idxs]]
+                column_labels = [label.format('F') for label in columns['y_labels'][idxs]]
             else:
-                column_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+                column_labels = [label.format(optics_parameter.upper()) for label in columns['y_labels'][idxs]]
 
         else:
-            y_labels = [l.format(optics_parameter.upper()) for l in columns['y_labels'][idxs]]
+            y_labels = [label.format(optics_parameter.upper()) for label in columns['y_labels'][idxs]]
             column_labels = [optics_parameter.upper()]
             if opt.suppress_column_legend:
                 column_labels = ['']
@@ -489,7 +489,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
 
     prefix = ''
     if opt.delta:
-        prefix += f'delta_'
+        prefix += 'delta_'
     if opt.combine_by and "files" in opt.combine_by:
         prefix += f'{optics_parameter}'
 

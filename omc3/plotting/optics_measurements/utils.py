@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional
 
-from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from numpy.typing import ArrayLike
 

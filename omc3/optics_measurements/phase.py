@@ -5,27 +5,33 @@ Phase Advance
 This module contains phase calculation functionality of ``optics_measurements``.
 It provides functions to compute betatron phase advances and structures to store them.
 """
-from os.path import join
+from __future__ import annotations
 from pathlib import Path
-from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
 import tfs
-from numpy.typing import ArrayLike
 
 from omc3.optics_measurements.constants import (DELTA, ERR, EXT, MDL, PHASE_NAME, SPECIAL_PHASE_NAME,
                                                 TOTAL_PHASE_NAME)
-from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
+
+from typing import TYPE_CHECKING 
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
+    from omc3.model.accelerators.accelerator import Accelerator
+    from numpy.typing import ArrayLike
+
 
 LOGGER = logging_tools.get_logger(__name__)
 
 
 def calculate(
-    meas_input: dict, input_files: dict, tunes, plane, no_errors=False
-) -> Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
+    meas_input: DotDict, input_files: InputFiles, tunes, plane, no_errors=False
+) -> dict[str, tuple[dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]:
     """
     Calculate phases for 'free' and 'uncompensated' cases from the measurement files, and return a
     dictionary combining the results for each transverse plane.
@@ -228,11 +234,17 @@ def _get_square_data_frame(data, index):
     return pd.DataFrame(data=data, index=index, columns=index)
 
 
-def write_special(meas_input, phase_advances, plane_tune, plane):
+def write_special(meas_input: DotDict, phase_advances: pd.DataFrame, plane_tune: float, plane: str):
+    """ Writes out the special phase advances, if any given by the accelerator class. """
     # TODO REFACTOR AND SIMPLIFY
-    accel = meas_input.accelerator
+    accel: Accelerator = meas_input.accelerator
+
+    important_phase_advances: list = accel.important_phase_advances()
+    if not important_phase_advances:
+        return
+
     meas = phase_advances["MEAS"]
-    bd = accel.beam_direction
+    beam_direction = accel.beam_direction
     elements = accel.elements
     special_phase_columns = ['ELEMENT1',
                              'ELEMENT2',
@@ -246,8 +258,7 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                              'BPM2',
                              f'BPM_PHASE{plane}',
                              f'BPM_{ERR}PHASE{plane}',]
-    special_phase_df = pd.DataFrame(columns=special_phase_columns)
-    
+    to_concat_rows = []
     for elem1, elem2 in accel.important_phase_advances():
         mus1 = elements.loc[elem1, f"MU{plane}"] - elements.loc[:, f"MU{plane}"]
         minmu1 = abs(mus1.loc[meas.index]).idxmin()
@@ -255,15 +266,14 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
         minmu2 = abs(mus2.loc[meas.index]).idxmin()
         bpm_phase_advance = meas.loc[minmu1, minmu2]
         model_value = elements.loc[elem2, f"MU{plane}"] - elements.loc[elem1, f"MU{plane}"]
-        if (elements.loc[elem1, "S"] - elements.loc[elem2, "S"]) * bd > 0.0:
+        if (elements.loc[elem1, "S"] - elements.loc[elem2, "S"]) * beam_direction > 0.0:
             bpm_phase_advance += plane_tune
             model_value += plane_tune
         bpm_err = phase_advances["ERRMEAS"].loc[minmu1, minmu2]
         elems_to_bpms = -mus1.loc[minmu1] - mus2.loc[minmu2]
-        ph_result = ((bpm_phase_advance + elems_to_bpms) * bd)
-        model_value = (model_value * bd) % 1
-        new_row = pd.DataFrame(
-            dict(zip(special_phase_columns, [
+        ph_result = ((bpm_phase_advance + elems_to_bpms) * beam_direction)
+        model_value = (model_value * beam_direction) % 1
+        new_row = pd.DataFrame([[
                 elem1,
                 elem2,
                 ph_result % 1,
@@ -276,12 +286,12 @@ def write_special(meas_input, phase_advances, plane_tune, plane):
                 minmu2,
                 bpm_phase_advance,
                 elems_to_bpms,
-            ])),
-            index=[0]
+            ]], 
+            columns=special_phase_columns,
         )
+        to_concat_rows.append(new_row)
 
-        special_phase_df = pd.concat([special_phase_df, new_row], axis="index", ignore_index=True)
-
+    special_phase_df = pd.concat(to_concat_rows, axis="index", ignore_index=True)
     tfs.write(Path(meas_input.outputdir) / f"{SPECIAL_PHASE_NAME}{plane.lower()}{EXT}", special_phase_df)
 
 

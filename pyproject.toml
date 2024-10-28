@@ -1,0 +1,113 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "omc3/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/doc",
+  "/tests",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["omc3"]
+
+[project]
+name = "omc3"
+readme = "README.md"
+description = "An accelerator physics tools package for the OMC team at CERN."
+authors = [
+    {name = "OMC Team", email = "pylhc@github.com"},  # see zenodo file / commits for details
+]
+license = "MIT"
+dynamic = ["version"]
+requires-python = ">=3.9"
+
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+# TODO: when we drop python 3.9, require pytables 3.10.1 minimum and stop caring about numpy 2 compability
+dependencies = [
+  "numpy >= 1.24, < 2.0; python_version < '3.10'",  # first pytables compatible with numpy 2 is 3.10 but does not support python 3.9
+  "numpy >= 1.24; python_version >= '3.10'",  # otherwise we can use numpy 2 as on python 3.10 there is a pytables which is ok with it
+  "scipy >= 1.10",
+  "pandas >= 2.1",
+  "tfs-pandas >= 3.8",
+  "matplotlib >= 3.8",
+  "Pillow >= 6.2.2",  # not our dependency but older versions crash with mpl
+  "generic-parser >= 1.1",
+  "sdds >= 0.4",
+  "optics-functions >= 0.1",
+  "turn_by_turn >= 0.6",
+  "uncertainties >= 3.1",
+  "scikit-learn >= 1.0",
+  "h5py >= 2.9",
+  "tables >= 3.9",  # TODO: require 3.10.1 minimum when it's out and we drop python 3.9 support
+  "requests >= 2.27",
+]
+
+[project.optional-dependencies]
+cern = [
+  "jpype1 >= 1.3",
+  "pytimber >= 3.0",  # NXCALS support
+  "pylogbook >= 3.4",
+  "kerberos >= 1.3.1",  # requires having krb-5config installed on the system
+]
+optional = [
+  "pymupdf >= 1.22",  # logbook for conversion from pdf to png
+  "qtpy >= 2.3.1",  # putting plots in windows
+]
+test = [
+  "jpype1 >= 1.3",
+  "pytest >= 7.0",
+  "pytest-cov >= 2.9",
+  "pytest-timeout >= 1.4",
+  "gitpython >= 3.1",  # imported as 'git', used for acc-models fixture
+]
+doc = [
+  "sphinx >= 7.0",
+  "sphinx_rtd_theme >= 2.0",
+]
+
+all = [
+  "omc3[cern]",
+  "omc3[optional]",
+  "omc3[test]",
+  "omc3[doc]",
+]
+
+[project.urls]
+homepage = "https://github.com/pylhc/omc3"
+repository = "https://github.com/pylhc/omc3"
+documentation = "https://pylhc.github.io/omc3/"
+changelog = "https://github.com/pylhc/omc3/blob/master/CHANGELOG.md"
+
+# ----- Testing ----- #
+
+[tool.pytest.ini_options]
+markers = [
+    "basic: basic tests run for every commit",
+    "extended: test run on PRs",
+    "cern_network: tests that require access to afs or the technical network",
+]
+# Helpful for pytest-debugging (leave commented out on commit):
+#log_cli = true
+#log_cli_level = "DEBUG"

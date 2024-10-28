@@ -7,11 +7,8 @@ It contains entrypoint wrappers to get accelerator classes or their instances.
 """
 from generic_parser.entrypoint_parser import entrypoint, EntryPoint, EntryPointParameters
 from omc3.model.accelerators import lhc, ps, esrf, psbooster, skekb, petra, iota, generic
-from generic_parser.dict_parser import ArgumentError
-from generic_parser.tools import silence
 
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.utils.parsertools import print_help
 
 ACCELS = {
     lhc.Lhc.NAME: lhc.Lhc,

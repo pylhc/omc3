@@ -228,14 +228,15 @@ well as a plot for all corrections (only EXPected) will be saved into the output
     Limits on the y axis (Tupel)
 
 """
+from __future__ import annotations
+
 import copy
 from pathlib import Path
-from typing import Dict, Sequence, Any, List
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
 import tfs
-from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 from omc3.correction import filters
 from omc3.correction import handler as global_correction
@@ -257,6 +258,11 @@ from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, glob_regex, save_config
 from omc3.utils.stats import rms, circular_rms
 from tfs import TfsDataFrame
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from generic_parser import DotDict
+
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -390,7 +396,7 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:
     return opt
 
 
-def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> Dict[str, Sequence[Path]]:
+def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> dict[str, Sequence[Path]]:
     """ Sort the given correction files:
     If given by individual files, they all go into one bucket,
     if given by folders (i.e. scenarios) they are sorted by its name.
@@ -414,14 +420,14 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> D
     return corr_dict
 
 
-def _glob_regex_paths(path: Path, pattern: str) -> List[Path]:
+def _glob_regex_paths(path: Path, pattern: str) -> list[Path]:
     """ Filter the files in path by pattern and return a list of paths. """
     return [path / f for f in glob_regex(path, pattern)]
 
 
 # Main and Output --------------------------------------------------------------
 
-def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> Dict[str, pd.Index]:
+def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> dict[str, pd.Index]:
     """ Get the filtered measurement based on the cuts as done in the correction calculation.
     As we need this only for RMS calculations later on, we only care about the
     BPM-names. So the returned dict contains the index to be used for this
@@ -456,7 +462,7 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> Dict[s
 
 def _create_model_and_write_diff_to_measurements(
         output_dir: Path, measurement: OpticsMeasurement, correction_name: str, correction_files: Sequence[Path],
-        accel_inst: Accelerator, rms_masks: Dict) -> OpticsMeasurement:
+        accel_inst: Accelerator, rms_masks: dict) -> OpticsMeasurement:
     """ Create a new model with the corrections (well, the "matchings") applied and calculate
     the difference to the nominal model, i.e. the expected improvement of the measurements
     (for detail see main docstring in this file).
@@ -480,7 +486,7 @@ def _create_model_and_write_diff_to_measurements(
     )
 
     diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
-    LOG.debug(f"Differences to nominal model calculated.")
+    LOG.debug("Differences to nominal model calculated.")
 
      # Create new "measurement" with additional columns
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
@@ -535,7 +541,7 @@ def _create_model_and_write_diff_to_measurements(
 
 def _create_check_columns(measurement: OpticsMeasurement, output_measurement: OpticsMeasurement, diff_models: TfsDataFrame,
                           colmap_meas: ColumnsAndLabels, colmap_model: ColumnsAndLabels, attribute: str,
-                          rms_mask: Dict = None) -> None:
+                          rms_mask: dict = None) -> None:
     """Creates the columns in the measurements, that allow for checking the corrections.
     These are:
         diff_correction_column: Difference between the corrected and uncorrected model,
@@ -650,7 +656,7 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, measurement: OpticsMea
 
 # Plotting ---------------------------------------------------------------------
 
-def _do_plots(corrections: Dict[str, Any], opt: DotDict):
+def _do_plots(corrections: dict[str, Any], opt: DotDict):
     """ Plot the differences of the matched models to the measurement. """
     opt_plot = {k: v for k, v in opt.items() if k in get_plotting_style_parameters().keys()}
     opt_plot["input_dir"] = opt.output_dir

@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### IN PROGRESS - v0.15.0 - _jdilly_, _fscarlier_, _fesoubel_
+#### IN PROGRESS - v0.18.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:
   - Plot Check Corrections: Fixed Crash when normalized dispersion is in measurements
@@ -12,6 +12,84 @@
   - Global Correction: Total phase correction arc-by-arc
   - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
   - Script to copy KMod results into optics directory
+
+#### 2024-09-30 - v0.16.2 - _jdilly_
+
+- Fixed:
+  - Temporary hack to fix `knob_extractor` in CCC.
+
+#### 2024-09-20 - v0.16.1 - _fsoubelet_
+
+- Fixed:
+  - Fixed `DepracationWarning`s related datetime operations.
+  - Fixed `DeprecationWarning` occuring due to the use of old `numpy` functions.
+  - Fixed `FutureWarning` happening during edge-cases of dataframe concatenation by performing checks ahead of time.
+  - Fixed `FutureWarning`s occuring due to deprecated `pandas.Series` accesses.
+  - Fixed `UserWarning` occuring when wrongly setting ticks and labels for correction plots.
+
+- Changed:
+  - Masked `NaturalNameWarning`s happening during HDF5 tables operations, as the use of names such as `kq4.r8b2` is not avoidable and `pandas` properly handles access operations for us.
+  - Masked `UserWarning`s happening during plotting for operations that are explicitely demanded.
+  - Intercept `RankWarning` which can happen during a `polyfit` of data and re-emit as log message.
+  - Intercept `OptimizeWarning` happening when the covariance parameters could not be estimated in `kmod` analysis and re-emit as log message.
+  - Intercept `OptimizeWarning` happening when the covariance parameters could not be estimated in `rdt` analysis and re-emit as log message.
+
+#### 2024-09-18 - v0.16.0 - _jdilly_
+
+- Added:
+  - Global Correction for LHC:
+    - The correction variables in the LHC accelerator class are now handled differently internally,
+      allowing new variable classes to be added to each lhc-year and user-given files in the model-directory.
+    - Variable categories `MQM_ALL` added to all LHC years.
+    - Variable categories `MQM_INJ_2024` and `MQM_TOP_2024` added to LHC 2024.
+    - Adding a "-" in front of a given correction variable name removes this variable from the correction. Does not work for whole variable categories.
+  - Tests for running `global_correction` with `omp` and `pinv` correction methods.
+
+- Fixed:
+  - Orthogonal Matching Pursuit (`omp`) in global correction runs again ([#448](https://github.com/pylhc/omc3/issues/448))
+  - Corrections Check window stop-iteration issue: fixed. Single-plane files, i.e. normalized dispersion, now accepted ([#447](https://github.com/pylhc/omc3/issues/447))
+  - LHC Correction variables now logged, if not found in the variable categories ([#446](https://github.com/pylhc/omc3/issues/446))
+
+#### 2024-09-16 - v0.15.4 - _jdilly_
+
+- Fixed:
+  - Measure optics skips now using the ERRAMP column, when not present, i.e. when cleaning deactivated ([#451](https://github.com/pylhc/omc3/issues/451))
+  - `hole_in_one` now allows `pathlib.Path` objects in addition to `str` ([#452](https://github.com/pylhc/omc3/issues/452))
+  - Pandas to numpy dtype conversions bug ([#453](https://github.com/pylhc/omc3/issues/453)).
+  - Special phases writing now skipped when accelerator has no special phases ([#454](https://github.com/pylhc/omc3/issues/454)).
+  - RDT/CRDT calculation now not crashing when also giving off-momentum files; but only calculated from on on-momentum files ([#456](https://github.com/pylhc/omc3/issues/456)).
+
+- Added:
+  - Tests for full runs `hole_in_one` with on-momentum and off-momentum files.
+
+#### 2024-08-14 - v0.15.3 - _jdilly_
+
+- Fixed:
+  - Add DOROS BPMs to `twiss.dat`.
+  - Some Pandas `FutureWarning`s, `DeprecationWarning`s and `PerformanceWarning`s
+
+#### 2024-08-14 - v0.15.2 - _fesoubel_, _jdilly_
+
+- Fixed:
+  - Numpy's `ComplexWarning` was not part of main namespace in v2.0, so we import it directly
+
+#### 2024-08-14 - v0.15.1 - _fesoubel_
+
+- Fixed:
+  - The package is now fully compatible with `numpy 2.x` on `Python >= 3.10` thanks to a `pytables` compatibility release.
+  - The package still limits to `numpy < 2` on `Python 3.9` due to the lack of compatibility from `pytables` on this versions.
+
+#### 2024-07-08 - v0.15.0 - _jdilly_
+
+- PINNING NUMPY TO < 2.0.0
+
+- Changed:
+  - Model creation:
+    - removed hard-coded `knobs.madx` from `lhc`
+    - removed `corrections.madx` from `lhc` best-knowledge model
+    - zip up log-output files in `response_madx.py`
+    - keep 0th output file in `response_madx.py` for reference of the model setup
+    - Sequence and modifiers use the acc-models symlink in madx-jobs where applicable.
 
 #### 2024-06-05 - v0.14.1 - _jdilly_
 
@@ -50,7 +128,7 @@
 #### 2023-11-29 - v0.12.0 - _jdilly_
 
 - Added to harmonic analysis:
-  - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file 
+  - `suffix` input parameter: adds suffix to output files, which e.g. allows running the same file
     with different parameters without overwriting it.
   - `bunch_ids` input parameter: in case of multibunch-files only analyse these bunches.
     If not given, all bunches will be analysed, as before.
@@ -73,7 +151,7 @@
   - Plot Optics: making normalized dispersion plot a special case.
 
 - Added:
-  - Plot Optics: optional input "--labels" to manually set the legend-labels. 
+  - Plot Optics: optional input "--labels" to manually set the legend-labels.
 
 #### 2023-06-16 - v0.11.1 - _jdilly_
 
@@ -81,7 +159,7 @@
   - OptionalString: 'None' as input is converted to None.
   - Missing Kerberos config added to MANIFEST for packaging.
   - Plot Optics plots now correct error-column, e.g. for beta-beating.
-  - Added warnings/errors for too few bpms in N-BPM/3-BPM methods. 
+  - Added warnings/errors for too few bpms in N-BPM/3-BPM methods.
   - Added navbar to sphinx documentation.
 
 - Tests:
@@ -126,12 +204,11 @@
 #### 2023-01-20 - v0.7.1 - _jdilly_
 
 - Added:
-  - Amplitude Detuning plots: Switch to plot only with/without BBQ correction 
+  - Amplitude Detuning plots: Switch to plot only with/without BBQ correction.
 
 - Fixed:
   - Second Order Amplitude Detuning fit now working
-  - Correct print/calculation of second order direct terms for forced 
-    kicks in plot-labels.
+  - Correct print/calculation of second order direct terms for forced kicks in plot-labels.
 
 #### 2022-11-08 - v0.7.0 - _jdilly_
 
@@ -143,14 +220,14 @@
   
 #### 2022-11-01 - v0.6.6
 
-- Bugfixes 
+- Bugfixes:
   - correction: fullresponse is converted to Path.
-  - fake measurement from model: dont randomize errors and values by default. 
+  - fake measurement from model: dont randomize errors and values by default.
 
 #### 2022-10-15 - v0.6.5
 
 - Added to `knob_extractor`:
-  - proper state extraction. 
+  - proper state extraction.
   - IP2 and IP8 separation/crossing variables.
 
 #### 2022-10-12 - v0.6.4
@@ -220,7 +297,7 @@
 #### 2022-05-19 - v0.3.0 - _jdilly_
 
 - Added:
-  - Linfile cleaning script. 
+  - Linfile cleaning script.
 
 #### 2022-04-25 - v0.2.7 - _awegshe_
 
@@ -315,7 +392,7 @@
   - Spectrum Plotting
   - Turn-by-Turn Converter
 
-- `setup.py` and packaging functionality 
+- `setup.py` and packaging functionality
 - Automated CI
   - Multiple versions of python
   - Accuracy tests

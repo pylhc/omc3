@@ -235,12 +235,12 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
         handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.to_numpy(),
                                                 color=pcolors.change_color_brightness(color, .7),
                                                 marker=".",
-                                                label="filtered".format(plane.lower())
+                                                label="filtered"
                                                 )[0]
         handles[2*len(PLANES)+idx] = axs[idx].plot(bbq_df.index, bbq_df[get_mav_col(plane)],
                                                   color=color,
                                                   linestyle="-",
-                                                  label="moving av.".format(plane.lower())
+                                                  label="moving av."
                                                   )[0]
 
         if (y_lim is None or y_lim[0] is None) and two_plots:

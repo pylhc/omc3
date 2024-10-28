@@ -4,32 +4,34 @@ Handler
 
 This module contains high-level functions to manage most functionality of the corrections calculations.
 """
+from __future__ import annotations
+
 import datetime
-import os
 import time
 from pathlib import Path
-from typing import Callable, Dict, List, Sequence, Tuple, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 import tfs
-from generic_parser import DotDict
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction import filters, model_appenders, response_twiss
-import omc3.correction.arc_by_arc as abba
-from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, F1001,
-                                                F1010, NORM_DISPERSION, PHASE, TUNE,
-                                                DISPERSION_NAME, EXT, REAL, IMAG,
-                                                NORM_DISP_NAME, PHASE_NAME, NAME
-                                                )
-from omc3.correction.constants import ERROR, VALUE, WEIGHT, DIFF
+from omc3.correction import filters, model_appenders, response_twiss, arc_by_arc as abba
+from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
+from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
+                                                F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
+                                                PHASE, PHASE_NAME, TUNE)
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+    from generic_parser import DotDict
+
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -143,8 +145,8 @@ def get_measurement_data(
         keys: Sequence[str],
         meas_dir: Path,
         beta_filename: str,
-        w_dict: Dict[str, float] = None,
-) -> Tuple[List[str], Dict[str, tfs.TfsDataFrame]]:
+        w_dict: dict[str, float] = None,
+) -> tuple[list[str], dict[str, tfs.TfsDataFrame]]:
     """ Loads all measurements defined by `keys` into a dictionary. """
     measurement = {}
     filtered_keys = keys
@@ -217,7 +219,7 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _create_corrected_model(twiss_out: Union[Path, str], change_params: Sequence[Path], accel_inst: Accelerator) -> tfs.TfsDataFrame:
+def _create_corrected_model(twiss_out: Path | str, change_params: Sequence[Path], accel_inst: Accelerator) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
     madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params)
     twiss_out_path = Path(twiss_out)
@@ -274,7 +276,7 @@ def _orthogonal_matching_pursuit(response_mat: pd.DataFrame, diff_vec, opt: DotD
     if opt.n_correctors is None:
         raise ValueError("n_correctors setting needed for orthogonal matching pursuit.")
 
-    res = OrthogonalMatchingPursuit(opt.n_correctors).fit(response_mat, diff_vec)
+    res = OrthogonalMatchingPursuit(n_nonzero_coefs=opt.n_correctors).fit(response_mat, diff_vec)
     coef = res.coef_
     LOG.debug(f"Orthogonal Matching Pursuit Results: \n"
               f"  Chosen variables: {response_mat.columns.to_numpy()[coef.nonzero()]}\n"

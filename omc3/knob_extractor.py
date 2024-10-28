@@ -33,8 +33,6 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
     Specify user-defined output path. This should probably be
     `model_dir/knobs.madx`
 
-    default: ``knobs.madx``
-
 
 - **state**:
 
@@ -63,19 +61,30 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 
 
 """
-####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ################
-# This ia a hack, please remove at the earliers convenience
+from __future__ import annotations
+
+####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ##################################
+# Move `/mcr/bin` to the end of the Path.
+# Fixes:
+# 'Error: Could not find or load main class (...) aircompressor-0.26.jar'
+#
+# This ia a hack, please remove at the earliest convenience. For updates see: 
+# https://cern.service-now.com/service-portal?id=ticket&table=incident&n=INC3768823
 import os
 if "PATH" in os.environ and "/mcr/bin" in os.environ["PATH"]:
-    os.environ["PATH"] = "/bin:" + os.environ["PATH"]
-##############################################################
+    parts = os.environ["PATH"].split(":")
+    parts.remove("/mcr/bin")
+    parts.append("/mcr/bin")  # probably not neccesary
+    os.environ["PATH"] = ":".join(parts)
+################################################################################
+
 import argparse
 import logging
 import math
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
@@ -86,6 +95,9 @@ from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
 
+if TYPE_CHECKING:
+   from collections.abc import Sequence 
+
 pytimber = cern_network_import("pytimber")
 
 LOGGER = get_logger(__name__)
@@ -95,8 +107,8 @@ ACC_MODELS_LHC = Path("acc-models-lhc")
 KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
 KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
 
-MINUS_CHARS: Tuple[str, ...] = ("_", "-")
-STATE_VARIABLES: Dict[str, str] = {
+MINUS_CHARS: tuple[str, ...] = ("_", "-")
+STATE_VARIABLES: dict[str, str] = {
     'opticName': 'Optics',
     'beamProcess': 'Beam Process',
     'opticId': 'Optics ID',
@@ -118,7 +130,7 @@ class Head:
     time: str = "EXTRACTION_TIME"
 
 
-KNOB_CATEGORIES: Dict[str, List[str]] = {
+KNOB_CATEGORIES: dict[str, list[str]] = {
     "sep": [
         "LHCBEAM:IP1-SEP-H-MM",
         "LHCBEAM:IP1-SEP-V-MM",
@@ -271,7 +283,9 @@ def get_params():
 )
 def main(opt) -> tfs.TfsDataFrame:
     """ Main knob extracting function. """
-    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR)
+    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR, 
+                             sparkprops={"spark.ui.showConsoleProgress", "false"}
+    )
     time = _parse_time(opt.time, opt.timedelta)
 
     if opt.state:
@@ -289,7 +303,7 @@ def main(opt) -> tfs.TfsDataFrame:
 
 # State Extraction -------------------------------------------------------------
 
-def get_state(ldb, time: datetime) -> Dict[str, str]:
+def get_state(ldb, time: datetime) -> dict[str, str]:
     """
     Standalone function to gather and log state data from  the StateTracker.
 
@@ -310,7 +324,7 @@ def get_state(ldb, time: datetime) -> Dict[str, str]:
     return state_dict
 
 
-def _get_state_as_df(state_dict: Dict[str, str], time: datetime) -> tfs.TfsDataFrame:
+def _get_state_as_df(state_dict: dict[str, str], time: datetime) -> tfs.TfsDataFrame:
     """
     Convert extracted StateTracker state-data into a TfsDataFrame
     To be consistent with the main functions output.
@@ -333,7 +347,7 @@ def _get_state_as_df(state_dict: Dict[str, str], time: datetime) -> tfs.TfsDataF
 
 # Knobs Extraction -------------------------------------------------------------
 
-def extract(ldb, knobs: Sequence[str], time: datetime) -> Dict[str, float]:
+def extract(ldb, knobs: Sequence[str], time: datetime) -> dict[str, float]:
     """
     Standalone function to gather data from  the StateTracker.
     Extracts data via pytimber's LoggingDB for the knobs given
@@ -433,7 +447,7 @@ def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
     return knobs
 
 
-def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame):
+def _write_knobsfile(output: Path | str, collected_knobs: tfs.TfsDataFrame):
     """ Takes the collected knobs and writes them out into a text-file. """
     collected_knobs = collected_knobs.copy()  # to not modify the df
 
@@ -452,7 +466,7 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame
 
     # Write them out
     with open(output, "w") as outfile:
-        outfile.write(f"!! --- knobs extracted by knob_extractor\n")
+        outfile.write("!! --- knobs extracted by knob_extractor\n")
         outfile.write(f"!! --- extracted knobs for time {collected_knobs.headers[Head.time]}\n\n")
         for category, knobs_df in category_knobs.items():
             outfile.write(f"!! --- {category:10} --------------------\n")
@@ -464,25 +478,25 @@ def _write_knobsfile(output: Union[Path, str], collected_knobs: tfs.TfsDataFrame
 
 # Knobs Definitions ------------------------------------------------------------
 
-def _get_knobs_def_file(user_defined: Optional[Union[Path, str]] = None) -> Path:
+def _get_knobs_def_file(user_defined: Path | str | None = None) -> Path:
     """ Check which knobs-definition file is appropriate to take. """
     if user_defined is not None:
-        LOGGER.info(f"Using user defined knobs.txt: '{user_defined}")
+        LOGGER.info(f"Using user knobs-definition file: '{user_defined}")
         return Path(user_defined)
 
     if KNOBS_FILE_ACC_MODELS.is_file():
-        LOGGER.info(f"Using model folder's knobs.txt: '{KNOBS_FILE_ACC_MODELS}")
+        LOGGER.info(f"Using given acc-models folder's knobs.txt as knobsdefinition file: '{KNOBS_FILE_ACC_MODELS}")
         return KNOBS_FILE_ACC_MODELS
 
     if KNOBS_FILE_AFS.is_file():
         # if all fails, fall back to lhc acc-models
-        LOGGER.info(f"Using fallback knobs.txt: '{KNOBS_FILE_AFS}'")
+        LOGGER.info(f"Using afs-fallback acc-models folder's knobs.txt as knobs-definition file: '{KNOBS_FILE_AFS}'")
         return KNOBS_FILE_AFS
 
     raise FileNotFoundError("None of the knobs-definition files are available.")
 
 
-def load_knobs_definitions(file_path: Union[Path, str]) -> pd.DataFrame:
+def load_knobs_definitions(file_path: Path | str) -> pd.DataFrame:
     """ Load the knobs-definition file and convert into a DataFrame.
     Each line in this file should consist of at least three comma separated
     entries in the following order: madx-name, lsa-name, scaling factor.
@@ -532,7 +546,7 @@ def _to_knobs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _parse_knobs_defintions(knobs_def_input: Optional[Union[Path, str, pd.DataFrame]]) -> pd.DataFrame:
+def _parse_knobs_defintions(knobs_def_input: Path | str | pd.DataFrame | None) -> pd.DataFrame:
     """ Parse the given knob-definitions either from a csv-file or from a DataFrame. """
     if isinstance(knobs_def_input, pd.DataFrame):
         return _to_knobs_dataframe(knobs_def_input)

@@ -4,17 +4,23 @@ Plotting Utilities: Annotations
 
 Helper functions to create annotations, legends as well as style labels in plots.
 """
+from __future__ import annotations
+
 import itertools
 import re
-from typing import Union
+from typing import TYPE_CHECKING
 
 import matplotlib
 import pandas as pd
 import tfs
 from matplotlib import pyplot as plt
 
+if TYPE_CHECKING:
+    from pathlib import Path
+    from matplotlib.axes import Axes
+
 # List of common y-labels. Sorry for the ugly.
-ylabels = {
+ylabels: dict[str, str] = {
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
     "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$'u'\u2030'r'$]$',
@@ -38,7 +44,7 @@ ylabels = {
 }
 
 
-def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plot x and plot y
+def set_yaxis_label(param: str, plane: str, ax=None, delta: bool = False, chromcoup: bool = False) -> None:  # plot x and plot y
     """
     Set y-axis labels.
 
@@ -67,7 +73,7 @@ def set_yaxis_label(param, plane, ax=None, delta=False, chromcoup=False):  # plo
     ax.set_ylabel(label)
 
 
-def set_xaxis_label(ax=None):
+def set_xaxis_label(ax=None) -> None:
     """
     Sets the standard x-axis label
 
@@ -79,7 +85,7 @@ def set_xaxis_label(ax=None):
     ax.set_xlabel(r'Longitudinal location [m]')
 
 
-def show_ir(ip_dict, ax=None, mode='inside'):
+def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
     """
     Plots the interaction regions into the background of the plot.
 
@@ -122,7 +128,7 @@ def show_ir(ip_dict, ax=None, mode='inside'):
     ax.set_ylim(ylim)
 
 
-def move_ip_labels(value, ax=None):
+def move_ip_labels(value, ax: Axes = None) -> None:
     """Moves IP labels according to max y * value."""
     if ax is None:
         ax = plt.gca()
@@ -134,7 +140,7 @@ def move_ip_labels(value, ax=None):
             t.set_position((x, y_max * value))
 
 
-def get_ip_positions(path):
+def get_ip_positions(path: Path) -> dict[str, float]:
     """
     Returns a `dict` of IP positions from tfs-file of path.
 
@@ -147,7 +153,7 @@ def get_ip_positions(path):
     return dict(zip(ip_names, ip_pos))
 
 
-def set_name(name, fig_or_ax=None):
+def set_name(name: str, fig_or_ax=None) -> None:
     """
     Sets the name of the figure or axes.
 
@@ -164,7 +170,7 @@ def set_name(name, fig_or_ax=None):
         fig_or_ax.canvas.manager.set_window_title(name)
 
 
-def get_name(fig_or_ax=None):
+def get_name(fig_or_ax=None) -> str:
     """
     Returns the name of the figure or axes.
 
@@ -180,7 +186,7 @@ def get_name(fig_or_ax=None):
         return fig_or_ax.canvas.get_window_title()
 
 
-def set_annotation(text, ax=None, position='right', pad=0.02):
+def set_annotation(text: str, ax: Axes = None, position: str = "right", pad: float = 0.02) -> None:
     """
     Writes an annotation on the top right of the axes.
 
@@ -209,7 +215,7 @@ def set_annotation(text, ax=None, position='right', pad=0.02):
         plt.setp(annotation, ha=position, x=xpos, y=1.0+pad)
 
 
-def get_annotation(ax=None, by_reference=True):
+def get_annotation(ax: Axes = None, by_reference: bool = True):
     """
     Returns the annotation set by ``set_annotation()``.
 
@@ -231,7 +237,7 @@ def get_annotation(ax=None, by_reference=True):
     return None
 
 
-def small_title(ax=None):
+def small_title(ax: Axes = None) -> None:
     """
     Alternative to annotation, which lets you use the title-functions.
 
@@ -250,7 +256,7 @@ def small_title(ax=None):
     ax.title.set_horizontalalignment('right')
 
 
-def figure_title(text, ax=None, pad=0, **kwargs):
+def figure_title(text: str, ax: Axes = None, pad: float = 0, **kwargs) -> None:
     """
     Set the title all the way to the top.
 
@@ -273,12 +279,12 @@ def figure_title(text, ax=None, pad=0, **kwargs):
     ax.title.set_position([.5, float(fdict['va'] == "top") + pad * (-1)**(fdict['va'] == 'top')])
 
 
-def get_legend_ncols(labels, max_length=78):
+def get_legend_ncols(labels, max_length: int = 78):
     """Calculate the number of columns in legend dynamically."""
-    return max([max_length/max([len(l) for l in labels]), 1])
+    return max([max_length/max([len(label) for label in labels]), 1])
 
 
-def transpose_legend_order(ncol, handles=None, labels=None, ax=None):
+def transpose_legend_order(ncol: int, handles=None, labels=None, ax: Axes = None):
     """ Reorder handles and labels, so that the legend order is transposed,
     i.e. the entries are row-first instead of column-first."""
     def reorder(items):
@@ -298,7 +304,9 @@ def transpose_legend_order(ncol, handles=None, labels=None, ax=None):
     return reorder(handles), reorder(labels)
 
 
-def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02, transposed=False):
+def make_top_legend(
+    ax: Axes, ncol: int, frame: bool = False, handles=None, labels=None, pad: float = 0.02, transposed=False
+):
     """Create a legend on top of the plot."""
     if ncol < 1:
         return
@@ -306,9 +314,16 @@ def make_top_legend(ax, ncol, frame=False, handles=None, labels=None, pad=0.02, 
     if transposed:
         handles, labels = transpose_legend_order(ncol, handles, labels, ax)
 
-    leg = ax.legend(handles=handles, labels=labels, loc='lower right',
-                    bbox_to_anchor=(1.0, 1.0+pad),
-                    fancybox=frame, shadow=frame, frameon=frame, ncol=ncol)
+    leg = ax.legend(
+        handles=handles,
+        labels=labels,
+        loc="lower right",
+        bbox_to_anchor=(1.0, 1.0+pad),
+        fancybox=frame,
+        shadow=frame,
+        frameon=frame,
+        ncol=ncol,
+    )
 
     leg.axes.figure.canvas.draw()
     legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
@@ -369,7 +384,7 @@ def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, ma
     return ax
 
 
-def get_fontsize_as_float(font_size: Union[str, float]) -> float:
+def get_fontsize_as_float(font_size: str | float) -> float:
     try:
         scale = {
             'xx-small': 0.579,

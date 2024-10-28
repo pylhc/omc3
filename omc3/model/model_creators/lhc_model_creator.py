@@ -5,7 +5,6 @@ LHC Model Creator
 This module provides convenience functions for model creation of the ``LHC``.
 """
 import logging
-import pathlib
 import shutil
 from pathlib import Path
 from typing import List
@@ -31,11 +30,11 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_DAT,
     PATHFETCHER, AFSFETCHER,  # GITFETCHER, LSAFETCHER,
     AFS_ACCELERATOR_MODEL_REPOSITORY,
-    MODIFIER_SUBDIR,
+    OPTICS_SUBDIR,
     AFS_B2_ERRORS_ROOT,
 )
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
-from omc3.utils import iotools
+from omc3.utils.iotools import get_check_suffix_func, create_dirs
 
 LOGGER = logging.getLogger(__name__)
 
@@ -52,29 +51,42 @@ class LhcModelCreator(ModelCreator):
     acc_model_name = "lhc"
 
     @classmethod
-    def get_options(cls, accel_inst, opt) -> bool:
+    def check_options(cls, accel: Lhc, opt) -> bool:
+        """ Use the fetcher to list choices if requested. """
+        
+        # Set the fetcher paths ---
         if opt.fetch == PATHFETCHER:
-            accel_inst.acc_model_path = Path(opt.path)
+            accel.acc_model_path = Path(opt.path)
+
         elif opt.fetch == AFSFETCHER:
-            accel_inst.acc_model_path = check_folder_choices(AFS_ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
-                                                             "No optics tag (flag --year) given",
-                                                             accel_inst.year,
-                                                             opt.list_choices,
-                                                             lambda path: path.is_dir())
+            # list 'year' choices ---
+            accel.acc_model_path = check_folder_choices(
+                AFS_ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
+                msg="No optics tag (flag --year) given",
+                selection=accel.year,
+                list_choices=opt.list_choices,
+                predicate=Path.is_dir
+            )
         else:
-            raise AttributeError(f"{accel_inst.NAME} model creation requires one of the following fetchers: "
-                                 f"[{PATHFETCHER}, {AFSFETCHER}]. "
-                                 "Please provide one with the flag `--fetch afs` "
-                                 "or `--fetch path --path PATH`.")
-        if accel_inst.acc_model_path is None:
+            raise AttributeError(
+                f"{accel.NAME} model creation requires one of the following fetchers: "
+                f"[{PATHFETCHER}, {AFSFETCHER}]. "
+                "Please provide one with the flag `--fetch afs` "
+                "or `--fetch path --path PATH`."
+            )
+
+        if accel.acc_model_path is None:
             return False
 
+        # list optics choices ---
         if opt.list_choices:
-            check_folder_choices(accel_inst.acc_model_path / MODIFIER_SUBDIR,
-                                 "No modifier given",
-                                 None,
-                                 True,
-                                 lambda path: path.suffix == ".madx")
+            check_folder_choices(
+                accel.acc_model_path / OPTICS_SUBDIR,
+                msg="No modifier given",
+                selection=None,  # TODO: could check if user made valid choice
+                list_choices=opt.list_choices,
+                predicate=get_check_suffix_func(".madx")
+            )
             return False
 
         return True
@@ -120,17 +132,13 @@ class LhcModelCreator(ModelCreator):
     @classmethod
     def prepare_run(cls, accel: Lhc) -> None:
         LOGGER.info("preparing run ...")
-        if accel.acc_model_path is not None:
-            link = Path(accel.model_dir)/accel.REPOSITORY
-            target = accel.acc_model_path
-            if not link.exists():
-                link.absolute().symlink_to(target)
-
+        cls.prepare_symlink(accel)
         cls.check_accelerator_instance(accel)
+        
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
         LOGGER.info("creating macros dirs")
-        iotools.create_dirs(macros_path)
+        create_dirs(macros_path)
 
         LOGGER.debug("Copying macros to model directory")
         lib_path = Path(__file__).parent.parent / "madx_macros"
@@ -155,7 +163,7 @@ class LhcModelCreator(ModelCreator):
                 index=b2_table.index,
                 columns=_b2_columns(),
             )
-            gen_df["K1L"] = b2_table.loc[:, f"K1L"].to_numpy()
+            gen_df["K1L"] = b2_table.loc[:, "K1L"].to_numpy()
             tfs.write(
                 accel.model_dir / B2_ERRORS_TFS,
                 gen_df,
@@ -197,12 +205,12 @@ class LhcModelCreator(ModelCreator):
             )
 
 
+
 class LhcBestKnowledgeCreator(LhcModelCreator):
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
-    CORRECTIONS_FILENAME: str = "corrections.madx"
 
     @classmethod
-    def get_options(cls, accel_inst, opt) -> bool:
+    def check_options(cls, accel_inst, opt) -> bool:
 
         if accel_inst.list_b2_errors:
             errors_dir = AFS_B2_ERRORS_ROOT / f"Beam{accel_inst.beam}"
@@ -211,7 +219,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
                     print(d.stem)
             return False
 
-        return super().get_options(accel_inst, opt)
+        return super().check_options(accel_inst, opt)
 
     @classmethod
     def get_madx_script(cls, accel: Lhc) -> str:
@@ -219,11 +227,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
             raise AcceleratorDefinitionError(
                 "Don't set ACD or ADT for best knowledge model.")
 
-        corrections_file = accel.model_dir / \
-            cls.CORRECTIONS_FILENAME  # existence is tested in madx
-
         madx_script = accel.get_base_madx_script(best_knowledge=True)
-        madx_script += f"call, file = '{corrections_file}';\n"
 
         mqts_file = accel.model_dir / cls.EXTRACTED_MQTS_FILENAME
         if mqts_file.exists():
