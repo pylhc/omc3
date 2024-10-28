@@ -68,7 +68,7 @@ from __future__ import annotations
 # Fixes:
 # 'Error: Could not find or load main class (...) aircompressor-0.26.jar'
 #
-# This ia a hack, please remove at the earliers convenience. For updates see: 
+# This ia a hack, please remove at the earliest convenience. For updates see: 
 # https://cern.service-now.com/service-portal?id=ticket&table=incident&n=INC3768823
 import os
 if "PATH" in os.environ and "/mcr/bin" in os.environ["PATH"]:
