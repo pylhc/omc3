@@ -5,6 +5,7 @@
 - Fixed:
   - Plot Optics Measurements: Added extra mpl style for clearer plots
   - LHC exciter BPM not found: Tells you which BPMs were searched for
+  - Plot Spectrum: Correct error handling for Single-Plane BPMs
 
 - Added:
   - Global Correction: Total phase correction arc-by-arc
