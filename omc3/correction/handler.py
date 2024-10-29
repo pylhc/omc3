@@ -10,6 +10,7 @@ import datetime
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING
+import copy
 
 import numpy as np
 import pandas as pd
@@ -134,38 +135,27 @@ def _update_response(
     In case of dpp being modified in the correction, we have to add the new dpp value
     to the accelerator instance, to run the `twiss` in madx at this dpp.
     All other parameters are taken care of in the model/elements.
-    The dpp value has to be reset afterwards, as in the calculation of the correction,
-    the delta is added via the CHANGEPARAMTERS file.
-
-    Alternatively: We could create a copy of the accelerator instance,
-    but that would require a proper copy implementation of the class, I think (jdilly 2024)
     """
-    # update model, not nice as "private" elements, but will be reset later
-    original_model = accel_inst.model 
-    original_elements = accel_inst.elements
-
-    accel_inst._model = corrected_model
-    accel_inst._elements = corrected_elements
+    # update model by creating a copy of the accelerator instance
+    accel_inst_cp = copy.deepcopy(accel_inst)
+    accel_inst_cp.model = corrected_model
+    accel_inst_cp.elements = corrected_elements
     
     update_dpp = ORBIT_DPP in delta.index
 
     if update_dpp:
         LOG.info("Updating response via MAD-X, due to delta dpp requested.")
         dpp = delta.loc[ORBIT_DPP, DELTA]
-        accel_inst.dpp += dpp # Add the delta dpp to be used in the twisses of the FR creation
-        resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories)
-        accel_inst.dpp -= dpp # Reset the dpp
+        accel_inst_cp.dpp += dpp # Add the delta dpp to be used in the twisses of the FR creation
+        resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
     else:
         if update_response == "madx":
             LOG.info("Updating response via MAD-X.")
-            resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories)
+            resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
         else:
             LOG.info("Updating response via analytical formulae.")
-            resp_dict = response_twiss.create_response(accel_inst, variable_categories, optics_params)
-    
-    # reset model (not really necessary as only used here, but nicer)
-    accel_inst._model = original_model
-    accel_inst._elements = original_elements
+            resp_dict = response_twiss.create_response(accel_inst_cp, variable_categories, optics_params)
+
     return resp_dict
 
 
