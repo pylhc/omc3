@@ -53,11 +53,12 @@ def _find_range_with_element(ranges, element):
 
 
 def _compute_ranges(dpps: Sequence[float], tolerance: float) -> list[list[int]]:
-    """ Groups the indices of dpps in bins of DPP_TOLERANCE. 
+    """ Groups the indices of dpps in bins of tolerance. 
     The function first sorts the indices by their dpp value 
     adds a new group whenever the dpp of the next index is larger than the first value in the group.
 
-    Works for now, but we could improve by using the mean dpp of the group to check against. 
+    Works for now, but we could improve by using the mean dpp of the group to check against,
+    i.e. `abs(np.mean(dpps[ranges[-1]]) - dpps[idx]) < tolerance`.
     Only neccessary if we have some weird outliers. (jdilly)
     """
     ordered_ids = np.argsort(dpps)
