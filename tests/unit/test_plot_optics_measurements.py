@@ -1,15 +1,15 @@
-from pathlib import Path
-
 import matplotlib
 import pytest
 
 from omc3.plotting.plot_optics_measurements import plot
 
+from tests.conftest import INPUTS, MODELS
+
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
 matplotlib.use("Agg")
 
 
-INPUT = Path(__file__).parent.parent / "inputs" / "optics_measurement" / "example_output"
+EXAMPLE_PATH = INPUTS / "optics_measurement" / "example_output"
 DEBUG = False  # switch to local output instead of temp
 
 
@@ -77,7 +77,7 @@ def test_orbit_ip_positions_location_manual(tmp_path):
     _default_test(
         "orbit",
         x_axis="location",
-        ip_positions=INPUT.parent.parent / "models" / "25cm_beam1" / "twiss_elements.dat",
+        ip_positions=MODELS / "2018_col_b1_25cm" / "twiss_elements.dat",
         output_dir=tmp_path,
     )
 
@@ -96,7 +96,7 @@ def test_two_directories(tmp_path):
         show=False,
         x_axis="phase-advance",
         ncol_legend=2,
-        folders=[str(INPUT), str(INPUT.parent / "example_copy")],
+        folders=[str(EXAMPLE_PATH), str(EXAMPLE_PATH.parent / "example_copy")],
         output=str(tmp_path),
         optics_parameters=["orbit", "beta_phase"],
     )
@@ -110,7 +110,7 @@ def test_two_directories_combined(tmp_path):
         show=False,
         x_axis="phase-advance",
         ncol_legend=2,
-        folders=[str(INPUT), str(INPUT.parent / "example_copy")],
+        folders=[str(EXAMPLE_PATH), str(EXAMPLE_PATH.parent / "example_copy")],
         output=str(tmp_path),
         optics_parameters=["orbit", "beta_phase"],
         combine_by=["files"],
@@ -126,7 +126,7 @@ def test_two_directories_combined_labels(tmp_path):
         show=False,
         x_axis="phase-advance",
         ncol_legend=2,
-        folders=[str(INPUT), str(INPUT.parent / "example_copy")],
+        folders=[str(EXAMPLE_PATH), str(EXAMPLE_PATH.parent / "example_copy")],
         labels=labels,
         output=str(tmp_path),
         optics_parameters=["orbit", "beta_phase"],
@@ -209,7 +209,7 @@ def _default_test(*args, **kwargs):
     out_dir = kwargs.pop("output_dir")
     default_args = dict(show=False, x_axis="phase-advance", ncol_legend=2,)
     default_args.update(kwargs)
-    figs = plot(folders=[INPUT,], output=out_dir, optics_parameters=list(args), **default_args)
+    figs = plot(folders=[EXAMPLE_PATH,], output=out_dir, optics_parameters=list(args), **default_args)
     assert len(list(out_dir.glob("*.pdf"))) == len(args)
     assert len(figs) == len(args)
     return figs
@@ -220,7 +220,7 @@ def _default_test_rdt(*args, **kwargs):
     default_args = dict(show=False, x_axis="location", ncol_legend=2,)
     default_args.update(kwargs)
     figs = plot(
-        folders=[str(INPUT),], output=str(out_dir), optics_parameters=list(args), **default_args
+        folders=[str(EXAMPLE_PATH),], output=str(out_dir), optics_parameters=list(args), **default_args
     )
     assert len(list(out_dir.glob("*.pdf"))) == 2 * len(args)
     assert len(figs) == 2 * len(args)

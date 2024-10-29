@@ -24,8 +24,6 @@ if TYPE_CHECKING:
 
 LOGGER = logging_tools.get_logger(__name__)
 
-DPP_TOLERANCE = 1e-6
-
 class InputFiles(dict):
     """
     Stores the input files, provides methods to gather quantity specific data
@@ -96,7 +94,7 @@ class InputFiles(dict):
         if dpp_value is None:
             return list(range(len(self[plane])))
 
-        return np.argwhere(np.abs(self.dpps(plane) - dpp_value) < DPP_TOLERANCE).T[0]
+        return np.argwhere(np.abs(self.dpps(plane) - dpp_value) < dpp.DPP_TOLERANCE).T[0]
 
     def _all_frames(self, plane: str):
         return self[plane]
@@ -110,7 +108,19 @@ class InputFiles(dict):
         dtype: np.dtype = np.float64
     ) -> pd.DataFrame:
         """
-        Constructs merged DataFrame from InputFiles.
+        Constructs merged DataFrame from collected DataFrames in InputFiles,
+        i.e. from the harpy output of the given measurements.
+
+        The input parameters to this function determine which data will be present in the 
+        joined frame:
+        which `plane` to use, the `columns` to be included, 
+        a `dpp_value` filter (with tolerance from :data:`omc3.optics_measurements.dpp.DPP_TOLERANCE`) 
+        and `how` to perform the merge.
+
+        You can also specify what `dtype` the resulting data will have, this should normally be `float64`.
+
+        The columns in the resulting Dataframe will be suffixed by `__#`, starting from `0`
+        with increasing integers for each of the input files.    
 
         Args:
             plane: marking the horizontal or vertical plane, **X** or **Y**.
@@ -143,12 +153,11 @@ class InputFiles(dict):
             for i, df in enumerate(frames_to_join[1:]):
                 joined_frame = pd.merge(joined_frame, df.reindex(columns=columns, fill_value=np.nan),
                                         how=how, left_index=True,
-                                        right_index=True, suffixes=('', '__' + str(i + 1)))
+                                        right_index=True, suffixes=('', f'__{i+1}'))
         joined_frame = joined_frame.rename(columns={column: column + '__0' for column in columns})
         if dtype is not None:
             joined_frame = joined_frame.astype(dtype)
         return joined_frame
-
 
     def bpms(self, plane=None, dpp_value=None):
         if plane is None:
@@ -219,3 +228,40 @@ class InputFiles(dict):
         """
         columns = InputFiles.get_columns(frame, column)
         return frame.loc[:, columns].to_numpy(dtype=np.float64)
+
+
+# DPP Filtering related functions ------------------------------------------------------------------
+
+def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, id_: str = None):
+    """ A helper function to check if off-momentum data is present in the input files, 
+    but no dpp-value is given by the user. 
+    
+    See https://github.com/pylhc/omc3/issues/456 .
+    """
+    on_momentum_files = input_files.dpp_frames_indices(plane, dpp_value=0)
+    if len(on_momentum_files) == len(input_files[plane]):
+        return  # no off-momentum data, nothing to warn
+
+    msg = (
+        "Off-momentum files for analysis found!\n"
+        "They will be included"
+    )
+    
+    if id_ is not None:
+        msg += f" in the {id_}"
+
+    msg += (
+        ", which can make the results more inaccurate.\n"
+        "To avoid, specify `analyse_dpp` or run the analysis only on on-momentum files"
+    )
+    
+    if id_ is not None:
+        msg += f" or possibly deactivate the {id_}"
+    
+    msg += "."
+    LOGGER.warning(msg)
+
+
+def filter_for_dpp(to_filter: dict[str, Sequence], input_files: InputFiles, dpp_value: float):
+    """ Filter the given data for the given dpp-value. """
+    return {plane: values[input_files.dpp_frames_indices(plane, dpp_value)] for plane, values in to_filter.items()}
