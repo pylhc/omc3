@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.data_models &mdash; omc3 0.16.2 documentation</title>
+  <title>omc3.optics_measurements.data_models &mdash; omc3 0.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=ee6890a7"></script>
+      <script src="../../../_static/documentation_options.js?v=0c3dd48d"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -229,8 +229,6 @@
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">DPP_TOLERANCE</span> <span class="o">=</span> <span class="mf">1e-6</span>
-
 <div class="viewcode-block" id="InputFiles">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles">[docs]</a>
 <span class="k">class</span> <span class="nc">InputFiles</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
@@ -308,7 +306,7 @@
         <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">])))</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="o">-</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">DPP_TOLERANCE</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="o">-</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dpp</span><span class="o">.</span><span class="n">DPP_TOLERANCE</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
     <span class="k">def</span> <span class="nf">_all_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -325,7 +323,19 @@
         <span class="n">dtype</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructs merged DataFrame from InputFiles.</span>
+<span class="sd">        Constructs merged DataFrame from collected DataFrames in InputFiles,</span>
+<span class="sd">        i.e. from the harpy output of the given measurements.</span>
+
+<span class="sd">        The input parameters to this function determine which data will be present in the </span>
+<span class="sd">        joined frame:</span>
+<span class="sd">        which `plane` to use, the `columns` to be included, </span>
+<span class="sd">        a `dpp_value` filter (with tolerance from :data:`omc3.optics_measurements.dpp.DPP_TOLERANCE`) </span>
+<span class="sd">        and `how` to perform the merge.</span>
+
+<span class="sd">        You can also specify what `dtype` the resulting data will have, this should normally be `float64`.</span>
+
+<span class="sd">        The columns in the resulting Dataframe will be suffixed by `__#`, starting from `0`</span>
+<span class="sd">        with increasing integers for each of the input files.    </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
@@ -358,12 +368,11 @@
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
                 <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">joined_frame</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
                                         <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                        <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;__&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+                                        <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;__</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
         <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">joined_frame</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">column</span><span class="p">:</span> <span class="n">column</span> <span class="o">+</span> <span class="s1">&#39;__0&#39;</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">joined_frame</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">joined_frame</span></div>
-
 
 
     <span class="k">def</span> <span class="nf">bpms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -444,6 +453,49 @@
         <span class="n">columns</span> <span class="o">=</span> <span class="n">InputFiles</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
 </div>
+
+
+
+<span class="c1"># DPP Filtering related functions ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="check_and_warn_about_offmomentum_data">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.check_and_warn_about_offmomentum_data">[docs]</a>
+<span class="k">def</span> <span class="nf">check_and_warn_about_offmomentum_data</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A helper function to check if off-momentum data is present in the input files, </span>
+<span class="sd">    but no dpp-value is given by the user. </span>
+<span class="sd">    </span>
+<span class="sd">    See https://github.com/pylhc/omc3/issues/456 .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">on_momentum_files</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">dpp_frames_indices</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">on_momentum_files</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="p">[</span><span class="n">plane</span><span class="p">]):</span>
+        <span class="k">return</span>  <span class="c1"># no off-momentum data, nothing to warn</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Off-momentum files for analysis found!</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;They will be included&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">id_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; in the </span><span class="si">{</span><span class="n">id_</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span>
+        <span class="s2">&quot;, which can make the results more inaccurate.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;To avoid, specify `analyse_dpp` or run the analysis only on on-momentum files&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">id_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; or possibly deactivate the </span><span class="si">{</span><span class="n">id_</span><span class="si">}</span><span class="s2">&quot;</span>
+    
+    <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="filter_for_dpp">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.filter_for_dpp">[docs]</a>
+<span class="k">def</span> <span class="nf">filter_for_dpp</span><span class="p">(</span><span class="n">to_filter</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Filter the given data for the given dpp-value. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">plane</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">input_files</span><span class="o">.</span><span class="n">dpp_frames_indices</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)]</span> <span class="k">for</span> <span class="n">plane</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">to_filter</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 </pre></div>
 

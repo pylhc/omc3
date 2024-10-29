@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.hole_in_one &mdash; omc3 0.16.2 documentation</title>
+  <title>omc3.hole_in_one &mdash; omc3 0.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ee6890a7"></script>
+      <script src="../../_static/documentation_options.js?v=0c3dd48d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -255,7 +255,7 @@
 <span class="kn">from</span> <span class="nn">omc3.harpy</span> <span class="kn">import</span> <span class="n">handler</span>
 <span class="kn">from</span> <span class="nn">omc3.harpy.constants</span> <span class="kn">import</span> <span class="n">LINFILES_SUBFOLDER</span>
 <span class="kn">from</span> <span class="nn">omc3.model</span> <span class="kn">import</span> <span class="n">manager</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="n">measure_optics</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="n">measure_optics</span><span class="p">,</span> <span class="n">phase</span>
 <span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="n">InputFiles</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.contexts</span> <span class="kn">import</span> <span class="n">timeit</span>
@@ -509,6 +509,12 @@
 <span class="sd">        Flags: **--union**</span>
 <span class="sd">        Action: ``store_true``</span>
 
+<span class="sd">      - **analyse_dpp** *(float)*: Filter files to analyse by this value </span>
+<span class="sd">        (in analysis for tune, phase, rdt and crdt)..</span>
+
+<span class="sd">        Flags: **--analyse_dpp**</span>
+<span class="sd">        Default: ``0``</span>
+
 
 <span class="sd">    Accelerator Kwargs:</span>
 <span class="sd">      - **accel**: Choose the accelerator to use. More details can be found in omc3/model/manager.py</span>
@@ -691,7 +697,7 @@
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bunch_ids&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Bunches to process in multi-bunch file. &quot;</span>
                          <span class="s2">&quot;If not specified, all bunches are processed.&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;to_write&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;to_write&quot;</span><span class="p">],</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;to_write&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;to_write&quot;</span><span class="p">],</span>
                          <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;lin&#39;</span><span class="p">,</span> <span class="s1">&#39;spectra&#39;</span><span class="p">,</span> <span class="s1">&#39;full_spectra&#39;</span><span class="p">,</span> <span class="s1">&#39;bpm_summary&#39;</span><span class="p">),</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the type of output.&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">],</span>
@@ -808,7 +814,7 @@
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use 3 BPM method in beta from phase&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;only_coupling&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate only coupling. &quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;compensation&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;compensation&quot;</span><span class="p">],</span>
-                         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;equation&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">),</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="n">phase</span><span class="o">.</span><span class="n">CompensationMode</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mode of compensation for the analysis after driven beam excitation&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;three_d_excitation&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use 3D kicks to calculate dispersion&quot;</span><span class="p">)</span>
@@ -818,6 +824,8 @@
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate second order dispersion&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;chromatic_beating&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate chromatic beatings: W, PHI and coupling&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;analyse_dpp&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">iotools</span><span class="o">.</span><span class="n">OptionalFloat</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;analyse_dpp&quot;</span><span class="p">],</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt).&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
 
@@ -845,6 +853,7 @@
         <span class="s2">&quot;range_of_bpms&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
         <span class="s2">&quot;compensation&quot;</span><span class="p">:</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span>
         <span class="s2">&quot;rdt_magnet_order&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="s2">&quot;analyse_dpp&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">}</span>
 
 

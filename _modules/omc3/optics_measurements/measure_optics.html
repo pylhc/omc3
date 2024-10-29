@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.measure_optics &mdash; omc3 0.16.2 documentation</title>
+  <title>omc3.optics_measurements.measure_optics &mdash; omc3 0.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=ee6890a7"></script>
+      <script src="../../../_static/documentation_options.js?v=0c3dd48d"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -211,28 +211,41 @@
 <span class="sd">It provides functions to compute various lattice optics parameters from frequency spectra.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">import</span> <span class="nn">tfs</span>
+
 <span class="kn">from</span> <span class="nn">omc3</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">VERSION</span>
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="p">(</span><span class="n">beta_from_amplitude</span><span class="p">,</span> <span class="n">beta_from_phase</span><span class="p">,</span>
-                                      <span class="n">chromatic</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">,</span> <span class="n">interaction_point</span><span class="p">,</span> <span class="n">kick</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">rdt</span><span class="p">,</span>
-                                      <span class="n">tune</span><span class="p">,</span> <span class="n">crdt</span><span class="p">,</span> <span class="n">coupling</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">beta_from_amplitude</span><span class="p">,</span>
+    <span class="n">beta_from_phase</span><span class="p">,</span>
+    <span class="n">chromatic</span><span class="p">,</span>
+    <span class="n">coupling</span><span class="p">,</span>
+    <span class="n">crdt</span><span class="p">,</span>
+    <span class="n">dispersion</span><span class="p">,</span>
+    <span class="n">interaction_point</span><span class="p">,</span>
+    <span class="n">kick</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">rdt</span><span class="p">,</span>
+    <span class="n">tune</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">CHROM_BETA_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">CALIBRATION_FILE</span><span class="p">,</span> <span class="n">NAME</span>
+    <span class="n">CALIBRATION_FILE</span><span class="p">,</span>
+    <span class="n">CHROM_BETA_NAME</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">NAME</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span> 
-
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
-    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span> 
+    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
     <span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="n">InputFiles</span>
 
 
@@ -253,39 +266,56 @@
 <span class="sd">    Returns:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculating optics parameters - code version </span><span class="si">{</span><span class="n">VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-    <span class="n">logging_tools</span><span class="o">.</span><span class="n">add_module_handler</span><span class="p">(</span><span class="n">logging_tools</span><span class="o">.</span><span class="n">file_handler</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">LOG_FILE</span><span class="p">)))</span>
+    <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+    <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
+    <span class="n">logging_tools</span><span class="o">.</span><span class="n">add_module_handler</span><span class="p">(</span><span class="n">logging_tools</span><span class="o">.</span><span class="n">file_handler</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="n">LOG_FILE</span><span class="p">))</span>
+    
+    <span class="c1"># Tune ---</span>
     <span class="n">tune_dict</span> <span class="o">=</span> <span class="n">tune</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">)</span>
     <span class="n">common_header</span> <span class="o">=</span> <span class="n">_get_header</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">)</span>
+
+    <span class="c1"># Linear Optics ---</span>
     <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">phase_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">phase_results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
-        <span class="n">phase_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">out_dfs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-        <span class="n">phase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_dfs</span><span class="p">,</span> <span class="p">[</span><span class="n">common_header</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-        <span class="n">phase</span><span class="o">.</span><span class="n">write_special</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s1">&#39;free&#39;</span><span class="p">],</span> <span class="n">tune_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="c1"># Phases -</span>
+        <span class="n">phase_results</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">out_dfs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">phase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_dfs</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">phase</span><span class="o">.</span><span class="n">write_special</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">phase_results</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">phase</span><span class="o">.</span><span class="n">COMPENSATED</span><span class="p">],</span> <span class="n">tune_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">plane</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">only_coupling</span><span class="p">:</span>
             <span class="k">continue</span>
-        <span class="n">beta_df</span><span class="p">,</span> <span class="n">beta_header</span> <span class="o">=</span> <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-        <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">beta_header</span><span class="p">,</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-
+        
+        <span class="c1"># Beta -</span>
+        <span class="n">beta_df</span><span class="p">,</span> <span class="n">beta_header</span> <span class="o">=</span> <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_results</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">phase</span><span class="o">.</span><span class="n">COMPENSATED</span><span class="p">],</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">beta_df</span><span class="p">,</span> <span class="n">beta_header</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
         <span class="n">ratio</span> <span class="o">=</span> <span class="n">beta_from_amplitude</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+
+        <span class="n">ip_df</span> <span class="o">=</span> <span class="n">interaction_point</span><span class="o">.</span><span class="n">betastar_from_phase</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">phase_results</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">phase</span><span class="o">.</span><span class="n">COMPENSATED</span><span class="p">])</span>
+        <span class="n">interaction_point</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ip_df</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+        
+        <span class="c1"># Action -</span>
         <span class="n">invariants</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">kick</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-        <span class="n">ip_df</span> <span class="o">=</span> <span class="n">interaction_point</span><span class="o">.</span><span class="n">betastar_from_phase</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s1">&#39;free&#39;</span><span class="p">])</span>
-        <span class="n">interaction_point</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ip_df</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+
+        <span class="c1"># Dispersion - </span>
         <span class="n">dispersion</span><span class="o">.</span><span class="n">calculate_orbit</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
         <span class="n">dispersion</span><span class="o">.</span><span class="n">calculate_dispersion</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">common_header</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span>
             <span class="n">dispersion</span><span class="o">.</span><span class="n">calculate_normalised_dispersion</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
-    <span class="n">coupling</span><span class="o">.</span><span class="n">calculate_coupling</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
+
+    <span class="c1"># Coupling ---</span>
+    <span class="n">coupling</span><span class="o">.</span><span class="n">calculate_coupling</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">phase_results</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">only_coupling</span><span class="p">:</span>
         <span class="k">return</span>
+    
+    <span class="c1"># Nonlinear Optics ---</span>
     <span class="k">if</span> <span class="s1">&#39;rdt&#39;</span> <span class="ow">in</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">nonlinear</span><span class="p">:</span>
-        <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s2">&quot;rdt&quot;</span><span class="p">))</span>
-        <span class="n">rdt</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
+        <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="s2">&quot;rdt&quot;</span><span class="p">)</span>
+        <span class="n">rdt</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_results</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="s1">&#39;crdt&#39;</span> <span class="ow">in</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">nonlinear</span><span class="p">:</span>
-        <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="s2">&quot;crdt&quot;</span><span class="p">))</span>
+        <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="s2">&quot;crdt&quot;</span><span class="p">)</span>
         <span class="n">crdt</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">common_header</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">chromatic_beating</span><span class="p">:</span>
         <span class="n">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">)</span></div>
 
@@ -293,7 +323,7 @@
 
 <div class="viewcode-block" id="chromatic_beating">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.chromatic_beating">[docs]</a>
-<span class="k">def</span> <span class="nf">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">:</span> <span class="n">tune</span><span class="o">.</span><span class="n">TuneDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main function to compute chromatic optics beating.</span>
 
@@ -312,34 +342,39 @@
         <span class="k">for</span> <span class="n">dpp_val</span> <span class="ow">in</span> <span class="n">dpps</span><span class="p">:</span>
             <span class="n">dpp_meas_input</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">measure_input</span><span class="p">)</span>
             <span class="n">dpp_meas_input</span><span class="p">[</span><span class="s2">&quot;dpp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp_val</span>
-            <span class="n">phase_dict</span><span class="p">,</span> <span class="n">out_dfs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">dpp_meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-            <span class="n">beta_df</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">dpp_meas_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_dict</span><span class="p">,</span> <span class="p">{},</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">phase_res</span><span class="p">,</span> <span class="n">out_dfs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">dpp_meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">beta_df</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">beta_from_phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">dpp_meas_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">phase_res</span><span class="p">[</span><span class="n">phase</span><span class="o">.</span><span class="n">COMPENSATED</span><span class="p">],</span> <span class="p">{},</span> <span class="n">plane</span><span class="p">)</span>
             <span class="n">betas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beta_df</span><span class="p">)</span>
         <span class="n">output_df</span> <span class="o">=</span> <span class="n">chromatic</span><span class="o">.</span><span class="n">calculate_w_and_phi</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">dpps</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CHROM_BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">output_df</span><span class="p">,</span> <span class="p">{},</span> <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span></div>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CHROM_BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">output_df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">_get_header</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">):</span>
-    <span class="n">compensation</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s2">&quot;by model&quot;</span><span class="p">,</span> <span class="s1">&#39;equation&#39;</span><span class="p">:</span> <span class="s2">&quot;by equation&quot;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">}</span>
-    <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="s1">&#39;Measure_optics:version&#39;</span><span class="p">,</span> <span class="n">VERSION</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s1">&#39;Command&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s1">&#39;CWD&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()),</span>
-                 <span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">. %B %Y, %H:%M:%S&quot;</span><span class="p">)),</span>
-                 <span class="p">(</span><span class="s1">&#39;Model_directory&#39;</span><span class="p">,</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_dir</span><span class="p">),</span>
-                 <span class="p">(</span><span class="s1">&#39;Compensation&#39;</span><span class="p">,</span> <span class="n">compensation</span><span class="p">[</span><span class="n">meas_input</span><span class="o">.</span><span class="n">compensation</span><span class="p">]),</span>
-                 <span class="p">(</span><span class="s1">&#39;Q1&#39;</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">]),</span>
-                 <span class="p">(</span><span class="s1">&#39;Q2&#39;</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">])])</span>
+<span class="k">def</span> <span class="nf">_get_header</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">:</span> <span class="n">tune</span><span class="o">.</span><span class="n">TuneDict</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;Measure_optics:version&quot;</span><span class="p">:</span> <span class="n">VERSION</span><span class="p">,</span>
+        <span class="s2">&quot;Command&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CWD&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span>
+        <span class="s2">&quot;Date&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">. %B %Y, %H:%M:%S&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;Model_directory&quot;</span><span class="p">:</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span>
+        <span class="s2">&quot;Compensation&quot;</span><span class="p">:</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">compensation</span><span class="p">,</span>
+        <span class="s2">&quot;Q1&quot;</span><span class="p">:</span> <span class="n">tune_dict</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;Q2&quot;</span><span class="p">:</span> <span class="n">tune_dict</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">copy_calibration_files</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">calibrationdir</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">copy_calibration_files</span><span class="p">(</span><span class="n">outputdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">calibrationdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">calibrationdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="n">calibs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">calibrationdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">calibrationdir</span><span class="p">)</span>
+    <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
         <span class="n">cal_file</span> <span class="o">=</span> <span class="n">CALIBRATION_FILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="n">iotools</span><span class="o">.</span><span class="n">copy_item</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">calibrationdir</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">))</span>
-        <span class="n">calibs</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">cal_file</span><span class="p">))</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">NAME</span><span class="p">)</span>
+        <span class="n">iotools</span><span class="o">.</span><span class="n">copy_item</span><span class="p">(</span><span class="n">calibrationdir</span> <span class="o">/</span> <span class="n">cal_file</span><span class="p">,</span> <span class="n">outputdir</span> <span class="o">/</span> <span class="n">cal_file</span><span class="p">)</span>
+        <span class="n">calibs</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="n">cal_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">calibs</span>
 </pre></div>
 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optics Measurements &mdash; omc3 0.16.2 documentation</title>
+  <title>Optics Measurements &mdash; omc3 0.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ee6890a7"></script>
+      <script src="../_static/documentation_options.js?v=0c3dd48d"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -240,7 +240,7 @@ It provides functions to compute various lattice optics parameters from frequenc
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">chromatic_beating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#chromatic_beating"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.measure_optics.</span></span><span class="sig-name descname"><span class="pre">chromatic_beating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tune.TuneDict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/measure_optics.html#chromatic_beating"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Main function to compute chromatic optics beating.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -300,7 +300,7 @@ It provides functions to calculate beta and alpha functions from phase advance d
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TuneDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PhaseDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Calculates betas and alphas from phase advances.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -344,7 +344,7 @@ given BPM combination (triplet).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">n_bpm_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_and_mdl_tunes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#n_bpm_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">n_bpm_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_and_mdl_tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#n_bpm_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Calculates betas and alphas from using all BPM combination within <strong>range_of_bpms</strong>. It also
 accounts for systematic errors</p>
 <dl class="field-list simple">
@@ -364,7 +364,7 @@ accounts for systematic errors</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">three_bpm_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_and_mdl_tunes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#three_bpm_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">three_bpm_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_and_mdl_tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#three_bpm_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Calculates betas and alphas from using adjacent BPMs (3 combination).
 <code class="docutils literal notranslate"><span class="pre">phase[&quot;MEAS&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">phase[&quot;MODEL&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">phase[&quot;ERRMEAS&quot;]</span></code> (from <code class="docutils literal notranslate"><span class="pre">get_phases</span></code>) are of the
 form:</p>
@@ -579,7 +579,16 @@ It provides functions to compute combined resonance driving terms following the 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">joined_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">plane:</span> <span class="pre">str,</span> <span class="pre">columns:</span> <span class="pre">~collections.abc.Sequence[str],</span> <span class="pre">dpp_value:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">dpp_amp:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">how:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'inner',</span> <span class="pre">dtype:</span> <span class="pre">~numpy.dtype</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#InputFiles.joined_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Constructs merged DataFrame from InputFiles.</p>
+<dd><p>Constructs merged DataFrame from collected DataFrames in InputFiles,
+i.e. from the harpy output of the given measurements.</p>
+<p>The input parameters to this function determine which data will be present in the
+joined frame:
+which <cite>plane</cite> to use, the <cite>columns</cite> to be included,
+a <cite>dpp_value</cite> filter (with tolerance from <code class="xref py py-data docutils literal notranslate"><span class="pre">omc3.optics_measurements.dpp.DPP_TOLERANCE</span></code>)
+and <cite>how</cite> to perform the merge.</p>
+<p>You can also specify what <cite>dtype</cite> the resulting data will have, this should normally be <cite>float64</cite>.</p>
+<p>The columns in the resulting Dataframe will be suffixed by <cite>__#</cite>, starting from <cite>0</cite>
+with increasing integers for each of the input files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -600,6 +609,20 @@ or to <cite>None</cite> to avoid conversion.</p></li>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.data_models.</span></span><span class="sig-name descname"><span class="pre">check_and_warn_about_offmomentum_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#check_and_warn_about_offmomentum_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A helper function to check if off-momentum data is present in the input files,
+but no dpp-value is given by the user.</p>
+<p>See <a class="reference external" href="https://github.com/pylhc/omc3/issues/456">https://github.com/pylhc/omc3/issues/456</a> .</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.data_models.</span></span><span class="sig-name descname"><span class="pre">filter_for_dpp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/data_models.html#filter_for_dpp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Filter the given data for the given dpp-value.</p>
 </dd></dl>
 
 <section id="dispersion">
@@ -671,7 +694,20 @@ It provides functions to computes and arrange dp over p.</p>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dpp.</span></span><span class="sig-name descname"><span class="pre">arrange_dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dpps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dpp.html#arrange_dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dpp.</span></span><span class="sig-name descname"><span class="pre">append_amp_dpp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_tfs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsFile</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dpp.html#append_amp_dpp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Add the dpp values to the DPP-header of the tfs files, if larger than the DPP-tolerance, otherwise set to zero.
+This is intended to the DPP value for on-momentum files to zero.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dpp.</span></span><span class="sig-name descname"><span class="pre">append_dpp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_tfs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsFile</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpp_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dpp.html#append_dpp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Add the dpp values to the DPP-header of the tfs files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dpp.</span></span><span class="sig-name descname"><span class="pre">arrange_dpps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dpps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dpp.html#arrange_dpps"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero.</p>
 </dd></dl>
 
@@ -684,36 +720,66 @@ It provides functions to detect and exclude BPMs with anomalies.</p>
 <h2>Interaction Point<a class="headerlink" href="#interaction-point" title="Link to this heading"></a></h2>
 <p>This module contains IP properties calculations related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute beta* from phase.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Put columns into the constants</p></li>
+</ul>
+</div>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.interaction_point.</span></span><span class="sig-name descname"><span class="pre">betastar_from_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/interaction_point.html#betastar_from_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Writes the <strong>getIP</strong> files with the betastar computed using phase advance.</p>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.interaction_point.</span></span><span class="sig-name descname"><span class="pre">betastar_from_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">phase.PhaseDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/interaction_point.html#betastar_from_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate beta* and l* from the phase advance of the IP-BPMs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>Measurement_input</cite> object.</p></li>
-<li><p><strong>phase_d</strong> -- Output of calculation.</p></li>
+<li><p><strong>phase_d</strong> -- PhaseDict output of the phasecalculation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A nested <cite>dict</cite> with the same structure as the <code class="docutils literal notranslate"><span class="pre">phase_d</span></code> <cite>dict</cite>.</p>
+<dd class="field-even"><p>A DataFrame with the beta* and l* as well as the phases used for the calculation
+as columns and the IP names as index.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.interaction_point.</span></span><span class="sig-name descname"><span class="pre">phase_to_betastar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lstar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errphase</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/interaction_point.html#phase_to_betastar"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.interaction_point.</span></span><span class="sig-name descname"><span class="pre">phase_to_betastar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lstar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errphase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/interaction_point.html#phase_to_betastar"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return the betastar and its error given the phase advance across the IP.</p>
 <p>This function computes the betastar using the phase advance between the BPMs around the IP
 and their distance (lstar). The phase and error in the phase must be given in radians.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lstar</strong> -- The distance between the BPMs and the IR.</p></li>
-<li><p><strong>phase</strong> -- The phase advance between the BPMs at each side of the IP. Must be given in radians.</p></li>
-<li><p><strong>errphase</strong> -- The error in phase. Must be given in radians.</p></li>
+<li><p><strong>lstar</strong> (<em>float</em>) -- The distance between the BPMs and the IR.</p></li>
+<li><p><strong>phase</strong> (<em>float</em>) -- The phase advance between the BPMs at each side of the IP. Must be given in radians.</p></li>
+<li><p><strong>errphase</strong> (<em>float</em>) -- The error in phase. Must be given in radians.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>betastar and its error.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[float, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.interaction_point.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_ips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/interaction_point.html#write"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Write the interaction point data to disk.
+Empty DataFrames are skipped on write.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_ips</strong> (<em>pd.DataFrame</em>) -- The interaction point data.</p></li>
+<li><p><strong>headers</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) -- The headers for the tfs file.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em><em>|</em><em>Path</em>) -- The path to the output directory.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- The plane of the interaction point data.</p></li>
 </ul>
 </dd>
 </dl>
@@ -748,27 +814,40 @@ It provides functions to compute kick actions.</p>
 <p>This module contains phase calculation functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
 It provides functions to compute betatron phase advances and structures to store them.</p>
 </section>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.phase.</span></span><span class="sig-name descname"><span class="pre">PhaseDict</span></span></dt>
+<dd></dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Calculate phases for ‘free’ and ‘uncompensated’ cases from the measurement files, and return a
-dictionary combining the results for each transverse plane.</p>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TuneDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">PhaseDict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate phases for ‘compensated’ (aka ‘free’) and ‘uncompensated’ (aka ‘driven’) cases from the measurement files,
+and return a dictionary combining the results for each transverse plane.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>meas_input</strong> (<em>dict</em>) -- <cite>OpticsInput</cite> object containing analysis settings from the command-line.</p></li>
-<li><p><strong>input_files</strong> (<em>dict</em>) -- <cite>InputFiles</cite> object containing frequency spectra files (linx/y).</p></li>
-<li><p><strong>tunes</strong></p></li>
-<li><p><strong>plane</strong></p></li>
-<li><p><strong>no_errors</strong></p></li>
+<li><p><strong>meas_input</strong> (<em>DotDict</em>) -- <cite>OpticsInput</cite> object containing analysis settings from the command-line.</p></li>
+<li><p><strong>input_files</strong> (<em>InputFiles</em>) -- <cite>InputFiles</cite> object containing frequency spectra files (linx/y).</p></li>
+<li><p><strong>tunes</strong> (<em>TuneDict</em>) -- <cite>TuneDict</cite> contains measured tunes.</p></li>
+<li><p><strong>plane</strong> (<em>str</em>) -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
+<li><p><strong>no_errors</strong> (<em>bool</em>) -- if <code class="docutils literal notranslate"><span class="pre">True</span></code>, measured errors shall not be propagated (only their spread).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary of the measured phase advances, with an entry for each horizontal plane. In said entry
-is a dictionary with the measured phase advances for ‘free’ and ‘uncompensated’ cases, as well as
-the location of the output <code class="docutils literal notranslate"><span class="pre">TfsDataFrames</span></code> for the phases.</p>
+<dd class="field-even"><p>A tuple of a dictionary and a list of corresponding phase DataFrames.
+The dictionary contains the compensated and uncompensated results in <cite>PhaseDict</cite> form,
+i.e. a dictionary of DataFrames with the phase models, measured and errors.
+The list contains the DataFrames with the phase advances between BPMs and the total phase advances,
+for both compensated and uncompensated cases.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.phase.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/phase.html#write"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Write out the phase advance data into TFS-files.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -784,7 +863,7 @@ It provides functions to compute global resonance driving terms <strong>f_jklm</
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.rdt.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TuneDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/rdt.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.rdt.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TuneDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">PhaseDict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/rdt.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Computes the RDTs for the given input files and settings up to the magnet
 order given in the inputs, and writes the results to file.</p>
 <dl class="field-list simple">
@@ -805,7 +884,7 @@ of actions/errors per kick, e.g. from <code class="xref py py-func docutils lite
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.rdt.</span></span><span class="sig-name descname"><span class="pre">complex_secondary_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_adv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_padv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/rdt.html#complex_secondary_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.rdt.</span></span><span class="sig-name descname"><span class="pre">complex_secondary_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_adv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_padv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span><span class="p"><span class="pre">[</span></span><span class="pre">complex</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span><span class="p"><span class="pre">[</span></span><span class="pre">complex</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/rdt.html#complex_secondary_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

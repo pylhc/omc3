@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.dispersion &mdash; omc3 0.16.2 documentation</title>
+  <title>omc3.optics_measurements.dispersion &mdash; omc3 0.17.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=ee6890a7"></script>
+      <script src="../../../_static/documentation_options.js?v=0c3dd48d"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -211,22 +211,31 @@
 <span class="sd">It provides functions to compute orbit, dispersion and normalised dispersion.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
 
 <span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PI2I</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DELTA</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span>
-                                                <span class="n">EXT</span><span class="p">,</span> <span class="n">MDL</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
-                                                <span class="n">ORBIT_NAME</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DELTA</span><span class="p">,</span>
+    <span class="n">DISPERSION_NAME</span><span class="p">,</span>
+    <span class="n">ERR</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">MDL</span><span class="p">,</span>
+    <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
+    <span class="n">ORBIT_NAME</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="n">dpp</span> 
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">stats</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
     <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+
     <span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="n">InputFiles</span>
 
 
@@ -298,10 +307,11 @@
 
 
 <span class="k">def</span> <span class="nf">_calculate_dispersion_2d</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">second_order_dispersion</span> <span class="k">else</span> <span class="mi">1</span>
     <span class="n">dpps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="k">return</span>  <span class="c1"># temporary solution</span>
+    <span class="k">if</span> <span class="n">_is_single_dpp_bin</span><span class="p">(</span><span class="n">dpps</span><span class="p">):</span>
+        <span class="k">return</span>
+
+    <span class="n">order</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">second_order_dispersion</span> <span class="k">else</span> <span class="mi">1</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">_get_merged_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CORMS&#39;</span><span class="p">])</span>
     <span class="n">fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">dpps</span><span class="p">,</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="s1">&#39;CO&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -344,8 +354,14 @@
 
 <span class="k">def</span> <span class="nf">_calculate_normalised_dispersion_2d</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
     <span class="c1"># TODO there are no errors from orbit</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">second_order_dispersion</span> <span class="k">else</span> <span class="mi">1</span>
     <span class="n">plane</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>
+    
+    <span class="n">dpps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_is_single_dpp_bin</span><span class="p">(</span><span class="n">dpps</span><span class="p">):</span>
+        <span class="k">return</span>
+    
+    <span class="n">order</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">second_order_dispersion</span> <span class="k">else</span> <span class="mi">1</span>
+    
     <span class="n">model</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">_get_merged_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CORMS&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
     <span class="n">df_orbit</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ND</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_orbit</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;D</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
@@ -355,10 +371,7 @@
             <span class="n">df_orbit</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="n">beta</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}</span><span class="s2">BET</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span>
                         <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">dpps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="k">return</span>  <span class="c1"># temporary solution</span>
-        <span class="c1"># raise ValueError(&#39;Cannot calculate dispersion, only a single dpoverp&#39;)</span>
+
     <span class="n">fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">dpps</span><span class="p">,</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="s1">&#39;CO&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">df_orbit</span><span class="p">[</span><span class="s1">&#39;ND2X_unscaled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">stats</span><span class="o">.</span><span class="n">weighted_mean</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -476,6 +489,13 @@
             <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
             <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">df</span>
+
+
+<span class="k">def</span> <span class="nf">_is_single_dpp_bin</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">DPP_BIN_TOLERANCE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Checks if the files would be grouped into a single dpp-bin </span>
+<span class="sd">    by :func:`omc3.optics_measurements.dpp._compute_ranges`. &quot;&quot;&quot;</span>
+    <span class="c1"># alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1 </span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpps</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">tolerance</span>
 </pre></div>
 
            </div>
