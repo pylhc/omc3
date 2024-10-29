@@ -504,7 +504,7 @@ class Lhc(Accelerator):
         return madx_script
     
     def get_update_deltap_script(self, deltap: float | str) -> str:
-        if isinstance(deltap, (int, float)):
+        if not isinstance(deltap, str):
             deltap = f"{deltap:.15e}"
 
         madx_script = (
