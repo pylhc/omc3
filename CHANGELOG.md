@@ -1,5 +1,11 @@
 # OMC3 Changelog
 
+#### 2024-10-29 - v0.18.0 - _jgray_
+
+- Added:
+  - Add the ability to calculate a deltap/p offset caused by a change in orbit.
+
+
 #### 2024-10-29 - v0.17.0 - _jdilly_ 
 
 - Added:
