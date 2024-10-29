@@ -1,9 +1,12 @@
 # OMC3 Changelog
 
-#### 2024-09-20 - v0.16.2 - _jdilly_ 
+#### 2024-10-30 - v0.17.0 - _jdilly_ 
 
 - Added:
   - Optics Measurements: `analyse_dpp` parameter, to analyse only files with a specific DPP for tune, phase and (C)RDTs.
+
+- Fixed:
+  - Uncompensated Phase calculations with `Equation` compensation are now actually uncompensated when passed on to the `coupling` module.
 
 #### 2024-09-20 - v0.16.1 - _fsoubelet_
 
