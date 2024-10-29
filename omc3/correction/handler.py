@@ -93,7 +93,6 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             if opt.update_response:
                 resp_dict = _update_response(
                     accel_inst=accel_inst,
-                    corrected_model=corr_model,
                     corrected_elements=corr_model_elements,
                     delta=delta,
                     optics_params=optics_params,
@@ -119,7 +118,6 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 
 def _update_response(
     accel_inst: Accelerator, 
-    corrected_model: pd.DataFrame,
     corrected_elements: pd.DataFrame,
     delta: pd.DataFrame, 
     optics_params: Sequence[str], 
@@ -137,10 +135,7 @@ def _update_response(
     All other parameters are taken care of in the model/elements.
     """
     # update model by creating a copy of the accelerator instance
-    accel_inst_cp = copy.deepcopy(accel_inst)
-    accel_inst_cp.model = corrected_model
-    accel_inst_cp.elements = corrected_elements
-    
+    accel_inst_cp = copy.copy(accel_inst)
     update_dpp = ORBIT_DPP in delta.index
 
     if update_dpp:
@@ -154,6 +149,8 @@ def _update_response(
             resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
         else:
             LOG.info("Updating response via analytical formulae.")
+            accel_inst_cp.elements = corrected_elements
+            # accel_inst_cp.model = corrected_model # - Not needed, don't think it's used by response_twiss (jgray 2024)
             resp_dict = response_twiss.create_response(accel_inst_cp, variable_categories, optics_params)
 
     return resp_dict
