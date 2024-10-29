@@ -6,22 +6,31 @@ This module contains dispersion calculations related functionality of ``optics_m
 It provides functions to compute orbit, dispersion and normalised dispersion.
 """
 from __future__ import annotations
+
+from collections.abc import Sequence
 from os.path import join
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 import tfs
 
 from omc3.definitions.constants import PI2I
-from omc3.optics_measurements.constants import (DELTA, DISPERSION_NAME, ERR,
-                                                EXT, MDL, NORM_DISP_NAME,
-                                                ORBIT_NAME)
+from omc3.optics_measurements.constants import (
+    DELTA,
+    DISPERSION_NAME,
+    ERR,
+    EXT,
+    MDL,
+    NORM_DISP_NAME,
+    ORBIT_NAME,
+)
+from omc3.optics_measurements import dpp 
 from omc3.utils import stats
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING: 
     from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
 
 
@@ -84,10 +93,11 @@ def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles
 
 
 def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, header, plane):
-    order = 2 if meas_input.second_order_dispersion else 1
     dpps = input_files.dpps(plane)
-    if np.max(dpps) - np.min(dpps) == 0.0:
-        return  # temporary solution
+    if _is_single_dpp_bin(dpps):
+        return
+
+    order = 2 if meas_input.second_order_dispersion else 1
     model = meas_input.accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS'])
     fit = np.polyfit(dpps, input_files.get_data(df_orbit, 'CO').T, order, cov=True)
@@ -130,8 +140,14 @@ def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, heade
 
 def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputFiles, beta, header):
     # TODO there are no errors from orbit
-    order = 2 if meas_input.second_order_dispersion else 1
     plane = "X"
+    
+    dpps = input_files.dpps(plane)
+    if _is_single_dpp_bin(dpps):
+        return
+    
+    order = 2 if meas_input.second_order_dispersion else 1
+    
     model = meas_input.accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS', f"AMP{plane}"])
     df_orbit[f"ND{plane}{MDL}"] = df_orbit.loc[:, f"D{plane}{MDL}"] / np.sqrt(
@@ -141,10 +157,7 @@ def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputF
             df_orbit.loc[:, f"BET{plane}{MDL}"])
     df_orbit = pd.merge(df_orbit, beta.loc[:, [f"BET{plane}", f"{ERR}BET{plane}"]], how='inner',
                         left_index=True, right_index=True)
-    dpps = input_files.dpps(plane)
-    if np.max(dpps) - np.min(dpps) == 0.0:
-        return  # temporary solution
-        # raise ValueError('Cannot calculate dispersion, only a single dpoverp')
+
     fit = np.polyfit(dpps, input_files.get_data(df_orbit, 'CO').T, order, cov=True)
     if order > 1:
         df_orbit['ND2X_unscaled'] = fit[0][-3, :].T / stats.weighted_mean(input_files.get_data(df_orbit, f"AMP{plane}"), axis=1)
@@ -262,3 +275,10 @@ def _get_delta_columns(df, plane):
             df[f"{DELTA}{col}"] = df.loc[:, col] - df.loc[:, f"{col}{MDL}"]
             df[f"{ERR}{DELTA}{col}"] = df.loc[:, f"{ERR}{col}"]
     return df
+
+
+def _is_single_dpp_bin(dpps: Sequence[float], tolerance: float = dpp.DPP_BIN_TOLERANCE) -> bool:
+    """ Checks if the files would be grouped into a single dpp-bin 
+    by :func:`omc3.optics_measurements.dpp._compute_ranges`. """
+    # alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1 
+    return np.abs(np.max(dpps) - np.min(dpps)) <= 2 * tolerance

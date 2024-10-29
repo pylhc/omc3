@@ -159,7 +159,6 @@ class InputFiles(dict):
             joined_frame = joined_frame.astype(dtype)
         return joined_frame
 
-
     def bpms(self, plane=None, dpp_value=None):
         if plane is None:
             return self.bpms(plane="X", dpp_value=dpp_value).intersection(self.bpms(plane="Y", dpp_value=dpp_value))
