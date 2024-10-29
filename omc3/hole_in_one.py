@@ -50,7 +50,7 @@ from omc3.definitions import formats
 from omc3.harpy import handler
 from omc3.harpy.constants import LINFILES_SUBFOLDER
 from omc3.model import manager
-from omc3.optics_measurements import measure_optics
+from omc3.optics_measurements import measure_optics, phase
 from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
@@ -302,6 +302,12 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--union**
         Action: ``store_true``
 
+      - **analyse_dpp** *(float)*: Filter files to analyse by this value 
+        (in analysis for tune, phase, rdt and crdt)..
+
+        Flags: **--analyse_dpp**
+        Default: ``0``
+
 
     Accelerator Kwargs:
       - **accel**: Choose the accelerator to use. More details can be found in omc3/model/manager.py
@@ -483,7 +489,7 @@ def harpy_params():
     params.add_parameter(name="bunch_ids", type=int, nargs="+",
                          help="Bunches to process in multi-bunch file. "
                          "If not specified, all bunches are processed.")
-    params.add_parameter(name="to_write", nargs='+', default=HARPY_DEFAULTS["to_write"],
+    params.add_parameter(name="to_write", nargs='*', default=HARPY_DEFAULTS["to_write"],
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output.")
     params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],
@@ -600,7 +606,7 @@ def optics_params():
                          help="Use 3 BPM method in beta from phase")
     params.add_parameter(name="only_coupling", action="store_true", help="Calculate only coupling. ")
     params.add_parameter(name="compensation", type=str, default=OPTICS_DEFAULTS["compensation"],
-                         choices=("model", "equation", "none"),
+                         choices=phase.CompensationMode.all(),
                          help="Mode of compensation for the analysis after driven beam excitation")
     params.add_parameter(name="three_d_excitation", action="store_true",
                          help="Use 3D kicks to calculate dispersion")
@@ -610,6 +616,8 @@ def optics_params():
                          help="Calculate second order dispersion")
     params.add_parameter(name="chromatic_beating", action="store_true",
                          help="Calculate chromatic beatings: W, PHI and coupling")
+    params.add_parameter(name="analyse_dpp", type=iotools.OptionalFloat, default=OPTICS_DEFAULTS["analyse_dpp"],
+                        help="Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt).")
     return params
 
 
@@ -637,6 +645,7 @@ OPTICS_DEFAULTS = {
         "range_of_bpms": 11,
         "compensation": "model",
         "rdt_magnet_order": 4,
+        "analyse_dpp": 0,
 }
 
 
