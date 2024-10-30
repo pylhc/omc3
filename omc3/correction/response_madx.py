@@ -128,7 +128,7 @@ def _generate_madx_jobs(
             var = no_dpp_vars[var_idx]
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
-            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}{deltap_twiss}';\n"
+            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}'{deltap_twiss};\n"
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:

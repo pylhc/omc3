@@ -164,50 +164,54 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientatio
 @pytest.mark.parametrize('dpp', (2.5e-4, -1e-4))
 def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: float):
     response_path = tmp_path / "full_response_dpp.h5"
+    beam = model_inj_beams.beam
+
+    # Create response
     response_dict = create_response(
-        outfile_path = response_path,
-        variable_categories=[ORBIT_DPP],
+        outfile_path=response_path,
+        variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}", f"kq10.l2b{beam}"],
         delta_k=2e-5,
         **model_inj_beams,
     )
 
-    # Basic check if response was created correctly
-    for key in response_dict.keys():
-        assert ORBIT_DPP in response_dict[key].columns
+    # Verify response creation
+    assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict.keys())
 
-    # create fake measurement from previously created model
-    dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{model_inj_beams.beam}.dat"
+    # Create fake measurement
+    dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{beam}.dat"
     model_df = tfs.read(dpp_path, index=NAME)
     fake_measurement(
-        twiss = model_df,
-        parameters = [f"{PHASE}X", f"{PHASE}Y"],
-        outputdir = tmp_path,
+        twiss=model_df,
+        parameters=[f"{PHASE}X", f"{PHASE}Y"],
+        outputdir=tmp_path,
     )
 
-    # See if the simulated dpp can be recreated
+    # Test global correction with and without response update
     for update_response in [True, False]:
-        diff = np.inf
-        for iteration in range(1, 4): # Must be at least 3 to test convergence
+        previous_diff = np.inf
+        for iteration in range(1, 4):
             global_correction(
-                meas_dir = tmp_path,
-                output_dir = tmp_path,
-                fullresponse_path = response_path,
-                variable_categories=[ORBIT_DPP],
-                optics_params = [f"{PHASE}X", f"{PHASE}Y"],
+                meas_dir=tmp_path,
+                output_dir=tmp_path,
+                fullresponse_path=response_path,
+                variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}"],
+                optics_params=[f"{PHASE}X", f"{PHASE}Y"],
                 iterations=iteration,
                 update_response=update_response,
                 **model_inj_beams,
             )
             result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
-            
-            # Check if the output is correct within 5% (Beam 2 is not as accurate)
-            rtol = 5e-2 if iteration == 1 else 2e-2
-            assert np.isclose(dpp, -result[DELTA][ORBIT_DPP], rtol=rtol), f"Expected {dpp}, got {result[DELTA][ORBIT_DPP]}, diff: {dpp + result[DELTA][ORBIT_DPP]}, iteration: {iteration}"
+            current_dpp = -result[DELTA][ORBIT_DPP]
 
-            # Check if the result is converging or has converged (within 0.1%)
-            rel_diff = np.abs(dpp + result[DELTA][ORBIT_DPP]) / np.abs(dpp)
-            assert diff > rel_diff or np.isclose(diff, rel_diff, atol=1e-3), f"Convergence not reached, diff: {diff} <= {rel_diff}, iteration: {iteration}"
-            diff = rel_diff
+            # Check output accuracy
+            rtol = 5e-2 if iteration == 1 else 2e-2
+            assert np.isclose(dpp, current_dpp, rtol=rtol), f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
+
+            # Check convergence
+            current_diff = np.abs(dpp - current_dpp) / np.abs(dpp)
+            assert previous_diff > current_diff or np.isclose(previous_diff, current_diff, atol=1e-3), f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
+            previous_diff = current_diff
+
 # Helper -----------------------------------------------------------------------
 
 
