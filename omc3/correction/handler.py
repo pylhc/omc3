@@ -94,9 +94,10 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                 resp_dict = _update_response(
                     accel_inst=accel_inst,
                     corrected_elements=corr_model_elements,
-                    delta=delta,
                     optics_params=optics_params,
+                    corr_files=[opt.change_params_path],
                     variable_categories=opt.variable_categories,
+                    update_dpp=update_deltap,
                     update_response=opt.update_response,
                 )
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
@@ -119,36 +120,32 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 def _update_response(
     accel_inst: Accelerator, 
     corrected_elements: pd.DataFrame,
-    delta: pd.DataFrame, 
-    optics_params: Sequence[str], 
+    optics_params: Sequence[str],
+    corr_files: Sequence[Path],
     variable_categories: Sequence[str], 
+    update_dpp: bool, 
     update_response: bool | str,
     ) -> dict[str, pd.DataFrame]:
     """ Create an updated response matrix.
     
     If we are to compute the response including the DPP, then we have to do so from MAD-X, 
-    as we do not have the analytical formulae.
+    as we do not have the analytical formulae. This therefore requires correction files to be
+    provided.
     Otherwise we go through the way of computing the response the user requested.
 
-    In case of dpp being modified in the correction, we have to add the new dpp value
-    to the accelerator instance, to run the `twiss` in madx at this dpp.
-    All other parameters are taken care of in the model/elements.
+    All other parameters are taken care of in the model/elements for the response_twiss only.
     """
-    # update model by creating a copy of the accelerator instance
-    accel_inst_cp = copy.copy(accel_inst)
-    update_dpp = ORBIT_DPP in delta.index
-
     if update_dpp:
         LOG.info("Updating response via MAD-X, due to delta dpp requested.")
-        dpp = delta.loc[ORBIT_DPP, DELTA]
-        accel_inst_cp.dpp += dpp # Add the delta dpp to be used in the twisses of the FR creation
-        resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
+        resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories, corr_files=corr_files)
     else:
         if update_response == "madx":
             LOG.info("Updating response via MAD-X.")
-            resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
+            resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories, corr_files=corr_files)
         else:
             LOG.info("Updating response via analytical formulae.")
+            # update model by creating a copy of the accelerator instance
+            accel_inst_cp = copy.copy(accel_inst)
             accel_inst_cp.elements = corrected_elements
             # accel_inst_cp.model = corrected_model # - Not needed, don't think it's used by response_twiss (jgray 2024)
             resp_dict = response_twiss.create_response(accel_inst_cp, variable_categories, optics_params)
@@ -263,9 +260,9 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _create_corrected_model(twiss_out: Path | str, change_params: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
+def _create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params, update_dpp)
+    madx_script: str = accel_inst.get_update_correction_script(twiss_out, corr_files, update_dpp)
     twiss_out_path = Path(twiss_out)
     madx_script = f"! Based on model '{accel_inst.model_dir}'\n" + madx_script
     madx_wrapper.run_string(
