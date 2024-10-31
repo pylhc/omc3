@@ -4,7 +4,7 @@ import pandas.testing as pdt
 import tfs
 
 from omc3.kmod.constants import AVERAGED_BETASTAR_FILENAME, EFFECTIVE_BETAS_FILENAME, EXT
-from omc3.kmod_lumi_imbalance import calculate_lumi_imbalance_entrypoint
+from omc3.kmod_lumi_imbalance import calculate_lumi_imbalance
 from tests.unit.test_kmod_averaging import REFERENCE_DIR, _get_reference_dir
 
 
@@ -13,7 +13,7 @@ def test_kmod_lumi_imbalance(tmp_path):
     beta = 0.22 
     path_beta_ip1 = _get_input_path(1, beta)
     path_beta_ip5 = _get_input_path(5, beta)
-    calculate_lumi_imbalance_entrypoint(ip1=path_beta_ip1, ip5=path_beta_ip5, output_dir=tmp_path)
+    calculate_lumi_imbalance(ip1=path_beta_ip1, ip5=path_beta_ip5, output_dir=tmp_path)
     _assert_correct_files_are_present(tmp_path, beta)
 
     eff_betas = tfs.read(tmp_path / _get_filename(beta))
@@ -42,6 +42,6 @@ def update_reference_files():
     beta = 0.22
     path_beta_ip1 = _get_input_path(1, beta)
     path_beta_ip5 = _get_input_path(5, beta)
-    calculate_lumi_imbalance_entrypoint(ip1=path_beta_ip1, ip5=path_beta_ip5, output_dir=REFERENCE_DIR)
+    calculate_lumi_imbalance(ip1=path_beta_ip1, ip5=path_beta_ip5, output_dir=REFERENCE_DIR)
     for ini_file in REFERENCE_DIR.glob("*.ini"):
         ini_file.unlink()

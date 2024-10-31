@@ -38,6 +38,7 @@ Calculate the luminosity imbalance from the k-mod results.
 """
 from __future__ import annotations
 
+import copy
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -63,7 +64,7 @@ if TYPE_CHECKING:
     from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
-IPS = ("ip1", "ip2", "ip5", "ip8")
+IPS: tuple[str, ...] = ("ip1", "ip2", "ip5", "ip8")
 
 def _get_params():
     """
@@ -85,28 +86,35 @@ def _get_params():
 
 
 @entrypoint(_get_params(), strict=True)
-def calculate_lumi_imbalance_entrypoint(opt: DotDict) -> tfs.TfsDataFrame:
+def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
     output_path = opt.output_dir 
     if output_path is not None:
         output_path = Path(output_path)
         output_path.mkdir(parents=True, exist_ok=True)
-        if isinstance(opt.ip1, (Path, str)) and isinstance(opt.ip5, (Path, str)):
-            save_config(output_path, opt, __file__)
+        opt_cp = copy.copy(opt)
+        for ip in IPS:
+            if not isinstance(opt_cp[ip], (Path, str)):
+                opt_cp[ip] = "(was provided as DataFrame)"
+        save_config(output_path, opt_cp, __file__)
 
-    dfs = _read_and_sort_dataframes(opt)
-    df = get_lumi_imbalance(**dfs)
+    dfs = _read_and_check_dataframes(opt)
+    df = get_lumi_imbalance_df(**dfs)
     betastar_x, betastar_y = dfs[list(dfs.keys())[0]].loc[1, [f'{BETASTAR}X{MDL}', f'{BETASTAR}Y{MDL}']].values
 
     if output_path is not None:
         tfs.write(
-            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=betastar_x, betastar_y=betastar_y)}{EXT}", df, 
+            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=betastar_x, betastar_y=betastar_y)}{EXT}", 
+            df, 
             save_index=IP
         )
     
     return df
 
 
-def _read_and_sort_dataframes(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
+def _read_and_check_dataframes(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
+    """
+    Read the given DataFrames if needed, check them for validity and return a dictionary.
+    """
     dfs = {}
     for ip in IPS:
         df = opt.get(ip, None)
@@ -118,44 +126,70 @@ def _read_and_sort_dataframes(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
                 df = tfs.read(df, index=BEAM)
             except KeyError as e:
                 msg = (
-                    f"Dataframe {df} does not contain a {BEAM} column."
-                    "You need to run the `kmod_average` script on data for both beams first."
+                    f"Dataframe '{df}' does not contain a '{BEAM}' column."
+                    "You need to run the `kmod_average` script on data for both beams "
+                    "before you can calulate the luminosity imbalance."
                 )
                 raise KeyError(msg) from e
-                    
+
+        if BEAM in df.columns:
+            df = df.set_index(BEAM)
+
+        for beam in (1, 2):
+            if beam not in df.index:
+                msg = (
+                    f"Dataframe '{df}' does not seem to contain data per beam."
+                    "You need to run the `kmod_average` script on data for both beams "
+                    "before you can calulate the luminosity imbalance."
+                )
+                raise KeyError(msg)
+
         dfs[ip] = df
+    
+    if len(dfs) != 2:
+        msg = (
+            "Lumi inbalance can only be calculated for exactly two IPs, "
+            f"but instead {len(dfs)} were given."
+        )
+        raise ValueError(msg)
+
     return dfs
 
-def get_lumi_imbalance(df_ip1: tfs.TfsDataFrame, df_ip5: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+
+def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
     """
     Calculate the effective beta stars and the luminosity imbalance from the input dataframes.
 
     Args:
-        df_ip1 (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis, for IP1.
-        df_ip5 (tfs.TfsDataFrame): a `TfsDataFrame` with the results from a kmod analysis, for IP5.
+        ipA (tfs.TfsDataFrame): ar`TfsDataFrame` with the averaged results from a kmod analysis, for IP_A.
+        ipB (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_B.
+        (Actually, any name that ends with an integer is fine.)
     
     Returns:
         tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.
     """
     df_effective_betas = tfs.TfsDataFrame()
-    for ip, df in ((1, df_ip1), (5, df_ip5)):
+    for ip_str, df in kwargs.items():
+        ip = int(ip_str[-1])
         df_effective_betas.loc[ip, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df)
     
+    ip_a, ip_b = df_effective_betas.index
     lumi_imb, lumi_imb_err = get_imbalance_w_err(
-        *tuple(df_effective_betas.loc[1, :]), 
-        *tuple(df_effective_betas.loc[5, :])
+        *tuple(df_effective_betas.loc[ip_a, :]), 
+        *tuple(df_effective_betas.loc[ip_b, :])
     )
+    
     df_effective_betas.headers[f'{LUMINOSITY}{IMBALACE}'] = lumi_imb
     df_effective_betas.headers[f'{ERR}{LUMINOSITY}{IMBALACE}'] = lumi_imb_err
     return df_effective_betas
 
 
-def get_imbalance_w_err(ip1_beta: float, ip1_beta_err: float, ip5_beta: float, ip5_beta_err: float) -> tuple[float, float]:
+def get_imbalance_w_err(ipA_beta: float, ipA_beta_err: float, ipB_beta: float, ipB_beta_err: float) -> tuple[float, float]:
     """
-    Calculate the luminosity imbalance IP1 / IP5  and its error.
+    Calculate the luminosity imbalance IP_A / IP_B  and its error.
     """
-    result = ip5_beta / ip1_beta  # due to beta in the denominator for lumi
-    err = result * np.sqrt((ip5_beta_err/ip5_beta)**2 + (ip1_beta_err/ip1_beta)**2)
+    result = ipB_beta / ipA_beta  # inverse due to beta in the denominator for lumi
+    err = result * np.sqrt((ipB_beta_err/ipB_beta)**2 + (ipA_beta_err/ipA_beta)**2)
     return result, err
 
 
@@ -180,6 +214,11 @@ def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
     return beta, sigma
 
 
+def _get_betastar_beams(df_ip: tfs.TfsDataFrame, errors: bool = False) -> tuple[float, float, float, float]:
+    """ Get betastar x and y for both beam 1 and beam 2. Order: b1x, b1y, b2x, b2y """
+    return (*_get_betastar_xy(df_ip, 1, errors), *_get_betastar_xy(df_ip, 2, errors))
+
+
 def _get_betastar_xy(df_ip: tfs.TfsDataFrame, beam: int, errors: bool = False) -> tuple[float, float]:
     """ Get betastar x and y for the given beam. """
     if errors:
@@ -187,10 +226,7 @@ def _get_betastar_xy(df_ip: tfs.TfsDataFrame, beam: int, errors: bool = False) -
     return tuple(df_ip.loc[beam, [f'{BETASTAR}X', f'{BETASTAR}Y']])
 
 
-def _get_betastar_beams(df_ip: tfs.TfsDataFrame, errors: bool = False) -> tuple[float, float, float, float]:
-    """ Get betastar x and y for both beam 1 and beam 2. Order: b1x, b1y, b2x, b2y """
-    return (*_get_betastar_xy(df_ip, 1, errors), *_get_betastar_xy(df_ip, 2, errors))
-
+# Commandline Entry Point ------------------------------------------------------
 
 if __name__ == "__main__":
-    calculate_lumi_imbalance_entrypoint()
+    calculate_lumi_imbalance()
