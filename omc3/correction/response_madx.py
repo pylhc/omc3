@@ -56,7 +56,6 @@ def create_fullresponse(
     variable_categories: Sequence[str],
     delta_k: float = 2e-5,
     num_proc: int = multiprocessing.cpu_count(),
-    corr_files: Sequence[Path | str] = [],
     temp_dir: Path = None
 ) -> dict[str, pd.DataFrame]:
     """ Generate a dictionary containing response matrices for
@@ -67,7 +66,6 @@ def create_fullresponse(
             variable_categories (list): Categories of the variables/knobs to use. (from .json)
             delta_k (float): delta K1L to be applied to quads for sensitivity matrix
             num_proc (int): Number of processes to use in parallel.
-            corr_files (str): Correction files to add before the response matrix is calculated. Used, if you would like to get the response matrix for a correction.
             temp_dir (str): temporary directory. If ``None``, uses folder of original_jobfile.
     """
     LOG.debug("Generating Fullresponse via Mad-X.")
@@ -82,7 +80,7 @@ def create_fullresponse(
         num_proc = num_proc if len(variables) > num_proc else len(variables)
         process_pool = multiprocessing.Pool(processes=num_proc)
 
-        incr_dict = _generate_madx_jobs(accel_inst, variables, delta_k, num_proc, corr_files, temp_dir)
+        incr_dict = _generate_madx_jobs(accel_inst, variables, delta_k, num_proc, temp_dir)
         _call_madx(process_pool, temp_dir, num_proc)
         _clean_up(temp_dir, num_proc)
 
@@ -97,7 +95,6 @@ def _generate_madx_jobs(
     variables: Sequence[str],
     delta_k: float,
     num_proc: int,
-    corr_files: Sequence[Path | str],
     temp_dir: Path
 ) -> dict[str, float]:
     """ Generates madx job-files """
@@ -114,11 +111,6 @@ def _generate_madx_jobs(
     # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
     if compute_deltap:
         madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n" # Set deltap to 0
-
-    for corr_file in corr_files:  # Load the corrections, can also update ORBIT_DPP
-        madx_job += f"call, file = '{str(corr_file)}';\n"
-
-    if compute_deltap:
         madx_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP)
         deltap_twiss = f", deltap={ORBIT_DPP}"
 

@@ -135,17 +135,23 @@ def _update_response(
 
     All other parameters are taken care of in the model/elements for the response_twiss only.
     """
+    # update model by creating a copy of the accelerator instance
+    accel_inst_cp = copy.copy(accel_inst)
+
+    if accel_inst_cp.modifiers is not None:
+        accel_inst_cp.modifiers = copy.deepcopy(accel_inst.modifiers).extend(corr_files)
+    else:
+        accel_inst_cp.modifiers = corr_files
+
     if update_dpp:
         LOG.info("Updating response via MAD-X, due to delta dpp requested.")
-        resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories, corr_files=corr_files)
+        resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
     else:
         if update_response == "madx":
             LOG.info("Updating response via MAD-X.")
-            resp_dict = response_madx.create_fullresponse(accel_inst, variable_categories, corr_files=corr_files)
+            resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
         else:
             LOG.info("Updating response via analytical formulae.")
-            # update model by creating a copy of the accelerator instance
-            accel_inst_cp = copy.copy(accel_inst)
             accel_inst_cp.elements = corrected_elements
             # accel_inst_cp.model = corrected_model # - Not needed, don't think it's used by response_twiss (jgray 2024)
             resp_dict = response_twiss.create_response(accel_inst_cp, variable_categories, optics_params)
