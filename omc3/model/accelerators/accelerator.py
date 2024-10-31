@@ -334,7 +334,7 @@ class Accelerator:
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
     
-    def get_update_deltap_script(self, deltap: float | str | None) -> str:
+    def get_update_deltap_script(self, deltap: float | str) -> str:
         """
         Returns job (string) to change the magnets for a given deltap (dpp). 
         i.e. updating the orbit and matching the tunes.
