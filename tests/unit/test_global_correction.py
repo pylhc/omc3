@@ -1,12 +1,11 @@
 import numpy as np
-import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal, assert_series_equal
+from pandas.testing import assert_frame_equal
 import tfs
 
 from omc3.model import manager
 from omc3.correction import response_madx
-from omc3.correction.constants import VALUE, ORBIT_DPP
+from omc3.correction.constants import VALUE
 from omc3.correction.handler import get_measurement_data, _update_response, _create_corrected_model
 from omc3.global_correction import OPTICS_PARAMS_CHOICES, CORRECTION_DEFAULTS, global_correction_entrypoint as global_correction
 from omc3.optics_measurements.constants import (BETA, DISPERSION, NORM_DISPERSION, F1001, F1010,
@@ -77,7 +76,7 @@ def test_lhc_global_correct_methods(tmp_path, model_inj_beams, method):
     # create and load fake measurement
     n_correctors = 5
 
-    meas_fake = fake_measurement(
+    fake_measurement(
         model=model_inj_beams.model_dir / "twiss.dat",
         twiss=correction_params.twiss,
         randomize=[],
@@ -114,7 +113,6 @@ def test_lhc_global_correct_methods(tmp_path, model_inj_beams, method):
 def test_update_response(tmp_path, model_inj_beams):
     """ Tests if the response is updated. """
     # create the accelerator instance
-    beam = model_inj_beams.beam
     knob = "kqd.a78"#f'kq10.l1b{beam}'
     accel_inst = manager.get_accelerator(model_inj_beams)
     delta = tfs.TfsDataFrame(

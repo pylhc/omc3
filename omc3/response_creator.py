@@ -63,7 +63,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint, DotDict
+from generic_parser.entrypoint_parser import DotDict, EntryPointParameters, entrypoint
 
 from omc3.correction import response_madx, response_twiss
 from omc3.correction.response_io import write_fullresponse

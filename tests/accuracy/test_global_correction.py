@@ -2,21 +2,33 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Sequence
 
-from generic_parser.tools import DotDict
 import numpy as np
 import pytest
-
 import tfs
-from omc3.correction.constants import VALUE, ERROR, WEIGHT, ORBIT_DPP
+from generic_parser.tools import DotDict
+
+from omc3.correction.constants import ERROR, ORBIT_DPP, VALUE, WEIGHT
 from omc3.correction.handler import get_measurement_data
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import global_correction_entrypoint as global_correction
 from omc3.optics_measurements.constants import (
-    NAME, AMPLITUDE, IMAG, REAL, BETA, DISPERSION,
-    NORM_DISPERSION, F1001, F1010, TUNE, PHASE, ERR, DELTA)
+    AMPLITUDE,
+    BETA,
+    DELTA,
+    DISPERSION,
+    ERR,
+    F1001,
+    F1010,
+    IMAG,
+    NAME,
+    NORM_DISPERSION,
+    PHASE,
+    REAL,
+    TUNE,
+)
 from omc3.response_creator import create_response_entrypoint as create_response
-from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
+from omc3.scripts.fake_measurement_from_model import ERRORS, VALUES
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
@@ -60,7 +72,7 @@ class CorrectionParameters:
     
 def get_skew_params(beam):
     return CorrectionParameters(
-        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_skew_quadrupole_error.dat",
+        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / "twiss_skew_quadrupole_error.dat",
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_skewquadrupole.madx",
         optics_params=[f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"],
         weights=[1., 1., 1., 1.],
@@ -72,7 +84,7 @@ def get_skew_params(beam):
 
 def get_normal_params(beam):
     return CorrectionParameters(
-        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat",
+        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / "twiss_quadrupole_error.dat",
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_quadrupole.madx",
         optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISPERSION}X", TUNE],
         weights=[1., 1., 1., 1., 1., 1.],
