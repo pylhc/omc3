@@ -144,18 +144,18 @@ def test_update_response(tmp_path, model_inj_beams):
     ref_resp_dict = response_madx.create_fullresponse(accel_inst, [knob])
 
     corr_model_path = tmp_path / f"twiss_cor{EXT}"
-    same_model = _create_corrected_model(corr_model_path, [], accel_inst, False)
+    ref_model = _create_corrected_model(corr_model_path, [], accel_inst, False)
     
     # As orbit_dpp is not in the response, it should not be updated. First for response_madx
     new_resp_dict = _update_response(
         accel_inst=accel_inst,
-        corrected_elements=same_model,
+        corrected_elements=ref_model,
         optics_params=optics_params,
         corr_files=[],
         variable_categories=[knob],
         update_dpp=False,
         update_response="madx"
-)
+    )
 
     # Check everything is the same, as model has not changed.
     for key in ref_resp_dict.keys():
@@ -165,13 +165,10 @@ def test_update_response(tmp_path, model_inj_beams):
     with open(corr_file, "w") as f:
         f.write(f"{knob} = {knob}{delta.loc[knob, DELTA]:+.16e};")
 
-    corr_model = _create_corrected_model(corr_model_path, [corr_file], accel_inst, False)
-    assert not same_model.equals(corr_model)
-
     # Now for response_madx with the model changed
     new_resp_dict = _update_response(
         accel_inst=accel_inst,
-        corrected_elements=corr_model,
+        corrected_elements=ref_model, # This is not used in response_madx  
         optics_params=optics_params,
         corr_files=[corr_file],
         variable_categories=[knob],
@@ -189,11 +186,31 @@ def test_update_response(tmp_path, model_inj_beams):
             assert new_resp_dict[key].index.equals(ref_resp_dict[key].index)
 
     # Now for response_twiss
+    ref_resp_dict = response_twiss.create_response(accel_inst, [knob], optics_params)
+
+    new_resp_dict = _update_response(
+        accel_inst=accel_inst,
+        corrected_elements=accel_inst.elements,
+        optics_params=optics_params,
+        #corr_files are not used in response_twiss but here to check it isn't used (as accel_inst.modifiers is always changed)
+        corr_files=[],
+        variable_categories=[knob],
+        update_dpp=False,
+        update_response="twiss"
+    )
+    
+    # Check everything is the same, as model is the reference model.
+    for key in ref_resp_dict.keys():
+        assert_frame_equal(ref_resp_dict[key], new_resp_dict[key])
+
+    corr_model = _create_corrected_model(corr_model_path, [corr_file], accel_inst, False)
+    assert not ref_model.equals(corr_model) # For debugging - if this is the problem, or response_twiss
+
     new_resp_dict = _update_response(
         accel_inst=accel_inst,
         corrected_elements=corr_model,
         optics_params=optics_params,
-        corr_files=[],
+        corr_files=[], 
         variable_categories=[knob],
         update_dpp=False,
         update_response=True
