@@ -138,11 +138,8 @@ def _update_response(
     # update model by creating a copy of the accelerator instance
     accel_inst_cp = copy.copy(accel_inst)
 
-    if accel_inst_cp.modifiers is not None:
-        accel_inst_cp.modifiers = copy.copy(accel_inst.modifiers)
-        accel_inst_cp.modifiers.extend(corr_files) # Extend is an inplace method
-    else:
-        accel_inst_cp.modifiers = corr_files
+    # Modifiers is None or list, if none, we need to make a list before extending it with the correction files
+    accel_inst_cp.modifiers = list(accel_inst_cp.modifiers or []) + corr_files
 
     if update_dpp:
         LOG.info("Updating response via MAD-X, due to delta dpp requested.")
