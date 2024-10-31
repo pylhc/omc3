@@ -1,19 +1,37 @@
 import numpy as np
 import pytest
-from pandas.testing import assert_frame_equal
 import tfs
+from pandas.testing import assert_frame_equal
 
-from omc3.model import manager
-from omc3.correction import response_madx
+from omc3.correction import response_madx, response_twiss
 from omc3.correction.constants import VALUE
-from omc3.correction.handler import get_measurement_data, _update_response, _create_corrected_model
-from omc3.global_correction import OPTICS_PARAMS_CHOICES, CORRECTION_DEFAULTS, global_correction_entrypoint as global_correction
-from omc3.optics_measurements.constants import (BETA, DISPERSION, NORM_DISPERSION, F1001, F1010,
-                                                DISPERSION_NAME, BETA_NAME, PHASE_NAME,
-                                                NORM_DISP_NAME, F1010_NAME, TUNE, PHASE,
-                                                F1001_NAME, EXT, DELTA)
+from omc3.correction.handler import (
+    _create_corrected_model,
+    _update_response,
+    get_measurement_data,
+)
+from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
+from omc3.global_correction import global_correction_entrypoint as global_correction
+from omc3.model import manager
+from omc3.optics_measurements.constants import (
+    BETA,
+    BETA_NAME,
+    DELTA,
+    DISPERSION,
+    DISPERSION_NAME,
+    EXT,
+    F1001,
+    F1001_NAME,
+    F1010,
+    F1010_NAME,
+    NORM_DISP_NAME,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_NAME,
+    TUNE,
+)
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
-from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
+from tests.accuracy.test_global_correction import get_normal_params, get_skew_params
 
 FILENAME_MAP = {
     # Names to be output on input of certain parameters.
