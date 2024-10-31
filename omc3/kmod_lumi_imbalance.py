@@ -4,13 +4,21 @@ K-Mod Luminosity Imbalance
 
 Calculate the luminosity imbalance from the k-mod results.
 
+.. warning::
+        You need to provide the data for exactly two of the four IP's.
+
 **Arguments:**
 
-*--Required--*
+*--Optional--*
 
 - **ip1** *(PathOrStrOrDataFrame)*:
 
     Path or DataFrame of the beta-star results of IP1.
+
+
+- **ip2** *(PathOrStrOrDataFrame)*:
+
+    Path or DataFrame of the beta-star results of IP2.
 
 
 - **ip5** *(PathOrStrOrDataFrame)*:
@@ -18,7 +26,10 @@ Calculate the luminosity imbalance from the k-mod results.
     Path or DataFrame of the beta-star results of IP5.
 
 
-*--Optional--*
+- **ip8** *(PathOrStrOrDataFrame)*:
+
+    Path or DataFrame of the beta-star results of IP8.
+
 
 - **output_dir** *(PathOrStr)*:
 
@@ -52,25 +63,19 @@ if TYPE_CHECKING:
     from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
-
+IPS = ("ip1", "ip2", "ip5", "ip8")
 
 def _get_params():
     """
     A function to initialize and return parameters for kmod luminosity calculation.
     """
     params = EntryPointParameters()
-    params.add_parameter(
-        name="ip1",
-        required=True,
-        type=PathOrStrOrDataFrame,
-        help="Path or DataFrame of the beta-star results of IP1.",
-    )
-    params.add_parameter(
-        name="ip5",
-        required=True,
-        type=PathOrStrOrDataFrame,
-        help="Path or DataFrame of the beta-star results of IP5.",
-    )
+    for ip in IPS:
+        params.add_parameter(
+            name=ip,
+            type=PathOrStrOrDataFrame,
+            help=f"Path or DataFrame of the beta-star results of {ip.upper()}.",
+        )
     params.add_parameter(
         name="output_dir",
         type=PathOrStr,
@@ -88,15 +93,9 @@ def calculate_lumi_imbalance_entrypoint(opt: DotDict) -> tfs.TfsDataFrame:
         if isinstance(opt.ip1, (Path, str)) and isinstance(opt.ip5, (Path, str)):
             save_config(output_path, opt, __file__)
 
-    dfs = {}
-    for ip in ("ip1", "ip5"):
-        df = opt[ip]
-        if isinstance(df, (Path, str)):
-            df = tfs.read(df, index=BEAM)
-        dfs[f"df_{ip}"] = df
-
+    dfs = _read_and_sort_dataframes(opt)
     df = get_lumi_imbalance(**dfs)
-    betastar_x, betastar_y = dfs["df_ip1"].loc[1, [f'{BETASTAR}X{MDL}', f'{BETASTAR}Y{MDL}']].values
+    betastar_x, betastar_y = dfs[list(dfs.keys())[0]].loc[1, [f'{BETASTAR}X{MDL}', f'{BETASTAR}Y{MDL}']].values
 
     if output_path is not None:
         tfs.write(
@@ -106,6 +105,26 @@ def calculate_lumi_imbalance_entrypoint(opt: DotDict) -> tfs.TfsDataFrame:
     
     return df
 
+
+def _read_and_sort_dataframes(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
+    dfs = {}
+    for ip in IPS:
+        df = opt.get(ip, None)
+        if df is None:
+            continue
+
+        if isinstance(df, (Path, str)):
+            try:
+                df = tfs.read(df, index=BEAM)
+            except KeyError as e:
+                msg = (
+                    f"Dataframe {df} does not contain a {BEAM} column."
+                    "You need to run the `kmod_average` script on data for both beams first."
+                )
+                raise KeyError(msg) from e
+                    
+        dfs[ip] = df
+    return dfs
 
 def get_lumi_imbalance(df_ip1: tfs.TfsDataFrame, df_ip5: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     """
