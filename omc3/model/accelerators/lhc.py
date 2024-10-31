@@ -400,6 +400,7 @@ class Lhc(Accelerator):
         madx_script += "\n! ---- Call optics and other modifiers ----\n"
 
         if self.modifiers is not None:
+            # if modifier is an absolute path, go there, otherwise use the path refers from model_dir
             madx_script += "".join(
                 f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
                 for modifier in self.modifiers
