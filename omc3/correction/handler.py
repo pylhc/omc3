@@ -139,7 +139,8 @@ def _update_response(
     accel_inst_cp = copy.copy(accel_inst)
 
     if accel_inst_cp.modifiers is not None:
-        accel_inst_cp.modifiers = copy.deepcopy(accel_inst.modifiers).extend(corr_files)
+        accel_inst_cp.modifiers = copy.copy(accel_inst.modifiers)
+        accel_inst_cp.modifiers.extend(corr_files) # Extend is an inplace method
     else:
         accel_inst_cp.modifiers = corr_files
 
