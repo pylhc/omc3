@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.handler &mdash; omc3 0.17.0 documentation</title>
+  <title>omc3.correction.handler &mdash; omc3 0.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=0c3dd48d"></script>
+      <script src="../../../_static/documentation_options.js?v=ba2e7b09"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -215,6 +215,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -222,8 +223,8 @@
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">OrthogonalMatchingPursuit</span>
 
 <span class="kn">import</span> <span class="nn">omc3.madx_wrapper</span> <span class="k">as</span> <span class="nn">madx_wrapper</span>
-<span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span>
-<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span>
+<span class="kn">from</span> <span class="nn">omc3.correction</span> <span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span><span class="p">,</span> <span class="n">response_madx</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span><span class="p">,</span> <span class="n">ORBIT_DPP</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.model_appenders</span> <span class="kn">import</span> <span class="n">add_coupling_to_model</span>
 <span class="kn">from</span> <span class="nn">omc3.correction.response_io</span> <span class="kn">import</span> <span class="n">read_fullresponse</span>
 <span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
@@ -255,6 +256,8 @@
     <span class="n">method_options</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s2">&quot;svd_cut&quot;</span><span class="p">,</span> <span class="s2">&quot;n_correctors&quot;</span><span class="p">])</span>
     <span class="c1"># read data from files</span>
     <span class="n">vars_list</span> <span class="o">=</span> <span class="n">_get_varlist</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">)</span>
+    <span class="n">update_deltap</span> <span class="o">=</span> <span class="n">ORBIT_DPP</span> <span class="ow">in</span> <span class="n">vars_list</span>
+    
     <span class="n">optics_params</span><span class="p">,</span> <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">get_measurement_data</span><span class="p">(</span>
         <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">,</span>
         <span class="n">opt</span><span class="o">.</span><span class="n">meas_dir</span><span class="p">,</span>
@@ -283,10 +286,10 @@
 
         <span class="c1"># ######### Update Model and Response ######### #</span>
         <span class="k">if</span> <span class="n">iteration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating model via MADX.&quot;</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating model via MAD-X.&quot;</span><span class="p">)</span>
             <span class="n">corr_model_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;twiss_</span><span class="si">{</span><span class="n">iteration</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
 
-            <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_create_corrected_model</span><span class="p">(</span><span class="n">corr_model_path</span><span class="p">,</span> <span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">)</span>
+            <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_create_corrected_model</span><span class="p">(</span><span class="n">corr_model_path</span><span class="p">,</span> <span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">,</span> <span class="n">update_deltap</span><span class="p">)</span>
             <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_maybe_add_coupling_to_model</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
 
             <span class="n">bpms_index_mask</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bpm&quot;</span><span class="p">])</span>
@@ -295,11 +298,15 @@
             <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">model_appenders</span><span class="o">.</span><span class="n">add_differences_to_model_to_measurements</span><span class="p">(</span><span class="n">corr_model</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">update_response</span><span class="p">:</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating response.&quot;</span><span class="p">)</span>
-                <span class="c1"># please look away for the next two lines.</span>
-                <span class="n">accel_inst</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">corr_model</span>
-                <span class="n">accel_inst</span><span class="o">.</span><span class="n">_elements</span> <span class="o">=</span> <span class="n">corr_model_elements</span>
-                <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+                <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">_update_response</span><span class="p">(</span>
+                    <span class="n">accel_inst</span><span class="o">=</span><span class="n">accel_inst</span><span class="p">,</span>
+                    <span class="n">corrected_elements</span><span class="o">=</span><span class="n">corr_model_elements</span><span class="p">,</span>
+                    <span class="n">optics_params</span><span class="o">=</span><span class="n">optics_params</span><span class="p">,</span>
+                    <span class="n">corr_files</span><span class="o">=</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">],</span>
+                    <span class="n">variable_categories</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span>
+                    <span class="n">update_dpp</span><span class="o">=</span><span class="n">update_deltap</span><span class="p">,</span>
+                    <span class="n">update_response</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">update_response</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">filter_response_index</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
                 <span class="n">resp_matrix</span> <span class="o">=</span> <span class="n">_join_responses</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">,</span> <span class="n">vars_list</span><span class="p">)</span>
 
@@ -315,6 +322,47 @@
     <span class="n">write_knob</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished Iterative Global Correction.&quot;</span><span class="p">)</span></div>
 
+
+
+
+<span class="k">def</span> <span class="nf">_update_response</span><span class="p">(</span>
+    <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> 
+    <span class="n">corrected_elements</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">optics_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">corr_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
+    <span class="n">variable_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> 
+    <span class="n">update_dpp</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> 
+    <span class="n">update_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create an updated response matrix.</span>
+<span class="sd">    </span>
+<span class="sd">    If we are to compute the response including the DPP, then we have to do so from MAD-X, </span>
+<span class="sd">    as we do not have the analytical formulae. This therefore requires correction files to be</span>
+<span class="sd">    provided.</span>
+<span class="sd">    Otherwise we go through the way of computing the response the user requested.</span>
+
+<span class="sd">    All other parameters are taken care of in the model/elements for the response_twiss only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># update model by creating a copy of the accelerator instance</span>
+    <span class="n">accel_inst_cp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
+
+    <span class="c1"># Modifiers is None or list, if none, we need to make a list before extending it with the correction files</span>
+    <span class="n">accel_inst_cp</span><span class="o">.</span><span class="n">modifiers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">accel_inst_cp</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">or</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">corr_files</span>
+
+    <span class="k">if</span> <span class="n">update_dpp</span><span class="p">:</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating response via MAD-X, due to delta dpp requested.&quot;</span><span class="p">)</span>
+        <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">response_madx</span><span class="o">.</span><span class="n">create_fullresponse</span><span class="p">(</span><span class="n">accel_inst_cp</span><span class="p">,</span> <span class="n">variable_categories</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">update_response</span> <span class="o">==</span> <span class="s2">&quot;madx&quot;</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating response via MAD-X.&quot;</span><span class="p">)</span>
+            <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">response_madx</span><span class="o">.</span><span class="n">create_fullresponse</span><span class="p">(</span><span class="n">accel_inst_cp</span><span class="p">,</span> <span class="n">variable_categories</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating response via analytical formulae.&quot;</span><span class="p">)</span>
+            <span class="n">accel_inst_cp</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">corrected_elements</span>
+            <span class="c1"># accel_inst_cp.model = corrected_model # - Not needed, don&#39;t think it&#39;s used by response_twiss (jgray 2024)</span>
+            <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span><span class="n">accel_inst_cp</span><span class="p">,</span> <span class="n">variable_categories</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resp_dict</span>
 
 
 <span class="c1"># Input ------------------------------------------------------------------------</span>
@@ -427,9 +475,9 @@
     <span class="k">return</span> <span class="n">model</span>
 
 
-<span class="k">def</span> <span class="nf">_create_corrected_model</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">change_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_create_corrected_model</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">update_dpp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Use the calculated deltas in changeparameters.madx to create a corrected model &quot;&quot;&quot;</span>
-    <span class="n">madx_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_update_correction_script</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">change_params</span><span class="p">)</span>
+    <span class="n">madx_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_update_correction_script</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">,</span> <span class="n">update_dpp</span><span class="p">)</span>
     <span class="n">twiss_out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">)</span>
     <span class="n">madx_script</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;! Based on model &#39;</span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">madx_script</span>
     <span class="n">madx_wrapper</span><span class="o">.</span><span class="n">run_string</span><span class="p">(</span>
@@ -525,11 +573,11 @@
 <span class="k">def</span> <span class="nf">_print_rms</span><span class="p">(</span><span class="n">meas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">diff_w</span><span class="p">,</span> <span class="n">r_delta_w</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Prints current RMS status &quot;&quot;&quot;</span>
     <span class="n">f_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:&gt;20s}</span><span class="s2"> : </span><span class="si">{:.5e}</span><span class="s2">&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;RMS Measure - Model (before correction, w/o weigths):&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;RMS Measure - Model (before correction, w/o weights):&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">meas</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">rms</span><span class="p">(</span><span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">DIFF</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())))</span>
 
-    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;RMS Measure - Model (before correction, w/ weigths):&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;RMS Measure - Model (before correction, w/ weights):&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">meas</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">rms</span><span class="p">(</span><span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">DIFF</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">meas</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">WEIGHT</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())))</span>
 

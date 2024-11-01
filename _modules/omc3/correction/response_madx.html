@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.response_madx &mdash; omc3 0.17.0 documentation</title>
+  <title>omc3.correction.response_madx &mdash; omc3 0.18.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=0c3dd48d"></script>
+      <script src="../../../_static/documentation_options.js?v=ba2e7b09"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -217,27 +217,40 @@
 
 <span class="sd">:author: Lukas Malina, Joschua Dilly, Jaime (...) Coello de Portugal</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">tfs</span>
 <span class="kn">from</span> <span class="nn">numpy.exceptions</span> <span class="kn">import</span> <span class="n">ComplexWarning</span>
 <span class="kn">from</span> <span class="nn">optics_functions.coupling</span> <span class="kn">import</span> <span class="n">coupling_via_cmatrix</span>
 
 <span class="kn">import</span> <span class="nn">omc3.madx_wrapper</span> <span class="k">as</span> <span class="nn">madx_wrapper</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span>
-                                                <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">INCR</span>
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AccElementTypes</span>
+<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="n">INCR</span><span class="p">,</span> <span class="n">ORBIT_DPP</span>
+<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">AccElementTypes</span><span class="p">,</span> <span class="n">Accelerator</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">DISPERSION</span><span class="p">,</span>
+    <span class="n">F1001</span><span class="p">,</span>
+    <span class="n">F1010</span><span class="p">,</span>
+    <span class="n">NAME</span><span class="p">,</span>
+    <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span> <span class="nn">omc3.utils.contexts</span> <span class="kn">import</span> <span class="n">suppress_warnings</span><span class="p">,</span> <span class="n">timeit</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
 
 
 <span class="c1"># Full Response Mad-X ##########################################################</span>
@@ -251,7 +264,7 @@
     <span class="n">delta_k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2e-5</span><span class="p">,</span>
     <span class="n">num_proc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(),</span>
     <span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Generate a dictionary containing response matrices for</span>
 <span class="sd">        beta, phase, dispersion, tune and coupling and saves it to a file.</span>
 
@@ -291,13 +304,23 @@
     <span class="n">delta_k</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">num_proc</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Generates madx job-files &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generating MADX jobfiles.&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generating MAD-X jobfiles.&quot;</span><span class="p">)</span>
     <span class="n">incr_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
-    <span class="n">vars_per_proc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_proc</span><span class="p">))</span>
+    <span class="n">compute_deltap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ORBIT_DPP</span> <span class="ow">in</span> <span class="n">variables</span>
+    <span class="n">no_dpp_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span> <span class="k">if</span> <span class="n">var</span> <span class="o">!=</span> <span class="n">ORBIT_DPP</span><span class="p">]</span>
+    <span class="n">vars_per_proc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">no_dpp_vars</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_proc</span><span class="p">))</span>
 
     <span class="n">madx_job</span> <span class="o">=</span> <span class="n">_get_madx_job</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
+    <span class="n">deltap_twiss</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">compute_deltap</span><span class="p">:</span>
+        <span class="c1"># This is here only for multiple iteration of the global correction</span>
+        <span class="c1"># By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change</span>
+        <span class="c1"># We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X</span>
+        <span class="n">madx_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="c1"># Set deltap to 0</span>
+        <span class="n">madx_job</span> <span class="o">+=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_update_deltap_script</span><span class="p">(</span><span class="n">deltap</span><span class="o">=</span><span class="n">ORBIT_DPP</span><span class="p">)</span>
+        <span class="n">deltap_twiss</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, deltap=</span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">for</span> <span class="n">proc_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_proc</span><span class="p">):</span>
         <span class="n">jobfile_path</span> <span class="o">=</span> <span class="n">_get_jobfiles</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">proc_idx</span><span class="p">)</span>
@@ -305,17 +328,23 @@
         <span class="n">current_job</span> <span class="o">=</span> <span class="n">madx_job</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">vars_per_proc</span><span class="p">):</span>
             <span class="n">var_idx</span> <span class="o">=</span> <span class="n">proc_idx</span> <span class="o">*</span> <span class="n">vars_per_proc</span> <span class="o">+</span> <span class="n">i</span>
-            <span class="k">if</span> <span class="n">var_idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">var_idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">no_dpp_vars</span><span class="p">):</span>
                 <span class="k">break</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">no_dpp_vars</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span>
             <span class="n">incr_dict</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_k</span>
             <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">var</span><span class="si">}{</span><span class="n">delta_k</span><span class="si">:</span><span class="s2">+.15e</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39;twiss.</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39;twiss.</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">deltap_twiss</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">var</span><span class="si">}{</span><span class="o">-</span><span class="n">delta_k</span><span class="si">:</span><span class="s2">+.15e</span><span class="si">}</span><span class="s2">;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="n">proc_idx</span> <span class="o">==</span> <span class="n">num_proc</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;twiss.0&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
-
+            <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;twiss.0&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">deltap_twiss</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            
+            <span class="k">if</span> <span class="n">compute_deltap</span><span class="p">:</span> <span class="c1"># If ORBIT_DPP is in variables, we run this in the last iteration</span>
+                <span class="c1"># Due to the match and correction of the orbit, this needs to be run at the end of the process</span>
+                <span class="n">incr_dict</span><span class="p">[</span><span class="n">ORBIT_DPP</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_k</span>
+                <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}{</span><span class="n">delta_k</span><span class="si">:</span><span class="s2">+.15e</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">current_job</span> <span class="o">+=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_update_deltap_script</span><span class="p">(</span><span class="n">deltap</span><span class="o">=</span><span class="n">ORBIT_DPP</span><span class="p">)</span> <span class="c1"># Do twiss, correct, match</span>
+                <span class="n">current_job</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;twiss, deltap=</span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s2">, file=&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="o">/</span><span class="sa">f</span><span class="s1">&#39;twiss.</span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">jobfile_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">current_job</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">incr_dict</span>
 
@@ -362,11 +391,11 @@
 
 
 <span class="k">def</span> <span class="nf">_load_madx_results</span><span class="p">(</span>
-    <span class="n">variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">process_pool</span><span class="p">,</span>
     <span class="n">incr_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">temp_dir</span><span class="p">:</span> <span class="n">Path</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Load the madx results in parallel and return var-tfs dictionary &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading Madx Results.&quot;</span><span class="p">)</span>
     <span class="n">vars_and_paths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -379,7 +408,7 @@
     <span class="k">return</span> <span class="n">var_to_twiss</span>
 
 
-<span class="k">def</span> <span class="nf">_create_fullresponse_from_dict</span><span class="p">(</span><span class="n">var_to_twiss</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_create_fullresponse_from_dict</span><span class="p">(</span><span class="n">var_to_twiss</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Convert var-tfs dictionary to fullresponse dictionary. &quot;&quot;&quot;</span>
     <span class="n">var_to_twiss</span> <span class="o">=</span> <span class="n">_add_coupling</span><span class="p">(</span><span class="n">var_to_twiss</span><span class="p">)</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">var_to_twiss</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -451,25 +480,25 @@
     <span class="n">madx_wrapper</span><span class="o">.</span><span class="n">run_file</span><span class="p">(</span><span class="n">inputfile_path</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="n">log_file</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">inputfile_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_load_and_remove_twiss</span><span class="p">(</span><span class="n">var_and_path</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_load_and_remove_twiss</span><span class="p">(</span><span class="n">var_and_path</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Function for pool to retrieve results &quot;&quot;&quot;</span>
     <span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="o">=</span> <span class="n">var_and_path</span>
     <span class="n">twissfile</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;twiss.</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="n">tfs_data</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">twissfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+    <span class="n">tfs_data</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">twissfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
     <span class="n">tfs_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfs_data</span><span class="o">.</span><span class="n">Q1</span>
     <span class="n">tfs_data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfs_data</span><span class="o">.</span><span class="n">Q2</span>
     <span class="n">twissfile</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">var</span><span class="p">,</span> <span class="n">tfs_data</span>
 
 
-<span class="k">def</span> <span class="nf">_add_coupling</span><span class="p">(</span><span class="n">dict_of_tfs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_add_coupling</span><span class="p">(</span><span class="n">dict_of_tfs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For each TfsDataFrame in the input dictionary, computes the coupling RDTs and adds a column for</span>
 <span class="sd">    the real and imaginary parts of the computed coupling RDTs. Returns a copy of the input dictionary with</span>
 <span class="sd">    the aforementioned computed columns added for each TfsDataFrame.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        dict_of_tfs (Dict[str, tfs.TfsDataFrame]): dictionary of Twiss dataframes.</span>
+<span class="sd">        dict_of_tfs (dict[str, tfs.TfsDataFrame]): dictionary of Twiss dataframes.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        An identical dictionary of Twiss dataframes, with the computed columns added.</span>
