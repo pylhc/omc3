@@ -4,6 +4,12 @@
 
 - Added:
   - Add the ability to calculate a deltap/p offset caused by a change in orbit.
+  - Add the ability to use `response_madx` to calculate the updated response matrix for the global correction.
+  - Tests for the calculation of the deltap/p and corresponding correction.
+  - Tests for the calculation of the updated response matrix for the global correction.
+
+- Fixed:
+  - Fixed the `response_twiss` when updating the response matrix when calculating the global correction.
 
 
 #### 2024-10-29 - v0.17.0 - _jdilly_ 
