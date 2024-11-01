@@ -1,20 +1,34 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
+from typing import Literal, Sequence
 
 import numpy as np
 import pytest
-
 import tfs
-from omc3.correction.constants import VALUE, ERROR, WEIGHT
+from generic_parser.tools import DotDict
+
+from omc3.correction.constants import ERROR, ORBIT_DPP, VALUE, WEIGHT
 from omc3.correction.handler import get_measurement_data
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import global_correction_entrypoint as global_correction
 from omc3.optics_measurements.constants import (
-    NAME, AMPLITUDE, IMAG, REAL, BETA, DISPERSION,
-    NORM_DISPERSION, F1001, F1010, TUNE, PHASE, ERR, DELTA)
-from omc3.scripts.fake_measurement_from_model import VALUES, ERRORS
+    AMPLITUDE,
+    BETA,
+    DELTA,
+    DISPERSION,
+    ERR,
+    F1001,
+    F1010,
+    IMAG,
+    NAME,
+    NORM_DISPERSION,
+    PHASE,
+    REAL,
+    TUNE,
+)
+from omc3.response_creator import create_response_entrypoint as create_response
+from omc3.scripts.fake_measurement_from_model import ERRORS, VALUES
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
@@ -58,7 +72,7 @@ class CorrectionParameters:
     
 def get_skew_params(beam):
     return CorrectionParameters(
-        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_skew_quadrupole_error.dat",
+        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / "twiss_skew_quadrupole_error.dat",
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_skewquadrupole.madx",
         optics_params=[f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"],
         weights=[1., 1., 1., 1.],
@@ -70,7 +84,7 @@ def get_skew_params(beam):
 
 def get_normal_params(beam):
     return CorrectionParameters(
-        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / f"twiss_quadrupole_error.dat",
+        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / "twiss_quadrupole_error.dat",
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_quadrupole.madx",
         optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISPERSION}X", TUNE],
         weights=[1., 1., 1., 1., 1., 1.],
@@ -82,7 +96,7 @@ def get_normal_params(beam):
 
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
+def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientation: Literal['skew', 'normal']):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
@@ -115,6 +129,7 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
     )
 
     # Test if corrected model is closer to model used to create measurement
+    diff_rms_prev = None
     for iter_step in range(iterations):
         if iter_step == 0:
             model_iter_df = model_df
@@ -139,7 +154,7 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
         # continue
         # ########################################
 
-        if iter_step > 0:
+        if diff_rms_prev is not None:
             # assert RMS after correction smaller than tolerances
             for param in correction_params.optics_params:
                 assert diff_rms[param] < RMS_TOL_DICT[param], (
@@ -156,6 +171,58 @@ def test_lhc_global_correct(tmp_path, model_inj_beams, orientation):
 
         diff_rms_prev = diff_rms
 
+
+@pytest.mark.basic
+@pytest.mark.parametrize('dpp', (2.5e-4, -1e-4))
+def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: float):
+    response_path = tmp_path / "full_response_dpp.h5"
+    beam = model_inj_beams.beam
+
+    # Create response
+    response_dict = create_response(
+        outfile_path=response_path,
+        variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}", f"kq10.l2b{beam}"],
+        delta_k=2e-5,
+        **model_inj_beams,
+    )
+
+    # Verify response creation
+    assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict.keys())
+
+    # Create fake measurement
+    dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{beam}.dat"
+    model_df = tfs.read(dpp_path, index=NAME)
+    fake_measurement(
+        twiss=model_df,
+        parameters=[f"{PHASE}X", f"{PHASE}Y"],
+        outputdir=tmp_path,
+    )
+
+    # Test global correction with and without response update
+    for update_response in [True, False]:
+        previous_diff = np.inf
+        for iteration in range(1, 4):
+            global_correction(
+                meas_dir=tmp_path,
+                output_dir=tmp_path,
+                fullresponse_path=response_path,
+                variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}"],
+                optics_params=[f"{PHASE}X", f"{PHASE}Y"],
+                iterations=iteration,
+                update_response=update_response,
+                **model_inj_beams,
+            )
+            result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
+            current_dpp = -result[DELTA][ORBIT_DPP]
+
+            # Check output accuracy
+            rtol = 5e-2 if iteration == 1 else 2e-2
+            assert np.isclose(dpp, current_dpp, rtol=rtol), f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
+
+            # Check convergence
+            current_diff = np.abs(dpp - current_dpp) / np.abs(dpp)
+            assert previous_diff > current_diff or np.isclose(previous_diff, current_diff, atol=1e-3), f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
+            previous_diff = current_diff
 
 # Helper -----------------------------------------------------------------------
 

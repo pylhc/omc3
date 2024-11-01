@@ -77,7 +77,7 @@ class ModelCreator(ABC):
         Prepares the model creation ``MAD-X`` run. It should check that the appropriate directories
         are created, and that macros and other files are in place.
         Should also check that all necessary data for model creation is available in the accelerator
-        instance. Called by the ``model_creator.create_accel_and_instance``
+        instance. Called by the ``model_creator.create_instance_and_model``
 
         Args:
             accel (Accelerator): Accelerator Instance used for the model creation.
