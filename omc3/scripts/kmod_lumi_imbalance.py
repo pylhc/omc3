@@ -7,28 +7,29 @@ Calculate the luminosity imbalance from the k-mod results.
 .. warning::
         You need to provide the data for exactly two of the four IP's.
 
+
 **Arguments:**
 
 *--Optional--*
 
 - **ip1** *(PathOrStrOrDataFrame)*:
 
-    Path or DataFrame of the beta-star results of IP1.
+    Path or DataFrame of the averaged beta-star results of IP1.
 
 
 - **ip2** *(PathOrStrOrDataFrame)*:
 
-    Path or DataFrame of the beta-star results of IP2.
+    Path or DataFrame of the averaged beta-star results of IP2.
 
 
 - **ip5** *(PathOrStrOrDataFrame)*:
 
-    Path or DataFrame of the beta-star results of IP5.
+    Path or DataFrame of the averaged beta-star results of IP5.
 
 
 - **ip8** *(PathOrStrOrDataFrame)*:
 
-    Path or DataFrame of the beta-star results of IP8.
+    Path or DataFrame of the averaged beta-star results of IP8.
 
 
 - **output_dir** *(PathOrStr)*:
@@ -46,7 +47,7 @@ import numpy as np
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
-from omc3.kmod.constants import (
+from omc3.optics_measurements.constants import (
     BEAM,
     BETASTAR,
     EFFECTIVE_BETAS_FILENAME,
@@ -66,7 +67,7 @@ if TYPE_CHECKING:
 LOG = logging_tools.get_logger(__name__)
 IPS: tuple[str, ...] = ("ip1", "ip2", "ip5", "ip8")
 
-def _get_params():
+def _get_params() -> EntryPointParameters:
     """
     A function to initialize and return parameters for kmod luminosity calculation.
     """
@@ -75,7 +76,7 @@ def _get_params():
         params.add_parameter(
             name=ip,
             type=PathOrStrOrDataFrame,
-            help=f"Path or DataFrame of the beta-star results of {ip.upper()}.",
+            help=f"Path or DataFrame of the averaged beta-star results of {ip.upper()}.",
         )
     params.add_parameter(
         name="output_dir",

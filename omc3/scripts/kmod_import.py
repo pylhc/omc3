@@ -1,0 +1,345 @@
+""" 
+Import K-Modulation Results
+---------------------------
+
+Imports K-Mod data and writes them into a file containing beta data, 
+in the same format as beta-from-phase or beta-from-amplitude.
+This data can then be easily used for the same purposes, e.g. global correction.
+
+
+**Arguments:**
+
+*--Required--*
+
+- **meas_files** *(PathOrStr)*:
+
+    Paths to the Kmod results files to import.
+    Can be either the TFS-files directly or a path to a folder containing them.
+
+
+- **model** *(PathOrStr)*:
+
+    Path to the model twiss file, or a folder containing 'twiss_elemtents.dat'. 
+    The model determines which elements to keep.
+
+
+*--Optional--*
+
+- **output_dir** *(PathOrStr)*:
+
+    Path to the directory where to write the output files.
+
+"""
+from __future__ import annotations
+
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+import tfs
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+
+from omc3.definitions.constants import PLANES
+from omc3.model.constants import TWISS_ELEMENTS_DAT
+from omc3.optics_measurements.constants import (
+    BEAM,
+    BETA,
+    BETA_KMOD_FILENAME,
+    BETA_STAR_FILENAME,
+    BETASTAR,
+    BETAWAIST,
+    DELTA,
+    ERR,
+    EXT,
+    LABEL,
+    MDL,
+    NAME,
+    S_LOCATION,
+    TIME,
+    TUNE,
+    WAIST,
+    S,
+)
+from omc3.optics_measurements.constants import (
+    KMOD_PHASE_ADV as PHASEADV,
+)
+from omc3.utils import logging_tools
+from omc3.utils.iotools import OptionalFloat, PathOrStr, save_config
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from generic_parser import DotDict
+
+LOG = logging_tools.get_logger(__name__)
+
+
+BPM_RESULTS_ID: str = "BPM"
+BETASTAR_RESULTS_ID: str = "BETASTAR"
+
+
+def _get_params() -> EntryPointParameters:
+    """
+    Creates and returns the parameters for the kmod_output function.
+    """
+    params = EntryPointParameters()
+    params.add_parameter(
+        name="meas_paths",
+        required=True,
+        nargs='+',
+        type=PathOrStr,
+        help="Paths to the K-modulation results files to import. "
+             "Can be either the TFS-files directly or a path to a folder containing them."
+    )
+    params.add_parameter(
+        name="model",
+        required=True,
+        type=PathOrStr,
+        help="Path to model twiss file, or a folder containing 'twiss_elemtents.dat'. "
+             "The model determines which elements to keep."
+    )
+    params.add_parameter(
+        name="beam",
+        type=OptionalFloat,
+        help="Beam for which to import."
+    )
+    params.add_parameter(
+        name="output_dir",
+        type=PathOrStr,
+        help="Path to the directory where to write the output files."
+    )
+    return params
+
+
+@entrypoint(_get_params(), strict=True)
+def import_kmod_data(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
+    """
+    Reads model and measurement files to calculate differences in beta functions 
+    and writes the results to output files.
+    
+    Args:
+        meas_paths (Sequence[Path|str]):
+            A sequence of k-modulation results files to import. 
+            This can include either single measurements (e.g., 'lsa_results.tfs'),
+            averaged results (e.g., 'averaged_bpm_beam1_ip1_beta0.22m.tfs') or a 
+            path to the folder containing multiple of such files.
+        
+        model (Path|str):
+            Path to the model twiss file, or a folder containing 'twiss_elemtents.dat'.
+            Determines which elements to keep, i.e. `twiss.dat` keeps only the BPMs,
+            `twiss_elements.dat` keeps BPMs and IPs.
+        
+        output_dir (Path|str):
+            Path to the output directory, i.e. the optics-measurement directory 
+            into which to import these K-Modulation results.
+    
+    Returns:
+        Dictionary of kmod-DataFrames by planes and IDs (BPM, BETASTAR).
+    """
+    LOG.info("Starting Kmod Import.")
+
+    # Prepare output dir    
+    if opt.output_dir is not None:
+        opt.output_dir = Path(opt.output_dir)
+        opt.output_dir.mkdir(exist_ok=True)
+        save_config(opt.output_dir, opt, __file__)
+
+    # read data
+    df_model = _read_model_df(opt.model)
+    bpm_results_list, betastar_results_list = _read_kmod_results(opt.meas_paths)
+
+
+    # create new dataframes
+    dfs = {}
+    if len(bpm_results_list):
+        dfs.update(convert_bpm_results(bpm_results_list, df_model))
+    if len(betastar_results_list):
+        dfs.update(convert_betastar_results(betastar_results_list, df_model, opt.beam))
+    
+    if opt.output_dir is not None:
+        _write_output(dfs, opt.output_dir)
+
+
+# BPM Results Conversion ---
+
+def convert_bpm_results(
+    bpm_results_list: Sequence[tfs.TfsDataFrame], 
+    df_model: tfs.TfsDataFrame, 
+    ) -> dict[str, tfs.TfsDataFrame]:
+    """ Convert K-Modulation BPM results to kmod-DataFrames
+    that can be placed in the optics-measurement directory.
+
+    Args:
+        bpm_results_list (Sequence[tfs.TfsDataFrame]): List of BPM results.
+        df_model (tfs.TfsDataFrame): Model data. 
+
+    Returns:
+        dict[str, tfs.TfsDataFrame]: Dictionary of kmod-DataFrames by planes and with BPM ID as key.
+    """
+    LOG.debug("Converting K-modulation BPM results")
+
+    # merge files
+    bpm_results_list = [df.set_index(NAME, drop=True) for df in bpm_results_list]
+    kmod_results = tfs.concat(bpm_results_list, join='outer',)
+    common_bpms = kmod_results.index.intersection(df_model.index)  # drops IPs, if not `twiss_elements.dat`
+    kmod_results = kmod_results.loc[common_bpms, :]
+    df_model = df_model.loc[common_bpms, :]
+
+    dfs = {}
+    for plane in PLANES:
+        beta_kmod = tfs.TfsDataFrame(index=df_model.index)
+        
+        # copy s and beta
+        beta_kmod.loc[:, S] = df_model.loc[:, S]
+        beta_kmod.loc[:, f'{BETA}{plane}{MDL}'] = df_model.loc[:, f'{BETA}{plane}']
+        beta_kmod.loc[:, f'{BETA}{plane}'] = kmod_results[f'{BETA}{plane}']
+        beta_kmod.loc[:, f'{ERR}{BETA}{plane}'] = kmod_results[f'{ERR}{BETA}{plane}']
+
+        # model-delta and beta-beating
+        beta_kmod.loc[:, f'{DELTA}{BETA}{plane}{MDL}'] = (
+            beta_kmod[f'{BETA}{plane}'] - beta_kmod[f'{BETA}{plane}{MDL}']
+        )
+        beta_kmod.loc[:, f'{DELTA}{BETA}{plane}'] = (
+            beta_kmod[f'{DELTA}{BETA}{plane}{MDL}'] / beta_kmod[f'{BETA}{plane}{MDL}']
+        )
+        beta_kmod.loc[:, f'{ERR}{DELTA}{BETA}{plane}'] = (
+            beta_kmod[f'{ERR}{BETA}{plane}'] / beta_kmod[f'{BETA}{plane}{MDL}']
+        )
+
+        # tune
+        beta_kmod.headers[f'{TUNE}1'] = df_model.headers[f'{TUNE}1'] % 1
+        beta_kmod.headers[f'{TUNE}2'] = df_model.headers[f'{TUNE}2'] % 1
+
+        beta_kmod = beta_kmod.sort_values(by=S)
+
+        dfs[f"{BPM_RESULTS_ID}{plane}"] = beta_kmod
+
+    return dfs
+
+
+# BetaStar Results Conversion ---
+
+def convert_betastar_results(
+    betastar_results_list: Sequence[tfs.TfsDataFrame], 
+    df_model: tfs.TfsDataFrame,
+    beam: int, 
+    ) -> dict[str, tfs.TfsDataFrame]:
+    """ Convert K-Modulation BetaStar results to kmod-DataFrames
+    that can be placed in the optics-measurement directory. 
+    
+    Args:
+        betastar_results_list (Sequence[tfs.TfsDataFrame]): List of BetaStar results.
+        df_model (tfs.TfsDataFrame): Model data.
+        beam (int): Beam to import.
+    
+    Returns:
+        dict[str, tfs.TfsDataFrame]: Dictionary of kmod-DataFrames by planes and with BETASTAR ID as key.
+    """
+    LOG.debug("Converting K-modulation BetaStar results")
+
+    # merge files and set index
+    kmod_results = tfs.concat(betastar_results_list, join='outer',)
+    if BEAM in kmod_results.columns:  # averaged file
+        if beam is None:
+            raise ValueError("Need to give beam when importing averaged betastar files.")
+    
+        kmod_results = kmod_results.loc[kmod_results[BEAM] == beam, :]
+        kmod_results = kmod_results.drop(columns=[BEAM])
+        kmod_results = kmod_results.set_index(NAME, drop=True)
+    
+    else:
+        kmod_results.index = kmod_results[LABEL].apply(lambda s: f"IP{s[-1]}")
+        kmod_results = kmod_results.drop(columns=[LABEL, TIME])
+
+    missing_ips = kmod_results.index.difference(df_model.index)
+    if len(missing_ips):
+        msg =  (
+            f"IPs {missing_ips} not found in the model. "
+            "Make sure to use the `elements` file as input!"
+        )
+        raise NameError(msg)
+
+    df_model = df_model.loc[kmod_results.index, :]  # Sync index
+    
+    dfs = {}
+    for plane in PLANES:
+        beta_kmod = tfs.TfsDataFrame(index=df_model.index)
+        
+        # copy s and beta from model
+        beta_kmod.loc[:, S] = df_model.loc[:, S]
+        beta_kmod.loc[:, f'{BETASTAR}{plane}{MDL}'] = df_model.loc[:, f'{BETA}{plane}']
+
+        # copy columns with errors from results
+        columns = [f"{column}{plane}" for column in (BETASTAR, BETAWAIST, WAIST, PHASEADV)] + [f"{WAIST}{plane}{S_LOCATION}"]
+        for column in columns:
+            beta_kmod.loc[:, f'{column}'] = kmod_results[f'{column}']
+            beta_kmod.loc[:, f'{ERR}{column}'] = kmod_results[f'{ERR}{column}']
+
+
+        # model-delta and beta-beating
+        beta_kmod.loc[:, f'{DELTA}{BETASTAR}{plane}{MDL}'] = (
+            beta_kmod[f'{BETASTAR}{plane}'] - beta_kmod[f'{BETASTAR}{plane}{MDL}']
+        )
+        beta_kmod.loc[:, f'{DELTA}{BETASTAR}{plane}'] = (
+            beta_kmod[f'{DELTA}{BETASTAR}{plane}{MDL}'] / beta_kmod[f'{BETASTAR}{plane}{MDL}']
+        )
+        beta_kmod.loc[:, f'{ERR}{DELTA}{BETA}{plane}'] = (
+            beta_kmod[f'{ERR}{BETA}{plane}'] / beta_kmod[f'{BETA}{plane}{MDL}']
+        )
+
+        # tune
+        beta_kmod.headers[f'{TUNE}1'] = df_model.headers[f'{TUNE}1'] % 1
+        beta_kmod.headers[f'{TUNE}2'] = df_model.headers[f'{TUNE}2'] % 1
+
+        beta_kmod = beta_kmod.sort_values(by=S)
+
+        dfs[f"{BETASTAR_RESULTS_ID}{plane}"] = beta_kmod
+
+    return dfs
+
+
+# IO ---
+
+def _read_model_df(model_path: Path | str) -> tfs.TfsDataFrame:
+    """ Read model twiss file, 
+    either directly or twiss_elements.dat from a folder. 
+    """
+    model_path = Path(model_path)
+    if model_path.is_dir():
+        return tfs.read(model_path / TWISS_ELEMENTS_DAT, index=NAME)
+   
+    return tfs.read(model_path, index=NAME)
+
+
+def _read_kmod_results(paths: Sequence[Path | str]
+    ) -> tuple[list[tfs.TfsDataFrame], list[tfs.TfsDataFrame]]:
+    """ Read K-modulation results from a list of paths and sort into betastar and bpm types. """
+    # read all files
+    all_dfs = []
+    for path in paths:
+        path = Path(path)
+        if path.is_dir():
+            all_dfs.extend(tfs.read(file_path) for file_path in path.glob(f"*{EXT}"))
+        else:
+            all_dfs.append(tfs.read(path))
+    
+    # sort into betastar and bpm
+    betastar_results = [df for df in all_dfs if f"{BETASTAR}X" in df.columns]
+    bpm_results = [df for df in all_dfs if f"{BETA}X" in df.columns]
+
+    return betastar_results, bpm_results
+
+
+def _write_output(dfs: dict[str, tfs.TfsDataFrame], output_dir: Path):
+    """ Write output files if data exists. """
+    for id_, filename in ((BETASTAR_RESULTS_ID, BETA_STAR_FILENAME), (BPM_RESULTS_ID, BETA_KMOD_FILENAME)):
+        for plane in PLANES:
+            df = dfs.get(f"{id_}{plane}")
+            if df is None:
+                continue
+
+            tfs.write(output_dir / f'{filename}{plane.lower()}{EXT}', df, save_index=NAME)
+
+
+# Script Mode ------------------------------------------------------------------
+
+if __name__ == "__main__":
+    import_kmod_data()

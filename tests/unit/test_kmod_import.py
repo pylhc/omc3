@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 import tfs
 import pandas.testing as pdt
-from omc3.kmod_import import import_kmod_data
-from omc3.kmod.constants import AVERAGED_BPM_FILENAME, BETA_FILENAME, EXT
+from omc3.kmod_importer import import_kmod_data
+from omc3.optics_measurements.constants import EXT, AVERAGED_BPM_FILENAME, BETA_KMOD_FILENAME
 from tests.unit.test_kmod_averaging import _get_reference_dir
 from tests.conftest import INPUTS
 
@@ -29,7 +29,7 @@ def test_kmod_import_beam(tmp_path, beam):
     _assert_correct_files_are_present(tmp_path)
 
     for plane in "xy":
-        beta_out = tfs.read(tmp_path / f"{BETA_FILENAME}{plane}{EXT}")
+        beta_out = tfs.read(tmp_path / f"{BETA_KMOD_FILENAME}{plane}{EXT}")
         beta_ref = tfs.read(_get_referece_path(beam, plane))
 
         # column order might have changed, but that's okay -> check_like=True
@@ -39,7 +39,7 @@ def test_kmod_import_beam(tmp_path, beam):
 def _assert_correct_files_are_present(outputdir: Path) -> None:
     """Simply checks the expected converted files are present in the outputdir"""
     for plane in "xy":
-        assert (outputdir / f"{BETA_FILENAME}{plane}{EXT}").is_file()
+        assert (outputdir / f"{BETA_KMOD_FILENAME}{plane}{EXT}").is_file()
 
 
 def _get_model_path(beam: int) -> Path:
@@ -51,7 +51,7 @@ def _get_input_path(beam: int, ip: int, beta: float) -> Path:
 
 
 def _get_referece_path(beam: int, plane: str) -> Path:
-    return REFERENCE_DIR / f"b{beam}_imported" / f"{BETA_FILENAME}{plane}{EXT}"
+    return REFERENCE_DIR / f"b{beam}_imported" / f"{BETA_KMOD_FILENAME}{plane}{EXT}"
 
 
 # ---------------- FOR UPDATING THE REFERENCES ------------------------------- #

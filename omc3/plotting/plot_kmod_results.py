@@ -10,8 +10,8 @@ Create Plots for the K-Modulation data.
 
 - **data** *(PathOrStrOrDataFrame)*:
 
-    Path to the K-Mod DataFrame, e.g. from `omc3.kmod_averages`, or the
-    DataFrame itself.
+    Path to the K-Mod BetaStar (i.e. `results.tfs`) DataFrame, 
+    e.g. from `omc3.kmod_averages`, or the DataFrame itself.
 
 
 *--Optional--*
@@ -59,7 +59,8 @@ import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 
-from omc3.kmod.constants import BEAM, BETASTAR, ERR, MDL, WAIST
+from omc3.kmod.constants import ERR, MDL
+from omc3.optics_measurements.constants import BEAM, BETASTAR, WAIST
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame, save_config
 from omc3.plotting.utils import style as pstyle
@@ -69,8 +70,8 @@ if TYPE_CHECKING:
 
 LOG = logging_tools.get_logger(__name__)
 
-PARAM_BETA = "beta"
-PARAM_WAIST = "waist"
+PARAM_BETA: str = "beta"
+PARAM_WAIST: str = "waist"
 
 
 def _get_params() -> EntryPointParameters:
@@ -80,7 +81,8 @@ def _get_params() -> EntryPointParameters:
         name="data",
         required=True,
         type=PathOrStrOrDataFrame,
-        help="Path to the K-Mod DataFrame, e.g. from `omc3.kmod_averages`, or the DataFrame itself.",
+        help="Path to the K-Mod DataFrame (i.e. `results.tfs`), "
+             "e.g. from `omc3.kmod_averages`, or the DataFrame itself.",
     )
     params.add_parameter(
         name="ip",
@@ -184,7 +186,7 @@ def plot_parameter(df_kmod: tfs.TfsDataFrame, parameter: str, ip: str | None = N
         if parameter == PARAM_BETA:
             x, xerr = _get_beat_and_err(df_kmod, beam, 'X')
             y, yerr = _get_beat_and_err(df_kmod, beam, 'Y')
-        elif parameter == PARAM_WAIST:
+        if parameter == PARAM_WAIST:
             x, xerr = _get_waist_and_err(df_kmod, beam, 'X')
             y, yerr = _get_waist_and_err(df_kmod, beam, 'Y')
 

@@ -3,8 +3,9 @@ from pathlib import Path
 import pandas.testing as pdt
 import tfs
 
-from omc3.kmod.constants import AVERAGED_BETASTAR_FILENAME, EFFECTIVE_BETAS_FILENAME, EXT
+from omc3.kmod.constants import EXT
 from omc3.kmod_lumi_imbalance import calculate_lumi_imbalance
+from omc3.optics_measurements.constants import AVERAGED_BETASTAR_FILENAME, EFFECTIVE_BETAS_FILENAME
 from tests.unit.test_kmod_averaging import REFERENCE_DIR, _get_reference_dir
 
 
