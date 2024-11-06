@@ -5,10 +5,11 @@ Accelerator
 This module provides high-level classes to define most functionality of ``model.accelerators``.
 It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
+from __future__ import annotations
 import re
 import os
 from pathlib import Path
-from typing import List, Union, Sequence
+from typing import TYPE_CHECKING
 
 import numpy
 import pandas as pd
@@ -28,6 +29,9 @@ from omc3.model.constants import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -215,7 +219,7 @@ class Accelerator:
     # Class methods ###########################################
 
     @classmethod
-    def get_element_types_mask(cls, list_of_elements: List[str], types) -> numpy.ndarray:
+    def get_element_types_mask(cls, list_of_elements: list[str], types) -> numpy.ndarray:
         """
         Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
         specified types.
@@ -274,7 +278,7 @@ class Accelerator:
             if self.excitation != AccExcitationMode.FREE and self.drv_tunes is None:
                 raise AttributeError("Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)")
 
-    def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
+    def get_exciter_bpm(self, plane: str, commonbpms: list[str]):
         """
         Returns the BPM next to the exciter.
         The `Accelerator` instance knows already which excitation method is used.
@@ -317,7 +321,7 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
+    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], **kwargs) -> str: #kwargs to be used for additional arguments in different accelerators
         """
         Returns job (string) to create an updated model from changeparameters input (used in
         iterative correction).
@@ -327,6 +331,13 @@ class Accelerator:
     def get_base_madx_script(self, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.
+        """
+        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+    
+    def get_update_deltap_script(self, deltap: float | str) -> str:
+        """
+        Returns job (string) to change the magnets for a given deltap (dpp). 
+        i.e. updating the orbit and matching the tunes.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -369,7 +380,7 @@ class AcceleratorDefinitionError(Exception):
 # Helper ----
 
 
-def _get_modifiers_from_modeldir(model_dir: Path) -> List[Path]:
+def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
     """Parse modifiers from job.create_model.madx or use modifiers.madx file."""
     job_file = model_dir / JOB_MODEL_MADX_NOMINAL
     if job_file.exists():

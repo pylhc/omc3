@@ -1,14 +1,41 @@
 # OMC3 Changelog
 
-#### 2024-10-24 - v0.17.0 - _fscarlier_, _jdilly_
+#### 2024-XX-XX - v0.19.0 - _fscarlier_, _jdilly_
 
 - Added K-Modulation tools:
+  - `kmod_importer`: Main function to call the following scripts in succession.
   - `kmod_averages`: Combine k-modulation results into a single file
   - `kmod_lumi_imbalance`: Calculate the luminosity imbalance IP1 / IP5 from k-modulation results
   - `kmod_import`: Import k-modulation results into an `optics_measurements` directory as `beta_kmod_().tfs` file.
 
 - Removed:
   - Old k-modulation scripts: Functionality is either in k-mod GUI or in newly added scripts.
+
+
+#### 2024-10-29 - v0.18.0 - _jgray_
+
+- Added:
+  - Add the ability to calculate a deltap/p offset caused by a change in orbit.
+  - Add the ability to use `response_madx` to calculate the updated response matrix for the global correction.
+  - Tests for the calculation of the deltap/p and corresponding correction.
+  - Tests for the calculation of the updated response matrix for the global correction.
+
+- Fixed:
+  - Fixed the `response_twiss` when updating the response matrix when calculating the global correction.
+
+
+#### 2024-10-29 - v0.17.0 - _jdilly_ 
+
+- Added:
+  - Optics Measurements: `analyse_dpp` parameter, to analyse only files with a specific DPP for tune, phase and (C)RDTs.
+
+- Fixed:
+  - Uncompensated Phase calculations with `Equation` compensation are now actually uncompensated when passed on to the `coupling` module.
+
+#### 2024-10-28 - v0.16.2 - _jdilly_
+
+- Fixed:
+  - Temporary hack to fix `knob_extractor` in CCC.
 
 #### 2024-09-20 - v0.16.1 - _fsoubelet_
 
