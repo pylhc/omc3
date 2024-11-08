@@ -4,7 +4,7 @@ import pandas.testing as pdt
 import pytest
 import tfs
 
-from omc3.kmod_average import (
+from omc3.scripts.kmod_average import (
     AVERAGED_BETASTAR_FILENAME,
     AVERAGED_BPM_FILENAME,
     EXT,

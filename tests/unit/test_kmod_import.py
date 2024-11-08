@@ -1,12 +1,19 @@
 from pathlib import Path
 
+import pandas.testing as pdt
 import pytest
 import tfs
-import pandas.testing as pdt
-from omc3.kmod_importer import import_kmod_data
-from omc3.optics_measurements.constants import EXT, AVERAGED_BPM_FILENAME, BETA_KMOD_FILENAME
-from tests.unit.test_kmod_averaging import _get_reference_dir
+
+from omc3.scripts.kmod_import import import_kmod_data
+from omc3.optics_measurements.constants import (
+    AVERAGED_BETASTAR_FILENAME,
+    AVERAGED_BPM_FILENAME,
+    BETA_KMOD_FILENAME,
+    BETA_STAR_FILENAME,
+    EXT,
+)
 from tests.conftest import INPUTS
+from tests.unit.test_kmod_averaging import _get_reference_dir
 
 INPUT_DIR_KMOD = INPUTS / "kmod"
 REFERENCE_DIR = INPUT_DIR_KMOD / "references"
@@ -22,15 +29,15 @@ def test_kmod_import_beam(tmp_path, beam):
     model = _get_model_path(beam)
     beta = 0.22
 
-    path_bpm_ip1 = _get_input_path(beam, 1, beta)
-    path_bpm_ip5 = _get_input_path(beam, 5, beta)
+    path_bpm_ip1 = _get_bpm_input_path(beam, 1, beta)
+    path_bpm_ip5 = _get_bpm_input_path(beam, 5, beta)
     
     import_kmod_data(meas_paths=[path_bpm_ip1, path_bpm_ip5], model=model, output_dir=str(tmp_path))
     _assert_correct_files_are_present(tmp_path)
 
     for plane in "xy":
         beta_out = tfs.read(tmp_path / f"{BETA_KMOD_FILENAME}{plane}{EXT}")
-        beta_ref = tfs.read(_get_referece_path(beam, plane))
+        beta_ref = tfs.read(_get_bpm_referece_path(beam, plane))
 
         # column order might have changed, but that's okay -> check_like=True
         pdt.assert_frame_equal(beta_ref, beta_out, check_like=True)
@@ -46,12 +53,20 @@ def _get_model_path(beam: int) -> Path:
     return INPUT_DIR_KMOD / f"b{beam}_twiss_22cm.dat"
 
 
-def _get_input_path(beam: int, ip: int, beta: float) -> Path:
+def _get_bpm_input_path(beam: int, ip: int, beta: float) -> Path:
     return _get_reference_dir(ip=ip, n_files=2) / f"{AVERAGED_BPM_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=beam)}{EXT}"
 
 
-def _get_referece_path(beam: int, plane: str) -> Path:
+def _get_betastar_input_path(beam: int, ip: int, beta: float) -> Path:
+    return _get_reference_dir(ip=ip, n_files=2) / f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=beam)}{EXT}"
+
+
+def _get_bpm_referece_path(beam: int, plane: str) -> Path:
     return REFERENCE_DIR / f"b{beam}_imported" / f"{BETA_KMOD_FILENAME}{plane}{EXT}"
+
+
+def _get_betastar_referece_path(beam: int, plane: str) -> Path:
+    return REFERENCE_DIR / f"b{beam}_imported" / f"{BETA_STAR_FILENAME}{plane}{EXT}"
 
 
 # ---------------- FOR UPDATING THE REFERENCES ------------------------------- #
@@ -64,9 +79,13 @@ def update_reference_files():
         output_path = REFERENCE_DIR / f"b{beam}_imported"
         output_path.mkdir(exist_ok=True, parents=True)
         model = _get_model_path(beam)
-        path_bpm_ip1 = _get_input_path(beam, 1, beta)
-        path_bpm_ip5 = _get_input_path(beam, 5, beta)
+        path_ip1 = _get_reference_dir(ip=1, n_files=2)
+        path_ip5 = _get_reference_dir(ip=5, n_files=2)
 
-        import_kmod_data(meas_paths=[path_bpm_ip1, path_bpm_ip5], model=model, output_dir=output_path)
+        import_kmod_data(meas_paths=[path_ip1, path_ip5], model=model, output_dir=output_path, beam=beam)
         for ini_file in output_path.glob("*.ini"):
             ini_file.unlink()
+
+
+if __name__ == "__main__":
+    update_reference_files()

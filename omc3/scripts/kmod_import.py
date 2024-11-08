@@ -33,6 +33,7 @@ This data can then be easily used for the same purposes, e.g. global correction.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from typing import TYPE_CHECKING
 
 import tfs
@@ -42,6 +43,7 @@ from omc3.definitions.constants import PLANES
 from omc3.model.constants import TWISS_ELEMENTS_DAT
 from omc3.optics_measurements.constants import (
     BEAM,
+    BEAM_DIR,
     BETA,
     BETA_KMOD_FILENAME,
     BETA_STAR_FILENAME,
@@ -63,7 +65,7 @@ from omc3.optics_measurements.constants import (
     KMOD_PHASE_ADV as PHASEADV,
 )
 from omc3.utils import logging_tools
-from omc3.utils.iotools import OptionalFloat, PathOrStr, save_config
+from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -98,7 +100,8 @@ def _get_params() -> EntryPointParameters:
     )
     params.add_parameter(
         name="beam",
-        type=OptionalFloat,
+        required=True,
+        type=int,
         help="Beam for which to import."
     )
     params.add_parameter(
@@ -144,16 +147,17 @@ def import_kmod_data(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
 
     # read data
     df_model = _read_model_df(opt.model)
-    bpm_results_list, betastar_results_list = _read_kmod_results(opt.meas_paths)
-
+    bpm_results_list, betastar_results_list = _read_kmod_results(opt.meas_paths, beam=opt.beam)
 
     # create new dataframes
     dfs = {}
     if len(bpm_results_list):
         dfs.update(convert_bpm_results(bpm_results_list, df_model))
+
     if len(betastar_results_list):
-        dfs.update(convert_betastar_results(betastar_results_list, df_model, opt.beam))
+        dfs.update(convert_betastar_results(betastar_results_list, df_model, beam=opt.beam))
     
+    # write output
     if opt.output_dir is not None:
         _write_output(dfs, opt.output_dir)
 
@@ -178,10 +182,8 @@ def convert_bpm_results(
 
     # merge files
     bpm_results_list = [df.set_index(NAME, drop=True) for df in bpm_results_list]
-    kmod_results = tfs.concat(bpm_results_list, join='outer',)
-    common_bpms = kmod_results.index.intersection(df_model.index)  # drops IPs, if not `twiss_elements.dat`
-    kmod_results = kmod_results.loc[common_bpms, :]
-    df_model = df_model.loc[common_bpms, :]
+    kmod_results = tfs.concat(bpm_results_list, join='inner',)
+    df_model = _sync_model_index(kmod_results, df_model) 
 
     dfs = {}
     for plane in PLANES:
@@ -190,8 +192,8 @@ def convert_bpm_results(
         # copy s and beta
         beta_kmod.loc[:, S] = df_model.loc[:, S]
         beta_kmod.loc[:, f'{BETA}{plane}{MDL}'] = df_model.loc[:, f'{BETA}{plane}']
-        beta_kmod.loc[:, f'{BETA}{plane}'] = kmod_results[f'{BETA}{plane}']
-        beta_kmod.loc[:, f'{ERR}{BETA}{plane}'] = kmod_results[f'{ERR}{BETA}{plane}']
+        beta_kmod.loc[:, f'{BETA}{plane}'] = kmod_results.loc[:, f'{BETA}{plane}']
+        beta_kmod.loc[:, f'{ERR}{BETA}{plane}'] = kmod_results.loc[:, f'{ERR}{BETA}{plane}']
 
         # model-delta and beta-beating
         beta_kmod.loc[:, f'{DELTA}{BETA}{plane}{MDL}'] = (
@@ -236,7 +238,7 @@ def convert_betastar_results(
     LOG.debug("Converting K-modulation BetaStar results")
 
     # merge files and set index
-    kmod_results = tfs.concat(betastar_results_list, join='outer',)
+    kmod_results = tfs.concat(betastar_results_list, join='inner',)
     if BEAM in kmod_results.columns:  # averaged file
         if beam is None:
             raise ValueError("Need to give beam when importing averaged betastar files.")
@@ -249,16 +251,8 @@ def convert_betastar_results(
         kmod_results.index = kmod_results[LABEL].apply(lambda s: f"IP{s[-1]}")
         kmod_results = kmod_results.drop(columns=[LABEL, TIME])
 
-    missing_ips = kmod_results.index.difference(df_model.index)
-    if len(missing_ips):
-        msg =  (
-            f"IPs {missing_ips} not found in the model. "
-            "Make sure to use the `elements` file as input!"
-        )
-        raise NameError(msg)
+    df_model = _sync_model_index(kmod_results, df_model) 
 
-    df_model = df_model.loc[kmod_results.index, :]  # Sync index
-    
     dfs = {}
     for plane in PLANES:
         beta_kmod = tfs.TfsDataFrame(index=df_model.index)
@@ -268,7 +262,9 @@ def convert_betastar_results(
         beta_kmod.loc[:, f'{BETASTAR}{plane}{MDL}'] = df_model.loc[:, f'{BETA}{plane}']
 
         # copy columns with errors from results
-        columns = [f"{column}{plane}" for column in (BETASTAR, BETAWAIST, WAIST, PHASEADV)] + [f"{WAIST}{plane}{S_LOCATION}"]
+        columns = [
+            f"{column}{plane}" for column in (BETASTAR, BETAWAIST, WAIST, PHASEADV)] + [f"{WAIST}{plane}{S_LOCATION}"
+        ]
         for column in columns:
             beta_kmod.loc[:, f'{column}'] = kmod_results[f'{column}']
             beta_kmod.loc[:, f'{ERR}{column}'] = kmod_results[f'{ERR}{column}']
@@ -281,8 +277,8 @@ def convert_betastar_results(
         beta_kmod.loc[:, f'{DELTA}{BETASTAR}{plane}'] = (
             beta_kmod[f'{DELTA}{BETASTAR}{plane}{MDL}'] / beta_kmod[f'{BETASTAR}{plane}{MDL}']
         )
-        beta_kmod.loc[:, f'{ERR}{DELTA}{BETA}{plane}'] = (
-            beta_kmod[f'{ERR}{BETA}{plane}'] / beta_kmod[f'{BETA}{plane}{MDL}']
+        beta_kmod.loc[:, f'{ERR}{DELTA}{BETASTAR}{plane}'] = (
+            beta_kmod[f'{ERR}{BETASTAR}{plane}'] / beta_kmod[f'{BETASTAR}{plane}{MDL}']
         )
 
         # tune
@@ -294,6 +290,18 @@ def convert_betastar_results(
         dfs[f"{BETASTAR_RESULTS_ID}{plane}"] = beta_kmod
 
     return dfs
+
+
+def _sync_model_index(kmod_results: tfs.TfsDataFrame, df_model: tfs.TfsDataFrame):
+    missing_elmnts = kmod_results.index.difference(df_model.index)
+    if len(missing_elmnts):
+        msg =  (
+            f"Elements {missing_elmnts} not found in the model. "
+            "Make sure to use the `elements` file as input!"
+        )
+        raise NameError(msg)
+
+    return df_model.loc[kmod_results.index, :]
 
 
 # IO ---
@@ -309,23 +317,42 @@ def _read_model_df(model_path: Path | str) -> tfs.TfsDataFrame:
     return tfs.read(model_path, index=NAME)
 
 
-def _read_kmod_results(paths: Sequence[Path | str]
+def _read_kmod_results(paths: Sequence[Path | str], beam: int    
     ) -> tuple[list[tfs.TfsDataFrame], list[tfs.TfsDataFrame]]:
-    """ Read K-modulation results from a list of paths and sort into betastar and bpm types. """
+    """ Read K-modulation results from a list of paths and sort into bpm and betastar types. """
     # read all files
     all_dfs = []
     for path in paths:
         path = Path(path)
         if path.is_dir():
             all_dfs.extend(tfs.read(file_path) for file_path in path.glob(f"*{EXT}"))
+            
+            # If the given path was a K-Mod output directory, the tfs might be in sub-dirs per beam
+            beam_dir = path / f"{BEAM_DIR}{beam}"
+            if beam_dir.exists():
+                all_dfs.extend(tfs.read(file_path) for file_path in beam_dir.glob(f"*{EXT}"))
+
         else:
             all_dfs.append(tfs.read(path))
     
-    # sort into betastar and bpm
-    betastar_results = [df for df in all_dfs if f"{BETASTAR}X" in df.columns]
-    bpm_results = [df for df in all_dfs if f"{BETA}X" in df.columns]
+    # sort into bpm and betastar
+    bpm_results = _filter_bpm_results(all_dfs, beam=beam)
+    betastar_results = _filter_betastar_results(all_dfs)
 
-    return betastar_results, bpm_results
+    return bpm_results, betastar_results
+
+
+def _filter_bpm_results(dfs: Sequence[tfs.TfsDataFrame], beam: int) -> list[tfs.TfsDataFrame]:
+    bpm_dfs = [df for df in dfs if f"{BETA}X" in df.columns]
+    bpm_dfs = [df for df in bpm_dfs if (
+        NAME not in df.columns or all(df[NAME].str.match(fr"(.*\.B{beam}$|IP\d$)", flags=re.IGNORECASE))
+    )
+    ]
+    return bpm_dfs
+
+
+def _filter_betastar_results(dfs: Sequence[tfs.TfsDataFrame]) -> list[tfs.TfsDataFrame]:
+    return [df for df in dfs if f"{BETASTAR}X" in df.columns]
 
 
 def _write_output(dfs: dict[str, tfs.TfsDataFrame], output_dir: Path):

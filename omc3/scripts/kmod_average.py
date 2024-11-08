@@ -54,19 +54,28 @@ import numpy as np
 import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-from omc3.definitions.constants import PLANES
-from omc3.plotting.plot_kmod_results import plot_kmod_results 
 
-from omc3.kmod.constants import (
+from omc3.definitions.constants import PLANES
+from omc3.optics_measurements.constants import (
+    AVERAGED_BETASTAR_FILENAME,
+    AVERAGED_BPM_FILENAME,
+    BEAM,
+    BEAM_DIR,
+    BETASTAR,
     ERR,
     EXT,
+    LABEL,
+    LSA_FILE_NAME,
     MDL,
-    TIME
+    NAME,
+    RESULTS_FILE_NAME,
+    TIME,
+    S,
 )
-from omc3.optics_measurements.constants import AVERAGED_BETASTAR_FILENAME, AVERAGED_BPM_FILENAME, BEAM, BEAM_DIR, BETASTAR, LABEL, LSA_FILE_NAME, NAME, RESULTS_FILE_NAME, S
+from omc3.plotting.plot_kmod_results import plot_kmod_results
 from omc3.utils import logging_tools
-from omc3.utils.stats import weighted_mean, weighted_error
 from omc3.utils.iotools import PathOrStr, save_config
+from omc3.utils.stats import weighted_error, weighted_mean
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
