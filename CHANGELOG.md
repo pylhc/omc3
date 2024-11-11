@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2024-11-11 - v0.18.1 - _jgray_
+#### 2024-11-11 - v0.18.1 - _jdilly_
 
 - Fixed:
   - Setting sparkprops wrong in `knob_extractor` fixed.
