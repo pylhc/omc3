@@ -186,7 +186,7 @@ def convert_bpm_results(
     LOG.debug("Converting K-modulation BPM results")
 
     # merge files
-    bpm_results_list = [df.set_index(NAME, drop=True) for df in bpm_results_list]
+    bpm_results_list = [df.set_index(NAME, drop=True) if NAME in df.columns else df for df in bpm_results_list]
     kmod_results = tfs.concat(bpm_results_list, join='inner',)
     df_model = _sync_model_index(kmod_results, df_model) 
 
@@ -244,12 +244,18 @@ def convert_betastar_results(
 
     # merge files and set index
     kmod_results = tfs.concat(betastar_results_list, join='inner',)
-    if BEAM in kmod_results.columns:  # averaged file
+    if BEAM in kmod_results.columns or kmod_results.index.name == BEAM:  # averaged file
         if beam is None:
             raise ValueError("Need to give beam when importing averaged betastar files.")
-    
-        kmod_results = kmod_results.loc[kmod_results[BEAM] == beam, :]
-        kmod_results = kmod_results.drop(columns=[BEAM])
+
+        try: 
+            # as column
+            kmod_results = kmod_results.loc[kmod_results[BEAM] == beam, :]
+            kmod_results = kmod_results.drop(columns=[BEAM])
+        except KeyError:
+            # already as index
+            kmod_results = kmod_results.loc[beam, :]
+
         kmod_results = kmod_results.set_index(NAME, drop=True)
     
     else:
@@ -311,11 +317,15 @@ def _sync_model_index(kmod_results: tfs.TfsDataFrame, df_model: tfs.TfsDataFrame
 
 # IO ---
 
-def read_model_df(model_path: Path | str) -> tfs.TfsDataFrame:
+def read_model_df(model_path: Path | str | tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     """ Read model twiss file, 
     either directly or twiss_elements.dat from a folder. 
     """
-    model_path = Path(model_path)
+    try:
+        model_path = Path(model_path)
+    except TypeError:
+        return model_path  # is a TfsDataFrame
+
     if model_path.is_dir():
         return tfs.read(model_path / TWISS_ELEMENTS_DAT, index=NAME)
    
@@ -325,22 +335,31 @@ def read_model_df(model_path: Path | str) -> tfs.TfsDataFrame:
 def _read_kmod_results(paths: Sequence[Path | str], beam: int    
     ) -> tuple[list[tfs.TfsDataFrame], list[tfs.TfsDataFrame]]:
     """ Read K-modulation results from a list of paths and sort into bpm and betastar types. """
-    # read all files
+    # read all files ---
     all_dfs = []
     for path in paths:
-        path = Path(path)
+        try:
+            path = Path(path)
+        except TypeError: 
+            # is a TfsDataFrame
+            all_dfs.append(path) 
+            continue
+        
         if path.is_dir():
-            all_dfs.extend(tfs.read(file_path) for file_path in path.glob(f"*{EXT}"))
-            
             # If the given path was a K-Mod output directory, the tfs might be in sub-dirs per beam
             beam_dir = path / f"{BEAM_DIR}{beam}"
             if beam_dir.exists():
                 all_dfs.extend(tfs.read(file_path) for file_path in beam_dir.glob(f"*{EXT}"))
+                continue
 
-        else:
-            all_dfs.append(tfs.read(path))
+            # otherwise, read all files in the given dir
+            all_dfs.extend(tfs.read(file_path) for file_path in path.glob(f"*{EXT}"))
+            continue
+        
+        # Not a folder, must be a file
+        all_dfs.append(tfs.read(path))
     
-    # sort into bpm and betastar
+    # sort into bpm and betastar --
     bpm_results = _filter_bpm_results(all_dfs, beam=beam)
     betastar_results = _filter_betastar_results(all_dfs)
 
