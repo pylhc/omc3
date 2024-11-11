@@ -8,7 +8,7 @@ from omc3.scripts.kmod_average import (
     AVERAGED_BETASTAR_FILENAME,
     AVERAGED_BPM_FILENAME,
     EXT,
-    average_kmod_results_entrypoint,
+    average_kmod_results,
 )
 from omc3.plotting.plot_kmod_results import PARAM_BETA, PARAM_WAIST
 from tests.conftest import INPUTS, ids_str
@@ -24,7 +24,7 @@ def test_kmod_averaging(tmp_path, ip, n_files):
     meas_paths = [_get_measurement_dir(ip, i+1) for i in range(n_files)]
     ref_output_dir = _get_reference_dir(ip, n_files)
 
-    average_kmod_results_entrypoint(
+    average_kmod_results(
         meas_paths=meas_paths, 
         output_dir=tmp_path,
         ip=ip, 
@@ -72,7 +72,7 @@ def update_reference_files():
         for n_files in (1, 2):
             meas_paths = [_get_measurement_dir(ip, i+1) for i in range(n_files)]
             output_dir = _get_reference_dir(ip, n_files)
-            average_kmod_results_entrypoint(
+            average_kmod_results(
                 meas_paths=meas_paths, 
                 output_dir=output_dir,
                 ip=ip, 

@@ -95,7 +95,6 @@ IMBALACE: str = "IMB"
 S_LOCATION: str = "_S_LOCATION"
 
 BEAM: str = "BEAM"
-IP: str = "IP"
 
 STAR: str = "STAR"
 BETASTAR: str = f"{BETA}{STAR}"

@@ -2,7 +2,12 @@
 K-Mod Luminosity Imbalance
 --------------------------
 
-Calculate the luminosity imbalance from the k-mod results.
+Calculate the luminosity imbalance from the averaged K-modulation results.
+This script needs the data in the format of the average script `kmod_average.py`,
+as the imbalance is calculated over both beams and this data is only available 
+at that point.
+The dataframes therefore need to have the columns `BEAM`, `BETSTAR` and `ERRBETSTAR`,
+and data for both beams needs to be available.
 
 .. warning::
         You need to provide the data for exactly two of the four IP's.
@@ -54,9 +59,9 @@ from omc3.optics_measurements.constants import (
     ERR,
     EXT,
     IMBALACE,
-    IP,
     LUMINOSITY,
     MDL,
+    NAME,
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame, save_config
@@ -106,7 +111,7 @@ def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
         tfs.write(
             output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=betastar_x, betastar_y=betastar_y)}{EXT}", 
             df, 
-            save_index=IP
+            save_index=NAME
         )
     
     return df
@@ -170,9 +175,8 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
         tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.
     """
     df_effective_betas = tfs.TfsDataFrame()
-    for ip_str, df in kwargs.items():
-        ip = int(ip_str[-1])
-        df_effective_betas.loc[ip, [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df)
+    for ip, df in kwargs.items():
+        df_effective_betas.loc[ip.upper(), [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df)
     
     ip_a, ip_b = df_effective_betas.index
     lumi_imb, lumi_imb_err = get_imbalance_w_err(

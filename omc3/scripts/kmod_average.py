@@ -11,7 +11,7 @@ Average muliple K-Modulation results into a single file/dataframe.
 
 - **betastar** *(float)*:
 
-    Model beta-star value of measurements.
+    Model beta-star values (x, y) of measurements.
 
 
 - **ip** *(int)*:
@@ -21,7 +21,7 @@ Average muliple K-Modulation results into a single file/dataframe.
 
 - **meas_paths** *(PathOrStr)*:
 
-    Directories of Kmod results to import.
+    Directories of K-modulation results to average.
 
 
 *--Optional--*
@@ -89,7 +89,7 @@ COLUMNS_NO_AVERAGE: tuple[str, ...] = (S, LABEL, NAME)
 
 def _get_params() -> EntryPointParameters:
     """
-    A function to create and return EntryPointParameters for Kmod average.
+    A function to create and return EntryPointParameters for K-modulation average.
     """
     params = EntryPointParameters()
     params.add_parameter(
@@ -97,7 +97,7 @@ def _get_params() -> EntryPointParameters:
         required=True,
         nargs="+",
         type=PathOrStr,
-        help="Directories of Kmod results to import.",
+        help="Directories of K-modulation results to average.",
     )
     params.add_parameter(
         name="ip", 
@@ -131,15 +131,13 @@ def _get_params() -> EntryPointParameters:
 
 
 @entrypoint(_get_params(), strict=True)
-def average_kmod_results_entrypoint(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
+def average_kmod_results(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
     """
     Reads kmod results and averages over the different measurements.
 
     Args:
         meas_paths (Sequence[Path|str]):
-            A sequence of kmod BPM results files to import. This can include either single 
-            measurements (e.g., 'lsa_results.tfs') or averaged results 
-            (e.g., 'averaged_bpm_beam1_ip1_beta0.22m.tfs').
+            Directories of K-modulation results to aver.
 
         ip (int):
             The specific IP to average over.
@@ -320,4 +318,4 @@ def _get_averaged_df(dfs: Sequence[pd.DataFrame]) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    average_kmod_results_entrypoint()
+    average_kmod_results()

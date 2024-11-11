@@ -23,6 +23,11 @@ This data can then be easily used for the same purposes, e.g. global correction.
     The model determines which elements to keep.
 
 
+- **beam** *(int)*:
+
+    Beam for which to import.
+
+
 *--Optional--*
 
 - **output_dir** *(PathOrStr)*:
@@ -65,7 +70,7 @@ from omc3.optics_measurements.constants import (
     KMOD_PHASE_ADV as PHASEADV,
 )
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, save_config
+from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame, save_config
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -84,17 +89,17 @@ def _get_params() -> EntryPointParameters:
     """
     params = EntryPointParameters()
     params.add_parameter(
-        name="meas_paths",
+        name="measurements",
         required=True,
         nargs='+',
-        type=PathOrStr,
+        type=PathOrStrOrDataFrame,
         help="Paths to the K-modulation results files to import. "
              "Can be either the TFS-files directly or a path to a folder containing them."
     )
     params.add_parameter(
         name="model",
         required=True,
-        type=PathOrStr,
+        type=PathOrStrOrDataFrame,
         help="Path to model twiss file, or a folder containing 'twiss_elemtents.dat'. "
              "The model determines which elements to keep."
     )
@@ -119,7 +124,7 @@ def import_kmod_data(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
     and writes the results to output files.
     
     Args:
-        meas_paths (Sequence[Path|str]):
+        measurements (Sequence[Path|str]):
             A sequence of k-modulation results files to import. 
             This can include either single measurements (e.g., 'lsa_results.tfs'),
             averaged results (e.g., 'averaged_bpm_beam1_ip1_beta0.22m.tfs') or a 
@@ -146,8 +151,8 @@ def import_kmod_data(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
         save_config(opt.output_dir, opt, __file__)
 
     # read data
-    df_model = _read_model_df(opt.model)
-    bpm_results_list, betastar_results_list = _read_kmod_results(opt.meas_paths, beam=opt.beam)
+    df_model = read_model_df(opt.model)
+    bpm_results_list, betastar_results_list = _read_kmod_results(opt.measurements, beam=opt.beam)
 
     # create new dataframes
     dfs = {}
@@ -306,7 +311,7 @@ def _sync_model_index(kmod_results: tfs.TfsDataFrame, df_model: tfs.TfsDataFrame
 
 # IO ---
 
-def _read_model_df(model_path: Path | str) -> tfs.TfsDataFrame:
+def read_model_df(model_path: Path | str) -> tfs.TfsDataFrame:
     """ Read model twiss file, 
     either directly or twiss_elements.dat from a folder. 
     """
