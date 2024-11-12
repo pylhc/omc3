@@ -67,7 +67,7 @@ from omc3.optics_measurements.constants import (
     BETA,
     ERR,
     EXT,
-    IMBALACE,
+    IMBALANCE,
     LSA_FILE_NAME,
     LUMINOSITY,
     NAME,
@@ -284,7 +284,7 @@ def calculate_all_lumi_imbalances(
             continue
 
         # Print luminosity imbalance
-        imb, err_imb = df.headers[f"{LUMINOSITY}{IMBALACE}"], df.headers[f"{ERR}{LUMINOSITY}{IMBALACE}"]
+        imb, err_imb = df.headers[f"{LUMINOSITY}{IMBALANCE}"], df.headers[f"{ERR}{LUMINOSITY}{IMBALANCE}"]
         LOG.info(f"Luminosity imbalance between {ipA} and {ipB}: {imb:.2e} +/- {err_imb:.2e}")
 
 

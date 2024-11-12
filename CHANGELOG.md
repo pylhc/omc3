@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2024-11-12 - v0.19.0 - _fscarlier_, _jdilly_
+#### 2024-11-13 - v0.19.0 - _fscarlier_, _jdilly_
 
 - Added K-Modulation tools:
   - `kmod_importer`: Main function to call the following scripts in succession.

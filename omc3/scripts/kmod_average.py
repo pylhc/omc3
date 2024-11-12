@@ -222,7 +222,7 @@ def get_average_betastar_results(meas_paths: Sequence[Path]) -> tfs.TfsDataFrame
 
         mean_df =  _get_averaged_df(all_dfs)
         if LABEL in mean_df.columns:
-            mean_df[NAME] = f"IP{mean_df[LABEL].iloc[0][-1]}"
+            mean_df[NAME] = mean_df[LABEL].apply(lambda s: f"IP{s[-1]}")
             mean_df = mean_df.drop(columns=[LABEL])
         
         mean_df[BEAM] = beam

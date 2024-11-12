@@ -16,21 +16,6 @@ Other
     :noindex:
 
 
-.. automodule:: omc3.kmod_averages
-    :members:
-    :noindex:
-
-
-.. automodule:: omc3.kmod_import
-    :members:
-    :noindex:
-
-
-.. automodule:: omc3.kmod_lumi_imbalance
-    :members:
-    :noindex:
-
-
 .. automodule:: omc3.madx_wrapper
     :members:
     :noindex:

@@ -63,7 +63,7 @@ from omc3.optics_measurements.constants import (
     EFFECTIVE_BETAS_FILENAME,
     ERR,
     EXT,
-    IMBALACE,
+    IMBALANCE,
     LUMINOSITY,
     MDL,
     NAME,
@@ -200,8 +200,8 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
         *tuple(df_effective_betas.loc[ip_b, :])
     )
     
-    df_effective_betas.headers[f'{LUMINOSITY}{IMBALACE}'] = lumi_imb
-    df_effective_betas.headers[f'{ERR}{LUMINOSITY}{IMBALACE}'] = lumi_imb_err
+    df_effective_betas.headers[f'{LUMINOSITY}{IMBALANCE}'] = lumi_imb
+    df_effective_betas.headers[f'{ERR}{LUMINOSITY}{IMBALANCE}'] = lumi_imb_err
     return df_effective_betas
 
 

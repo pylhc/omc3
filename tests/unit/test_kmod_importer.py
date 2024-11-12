@@ -10,8 +10,8 @@ from tests.unit.test_kmod_averaging import (
     get_measurement_dir,
     get_reference_dir,
 )
-from tests.unit.test_kmod_import import get_model_path, _get_bpm_referece_path, _get_betastar_referece_path 
-from tests.unit.test_kmod_lumi_imbalance import REFERENCE_DIR, _get_filename as _get_lumi_filename
+from tests.unit.test_kmod_import import get_model_path, _get_bpm_reference_path, _get_betastar_reference_path 
+from tests.unit.test_kmod_lumi_imbalance import REFERENCE_DIR, _get_effbetas_filename as _get_lumi_filename
 
 
 @pytest.mark.basic
@@ -51,7 +51,7 @@ def test_full_kmod_import_beam(tmp_path, beam):
 
     # import --
     for plane in "xy":
-        for ref_path in (_get_bpm_referece_path(beam, plane), _get_betastar_referece_path(beam, plane)):
+        for ref_path in (_get_bpm_reference_path(beam, plane), _get_betastar_reference_path(beam, plane)):
             ref_file = tfs.read(ref_path)
             out_file = tfs.read(tmp_path / ref_path.name)
             pdt.assert_frame_equal(ref_file, out_file, check_like=True)

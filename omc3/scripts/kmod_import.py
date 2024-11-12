@@ -91,7 +91,7 @@ def _get_params() -> EntryPointParameters:
     params.add_parameter(
         name="measurements",
         required=True,
-        nargs='+',
+        nargs="+",
         type=PathOrStrOrDataFrame,
         help="Paths to the K-modulation results files to import. "
              "Can be either the TFS-files directly or a path to a folder containing them."
@@ -131,7 +131,7 @@ def import_kmod_data(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
             path to the folder containing multiple of such files.
         
         model (Path|str):
-            Path to the model twiss file, or a folder containing 'twiss_elemtents.dat'.
+            Path to the model twiss file, or a folder containing 'twiss_elements.dat'.
             Determines which elements to keep, i.e. `twiss.dat` keeps only the BPMs,
             `twiss_elements.dat` keeps BPMs and IPs.
         
@@ -187,7 +187,7 @@ def convert_bpm_results(
 
     # merge files
     bpm_results_list = [df.set_index(NAME, drop=True) if NAME in df.columns else df for df in bpm_results_list]
-    kmod_results = tfs.concat(bpm_results_list, join='inner',)
+    kmod_results = tfs.concat(bpm_results_list, join="inner",)
     df_model = _sync_model_index(kmod_results, df_model) 
 
     dfs = {}
@@ -196,24 +196,24 @@ def convert_bpm_results(
         
         # copy s and beta
         beta_kmod.loc[:, S] = df_model.loc[:, S]
-        beta_kmod.loc[:, f'{BETA}{plane}{MDL}'] = df_model.loc[:, f'{BETA}{plane}']
-        beta_kmod.loc[:, f'{BETA}{plane}'] = kmod_results.loc[:, f'{BETA}{plane}']
-        beta_kmod.loc[:, f'{ERR}{BETA}{plane}'] = kmod_results.loc[:, f'{ERR}{BETA}{plane}']
+        beta_kmod.loc[:, f"{BETA}{plane}{MDL}"] = df_model.loc[:, f"{BETA}{plane}"]
+        beta_kmod.loc[:, f"{BETA}{plane}"] = kmod_results.loc[:, f"{BETA}{plane}"]
+        beta_kmod.loc[:, f"{ERR}{BETA}{plane}"] = kmod_results.loc[:, f"{ERR}{BETA}{plane}"]
 
         # model-delta and beta-beating
-        beta_kmod.loc[:, f'{DELTA}{BETA}{plane}{MDL}'] = (
-            beta_kmod[f'{BETA}{plane}'] - beta_kmod[f'{BETA}{plane}{MDL}']
+        beta_kmod.loc[:, f"{DELTA}{BETA}{plane}{MDL}"] = (
+            beta_kmod[f"{BETA}{plane}"] - beta_kmod[f"{BETA}{plane}{MDL}"]
         )
-        beta_kmod.loc[:, f'{DELTA}{BETA}{plane}'] = (
-            beta_kmod[f'{DELTA}{BETA}{plane}{MDL}'] / beta_kmod[f'{BETA}{plane}{MDL}']
+        beta_kmod.loc[:, f"{DELTA}{BETA}{plane}"] = (
+            beta_kmod[f"{DELTA}{BETA}{plane}{MDL}"] / beta_kmod[f"{BETA}{plane}{MDL}"]
         )
-        beta_kmod.loc[:, f'{ERR}{DELTA}{BETA}{plane}'] = (
-            beta_kmod[f'{ERR}{BETA}{plane}'] / beta_kmod[f'{BETA}{plane}{MDL}']
+        beta_kmod.loc[:, f"{ERR}{DELTA}{BETA}{plane}"] = (
+            beta_kmod[f"{ERR}{BETA}{plane}"] / beta_kmod[f"{BETA}{plane}{MDL}"]
         )
 
         # tune
-        beta_kmod.headers[f'{TUNE}1'] = df_model.headers[f'{TUNE}1'] % 1
-        beta_kmod.headers[f'{TUNE}2'] = df_model.headers[f'{TUNE}2'] % 1
+        beta_kmod.headers[f"{TUNE}1"] = df_model.headers[f"{TUNE}1"] % 1
+        beta_kmod.headers[f"{TUNE}2"] = df_model.headers[f"{TUNE}2"] % 1
 
         beta_kmod = beta_kmod.sort_values(by=S)
 
@@ -243,7 +243,7 @@ def convert_betastar_results(
     LOG.debug("Converting K-modulation BetaStar results")
 
     # merge files and set index
-    kmod_results = tfs.concat(betastar_results_list, join='inner',)
+    kmod_results = tfs.concat(betastar_results_list, join="inner",)
     if BEAM in kmod_results.columns or kmod_results.index.name == BEAM:  # averaged file
         if beam is None:
             raise ValueError("Need to give beam when importing averaged betastar files.")
@@ -270,31 +270,31 @@ def convert_betastar_results(
         
         # copy s and beta from model
         beta_kmod.loc[:, S] = df_model.loc[:, S]
-        beta_kmod.loc[:, f'{BETASTAR}{plane}{MDL}'] = df_model.loc[:, f'{BETA}{plane}']
+        beta_kmod.loc[:, f"{BETASTAR}{plane}{MDL}"] = df_model.loc[:, f"{BETA}{plane}"]
 
         # copy columns with errors from results
         columns = [
             f"{column}{plane}" for column in (BETASTAR, BETAWAIST, WAIST, PHASEADV)] + [f"{WAIST}{plane}{S_LOCATION}"
         ]
         for column in columns:
-            beta_kmod.loc[:, f'{column}'] = kmod_results[f'{column}']
-            beta_kmod.loc[:, f'{ERR}{column}'] = kmod_results[f'{ERR}{column}']
+            beta_kmod.loc[:, f"{column}"] = kmod_results[f"{column}"]
+            beta_kmod.loc[:, f"{ERR}{column}"] = kmod_results[f"{ERR}{column}"]
 
 
         # model-delta and beta-beating
-        beta_kmod.loc[:, f'{DELTA}{BETASTAR}{plane}{MDL}'] = (
-            beta_kmod[f'{BETASTAR}{plane}'] - beta_kmod[f'{BETASTAR}{plane}{MDL}']
+        beta_kmod.loc[:, f"{DELTA}{BETASTAR}{plane}{MDL}"] = (
+            beta_kmod[f"{BETASTAR}{plane}"] - beta_kmod[f"{BETASTAR}{plane}{MDL}"]
         )
-        beta_kmod.loc[:, f'{DELTA}{BETASTAR}{plane}'] = (
-            beta_kmod[f'{DELTA}{BETASTAR}{plane}{MDL}'] / beta_kmod[f'{BETASTAR}{plane}{MDL}']
+        beta_kmod.loc[:, f"{DELTA}{BETASTAR}{plane}"] = (
+            beta_kmod[f"{DELTA}{BETASTAR}{plane}{MDL}"] / beta_kmod[f"{BETASTAR}{plane}{MDL}"]
         )
-        beta_kmod.loc[:, f'{ERR}{DELTA}{BETASTAR}{plane}'] = (
-            beta_kmod[f'{ERR}{BETASTAR}{plane}'] / beta_kmod[f'{BETASTAR}{plane}{MDL}']
+        beta_kmod.loc[:, f"{ERR}{DELTA}{BETASTAR}{plane}"] = (
+            beta_kmod[f"{ERR}{BETASTAR}{plane}"] / beta_kmod[f"{BETASTAR}{plane}{MDL}"]
         )
 
         # tune
-        beta_kmod.headers[f'{TUNE}1'] = df_model.headers[f'{TUNE}1'] % 1
-        beta_kmod.headers[f'{TUNE}2'] = df_model.headers[f'{TUNE}2'] % 1
+        beta_kmod.headers[f"{TUNE}1"] = df_model.headers[f"{TUNE}1"] % 1
+        beta_kmod.headers[f"{TUNE}2"] = df_model.headers[f"{TUNE}2"] % 1
 
         beta_kmod = beta_kmod.sort_values(by=S)
 
@@ -304,10 +304,10 @@ def convert_betastar_results(
 
 
 def _sync_model_index(kmod_results: tfs.TfsDataFrame, df_model: tfs.TfsDataFrame):
-    missing_elmnts = kmod_results.index.difference(df_model.index)
-    if len(missing_elmnts):
+    missing_elements = kmod_results.index.difference(df_model.index)
+    if len(missing_elements):
         msg =  (
-            f"Elements {missing_elmnts} not found in the model. "
+            f"Elements {missing_elements} not found in the model. "
             "Make sure to use the `elements` file as input!"
         )
         raise NameError(msg)
@@ -387,7 +387,7 @@ def _write_output(dfs: dict[str, tfs.TfsDataFrame], output_dir: Path):
             if df is None:
                 continue
 
-            tfs.write(output_dir / f'{filename}{plane.lower()}{EXT}', df, save_index=NAME)
+            tfs.write(output_dir / f"{filename}{plane.lower()}{EXT}", df, save_index=NAME)
 
 
 # Script Mode ------------------------------------------------------------------

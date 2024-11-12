@@ -43,7 +43,7 @@ def test_kmod_import_averaged_folder_beam(tmp_path, beam):
     _assert_correct_files_are_present(tmp_path)
 
     for plane in "xy":
-        for ref_path in (_get_bpm_referece_path(beam, plane), _get_betastar_referece_path(beam, plane)):
+        for ref_path in (_get_bpm_reference_path(beam, plane), _get_betastar_reference_path(beam, plane)):
             beta_ref = tfs.read(ref_path)
             beta_out = tfs.read(tmp_path / ref_path.name)
 
@@ -80,10 +80,10 @@ def test_kmod_import_files_beam(tmp_path, beam, files, read):
     for plane in "xy":
         ref_paths = []
         if "bpm" in files:
-            ref_paths += [_get_bpm_referece_path(beam, plane)]
+            ref_paths += [_get_bpm_reference_path(beam, plane)]
         
         if "betastar" in files:
-            ref_paths += [_get_betastar_referece_path(beam, plane)]
+            ref_paths += [_get_betastar_reference_path(beam, plane)]
 
         for ref_path in ref_paths:
             beta_ref = tfs.read(ref_path)
@@ -110,11 +110,11 @@ def _get_betastar_input_path(beam: int, ip: int, beta: float) -> Path:
     return get_averages_dir(ip=ip, n_files=2) / f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=beam)}{EXT}"
 
 
-def _get_bpm_referece_path(beam: int, plane: str) -> Path:
+def _get_bpm_reference_path(beam: int, plane: str) -> Path:
     return REFERENCE_DIR / f"b{beam}_imported" / f"{BETA_KMOD_FILENAME}{plane}{EXT}"
 
 
-def _get_betastar_referece_path(beam: int, plane: str) -> Path:
+def _get_betastar_reference_path(beam: int, plane: str) -> Path:
     return REFERENCE_DIR / f"b{beam}_imported" / f"{BETA_STAR_FILENAME}{plane}{EXT}"
 
 

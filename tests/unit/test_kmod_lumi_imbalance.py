@@ -20,8 +20,8 @@ def test_kmod_lumi_imbalance(tmp_path):
     calculate_lumi_imbalance(ip1=path_beta_ip1, ip5=path_beta_ip5, betastar=[beta], output_dir=tmp_path)
     _assert_correct_files_are_present(tmp_path, beta)
 
-    eff_betas = tfs.read(tmp_path / _get_filename(beta))
-    eff_betas_ref = tfs.read(REFERENCE_DIR / _get_filename(beta))
+    eff_betas = tfs.read(tmp_path / _get_effbetas_filename(beta))
+    eff_betas_ref = tfs.read(REFERENCE_DIR / _get_effbetas_filename(beta))
     pdt.assert_frame_equal(eff_betas_ref, eff_betas, check_like=True)
 
 
@@ -29,14 +29,14 @@ def test_kmod_lumi_imbalance(tmp_path):
 
 def _assert_correct_files_are_present(outputdir: Path, beta: float) -> None:
     """Simply checks the expected converted files are present in the outputdir"""
-    assert (outputdir / _get_filename(beta)).is_file()
+    assert (outputdir / _get_effbetas_filename(beta)).is_file()
 
 
 def _get_input_path(ip: int, beta: float) -> Path:
     return get_reference_dir(ip=ip, n_files=2) / f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip)}{EXT}"
 
 
-def _get_filename(beta: float) -> str:
+def _get_effbetas_filename(beta: float) -> str:
     return f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=beta, betastar_y=beta)}{EXT}"
 
 

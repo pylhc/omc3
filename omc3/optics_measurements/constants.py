@@ -91,7 +91,7 @@ BPM_RESOLUTION: str = "BPMResolution"
 # Columns and Column-Prefixes
 EFFECTIVE: str = "EFF"
 LUMINOSITY: str = "LUMI"
-IMBALACE: str = "IMB"
+IMBALANCE: str = "IMBALANCE"
 S_LOCATION: str = "_S_LOCATION"
 
 BEAM: str = "BEAM"
@@ -104,14 +104,14 @@ LABEL: str = "LABEL"
 KMOD_PHASE_ADV: str = "PHASEADV"
 
 # file names from kmod-application
-BEAM_DIR: str = 'B'
-LSA_FILE_NAME: str = 'lsa_results'  # contains beta-per-BPM (and IP) results
-RESULTS_FILE_NAME: str = 'results'  # contains betastar results
+BEAM_DIR: str = "B"
+LSA_FILE_NAME: str = "lsa_results"  # contains beta-per-BPM (and IP) results
+RESULTS_FILE_NAME: str = "results"  # contains betastar results
 
 # file names defined by omc3
-AVERAGED_BETASTAR_FILENAME: str = 'averaged_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m'
-AVERAGED_BPM_FILENAME: str = 'averaged_bpm_beam{beam}_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m'
-EFFECTIVE_BETAS_FILENAME: str = 'effective_betas_beta{betastar_x:.2f}m{betastar_y:.2f}m'
+AVERAGED_BETASTAR_FILENAME: str = "averaged_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m"
+AVERAGED_BPM_FILENAME: str = "averaged_bpm_beam{beam}_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m"
+EFFECTIVE_BETAS_FILENAME: str = "effective_betas_beta{betastar_x:.2f}m{betastar_y:.2f}m"
 
-BETA_KMOD_FILENAME: str = 'beta_kmod_'
-BETA_STAR_FILENAME: str = 'betastar_'
+BETA_KMOD_FILENAME: str = "beta_kmod_"
+BETA_STAR_FILENAME: str = "betastar_"
