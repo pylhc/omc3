@@ -37,6 +37,11 @@ and data for both beams needs to be available.
     Path or DataFrame of the averaged beta-star results of IP8.
 
 
+- **betastar** *(float)*:
+
+    Model beta-star values (x, y) of measurements. Only used for filename.
+
+
 - **output_dir** *(PathOrStr)*:
 
     Path to the directory where to write the output files.
@@ -84,6 +89,12 @@ def _get_params() -> EntryPointParameters:
             help=f"Path or DataFrame of the averaged beta-star results of {ip.upper()}.",
         )
     params.add_parameter(
+        name="betastar",
+        type=float,
+        nargs="+",
+        help="Model beta-star values (x, y) of measurements. Only used for filename.",
+    )
+    params.add_parameter(
         name="output_dir",
         type=PathOrStr,
         help="Path to the directory where to write the output files.",
@@ -93,6 +104,7 @@ def _get_params() -> EntryPointParameters:
 
 @entrypoint(_get_params(), strict=True)
 def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
+    """ Perform the luminosity imbalance calculation. """
     output_path = opt.output_dir 
     if output_path is not None:
         output_path = Path(output_path)
@@ -105,11 +117,15 @@ def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
 
     dfs = _read_and_check_dataframes(opt)
     df = get_lumi_imbalance_df(**dfs)
-    betastar_x, betastar_y = dfs[list(dfs.keys())[0]].loc[1, [f'{BETASTAR}X{MDL}', f'{BETASTAR}Y{MDL}']].values
 
     if output_path is not None:
+        if opt.betastar is None:
+            raise ValueError("Betastar not given. Cannot write out results.")
+        if len(opt.betastar) == 1:
+            opt.betastar = [opt.betastar[0], opt.betastar[0]]
+
         tfs.write(
-            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=betastar_x, betastar_y=betastar_y)}{EXT}", 
+            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=opt.betastar[0], betastar_y=opt.betastar[1])}{EXT}", 
             df, 
             save_index=NAME
         )

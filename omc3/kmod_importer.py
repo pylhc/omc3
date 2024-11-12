@@ -4,13 +4,13 @@ Full Import of K-Modulation Results
 
 Performs the full import procedure of the "raw" K-Modulation results,
 which come from the K-modulation GUI. Each `measurement` needs to be the path
-to he main output folder of a K-modulation run, containing `B1` and `B2` folders.
+to the main output folder of a K-modulation run, containing `B1` and `B2` folders.
 
 The results are first sorted by IP and averaged. The averaged results are
 written into a sub-folder of the given `output_dir`.
 
 If data for both beams is present, these averages are then used to calculate the 
-luminosity imbalance between each combination of IP's. 
+luminosity imbalance between each combination of IPs. 
 These results are again written out into the same sub-folder of the given `output_dir`.
 
 Finally, the averaged results for the given `beam` are then written out into 
@@ -55,7 +55,6 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Sequence
 from itertools import combinations
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -80,6 +79,7 @@ from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
@@ -177,6 +177,7 @@ def import_kmod_results(opt: DotDict) -> None:
     
     calculate_all_lumi_imbalances(
         averaged_results, 
+        df_model=df_model, 
         output_dir=average_output_dir
     )
 
@@ -222,11 +223,10 @@ def average_all_results(
     averaged_results = {}
     for ip, paths in sorted_paths.items():
         LOG.debug(f"Averaging IP {ip}")
-        betastar = [round(bstar, 2) for bstar in df_model.loc[ip, [f"{BETA}X", f"{BETA}Y"]]]
 
         average = average_kmod_results(
             ip=int(ip[-1]),
-            betastar=betastar,
+            betastar=_get_betastar(df_model, ip),
             meas_paths=paths,
             output_dir=output_dir,
             plot=True,
@@ -257,12 +257,14 @@ def _sort_paths_by_ip(paths: Sequence[str | Path], beam: int) -> dict[str, list[
 
 def calculate_all_lumi_imbalances(
     averaged_results: dict[str, dict[int, tfs.TfsDataFrame]], 
+    df_model: tfs.TfsDataFrame,
     output_dir: Path | str = None
     ) -> None:
     """ Calculates the luminosity imbalance between two IPs.
     
     Args:
         averaged_results (dict[str, dict[int, tfs.TfsDataFrame]]): Averaged kmod results, sorted by IP. 
+        df_model (tfs.TfsDataFrame): DataFrame with the model. 
         output_dir (Path | str, optional): Path to the output directory. Defaults to None.
 
     Returns:
@@ -271,11 +273,12 @@ def calculate_all_lumi_imbalances(
     sets_of_ips = list(combinations(averaged_results.keys(), 2))
     for (ipA, ipB) in sets_of_ips:
         LOG.debug(f"Calculating lumi imbalance between {ipA} and {ipB}")
+        betastar = _get_betastar(df_model, ipA)  # does not really matter which IP, for output name only
 
         # Calculate luminosity imbalance
         data = {ip.lower(): averaged_results[ip][0] for ip in (ipA, ipB)}
         try:
-            df = calculate_lumi_imbalance(**data, output_dir=output_dir)
+            df = calculate_lumi_imbalance(**data, output_dir=output_dir, betastar=betastar)
         except KeyError as e:
             LOG.debug(f"Could not calculate lumi imbalance between {ipA} and {ipB}. Skipping.", exc_info=e)
             continue
@@ -283,6 +286,11 @@ def calculate_all_lumi_imbalances(
         # Print luminosity imbalance
         imb, err_imb = df.headers[f"{LUMINOSITY}{IMBALACE}"], df.headers[f"{ERR}{LUMINOSITY}{IMBALACE}"]
         LOG.info(f"Luminosity imbalance between {ipA} and {ipB}: {imb:.2e} +/- {err_imb:.2e}")
+
+
+def _get_betastar(df_model: tfs.TfsDataFrame, ip: str) -> list[float, float]:
+    # return [round(bstar, 3) for bstar in df_model.loc[ip, [f"{BETA}X", f"{BETA}Y"]]]
+    return df_model.loc[ip, [f"{BETA}X", f"{BETA}Y"]].tolist()
 
 
 # Script Mode ------------------------------------------------------------------

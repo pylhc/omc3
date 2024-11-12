@@ -9,16 +9,6 @@ Average muliple K-Modulation results into a single file/dataframe.
 
 *--Required--*
 
-- **betastar** *(float)*:
-
-    Model beta-star values (x, y) of measurements.
-
-
-- **ip** *(int)*:
-
-    Specific ip to average over.
-
-
 - **meas_paths** *(PathOrStr)*:
 
     Directories of K-modulation results to average.
@@ -29,6 +19,16 @@ Average muliple K-Modulation results into a single file/dataframe.
 - **output_dir** *(PathOrStr)*:
 
     Path to the directory where to write the output files.
+
+
+- **betastar** *(float)*:
+
+    Model beta-star values (x, y) of measurements. Only used for filename and plot.
+
+
+- **ip** *(int)*:
+
+    IP this result is from. Only used for filename and plot.
 
 
 - **plot**:
@@ -55,18 +55,15 @@ import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
-from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import (
     AVERAGED_BETASTAR_FILENAME,
     AVERAGED_BPM_FILENAME,
     BEAM,
     BEAM_DIR,
-    BETASTAR,
     ERR,
     EXT,
     LABEL,
     LSA_FILE_NAME,
-    MDL,
     NAME,
     RESULTS_FILE_NAME,
     TIME,
@@ -101,16 +98,14 @@ def _get_params() -> EntryPointParameters:
     )
     params.add_parameter(
         name="ip", 
-        required=True, 
         type=int, 
-        help="Specific ip to average over."
+        help="IP this result is from. Only used for filename and plot."
     )
     params.add_parameter(
         name="betastar",
-        required=True,
         type=float,
         nargs="+",
-        help="Model beta-star values (x, y) of measurements.",
+        help="Model beta-star values (x, y) of measurements. Only used for filename and plot.",
     )
     params.add_parameter(
         name="output_dir",
@@ -141,10 +136,12 @@ def average_kmod_results(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
 
         ip (int):
             The specific IP to average over.
+            Only used for filename.
 
         betastar (float):
             The model beta-star values (x, y) of the measurements.
             If a single value is given, beta-star_x == beta-star_y is assumed.
+            Only used for filename.
 
         output_dir (Path|str):
             Path to the output directory to write out the averaged results. Optional.
@@ -161,19 +158,26 @@ def average_kmod_results(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
     """
     LOG.info("Starting K-mod averaging.")
     if opt.output_dir is not None:
+        if opt.betastar is None:
+            raise ValueError("Betastar not given. Cannot write out results.")
+        
+        if opt.ip is None:
+            raise ValueError("IP not given. Cannot write out results.")
+
         opt.output_dir = Path(opt.output_dir)
         opt.output_dir.mkdir(exist_ok=True)
         save_config(opt.output_dir, opt, __file__)
 
-    if len(opt.betastar) == 1:
-        opt.betastar = [opt.betastar[0], opt.betastar[0]]
 
     meas_paths = [Path(m) for m in opt.meas_paths]
 
-    averaged_results = get_average_betastar_results(meas_paths, opt.betastar)
+    averaged_results = get_average_betastar_results(meas_paths)
     averaged_bpm_results = get_average_bpm_results(meas_paths)
 
     if opt.output_dir is not None:
+        if len(opt.betastar) == 1:
+            opt.betastar = [opt.betastar[0], opt.betastar[0]]
+
         filename = AVERAGED_BETASTAR_FILENAME.format(ip=opt.ip, betastar_x=opt.betastar[0], betastar_y=opt.betastar[1])
         tfs.write(opt.output_dir / f'{filename}{EXT}', averaged_results, save_index=BEAM)
         
@@ -185,6 +189,7 @@ def average_kmod_results(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
         plot_kmod_results(
             data=averaged_results, 
             ip=opt.ip, 
+            betastar=opt.betastar,
             output_dir=opt.output_dir, 
             show=opt.show_plots
         )
@@ -193,13 +198,12 @@ def average_kmod_results(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
     return averaged_bpm_results
 
 
-def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[float]) -> tfs.TfsDataFrame:
+def get_average_betastar_results(meas_paths: Sequence[Path]) -> tfs.TfsDataFrame:
     """
     Calculate the average betastar results for the given measurements.
 
     Args:
         meas_paths: The paths to the measurements.
-        betastar: The model betastar value.
 
     Returns:
         The final results as a DataFrame; both beams merged.
@@ -221,9 +225,6 @@ def get_average_betastar_results(meas_paths: Sequence[Path], betastar: list[floa
             mean_df[NAME] = f"IP{mean_df[LABEL].iloc[0][-1]}"
             mean_df = mean_df.drop(columns=[LABEL])
         
-        for plane, bstar in zip(PLANES, betastar):
-            mean_df[f'{BETASTAR}{plane}{MDL}'] = bstar
-
         mean_df[BEAM] = beam
         final_results[beam] = mean_df
     final_df = tfs.concat(final_results.values()).set_index(BEAM)

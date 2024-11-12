@@ -4,8 +4,8 @@
 
 - Added K-Modulation tools:
   - `kmod_importer`: Main function to call the following scripts in succession.
-  - `kmod_averages`: Combine k-modulation results into a single file
-  - `kmod_lumi_imbalance`: Calculate the luminosity imbalance IP1 / IP5 from k-modulation results
+  - `kmod_averages`: Combine k-modulation results into a single file.
+  - `kmod_lumi_imbalance`: Calculate the luminosity imbalance IP1 / IP5 from k-modulation results.
   - `kmod_import`: Import k-modulation results into an `optics_measurements` directory as `beta_kmod_().tfs` file.
 
 - Removed:

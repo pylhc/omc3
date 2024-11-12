@@ -20,6 +20,15 @@ Create Plots for the K-Modulation data.
 
     IP this result is from (for plot label and filename only).
 
+- **betastar** *(float)*:
+
+    Model beta-star values (x, y) for reference.
+
+
+- **waist** *(float)*:
+
+    Model waist values (x, y) for reference.
+
 
 - **manual_style** *(DictAsString)*:
 
@@ -70,7 +79,14 @@ if TYPE_CHECKING:
 LOG = logging_tools.get_logger(__name__)
 
 PARAM_BETA: str = "beta"
+PARAM_BETABEAT: str = "betabeat"
 PARAM_WAIST: str = "waist"
+
+AXIS_LABELS = {
+    PARAM_BETA: r'$\beta_{plane}$ [m]',
+    PARAM_BETABEAT: r'$\Delta\beta_{plane}/\beta_{plane}$ %',
+    PARAM_WAIST: r'Waist {plane} [m]',
+}
 
 
 def _get_params() -> EntryPointParameters:
@@ -87,6 +103,18 @@ def _get_params() -> EntryPointParameters:
         name="ip",
         type=int,
         help="IP this result is from (for plot label and filename only)."
+    )
+    params.add_parameter(
+        name="betastar",
+        type=float,
+        nargs="+",
+        help="Model beta-star values (x, y) for reference.",
+    )
+    params.add_parameter(
+        name="waist",
+        type=float,
+        nargs="+",
+        help="Model waist values (x, y) for reference.",
     )
     params.add_parameter(
         name="output_dir",
@@ -132,8 +160,11 @@ def plot_kmod_results(opt: DotDict) -> dict[str, plt.Figure]:
     pstyle.set_style(opt.plot_styles, opt.manual_style)
 
     figs: dict[str, plt.Figure] = {}
-    for parameter in (PARAM_BETA, PARAM_WAIST):
-        figs[parameter]  = plot_parameter(df_kmod, parameter, opt.ip)
+    for parameter, reference in ((PARAM_BETA, opt.betastar), (PARAM_BETABEAT, opt.betastar), (PARAM_WAIST, opt.waist)):
+        if parameter == PARAM_BETABEAT and reference is None:
+            continue
+        
+        figs[parameter]  = plot_parameter(df_kmod, parameter, reference=reference, ip=opt.ip)
     
     # Output ---
     if opt.output_dir is not None:
@@ -155,7 +186,12 @@ def plot_kmod_results(opt: DotDict) -> dict[str, plt.Figure]:
     return figs
 
 
-def plot_parameter(df_kmod: tfs.TfsDataFrame, parameter: str, ip: str | None = None) -> plt.Figure:
+def plot_parameter(
+    df_kmod: tfs.TfsDataFrame,
+    parameter: str,
+    reference: list[float],
+    ip: str | None = None,
+) -> plt.Figure:
     """
     Function to plot the resulting parameter, beta function or waist.
 
@@ -164,6 +200,8 @@ def plot_parameter(df_kmod: tfs.TfsDataFrame, parameter: str, ip: str | None = N
             The results to plot.
         parameter (str):
             Parameter to plot. Either 'beta' or 'waist'.
+        reference (list[float]):
+            Reference values to plot.
         ip (str|None):
             The specific IP to plot. (only used as label)
 
@@ -171,20 +209,42 @@ def plot_parameter(df_kmod: tfs.TfsDataFrame, parameter: str, ip: str | None = N
         The created figure.
 
     """
-    if parameter not in [PARAM_BETA, PARAM_WAIST]:
-        msg = f"Parameter must be either '{PARAM_BETA}' or '{PARAM_WAIST}', instead got '{parameter}'"
+    if parameter not in [PARAM_BETA, PARAM_WAIST, PARAM_BETABEAT]:
+        msg = (
+            f"Parameter must be either '{PARAM_BETA}', '{PARAM_WAIST}' "
+            f"or '{PARAM_BETABEAT}', instead got '{parameter}'"
+        )
         raise ValueError(msg)
 
     LOG.debug(f"Plotting parameter {parameter}.")
     fig, ax = _get_square_axes()
+    
+    # Plot reference ---
+    if reference is not None:
+        if len(reference) == 1:
+            reference = [reference, reference]
+
+        if parameter != PARAM_BETABEAT:
+            ax.plot(*reference, color="black", label="Model", ls='none')
+
+    # Plot data ---
     for beam in (1, 2):
         if beam not in df_kmod.index:
             LOG.info(f"Beam {beam} not found in DataFrame. Skipping.")
             continue
 
         if parameter == PARAM_BETA:
-            x, xerr = _get_beat_and_err(df_kmod, beam, 'X')
-            y, yerr = _get_beat_and_err(df_kmod, beam, 'Y')
+            x, xerr = _get_beta_and_err(df_kmod, beam, 'X')
+            y, yerr = _get_beta_and_err(df_kmod, beam, 'Y')
+
+        if parameter == PARAM_BETABEAT:
+            if reference is None:
+                msg = "To plot betabeating, please give a betastar for reference!"
+                raise ValueError(msg)
+
+            x, xerr = _get_beat_and_err(df_kmod, beam, 'X', reference[0])
+            y, yerr = _get_beat_and_err(df_kmod, beam, 'Y', reference[1])
+
         if parameter == PARAM_WAIST:
             x, xerr = _get_waist_and_err(df_kmod, beam, 'X')
             y, yerr = _get_waist_and_err(df_kmod, beam, 'Y')
@@ -195,11 +255,8 @@ def plot_parameter(df_kmod: tfs.TfsDataFrame, parameter: str, ip: str | None = N
                     label=f'B{beam} IP{ip}' if ip is not None else f'B{beam}'
         )
 
-    if parameter == PARAM_BETA:
-        label = r'$\Delta\beta_{plane}/\beta_{plane}$ %'
-    if parameter == PARAM_WAIST:
-        label = r'Waist {plane} [m]'
-    
+    # Decorate axes ---
+    label = AXIS_LABELS[parameter]
     ax.set_xlabel(label.format(plane='x'))
     ax.set_ylabel(label.format(plane='y'))
     _set_square_limits(ax)
@@ -229,8 +286,13 @@ def _get_waist_and_err(results: tfs.TfsDataFrame, beam: int, plane: str) -> tupl
     return waist, err
 
 
-def _get_beat_and_err(results: tfs.TfsDataFrame, beam: int, plane: str) -> tuple[float, float]:
-    model = results.loc[beam, f'{BETASTAR}{plane}{MDL}']
+def _get_beta_and_err(results: tfs.TfsDataFrame, beam: int, plane: str) -> tuple[float, float]:
+    beta = results.loc[beam, f'{BETASTAR}{plane}'] 
+    err = results.loc[beam, f'{ERR}{BETASTAR}{plane}']
+    return beta, err
+
+
+def _get_beat_and_err(results: tfs.TfsDataFrame, beam: int, plane: str, model: float) -> tuple[float, float]:
     beat = (results.loc[beam, f'{BETASTAR}{plane}'] - model) / model * 100
     err = results.loc[beam, f'{ERR}{BETASTAR}{plane}'] / model * 100
     return beat, err

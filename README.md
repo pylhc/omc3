@@ -41,7 +41,7 @@ Codes can then be run with either `python -m omc3.SCRIPT --FLAG ARGUMENT` or cal
 
 Main scripts to be executed lie in the [`/omc3`](omc3) directory. These include:
 - `hole_in_one.py` to perform frequency analysis on turn by turn BPM data and infer optics (and more) for a given accelerator.
-- `kmod_importer.py` to average, import and calcualte lumi-imbalace K-modulation results.
+- `kmod_importer.py` to average, import and calculate lumi-imbalace K-modulation results.
 - `knob_extractor.py` to extract from `NXCALS` the value of given knobs in the machine at a given time.
 - `model_creator.py` to generate optics models required for optics analysis.
 - `global_correction.py` to calculate corrections from measurement files.
@@ -69,7 +69,7 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 - `fake_measurement_from_model.py` to create a fake measurement based on a model TWISS file.
 - `betabeatsrc_output_converter.py` to convert outputs from our old codes to `omc3`'s new standardized format.
 - `linfile_clean.py` to automatically clean given columns in lin files.
-- `kmod_average.py` to calcualte the average of multiple K-modulation measurements.
+- `kmod_average.py` to calculate the average of multiple K-modulation measurements.
 - `kmod_import.py` to import a K-modulation measurement into an optics-measurement directory.
 - `kmod_lumi_imbalace.py` to calculate the luminosity imbalance between two IPs from averaged K-modulation files.
 
