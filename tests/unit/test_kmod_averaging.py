@@ -1,21 +1,20 @@
-from collections.abc import Sequence
 import logging
-from pathlib import Path
 import shutil
+from collections.abc import Sequence
+from pathlib import Path
 
-import pandas.testing as pdt
 import pytest
 import tfs
 
 from omc3.optics_measurements.constants import BEAM, BEAM_DIR, BETA, NAME
+from omc3.plotting.plot_kmod_results import PARAM_BETA, PARAM_BETABEAT, PARAM_WAIST
 from omc3.scripts.kmod_average import (
     AVERAGED_BETASTAR_FILENAME,
     AVERAGED_BPM_FILENAME,
     EXT,
     average_kmod_results,
 )
-from omc3.plotting.plot_kmod_results import PARAM_BETA, PARAM_BETABEAT, PARAM_WAIST
-from tests.conftest import INPUTS, ids_str
+from tests.conftest import INPUTS, assert_tfsdataframe_equal, ids_str
 
 KMOD_INPUT_DIR = INPUTS / "kmod"
 REFERENCE_DIR = KMOD_INPUT_DIR / "references"
@@ -43,7 +42,7 @@ def test_kmod_averaging(tmp_path, ip, n_files):
     for out_name in get_all_tfs_filenames(ip, beta[0]):
         out_file = tfs.read(tmp_path / out_name)
         ref_file = tfs.read(ref_output_dir / out_name)
-        pdt.assert_frame_equal(out_file, ref_file, check_like=True)
+        assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
 
 
 @pytest.mark.extended
@@ -80,7 +79,7 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
         ref_file = tfs.read(ref_output_dir / out_name)
         if BEAM in ref_file.columns:
             ref_file = ref_file.loc[ref_file[BEAM] == beam, :].reset_index(drop=True)
-        pdt.assert_frame_equal(out_file, ref_file, check_like=True)
+        assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
 
 
 # Helper ---

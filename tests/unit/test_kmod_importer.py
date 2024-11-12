@@ -1,18 +1,29 @@
-import pandas.testing as pdt
 import pytest
 import tfs
 
 from omc3.kmod_importer import AVERAGE_DIR, import_kmod_results
 from omc3.optics_measurements.constants import EXT
+from tests.conftest import assert_tfsdataframe_equal
 from tests.unit.test_kmod_averaging import (
     get_all_tfs_filenames as _get_averaged_filenames,
+)
+from tests.unit.test_kmod_averaging import (
     get_betastar_model,
     get_measurement_dir,
     get_reference_dir,
 )
-from tests.unit.test_kmod_import import get_model_path, _get_bpm_reference_path, _get_betastar_reference_path 
-from tests.unit.test_kmod_lumi_imbalance import REFERENCE_DIR, _get_effbetas_filename as _get_lumi_filename
+from tests.unit.test_kmod_import import (
+    _get_betastar_reference_path,
+    _get_bpm_reference_path,
+    get_model_path,
+)
+from tests.unit.test_kmod_lumi_imbalance import REFERENCE_DIR
+from tests.unit.test_kmod_lumi_imbalance import (
+    _get_effbetas_filename as _get_lumi_filename,
+)
 
+
+# Tests ---
 
 @pytest.mark.basic
 @pytest.mark.parametrize('beam', [1, 2])
@@ -42,17 +53,17 @@ def test_full_kmod_import_beam(tmp_path, beam):
         for out_name in _get_averaged_filenames(ip, beta=beta):
             out_file = tfs.read(average_dir / out_name)
             ref_file = tfs.read(get_reference_dir(ip, n_files=2) / out_name)
-            pdt.assert_frame_equal(out_file, ref_file, check_like=True)
+            assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
 
     # lumi --
     eff_betas = tfs.read(average_dir / _get_lumi_filename(beta))
     eff_betas_ref = tfs.read(REFERENCE_DIR / _get_lumi_filename(beta))
-    pdt.assert_frame_equal(eff_betas_ref, eff_betas, check_like=True)
+    assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)
 
     # import --
     for plane in "xy":
         for ref_path in (_get_bpm_reference_path(beam, plane), _get_betastar_reference_path(beam, plane)):
             ref_file = tfs.read(ref_path)
             out_file = tfs.read(tmp_path / ref_path.name)
-            pdt.assert_frame_equal(ref_file, out_file, check_like=True)
+            assert_tfsdataframe_equal(ref_file, out_file, check_like=True)
 

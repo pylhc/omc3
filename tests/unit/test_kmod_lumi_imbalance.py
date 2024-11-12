@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import pandas.testing as pdt
+import pytest
 import tfs
 
 from omc3.optics_measurements.constants import (
@@ -9,10 +9,12 @@ from omc3.optics_measurements.constants import (
     EXT,
 )
 from omc3.scripts.kmod_lumi_imbalance import calculate_lumi_imbalance
+from tests.conftest import assert_tfsdataframe_equal
 from tests.unit.test_kmod_averaging import REFERENCE_DIR, get_reference_dir
 
 # Tests ---
 
+@pytest.mark.basic
 def test_kmod_lumi_imbalance(tmp_path):
     beta = 0.22
     path_beta_ip1 = _get_input_path(1, beta)
@@ -22,7 +24,7 @@ def test_kmod_lumi_imbalance(tmp_path):
 
     eff_betas = tfs.read(tmp_path / _get_effbetas_filename(beta))
     eff_betas_ref = tfs.read(REFERENCE_DIR / _get_effbetas_filename(beta))
-    pdt.assert_frame_equal(eff_betas_ref, eff_betas, check_like=True)
+    assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)
 
 
 # Helper ---
