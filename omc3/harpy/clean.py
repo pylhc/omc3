@@ -175,7 +175,7 @@ def _report_clean_stats(n_total_bpms, n_good_bpms, bad_bpms_with_reasons):
     bad_bpms_message += "\n".join(bad_bpms_with_reasons)
     
     # If all BPMs have been bad ---
-    if n_total_bpms == 0:
+    if n_good_bpms == 0:
         LOGGER.info(bad_bpms_message)
         raise ValueError("Total Number of BPMs after filtering is zero.")
     

@@ -8,8 +8,9 @@ import tfs
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
-from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME
+from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME, PHASE, ALPHA, BETA, DISPERSION, NORM_DISPERSION
 from omc3.optics_measurements.data_models import InputFiles
+from omc3.optics_measurements.phase import CompensationMode
 from omc3.utils import logging_tools
 from omc3.utils import stats
 from omc3.utils.contexts import timeit
@@ -19,11 +20,11 @@ LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__')  # debugging
 
 LIMITS = {
-    'PHASE': 1e-4,
-    'ALF': 6e-3,
-    'BET': 3e-3,
-    'D': 1.1e-2,
-    'ND': 5e-3,
+    PHASE: 1e-4,
+    ALPHA: 6e-3,
+    BETA: 3e-3,
+    DISPERSION: 1.1e-2,
+    NORM_DISPERSION: 5e-3,
     '': 5e-3  # orbit
 }
 BASE_PATH = Path(__file__).parent.parent / "results"
@@ -32,7 +33,7 @@ INPUTS = Path(__file__).parent.parent / 'inputs'
 DPPS = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]  # defines the slicing
 
 MEASURE_OPTICS_SETTINGS = dict(
-    compensation=["model", "equation", "none"],
+    compensation=CompensationMode.all(),
     coupling_method=[2],
     range_of_bpms=[11],
     three_bpm_method=[False],
@@ -61,7 +62,7 @@ def test_3_onmom_files_single_input(tmp_path, input_data):
 def test_measure_optics(
         tmp_path, input_data, lin_slice,
         compensation, coupling_method, range_of_bpms, three_bpm_method, second_order_disp):
-    data = input_data["free" if compensation == 'none' else "driven"]
+    data = input_data["free" if compensation == CompensationMode.NONE else "driven"]
     lins, optics_opt = data['lins'], data['optics_opt']
     optics_opt.update(
         outputdir=tmp_path,
@@ -111,7 +112,7 @@ def input_data(request, tmp_path_factory):
         output_path = tmp_path_factory.mktemp(f"input_{motion}_b{beam}")
 
         opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
-                        model_dir=INPUTS / "models" / f"25cm_beam{beam}",
+                        model_dir=INPUTS / "models" / f"2018_col_b{beam}_25cm",
                         outputdir=output_path)
         optics_opt, rest = _optics_entrypoint(opt_dict)
         optics_opt.accelerator = manager.get_accelerator(rest)

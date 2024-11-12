@@ -167,7 +167,7 @@ def _get_errorbased_weights(key: str, weights, errors):
     # TODO case without errors used may corrupt the correction (typical error != 1)
     w2 = stats.weights_from_errors(errors)
     if w2 is None:
-        LOG.warn(
+        LOG.warning(
             f"Weights will not be based on errors for '{key}'"
             f", zeros of NaNs were found. Maybe don't use --errorbars."
         )
