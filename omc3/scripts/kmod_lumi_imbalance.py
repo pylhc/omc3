@@ -2,7 +2,10 @@
 K-Mod Luminosity Imbalance
 --------------------------
 
-Calculate the luminosity imbalance from the averaged K-modulation results.
+Calculate the luminosity imbalance from the averaged K-modulation results,
+based on the effective betas for two IPs, i.e. assuming that apart from the 
+beta-function all other parameters are identical for the two IPs.
+
 This script needs the data in the format of the average script `kmod_average.py`,
 as the imbalance is calculated over both beams and this data is only available 
 at that point.
@@ -183,7 +186,7 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
     Calculate the effective beta stars and the luminosity imbalance from the input dataframes.
 
     Args:
-        ipA (tfs.TfsDataFrame): ar`TfsDataFrame` with the averaged results from a kmod analysis, for IP_A.
+        ipA (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_A.
         ipB (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_B.
         (Actually, any name that ends with an integer is fine.)
     
@@ -207,7 +210,9 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
 
 def get_imbalance_w_err(ipA_beta: float, ipA_beta_err: float, ipB_beta: float, ipB_beta_err: float) -> tuple[float, float]:
     """
-    Calculate the luminosity imbalance IP_A / IP_B  and its error.
+    Calculate the luminosity imbalance IP_A / IP_B  and its error, based on the effective betas for IP_A and IP_B.
+    This implies, that all the other beam parameters (see e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf) 
+    are the same for both IPs.
     """
     result = ipB_beta / ipA_beta  # inverse due to beta in the denominator for lumi
     err = result * np.sqrt((ipB_beta_err/ipB_beta)**2 + (ipA_beta_err/ipA_beta)**2)
@@ -215,9 +220,9 @@ def get_imbalance_w_err(ipA_beta: float, ipA_beta_err: float, ipB_beta: float, i
 
 
 def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
-    """ Calculates the effective beta*, 
-    i.e. the denominator of the luminosity (e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf)
-    without any constants, as we only need it for the ratio anyway.  
+    """ Calculates the effective beta*, i.e. the denominator of the luminosity as given in e.g. 
+    Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf , without any constants 
+    as we assume here that these are equal for both IPs, and we only care about the ratio. 
     """
     b1x, b1y, b2x, b2y = _get_betastar_beams(df_ip)
     db1x, db2x, db1y, db2y = _get_betastar_beams(df_ip, errors=True) 
