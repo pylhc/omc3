@@ -5,7 +5,7 @@ Constants
 Specific constants and helpers to be used in ``tune_analysis``, to help with consistency.
 """
 from dataclasses import dataclass
-from typing import Tuple, Sequence
+from typing import Sequence
 
 import pandas as pd
 from omc3.definitions.constants import PLANE_TO_NUM
@@ -36,7 +36,7 @@ def get_kick_out_name() -> str:
 
 
 def get_bbq_out_name() -> str:
-    return f"bbq_ampdet.tfs"
+    return "bbq_ampdet.tfs"
 
 
 @dataclass
@@ -187,7 +187,7 @@ def get_tune_label(plane: str, scale: int = None) -> str:
     """ Tune label for the action/tune plots. """
     unit = ""
     if scale:
-        unit = f" \quad [10^{{{scale:d}}}]"
+        unit = fr" \quad [10^{{{scale:d}}}]"
     return fr"$\Delta Q_{plane.lower():s}{unit}$"
 
 

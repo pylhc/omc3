@@ -13,8 +13,10 @@ In earlier implementations there was a split between all kinds of measures,
 i.e. beta, phase etc. In this implementation most of it is handled by
 the `_get_filtered_generic` function.
 """
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Callable, Dict, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -22,10 +24,24 @@ import tfs
 from generic_parser import DotDict
 
 from omc3.correction.constants import ERROR, VALUE, WEIGHT
-from omc3.optics_measurements.constants import DELTA, ERR, NAME2, PHASE, PHASE_ADV, TUNE
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import AMPLITUDE, F1001, F1010, IMAG, REAL
+from omc3.optics_measurements.constants import (
+    AMPLITUDE,
+    DELTA,
+    ERR,
+    F1001,
+    F1010,
+    IMAG,
+    NAME2,
+    PHASE,
+    PHASE_ADV,
+    REAL,
+    TUNE,
+)
 from omc3.utils import logging_tools, stats
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -34,7 +50,7 @@ LOG = logging_tools.get_logger(__name__)
 
 
 def filter_measurement(
-    keys: Sequence[str], meas: Dict[str, pd.DataFrame], model: pd.DataFrame, opt: DotDict
+    keys: Sequence[str], meas: dict[str, pd.DataFrame], model: pd.DataFrame, opt: DotDict
 ) -> dict:
     """Filters measurements in `keys` based on the dict-entries (keys as in `keys`)
     in `opt.errorcut`, `opt.modelcut` and `opt.weights` and unifies the
@@ -103,9 +119,9 @@ def _get_filtered_generic(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt
 
     # if opt.automatic_model_cut:  # TODO automated model cut
     #     model_filter = _get_smallest_data_mask(np.abs(meas.loc[:, f"{DELTA}{col}"].to_numpy()), portion=0.95)
-    if f"{PHASE}" in col:
+    if PHASE in col:
         new[NAME2] = meas.loc[:, NAME2].to_numpy()
-        second_bpm_exists = np.in1d(new.loc[:, NAME2].to_numpy(), new.index.to_numpy())
+        second_bpm_exists = np.isin(new.loc[:, NAME2].to_numpy(), new.index.to_numpy())
         good_bpms = error_mask & model_mask & second_bpm_exists
         good_bpms[-1] = False  # TODO not sure why, ask Lukas? (jdilly)
     else:
@@ -151,7 +167,7 @@ def _get_errorbased_weights(key: str, weights, errors):
     # TODO case without errors used may corrupt the correction (typical error != 1)
     w2 = stats.weights_from_errors(errors)
     if w2 is None:
-        LOG.warn(
+        LOG.warning(
             f"Weights will not be based on errors for '{key}'"
             f", zeros of NaNs were found. Maybe don't use --errorbars."
         )
@@ -162,7 +178,7 @@ def _get_errorbased_weights(key: str, weights, errors):
 # Response Matrix Filter -------------------------------------------------------
 
 
-def filter_response_index(response: Dict, measurement: Dict, keys: Sequence[str]):
+def filter_response_index(response: dict, measurement: dict, keys: Sequence[str]):
     """Filters the index of the response matrices `response` by the respective entries in `measurement`."""
     # rename MU to PHASE as we create a PHASE-Response afterwards
     # easier to do here, than to check eveywhere below. (jdilly)
@@ -182,7 +198,7 @@ def filter_response_index(response: Dict, measurement: Dict, keys: Sequence[str]
     return new_response
 
 
-def _get_response_filters() -> Dict[str, Callable]:
+def _get_response_filters() -> dict[str, Callable]:
     """
     Returns a dict with the respective `_get_*_response` functions that defaults
     to `_get_generic_response`.

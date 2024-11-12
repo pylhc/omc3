@@ -67,13 +67,14 @@ from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import (Accelerator,
                                                  AcceleratorDefinitionError, AccElementTypes, AccExcitationMode)
-from omc3.model.constants import PLANE_TO_HV, MODIFIER_TAG
+from omc3.model.accelerators.psbase import PsBase
+from omc3.model.constants import PLANE_TO_HV
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent
 
 
-class Psbooster(Accelerator):
+class Psbooster(PsBase):
     """Parent Class for Psbooster-types."""
     NAME = "psbooster"
     RE_DICT = {AccElementTypes.BPMS: r"BR\d\.BPM[^T]",
@@ -107,10 +108,8 @@ class Psbooster(Accelerator):
         self._ring = value
 
     def verify_object(self):
+        Accelerator.verify_object(self)
         _ = self.ring
-        if self.modifiers:
-            raise AcceleratorDefinitionError(f"Accelerator {self.NAME} cannot handle modifiers,"
-                                             f" yet modifiers were given.")
 
     def get_exciter_bpm(self, plane, bpms):
         if not self.excitation:
@@ -123,16 +122,20 @@ class Psbooster(Accelerator):
 
     def get_base_madx_script(self, best_knowledge=False):
         if best_knowledge:
-            raise NotImplementedError(f"Best knowledge model not implemented for accelerator {self.NAME}")
+            raise AttributeError(f"No best knowledge model for {self.NAME} (yet).")
 
         use_acd = self.excitation == AccExcitationMode.ACD
         replace_dict = {
             "FILES_DIR": str(self.get_dir()),
             "USE_ACD": str(int(use_acd)),
-            "RING": self.ring,
+            "RING": str(self.ring),
             "NAT_TUNE_X": self.nat_tunes[0],
             "NAT_TUNE_Y": self.nat_tunes[1],
-            "KINETICENERGY": self.energy,
+            "KINETICENERGY": 0 if self.energy is None else self.energy,
+            "USE_CUSTOM_PC": "0" if self.energy is None else "1",
+            "ACC_MODELS_DIR": self.acc_model_path,
+            "BEAM_FILE": self.beam_file,
+            "STR_FILE": self.str_file,
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
         }

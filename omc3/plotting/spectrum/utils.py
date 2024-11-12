@@ -344,8 +344,8 @@ def filter_amps(files: dict, limit: float):
     """ Filter amplitudes by limit. """
     for plane in PLANES:
         filter_idx = files[AMPS][plane] <= limit
-        files[AMPS][plane][filter_idx] = np.NaN
-        files[FREQS][plane][filter_idx] = np.NaN
+        files[AMPS][plane][filter_idx] = np.nan
+        files[FREQS][plane][filter_idx] = np.nan
     return files
 
 

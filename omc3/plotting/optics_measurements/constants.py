@@ -4,16 +4,15 @@ Constants
 
 Constants and definitions for the ``plotting`` module.
 """
-from dataclasses import dataclass
-from typing import Optional
-
-from omc3.optics_measurements.constants import (
+# These below are here so they can be imported from the plotting
+# module of omc3 directly and not care where they originate / avoid
+# re-defining somewhere.
+from omc3.optics_measurements.constants import (  # noqa: F401
     S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
-    AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,
+    AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,  
     SPECIAL_PHASE_NAME, TOTAL_PHASE_NAME, DISPERSION_NAME,
     NORM_DISP_NAME, ORBIT_NAME, KICK_NAME, IP_NAME, PHASE_ADV, MDL
 )
-from omc3.plotting.utils.annotations import ylabels
 
 IP_POS_DEFAULT = {
     "LHCB1": {

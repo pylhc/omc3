@@ -3,10 +3,6 @@
 # The build is published to github pages if the triggering event is a push to the master branch (PR merge)
 name: Build and upload documentation
 
-defaults:
-  run:
-    shell: bash
-
 on:  # Runs on any push event in a PR or any push event to master
   pull_request:
   push:
@@ -15,44 +11,4 @@ on:  # Runs on any push event in a PR or any push event to master
 
 jobs:
   documentation:
-    name: ${{ matrix.os }} / ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:  # only a single supported Python on latest ubuntu
-        os: [ubuntu-latest]
-        python-version: [3.9]
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: '**/setup.py'
-
-      - name: Upgrade pip, setuptools and wheel
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install package
-        run: python -m pip install '.[doc]'
-
-      - name: Build documentation
-        run: python -m sphinx -b html doc ./doc_build -d ./doc_build
-
-      - name: Upload build artifacts  # upload artifacts so reviewers can have a quick look without building documentation from the branch locally
-        uses: actions/upload-artifact@v2
-        if: success() && github.event_name == 'pull_request'  # only for pushes in PR
-        with:
-          name: site-build
-          path: doc_build
-          retention-days: 5
-
-      - name: Upload documentation to gh-pages
-        if: success() && github.ref == 'refs/heads/master'  # only for pushes to master
-        uses: JamesIves/github-pages-deploy-action@3.6.2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: doc_build
+        uses: pylhc/.github/.github/workflows/documentation.yml@master

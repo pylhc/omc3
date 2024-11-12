@@ -6,7 +6,6 @@ This module contains high-level functions to manage most functionality of ``harp
 Tools are provided to handle the cleaning, frequency analysis and resonance search for a
 single-bunch `TbtData`.
 """
-from collections import OrderedDict
 from os.path import basename, join
 
 import numpy as np
@@ -95,10 +94,20 @@ def _scale_to_meters(bpm_data, unit):
 
 
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
-    lin_frame = pd.DataFrame(index=bpm_data.index.to_numpy(),
-                             data=OrderedDict([(COL_NAME, bpm_data.index.to_numpy()),
-                                               ("S", np.arange(bpm_data.index.size) if model is None
-                                               else model.loc[bpm_data.index])]))
+    lin_frame = pd.DataFrame(
+        index=bpm_data.index.to_numpy(),
+        data=dict(
+            [
+                (COL_NAME, bpm_data.index.to_numpy()),
+                (
+                    "S",
+                    np.arange(bpm_data.index.size)
+                    if model is None
+                    else model.loc[bpm_data.index],
+                ),
+            ]
+        ),
+    )
     lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
     with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
         lin_frame = _get_orbit_data(lin_frame, bpm_data)
@@ -150,7 +159,7 @@ def _sync_phase(lin_frame, plane):
 
 
 def _compute_headers(panda, date=None):
-    headers = OrderedDict()
+    headers = {}
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
             try:
@@ -184,29 +193,35 @@ def _get_output_path_without_suffix(output_dir, file_path):
     return join(output_dir, basename(file_path))
 
 
-def _rescale_amps_to_main_line_and_compute_noise(panda, plane):
+def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -> pd.DataFrame:
     """
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
-    cols = [col for col in panda.columns.to_numpy() if col.startswith(COL_AMP)]
+    cols = [col for col in df.columns.to_numpy() if col.startswith(COL_AMP)]
     cols.remove(f"{COL_AMP}{plane}")
-    panda.loc[:, cols] = panda.loc[:, cols].div(panda.loc[:, f"{COL_AMP}{plane}"], axis="index")
-    amps = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy()
+    df.loc[:, cols] = df.loc[:, cols].div(df.loc[:, f"{COL_AMP}{plane}"], axis="index")
+    amps = df.loc[:, f"{COL_AMP}{plane}"].to_numpy()
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm]
     # TODO  later remove
-    panda[f"{COL_AMP}{plane}"] = panda.loc[:, f"{COL_AMP}{plane}"].to_numpy() / 2
-    if f"{COL_NATAMP}{plane}" in panda.columns:
-        panda[f"{COL_NATAMP}{plane}"] = panda.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
+    df[f"{COL_AMP}{plane}"] = df.loc[:, f"{COL_AMP}{plane}"].to_numpy() / 2
+    if f"{COL_NATAMP}{plane}" in df.columns:
+        df[f"{COL_NATAMP}{plane}"] = df.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
 
-    if np.max(panda.loc[:, 'NOISE'].to_numpy()) == 0.0:
-        return panda  # Do not calculated errors when no noise was calculated
-    noise_scaled = panda.loc[:, 'NOISE'] / amps
-    panda.loc[:, "NOISE_SCALED"] = noise_scaled
-    panda.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = panda.loc[:, 'NOISE']
-    if f"{COL_NATTUNE}{plane}" in panda.columns:
-        panda.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = panda.loc[:, 'NOISE']
-    for col in cols:
-        this_amp = panda.loc[:, col]
-        panda.loc[:, f"{COL_ERR}{col}"] = noise_scaled * np.sqrt(1 + np.square(this_amp))
-    return panda
+    if np.max(df.loc[:, 'NOISE'].to_numpy()) == 0.0:
+        return df  # Do not calculated errors when no noise was calculated
+    noise_scaled = df.loc[:, 'NOISE'] / amps
+    df.loc[:, "NOISE_SCALED"] = noise_scaled
+    df.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = df.loc[:, 'NOISE']
+    if f"{COL_NATTUNE}{plane}" in df.columns:
+        df.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = df.loc[:, 'NOISE']
+    
+    # Create dedicated dataframe with error columns to assign later (cleaner
+    # and faster than assigning individual columns)
+    df_amp = pd.DataFrame(
+        data={f"{COL_ERR}{col}": noise_scaled * np.sqrt(1 + np.square(df.loc[:, col])) for col in cols},
+        index=df.index, 
+        dtype=pd.Float64Dtype()
+    )
+    df.loc[:, df_amp.columns] = df_amp
+    return df

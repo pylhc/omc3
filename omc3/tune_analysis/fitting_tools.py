@@ -6,7 +6,6 @@ This module contains fitting functionality for ``tune_analysis``.
 It provides tools for fitting functions, mainly via odr.
 
 """
-from collections import namedtuple
 from typing import Sequence, Dict, List, Tuple
 
 import numpy as np
@@ -17,7 +16,7 @@ from scipy.odr import RealData, Model, ODR
 from scipy.optimize import curve_fit
 
 from omc3.utils import logging_tools
-from omc3.tune_analysis.constants import FakeOdrOutput, AmpDetData
+from omc3.tune_analysis.constants import FakeOdrOutput
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -153,7 +152,9 @@ def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike
     x, y, xerr, yerr = _filter_nans(x, y, xerr, yerr)
 
     # Curve-Fit for starting point ---
-    curve_fit_fun = lambda v, *args: first_order_detuning_2d(args, v).ravel()
+    def curve_fit_fun(v, *args):
+        return first_order_detuning_2d(args, v).ravel()
+
     beta, beta_cov = curve_fit(f=curve_fit_fun, xdata=x, ydata=y.ravel(), p0=[0]*5)
 
     res_str = ",\n".join([f"{n:>16} = {b:9.3g}" for n, b in zip(INPUT_ORDER, beta)])

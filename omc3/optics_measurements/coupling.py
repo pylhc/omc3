@@ -6,15 +6,14 @@ This module contains linear coupling calculations related functionality of ``opt
 It provides functions to computes and the coupling resonance driving terms, which are part of the standard
 optics outputs.
 """
-from collections import OrderedDict
+from __future__ import annotations
+from collections.abc import Sequence, Callable
 from functools import partial, reduce
 from pathlib import Path
-from typing import Callable, Dict, List, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import tfs
-from numpy import cos, exp, ndarray, sin, sqrt, tan
 from optics_functions.coupling import coupling_via_cmatrix
 
 from omc3.definitions.constants import PI2, PI2I
@@ -37,23 +36,32 @@ from omc3.optics_measurements.constants import (
     ERR,
     EXT,
     MDL,
+    MEASUREMENT,
     DELTA, F1010_NAME, F1001_NAME
 )
+from omc3.optics_measurements.phase import CompensationMode, UNCOMPENSATED, COMPENSATED
 from omc3.utils import logging_tools, stats
+
+from typing import TYPE_CHECKING 
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
+    from omc3.optics_measurements.phase import PhaseDict
 
 LOGGER = logging_tools.get_logger(__name__)
 
-COLS_TO_KEEP_X: List[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
-COLS_TO_KEEP_Y: List[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
+COLS_TO_KEEP_X: list[str] = [NAME, S, f"{AMPLITUDE}01", f"{PHASE}01", f"{PHASE_ADV}X"]
+COLS_TO_KEEP_Y: list[str] = [NAME, S, f"{AMPLITUDE}10", f"{PHASE}10", f"{PHASE_ADV}Y"]
 CUTOFF: int = 5
 
 
 def calculate_coupling(
-    meas_input: dict,
-    input_files: dict,
-    phase_dict: Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], Sequence[tfs.TfsDataFrame]]],
-    tune_dict: Dict[str, float],
-    header_dict: OrderedDict,
+    meas_input: DotDict,
+    input_files: InputFiles,
+    phase_results: dict[str, tuple[PhaseDict, Sequence[tfs.TfsDataFrame]]],
+    tune_dict: dict[str, float],
+    header_dict: dict,
 ) -> None:
     """
     Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
@@ -71,18 +79,18 @@ def calculate_coupling(
         meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
         input_files (dict): `InputFiles` (dict) object containing frequency spectra files (linx/y) for
             each transverse plane (as keys).
-        phase_dict (Dict[str, Tuple[Dict[str, tfs.TfsDataFrame], tfs.TfsDataFrame]]): dictionary containing
+        phase_results (dict[str, tuple[PhaseDict, tfs.TfsDataFrame]]): dictionary containing
             the measured phase advances, with an entry for each transverse plane. In said entry is a
             dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
             the location of the output ``TfsDataFrames`` for the phases.
-        tune_dict (Dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
+        tune_dict (dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
             calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
-        header_dict (OrderedDict): header dictionary of common items for coupling output files,
+        header_dict (dict): header dictionary of common items for coupling output files,
             will be attached as the header to the **f1001.tfs** and **f1010.tfs** files..
     """
     LOGGER.info("Calculating coupling")
     bd = meas_input.accelerator.beam_direction
-    compensation = "uncompensated" if meas_input.compensation == "model" else "free"
+    compensation = UNCOMPENSATED if meas_input.compensation == CompensationMode.MODEL else COMPENSATED
 
     # We need vertical and horizontal spectra, so we have to intersect first all inputs with X and Y phase
     # output furthermore the output has to be rearranged in the order of the model (important for e.g. LHC
@@ -92,13 +100,13 @@ def calculate_coupling(
     joined: tfs.TfsDataFrame = _joined_frames(input_files)  # merge transverse input frames
     joined_index: pd.Index = (
         meas_input.accelerator.model.index.intersection(joined.index)
-        .intersection(phase_dict["X"][compensation]["MEAS"].index)
-        .intersection(phase_dict["Y"][compensation]["MEAS"].index)
+        .intersection(phase_results["X"][compensation][MEASUREMENT].index)
+        .intersection(phase_results["Y"][compensation][MEASUREMENT].index)
     )
     joined = joined.loc[joined_index].copy()
 
-    phases_x: tfs.TfsDataFrame = phase_dict["X"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
-    phases_y: tfs.TfsDataFrame = phase_dict["Y"][compensation]["MEAS"].loc[joined_index, joined_index].copy()
+    phases_x: tfs.TfsDataFrame = phase_results["X"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
+    phases_y: tfs.TfsDataFrame = phase_results["Y"][compensation][MEASUREMENT].loc[joined_index, joined_index].copy()
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
@@ -118,29 +126,29 @@ def calculate_coupling(
 
     LOGGER.debug("Computing complex lines from spectra")
     A01: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_X] * exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
+        joined[SECONDARY_AMPLITUDE_X] * np.exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
     B10: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_Y] * exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
+        joined[SECONDARY_AMPLITUDE_Y] * np.exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
     A0_1: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_X] * exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
+        joined[SECONDARY_AMPLITUDE_X] * np.exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
     B_10: np.ndarray = 0.5 * _get_complex_line(
-        joined[SECONDARY_AMPLITUDE_Y] * exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
+        joined[SECONDARY_AMPLITUDE_Y] * np.exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
 
     q1001_from_A = -np.angle(A01) + (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1001_from_B = np.angle(B10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
-    eq_1001 = exp(1.0j * q1001_from_A) + exp(1.0j * q1001_from_B)
+    eq_1001 = np.exp(1.0j * q1001_from_A) + np.exp(1.0j * q1001_from_B)
 
     q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
     q1010_from_B = -np.angle(B_10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
-    eq_1010 = exp(1.0j * q1010_from_A) + exp(1.0j * q1010_from_B)
+    eq_1010 = np.exp(1.0j * q1010_from_A) + np.exp(1.0j * q1010_from_B)
 
     LOGGER.debug("Computing average of coupling RDTs")
-    f1001: np.ndarray = -0.5 * sqrt(np.abs(A01 * B10)) * eq_1001 / abs(eq_1001)
-    f1010: np.ndarray = 0.5 * sqrt(np.abs(A0_1 * B_10)) * eq_1010 / abs(eq_1010)
+    f1001: np.ndarray = -0.5 * np.sqrt(np.abs(A01 * B10)) * eq_1001 / np.abs(eq_1001)
+    f1010: np.ndarray = 0.5 * np.sqrt(np.abs(A0_1 * B_10)) * eq_1010 / np.abs(eq_1010)
 
     LOGGER.debug("Getting tune separation from measurements")
     tune_separation = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
@@ -153,11 +161,11 @@ def calculate_coupling(
     )
 
     LOGGER.debug("Calculating exact Cminus")
-    C_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    C_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * np.exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
     header_dict["Cminus_exact"] = C_exact
     LOGGER.info(f"|C-| (exact)  = {C_exact:.5f}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
-    if meas_input.compensation == "model":
+    if meas_input.compensation == CompensationMode.MODEL:
         LOGGER.debug("Compensating coupling RDT values by model")
         f1001, f1010 = compensate_rdts_by_model(f1001, f1010, tune_dict)
 
@@ -172,8 +180,8 @@ def calculate_coupling(
 
 
 def compensate_rdts_by_model(
-    f1001: np.ndarray, f1010: np.ndarray, tune_dict: Dict[str, float]
-) -> Tuple[np.ndarray, np.ndarray]:
+    f1001: np.ndarray, f1010: np.ndarray, tune_dict: dict[str, float]
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Compensate coupling RDTs by model (equation) only, implies we're providing a driven model (ACD / ATD
     kick). The scaling factors are calculated from the model's free and driven tunes, and the scaled RDTs
@@ -182,7 +190,7 @@ def compensate_rdts_by_model(
     Args:
         f1001 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
         f1010 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
-        tune_dict (Dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
+        tune_dict (dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
             calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
 
     Returns:
@@ -200,8 +208,8 @@ def compensate_rdts_by_model(
     Qy_driven = PI2 * tune_dict["Y"]["QM"]
 
     LOGGER.debug("Computing scaling factor from driven model")
-    f1001_scaling_factor = np.sqrt(np.abs(sin(Qy_driven - Qx) * sin(Qx_driven - Qy))) / np.abs(sin(Qx - Qy))
-    f1010_scaling_factor = np.abs(np.sqrt(sin(Qx + Qy_driven) * sin(Qy + Qx_driven)) / sin(Qx + Qy))
+    f1001_scaling_factor = np.sqrt(np.abs(np.sin(Qy_driven - Qx) * np.sin(Qx_driven - Qy))) / np.abs(np.sin(Qx - Qy))
+    f1010_scaling_factor = np.abs(np.sqrt(np.sin(Qx + Qy_driven) * np.sin(Qy + Qx_driven)) / np.sin(Qx + Qy))
     f1001 *= f1001_scaling_factor
     f1010 *= f1010_scaling_factor
 
@@ -226,7 +234,6 @@ def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
             tries to find the best candidate. If a value ``n>=1`` is given,
             then takes the n-th following BPM downstream for the pairing.
     """
-
     if mode == 0:
         return _find_candidate(phases)
     else:
@@ -247,7 +254,7 @@ def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
     return indices, phases.to_numpy()[np.arange(phases.to_numpy().shape[0]), indices] - 0.25
 
 
-def _find_candidate(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:
+def _find_candidate(phases: tfs.TfsDataFrame) -> tuple[np.ndarray, np.ndarray]:
     """
     Finds the best candidate for momentum reconstruction.
 
@@ -266,18 +273,18 @@ def _find_candidate(phases: tfs.TfsDataFrame) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def _get_complex_line(
-    spectral_lines: Union[pd.Series, np.ndarray],
-    deltas: Union[pd.Series, np.ndarray],
-    pairs: Union[pd.Series, np.ndarray],
+    spectral_lines: pd.Series|np.ndarray,
+    deltas: pd.Series|np.ndarray,
+    pairs: pd.Series|np.ndarray,
 ) -> np.ndarray:
     """
     Calculates the complex line from the real lines at positions i and j, where j is determined by
     taking the next BPM with a phase advance sufficiently close to pi/2
 
     Args:
-      spectral_lines (Union[pd.Series, np.ndarray]): vector with measured (real) spectral lines.
-      deltas (Union[pd.Series, np.ndarray]): vector with phase advances minus 90deg.
-      pairs (Union[pd.Series, np.ndarray]): vector with indices for pairing.
+      spectral_lines (pd.Series|np.ndarray): vector with measured (real) spectral lines.
+      deltas (pd.Series|np.ndarray): vector with phase advances minus 90deg.
+      pairs (pd.Series|np.ndarray): vector with indices for pairing.
 
     Returns:
         A numpy array with the results at all given positions from the inputs.
@@ -285,14 +292,12 @@ def _get_complex_line(
     spectral_lines = np.array(spectral_lines)  # make sure we avoid any inplace modification of data
     deltas = np.array(deltas)
     pairs = np.array(pairs)
-    return (1.0 - 1.0j * tan(PI2 * deltas)) * spectral_lines - 1.0j / cos(PI2 * deltas) * spectral_lines[
-        pairs
-    ]
+    return (1.0 - 1.0j * np.tan(PI2 * deltas)) * spectral_lines - 1.0j / np.cos(PI2 * deltas) * spectral_lines[pairs]
 
 
 def _rdt_to_output_df(
-    fterm: Union[pd.Series, np.ndarray],
-    fterm_mdl: Union[pd.Series, np.ndarray],
+    fterm: pd.Series|np.ndarray,
+    fterm_mdl: pd.Series|np.ndarray,
     model_df: tfs.TfsDataFrame,
     index: pd.Index,
 ) -> pd.DataFrame:
@@ -316,8 +321,8 @@ def _rdt_to_output_df(
         It would fail the correction functionality to remove these columns.
 
     Args:
-        fterm (Union[pd.Series, np.ndarray]): the calculated coupling RDT.
-        fterm_mdl (Union[pd.Series, np.ndarray]): corresponding RDT values calculated from the model (e.g.
+        fterm (pd.Series|np.ndarray): the calculated coupling RDT.
+        fterm_mdl (pd.Series|np.ndarray): corresponding RDT values calculated from the model (e.g.
             calculated via cmatrix from the model_df).
         model_df (tfs.TfsDataFrame): the model dataframe attached to the accelerator object, used to get the
             ``S`` position.
@@ -332,45 +337,45 @@ def _rdt_to_output_df(
 
     LOGGER.debug("Computing RDT amplitude values")
     df[AMPLITUDE] = np.abs(fterm)
-    df[AMPLITUDE + MDL] = np.abs(fterm_mdl)
+    df[f"{AMPLITUDE}{MDL}"] = np.abs(fterm_mdl)
 
     LOGGER.debug("Computing phase values")
     df[PHASE] = (np.angle(fterm) / PI2) % 1
-    df[PHASE + MDL] = (np.angle(fterm_mdl) / PI2) % 1
+    df[f"{PHASE}{MDL}"] = (np.angle(fterm_mdl) / PI2) % 1
 
     LOGGER.debug("Computing deviation from model")
-    df[DELTA + AMPLITUDE] = df[AMPLITUDE] - df[AMPLITUDE + MDL]
-    df[DELTA + PHASE] = df[PHASE] - df[PHASE + MDL]
+    df[f"{DELTA}{AMPLITUDE}"] = df[AMPLITUDE] - df[f"{AMPLITUDE}{MDL}"]
+    df[f"{DELTA}{PHASE}"] = df[PHASE] - df[f"{PHASE}{MDL}"]
 
     LOGGER.debug("Computing error values")
-    df[ERR + AMPLITUDE] = 0  # TODO: will need to implement this calculation later
-    df[ERR + PHASE] = 0
-    df[ERR + DELTA + AMPLITUDE] = df[ERR + AMPLITUDE]
-    df[ERR + DELTA + PHASE] = df[ERR + PHASE]
+    df[f"{ERR}{AMPLITUDE}"] = 0  # TODO: will need to implement this calculation later
+    df[f"{ERR}{PHASE}"] = 0
+    df[f"{ERR}{DELTA}{AMPLITUDE}"] = df[f"{ERR}{AMPLITUDE}"]
+    df[f"{ERR}{DELTA}{PHASE}"] = df[f"{ERR}{PHASE}"]
 
     LOGGER.debug("Adding real and imaginary parts columns")
     df[REAL] = np.real(fterm)
-    df[REAL + MDL] = np.real(fterm_mdl)
-    df[ERR + REAL] = 0  # TODO: same
+    df[f"{REAL}{MDL}"] = np.real(fterm_mdl)
+    df[f"{ERR}{REAL}"] = 0  # TODO: same
     # These following columns are needed in the correction calculation later on
     # Most of the time model has 0 coupling so the DELTA is just the REAL / IMAG but let's
     # not neglect that we might want to have weird coupled models sometimes
     # For now error on delta is just the error on REAL / IMAG but in the future
     # we might want to change this for a fancier calculation
-    df[DELTA + REAL] = df[REAL] - df[REAL + MDL]
-    df[ERR + DELTA + REAL] = df[ERR + REAL]
+    df[f"{DELTA}{REAL}"] = df[REAL] - df[f"{REAL}{MDL}"]
+    df[f"{ERR}{DELTA}" + REAL] = df[f"{ERR}{REAL}"]
 
     df[IMAG] = np.imag(fterm)
-    df[IMAG + MDL] = np.imag(fterm_mdl)
-    df[ERR + IMAG] = 0  # TODO: same
+    df[f"{IMAG}{MDL}"] = np.imag(fterm_mdl)
+    df[f"{ERR}{IMAG}"] = 0  # TODO: same
     # See comment above, same thing here for IMAG
-    df[DELTA + IMAG] = df[IMAG] - df[IMAG + MDL]
-    df[ERR + DELTA + IMAG] = df[ERR + IMAG]
+    df[f"{DELTA}{IMAG}"] = df[IMAG] - df[f"{IMAG}{MDL}"]
+    df[f"{ERR}{DELTA}" + IMAG] = df[f"{ERR}{IMAG}"]
 
     return df.sort_values(by=S)
 
 
-def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
+def _joined_frames(input_files: InputFiles) -> tfs.TfsDataFrame:
     """
     Merges spectrum data from the two planes from all the input files.
 
@@ -402,7 +407,7 @@ def _joined_frames(input_files: dict) -> tfs.TfsDataFrame:
     reduced = reduced.rename(
         columns={f"{PHASE_ADV}X_X_0": f"{PHASE_ADV}X", f"{PHASE_ADV}Y_Y_0": f"{PHASE_ADV}Y"}
     )
-    return tfs.TfsDataFrame(reduced)
+    return tfs.TfsDataFrame(reduced, dtype=np.float64)
 
 
 def rename_col(plane: str, index: int) -> Callable:

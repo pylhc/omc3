@@ -16,7 +16,7 @@ which creates a pseudo-inverse via svd is used).
 The response matrices are hereby merged into one matrix for all observables to solve for all
 :math:`\delta var` at the same time.
 
-To normalize the observables to another ``weigths`` (W) can be applied.
+To normalize the observables to another ``weights`` (W) can be applied.
 
 Furthermore, an ``errorcut``, specifying the maximum errorbar for a BPM to be used, and
 ``modelcut``, specifying the maximum distance between measurement and model for a BPM to be used,
@@ -62,7 +62,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 - **fullresponse_path**:
 
-    Path to the fullresponse binary file.If not given, calculates the
+    Path to the fullresponse binary file. If not given, calculates the
     response analytically.
 
 
@@ -164,10 +164,11 @@ Possible problems and notes (lmalina, 2020):
  * Missing a part that treats the output from LSA
 
 """
-from pathlib import Path
-from typing import Dict
+from __future__ import annotations
 
-from generic_parser import DotDict
+from pathlib import Path
+from typing import TYPE_CHECKING
+
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 from omc3.correction import handler
 from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
@@ -175,6 +176,9 @@ from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
 from omc3.model import manager
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -316,7 +320,7 @@ def _add_hardcoded_paths(opt: DotDict) -> DotDict:  # acts inplace...
 
 
 # Define functions here, to new optics params
-def _get_default_values() -> Dict[str, Dict[str, float]]:
+def _get_default_values() -> dict[str, dict[str, float]]:
     return {
         "modelcut": {
             f"{PHASE}X": 0.05,

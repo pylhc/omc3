@@ -5,6 +5,7 @@ import pytest
 import tfs
 
 from omc3.hole_in_one import hole_in_one_entrypoint
+from tests.conftest import MODELS
 
 # accuracy limits of rdt to ptc
 ACCURACY_LIMIT = dict(
@@ -72,7 +73,7 @@ def _create_input(tmp_path_factory, request):
                 "files": [str(path_to_lin / f"B{request.param}_{order}{idx}") for idx in range(1, 4)],
                 "outputdir": tmp_path_factory.mktemp(order).resolve(),
                 "beam": request.param,
-                "model_dir": Path(__file__).parent.parent / "inputs" / "models" / f"inj_beam{request.param}",
+                "model_dir": MODELS / f"2018_inj_b{request.param}_11m",
             }
         )
         hole_in_one_entrypoint(**optics_opt)

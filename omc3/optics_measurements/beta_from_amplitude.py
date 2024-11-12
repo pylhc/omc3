@@ -5,6 +5,7 @@ Beta from Amplitude
 This module contains some of the beta calculation related functionality of ``optics_measurements``.
 It provides functions to calculate beta functions from amplitude data.
 """
+from __future__ import annotations
 from os.path import join
 
 import numpy as np
@@ -15,8 +16,14 @@ from omc3.optics_measurements.constants import (AMP_BETA_NAME, DELTA, ERR, EXT,
                                                 MDL, RES)
 from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
+from typing import TYPE_CHECKING 
 
-def calculate(meas_input, input_files, tune_dict, beta_phase, header_dict, plane):
+if TYPE_CHECKING: 
+    from generic_parser import DotDict 
+    from omc3.optics_measurements.data_models import InputFiles
+
+
+def calculate(meas_input: DotDict, input_files: InputFiles, tune_dict, beta_phase, header_dict, plane):
     """
     Calculates beta and fills the following `TfsFiles`: ``f"{AMP_BETA_NAME}{plane.lower()}{EXT}"``
 
@@ -82,7 +89,7 @@ def beta_from_amplitude(meas_input, input_files, plane, tunes):
 
 def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
     phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
-    driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
+    driven_tune, _free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
     phase_corr = ac2bpmac[1] - phases_meas[k_bpmac] + (0.5 * driven_tune)
     phases_meas = phases_meas + phase_corr[np.newaxis, :]

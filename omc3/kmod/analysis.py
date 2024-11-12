@@ -5,6 +5,7 @@ Analysis
 This module contains the analysis functionality of ``kmod``.
 It provides functions to calculate beta functions at different locations from K-modulation data.
 """
+
 import datetime
 
 import numpy as np
@@ -15,10 +16,9 @@ from tfs import tools as tfstools
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 from omc3.kmod import helper
-from omc3.kmod.constants import CLEANED, K, TUNE, ERR, BETA, STAR, WAIST, PHASEADV, AVERAGE, \
-    SEQUENCES_PATH
+from omc3.kmod.constants import AVERAGE, BETA, CLEANED, ERR, PHASEADV, SEQUENCES_PATH, STAR, TUNE, WAIST, K
 from omc3.model.constants import TWISS_DAT
-from omc3.optics_measurements.constants import PHASE_NAME, EXT
+from omc3.optics_measurements.constants import EXT, PHASE_NAME
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
@@ -37,7 +37,6 @@ def return_sign_for_err(n):
     Columns corresponds to error, i.e. first column for `dQ` etc.
     """
     sign = np.zeros((2*n+1, n))
-
     sign[1::2] = np.eye(n)
     sign[2::2] = -np.eye(n)
     return sign
@@ -146,22 +145,16 @@ def fit_prec(x, beta_av):
     return dQ
 
 
-np.vectorize(fit_prec)
-
-
 def fit_approx(x, beta_av):
     dQ = beta_av*x[0]/(4*np.pi)
     return dQ
 
 
-np.vectorize(fit_approx)
-
-
-def average_beta_from_Tune(Q, TdQ, l, Dk):
+def average_beta_from_Tune(Q, TdQ, length, Dk):
     """Calculates average beta function in quadrupole from tune change ``TdQ`` and ``delta K``."""
 
     beta_av = 2 * (1 / np.tan(2 * np.pi * Q) *
-              (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (l * Dk)
+              (1 - np.cos(2 * np.pi * TdQ)) + np.sin(2 * np.pi * TdQ)) / (length * Dk)
     return abs(beta_av)
 
 
@@ -177,9 +170,6 @@ def average_beta_focussing_quadrupole(b, w, L, K, Lstar):
     return average_beta
 
 
-np.vectorize(average_beta_focussing_quadrupole)
-
-
 def average_beta_defocussing_quadrupole(b, w, L, K, Lstar):
     beta0 = b + ((Lstar - w) ** 2 / b)
     alpha0 = -(Lstar - w) / b
@@ -189,9 +179,6 @@ def average_beta_defocussing_quadrupole(b, w, L, K, Lstar):
                    (((np.sinh(2 * np.sqrt(abs(K)) * L)) / (2 * np.sqrt(abs(K)) * L)) - 1)
 
     return average_beta
-
-
-np.vectorize(average_beta_defocussing_quadrupole)
 
 
 def calc_tune(magnet_df):
@@ -220,6 +207,10 @@ def return_fit_input(magnet_df, plane):
 
 
 def do_fit(magnet_df, plane, use_approx=False):
+    import warnings
+
+    from scipy.optimize import OptimizeWarning
+
     if not use_approx:
         fun = fit_prec
     elif use_approx:
@@ -229,15 +220,25 @@ def do_fit(magnet_df, plane, use_approx=False):
     if not np.any(sigma):
         sigma = 1.E-22 * np.ones(len(sigma))
 
-    av_beta, av_beta_err = scipy.optimize.curve_fit(
-        fun,
-        xdata=return_fit_input(magnet_df, plane),
-        ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
-            f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
-        sigma=sigma,
-        absolute_sigma=True,
-        p0=1
-    )
+    # We filter out the "Covariance of the parameters could not be estimated" warning
+    # If the warning is issued we relay it as a logged message, which allows us to
+    # avoid polluting the stderr and allows the user to not see it depending on log level
+    with warnings.catch_warnings(record=True) as records:
+        warnings.simplefilter("ignore", category=OptimizeWarning)
+        av_beta, av_beta_err = scipy.optimize.curve_fit(
+            fun,
+            xdata=return_fit_input(magnet_df, plane),
+            ydata=magnet_df.where(magnet_df[f"{CLEANED}{plane}"])[
+                f"{TUNE}{plane}"].dropna() - magnet_df.headers[f"{TUNE}{plane}"],
+            sigma=sigma,
+            absolute_sigma=True,
+            p0=1
+        )
+
+        # We log any captured warning at warning level
+        for warning in records:
+            LOG.warning(f"Curve fit warning: {warning.message}")
+
     return np.abs(av_beta[0]), np.sqrt(np.diag(av_beta_err))[0]
 
 
@@ -342,7 +343,7 @@ def chi2(x, foc_magnet_df, def_magnet_df, plane, kmod_input_params, sign, BPM_di
         foc_magnet_df.headers['LSTAR'] +
         sign[2] * kmod_input_params.misalignment) -
         foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] +
-        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"])/(def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] + foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"])/2.0) ** 2 +
+        sign[3] * foc_magnet_df.headers[f"{ERR}{AVERAGE}{BETA}{plane}"]) / (def_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"] + foc_magnet_df.headers[f"{AVERAGE}{BETA}{plane}"]) / 2.0) ** 2 +
         ((average_beta_defocussing_quadrupole(b, -w, def_magnet_df.headers['LENGTH'] +
         sign[4] * kmod_input_params.errorL, def_magnet_df.headers[K] +
         sign[5] * kmod_input_params.errorK * def_magnet_df.headers[K],
