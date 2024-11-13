@@ -280,6 +280,7 @@ def calculate_all_lumi_imbalances(
         try:
             df = calculate_lumi_imbalance(**data, output_dir=output_dir, betastar=betastar)
         except KeyError as e:
+            # Most likely because not all data available (e.g. only one beam).
             LOG.debug(f"Could not calculate lumi imbalance between {ipA} and {ipB}. Skipping.", exc_info=e)
             continue
 
