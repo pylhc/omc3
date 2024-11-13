@@ -5,9 +5,11 @@ Isolation Forest
 This module contains the isolation forest functionality of ``optics_measurements``.
 It provides functions to detect and exclude BPMs with anomalies.
 """
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
+import tfs
 
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.utils import logging_tools
@@ -21,8 +23,8 @@ def clean_with_isolation_forest(input_files, meas_input, plane):
     bad_bpms = identify_bad_bpms(meas_input, input_files, plane)
     input_files = remove_bad_bpms(input_files, list(set(bad_bpms.NAME)), plane)
     LOGGER.info(str(list(set(bad_bpms.NAME))))
-    # TODO potentially write output files ... currently not unique indices!
-    #  tfs.write(os.path.join(meas_input.outputdir, f"bad_bpms_iforest_{plane.lower()}.tfs"), bad_bpms)
+    if meas_input.outputdir is not None:
+        tfs.write(Path(meas_input.outputdir)/ f"bad_bpms_iforest_{plane.lower()}.tfs", bad_bpms)
     return input_files
 
 
