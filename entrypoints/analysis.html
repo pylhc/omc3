@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; omc3 0.18.1 documentation</title>
+  <title>Analysis &mdash; omc3 0.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1e56ff10"></script>
+      <script src="../_static/documentation_options.js?v=cbfb3150"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -49,7 +49,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#hole-in-one">Hole in One</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
@@ -71,12 +70,14 @@
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-correction-test">Plot Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-bbq">Plot BBQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -109,12 +110,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#frequency">Frequency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#handler">Handler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/kmod.html">Kmod</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#analysis">Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#helper">Helper</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
@@ -208,7 +203,6 @@
 <li><a class="reference internal" href="#">Analysis</a><ul>
 <li><a class="reference internal" href="#hole-in-one">Hole in One</a></li>
 <li><a class="reference internal" href="#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
-<li><a class="reference internal" href="#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
 </ul>
@@ -655,140 +649,6 @@ BBQ cleaning (Method ‘minmax’).</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.amplitude_detuning_analysis.</span></span><span class="sig-name descname"><span class="pre">single_action_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kick_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kick_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detuning_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/amplitude_detuning_analysis.html#single_action_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Performs the fit one action and tune pane at a time.</p>
-</dd></dl>
-
-<section id="run-kmod">
-<h2>Run Kmod<a class="headerlink" href="#run-kmod" title="Link to this heading"></a></h2>
-<p>Top-level script to analyse Kmod-results from the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> and creating files for GUI and plotting
-as well as returning beta-star and waist shift.</p>
-</section>
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.run_kmod.</span></span><span class="sig-name descname"><span class="pre">analyse_kmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/run_kmod.html#analyse_kmod"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Run Kmod analysis.</p>
-<dl>
-<dt>Kmod Keyword Arguments:</dt><dd><p><em>--Required--</em></p>
-<ul>
-<li><p><strong>beam</strong> <em>(int)</em>:</p>
-<blockquote>
-<div><p>define beam used: 1 or 2</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>betastar_and_waist</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Estimated beta star of measurements and waist shift</p>
-</div></blockquote>
-</li>
-<li><p><strong>working_directory</strong> <em>(Path)</em>:</p>
-<blockquote>
-<div><p>path to working directory with stored KMOD measurement files</p>
-</div></blockquote>
-</li>
-</ul>
-<p><em>--Optional--</em></p>
-<ul>
-<li><p><strong>circuits</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>circuit names of the modulated quadrupoles</p>
-</div></blockquote>
-</li>
-<li><p><strong>cminus</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>C Minus</p>
-</div></blockquote>
-</li>
-<li><p><strong>errorK</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>error in K of the modulated quadrupoles, relative to gradient</p>
-</div></blockquote>
-</li>
-<li><p><strong>errorL</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>error in length of the modulated quadrupoles, unit m</p>
-</div></blockquote>
-</li>
-<li><p><strong>instruments</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>define instruments (use keywords from twiss) at which beta should be
-calculated , separated by comma, e.g. MONITOR,RBEND,INSTRUMENT,TKICKER</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">MONITOR,SBEND,TKICKER,INSTRUMENT</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>interaction_point</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>define interaction point</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">['ip1',</span> <span class="pre">'ip2',</span> <span class="pre">'ip5',</span> <span class="pre">'ip8',</span> <span class="pre">'IP1',</span> <span class="pre">'IP2',</span> <span class="pre">'IP5',</span> <span class="pre">'IP8']</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>log</strong>:</p>
-<blockquote>
-<div><p>flag for creating a log file</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>measurement_dir</strong> <em>(Path)</em>:</p>
-<blockquote>
-<div><p>give an optics measurement directory to include phase constraint in
-penalty function</p>
-</div></blockquote>
-</li>
-<li><p><strong>misalignment</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>misalignment of the modulated quadrupoles in m</p>
-</div></blockquote>
-</li>
-<li><p><strong>model_dir</strong> <em>(Path)</em>:</p>
-<blockquote>
-<div><p>twiss model that contains phase</p>
-</div></blockquote>
-</li>
-<li><p><strong>no_autoclean</strong>:</p>
-<blockquote>
-<div><p>flag for manually cleaning data</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>no_plots</strong>:</p>
-<blockquote>
-<div><p>flag to not create any plots</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>no_sig_digits</strong>:</p>
-<blockquote>
-<div><p>flag to not use significant digits</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>outputdir</strong> <em>(Path)</em>:</p>
-<blockquote>
-<div><p>Path where outputfiles will be stored, defaults to the given
-working_directory</p>
-</div></blockquote>
-</li>
-<li><p><strong>phase_weight</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>weight in penalty function between phase and beta.If weight=0 phase is
-not used as a constraint.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>simulation</strong>:</p>
-<blockquote>
-<div><p>flag for enabling simulation mode</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>tune_uncertainty</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>tune measurement uncertainty</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">2.5e-05</span></code></p>
-</div></blockquote>
-</li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 </section>

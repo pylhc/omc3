@@ -1,0 +1,639 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.scripts.kmod_import &mdash; omc3 0.19.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=cbfb3150"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.scripts.kmod_import</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.scripts.kmod_import</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Import K-Modulation Results</span>
+<span class="sd">---------------------------</span>
+
+<span class="sd">Imports K-Mod data and writes them into a file containing beta data, </span>
+<span class="sd">in the same format as beta-from-phase or beta-from-amplitude.</span>
+<span class="sd">This data can then be easily used for the same purposes, e.g. global correction.</span>
+
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Required--*</span>
+
+<span class="sd">- **meas_files** *(PathOrStr)*:</span>
+
+<span class="sd">    Paths to the Kmod results files to import.</span>
+<span class="sd">    Can be either the TFS-files directly or a path to a folder containing them.</span>
+
+
+<span class="sd">- **model** *(PathOrStr)*:</span>
+
+<span class="sd">    Path to the model twiss file, or a folder containing &#39;twiss_elemtents.dat&#39;. </span>
+<span class="sd">    The model determines which elements to keep.</span>
+
+
+<span class="sd">- **beam** *(int)*:</span>
+
+<span class="sd">    Beam for which to import.</span>
+
+
+<span class="sd">*--Optional--*</span>
+
+<span class="sd">- **output_dir** *(PathOrStr)*:</span>
+
+<span class="sd">    Path to the directory where to write the output files.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+
+<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">TWISS_ELEMENTS_DAT</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BEAM</span><span class="p">,</span>
+    <span class="n">BEAM_DIR</span><span class="p">,</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">BETA_KMOD_FILENAME</span><span class="p">,</span>
+    <span class="n">BETA_STAR_FILENAME</span><span class="p">,</span>
+    <span class="n">BETASTAR</span><span class="p">,</span>
+    <span class="n">BETAWAIST</span><span class="p">,</span>
+    <span class="n">DELTA</span><span class="p">,</span>
+    <span class="n">ERR</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">LABEL</span><span class="p">,</span>
+    <span class="n">MDL</span><span class="p">,</span>
+    <span class="n">NAME</span><span class="p">,</span>
+    <span class="n">S_LOCATION</span><span class="p">,</span>
+    <span class="n">TIME</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+    <span class="n">WAIST</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">KMOD_PHASE_ADV</span> <span class="k">as</span> <span class="n">PHASEADV</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span> <span class="n">save_config</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">BPM_RESULTS_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;BPM&quot;</span>
+<span class="n">BETASTAR_RESULTS_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;BETASTAR&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates and returns the parameters for the kmod_output function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;measurements&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Paths to the K-modulation results files to import. &quot;</span>
+             <span class="s2">&quot;Can be either the TFS-files directly or a path to a folder containing them.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to model twiss file, or a folder containing &#39;twiss_elemtents.dat&#39;. &quot;</span>
+             <span class="s2">&quot;The model determines which elements to keep.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;beam&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Beam for which to import.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_dir&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the directory where to write the output files.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<div class="viewcode-block" id="import_kmod_data">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_import.import_kmod_data">[docs]</a>
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">import_kmod_data</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads model and measurement files to calculate differences in beta functions </span>
+<span class="sd">    and writes the results to output files.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        measurements (Sequence[Path|str]):</span>
+<span class="sd">            A sequence of k-modulation results files to import. </span>
+<span class="sd">            This can include either single measurements (e.g., &#39;lsa_results.tfs&#39;),</span>
+<span class="sd">            averaged results (e.g., &#39;averaged_bpm_beam1_ip1_beta0.22m.tfs&#39;) or a </span>
+<span class="sd">            path to the folder containing multiple of such files.</span>
+<span class="sd">        </span>
+<span class="sd">        model (Path|str):</span>
+<span class="sd">            Path to the model twiss file, or a folder containing &#39;twiss_elements.dat&#39;.</span>
+<span class="sd">            Determines which elements to keep, i.e. `twiss.dat` keeps only the BPMs,</span>
+<span class="sd">            `twiss_elements.dat` keeps BPMs and IPs.</span>
+<span class="sd">        </span>
+<span class="sd">        output_dir (Path|str):</span>
+<span class="sd">            Path to the output directory, i.e. the optics-measurement directory </span>
+<span class="sd">            into which to import these K-Modulation results.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary of kmod-DataFrames by planes and IDs (BPM, BETASTAR).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting Kmod Import.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Prepare output dir    </span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">save_config</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
+
+    <span class="c1"># read data</span>
+    <span class="n">df_model</span> <span class="o">=</span> <span class="n">read_model_df</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">bpm_results_list</span><span class="p">,</span> <span class="n">betastar_results_list</span> <span class="o">=</span> <span class="n">_read_kmod_results</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">measurements</span><span class="p">,</span> <span class="n">beam</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">)</span>
+
+    <span class="c1"># create new dataframes</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bpm_results_list</span><span class="p">):</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">convert_bpm_results</span><span class="p">(</span><span class="n">bpm_results_list</span><span class="p">,</span> <span class="n">df_model</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">betastar_results_list</span><span class="p">):</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">convert_betastar_results</span><span class="p">(</span><span class="n">betastar_results_list</span><span class="p">,</span> <span class="n">df_model</span><span class="p">,</span> <span class="n">beam</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">))</span>
+    
+    <span class="c1"># write output</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_write_output</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># BPM Results Conversion ---</span>
+
+<div class="viewcode-block" id="convert_bpm_results">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_import.convert_bpm_results">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_bpm_results</span><span class="p">(</span>
+    <span class="n">bpm_results_list</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> 
+    <span class="n">df_model</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> 
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Convert K-Modulation BPM results to kmod-DataFrames</span>
+<span class="sd">    that can be placed in the optics-measurement directory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bpm_results_list (Sequence[tfs.TfsDataFrame]): List of BPM results.</span>
+<span class="sd">        df_model (tfs.TfsDataFrame): Model data. </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, tfs.TfsDataFrame]: Dictionary of kmod-DataFrames by planes and with BPM ID as key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting K-modulation BPM results&quot;</span><span class="p">)</span>
+
+    <span class="c1"># merge files</span>
+    <span class="n">bpm_results_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">NAME</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="n">df</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">bpm_results_list</span><span class="p">]</span>
+    <span class="n">kmod_results</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">bpm_results_list</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,)</span>
+    <span class="n">df_model</span> <span class="o">=</span> <span class="n">_sync_model_index</span><span class="p">(</span><span class="n">kmod_results</span><span class="p">,</span> <span class="n">df_model</span><span class="p">)</span> 
+
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">beta_kmod</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_model</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        
+        <span class="c1"># copy s and beta</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">S</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">S</span><span class="p">]</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+        <span class="c1"># model-delta and beta-beating</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># tune</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span>
+
+        <span class="n">beta_kmod</span> <span class="o">=</span> <span class="n">beta_kmod</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+
+        <span class="n">dfs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BPM_RESULTS_ID</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta_kmod</span>
+
+    <span class="k">return</span> <span class="n">dfs</span></div>
+
+
+
+<span class="c1"># BetaStar Results Conversion ---</span>
+
+<div class="viewcode-block" id="convert_betastar_results">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_import.convert_betastar_results">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_betastar_results</span><span class="p">(</span>
+    <span class="n">betastar_results_list</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> 
+    <span class="n">df_model</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
+    <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Convert K-Modulation BetaStar results to kmod-DataFrames</span>
+<span class="sd">    that can be placed in the optics-measurement directory. </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        betastar_results_list (Sequence[tfs.TfsDataFrame]): List of BetaStar results.</span>
+<span class="sd">        df_model (tfs.TfsDataFrame): Model data.</span>
+<span class="sd">        beam (int): Beam to import.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, tfs.TfsDataFrame]: Dictionary of kmod-DataFrames by planes and with BETASTAR ID as key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting K-modulation BetaStar results&quot;</span><span class="p">)</span>
+
+    <span class="c1"># merge files and set index</span>
+    <span class="n">kmod_results</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">betastar_results_list</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="n">BEAM</span> <span class="ow">in</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">BEAM</span><span class="p">:</span>  <span class="c1"># averaged file</span>
+        <span class="k">if</span> <span class="n">beam</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need to give beam when importing averaged betastar files.&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="c1"># as column</span>
+            <span class="n">kmod_results</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kmod_results</span><span class="p">[</span><span class="n">BEAM</span><span class="p">]</span> <span class="o">==</span> <span class="n">beam</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">kmod_results</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">BEAM</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># already as index</span>
+            <span class="n">kmod_results</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">kmod_results</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kmod_results</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="p">[</span><span class="n">LABEL</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;IP</span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">kmod_results</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">LABEL</span><span class="p">,</span> <span class="n">TIME</span><span class="p">])</span>
+
+    <span class="n">df_model</span> <span class="o">=</span> <span class="n">_sync_model_index</span><span class="p">(</span><span class="n">kmod_results</span><span class="p">,</span> <span class="n">df_model</span><span class="p">)</span> 
+
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+        <span class="n">beta_kmod</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_model</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        
+        <span class="c1"># copy s and beta from model</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">S</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">S</span><span class="p">]</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+        <span class="c1"># copy columns with errors from results</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="p">(</span><span class="n">BETASTAR</span><span class="p">,</span> <span class="n">BETAWAIST</span><span class="p">,</span> <span class="n">WAIST</span><span class="p">,</span> <span class="n">PHASEADV</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">WAIST</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">S_LOCATION</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+            <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+
+        <span class="c1"># model-delta and beta-beating</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">beta_kmod</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># tune</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span>
+        <span class="n">beta_kmod</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span>
+
+        <span class="n">beta_kmod</span> <span class="o">=</span> <span class="n">beta_kmod</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">S</span><span class="p">)</span>
+
+        <span class="n">dfs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETASTAR_RESULTS_ID</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta_kmod</span>
+
+    <span class="k">return</span> <span class="n">dfs</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_sync_model_index</span><span class="p">(</span><span class="n">kmod_results</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">df_model</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">):</span>
+    <span class="n">missing_elements</span> <span class="o">=</span> <span class="n">kmod_results</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">df_model</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_elements</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span>  <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Elements </span><span class="si">{</span><span class="n">missing_elements</span><span class="si">}</span><span class="s2"> not found in the model. &quot;</span>
+            <span class="s2">&quot;Make sure to use the `elements` file as input!&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kmod_results</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span>
+
+
+<span class="c1"># IO ---</span>
+
+<div class="viewcode-block" id="read_model_df">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_import.read_model_df">[docs]</a>
+<span class="k">def</span> <span class="nf">read_model_df</span><span class="p">(</span><span class="n">model_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Read model twiss file, </span>
+<span class="sd">    either directly or twiss_elements.dat from a folder. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">model_path</span>  <span class="c1"># is a TfsDataFrame</span>
+
+    <span class="k">if</span> <span class="n">model_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">model_path</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+   
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_read_kmod_results</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span>    
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Read K-modulation results from a list of paths and sort into bpm and betastar types. &quot;&quot;&quot;</span>
+    <span class="c1"># read all files ---</span>
+    <span class="n">all_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span> 
+            <span class="c1"># is a TfsDataFrame</span>
+            <span class="n">all_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> 
+            <span class="k">continue</span>
+        
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="c1"># If the given path was a K-Mod output directory, the tfs might be in sub-dirs per beam</span>
+            <span class="n">beam_dir</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BEAM_DIR</span><span class="si">}{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">beam_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">all_dfs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">beam_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># otherwise, read all files in the given dir</span>
+            <span class="n">all_dfs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="k">continue</span>
+        
+        <span class="c1"># Not a folder, must be a file</span>
+        <span class="n">all_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    
+    <span class="c1"># sort into bpm and betastar --</span>
+    <span class="n">bpm_results</span> <span class="o">=</span> <span class="n">_filter_bpm_results</span><span class="p">(</span><span class="n">all_dfs</span><span class="p">,</span> <span class="n">beam</span><span class="o">=</span><span class="n">beam</span><span class="p">)</span>
+    <span class="n">betastar_results</span> <span class="o">=</span> <span class="n">_filter_betastar_results</span><span class="p">(</span><span class="n">all_dfs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bpm_results</span><span class="p">,</span> <span class="n">betastar_results</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_bpm_results</span><span class="p">(</span><span class="n">dfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+    <span class="n">bpm_dfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span> <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">bpm_dfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">bpm_dfs</span> <span class="k">if</span> <span class="p">(</span>
+        <span class="n">NAME</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;(.*\.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">$|IP\d$)&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">bpm_dfs</span>
+
+
+<span class="k">def</span> <span class="nf">_filter_betastar_results</span><span class="p">(</span><span class="n">dfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">df</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span> <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s2">X&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_write_output</span><span class="p">(</span><span class="n">dfs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Write output files if data exists. &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">id_</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">((</span><span class="n">BETASTAR_RESULTS_ID</span><span class="p">,</span> <span class="n">BETA_STAR_FILENAME</span><span class="p">),</span> <span class="p">(</span><span class="n">BPM_RESULTS_ID</span><span class="p">,</span> <span class="n">BETA_KMOD_FILENAME</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">dfs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">id_</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+
+
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">import_kmod_data</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

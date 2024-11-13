@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plotting &mdash; omc3 0.18.1 documentation</title>
+  <title>Plotting &mdash; omc3 0.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1e56ff10"></script>
+      <script src="../_static/documentation_options.js?v=cbfb3150"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#hole-in-one">Hole in One</a></li>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
@@ -71,12 +70,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-correction-test">Plot Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-k-modulation-results">Plot K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-bbq">Plot BBQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -109,12 +110,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#frequency">Frequency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#handler">Handler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/kmod.html">Kmod</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#analysis">Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#helper">Helper</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
@@ -211,6 +206,7 @@
 <li><a class="reference internal" href="#plot-spectrum">Plot Spectrum</a></li>
 <li><a class="reference internal" href="#plot-correction-test">Plot Correction Test</a></li>
 <li><a class="reference internal" href="#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li><a class="reference internal" href="#plot-k-modulation-results">Plot K-Modulation Results</a></li>
 <li><a class="reference internal" href="#plot-bbq">Plot BBQ</a></li>
 </ul>
 </li>
@@ -952,6 +948,87 @@ An id for the 4 different plots will be added before the suffix.</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_amplitude_detuning.</span></span><span class="sig-name descname"><span class="pre">plot_odr_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odr_fits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Output</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xymax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/plot_amplitude_detuning.html#plot_odr_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Plot the odr fit in 3D.</p>
+</dd></dl>
+
+<section id="plot-k-modulation-results">
+<h2>Plot K-Modulation Results<a class="headerlink" href="#plot-k-modulation-results" title="Link to this heading"></a></h2>
+<p>Create Plots for the K-Modulation data.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>data</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>Path to the K-Mod BetaStar (i.e. <cite>results.tfs</cite>) DataFrame,
+e.g. from <cite>omc3.kmod_averages</cite>, or the DataFrame itself.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>ip</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>IP this result is from (for plot label and filename only).</p>
+</div></blockquote>
+</li>
+<li><p><strong>betastar</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Model beta-star values (x, y) for reference.</p>
+</div></blockquote>
+</li>
+<li><p><strong>waist</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Model waist values (x, y) for reference.</p>
+</div></blockquote>
+</li>
+<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
+<blockquote>
+<div><p>Additional style rcParameters which update the set of predefined ones.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to save the plots into. If not given, no plots will be saved.</p>
+</div></blockquote>
+</li>
+<li><p><strong>plot_styles</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Which plotting styles to use, either from plotting.styles.*.mplstyles
+or default mpl.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['standard',</span> <span class="pre">'kmod_results']</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>show</strong>:</p>
+<blockquote>
+<div><p>Show the plots.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_kmod_results.</span></span><span class="sig-name descname"><span class="pre">plot_kmod_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">plt.Figure</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/plotting/plot_kmod_results.html#plot_kmod_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Function to plot the beta-beating and waist from K-Modulation data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.plotting.plot_kmod_results.</span></span><span class="sig-name descname"><span class="pre">plot_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_kmod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="reference internal" href="../_modules/omc3/plotting/plot_kmod_results.html#plot_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Function to plot the resulting parameter, beta function or waist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> (<em>tfs.TfsDataFrame</em>) -- The results to plot.</p></li>
+<li><p><strong>parameter</strong> (<em>str</em>) -- Parameter to plot. Either ‘beta’ or ‘waist’.</p></li>
+<li><p><strong>reference</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) -- Reference values to plot.</p></li>
+<li><p><strong>ip</strong> (<em>str</em><em>|</em><em>None</em>) -- The specific IP to plot. (only used as label)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created figure.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <section id="plot-bbq">

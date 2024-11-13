@@ -26,6 +26,11 @@ Plotting
     :noindex:
 
 
+.. automodule:: omc3.plotting.plot_kmod_results
+    :members:
+    :noindex:
+
+
 .. automodule:: omc3.plotting.plot_bbq
     :members:
     :noindex:

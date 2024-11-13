@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.18.1 documentation</title>
+  <title>Scripts &mdash; omc3 0.19.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,10 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1e56ff10"></script>
+      <script src="../_static/documentation_options.js?v=cbfb3150"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -50,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#hole-in-one">Hole in One</a></li>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#run-kmod">Run Kmod</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
@@ -72,12 +70,14 @@
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-spectrum">Plot Spectrum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-correction-test">Plot Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-bbq">Plot BBQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#merge-kmod-results">Merge KMOD Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -110,12 +110,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#frequency">Frequency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#handler">Handler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/kmod.html">Kmod</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#analysis">Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/kmod.html#helper">Helper</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
@@ -208,7 +202,8 @@
     <ul>
 <li><a class="reference internal" href="#">Scripts</a><ul>
 <li><a class="reference internal" href="#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
-<li><a class="reference internal" href="#merge-kmod-results">Merge KMOD Results</a></li>
+<li><a class="reference internal" href="#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li><a class="reference internal" href="#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -441,96 +436,202 @@ compensation by equation, ‘_free2’ by model).</p>
 </ul>
 </dd></dl>
 
-<section id="merge-kmod-results">
-<h2>Merge KMOD Results<a class="headerlink" href="#merge-kmod-results" title="Link to this heading"></a></h2>
-<p>Script to merge the results from KMOD into one <cite>TfsDataFrame</cite>.
-The script takes the kmod-results folders as input and merges the lsa-result tfs-files in these
-together.
-The resulting <cite>TfsDataFrame</cite> is returned, but also written out if an <code class="docutils literal notranslate"><span class="pre">outputdir</span></code> is given.</p>
-<p><strong>BPMWKs</strong> (common for both beams) are hereby dropped, to avoid duplicated elements.</p>
-<p>Headers of the same name will be overwritten (depending on the alphabetical order of the
-directory names).</p>
-<p>Some sanity checks are performed, e.g. that there is only one entry per element. If IP1 and IP5
-results are given for both planes and beams, the luminosity imbalance between these IPs is also
-calculated and written into the header, as well as logged.</p>
+<section id="import-k-modulation-results">
+<h2>Import K-Modulation Results<a class="headerlink" href="#import-k-modulation-results" title="Link to this heading"></a></h2>
+<p>Imports K-Mod data and writes them into a file containing beta data,
+in the same format as beta-from-phase or beta-from-amplitude.
+This data can then be easily used for the same purposes, e.g. global correction.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
 <ul>
-<li><p><strong>kmod_dirs</strong> <em>(Path)</em>:</p>
+<li><p><strong>meas_files</strong> <em>(PathOrStr)</em>:</p>
 <blockquote>
-<div><p>Path to kmod directories with stored KMOD measurement files,in particular lsa_results.tfs</p>
+<div><p>Paths to the Kmod results files to import.
+Can be either the TFS-files directly or a path to a folder containing them.</p>
+</div></blockquote>
+</li>
+<li><p><strong>model</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the model twiss file, or a folder containing ‘twiss_elemtents.dat’.
+The model determines which elements to keep.</p>
+</div></blockquote>
+</li>
+<li><p><strong>beam</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>Beam for which to import.</p>
 </div></blockquote>
 </li>
 </ul>
 <p><em>--Optional--</em></p>
 <ul>
-<li><p><strong>outputdir</strong> <em>(Path)</em>:</p>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
 <blockquote>
-<div><p>Output directory where to write the result tfs</p>
+<div><p>Path to the directory where to write the output files.</p>
 </div></blockquote>
 </li>
 </ul>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">get_kmod_ip_subdirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kmod_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_kmod_ip_subdirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns the paths to the ip-subdirectories in the kmod result directories.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kmod_dirs</strong> (<em>List</em><em>[</em><em>Path</em><em>]</em>) -- Main kmod result directories with IP-subdirectories.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>(List[Path]) Paths to all subdirectories.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">get_lumi_imbalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">AffineScalarFunc</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AffineScalarFunc</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AffineScalarFunc</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#get_lumi_imbalance"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Calculate the IP1 / IP5 luminosity imbalance. The luminosity is taken as defined in
-<cite>Concept of luminosity</cite>, Eq(17): <a class="reference external" href="https://cds.cern.ch/record/941318/files/p361.pdf">https://cds.cern.ch/record/941318/files/p361.pdf</a></p>
-<p>The calculation of the luminosity imbalance is then:</p>
-<div class="math notranslate nohighlight">
-\[\frac{L_{IP1}}{L_{IP5}}=\frac{\sqrt{\beta_{x1,IP5}+\beta_{x2,IP5}}
-\cdot\sqrt{\beta_{y1,IP5}+\beta_{y2,IP5}}}
-{\sqrt{\beta_{x1,IP1}+\beta_{x2,IP1}}\cdot\sqrt{\beta_{y1,IP1}+\beta_{y2,IP1}}}\]</div>
-<p>and the error:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}\sigma_{\frac{L_{IP1}}{L_{IP5}}} = \frac{1}{2}\frac{L_{IP1}}{L_{IP5}}
-\cdot \sqrt{\sum_{\substack{z \in (x,y) \\ i \in (IP1, IP5) }}
-{\frac{\sigma^2_{\beta_{z1,i}} + \sigma^2_{\beta_{z2,i}}} {(\beta_{z1,i}+\beta_{z2,i})^2}}}\end{split}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data_frame</strong> (<em>tfs.TfsDataFrame</em>) -- a <cite>TfsDataFrame</cite> with the results from a kmod analysis.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Tuple with the imbalance, the betas at IPs as ufloats.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">merge_kmod_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_kmod_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Main function to merge K-Mod output.
-See <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.scripts.merge_kmod_results</span></code>.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.scripts.merge_kmod_results.</span></span><span class="sig-name descname"><span class="pre">merge_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/merge_kmod_results.html#merge_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Merge different kmod analysis results from a list of directories into a single <cite>TfsDataFrame</cite>.</p>
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_import.</span></span><span class="sig-name descname"><span class="pre">convert_betastar_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">betastar_results_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tfs.TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_import.html#convert_betastar_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Convert K-Modulation BetaStar results to kmod-DataFrames
+that can be placed in the optics-measurement directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>directories</strong> (<em>List</em><em>[</em><em>pathlib.Path</em><em>]</em>) -- list of PosixPath objects to directories holding TFS
-files with the results of kmod analysis.</p></li>
-<li><p><strong>filename</strong> (<em>str</em>) -- name of the TFS files to look for in the provided directories.</p></li>
+<li><p><strong>betastar_results_list</strong> (<em>Sequence</em><em>[</em><em>tfs.TfsDataFrame</em><em>]</em>) -- List of BetaStar results.</p></li>
+<li><p><strong>df_model</strong> (<em>tfs.TfsDataFrame</em>) -- Model data.</p></li>
+<li><p><strong>beam</strong> (<em>int</em>) -- Beam to import.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <cite>TfsDataFrame</cite> combining all the loaded files from the provided directories.</p>
+<dd class="field-even"><p>Dictionary of kmod-DataFrames by planes and with BETASTAR ID as key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, tfs.TfsDataFrame]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_import.</span></span><span class="sig-name descname"><span class="pre">convert_bpm_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bpm_results_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tfs.TfsDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_import.html#convert_bpm_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Convert K-Modulation BPM results to kmod-DataFrames
+that can be placed in the optics-measurement directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bpm_results_list</strong> (<em>Sequence</em><em>[</em><em>tfs.TfsDataFrame</em><em>]</em>) -- List of BPM results.</p></li>
+<li><p><strong>df_model</strong> (<em>tfs.TfsDataFrame</em>) -- Model data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of kmod-DataFrames by planes and with BPM ID as key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, tfs.TfsDataFrame]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_import.</span></span><span class="sig-name descname"><span class="pre">import_kmod_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_import.html#import_kmod_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reads model and measurement files to calculate differences in beta functions
+and writes the results to output files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurements</strong> (<em>Sequence</em><em>[</em><em>Path</em><em>|</em><em>str</em><em>]</em>) -- A sequence of k-modulation results files to import.
+This can include either single measurements (e.g., ‘lsa_results.tfs’),
+averaged results (e.g., ‘averaged_bpm_beam1_ip1_beta0.22m.tfs’) or a
+path to the folder containing multiple of such files.</p></li>
+<li><p><strong>model</strong> (<em>Path</em><em>|</em><em>str</em>) -- Path to the model twiss file, or a folder containing ‘twiss_elements.dat’.
+Determines which elements to keep, i.e. <cite>twiss.dat</cite> keeps only the BPMs,
+<cite>twiss_elements.dat</cite> keeps BPMs and IPs.</p></li>
+<li><p><strong>output_dir</strong> (<em>Path</em><em>|</em><em>str</em>) -- Path to the output directory, i.e. the optics-measurement directory
+into which to import these K-Modulation results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of kmod-DataFrames by planes and IDs (BPM, BETASTAR).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_import.</span></span><span class="sig-name descname"><span class="pre">read_model_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_import.html#read_model_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Read model twiss file,
+either directly or twiss_elements.dat from a folder.</p>
+</dd></dl>
+
+<section id="k-mod-luminosity-imbalance">
+<h2>K-Mod Luminosity Imbalance<a class="headerlink" href="#k-mod-luminosity-imbalance" title="Link to this heading"></a></h2>
+<p>Calculate the luminosity imbalance from the averaged K-modulation results,
+based on the effective betas for two IPs, i.e. assuming that apart from the
+beta-function all other parameters are identical for the two IPs.</p>
+<p>This script needs the data in the format of the average script <cite>kmod_average.py</cite>,
+as the imbalance is calculated over both beams and this data is only available
+at that point.
+The dataframes therefore need to have the columns <cite>BEAM</cite>, <cite>BETSTAR</cite> and <cite>ERRBETSTAR</cite>,
+and data for both beams needs to be available.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You need to provide the data for exactly two of the four IP’s.</p>
+</div>
+<p><strong>Arguments:</strong></p>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>ip1</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>Path or DataFrame of the averaged beta-star results of IP1.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ip2</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>Path or DataFrame of the averaged beta-star results of IP2.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ip5</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>Path or DataFrame of the averaged beta-star results of IP5.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ip8</strong> <em>(PathOrStrOrDataFrame)</em>:</p>
+<blockquote>
+<div><p>Path or DataFrame of the averaged beta-star results of IP8.</p>
+</div></blockquote>
+</li>
+<li><p><strong>betastar</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Model beta-star values (x, y) of measurements. Only used for filename.</p>
+</div></blockquote>
+</li>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the directory where to write the output files.</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_lumi_imbalance.</span></span><span class="sig-name descname"><span class="pre">calculate_lumi_imbalance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_lumi_imbalance.html#calculate_lumi_imbalance"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Perform the luminosity imbalance calculation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_lumi_imbalance.</span></span><span class="sig-name descname"><span class="pre">get_effective_beta_star_w_err</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_lumi_imbalance.html#get_effective_beta_star_w_err"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculates the effective beta*, i.e. the denominator of the luminosity as given in e.g.
+Eq(17): <a class="reference external" href="https://cds.cern.ch/record/941318/files/p361.pdf">https://cds.cern.ch/record/941318/files/p361.pdf</a> , without any constants
+as we assume here that these are equal for both IPs, and we only care about the ratio.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_lumi_imbalance.</span></span><span class="sig-name descname"><span class="pre">get_imbalance_w_err</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ipA_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ipA_beta_err</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ipB_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ipB_beta_err</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_lumi_imbalance.html#get_imbalance_w_err"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the luminosity imbalance IP_A / IP_B  and its error, based on the effective betas for IP_A and IP_B.
+This implies, that all the other beam parameters (see e.g. Eq(17): <a class="reference external" href="https://cds.cern.ch/record/941318/files/p361.pdf">https://cds.cern.ch/record/941318/files/p361.pdf</a>)
+are the same for both IPs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_lumi_imbalance.</span></span><span class="sig-name descname"><span class="pre">get_lumi_imbalance_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_lumi_imbalance.html#get_lumi_imbalance_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the effective beta stars and the luminosity imbalance from the input dataframes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ipA</strong> (<em>tfs.TfsDataFrame</em>) -- a <cite>TfsDataFrame</cite> with the averaged results from a kmod analysis, for IP_A.</p></li>
+<li><p><strong>ipB</strong> (<em>tfs.TfsDataFrame</em>) -- a <cite>TfsDataFrame</cite> with the averaged results from a kmod analysis, for IP_B.</p></li>
+<li><p><strong>(</strong><strong>Actually</strong></p></li>
+<li><p><strong>fine.</strong><strong>)</strong> (<em>any name that ends with an integer is</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.</p>
 </dd>
 </dl>
 </dd></dl>
