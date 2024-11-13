@@ -40,3 +40,7 @@ Scripts
     :members:
     :noindex:
 
+
+.. automodule:: omc3.scripts.bad_bpms_summary
+    :members:
+    :noindex:

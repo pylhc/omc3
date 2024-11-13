@@ -72,6 +72,7 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 - `kmod_average.py` to calculate the average of multiple K-modulation measurements.
 - `kmod_import.py` to import a K-modulation measurement into an optics-measurement directory.
 - `kmod_lumi_imbalace.py` to calculate the luminosity imbalance between two IPs from averaged K-modulation files.
+- `bad_bpms_summary.py` to collect and summarize the bad BPMs from GUI runs.
 
 Example use for these scripts can be found in the [`tests`](tests) files.
 Documentation including relevant flags and parameters can be found at <https://pylhc.github.io/omc3/>.
