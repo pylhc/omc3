@@ -6,7 +6,17 @@ Scripts
     :noindex:
 
 
-.. automodule:: omc3.scripts.merge_kmod_results
+.. automodule:: omc3.scripts.kmod_averages
+    :members:
+    :noindex:
+
+
+.. automodule:: omc3.scripts.kmod_import
+    :members:
+    :noindex:
+
+
+.. automodule:: omc3.scripts.kmod_lumi_imbalance
     :members:
     :noindex:
 

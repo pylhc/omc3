@@ -73,7 +73,7 @@ instance/
 
 # Sphinx build directory and sphinx-gallery generated documents
 docs/_build/
-docs/_build/
+doc/_build/
 doc_build/
 .doc_build
 .doc_build/
