@@ -5,15 +5,14 @@ Bad BPMs Summary
 Scans all measurements in a list of given GUI output folders and compiles a list of bad BPMs with
 their given number of appearances after 'harpy' and 'isolation forest'.
 """
-from collections import defaultdict
 from collections.abc import Sequence
 from pathlib import Path
-from generic_parser import DotDict, EntryPointParameters, entrypoint
-import pandas as pd
-import tfs
 
-from omc3.utils.iotools import PathOrStr
+import tfs
+from generic_parser import DotDict, EntryPointParameters, entrypoint
+
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -30,6 +29,8 @@ PLANE = "PLANE"
 SOURCE = "SOURCE"
 REASON = "REASON"
 COUNT = "COUNT"
+FILE = "FILE"
+FILE_COUNT = "FILE_COUNT"
 PERCENTAGE = "PERCENTAGE"
 
 # Files ---
@@ -95,10 +96,21 @@ def bad_bpms_summary(opt: DotDict):
 
 # Collection of Data ---
 
+def get_empty_df() -> tfs.TfsDataFrame:
+    """ Create an empty TfsDataFrame with the correct column names. """
+    return tfs.TfsDataFrame(columns=[NAME, ACCEL, PLANE, SOURCE, FILE])
+
+
 def collect_bad_bpms(root: Path, dates: Sequence[Path | str], accel_glob: str) -> tfs.TfsDataFrame:
-    """ Create a TfsDataFrame with all bad-bpms within selcted dates. 
-    
-    
+    """ Create a TfsDataFrame with all bad-bpms within selcted dates.
+
+    Args:
+        root (Path): Root path to the GUI output folder.
+        dates (Sequence[Path | str]): List of dates or glob patterns to collect bad-bpms from.
+        accel_glob (str): Accelerator name (glob for the sub-directories).
+
+    Returns:
+        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms within selcted dates.
     
     """
     dfs = []
@@ -110,30 +122,51 @@ def collect_bad_bpms(root: Path, dates: Sequence[Path | str], accel_glob: str) -
 
         for date_dir in root.glob(date):
             dfs.append(collect_date(date_dir, accel_glob))
-    return tfs.concat(dfs, axis="index", ignore_index=True, new_headers=get_headers_sum(dfs)) 
+    return tfs.concat(dfs, axis="index", ignore_index=True) 
 
 
 def collect_date(date_dir: Path, accel_glob: str) -> tfs.TfsDataFrame:
+    """ Collect bad-bpms for a single date.
+    
+    Args:
+        date_dir (Path): Path to the date directory.
+        accel_glob (str): Accelerator name (glob for the sub-directories).
+
+    Returns:
+        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms for the date.
+    """
     dfs: list[tfs.TfsDataFrame] = []
 
     for accel_dir in date_dir.glob(accel_glob):
         measurements_dir = accel_dir / MEASUREMENT_DIR
+        if not measurements_dir.is_dir():
+            continue
+
         for measurement in measurements_dir.iterdir():
             if not measurement.is_dir():
                 continue
 
-            df_collected = collect_measurement_dir(measurement, accel=accel_dir.name)
+            df_collected = collect_measurement_dir(measurement)
+            df_collected.loc[:, ACCEL] = accel_dir.name
             dfs.append(df_collected)
 
     if not len(dfs):
         return get_empty_df()
 
-    return tfs.concat(dfs, axis="index", ignore_index=True, new_headers=get_headers_sum(dfs)) 
+    return tfs.concat(dfs, axis="index", ignore_index=True) 
     
 
-def collect_measurement_dir(measurement_dir: Path, accel: str) -> tfs.TfsDataFrame:
+def collect_measurement_dir(measurement_dir: Path) -> tfs.TfsDataFrame:
+    """ Collect bad-bpms for a single measurement directory.
+    
+    Args:
+        measurement_dir (Path): Path to the measurement directory.
+
+    Returns:
+        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms from the measurement directory.
+    
+    """
     dfs: list[tfs.TfsDataFrame] = []
-    headers = defaultdict(int)
 
     readers_map = {
         BAD_BPMS_HARPY: read_harpy_bad_bpms_file,
@@ -142,20 +175,27 @@ def collect_measurement_dir(measurement_dir: Path, accel: str) -> tfs.TfsDataFra
 
     for glob_pattern, reader in readers_map.items():
         for bad_bpms_file in measurement_dir.glob(glob_pattern):
-            new_df, meta = reader(bad_bpms_file, accel)
-            headers[_get_header_key(meta)] += 1
-            dfs.append(new_df)
+            dfs.append(reader(bad_bpms_file))
 
     if not len(dfs):
         return get_empty_df()
     
-    return tfs.concat(dfs, axis="index", ignore_index=True, new_headers=headers)
+    return tfs.concat(dfs, axis="index", ignore_index=True)
 
 
 # File Readers --
             
-def read_harpy_bad_bpms_file(svd_file: Path, accel: str) -> tuple[tfs.TfsDataFrame, pd.Series]:
-    TO_INGNORE = ["not found in model"]
+def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
+    """ Reads a harpy bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.
+    
+    Args:
+        svd_file (Path): Path to the bad-bpm file.
+
+    Returns:
+        tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.
+
+    """
+    TO_INGNORE = ["not found in model", "known bad bpm"]
     COMMENT = "#"
 
     plane = svd_file.name[-1]
@@ -167,54 +207,73 @@ def read_harpy_bad_bpms_file(svd_file: Path, accel: str) -> tuple[tfs.TfsDataFra
     
     df = get_empty_df()
     df.loc[:, NAME] = list(set(line[0] for line in lines))
-    meta = pd.Series({PLANE: plane.upper(), SOURCE: HARPY, ACCEL: accel})
-    df.loc[:, meta.keys()] = meta.to_list()
-    return df, meta
+    df.loc[:, PLANE] = plane.upper()
+    df.loc[:, SOURCE] = HARPY
+    df.loc[:, FILE] = str(svd_file)
+    return df
 
 
-def read_iforest_bad_bpms_file(iforest_file: Path, accel: str) -> tuple[tfs.TfsDataFrame, pd.Series]:
+def read_iforest_bad_bpms_file(iforest_file: Path) -> tfs.TfsDataFrame:
+    """ Reads an iforest bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.
+    
+    Args:
+        iforest_file (Path): Path to the bad-bpm file.
+
+    Returns:
+        tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.
+
+    """
     df_iforest = tfs.read(iforest_file)
     plane = iforest_file.stem[-1]
 
     df = get_empty_df()
     df.loc[:, NAME] = list(set(df_iforest[NAME]))  # hint: be sure to ignore index
-    meta = pd.Series({PLANE: plane.upper(), SOURCE: IFOREST, ACCEL: accel})
-    df.loc[:, meta.keys()] = meta.to_list()
-    return df, meta
-
-# Helper --
-
-def get_empty_df() -> tfs.TfsDataFrame:
-    return tfs.TfsDataFrame(columns=[NAME, ACCEL, PLANE, SOURCE])
-
-
-def get_headers_sum(dfs: Sequence[tfs.TfsDataFrame]) -> dict[str, int]:
-    if not len(dfs):
-        return {}
-
-    all_keys = set(key for df in dfs for key in df.headers.keys())
-    return {
-        key: sum(df.headers[key] for df in dfs if key in df.headers) for key in all_keys
-    }
-
-
-def _get_header_key(series: pd.Series) -> str:
-    return f"{series[SOURCE]}_{series[ACCEL]}_{series[PLANE]}"
+    df.loc[:, PLANE] = plane.upper()
+    df.loc[:, SOURCE] = IFOREST 
+    df.loc[:, FILE] = str(iforest_file)
+    return df
 
 
 # Evaluaion ----
 
 
 def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
-    df_counted = df.groupby(list(df.columns)).size().reset_index(name=COUNT)
-    df_counted = tfs.TfsDataFrame(df_counted.sort_values(COUNT, ascending=False), headers=df.headers)
+    """ Evaluates the gathered bad-bpms and returns a TfsDataFrame with the results.
+
+    The evaluation is based on the following criteria:
+    - Count how often a BPM is bad
+    - Count the total number of (unique) files for each combination of accelerator, source and plane
+
+    From this information the percentage of how often a BPM is deemed bad is calculated.
+    
+    Args:
+        df (tfs.TfsDataFrame): TfsDataFrame with all bad-bpms.
+
+    Returns:
+        tfs.TfsDataFrame: TfsDataFrame with the evaluated results.
+    """
+    # Count how often a BPM is bad
+    df_counted = df.groupby([NAME, ACCEL, SOURCE, PLANE]).size().reset_index(name=COUNT)
+
+    # Count the total number of (unique) files for each combination of accelerator, source and plane
+    file_count = df.groupby([ACCEL, SOURCE, PLANE])[FILE].nunique().reset_index(name=FILE_COUNT)
+    df_counted = df_counted.merge(file_count, how="left", on=[ACCEL, SOURCE, PLANE])
+
     df_counted.loc[:, PERCENTAGE] = round(
-        (df_counted[COUNT] / df_counted.apply(_get_header_key, axis="columns").map(df_counted.headers)) * 100, 2
+        (df_counted[COUNT] / df_counted[FILE_COUNT]) * 100, 2
     )
+    
+    df_counted = tfs.TfsDataFrame(df_counted.sort_values(PERCENTAGE, ascending=False), headers=df.headers)
     return df_counted
 
 
 def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
+    """ Prints the results to the console (INFO level). 
+    
+    Args:
+        df_counted (tfs.TfsDataFrame): TfsDataFrame with the evaluated results.
+        print_percentage (float): Print out BPMs that appear in more than this percentage of measurements.
+    """
     percentage_mask = df_counted[PERCENTAGE] >= print_percentage
 
     for accel in sorted(df_counted[ACCEL].unique()):
@@ -223,7 +282,7 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
             source_mask = df_counted[SOURCE] == source
             df_filtered = df_counted.loc[percentage_mask & source_mask & accel_mask, :]
             msg = "\n".join(
-                f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{df_counted.headers[_get_header_key(row)]})" 
+                f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{row[FILE_COUNT]})" 
                 for _,row in df_filtered.iterrows()
             )
             LOG.info(f"Highest bad BPMs of {accel} from {source}:\n" + msg)
@@ -232,10 +291,4 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
 # Script Mode ------------------------------------------------------------------
 
 if __name__ == "__main__":
-    bad_bpms_summary(
-        root="/home/jdilly/mnt/user/slops/data/LHC_DATA/OP_DATA/Betabeat",
-        dates=["2023-09-06"],
-        accel_glob="LHCB*",
-        outfile="bad_bpms_summary.tfs",
-        print_percentage=25.,
-    )
+    bad_bpms_summary()
