@@ -21,7 +21,7 @@ def test_bad_bpms_summary(tmp_path, caplog):
 
     # Test Data has been written
     assert df_eval is not None
-    assert_tfsdataframe_equal(df_eval, tfs.read(outfile))
+    assert_tfsdataframe_equal(df_eval.reset_index(drop=True), tfs.read(outfile))
 
     # Test some random BPMs
     not_in_model = ["BPMSI.A4R6.B1", ]
