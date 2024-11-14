@@ -29,13 +29,13 @@ def test_bad_bpms_summary(tmp_path, caplog):
         assert bpm not in df_eval[NAME].tolist()
 
     iforest_bpms = ["BPM.27R8.B1", "BPMS.2R1.B1"]
-    df_iforest = df_eval[df_eval[SOURCE] == IFOREST]
+    eval_iforest_bpms = df_eval[df_eval[SOURCE] == IFOREST, NAME].tolist()
     for bpm in iforest_bpms:
-        assert bpm in df_iforest[NAME].tolist()
+        assert bpm in eval_iforest_bpms
         assert bpm in caplog.text
 
     harpy_bpms = ["BPMSE.4L6.B1", "BPM.31L5.B1"]
-    df_harpy = df_eval[df_eval[SOURCE] == HARPY]
+    eval_harpy_bpms = df_eval[df_eval[SOURCE] == HARPY, NAME].tolist()
     for bpm in harpy_bpms:
-        assert bpm in df_harpy[NAME].tolist()
+        assert bpm in eval_harpy_bpms
         assert bpm in caplog.text
