@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.19.0 documentation</title>
+  <title>Scripts &mdash; omc3 0.20.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=cbfb3150"></script>
+      <script src="../_static/documentation_options.js?v=b52c616d"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -82,6 +82,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -208,6 +209,7 @@
 <li><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li><a class="reference internal" href="#linfile-cleaning">Linfile Cleaning</a></li>
+<li><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -898,6 +900,189 @@ from cleaning.</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.scripts.linfile_clean.</span></span><span class="sig-name descname"><span class="pre">restore_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/linfile_clean.html#restore_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Restore backupped files.</p>
+</dd></dl>
+
+<section id="bad-bpms-summary">
+<h2>Bad BPMs Summary<a class="headerlink" href="#bad-bpms-summary" title="Link to this heading"></a></h2>
+<p>Scans all measurements in a list of given GUI output folders and compiles a list of bad BPMs with
+their given number of appearances after ‘harpy’ and ‘isolation forest’.</p>
+<div class="admonition-usage admonition">
+<p class="admonition-title">Usage</p>
+<p>Get bad BPMs for LHC-Beam 1 from September 2024 and 2024-10-03</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python -m omc3.scripts.bad_bpms_summary --dates 2024-09-* 2024-10-03 --accel_glob LHCB1 --outfile bad_bpms_sep_2024.txt  --print_percentage 50
+</pre></div>
+</div>
+</div>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>dates</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Dates to include in analysis. This should be either subfolders in
+<cite>root</cite> or glob-patterns for those.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>accel_glob</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Accelerator name (glob for the sub-directories).</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">LHCB*</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>outfile</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the file to write out.</p>
+</div></blockquote>
+</li>
+<li><p><strong>print_percentage</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Print out BPMs that appear in more than this percentage of
+measurements.</p>
+</div></blockquote>
+</li>
+<li><p><strong>root</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the root directory, containing the dates.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">/user/slops/data/LHC_DATA/OP_DATA/Betabeat</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">collect_bad_bpm_files_in_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#collect_bad_bpm_files_in_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Collect bad-bpms for a single measurement directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>Path</em>) -- Path to the directory possibly containing bad-bpm files of type <cite>file_types</cite>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TfsDataFrame with all bad-bpms from the given directory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">collect_bad_bpms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_glob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#collect_bad_bpms"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a TfsDataFrame with all bad-bpms within selected dates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>Path</em>) -- Root path to the GUI output folder.</p></li>
+<li><p><strong>dates</strong> (<em>Sequence</em><em>[</em><em>Path</em><em> | </em><em>str</em><em>]</em>) -- List of dates or glob patterns to collect bad-bpms from.</p></li>
+<li><p><strong>accel_glob</strong> (<em>str</em>) -- Accelerator name (glob for the sub-directories).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TfsDataFrame with all bad-bpms within selected dates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">collect_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_glob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#collect_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Collect bad-bpms for a single date, by checking the sub-directories
+which conform to the <cite>accel_glob</cite> pattern.</p>
+<p>In each accel directory, check for sub-directories named <cite>Measurements</cite> and <cite>Results</cite>,
+which in turn contain which in turn have entries containing the bad-bpms files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>date_dir</strong> (<em>Path</em>) -- Path to the date directory.</p></li>
+<li><p><strong>accel_glob</strong> (<em>str</em>) -- Accelerator name (glob for the sub-directories).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TfsDataFrame with all bad-bpms for the date.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Evaluates the gathered bad-bpms and returns a TfsDataFrame with the results.</p>
+<p>The evaluation is based on the following criteria:
+- Count how often a BPM is bad
+- Count the total number of (unique) files for each combination of accelerator, source and plane</p>
+<p>From this information the percentage of how often a BPM is deemed bad is calculated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>tfs.TfsDataFrame</em>) -- TfsDataFrame with all bad-bpms.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TfsDataFrame with the evaluated results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">get_empty_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#get_empty_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create an empty TfsDataFrame with the correct column names.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">print_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_counted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_percentage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#print_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Log the results to console (INFO level if logger is setup, print otherwise).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_counted</strong> (<em>tfs.TfsDataFrame</em>) -- TfsDataFrame with the evaluated results.</p></li>
+<li><p><strong>print_percentage</strong> (<em>float</em>) -- Print out BPMs that appear in more than this percentage of measurements.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">read_harpy_bad_bpms_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svd_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#read_harpy_bad_bpms_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reads a harpy bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>svd_file</strong> (<em>Path</em>) -- Path to the bad-bpm file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TfsDataFrame with all unique bad-bpms.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">read_iforest_bad_bpms_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iforest_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#read_iforest_bad_bpms_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reads an iforest bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>iforest_file</strong> (<em>Path</em>) -- Path to the bad-bpm file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TfsDataFrame with all unique bad-bpms.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

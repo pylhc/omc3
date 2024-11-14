@@ -1,0 +1,670 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.scripts.bad_bpms_summary &mdash; omc3 0.20.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=b52c616d"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.scripts.bad_bpms_summary</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.scripts.bad_bpms_summary</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Bad BPMs Summary</span>
+<span class="sd">----------------</span>
+
+<span class="sd">Scans all measurements in a list of given GUI output folders and compiles a list of bad BPMs with</span>
+<span class="sd">their given number of appearances after &#39;harpy&#39; and &#39;isolation forest&#39;.</span>
+
+
+
+<span class="sd">.. admonition:: Usage</span>
+
+<span class="sd">  Get bad BPMs for LHC-Beam 1 from September 2024 and 2024-10-03</span>
+
+<span class="sd">  .. code-block:: none </span>
+
+<span class="sd">    python -m omc3.scripts.bad_bpms_summary --dates 2024-09-* 2024-10-03 --accel_glob LHCB1 --outfile bad_bpms_sep_2024.txt  --print_percentage 50 </span>
+
+
+
+<span class="sd">*--Required--*</span>
+
+<span class="sd">- **dates** *(str)*:</span>
+
+<span class="sd">    Dates to include in analysis. This should be either subfolders in</span>
+<span class="sd">    `root` or glob-patterns for those.</span>
+
+
+<span class="sd">*--Optional--*</span>
+
+<span class="sd">- **accel_glob** *(str)*:</span>
+
+<span class="sd">    Accelerator name (glob for the sub-directories).</span>
+
+<span class="sd">    default: ``LHCB*``</span>
+
+
+<span class="sd">- **outfile** *(PathOrStr)*:</span>
+
+<span class="sd">    Path to the file to write out.</span>
+
+
+<span class="sd">- **print_percentage** *(float)*:</span>
+
+<span class="sd">    Print out BPMs that appear in more than this percentage of</span>
+<span class="sd">    measurements.</span>
+
+
+<span class="sd">- **root** *(PathOrStr)*:</span>
+
+<span class="sd">    Path to the root directory, containing the dates.</span>
+
+<span class="sd">    default: ``/user/slops/data/LHC_DATA/OP_DATA/Betabeat``</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+
+<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">OptionalFloat</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Constants ---</span>
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/user/slops/data/LHC_DATA/OP_DATA/Betabeat&quot;</span><span class="p">)</span>
+<span class="n">IFOREST</span> <span class="o">=</span> <span class="s2">&quot;IFOREST&quot;</span>
+<span class="n">HARPY</span> <span class="o">=</span> <span class="s2">&quot;HARPY&quot;</span>
+
+<span class="c1"># Columns ---</span>
+<span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;NAME&quot;</span>
+<span class="n">ACCEL</span> <span class="o">=</span> <span class="s2">&quot;ACCELERATOR&quot;</span>
+<span class="n">PLANE</span> <span class="o">=</span> <span class="s2">&quot;PLANE&quot;</span>
+<span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;SOURCE&quot;</span>
+<span class="n">REASON</span> <span class="o">=</span> <span class="s2">&quot;REASON&quot;</span>
+<span class="n">COUNT</span> <span class="o">=</span> <span class="s2">&quot;COUNT&quot;</span>
+<span class="n">FILE</span> <span class="o">=</span> <span class="s2">&quot;FILE&quot;</span>
+<span class="n">FILE_COUNT</span> <span class="o">=</span> <span class="s2">&quot;FILE_COUNT&quot;</span>
+<span class="n">PERCENTAGE</span> <span class="o">=</span> <span class="s2">&quot;PERCENTAGE&quot;</span>
+
+<span class="c1"># Files ---</span>
+<span class="n">MEASUREMENTS_DIR</span> <span class="o">=</span> <span class="s2">&quot;Measurements&quot;</span>
+<span class="n">RESULTS_DIR</span> <span class="o">=</span> <span class="s2">&quot;Results&quot;</span>
+<span class="n">BAD_BPMS_HARPY</span> <span class="o">=</span> <span class="s2">&quot;*.bad_bpms_*&quot;</span>
+<span class="n">BAD_BPMS_IFOREST</span> <span class="o">=</span> <span class="s2">&quot;bad_bpms_iforest_*.tfs&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dates&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Dates to include in analysis. &quot;</span>
+        <span class="s2">&quot;This should be either subfolders in `root` or glob-patterns for those.&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the root directory, containing the dates.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outfile&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the file to write out.&quot;</span> 
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;print_percentage&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">OptionalFloat</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print out BPMs that appear in more than this percentage of measurements.&quot;</span> 
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accel_glob&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;LHCB*&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Accelerator name (glob for the sub-directories).&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bad_bpms_summary</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="n">df_collection</span> <span class="o">=</span> <span class="n">collect_bad_bpms</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="n">opt</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">accel_glob</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="o">.</span><span class="n">with_stem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">outfile</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_collected&quot;</span><span class="p">),</span> <span class="n">df_collection</span><span class="p">)</span>
+    
+    <span class="n">df_evaluated</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">df_collection</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">df_evaluated</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">print_percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">print_results</span><span class="p">(</span><span class="n">df_evaluated</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">print_percentage</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df_evaluated</span>
+
+
+<span class="c1"># Collection of Data ---</span>
+
+<div class="viewcode-block" id="get_empty_df">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.get_empty_df">[docs]</a>
+<span class="k">def</span> <span class="nf">get_empty_df</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create an empty TfsDataFrame with the correct column names. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">NAME</span><span class="p">,</span> <span class="n">ACCEL</span><span class="p">,</span> <span class="n">PLANE</span><span class="p">,</span> <span class="n">SOURCE</span><span class="p">,</span> <span class="n">FILE</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="collect_bad_bpms">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpms">[docs]</a>
+<span class="k">def</span> <span class="nf">collect_bad_bpms</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">dates</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span> <span class="n">accel_glob</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a TfsDataFrame with all bad-bpms within selected dates.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root (Path): Root path to the GUI output folder.</span>
+<span class="sd">        dates (Sequence[Path | str]): List of dates or glob patterns to collect bad-bpms from.</span>
+<span class="sd">        accel_glob (str): Accelerator name (glob for the sub-directories).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms within selected dates.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">collect_and_append</span><span class="p">(</span><span class="n">date_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Helper to collect for date_dir and append to dfs if not None. &quot;&quot;&quot;</span>
+        <span class="n">df_new</span> <span class="o">=</span> <span class="n">collect_date</span><span class="p">(</span><span class="n">date_dir</span><span class="p">,</span> <span class="n">accel_glob</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df_new</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_new</span><span class="p">)</span>
+
+    <span class="c1"># Loop over dates ---</span>
+    <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">dates</span><span class="p">:</span>
+        <span class="n">date_dir</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="n">date</span>
+        <span class="k">if</span> <span class="n">date_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">collect_and_append</span><span class="p">(</span><span class="n">date_dir</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>  
+            <span class="k">for</span> <span class="n">date_dir</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>
+                <span class="n">collect_and_append</span><span class="p">(</span><span class="n">date_dir</span><span class="p">)</span>
+    
+    <span class="c1"># Check and return ---</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">):</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No bad-bpms found! Resulting TfsDataFrame will be empty.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">get_empty_df</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> </div>
+
+
+
+<div class="viewcode-block" id="collect_date">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_date">[docs]</a>
+<span class="k">def</span> <span class="nf">collect_date</span><span class="p">(</span><span class="n">date_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">accel_glob</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Collect bad-bpms for a single date, by checking the sub-directories </span>
+<span class="sd">    which conform to the `accel_glob` pattern.</span>
+
+<span class="sd">    In each accel directory, check for sub-directories named `Measurements` and `Results`,</span>
+<span class="sd">    which in turn contain which in turn have entries containing the bad-bpms files.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        date_dir (Path): Path to the date directory.</span>
+<span class="sd">        accel_glob (str): Accelerator name (glob for the sub-directories).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms for the date.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dfs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">accel_dir</span> <span class="ow">in</span> <span class="n">date_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">accel_glob</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">subdir_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MEASUREMENTS_DIR</span><span class="p">,</span> <span class="n">RESULTS_DIR</span><span class="p">):</span>
+            <span class="n">analysis_stage_dir</span> <span class="o">=</span> <span class="n">accel_dir</span> <span class="o">/</span> <span class="n">subdir_name</span> 
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">analysis_stage_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">data_dir</span> <span class="ow">in</span> <span class="n">analysis_stage_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">data_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                    <span class="k">continue</span>
+
+                <span class="n">df_collected</span> <span class="o">=</span> <span class="n">collect_bad_bpm_files_in_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">df_collected</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">df_collected</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">ACCEL</span><span class="p">]</span> <span class="o">=</span> <span class="n">accel_dir</span><span class="o">.</span><span class="n">name</span>
+                    <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_collected</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> </div>
+
+    
+
+<div class="viewcode-block" id="collect_bad_bpm_files_in_dir">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpm_files_in_dir">[docs]</a>
+<span class="k">def</span> <span class="nf">collect_bad_bpm_files_in_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Collect bad-bpms for a single measurement directory.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        directory (Path): Path to the directory possibly containing bad-bpm files of type `file_types`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms from the given directory.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">readers_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">BAD_BPMS_HARPY</span><span class="p">:</span> <span class="n">read_harpy_bad_bpms_file</span><span class="p">,</span>
+        <span class="n">BAD_BPMS_IFOREST</span><span class="p">:</span> <span class="n">read_iforest_bad_bpms_file</span>
+    <span class="p">}</span>
+
+    <span class="n">dfs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">glob_pattern</span><span class="p">,</span> <span class="n">reader</span> <span class="ow">in</span> <span class="n">readers_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">bad_bpms_file</span> <span class="ow">in</span> <span class="n">directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">glob_pattern</span><span class="p">):</span>
+            <span class="n">new_df</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="n">bad_bpms_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_df</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># File Readers --</span>
+            
+<div class="viewcode-block" id="read_harpy_bad_bpms_file">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.read_harpy_bad_bpms_file">[docs]</a>
+<span class="k">def</span> <span class="nf">read_harpy_bad_bpms_file</span><span class="p">(</span><span class="n">svd_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reads a harpy bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        svd_file (Path): Path to the bad-bpm file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TO_IGNORE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;not found in model&quot;</span><span class="p">,)</span>
+    <span class="n">TO_MARK</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;known bad bpm&quot;</span><span class="p">,)</span>
+    <span class="n">COMMENT</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span>
+
+    <span class="n">plane</span> <span class="o">=</span> <span class="n">svd_file</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Read and parse file </span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">svd_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">COMMENT</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TO_IGNORE</span><span class="p">]</span>
+    <span class="n">bpms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">TO_MARK</span> <span class="k">else</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">)</span>
+
+    <span class="c1"># Create DataFrame    </span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">get_empty_df</span><span class="p">()</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">NAME</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">PLANE</span><span class="p">]</span> <span class="o">=</span> <span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">SOURCE</span><span class="p">]</span> <span class="o">=</span> <span class="n">HARPY</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">FILE</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">svd_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="read_iforest_bad_bpms_file">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.read_iforest_bad_bpms_file">[docs]</a>
+<span class="k">def</span> <span class="nf">read_iforest_bad_bpms_file</span><span class="p">(</span><span class="n">iforest_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reads an iforest bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        iforest_file (Path): Path to the bad-bpm file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df_iforest</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">iforest_file</span><span class="p">)</span>
+    <span class="n">plane</span> <span class="o">=</span> <span class="n">iforest_file</span><span class="o">.</span><span class="n">stem</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">get_empty_df</span><span class="p">()</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">NAME</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df_iforest</span><span class="p">[</span><span class="n">NAME</span><span class="p">]))</span>  <span class="c1"># hint: be sure to ignore index</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">PLANE</span><span class="p">]</span> <span class="o">=</span> <span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">SOURCE</span><span class="p">]</span> <span class="o">=</span> <span class="n">IFOREST</span> 
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">FILE</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">iforest_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<span class="c1"># Evaluaion ----</span>
+
+
+<div class="viewcode-block" id="evaluate">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.evaluate">[docs]</a>
+<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Evaluates the gathered bad-bpms and returns a TfsDataFrame with the results.</span>
+
+<span class="sd">    The evaluation is based on the following criteria:</span>
+<span class="sd">    - Count how often a BPM is bad</span>
+<span class="sd">    - Count the total number of (unique) files for each combination of accelerator, source and plane</span>
+
+<span class="sd">    From this information the percentage of how often a BPM is deemed bad is calculated.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df (tfs.TfsDataFrame): TfsDataFrame with all bad-bpms.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tfs.TfsDataFrame: TfsDataFrame with the evaluated results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Count how often a BPM is bad</span>
+    <span class="n">df_counted</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">NAME</span><span class="p">,</span> <span class="n">ACCEL</span><span class="p">,</span> <span class="n">SOURCE</span><span class="p">,</span> <span class="n">PLANE</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">COUNT</span><span class="p">)</span>
+
+    <span class="c1"># Count the total number of (unique) files for each combination of accelerator, source and plane</span>
+    <span class="n">file_count</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">ACCEL</span><span class="p">,</span> <span class="n">SOURCE</span><span class="p">,</span> <span class="n">PLANE</span><span class="p">])[</span><span class="n">FILE</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">FILE_COUNT</span><span class="p">)</span>
+    <span class="n">df_counted</span> <span class="o">=</span> <span class="n">df_counted</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">file_count</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="n">ACCEL</span><span class="p">,</span> <span class="n">SOURCE</span><span class="p">,</span> <span class="n">PLANE</span><span class="p">])</span>
+
+    <span class="n">df_counted</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">PERCENTAGE</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">df_counted</span><span class="p">[</span><span class="n">COUNT</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_counted</span><span class="p">[</span><span class="n">FILE_COUNT</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="p">)</span>
+    
+    <span class="n">df_counted</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">df_counted</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">PERCENTAGE</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_counted</span></div>
+
+
+
+<div class="viewcode-block" id="print_results">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.print_results">[docs]</a>
+<span class="k">def</span> <span class="nf">print_results</span><span class="p">(</span><span class="n">df_counted</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">print_percentage</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Log the results to console (INFO level if logger is setup, print otherwise). </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_counted (tfs.TfsDataFrame): TfsDataFrame with the evaluated results.</span>
+<span class="sd">        print_percentage (float): Print out BPMs that appear in more than this percentage of measurements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">percentage_mask</span> <span class="o">=</span> <span class="n">df_counted</span><span class="p">[</span><span class="n">PERCENTAGE</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">print_percentage</span>
+    <span class="n">printer</span> <span class="o">=</span> <span class="nb">print</span>
+    <span class="k">if</span> <span class="n">LOG</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
+        <span class="n">printer</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">info</span>
+    
+    <span class="n">planes</span> <span class="o">=</span> <span class="n">df_counted</span><span class="p">[</span><span class="n">PLANE</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="n">printer</span><span class="p">(</span><span class="s2">&quot;Bad BPMs Summary. Hint: &#39;[BPM]&#39; were filtered as known bad BPMs.&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">accel</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df_counted</span><span class="p">[</span><span class="n">ACCEL</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+        <span class="n">accel_mask</span> <span class="o">=</span> <span class="n">df_counted</span><span class="p">[</span><span class="n">ACCEL</span><span class="p">]</span> <span class="o">==</span> <span class="n">accel</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df_counted</span><span class="p">[</span><span class="n">SOURCE</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+            <span class="n">source_mask</span> <span class="o">=</span> <span class="n">df_counted</span><span class="p">[</span><span class="n">SOURCE</span><span class="p">]</span> <span class="o">==</span> <span class="n">source</span>
+
+            <span class="n">df_filtered</span> <span class="o">=</span> <span class="n">df_counted</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">source_mask</span> <span class="o">&amp;</span> <span class="n">accel_mask</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">planes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># Merge X and Y for nicer output ---</span>
+                <span class="n">df_x</span> <span class="o">=</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_filtered</span><span class="p">[</span><span class="n">PLANE</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">NAME</span><span class="p">)</span>
+                <span class="n">df_y</span> <span class="o">=</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_filtered</span><span class="p">[</span><span class="n">PLANE</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">NAME</span><span class="p">)</span>
+
+                <span class="n">df_merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_x</span><span class="p">,</span> <span class="n">df_y</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">))</span>
+                <span class="n">df_merged</span><span class="p">[</span><span class="s1">&#39;max_pct&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_merged</span><span class="p">[[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PERCENTAGE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PERCENTAGE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">df_merged</span> <span class="o">=</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;max_pct&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">df_merged</span> <span class="o">=</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_merged</span><span class="p">[</span><span class="s1">&#39;max_pct&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">print_percentage</span><span class="p">,</span> <span class="p">:]</span>
+
+                <span class="c1"># Print Table ---</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;BPM&#39;</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;X&#39;</span><span class="si">:</span><span class="s2">^18s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;Y&#39;</span><span class="si">:</span><span class="s2">^18s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2">  &quot;</span> <span class="o">+</span> 
+                    <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">{:^18s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FILE_COUNT</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span> <span class="k">else</span> 
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PERCENTAGE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">% &quot;</span>
+                        <span class="s2">&quot;</span><span class="si">{:&lt;11s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COUNT</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FILE_COUNT</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> 
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Print a list ---</span>
+                <span class="n">df_filtered</span> <span class="o">=</span> <span class="n">df_counted</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">percentage_mask</span> <span class="o">&amp;</span> <span class="n">source_mask</span> <span class="o">&amp;</span> <span class="n">accel_mask</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">PLANE</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">PERCENTAGE</span><span class="p">]</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">% (</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">COUNT</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">FILE_COUNT</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span> 
+                    <span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Highest bad BPMs of </span><span class="si">{</span><span class="n">accel</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">bad_bpms_summary</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
