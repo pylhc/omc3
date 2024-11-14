@@ -64,7 +64,7 @@ import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr
+from omc3.utils.iotools import PathOrStr, OptionalFloat
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -119,7 +119,7 @@ def get_params():
     )
     params.add_parameter(
         name="print_percentage",
-        type=float,
+        type=OptionalFloat,
         help="Print out BPMs that appear in more than this percentage of measurements." 
     )
     params.add_parameter(
@@ -132,14 +132,11 @@ def get_params():
 
 
 @entrypoint(get_params(), strict=True)
-def bad_bpms_summary(opt: DotDict):
+def bad_bpms_summary(opt: DotDict) -> tfs.TfsDataFrame:
     outfile = None
     if opt.outfile is not None:
         outfile = Path(opt.outfile)
         outfile.parent.mkdir(parents=True, exist_ok=True)
-    
-    if opt.outfile is None and opt.print_percentage is None:
-        raise ValueError("Either `outfile` or `print_percentage` must be specified.")
     
     df_collection = collect_bad_bpms(Path(opt.root), opt.dates, opt.accel_glob)
     if outfile is not None:
@@ -151,6 +148,8 @@ def bad_bpms_summary(opt: DotDict):
 
     if opt.print_percentage is not None:
         print_results(df_evaluated, opt.print_percentage)
+
+    return df_evaluated
 
 
 # Collection of Data ---
@@ -383,6 +382,8 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                 df_merged['max_pct'] = df_merged[[f"{PERCENTAGE}X", f"{PERCENTAGE}Y"]].max(axis=1)
                 df_merged = df_merged.sort_values(by='max_pct', ascending=False)
                 df_merged = df_merged.loc[df_merged['max_pct'] >= print_percentage, :]
+
+                # Print Table ---
                 header = f"{'BPM':>20s}  {'X':^18s}  {'Y':^18s}\n"
                 msg = header + "\n".join(
                     f"{name:>20s}  " + 
@@ -398,6 +399,7 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                 )
 
             else:
+                # Print a list ---
                 df_filtered = df_counted.loc[percentage_mask & source_mask & accel_mask, :]
                 msg = "\n".join(
                     f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{row[FILE_COUNT]})" 
