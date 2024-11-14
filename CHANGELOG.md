@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2024-11-14 - v0.20.0 - _jdilly_, _awegsche_
+
+- Added:
+  - `bad_bpms_summary` script: Collect and summarize the bad BPMs from GUI runs.
+
 #### 2024-11-13 - v0.19.0 - _fscarlier_, _jdilly_
 
 - Added K-Modulation tools:
