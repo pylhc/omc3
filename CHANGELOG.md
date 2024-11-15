@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2024-11-14 - v0.20.1 - _jdilly_
+
+- Fixed:
+  - `kmod_import` fixed issue with too harsh filtering of BPM data.
+
 #### 2024-11-14 - v0.20.0 - _jdilly_, _awegsche_
 
 - Added:

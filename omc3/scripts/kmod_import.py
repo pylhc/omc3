@@ -362,17 +362,25 @@ def _read_kmod_results(paths: Sequence[Path | str], beam: int
     # sort into bpm and betastar --
     bpm_results = _filter_bpm_results(all_dfs, beam=beam)
     betastar_results = _filter_betastar_results(all_dfs)
-
+    LOG.debug(
+        f"Found {len(bpm_results)} BPM results and {len(betastar_results)} betastar results for beam {beam}."
+    )
     return bpm_results, betastar_results
 
 
+def _is_bpm_df(df: tfs.TfsDataFrame, beam: int) -> bool:
+    """ Check if the given df is a BPM results file for the given beam. """
+    # bpm files must have a beta column
+    if f"{BETA}X" not in df.columns:
+        return False
+    
+    # They should also have at least one element (e.g. the BPM) matching the beam
+    elements = df.index if NAME not in df.columns else df[NAME]
+    return elements.str.match(fr".*\.B{beam}$", flags=re.IGNORECASE).any()
+
+
 def _filter_bpm_results(dfs: Sequence[tfs.TfsDataFrame], beam: int) -> list[tfs.TfsDataFrame]:
-    bpm_dfs = [df for df in dfs if f"{BETA}X" in df.columns]
-    bpm_dfs = [df for df in bpm_dfs if (
-        NAME not in df.columns or all(df[NAME].str.match(fr"(.*\.B{beam}$|IP\d$)", flags=re.IGNORECASE))
-    )
-    ]
-    return bpm_dfs
+    return [df for df in dfs if _is_bpm_df(df, beam)]
 
 
 def _filter_betastar_results(dfs: Sequence[tfs.TfsDataFrame]) -> list[tfs.TfsDataFrame]:
@@ -386,8 +394,9 @@ def _write_output(dfs: dict[str, tfs.TfsDataFrame], output_dir: Path):
             df = dfs.get(f"{id_}{plane}")
             if df is None:
                 continue
-
-            tfs.write(output_dir / f"{filename}{plane.lower()}{EXT}", df, save_index=NAME)
+            outfile = output_dir / f"{filename}{plane.lower()}{EXT}"
+            LOG.info(f"Writing output file {outfile}")
+            tfs.write(outfile, df, save_index=NAME)
 
 
 # Script Mode ------------------------------------------------------------------
