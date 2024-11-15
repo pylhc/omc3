@@ -14,6 +14,10 @@ from pathlib import Path
 from typing import Any, Callable
 import git
 
+
+from pandas._testing import assert_dict_equal
+from pandas.testing import assert_frame_equal
+
 import pytest
 
 from generic_parser import DotDict
@@ -85,6 +89,16 @@ def ids_str(template: str) -> Callable[[Any], str]:
     def to_string(val: Any):
         return template.format(val)
     return to_string
+
+
+def assert_tfsdataframe_equal(df1, df2, compare_keys=True, **kwargs):
+    """ Wrapper to compare two TfsDataFrames with 
+    `assert_frame_equal` for the data and `assert_dict_equal` for the headers. 
+    
+    The `kwargs` are passed to `assert_frame_equal`.
+    """
+    assert_dict_equal(df1.headers, df2.headers, compare_keys=compare_keys)
+    assert_frame_equal(df1, df2, **kwargs)
 
 
 # Model fixtures from /inputs/models -------------------------------------------
