@@ -65,6 +65,7 @@ import pandas as pd
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
+from omc3.optics_measurements.iforest import FEATURE
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, OptionalFloat
 
@@ -101,6 +102,7 @@ class HarpyReasons(str, Enum):
     EXACT_ZERO = "exact zero"
     NO_TUNE = "main resonance has not been found"
     TUNE_CLEAN = "too far from average"
+    SVD_PEAK = "svd"
 
 
 # Files ---
@@ -155,13 +157,11 @@ def bad_bpms_summary(opt: DotDict) -> tfs.TfsDataFrame:
     
     df_collection = collect_bad_bpms(Path(opt.root), opt.dates, opt.accel_glob)
     if outfile is not None:
-        df_collection_out = df_collection.copy()
-        df_collection_out[REASONS] = df_collection_out[REASONS].apply(lambda reasons: "|".join(reasons))
-        tfs.write(outfile.with_stem(f"{outfile.stem}_collected"), df_collection_out)
+        tfs.write(outfile.with_stem(f"{outfile.stem}_collected"), merge_reasons(df_collection))
     
     df_evaluated = evaluate(df_collection)
     if outfile is not None:
-        tfs.write(outfile, df_evaluated)
+        tfs.write(outfile, merge_reasons(df_evaluated))
 
     if opt.print_percentage is not None:
         print_results(df_evaluated, opt.print_percentage)
@@ -173,7 +173,14 @@ def bad_bpms_summary(opt: DotDict) -> tfs.TfsDataFrame:
 
 def get_empty_df() -> tfs.TfsDataFrame:
     """ Create an empty TfsDataFrame with the correct column names. """
-    return tfs.TfsDataFrame(columns=[NAME, ACCEL, PLANE, SOURCE, FILE])
+    return tfs.TfsDataFrame(columns=[NAME, ACCEL, PLANE, SOURCE, FILE, REASONS])
+
+
+def merge_reasons(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+    """ Merge the REASONS column into a string of reasons. """
+    df_out = df.copy()
+    df_out.loc[:, REASONS] = df_out[REASONS].map(lambda reasons: "|".join(reasons))
+    return df_out
 
 
 def collect_bad_bpms(root: Path, dates: Sequence[Path | str], accel_glob: str) -> tfs.TfsDataFrame:
@@ -311,13 +318,18 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
     for line in lines:
         bpm = f"[{line[0]}]" if line[1] in TO_MARK else line[0]
         for reason in HarpyReasons:
-            if reason.value in line[1] and reason.name not in bpms[bpm]:
+            if reason.value.lower() in line[1] and reason.name not in bpms[bpm]:
                     bpms[bpm].append(reason.name)
+                    break
+        else:
+            LOG.warning(f"Unknown reason for BPM {bpm}: {line[1]}")
+            if "unknown" not in bpms[bpm]:
+                bpms[bpm].append("unknown")
 
     # Create DataFrame    
     df = get_empty_df()
     df.loc[:, NAME] = list(bpms.keys())
-    df.loc[:, REASONS] = list(bpms.values())  # each entry is a list
+    df.loc[:, REASONS] = pd.Series(bpms.values())  # each entry is a list
     df.loc[:, PLANE] = plane.upper()
     df.loc[:, SOURCE] = HARPY
     df.loc[:, FILE] = str(svd_file)
@@ -336,9 +348,13 @@ def read_iforest_bad_bpms_file(iforest_file: Path) -> tfs.TfsDataFrame:
     """
     df_iforest = tfs.read(iforest_file)
     plane = iforest_file.stem[-1]
+    bpms = defaultdict(list)
+    for _, (bpm, feature) in df_iforest[[NAME, FEATURE]].iterrows():
+        bpms[bpm].append(feature)
 
     df = get_empty_df()
-    df.loc[:, NAME] = list(set(df_iforest[NAME]))  # hint: be sure to ignore index
+    df.loc[:, NAME] = list(bpms.keys())
+    df.loc[:, REASONS] = pd.Series(bpms.values())
     df.loc[:, PLANE] = plane.upper()
     df.loc[:, SOURCE] = IFOREST 
     df.loc[:, FILE] = str(iforest_file)
@@ -447,7 +463,7 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                     f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{row[FILE_COUNT]})  {' | '.join(row[REASONS])}" 
                     for _,row in df_filtered.iterrows()
                 )
-            printer(f"Highest bad BPMs of {accel} from {source}:\n{msg}")
+            printer(f"Highest bad BPMs of {accel} from {source}:\n{msg}\n")
 
 
 # Script Mode ------------------------------------------------------------------

@@ -18,6 +18,9 @@ LOGGER = logging_tools.get_logger(__name__)
 ARCS_CONT = 0.01
 IRS_CONT = 0.025
 
+# Columns ---
+FEATURE: str = "FEATURE"
+
 
 def clean_with_isolation_forest(input_files, meas_input, plane):
     bad_bpms = identify_bad_bpms(meas_input, input_files, plane)
@@ -59,7 +62,7 @@ def get_significant_features(bpm_tfs_data, data_for_clustering, bad_bpms, good_b
                         for col in [f"TUNE{plane}", "NOISE_SCALED", f"AMP{plane}"]])
         max_dist, sig_col = max_dist
         features_df.loc[index, "NAME"] = bad_bpms.loc[index, "NAME"]
-        features_df.loc[index, "FEATURE"] = sig_col
+        features_df.loc[index, FEATURE] = sig_col
         features_df.loc[index, "VALUE"] = bpm_tfs_data.loc[index, sig_col]
         features_df.loc[index, "AVG"] = np.mean(bpm_tfs_data.loc[good_bpms.index][sig_col])
     return features_df
