@@ -1,18 +1,16 @@
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import pytest
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
-from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.model_creators.lhc_model_creator import LHC_REPOSITORY_NAME, LhcSegmentCreator
-from omc3.segment_by_segment.propagables import Phase, get_all_propagables
-from omc3.segment_by_segment.segments import Segment, SegmentDiffs
+from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
+from omc3.sbs_propagation import segment_by_segment
 from omc3.segment_by_segment.constants import corrections_madx, logfile
 from omc3.segment_by_segment.definitions import PropagableColumns
-
-from omc3.sbs_propagation import segment_by_segment
+from omc3.segment_by_segment.propagables import Phase, get_all_propagables
+from omc3.segment_by_segment.segments import Segment, SegmentDiffs
 from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
