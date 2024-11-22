@@ -469,7 +469,7 @@ def _create_model_and_write_diff_to_measurements(
     This will be written out then into individual tfs-files in the output folder(s). 
     
     TODO After merge with new model creation: should crossing angles be deactivated and nominal model redone? 
-         Can be done by calling the _create_corrected_model function with and without correction files
+         Can be done by calling the create_corrected_model function with and without correction files
          and different paths.
     (jdilly 2023)
     """

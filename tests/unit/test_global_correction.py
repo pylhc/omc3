@@ -6,7 +6,7 @@ from pandas.testing import assert_frame_equal
 from omc3.correction import response_madx, response_twiss
 from omc3.correction.constants import VALUE
 from omc3.correction.handler import (
-    _create_corrected_model,
+    create_corrected_model,
     _update_response,
     get_measurement_data,
 )
@@ -144,7 +144,7 @@ def test_update_response(tmp_path, model_inj_beams):
     ref_resp_dict = response_madx.create_fullresponse(accel_inst, [knob])
 
     corr_model_path = tmp_path / f"twiss_cor{EXT}"
-    ref_model = _create_corrected_model(corr_model_path, [], accel_inst, False)
+    ref_model = create_corrected_model(corr_model_path, [], accel_inst, False)
     
     # As orbit_dpp is not in the response, it should not be updated. First for response_madx
     new_resp_dict = _update_response(
@@ -203,7 +203,7 @@ def test_update_response(tmp_path, model_inj_beams):
     for key in ref_resp_dict.keys():
         assert_frame_equal(ref_resp_dict[key], new_resp_dict[key])
 
-    corr_model = _create_corrected_model(corr_model_path, [corr_file], accel_inst, False)
+    corr_model = create_corrected_model(corr_model_path, [corr_file], accel_inst, False)
     assert not ref_model.equals(corr_model) # For debugging - if this is the problem, or response_twiss
 
     new_resp_dict = _update_response(
