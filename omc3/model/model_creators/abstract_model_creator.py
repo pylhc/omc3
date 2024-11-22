@@ -5,6 +5,7 @@ Abstract Model Creator Class
 This module provides the template for all model creators.
 """
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -13,22 +14,30 @@ import tfs
 
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
-from omc3.model.constants import (JOB_MODEL_MADX, OPTICS_SUBDIR, TWISS_AC_DAT, TWISS_ADT_DAT,
-                                  TWISS_DAT, TWISS_ELEMENTS_DAT)
+from omc3.model.constants import (
+    JOB_MODEL_MADX_NOMINAL,
+    OPTICS_SUBDIR,
+    TWISS_AC_DAT,
+    TWISS_ADT_DAT,
+    TWISS_DAT,
+    TWISS_ELEMENTS_DAT,
+)
 from omc3.optics_measurements.constants import NAME
-from omc3.segment_by_segment.constants import (corrections_madx, 
-                                               jobfile, 
-                                               measurement_madx,
-                                               TWISS_BACKWARD,
-                                               TWISS_BACKWARD_CORRECTED,
-                                               TWISS_FORWARD,
-                                               TWISS_FORWARD_CORRECTED)
-from omc3.utils import iotools, logging_tools
+from omc3.segment_by_segment.constants import (
+    TWISS_BACKWARD,
+    TWISS_BACKWARD_CORRECTED,
+    TWISS_FORWARD,
+    TWISS_FORWARD_CORRECTED,
+    corrections_madx,
+    jobfile,
+    measurement_madx,
+)
 from omc3.segment_by_segment.propagables import Propagable
 from omc3.segment_by_segment.segments import Segment
+from omc3.utils import iotools, logging_tools
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence, Iterable
+    from collections.abc import Iterable, Sequence
 
 LOGGER = logging_tools.get_logger(__file__)
 
@@ -36,7 +45,7 @@ MADXInputType = Path | str | dict[str, str]
 
 
 class ModelCreator(ABC):
-    jobfile = JOB_MODEL_MADX
+    jobfile: str = JOB_MODEL_MADX_NOMINAL
     """
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
     functions are defined here.

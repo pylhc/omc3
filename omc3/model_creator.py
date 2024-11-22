@@ -10,28 +10,34 @@ from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, OPTICS_SUBDIR
+from omc3.model.constants import AFSFETCHER, PATHFETCHER
+from omc3.model.model_creators import abstract_model_creator
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
-    LhcCouplingCreator,
     LhcModelCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
-from omc3.utils.iotools import create_dirs, PathOrStr, save_config
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.parsertools import print_help, require_param
-from omc3.model.model_creators import abstract_model_creator
 
 LOGGER = logging_tools.get_logger(__name__)
 
+NOMINAL: str = "nominal"
+BEST_KNOWLEDGE: str = "best_knowledge"
 
 CREATORS = {
-    "lhc": {"nominal": LhcModelCreator,
-            "best_knowledge": LhcBestKnowledgeCreator,
-            "coupling_correction": LhcCouplingCreator},
-    "psbooster": {"nominal": BoosterModelCreator},
-    "ps": {"nominal": PsModelCreator},
+    "lhc": {
+        NOMINAL: LhcModelCreator,
+        BEST_KNOWLEDGE: LhcBestKnowledgeCreator,
+    },
+    "psbooster": {
+        NOMINAL: BoosterModelCreator
+    },
+    "ps": {
+        NOMINAL: PsModelCreator
+    },
 }
 
 
@@ -39,7 +45,7 @@ def _get_params():
     params = EntryPointParameters()
     params.add_parameter(
         name="type",
-        choices=("nominal", "best_knowledge", "coupling_correction"),
+        choices=(NOMINAL, BEST_KNOWLEDGE),
         help="Type of model to create. [Required]",
     )
     params.add_parameter(

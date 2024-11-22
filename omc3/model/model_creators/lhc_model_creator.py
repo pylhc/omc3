@@ -21,6 +21,7 @@ from omc3.model.constants import (
     B2_SETTINGS_MADX,
     ERROR_DEFFS_TXT,
     GENERAL_MACROS,
+    JOB_MODEL_MADX_BEST_KNOWLEDGE,
     LHC_MACROS,
     LHC_MACROS_RUN3,
     MACROS_DIR,
@@ -219,6 +220,7 @@ class LhcModelCreator(ModelCreator):
 class LhcBestKnowledgeCreator(LhcModelCreator):
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
     CORRECTIONS_FILENAME: str = "corrections.madx"
+    jobfile: str = JOB_MODEL_MADX_BEST_KNOWLEDGE
 
     def check_options(self, opt) -> bool:
         accel = self.accel
