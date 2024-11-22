@@ -2,7 +2,7 @@ import pytest
 import tfs 
 
 from tests.conftest import INPUTS, assert_tfsdataframe_equal
-from omc3.scripts.bad_bpms_summary import NAME, SOURCE, bad_bpms_summary, IFOREST, HARPY
+from omc3.scripts.bad_bpms_summary import NAME, SOURCE, bad_bpms_summary, IFOREST, HARPY, merge_reasons
 import logging
 
 
@@ -19,8 +19,11 @@ def test_bad_bpms_summary(tmp_path, caplog):
             print_percentage=50,
         )
 
-    # Test Data has been written
     assert df_eval is not None
+    assert "Unknown reason" not in caplog.text
+
+    # Test Data has been written
+    df_eval = merge_reasons(df_eval)
     assert_tfsdataframe_equal(df_eval.reset_index(drop=True), tfs.read(outfile))
 
     # Test some random BPMs
