@@ -380,8 +380,7 @@ def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
         tfs.TfsDataFrame: TfsDataFrame with the evaluated results.
     """
     # If the dataframe was read from file, split the REASONS again
-    strings_mask = df[REASONS].apply(lambda x: isinstance(x, str))
-    df.loc[strings_mask, REASONS] = df.loc[strings_mask, REASONS].str.split("|")
+    df[REASONS] = df[REASONS].map(lambda x: x.split("|") if isinstance(x, str) else x)
 
     # Count how often a BPM is bad, combine reasons
     df_counted = (
