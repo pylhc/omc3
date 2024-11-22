@@ -5,6 +5,7 @@ Accelerator
 This module provides high-level classes to define most functionality of ``model.accelerators``.
 It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
+
 from __future__ import annotations
 import re
 import os
@@ -57,6 +58,7 @@ class Accelerator:
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
+
     # RE_DICT needs to use MAD-X compatible patterns (jdilly, 2021)
     RE_DICT = {
         AccElementTypes.BPMS: r".*",
@@ -64,8 +66,8 @@ class Accelerator:
         AccElementTypes.ARC_BPMS: r".*",
     }
     BPM_INITIAL = "B"
-    NAME=None
-    REPOSITORY=None
+    NAME = None
+    REPOSITORY = None
 
     @staticmethod
     def get_parameters():
@@ -111,7 +113,9 @@ class Accelerator:
             help="Path to the optics file to use (modifiers file).",
         )
         params.add_parameter(
-            name="xing", action="store_true", help="If True, x-ing angles will be applied to model"
+            name="xing",
+            action="store_true",
+            help="If True, x-ing angles will be applied to model",
         )
         return params
 
@@ -139,6 +143,17 @@ class Accelerator:
                 raise AcceleratorDefinitionError(
                     "Arguments 'nat_tunes' and 'driven_tunes' are "
                     "not allowed when loading from model directory."
+                )
+            if (
+                (opt.driven_excitation is not None)
+                or (opt.dpp != 0.0)
+                or (opt.energy is not None)
+                or (opt.xing is not None)
+                or (opt.modifiers is not None)
+            ):
+                Warning(
+                    "Arguments 'driven_excitation', 'dpp', 'energy', 'xing' and 'modifiers' are "
+                    "ignored when loading from model directory."
                 )
             self.init_from_model_dir(Path(opt.model_dir))
 
@@ -174,23 +189,35 @@ class Accelerator:
             self.model = tfs.read(model_dir / TWISS_DAT, index="NAME")
         except IOError:
             bpm_index = [
-                idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)
+                idx
+                for idx in self.elements.index.to_numpy()
+                if idx.startswith(self.BPM_INITIAL)
             ]
             self.model = self.elements.loc[bpm_index, :]
-        self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
+        self.nat_tunes = [
+            float(self.model.headers["Q1"]),
+            float(self.model.headers["Q2"]),
+        ]
         # self.energy = float(self.model.headers["ENERGY"]) * 1e-3  # TODO not the same Energy (jdilly, 2021)
 
         # Excitations #####################################
-        driven_filenames = dict(acd=model_dir / TWISS_AC_DAT, adt=model_dir / TWISS_ADT_DAT)
+        driven_filenames = dict(
+            acd=model_dir / TWISS_AC_DAT, adt=model_dir / TWISS_ADT_DAT
+        )
         if driven_filenames["acd"].is_file() and driven_filenames["adt"].is_file():
-            raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
+            raise AcceleratorDefinitionError(
+                "ADT as well as ACD models provided. Choose only one."
+            )
         for key in driven_filenames.keys():
             if driven_filenames[key].is_file():
                 self._model_driven = tfs.read(driven_filenames[key], index="NAME")
                 self.excitation = DRIVEN_EXCITATIONS[key]
 
         if not self.excitation == AccExcitationMode.FREE:
-            self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
+            self.drv_tunes = [
+                self.model_driven.headers["Q1"],
+                self.model_driven.headers["Q2"],
+            ]
 
         # Best Knowledge #####################################
         best_knowledge_path = model_dir / TWISS_BEST_KNOWLEDGE_DAT
@@ -219,7 +246,9 @@ class Accelerator:
     # Class methods ###########################################
 
     @classmethod
-    def get_element_types_mask(cls, list_of_elements: list[str], types) -> numpy.ndarray:
+    def get_element_types_mask(
+        cls, list_of_elements: list[str], types
+    ) -> numpy.ndarray:
         """
         Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
         specified types.
@@ -247,7 +276,9 @@ class Accelerator:
         Gets the variables with elements in the given range and the given classes. ``None`` means
         everything.
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        raise NotImplementedError(
+            "A function should have been overwritten, check stack trace."
+        )
 
     @classmethod
     def get_correctors_variables(cls, frm=None, to=None, classes=None):
@@ -255,7 +286,9 @@ class Accelerator:
         Returns the set of corrector variables between ``frm`` and ``to``, with classes in
         classes. ``None`` means select all.
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        raise NotImplementedError(
+            "A function should have been overwritten, check stack trace."
+        )
 
     @property
     def beam_direction(self) -> int:
@@ -274,9 +307,13 @@ class Accelerator:
         # since we removed `required` args, we check here if everything has been passed
         if self.model_dir is None:
             if self.nat_tunes is None:
-                raise AttributeError("Natural tunes not set (missing `--nat_tunes` flag?)")
+                raise AttributeError(
+                    "Natural tunes not set (missing `--nat_tunes` flag?)"
+                )
             if self.excitation != AccExcitationMode.FREE and self.drv_tunes is None:
-                raise AttributeError("Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)")
+                raise AttributeError(
+                    "Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)"
+                )
 
     def get_exciter_bpm(self, plane: str, commonbpms: list[str]):
         """
@@ -290,7 +327,9 @@ class Accelerator:
         Returns:
             `((index, bpm_name), exciter_name): tuple(int, str), str)`
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        raise NotImplementedError(
+            "A function should have been overwritten, check stack trace."
+        )
 
     def important_phase_advances(self):
         return []
@@ -321,25 +360,33 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], **kwargs) -> str: #kwargs to be used for additional arguments in different accelerators
+    def get_update_correction_script(
+        self, outpath: Path | str, corr_files: Sequence[Path | str], **kwargs
+    ) -> str:  # kwargs to be used for additional arguments in different accelerators
         """
         Returns job (string) to create an updated model from changeparameters input (used in
         iterative correction).
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        raise NotImplementedError(
+            "A function should have been overwritten, check stack trace."
+        )
 
     def get_base_madx_script(self, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-    
+        raise NotImplementedError(
+            "A function should have been overwritten, check stack trace."
+        )
+
     def get_update_deltap_script(self, deltap: float | str) -> str:
         """
-        Returns job (string) to change the magnets for a given deltap (dpp). 
+        Returns job (string) to change the magnets for a given deltap (dpp).
         i.e. updating the orbit and matching the tunes.
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        raise NotImplementedError(
+            "A function should have been overwritten, check stack trace."
+        )
 
     ##########################################################################
 
@@ -391,7 +438,7 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
         # see e.g. `get_base_madx_script()` in `lhc.py`
         # example for a match to the regex: `call, file = 'modifiers.madx'; MODIFIER_TAG`
         modifiers = re.findall(
-            fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
+            rf"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
             job_madx,
             flags=re.IGNORECASE,
         )
