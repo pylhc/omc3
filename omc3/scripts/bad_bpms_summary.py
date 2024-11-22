@@ -388,11 +388,9 @@ def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
                     df.groupby([NAME, ACCEL, SOURCE, PLANE], as_index=False)
                     .agg(
                         COUNT=(NAME, 'size'),  # Count the number of rows in each group
-                        REASONS=(REASONS, lambda x: sum(x, []))  # Flatten and combine the lists
+                        REASONS=(REASONS, lambda x: list(set(sum(x, []))))  # Flatten and combine the lists
                     )
                 )
-    
-    df_counted.loc[:, REASONS] = df_counted[REASONS].apply(lambda x: list(set(x)))  # unique reasons only
 
     # Count the total number of (unique) files for each combination of accelerator, source and plane
     file_count = df.groupby([ACCEL, SOURCE, PLANE])[FILE].nunique().reset_index(name=FILE_COUNT)
@@ -437,7 +435,7 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                 df_merged = df_merged.sort_values(by='max_pct', ascending=False)
                 df_merged = df_merged.loc[df_merged['max_pct'] >= print_percentage, :]
                 df_merged.loc[:, [f'{REASONS}X', f'{REASONS}Y']] = df_merged.loc[:, [f'{REASONS}X', f'{REASONS}Y']].map(
-                    lambda x: [] if not isinstance(x, list) else x
+                    lambda x: [] if not isinstance(x, list) else x  # could be NaN from merging
                 )
 
                 # Print Table ---
