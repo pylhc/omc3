@@ -166,9 +166,9 @@ def test_harpy_3d(_test_file, _model_file):
     model = tfs.read(_model_file)
     _assert_spectra(lin, model)
     assert _rms(_diff(lin["X"].loc[:, "TUNEZ"].to_numpy(), TUNEZ)) < LIMITS["F2"]
-    assert _rms(_rel_diff(lin["X"].loc[:, f"AMPZ"].to_numpy() *
-                            lin["X"].loc[:, f"AMPX"].to_numpy() * 2, AMPZ * BASEAMP)) < LIMITS["A2"]
-    assert _rms(_angle_diff(lin["X"].loc[:, f"MUZ"].to_numpy(), MUZ)) < LIMITS["P2"]
+    assert _rms(_rel_diff(lin["X"].loc[:, "AMPZ"].to_numpy() *
+                            lin["X"].loc[:, "AMPX"].to_numpy() * 2, AMPZ * BASEAMP)) < LIMITS["A2"]
+    assert _rms(_angle_diff(lin["X"].loc[:, "MUZ"].to_numpy(), MUZ)) < LIMITS["P2"]
 
 
 def _assert_spectra(lin, model):

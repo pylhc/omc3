@@ -9,6 +9,7 @@ import sys
 import time
 import warnings
 from contextlib import contextmanager
+from typing import Callable
 
 
 @contextmanager
@@ -39,7 +40,7 @@ def silence():
 
 
 @contextmanager
-def timeit(function):
+def timeit(function: Callable):
     """Prints the time at the end of the context via ``function``."""
     start_time = time.time()
     try:
@@ -47,7 +48,6 @@ def timeit(function):
     finally:
         time_used = time.time() - start_time
         function(time_used)
-
 
 @contextmanager
 def suppress_warnings(warning_classes):
