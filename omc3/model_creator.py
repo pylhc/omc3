@@ -144,69 +144,32 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         print("---- Model Creator | Usage ----\n")
         print_help(manager._get_params())
         print_help(_get_params())
-        return None
+        return 
 
-    
     # proceed to the creator
     accel_inst = manager.get_accelerator(accel_opt)
     require_param("type", _get_params(), opt)
-
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
+    
+    # model_dir is used as the output directory
+    require_param("outputdir", _get_params(), opt)
+    accel_inst.model_dir = Path(opt.outputdir).absolute()
 
     creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type](accel_inst, logfile=opt.logfile)
+
+    # Check if the options (i.e. the values of the arguments given) are valid choices.
+    # This needs to be done by the creator itself, as it should know what valid options are
+    # and can then also print them. If this fails, we have to abort.
+    if not creator.check_options(opt):
+        return None
+    
+    # Save config only now, to not being written out for each time the choices are listed
+    save_config(Path(opt.outputdir), opt=opt, unknown_opt=accel_opt, script=__file__)
+
+    # Run the actual model creation
     creator.full_run()
-
-    # # now that the creator is initialised, we can ask for modifiers that are actually present
-    # # using the fetcher we chose
-    # if not creator.check_options(accel_inst, opt):
-    #     return None
-
-    # accel_inst.verify_object()
-    # require_param("outputdir", _get_params(), opt)
-
-    # # Prepare model-dir output directory
-    # accel_inst.model_dir = Path(opt.outputdir).absolute()
-
-    # # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
-    # if accel_inst.modifiers is not None:
-    #     accel_inst.modifiers = [_find_modifier(m, accel_inst) for m in accel_inst.modifiers]
-
-    # # Prepare paths
-    # create_dirs(opt.outputdir)
-    # creator.prepare_run(accel_inst)
     
-    # madx_script = creator.get_madx_script(accel_inst)
-    # # Run madx to create model
-    # run_string(madx_script,
-    #            output_file=opt.outputdir / JOB_MODEL_MADX_MASK.format(opt.type),
-    #            log_file=opt.logfile,
-    #            cwd=opt.outputdir)
-    
-    # # Save config at the end, to not being written out for each time the choices are listed
-    # save_config(Path(opt.outputdir), opt=opt, unknown_opt=accel_opt, script=__file__)
-    
-    # Return accelerator instance
-    accel_inst.model_dir = opt.outputdir
     return accel_inst
-
-
-def _find_modifier(modifier: Path, accel_inst: Accelerator):
-    # first case: if modifier exists as is, take it
-    if modifier.exists():
-        return modifier
-
-    # second case: try if it is already in the output dir
-    model_dir_path: Path = accel_inst.model_dir / modifier
-    if model_dir_path.exists():
-        return model_dir_path.absolute()
-
-    # and last case, try to find it in the acc-models rep
-    if accel_inst.acc_model_path is not None:
-        optics_path: Path = accel_inst.acc_model_path / OPTICS_SUBDIR / modifier
-        if optics_path.exists():
-            return optics_path.absolute()
-
-    raise FileNotFoundError(f"couldn't find modifier {modifier}. Tried in {accel_inst.model_dir} and {accel_inst.acc_model_path}/{OPTICS_SUBDIR}")
 
 
 if __name__ == "__main__":

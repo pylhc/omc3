@@ -15,6 +15,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class PsModelCreator(PsBaseModelCreator):
+    acc_model_name = "ps"
 
     def get_madx_script(self) -> str:
         if (self.accel.energy is None):

@@ -13,7 +13,7 @@ import tfs
 
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
-from omc3.model.constants import (JOB_MODEL_MADX, TWISS_AC_DAT, TWISS_ADT_DAT,
+from omc3.model.constants import (JOB_MODEL_MADX, OPTICS_SUBDIR, TWISS_AC_DAT, TWISS_ADT_DAT,
                                   TWISS_DAT, TWISS_ELEMENTS_DAT)
 from omc3.optics_measurements.constants import NAME
 from omc3.segment_by_segment.constants import (corrections_madx, 
@@ -52,6 +52,8 @@ class ModelCreator(ABC):
         self.logfile = logfile
         self.output_dir = accel.model_dir
 
+        # Check arguments. This assumes that all arguments have been cosumed by the sub-classes
+        # of ModelCreator, so if there are any "left-over" arguments, warn the user.
         cleaned_args = [arg for arg in args if arg is not None]
         if len(cleaned_args):
             LOGGER.warning(f"Unknown args for Model Creator: {', '.join(cleaned_args)}")
@@ -60,9 +62,8 @@ class ModelCreator(ABC):
         if len(cleaned_kwargs):
             LOGGER.warning(f"Unknown kwargs for Model Creator: {cleaned_kwargs!s}")
 
-    @classmethod
     @abstractmethod
-    def check_options(cls, accel_inst: Accelerator, options) -> bool:
+    def check_options(self, opt) -> bool:
         """
         Parses additional commandline options (if any) and checks if they are valid.
         If there are options missing, return False. 
@@ -70,7 +71,7 @@ class ModelCreator(ABC):
         model creator to print possible choices for the user.        
 
         Args:
-            options: The remaining options (i.e. those not yet consumed by the model creator)
+            opt: The remaining options (i.e. those not yet consumed by the model creator)
 
         Returns: True if enough options are given to provide a valid model
 
@@ -96,8 +97,13 @@ class ModelCreator(ABC):
 
     def full_run(self):
         """ Does the full run: preparation, running madx, post_run. """
+
         # Prepare model-dir output directory
         self.prepare_run()
+        
+        # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
+        if self.accel.modifiers is not None:
+            self.accel.modifiers = [self._find_modifier(m) for m in self.accel.modifiers]
 
         # get madx-script with relative output-paths
         self.accel.model_dir = Path()
@@ -115,7 +121,6 @@ class ModelCreator(ABC):
         # Check output and return accelerator instance
         self.post_run()
 
-
     @abstractmethod
     def get_madx_script(self) -> str:
         """
@@ -125,7 +130,6 @@ class ModelCreator(ABC):
             The string of the ``MAD-X`` script used to used to create the model (directory).
         """
         pass
-    
     
     @abstractmethod
     def prepare_run(self) -> None:
@@ -146,21 +150,21 @@ class ModelCreator(ABC):
         appropriate directories are created, and that macros and other files are in place.
         Also assings created models to the accelerator instance.
         """
+        accel = self.accel
+
         # These are the default files for most model creators for now.
         files_to_check: list[str] = [TWISS_DAT, TWISS_ELEMENTS_DAT]
-        self.accel.model = tfs.read(self.accel.model_dir / TWISS_DAT, index=NAME)
-        self.accel.elements = tfs.read(self.accel.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
+        accel.model = tfs.read(accel.model_dir / TWISS_DAT, index=NAME)
+        accel.elements = tfs.read(accel.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
         
-        if self.accel.excitation == AccExcitationMode.ACD:
+        if accel.excitation == AccExcitationMode.ACD:
             files_to_check += [TWISS_AC_DAT]
-            self.accel.model_driven = tfs.read(self.accel.model_dir / TWISS_AC_DAT, index=NAME)
-        elif self.accel.excitation == AccExcitationMode.ADT:
+            accel.model_driven = tfs.read(accel.model_dir / TWISS_AC_DAT, index=NAME)
+        elif accel.excitation == AccExcitationMode.ADT:
             files_to_check += [TWISS_ADT_DAT]
-            self.accel.model_driven = tfs.read(self.accel.model_dir / TWISS_ADT_DAT, index=NAME)
+            accel.model_driven = tfs.read(accel.model_dir / TWISS_ADT_DAT, index=NAME)
 
-        self._check_files_exist(self.accel.model_dir, files_to_check)
-
-        
+        self._check_files_exist(accel.model_dir, files_to_check)
 
     @staticmethod
     def _check_files_exist(dir_: Path | str, files: Sequence[str]) -> None:
@@ -183,17 +187,14 @@ class ModelCreator(ABC):
                     f"Model Creation Failed. The file '{file_path.absolute()}' was not created."
                 )
 
-    @staticmethod
-    def prepare_symlink(accel: Accelerator):
+    def prepare_symlink(self):
         """Prepare the acc-models-symlink.
         Create symlink if it does not yet exist or points the wrong way.
         Use the symlink from here on instead of the acc-model-path, also in the modifiers.
 
         This functions can be used by all model creators supporting the acc-models creation.
-
-        Args:
-            accel (Accelerator): Accelerator instance 
         """
+        accel = self.accel
         if accel.acc_model_path is None:
             return
 
@@ -223,6 +224,29 @@ class ModelCreator(ABC):
                 iotools.replace_in_path(m.absolute(), target.absolute(), link.absolute()) 
                 for m in accel.modifiers
             ]
+    
+    def _find_modifier(self, modifier: Path):
+        # first case: if modifier exists as is, take it
+        if modifier.exists():
+            return modifier
+
+        # second case: try if it is already in the output dir
+        model_dir_path: Path = self.accel.model_dir / modifier
+        if model_dir_path.exists():
+            return model_dir_path.absolute()
+
+        # and last case, try to find it in the acc-models rep
+        if self.accel.acc_model_path is not None:
+            optics_path: Path = self.accel.acc_model_path / OPTICS_SUBDIR / modifier
+            if optics_path.exists():
+                return optics_path.absolute()
+
+        # if you are here, all attempts failed
+        msg = (
+            f"couldn't find modifier {modifier}. "
+            f"Tried in {self.accel.model_dir} and {self.accel.acc_model_path}/{OPTICS_SUBDIR}"
+        )
+        raise FileNotFoundError(msg)
 
 
 def check_folder_choices(parent: Path, msg: str,

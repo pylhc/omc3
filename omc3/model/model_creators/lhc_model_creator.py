@@ -4,10 +4,12 @@ LHC Model Creator
 
 This module provides convenience functions for model creation of the ``LHC``.
 """
+from __future__ import annotations
+
 import logging
 import shutil
 from pathlib import Path
-from typing import List, Sequence, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -37,10 +39,13 @@ from omc3.model.model_creators.abstract_model_creator import ModelCreator, check
 from omc3.optics_measurements.constants import NAME
 from omc3.utils.iotools import get_check_suffix_func, create_dirs
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 LOGGER = logging.getLogger(__name__)
 
 
-def _b2_columns() -> List[str]:
+def _b2_columns() -> list[str]:
     cols_outer = [f"{KP}{num}{S}L" for KP in (
         "K", "P") for num in range(21) for S in ("", "S")]
     cols_middle = ["DX", "DY", "DS", "DPHI", "DTHETA", "DPSI", "MREX", "MREY", "MREDX", "MREDY",
@@ -54,9 +59,9 @@ class LhcModelCreator(ModelCreator):
     def __init__(self, accel: Lhc, *args, **kwargs):
         super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
 
-    @classmethod
-    def check_options(cls, accel: Lhc, opt) -> bool:
+    def check_options(self, opt) -> bool:
         """ Use the fetcher to list choices if requested. """
+        accel = self.accel
         
         # Set the fetcher paths ---
         if opt.fetch == PATHFETCHER:
@@ -65,7 +70,7 @@ class LhcModelCreator(ModelCreator):
         elif opt.fetch == AFSFETCHER:
             # list 'year' choices ---
             accel.acc_model_path = check_folder_choices(
-                AFS_ACCELERATOR_MODEL_REPOSITORY / cls.acc_model_name,
+                AFS_ACCELERATOR_MODEL_REPOSITORY / self.acc_model_name,
                 msg="No optics tag (flag --year) given",
                 selection=accel.year,
                 list_choices=opt.list_choices,
@@ -138,8 +143,8 @@ class LhcModelCreator(ModelCreator):
     def prepare_run(self) -> None:
         LOGGER.info("preparing run ...")
         accel = self.accel
-        self.prepare_symlink(accel)
-        self.check_accelerator_instance(accel)
+        self.prepare_symlink()
+        self.check_accelerator_instance()
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
         LOGGER.info("creating macros dirs")
@@ -215,17 +220,16 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
     CORRECTIONS_FILENAME: str = "corrections.madx"
 
-    @classmethod
-    def check_options(cls, accel_inst, opt) -> bool:
-
-        if accel_inst.list_b2_errors:
-            errors_dir = AFS_B2_ERRORS_ROOT / f"Beam{accel_inst.beam}"
+    def check_options(self, opt) -> bool:
+        accel = self.accel
+        if accel.list_b2_errors:
+            errors_dir = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}"
             for d in errors_dir.iterdir():
                 if d.suffix==".errors" and d.name.startswith("MB2022"):
                     print(d.stem)
             return False
 
-        return super().check_options(accel_inst, opt)
+        return super().check_options(opt)
 
     def get_madx_script(self) -> str:
         accel = self.accel
@@ -266,7 +270,7 @@ class LhcCorrectionModelCreator(LhcModelCreator):
     """
     jobfile = None  # set in init
 
-    def __init__(self, accel: Lhc, twiss_out: Union[Path, str], change_params: Sequence[Path], *args, **kwargs):
+    def __init__(self, accel: Lhc, twiss_out: Path | str, change_params: Sequence[Path], *args, **kwargs):
         """Model creator for the corrected/matched model of the LHC.
 
         Args:
@@ -302,12 +306,6 @@ class LhcCorrectionModelCreator(LhcModelCreator):
     def post_run(self) -> None:
         files_to_check = [self.twiss_out, self.jobfile, self.logfile]
         self._check_files_exist(self.accel.model_dir, files_to_check)
-
-
-class LhcCouplingCreator(LhcModelCreator):
-    @classmethod
-    def get_madx_script(cls, accel: Lhc) -> str:
-        return cls.get_correction_check_script(accel)
 
 
 class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
