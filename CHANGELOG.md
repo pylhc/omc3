@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2024-11-21 - v0.20.2 - _jdilly_, _awegsche_
+
+- Added:
+  - `bad_bpms_summary`: Also collect the reasons for the BPMs being bad.
+
 #### 2024-11-14 - v0.20.1 - _jdilly_
 
 - Fixed:
