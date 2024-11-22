@@ -161,11 +161,3 @@ class Ps(PsBase):
             replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
         mask = self.get_file('base.madx').read_text()
         return mask % replace_dict
-
-
-class _PsSegmentMixin(object):
-
-    def __init__(self):
-        self._start = None
-        self._end = None
-        self.energy = None

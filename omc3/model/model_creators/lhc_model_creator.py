@@ -7,7 +7,7 @@ This module provides convenience functions for model creation of the ``LHC``.
 import logging
 import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -33,7 +33,8 @@ from omc3.model.constants import (
     OPTICS_SUBDIR,
     AFS_B2_ERRORS_ROOT,
 )
-from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
+from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices, SegmentCreator
+from omc3.optics_measurements.constants import NAME
 from omc3.utils.iotools import get_check_suffix_func, create_dirs
 
 LOGGER = logging.getLogger(__name__)
@@ -49,6 +50,9 @@ def _b2_columns() -> List[str]:
 
 class LhcModelCreator(ModelCreator):
     acc_model_name = "lhc"
+
+    def __init__(self, accel: Lhc, *args, **kwargs):
+        super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
 
     @classmethod
     def check_options(cls, accel: Lhc, opt) -> bool:
@@ -91,8 +95,9 @@ class LhcModelCreator(ModelCreator):
 
         return True
 
-    @classmethod
-    def get_madx_script(cls, accel: Lhc) -> str:  # nominal
+
+    def get_madx_script(self) -> str:  # nominal
+        accel = self.accel
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
         madx_script = accel.get_base_madx_script()
@@ -129,12 +134,12 @@ class LhcModelCreator(ModelCreator):
             )
         return madx_script
 
-    @classmethod
-    def prepare_run(cls, accel: Lhc) -> None:
+
+    def prepare_run(self) -> None:
         LOGGER.info("preparing run ...")
-        cls.prepare_symlink(accel)
-        cls.check_accelerator_instance(accel)
-        
+        accel = self.accel
+        self.prepare_symlink(accel)
+        self.check_accelerator_instance(accel)
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
         LOGGER.info("creating macros dirs")
@@ -179,9 +184,9 @@ class LhcModelCreator(ModelCreator):
             shutil.copy(error_dir_path /
                         f"{core}GeV.tfs", accel.model_dir / ERROR_DEFFS_TXT)
 
+    def check_accelerator_instance(self) -> None:
+        accel = self.accel
 
-    @staticmethod
-    def check_accelerator_instance(accel: Lhc) -> None:
         accel.verify_object()  # should have been done anyway, but cannot hurt (jdilly)
 
         # Creator specific checks
@@ -208,6 +213,7 @@ class LhcModelCreator(ModelCreator):
 
 class LhcBestKnowledgeCreator(LhcModelCreator):
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
+    CORRECTIONS_FILENAME: str = "corrections.madx"
 
     @classmethod
     def check_options(cls, accel_inst, opt) -> bool:
@@ -221,32 +227,141 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 
         return super().check_options(accel_inst, opt)
 
-    @classmethod
-    def get_madx_script(cls, accel: Lhc) -> str:
+    def get_madx_script(self) -> str:
+        accel = self.accel
+
         if accel.excitation is not AccExcitationMode.FREE:
             raise AcceleratorDefinitionError(
-                "Don't set ACD or ADT for best knowledge model.")
+                "Don't set ACD or ADT for best knowledge model."
+            )
+        if accel.energy is None:
+            raise AcceleratorDefinitionError(
+                "Best knowledge model requires energy."
+            )
 
         madx_script = accel.get_base_madx_script(best_knowledge=True)
 
-        mqts_file = accel.model_dir / cls.EXTRACTED_MQTS_FILENAME
-        if mqts_file.exists():
-            madx_script += f"call, file = '{mqts_file}';\n"
+        corrections_file = accel.model_dir / self.CORRECTIONS_FILENAME  # existence is tested in madx
+        mqts_file = accel.model_dir / self.EXTRACTED_MQTS_FILENAME  # existence is tested in madx
 
         madx_script += (
+            f"call, file = '{corrections_file}';\n"
+            f"call, file = '{mqts_file}';\n"
             f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
             f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
         )
         return madx_script
 
-    @classmethod
-    def check_run_output(cls, accel: Lhc) -> None:
-        files_to_check = [TWISS_BEST_KNOWLEDGE_DAT,
-                          TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
-        cls._check_files_exist(accel.model_dir, files_to_check)
+    def post_run(self) -> None:
+        files_to_check = [TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT]
+        self._check_files_exist(self.accel.model_dir, files_to_check)
+        
+        self.accel.model_best_knowledge = tfs.read(self.accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT, index=NAME)
+
+
+class LhcCorrectionModelCreator(LhcModelCreator):
+    """
+    Creates an updated model from multiple changeparameters inputs 
+    (used in iterative correction).
+    """
+    jobfile = None  # set in init
+
+    def __init__(self, accel: Lhc, twiss_out: Union[Path, str], change_params: Sequence[Path], *args, **kwargs):
+        """Model creator for the corrected/matched model of the LHC.
+
+        Args:
+            accel (Lhc): Accelerator Class Instance
+            twiss_out (Union[Path, str]): Path to the twiss(-elements) file to write
+            change_params (Sequence[Path]): Sequence of correction/matching files
+        """
+        super().__init__(accel, *args, **kwargs)
+        self.twiss_out = Path(twiss_out)
+
+        # use absolute paths to force files into twiss_out directory instead of model-dir
+        self.jobfile = self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.madx"
+        self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
+        self.change_params = change_params
+
+    def get_madx_script(self) -> str:
+        accel = self.accel
+        madx_script = f"! Based on model '{self.accel.model_dir}'\n{self.accel.get_base_madx_script()}" 
+        for corr_file in self.change_params:
+            madx_script += f"call, file = '{str(corr_file)}';\n"
+        madx_script += f"exec, do_twiss_elements(LHCB{accel.beam}, '{str(self.twiss_out)}', {accel.dpp});\n"
+        return madx_script
+
+    def prepare_run(self) -> None:
+        # As the matched/corrected model is created in the same directory as the original model,
+        # we do not need to prepare as much.
+        self.check_accelerator_instance()
+        LOGGER.debug("Preparing model creation structure")
+        macros_path = self.accel.model_dir / MACROS_DIR
+        if not macros_path.exists():
+            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path:s}.")
+    
+    def post_run(self) -> None:
+        files_to_check = [self.twiss_out, self.jobfile, self.logfile]
+        self._check_files_exist(self.accel.model_dir, files_to_check)
 
 
 class LhcCouplingCreator(LhcModelCreator):
     @classmethod
     def get_madx_script(cls, accel: Lhc) -> str:
         return cls.get_correction_check_script(accel)
+
+
+class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
+
+    def get_madx_script(self):
+        accel = self.accel
+        madx_script = accel.get_base_madx_script()
+
+        madx_script += "\n".join([
+            "",
+            f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
+            f"",
+            f"use, period = LHCB{accel.beam};",
+            f"option, echo;",
+            f"",
+            f"twiss;",
+            f"exec, save_initial_and_final_values(",
+            f"    LHCB{accel.beam},",
+            f"    {self.segment.start},",
+            f"    {self.segment.end}, ",
+            f"    \"{accel.model_dir / self.measurement_madx!s}\",",
+            f"    biniLHCB{accel.beam},",
+            f"    bendLHCB{accel.beam}",
+            f");",
+            f"",
+            f"exec, extract_segment_sequence(",
+            f"    LHCB{accel.beam},",
+            f"    forward_LHCB{accel.beam},",
+            f"    backward_LHCB{accel.beam},",
+            f"    {self.segment.start},",
+            f"    {self.segment.end},",
+            f");",
+            f"",
+            f"exec, beam_LHCB{accel.beam}(forward_LHCB{accel.beam});",  # TODO: use engery in macro
+            f"exec, beam_LHCB{accel.beam}(backward_LHCB{accel.beam});",  # TODO: use engery in macro
+            f"exec, twiss_segment(forward_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",
+            f"exec, twiss_segment(backward_LHCB{accel.beam}, \"{self.twiss_backward!s}\", bendLHCB{accel.beam});",
+            "",
+        ])
+
+        if (self.output_dir / self.corrections_madx).is_file():
+            madx_script += "\n".join([
+                f"call, file=\"{self.corrections_madx!s}\";",
+                f"exec, twiss_segment(forward_LHCB{accel.beam}, "
+                f"\"{self.twiss_forward_corrected}\", biniLHCB{accel.beam});",
+                f"exec, twiss_segment(backward_LHCB{accel.beam}, "
+                f"\"{self.twiss_backward_corrected}\", bendLHCB{accel.beam});",
+                "",
+            ])
+
+        return madx_script
+
+    def post_run(self):
+        check_files = [self.twiss_forward, self.twiss_backward]
+        if (self.output_dir / self.corrections_madx).is_file():
+            check_files += [self.twiss_backward_corrected, self.twiss_backward_corrected]
+        self._check_files_exist(self.accel.model_dir, check_files)

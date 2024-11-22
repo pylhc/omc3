@@ -135,7 +135,11 @@ class Lhc(Accelerator):
     def get_parameters():
         params = super(Lhc, Lhc).get_parameters()
         params.add_parameter(
-            name="beam", type=int, choices=(1, 2), required=True, help="Beam to use."
+            name="beam",
+            type=int,
+            choices=(1, 2),
+            required=True,
+            help="Beam to use."
         )
         params.add_parameter(
             name="year",
@@ -639,33 +643,3 @@ def _is_one_of_in(bpms_to_find: Sequence[str], bpms: Sequence[str]):
     if len(found_bpms):
         return list(bpms).index(found_bpms[0]), found_bpms[0]
     raise KeyError
-
-
-class _LhcSegmentMixin:
-    def __init__(self):
-        self._start = None
-        self._end = None
-
-    def get_segment_vars(self, classes=None):
-        return self.get_variables(frm=self.start.s, to=self.end.s, classes=classes)
-
-    def verify_object(self) -> None:
-        try:
-            self.beam
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, beam "
-                "has to be specified (--beam option missing?)."
-            )
-        if self.modifiers is None or not len(self.modifiers):
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, no modifiers could be found."
-            )
-        if self.xing is None:
-            raise AcceleratorDefinitionError("Crossing on or off not set.")
-        if self.label is None:
-            raise AcceleratorDefinitionError("Segment label not set.")
-        if self.start is None:
-            raise AcceleratorDefinitionError("Segment start not set.")
-        if self.end is None:
-            raise AcceleratorDefinitionError("Segment end not set.")

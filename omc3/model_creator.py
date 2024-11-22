@@ -8,7 +8,6 @@ from pathlib import Path
 
 from generic_parser import EntryPointParameters, entrypoint
 
-from omc3.madx_wrapper import run_string
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.constants import JOB_MODEL_MADX_MASK, PATHFETCHER, AFSFETCHER, OPTICS_SUBDIR
@@ -19,7 +18,6 @@ from omc3.model.model_creators.lhc_model_creator import (  # noqa
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
-from omc3.model.model_creators.segment_creator import SegmentCreator
 from omc3.utils.iotools import create_dirs, PathOrStr, save_config
 from omc3.utils import logging_tools
 from omc3.utils.parsertools import print_help, require_param
@@ -31,12 +29,9 @@ LOGGER = logging_tools.get_logger(__name__)
 CREATORS = {
     "lhc": {"nominal": LhcModelCreator,
             "best_knowledge": LhcBestKnowledgeCreator,
-            "segment": SegmentCreator,
             "coupling_correction": LhcCouplingCreator},
-    "psbooster": {"nominal": BoosterModelCreator,
-                  "segment": SegmentCreator},
-    "ps": {"nominal": PsModelCreator,
-           "segment": SegmentCreator},
+    "psbooster": {"nominal": BoosterModelCreator},
+    "ps": {"nominal": PsModelCreator},
 }
 
 
@@ -115,7 +110,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
             Type of model to create.
 
-            choices: ``('nominal', 'best_knowledge', 'coupling_correction')``
+            choices: ``('nominal', 'best_knowledge', 'correction', 'segment')``
 
 
     Accelerator Keyword Args:
@@ -158,36 +153,37 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
 
-    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type]
+    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type](accel_inst, logfile=opt.logfile)
+    creator.full_run()
 
-    # now that the creator is initialised, we can ask for modifiers that are actually present
-    # using the fetcher we chose
-    if not creator.check_options(accel_inst, opt):
-        return None
+    # # now that the creator is initialised, we can ask for modifiers that are actually present
+    # # using the fetcher we chose
+    # if not creator.check_options(accel_inst, opt):
+    #     return None
 
-    accel_inst.verify_object()
-    require_param("outputdir", _get_params(), opt)
+    # accel_inst.verify_object()
+    # require_param("outputdir", _get_params(), opt)
 
-    # Prepare model-dir output directory
-    accel_inst.model_dir = Path(opt.outputdir).absolute()
+    # # Prepare model-dir output directory
+    # accel_inst.model_dir = Path(opt.outputdir).absolute()
 
-    # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
-    if accel_inst.modifiers is not None:
-        accel_inst.modifiers = [_find_modifier(m, accel_inst) for m in accel_inst.modifiers]
+    # # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
+    # if accel_inst.modifiers is not None:
+    #     accel_inst.modifiers = [_find_modifier(m, accel_inst) for m in accel_inst.modifiers]
 
-    # Prepare paths
-    create_dirs(opt.outputdir)
-    creator.prepare_run(accel_inst)
+    # # Prepare paths
+    # create_dirs(opt.outputdir)
+    # creator.prepare_run(accel_inst)
     
-    madx_script = creator.get_madx_script(accel_inst)
-    # Run madx to create model
-    run_string(madx_script,
-               output_file=opt.outputdir / JOB_MODEL_MADX_MASK.format(opt.type),
-               log_file=opt.logfile,
-               cwd=opt.outputdir)
+    # madx_script = creator.get_madx_script(accel_inst)
+    # # Run madx to create model
+    # run_string(madx_script,
+    #            output_file=opt.outputdir / JOB_MODEL_MADX_MASK.format(opt.type),
+    #            log_file=opt.logfile,
+    #            cwd=opt.outputdir)
     
-    # Save config at the end, to not being written out for each time the choices are listed
-    save_config(Path(opt.outputdir), opt=opt, unknown_opt=accel_opt, script=__file__)
+    # # Save config at the end, to not being written out for each time the choices are listed
+    # save_config(Path(opt.outputdir), opt=opt, unknown_opt=accel_opt, script=__file__)
     
     # Return accelerator instance
     accel_inst.model_dir = opt.outputdir

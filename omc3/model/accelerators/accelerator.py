@@ -57,6 +57,7 @@ class Accelerator:
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
+    NAME: str
     # RE_DICT needs to use MAD-X compatible patterns (jdilly, 2021)
     RE_DICT = {
         AccElementTypes.BPMS: r".*",
@@ -186,8 +187,8 @@ class Accelerator:
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
         for key in driven_filenames.keys():
             if driven_filenames[key].is_file():
-                self._model_driven = tfs.read(driven_filenames[key], index="NAME")
                 self.excitation = DRIVEN_EXCITATIONS[key]
+                self.model_driven = tfs.read(driven_filenames[key], index="NAME")
 
         if not self.excitation == AccExcitationMode.FREE:
             self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
@@ -300,6 +301,12 @@ class Accelerator:
         if self._model_driven is None:
             raise AttributeError("No driven model given in this accelerator instance.")
         return self._model_driven
+
+    @model_driven.setter
+    def model_driven(self, value):
+        if self.excitation == AccExcitationMode.FREE:
+            raise AcceleratorDefinitionError("Driven model cannot be set for accelerator with free excitation mode.")
+        self._model_driven = value
 
     @classmethod
     def get_dir(cls) -> Path:

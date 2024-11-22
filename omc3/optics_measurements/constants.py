@@ -115,3 +115,4 @@ EFFECTIVE_BETAS_FILENAME: str = "effective_betas_beta{betastar_x:.2f}m{betastar_
 
 BETA_KMOD_FILENAME: str = "beta_kmod_"
 BETA_STAR_FILENAME: str = "betastar_"
+MODEL_DIRECTORY: str = "Model_directory"   # wish this was 'ModelDirectory' but too afraid to change it (jdilly 2023)

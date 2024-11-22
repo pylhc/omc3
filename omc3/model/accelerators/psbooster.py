@@ -85,7 +85,12 @@ class Psbooster(PsBase):
     @staticmethod
     def get_parameters():
         params = super(Psbooster, Psbooster).get_parameters()
-        params.add_parameter(name="ring", type=int, choices=(1, 2, 3, 4), help="Ring to use.")
+        params.add_parameter(
+            name="ring", 
+            type=int, 
+            choices=(1, 2, 3, 4),
+            required=True,
+            help="Ring to use.")
         return params
 
     def __init__(self, *args, **kwargs):
@@ -144,10 +149,3 @@ class Psbooster(PsBase):
             replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
         mask = self.get_file('base.mask').read_text()
         return mask % replace_dict
-
-
-class _PsboosterSegmentMixin(object):
-
-    def __init__(self):
-        self._start = None
-        self._end = None

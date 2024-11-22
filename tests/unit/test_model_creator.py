@@ -5,7 +5,8 @@ from pathlib import Path
 
 import pytest
 import tfs
-from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
+from generic_parser import DotDict
+from omc3.model.accelerators.accelerator import Accelerator,AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, PATHFETCHER
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
@@ -123,7 +124,7 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
     # the PS acc-models repo doesn't provide `.beam` files, that could be used to extract the
     # energy settings for each scenario automatically. So we rely on te user to specify this
@@ -276,7 +277,7 @@ def test_lhc_creation_relative_modifier_path(tmp_path, acc_models_lhc_2022):
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -330,16 +331,16 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path, acc_models_lhc_2
     )
 
     # ... which is then caught here:
-    check_accel_from_dir_vs_options(
-        model_dir_relpath, accel_opt, accel, required_keys=["beam", "year"]
-    )
+    check_accel_from_dir_vs_options(model_dir_relpath, accel_opt, accel)
     os.chdir(request.config.invocation_dir)  # return to original cwd
 
 
 @pytest.mark.basic
 def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
+    """ Checks if the post_run() method succeeds on an already existing given model (dir),
+    and then checks that it failes when removing individual files from that model. """
     accel = get_accelerator(**model_25cm_beam1)
-    LhcModelCreator.check_run_output(accel)
+    LhcModelCreator(accel).post_run()
 
     for dat_file in (TWISS_AC_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, TWISS_ADT_DAT):
         file_path: Path = accel.model_dir / dat_file
@@ -351,7 +352,7 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
 
         # Run test
         with pytest.raises(FileNotFoundError) as creation_error:
-            LhcModelCreator.check_run_output(accel)
+            LhcModelCreator(accel).post_run()
         assert str(dat_file) in str(creation_error.value)
 
         if file_path_moved.exists():
@@ -475,7 +476,7 @@ def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
 
 # ---- helper --------------------------------------------------------------------------------------
 
-def check_accel_from_dir_vs_options(model_dir, accel_options, accel_from_opt, required_keys, best_knowledge=False):
+def check_accel_from_dir_vs_options(model_dir: Path, accel_options: DotDict, accel_from_opt: Accelerator, required_keys, best_knowledge=False):
     # creation via model_from_dir tests that all files are in place:
     accel_from_dir = get_accelerator(
         accel=accel_options["accel"],

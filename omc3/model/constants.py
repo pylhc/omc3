@@ -37,7 +37,8 @@ B2_SETTINGS_MADX = "b2_settings.madx"
 B2_ERRORS_TFS = "b2_errors.tfs"
 PLANE_TO_HV = dict(X="H", Y="V")
 
-AFS_ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models")
+AFS_ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models")  # /lhc???
+ACC_MODELS_PREFIX = AFS_ACCELERATOR_MODEL_REPOSITORY.name
 OPTICS_SUBDIR = "operation/optics"
 
 AFS_B2_ERRORS_ROOT = Path("/afs/cern.ch/eng/sl/lintrack/error_tables/")
