@@ -4,8 +4,9 @@ Segment by Segment: Definitions
 
 This module provides definitions to be used with segment by segment
 """
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
-from typing import Tuple
 
 from uncertainties.core import Variable 
 
@@ -24,7 +25,7 @@ class PropagableColumns:
         self._column = column
         self._plane = plane
 
-    def planed(self, plane: str) -> "PropagableColumns":
+    def planed(self, plane: str) -> PropagableColumns:
         return PropagableColumns(self._column, plane)
 
     @property
@@ -69,7 +70,7 @@ class PropagableColumns:
 
 
 class Measurement(Variable):
-    def as_tuple(self) -> Tuple[float, float]:
+    def as_tuple(self) -> tuple[float, float]:
         return (self.nominal_value, self.std_dev)
     
     def __iter__(self):

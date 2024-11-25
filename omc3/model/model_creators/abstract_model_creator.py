@@ -19,7 +19,9 @@ from omc3.model.constants import (
     OPTICS_SUBDIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
+    TWISS_BEST_KNOWLEDGE_DAT,
     TWISS_DAT,
+    TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
 )
 from omc3.optics_measurements.constants import NAME
@@ -45,11 +47,12 @@ MADXInputType = Path | str | dict[str, str]
 
 
 class ModelCreator(ABC):
-    jobfile: str = JOB_MODEL_MADX_NOMINAL
     """
     Abstract class for the implementation of a model creator. All mandatory methods and convenience
     functions are defined here.
     """
+    jobfile: str = JOB_MODEL_MADX_NOMINAL
+
     def __init__(self, accel: Accelerator, logfile: Path = None, *args, **kwargs):
         """
         Initialize the Model Creator.
@@ -106,14 +109,9 @@ class ModelCreator(ABC):
 
     def full_run(self):
         """ Does the full run: preparation, running madx, post_run. """
-
         # Prepare model-dir output directory
         self.prepare_run()
         
-        # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
-        if self.accel.modifiers is not None:
-            self.accel.modifiers = [self._find_modifier(m) for m in self.accel.modifiers]
-
         # get madx-script with relative output-paths
         self.accel.model_dir = Path()
         madx_script = self.get_madx_script()
@@ -140,7 +138,6 @@ class ModelCreator(ABC):
         """
         pass
     
-    @abstractmethod
     def prepare_run(self) -> None:
         """
         Prepares the model creation ``MAD-X`` run. It should check that the appropriate directories
@@ -148,37 +145,68 @@ class ModelCreator(ABC):
         Should also check that all necessary data for model creation is available in the accelerator
         instance. 
 
+        Here implemented are some usual defaults, so that an implementation of the model-creator
+        might run these easily with `super()` if desired.
+
         Args:
             accel (Accelerator): Accelerator Instance used for the model creation.
         """
-        pass
+        LOGGER.info("Preparing MAD-X run for model creation.")
+        # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
+        if self.accel.modifiers is not None:
+            self.accel.modifiers = [self._find_modifier(m) for m in self.accel.modifiers]
+        
+        # prepare the acc-models-symlink and replace paths to use the symlink
+        self.prepare_symlink()
 
     def post_run(self) -> None:
         """
         Checks that the model creation ``MAD-X`` run was successful. It should check that the
         appropriate directories are created, and that macros and other files are in place.
         Also assings created models to the accelerator instance.
+
+        Hint: If you only need to check a different set of files, you can simply override the `files_to_check` property,
+              instead of this whole function.
         """
-        accel = self.accel
-
-        # These are the default files for most model creators for now.
-        files_to_check: list[str] = [TWISS_DAT, TWISS_ELEMENTS_DAT]
-        accel.model = tfs.read(accel.model_dir / TWISS_DAT, index=NAME)
-        accel.elements = tfs.read(accel.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
+        LOGGER.info("Checking output from MAD-X run for model creation.")
+        self._check_files_exist(self.accel.model_dir, self.files_to_check)
         
-        if accel.excitation == AccExcitationMode.ACD:
-            files_to_check += [TWISS_AC_DAT]
-            accel.model_driven = tfs.read(accel.model_dir / TWISS_AC_DAT, index=NAME)
-        elif accel.excitation == AccExcitationMode.ADT:
-            files_to_check += [TWISS_ADT_DAT]
-            accel.model_driven = tfs.read(accel.model_dir / TWISS_ADT_DAT, index=NAME)
+        # Load the twiss files
+        attribute_map = {
+            TWISS_DAT: "model",
+            TWISS_ELEMENTS_DAT: "elements",
+            TWISS_BEST_KNOWLEDGE_DAT: "model_best_knowledge",
+            TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT: "elements_best_knowledge",
+            TWISS_AC_DAT: "model_driven",
+            TWISS_ADT_DAT: "model_driven",
+        }
+        for filename in self.files_to_check:
+            try: 
+                setattr(self.accel, attribute_map[filename], tfs.read(self.accel.model_dir / filename, index=NAME))
+            except KeyError:
+                pass  # just a file to check, not a file with attribute
 
-        self._check_files_exist(accel.model_dir, files_to_check)
+    
+    @property
+    def files_to_check(self) -> list[str]:
+        """
+        Returns the list of files to check after model creation, 
+        should only be used in `post_run`.
+        Override in subclass if you need to check a different set of files.
+        """
+        check_files = [TWISS_DAT, TWISS_ELEMENTS_DAT]  # default for most accelerators
+        excitation_map = {
+            AccExcitationMode.FREE: [],
+            AccExcitationMode.ACD: [TWISS_AC_DAT],
+            AccExcitationMode.ADT: [TWISS_ADT_DAT],
+        }
+        check_files = check_files + excitation_map[self.accel.excitation]
+        return check_files 
 
     @staticmethod
     def _check_files_exist(dir_: Path | str, files: Sequence[str]) -> None:
         """
-        Convenience function to loop over files supposed to be in a locatioin and raise an error if
+        Convenience function to loop over files supposed to be in a location and raise an error if
         one or more of these files does not exist.
 
         Args:
@@ -195,7 +223,7 @@ class ModelCreator(ABC):
                 raise FileNotFoundError(
                     f"Model Creation Failed. The file '{file_path.absolute()}' was not created."
                 )
-
+    
     def prepare_symlink(self):
         """Prepare the acc-models-symlink.
         Create symlink if it does not yet exist or points the wrong way.
@@ -204,11 +232,13 @@ class ModelCreator(ABC):
         This functions can be used by all model creators supporting the acc-models creation.
         """
         accel = self.accel
-        if accel.acc_model_path is None:
+        if accel.acc_model_path is None or accel.REPOSITORY is None:
+            LOGGER.debug(f"No symlink required for accel {accel.NAME}.")
             return
 
+        LOGGER.debug("Preparing acc-models-symlink")
         target = accel.acc_model_path
-        link = Path(accel.model_dir) / accel.REPOSITORY
+        link: Path = Path(accel.model_dir) / accel.REPOSITORY
 
         if link.is_symlink() or link.exists():
             # something is here
@@ -226,7 +256,8 @@ class ModelCreator(ABC):
             # no symlink so we create one
             link.absolute().symlink_to(target)
         
-        # use the link from now on as model path and for modifiers
+        # use the link from now on as model path and for modifiers;
+        # this converts all modifiers to absolute paths ... maybe not desired? (jdilly, 2024)
         accel.acc_model_path = link.absolute()
         if accel.modifiers is not None:
             accel.modifiers = [

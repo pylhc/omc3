@@ -25,6 +25,7 @@ from omc3.model.constants import (
     TWISS_ADT_DAT,
     TWISS_BEST_KNOWLEDGE_DAT,
     TWISS_DAT,
+    TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
 )
 from omc3.utils import logging_tools
@@ -125,6 +126,7 @@ class Accelerator:
         self._model_driven = None
         self.model_best_knowledge = None
         self.elements = None
+        self.elements_best_knowledge = None
         self.error_defs_file = None
         self.acc_model_path = None
         self.modifiers = None
@@ -197,6 +199,10 @@ class Accelerator:
         best_knowledge_path = model_dir / TWISS_BEST_KNOWLEDGE_DAT
         if best_knowledge_path.is_file():
             self.model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
+
+        best_knowledge_elements_path = model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT
+        if best_knowledge_elements_path.is_file():
+            self.elements_best_knowledge = tfs.read(best_knowledge_elements_path, index="NAME")
 
         # Base Model ########################################
         if self.REPOSITORY is not None:

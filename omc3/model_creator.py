@@ -153,13 +153,14 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         return 
 
     # proceed to the creator
-    accel_inst = manager.get_accelerator(accel_opt)
+    accel_inst: Accelerator = manager.get_accelerator(accel_opt)
     require_param("type", _get_params(), opt)
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     
     # model_dir is used as the output directory
     require_param("outputdir", _get_params(), opt)
-    accel_inst.model_dir = Path(opt.outputdir).absolute()
+    outputdir = Path(opt.outputdir)
+    accel_inst.model_dir = outputdir.absolute()
 
     creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type](accel_inst, logfile=opt.logfile)
 
@@ -170,7 +171,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
         return None
     
     # Save config only now, to not being written out for each time the choices are listed
-    save_config(Path(opt.outputdir), opt=opt, unknown_opt=accel_opt, script=__file__)
+    save_config(outputdir, opt=opt, unknown_opt=accel_opt, script=__file__)
 
     # Run the actual model creation
     creator.full_run()

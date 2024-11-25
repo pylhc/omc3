@@ -7,11 +7,13 @@ import pytest
 import tfs
 from generic_parser import DotDict
 from omc3.model.accelerators.accelerator import Accelerator,AcceleratorDefinitionError, AccExcitationMode
+from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, PATHFETCHER
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import NAME
+from tests.conftest import assert_frame_equal
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 LHC_30CM_MODIFIERS = [Path("R2023a_A30cmC30cmA10mL200cm.madx")]
@@ -40,7 +42,7 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
     # now check a few error cases
 
@@ -77,7 +79,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
     accel = create_instance_and_model(
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["ring"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 # # ps tune matching fails for 2018 optics
 # # The magnets used for the different tune matching methods in > 2018 were installed in LS2. 
@@ -103,7 +105,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
 #     accel = create_instance_and_model(
 #         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
 #     )
-#     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["year"])
+#     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 #
 #
 @pytest.mark.basic
@@ -156,7 +158,7 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
     # quick check for DOROS BPMs
     for twiss_name in (TWISS_DAT, TWISS_ELEMENTS_DAT):
@@ -168,13 +170,13 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
     with pytest.raises(AcceleratorDefinitionError) as excinfo:
         accel_duplicate = copy.deepcopy(accel)
         accel_duplicate.model_dir = None
-        LhcModelCreator.check_accelerator_instance(accel_duplicate)
+        LhcModelCreator(accel_duplicate).check_accelerator_instance()
     assert "model directory (outputdir option) was not given" in str(excinfo.value)
 
     with pytest.raises(AcceleratorDefinitionError) as excinfo:
         accel_duplicate = copy.deepcopy(accel)
         accel_duplicate.modifiers = None
-        LhcModelCreator.check_accelerator_instance(accel_duplicate)
+        LhcModelCreator(accel_duplicate).check_accelerator_instance()
     assert "no modifiers could be found" in str(excinfo.value)
 
     with pytest.raises(AttributeError):
@@ -199,7 +201,7 @@ def test_lhc_creation_nominal_free_high_beta(tmp_path, acc_models_lhc_2018):
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -218,7 +220,7 @@ def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2023):
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"])
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -245,16 +247,20 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2023):
     )
 
     # like from the GUI, dump best knowledge on top of nominal
-    accel = create_instance_and_model(
+    accel_nominal: Lhc = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=logfile, **accel_opt
     )
 
     accel_opt["b2_errors"] = str(INPUTS / "models/error_tables/MB2022_6500.0GeV_0133cm")
 
-    accel = create_instance_and_model(
+    accel: Lhc = create_instance_and_model(
         outputdir=tmp_path, type="best_knowledge", logfile=logfile, **accel_opt
     )
-    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, required_keys=["beam", "year"], best_knowledge=True)
+
+    assert accel.model is None  # should not have been created in the opt
+    accel.model = accel_nominal.model  # but is present in the tmp_dir, so add here to compare
+
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel, best_knowledge=True)
     assert corrections_str in logfile.read_text()
 
 
@@ -331,7 +337,7 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path, acc_models_lhc_2
     )
 
     # ... which is then caught here:
-    check_accel_from_dir_vs_options(model_dir_relpath, accel_opt, accel)
+    check_accel_from_dir_vs_options(model_dir_relpath.absolute(), accel_opt, accel)
     os.chdir(request.config.invocation_dir)  # return to original cwd
 
 
@@ -476,12 +482,17 @@ def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
 
 # ---- helper --------------------------------------------------------------------------------------
 
-def check_accel_from_dir_vs_options(model_dir: Path, accel_options: DotDict, accel_from_opt: Accelerator, required_keys, best_knowledge=False):
+def check_accel_from_dir_vs_options(
+    model_dir: Path, 
+    accel_options: DotDict, 
+    accel_from_opt: Accelerator, 
+    best_knowledge=False
+    ):
     # creation via model_from_dir tests that all files are in place:
-    accel_from_dir = get_accelerator(
+    accel_from_dir: Accelerator = get_accelerator(
         accel=accel_options["accel"],
         model_dir=model_dir,
-        **{k: accel_options[k] for k in required_keys},
+        **_get_required_accelerator_parameters(accel_from_opt),
     )
 
     _check_arrays(accel_from_opt.nat_tunes, accel_from_dir.nat_tunes, eps=1e-4, tunes=True)
@@ -498,6 +509,14 @@ def check_accel_from_dir_vs_options(model_dir: Path, accel_options: DotDict, acc
 
         _check_arrays(beta_model, beta_bk, eps=1e-4, is_close=False)
 
+        assert_frame_equal(accel_from_opt.model_best_knowledge, accel_from_dir.model_best_knowledge)
+
+    if accel_from_dir.model is not None:
+        assert_frame_equal(accel_from_opt.model, accel_from_dir.model)
+    
+    if accel_from_opt.excitation != AccExcitationMode.FREE:
+        assert_frame_equal(accel_from_opt.model_driven, accel_from_dir.model_driven)
+    
     # TODO: Energy not set in model ? (jdilly, 2021)
     # assert abs(accel_from_opt.energy - accel_from_dir.energy) < 1e-2
 
@@ -519,3 +538,13 @@ def _check_arrays(a_array, b_array, eps=None, tunes=False, is_close=True):
             assert (abs((a % 1) - (b % 1)) <= eps) == is_close
         else:
             assert (abs(a - b) <= eps) == is_close
+
+
+def _get_required_accelerator_parameters(accel_inst: Accelerator) -> dict:
+    """Return the required parameters with the values from  the accelerator instance."""
+    parameters_required = dict()
+    parameters_accel = accel_inst.__class__.get_parameters()
+    for name, param in parameters_accel.items():
+        if param.get("required", False):
+            parameters_required[name] = getattr(accel_inst, name)
+    return parameters_required

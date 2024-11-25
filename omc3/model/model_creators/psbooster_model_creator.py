@@ -26,6 +26,7 @@ class BoosterModelCreator(PsBaseModelCreator):
         return madx_script
 
     def prepare_run(self):
+        super().prepare_run()
         shutil.copy(
             self.accel.get_file(f"error_deff_ring{self.accel.ring}.txt"), self.accel.model_dir / ERROR_DEFFS_TXT
         )

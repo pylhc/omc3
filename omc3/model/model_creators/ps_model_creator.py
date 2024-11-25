@@ -31,5 +31,6 @@ class PsModelCreator(PsBaseModelCreator):
         return madx_script
 
     def prepare_run(self) -> None:
+        super().prepare_run()
         # get path of file from PS model directory (without year at the end)
         shutil.copy(self.accel.get_file("error_deff.txt"), self.accel.model_dir / ERROR_DEFFS_TXT)
