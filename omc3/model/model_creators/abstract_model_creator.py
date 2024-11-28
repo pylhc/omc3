@@ -45,11 +45,10 @@ if TYPE_CHECKING:
 LOGGER = logging_tools.get_logger(__file__)
 
 
-
 class ModelCreator(ABC):
     """
-    Abstract class for the implementation of a model creator. All mandatory methods and convenience
-    functions are defined here.
+    Abstract class for the implementation of a model creator. 
+    All mandatory methods and convenience functions are defined here.
     """
     jobfile: str = JOB_MODEL_MADX_NOMINAL
 
@@ -121,15 +120,14 @@ class ModelCreator(ABC):
         """
         pass
     
-    @abstractmethod
     def get_update_deltap_script(self, deltap: float | str) -> str:
         """ Get the madx snippet that updates the dpp in the machine.
         
         Args:
             deltap (float | str): The dpp to update the machine to.
          """
-        pass
-    
+        raise NotImplementedError("Update dpp not implemented for this model creator.")
+
     def prepare_run(self) -> None:
         """
         Prepares the model creation ``MAD-X`` run. It should check that the appropriate directories
