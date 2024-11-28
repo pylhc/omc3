@@ -10,9 +10,9 @@ decaying) oscillations are analysed.
 import numpy as np
 import pandas as pd
 
-from omc3.utils import logging_tools
-from omc3.harpy.constants import COL_TUNE, COL_MU
 from omc3.definitions.constants import PI2
+from omc3.harpy.constants import COL_MU, COL_TUNE
+from omc3.utils import logging_tools
 
 LOGGER = logging_tools.getLogger(__name__)
 
