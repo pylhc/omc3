@@ -40,10 +40,10 @@ from omc3.utils import iotools, logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
+    MADXInputType = Path | str | dict[str, str]
 
 LOGGER = logging_tools.get_logger(__file__)
 
-MADXInputType = Path | str | dict[str, str]
 
 
 class ModelCreator(ABC):

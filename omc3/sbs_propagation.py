@@ -5,22 +5,22 @@ Segment-by-Segment Correction
 TODO
 
 """
+from __future__ import annotations
+
 import functools
 import shutil
 from pathlib import Path
-from typing import Callable, Dict, List, Sequence, Tuple, Union
+from typing import TYPE_CHECKING
 
 import pandas as pd
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entrypoint_parser import add_to_arguments
-from pandas import DataFrame
 
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
-from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
+from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.constants import ACC_MODELS_PREFIX, MACROS_DIR, TWISS_ELEMENTS_DAT
-from omc3.model.model_creators.abstract_model_creator import MADXInputType
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
@@ -28,6 +28,13 @@ from omc3.segment_by_segment.segments import (SbsDefinitionError, Segment, Segme
                                               SegmentModels)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDict
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+    from omc3.model.model_creators.abstract_model_creator import MADXInputType
+    from pandas import DataFrame
+    from omc3.model.accelerators.accelerator import Accelerator
+
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -70,7 +77,7 @@ def get_parameters():
 
 
 @entrypoint(get_parameters(), strict=False)
-def segment_by_segment(opt, accel_opt) -> Dict[str, SegmentDiffs]:
+def segment_by_segment(opt, accel_opt) -> dict[str, SegmentDiffs]:
     """
     TODO
     """
@@ -82,7 +89,7 @@ def segment_by_segment(opt, accel_opt) -> Dict[str, SegmentDiffs]:
     measurement = OpticsMeasurement(opt.measurement_dir)
     segments, elements = _check_segments_and_elements(opt.segments, opt.elements)
 
-    results: Dict[str, SegmentDiffs] = {}
+    results: dict[str, SegmentDiffs] = {}
     for segment in segments + elements:
         propagables = create_segment(accel, segment, measurement, opt.corrections)
         results[segment.name] = get_differences(propagables, segment.name, accel.model_dir)
@@ -91,7 +98,7 @@ def segment_by_segment(opt, accel_opt) -> Dict[str, SegmentDiffs]:
 
 
 def create_segment(accel: Accelerator, segment_in: Segment, 
-                   measurement: OpticsMeasurement, corrections: MADXInputType) -> List[Propagable]:
+                   measurement: OpticsMeasurement, corrections: MADXInputType) -> list[Propagable]:
     """Perform the computations on the segment.
     The segment is adapted fist, so that the given start and end bpms a in the measurement.
     Then madx is run to create the specified segments and the output files
@@ -166,7 +173,7 @@ def extend_segment(segment: Segment, model: DataFrame, measurement: OpticsMeasur
     return new_segment
 
 
-def get_differences(propagables: List[Propagable], segment_name: str = "", output_dir: Path = None) -> SegmentDiffs:
+def get_differences(propagables: list[Propagable], segment_name: str = "", output_dir: Path = None) -> SegmentDiffs:
     """Calculate the differences of the propagated model and the measurement and write
     them out into files (if ``output`` had been given).
 
@@ -191,7 +198,7 @@ def get_differences(propagables: List[Propagable], segment_name: str = "", outpu
     return segment_diffs 
 
 
-def _get_accelerator_instance(accel_opt: dict, output_dir: Union[Path, str]) -> Accelerator:
+def _get_accelerator_instance(accel_opt: dict, output_dir: Path | str) -> Accelerator:
     """Get accelerator instance from ``accel_opt`` and create a nominal model if not present."""
     try:
         accel_inst = manager.get_accelerator(accel_opt)
@@ -206,7 +213,7 @@ def _get_accelerator_instance(accel_opt: dict, output_dir: Union[Path, str]) -> 
     return accel_inst
 
 
-def _check_segments_and_elements(segments: List[str], elements: List[str]) -> Tuple[List[Segment], List[Segment]]:
+def _check_segments_and_elements(segments: list[str], elements: list[str]) -> tuple[list[Segment], list[Segment]]:
     """Convert segments and elements to Segments and check for duplicate names."""
     if not segments and not elements:
         raise SbsDefinitionError("No segments or elements provided in the input.")
@@ -220,7 +227,7 @@ def _check_segments_and_elements(segments: List[str], elements: List[str]) -> Tu
     return segments, elements
 
 
-def _parse_segments(segment_definitions: Sequence[Union[Segment, str]]) -> List[Segment]:
+def _parse_segments(segment_definitions: Sequence[Segment | str]) -> list[Segment]:
     """Convert all segment definitions to Segments.     
 
     Args:
@@ -251,7 +258,7 @@ def _parse_segments(segment_definitions: Sequence[Union[Segment, str]]) -> List[
     return list(segments.values())
 
 
-def _parse_elements(elements: Sequence[Union[Segment, str]]) -> List[Segment]:
+def _parse_elements(elements: Sequence[Segment | str]) -> list[Segment]:
     """Convert all elements to Segments.
 
     Args:
