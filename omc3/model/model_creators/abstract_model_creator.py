@@ -80,23 +80,6 @@ class ModelCreator(ABC):
         """
         return True
 
-    @classmethod
-    @abstractmethod
-    def get_correction_check_script(cls, accel: Accelerator, corr_file: str, chrom: bool) -> str:
-        """
-        Returns the ``MAD-X`` script used to verify global corrections. This script should create twiss
-        files for before (``twiss_no.dat``) and after (``twiss_corr.dat``) correction.
-
-        Args:
-            accel (Accelerator): Accelerator Instance used for the model creation.
-            corr_file (str): File containing the corrections (madx-readable).
-            chrom (bool): Flag for chromatic corrections deltapm and deltapp.
-
-        Returns:
-            The string of the ``MAD-X`` script used to verify global corrections.
-        """
-        pass
-
     def full_run(self):
         """ Does the full run: preparation, running madx, post_run. """
         # Prepare model-dir output directory
@@ -125,6 +108,16 @@ class ModelCreator(ABC):
 
         Returns:
             The string of the ``MAD-X`` script used to used to create the model (directory).
+        """
+        pass
+    
+    @abstractmethod
+    def get_base_madx_script(self) -> str:
+        """
+        Returns the ``MAD-X`` script used to set-up the machine, without creating the model (twiss-output).
+
+        Returns:
+            The string of the ``MAD-X`` script used to used to set-up the machine.
         """
         pass
     
@@ -381,3 +374,34 @@ class SegmentCreator(ModelCreator, ABC):
             return input_file.read_text()
         
         return self.corrections
+
+
+class CorrectionModelCreator(ModelCreator, ABC):
+    jobfile = None  # set in __init__ 
+    
+    def __init__(self, accel: Accelerator, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False):
+        """Model creator for the corrected/matched model of the LHC.
+
+        Args:
+            accel (Accelerator): Accelerator Class Instance.
+            twiss_out (Path | str): Path to the twiss(-elements) file to write.
+            change_params (Sequence[Path]): Sequence of correction/matching files.
+            update_dpp (bool): Whether to update the dpp in the machine.
+        """
+        super(CorrectionModelCreator, self).__init__(accel)
+        self.twiss_out = Path(twiss_out)
+
+        # use absolute paths to force files into twiss_out directory instead of model-dir
+        self.jobfile = self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.madx"
+        self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
+        self.corr_files = corr_files
+        self.update_dpp = update_dpp
+
+    @abstractmethod
+    def get_update_deltap_script(self, deltap: float | str) -> str:
+        """ Get the madx script that updates the dpp in the machine.
+        
+        Args:
+            deltap (float | str): The dpp to update the machine to.
+         """
+        pass

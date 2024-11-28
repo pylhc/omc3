@@ -124,28 +124,3 @@ class Psbooster(PsBase):
         if not len(found_bpms):
             raise KeyError
         return (list(bpms).index(found_bpms[0]), found_bpms[0]), f"{PLANE_TO_HV[plane]}ACMAP"
-
-    def get_base_madx_script(self, best_knowledge=False):
-        if best_knowledge:
-            raise AttributeError(f"No best knowledge model for {self.NAME} (yet).")
-
-        use_acd = self.excitation == AccExcitationMode.ACD
-        replace_dict = {
-            "FILES_DIR": str(self.get_dir()),
-            "USE_ACD": str(int(use_acd)),
-            "RING": str(self.ring),
-            "NAT_TUNE_X": self.nat_tunes[0],
-            "NAT_TUNE_Y": self.nat_tunes[1],
-            "KINETICENERGY": 0 if self.energy is None else self.energy,
-            "USE_CUSTOM_PC": "0" if self.energy is None else "1",
-            "ACC_MODELS_DIR": self.acc_model_path,
-            "BEAM_FILE": self.beam_file,
-            "STR_FILE": self.str_file,
-            "DRV_TUNE_X": "",
-            "DRV_TUNE_Y": "",
-        }
-        if use_acd:
-            replace_dict["DRV_TUNE_X"] = self.drv_tunes[0]
-            replace_dict["DRV_TUNE_Y"] = self.drv_tunes[1]
-        mask = self.get_file('base.mask').read_text()
-        return mask % replace_dict

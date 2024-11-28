@@ -26,6 +26,8 @@ import tfs
 from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
+from omc3.model.model_creators.abstract_model_creator import ModelCreator
+from omc3.model_creator import CREATORS, CreatorType
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.constants import INCR, ORBIT_DPP
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
@@ -142,14 +144,24 @@ def _generate_madx_jobs(
 
 
 def _get_madx_job(accel_inst: Accelerator) -> str:
-    model_dir_backup = accel_inst.model_dir  # use relative paths as we use model_dir as cwd
+    # use relative paths as we use model_dir as cwd
+    model_dir_backup = accel_inst.model_dir  
     accel_inst.model_dir = Path()
-    job_content = accel_inst.get_base_madx_script()
-    accel_inst.model_dir = model_dir_backup
+
+    # get nominal setup from creator
+    creator_type = CreatorType.NOMINAL
+    # if accel_inst.model_best_knowledge is not None:
+    #     creator_type = CreatorType.BEST_KNOWLEDGE  # Not 100% sure if we should do this. To be discussed. (jdilly, 2024)
+
+    creator: ModelCreator = CREATORS[accel_inst.NAME][creator_type](accel_inst)
+    job_content = creator.get_base_madx_script()
     job_content += (
         "select, flag=twiss, clear;\n"
         f"select, flag=twiss, pattern='{accel_inst.RE_DICT[AccElementTypes.BPMS]}', "
         "column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;\n\n")
+
+    # restore model_dir
+    accel_inst.model_dir = model_dir_backup
     return job_content
 
 

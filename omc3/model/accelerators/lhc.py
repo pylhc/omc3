@@ -92,21 +92,10 @@ from omc3.model.accelerators.accelerator import (
     AcceleratorDefinitionError,
     AccExcitationMode,
 )
-from omc3.model.constants import (
-    B2_ERRORS_TFS,
-    B2_SETTINGS_MADX,
-    GENERAL_MACROS,
-    LHC_MACROS,
-    LHC_MACROS_RUN3,
-    MACROS_DIR,
-    MODIFIER_TAG,
-)
-from omc3.correction.constants import ORBIT_DPP
-
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Sequence, Iterable
+    from collections.abc import Iterable, Iterator, Sequence
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -115,9 +104,8 @@ LHC_DIR = CURRENT_DIR / "lhc"
 
 class Lhc(Accelerator):
     """
-    Parent Class for LHC-types.
+    Accelerator class for the ``LHC`` collider.
     """
-
     NAME = "lhc"
     REPOSITORY = "acc-models-lhc"
     RE_DICT: dict[str, str] = {
@@ -377,244 +365,10 @@ class Lhc(Accelerator):
             return [i in index for i in self.model.loc["BPMSW.33L2.B1":].index]
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
-
-    # MAD-X Methods ############################################################
-
-    def get_base_madx_script(self, best_knowledge: bool = False, ats_md: bool = False, high_beta: bool = False) -> str:
-        madx_script = (
-            f"{self._get_madx_script_info_comments()}\n\n"
-            f"call, file = '{self.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
-            f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS}';\n"
-        )
-        madx_script += f"omc3_beam_energy = {self.energy};\n"
-        madx_script += "exec, define_nominal_beams();\n\n"
-        if self._uses_run3_macros():
-            LOGGER.debug(
-                "According to the optics year, Run 3 versions of the macros will be used"
-            )
-            madx_script += (
-                f"call, file = '{self.model_dir / MACROS_DIR / LHC_MACROS_RUN3}';\n"
-            )
-
-        madx_script += "\n! ----- Calling Sequence -----\n"
-        madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
-        madx_script += self._get_madx_main_sequence_loading()
-        madx_script += "\noption, echo;  ! re-enable output to see the optics settings\n"
-        
-        madx_script += "\n! ---- Call optics and other modifiers ----\n"
-
-        if self.modifiers is not None:
-            # if modifier is an absolute path, go there, otherwise use the path refers from model_dir
-            madx_script += "".join(
-                f"call, file = '{self.model_dir / modifier}'; {MODIFIER_TAG}\n"
-                for modifier in self.modifiers
-            )
-
-        if self.year in ['2012', '2015', '2016', '2017', '2018', '2021', 'hllhc1.3']:
-            # backwards compatibility with pre acc-models optics
-            # WARNING: This might override values extracted via the knob-extractor.
-            madx_script += (
-                f"\n! ----- Defining Configuration Specifics -----\n"
-                f"xing_angles = {'1' if self.xing else '0'};\n"
-                f"if(xing_angles==1){{\n"
-                f"    exec, set_crossing_scheme_ON();\n"
-                f"}}else{{\n"
-                f"    exec, set_default_crossing_scheme();\n"
-                f"}}\n"
-            )
-
-        madx_script += (
-            "\n! ----- Finalize Sequence -----\n"
-            "exec, cycle_sequences();\n"
-            f"use, sequence = LHCB{self.beam};\n"
-        )
-
-        if best_knowledge:
-            # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
-            madx_script += (
-                f"\n! ----- For Best Knowledge Model -----\n"
-                f"readmytable, file = '{self.model_dir / B2_ERRORS_TFS}', table=errtab;\n"
-                f"seterr, table=errtab;\n"
-                f"call, file = '{self.model_dir / B2_SETTINGS_MADX}';\n"
-            )
-            
-        if high_beta:
-            madx_script += "exec, high_beta_matcher();\n"
-
-        madx_script += "\n! ----- Matching Knobs and Output Files -----\n"
-
-        # in the best knowledge case, all knobs are loaded from actual knowledge
-        if not best_knowledge:
-            if self._uses_ats_knobs():
-                LOGGER.debug(
-                    "According to the optics year or the --ats flag being provided, ATS macros and knobs will be used"
-                )
-                madx_script += f"exec, match_tunes_ats({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-                madx_script += f"exec, coupling_knob_ats({self.beam});\n"
-            else:
-                madx_script += f"exec, match_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-                madx_script += f"exec, coupling_knob({self.beam});\n"
-
-        if ats_md:
-            madx_script += "exec, full_response_ats();\n"
-
-        return madx_script
-        
-    def _get_madx_script_info_comments(self) -> str:
-        info_comments = (
-            f'title, "LHC Model created by omc3";\n'
-            f"! Model directory: {Path(self.model_dir).absolute()}\n"
-            f"! Natural Tune X         [{self.nat_tunes[0]:10.3f}]\n"
-            f"! Natural Tune Y         [{self.nat_tunes[1]:10.3f}]\n"
-            f"! Best Knowledge:        [{'NO' if self.model_best_knowledge is None else 'YES':>10s}]\n"
-        )
-        if self.excitation == AccExcitationMode.FREE:
-            info_comments += f"! Excitation             [{'NO':>10s}]\n"
-        else:
-            info_comments += (
-                f"! Excitation             [{'ACD' if self.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
-                f"! > Driven Tune X        [{self.drv_tunes[0]:10.3f}]\n"
-                f"! > Driven Tune Y        [{self.drv_tunes[1]:10.3f}]\n"
-
-            )
-        return info_comments
-
-    def _get_madx_main_sequence_loading(self) -> str:
-        if self.acc_model_path is not None:
-            main_call = f'call, file = \'{self.acc_model_path / "lhc.seq"}\';'
-            if self.year.startswith('hl'):
-                main_call += f'\ncall, file = \'{self.acc_model_path / "hllhc_sequence.madx"}\';'
-            return main_call
-        try:
-            return self._get_call_main()
-        except AttributeError:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete, mode "
-                "has to be specified (--lhcmode option missing?)."
-            )
-
-    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False) -> str:
-        madx_script = self.get_base_madx_script()
-
-        # First set the dpp to the value in the accelerator model
-        madx_script += f"{ORBIT_DPP} = {self.dpp};\n"
-
-        for corr_file in corr_files:  # Load the corrections, can also update ORBIT_DPP
-            madx_script += f"call, file = '{str(corr_file)}';\n"
-        
-        if update_dpp: # If we are doing orbit correction, we need to ensure that a correct and a match is done (in get_update_deltap_script)
-            madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
-
-        madx_script += f'exec, do_twiss_elements(LHCB{self.beam}, "{str(outpath)}", {ORBIT_DPP});\n'
-        return madx_script
     
-    def get_update_deltap_script(self, deltap: float | str) -> str:
-        if not isinstance(deltap, str):
-            deltap = f"{deltap:.15e}"
-
-        madx_script = (
-            f"twiss, deltap={deltap};\n"
-            "correct, mode=svd;\n\n"
-            
-            "! The same as match_tunes, but include deltap in the matching\n"
-            f"exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-            f"match, deltap={deltap};\n"
-        ) # Works better when split up
-        madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
-        madx_script += (
-            "constraint, range=#E, mux=total_qx, muy=total_qy;\n"
-            "lmdif, tolerance=1e-10;\n"
-            "endmatch;\n"
-        )
-        return madx_script
-    
-    def get_tune_knobs(self) -> tuple[str, str]:
-        if self._uses_run3_macros():
-            return f"dQx.b{self.beam}_op", f"dQy.b{self.beam}_op"
-        elif self._uses_ats_knobs():
-            return f"dQx.b{self.beam}", f"dQy.b{self.beam}"
-        else:
-            return f"KQTD.B{self.beam}", f"KQTF.B{self.beam}"
-
-    # Private Methods ##########################################################
-
-    def _uses_ats_knobs(self) -> bool:
-        """
-        Returns wether the ATS knobs and macros should be used, based on the instance's year.
-        If the **--ats** flag was explicitely provided then the returned value will be `True`.
-        """
-        try:
-            if self.ats:
-                return True
-            return 2018 <= int(self.year) <= 2021  # self.year is always a string
-        except ValueError:  # if a "hllhc1.x" version is given
-            return False
-
-    def _uses_run3_macros(self) -> bool:
-        """Returns whether the Run 3 macros should be called, based on the instance's year."""
-        try:
-            return int(self.year) >= 2022  # self.year is always a string
-        except ValueError:  # if a "hllhc1.x" year is given
-            return False
-
-    def _get_corrector_elems(self) -> Path:
-        """ Return the corrector elements file, either from the instance's specific directory,
-        if it exists, or the default directory. """
-        return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
-    
-    def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
-        """ Get the corrector files from the default directory AND 
-        the instance's specific directory if it exists AND the model directroy if it exists, 
-        in that order. 
-        See also discussion in https://github.com/pylhc/omc3/pull/458#discussion_r1764829247 .
-        """
-
-        # add file from the default directory (i.e. "model/accelerators/lhc/correctors")
-        default_file = Lhc.DEFAULT_CORRECTORS_DIR / file_name
-        if not default_file.exists():
-            msg = (f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
-                  "Something went wrong with the variables getting logic.")
-            raise FileNotFoundError(msg)
-        
-        LOGGER.debug(
-            f"Default corrector file {file_name} found in {default_file.parent}."
-        )
-        corrector_files = [default_file]
-
-        # add file from the accelerator directory (e.g. "model/accelerators/lhc/2024/correctors")
-        accel_dir_file = self._get_accel_file(Path(Lhc.DEFAULT_CORRECTORS_DIR.name) / file_name)
-        if accel_dir_file.exists():
-            LOGGER.debug(
-                f"Corrector file {file_name} found in {accel_dir_file.parent}. "
-                "Contents will take precedence over defaults."
-            )
-            corrector_files.append(accel_dir_file)
-
-        # add file from the model directory (without "correctors" and subfolders) - bit of a hidden feature
-        if self.model_dir is not None:
-            model_dir_file = Path(self.model_dir) / Path(file_name).name
-            if model_dir_file.exists():
-                LOGGER.info(
-                    f"Corrector file {file_name} found in {model_dir_file.parent}. "
-                    "Contents will take precedence over omc3-given defaults."
-                )
-                corrector_files.append(model_dir_file)
-        
-        return corrector_files
-    
-    def _get_call_main(self) -> str:
-        call_main = f"call, file = '{self._get_accel_file('main.seq')}';\n"
-        if self.year == "2012":
-            call_main += (
-                f"call, file = '{self._get_accel_file('install_additional_elements.madx')}';\n"
-            )
-        if self.year == "hllhc1.3":
-            call_main += f"call, file = '{self._get_accel_file('main_update.seq')}';\n"
-        return call_main
-
-    def _get_accel_file(self, filename: str | Path) -> Path:
+    def get_accel_file(self, filename: str | Path) -> Path:
         return LHC_DIR / self.year / filename
-        
+
 
 # General functions ##########################################################
 

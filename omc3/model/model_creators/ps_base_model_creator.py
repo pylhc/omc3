@@ -2,8 +2,8 @@ from abc import ABC
 from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
-from omc3.model.accelerators.psbooster import Psbooster
-from omc3.model.constants import (AFS_ACCELERATOR_MODEL_REPOSITORY, Fetcher)
+from omc3.model.accelerators.psbase import PsBase
+from omc3.model.constants import AFS_ACCELERATOR_MODEL_REPOSITORY, Fetcher
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import logging_tools
 from omc3.utils.iotools import get_check_suffix_func
@@ -14,15 +14,9 @@ LOGGER = logging_tools.get_logger(__name__)
 class PsBaseModelCreator(ModelCreator, ABC):
     acc_model_name = None
 
-    @classmethod
-    def get_correction_check_script(cls, accel: Psbooster, corr_file: str, chrom: bool) -> str:
-        raise NotImplementedError(
-            "Correction check is not implemented for the PsBooster model creator yet. "
-        )
-
     def check_options(self, opt) -> bool:
         """ Use the fetcher to list choices if requested. """
-        accel = self.accel
+        accel: PsBase = self.accel
 
         if opt.fetch == Fetcher.PATH:
             accel.acc_model_path = Path(opt.path)

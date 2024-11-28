@@ -333,27 +333,6 @@ class Accelerator:
             f"File {file_path.name} not available for accelerator {cls.NAME}."
         )
 
-    # Jobs ###################################################################
-
-    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], **kwargs) -> str: #kwargs to be used for additional arguments in different accelerators
-        """
-        Returns job (string) to create an updated model from changeparameters input (used in
-        iterative correction).
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    def get_base_madx_script(self, best_knowledge=False):
-        """
-        Returns job (string) to create the basic accelerator sequence.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-    
-    def get_update_deltap_script(self, deltap: float | str) -> str:
-        """
-        Returns job (string) to change the magnets for a given deltap (dpp). 
-        i.e. updating the orbit and matching the tunes.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     ##########################################################################
 

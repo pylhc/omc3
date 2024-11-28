@@ -274,7 +274,7 @@ def create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], ac
     model_creator = CORRECTION_MODEL_CREATORS[accel_inst.NAME](
         accel=accel_inst, 
         twiss_out=twiss_out, 
-        change_params=corr_files,
+        corr_files=corr_files,
         update_dpp=update_dpp,
     )
     model_creator.full_run()
