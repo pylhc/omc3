@@ -15,14 +15,15 @@ class BoosterModelCreator(PsBaseModelCreator):
     acc_model_name = "psb"
 
     def get_madx_script(self) -> str:
-        madx_script = self.accel.get_base_madx_script()
+        accel: Psbooster = self.accel
+        madx_script = self.get_base_madx_script()
         replace_dict = {
-            "USE_ACD": str(int(self.accel.excitation == AccExcitationMode.ACD)),
-            "RING": self.accel.ring,
-            "DPP": self.accel.dpp,
-            "OUTPUT": str(self.accel.model_dir),
+            "USE_ACD": str(int(accel.excitation == AccExcitationMode.ACD)),
+            "RING": accel.ring,
+            "DPP": accel.dpp,
+            "OUTPUT": str(accel.model_dir),
         }
-        madx_template = self.accel.get_file("twiss.mask").read_text()
+        madx_template = accel.get_file("twiss.mask").read_text()
         madx_script += madx_template % replace_dict
         return madx_script
 
