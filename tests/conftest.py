@@ -11,7 +11,8 @@ import string
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 import git
 
 
@@ -22,9 +23,11 @@ import pytest
 
 from generic_parser import DotDict
 from omc3 import model
+import omc3
 
 INPUTS = Path(__file__).parent / 'inputs'
 MODELS = INPUTS / "models"
+OMC3_DIR = Path(omc3.__file__).parent
 MADX_MACROS = Path(model.__file__).parent / "madx_macros"
 GITLAB_REPO_ACC_MODELS = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
 

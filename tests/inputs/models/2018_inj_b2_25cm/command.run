@@ -1,0 +1,9 @@
+2018-06-15#17-46-28:
+Name: LhcModelCreation
+Command:
+ssh cs-ccr-optics2 /afs/cern.ch/work/o/omc/anaconda/bin/python /afs/cern.ch/eng/sl/lintrack/Beta-Beat.src//model/creator.py --type=nominal --accel=lhc --lhcmode=lhc_runII_2018 --beam=2 --nattunex=0.28 --nattuney=0.31 --acd --drvtunex=0.268 --drvtuney=0.325 --dpp=0.0 --energy=6.5 --optics=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm/modifiers.madx --fullresponse --output=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm --writeto=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm/job.twiss.madx --logfile=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm/madx_log.txt
+
+2018-06-15#17-46-40:
+Name: LhcModelCreation
+Command:
+ssh cs-ccr-optics2 /afs/cern.ch/work/o/omc/anaconda/bin/python /afs/cern.ch/eng/sl/lintrack/Beta-Beat.src//model/creator.py --type=best_knowledge --accel=lhc --lhcmode=lhc_runII_2018 --beam=2 --nattunex=0.28 --nattuney=0.31 --dpp=0.0 --energy=6.5 --optics=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm/modifiers.madx --output=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm --writeto=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm/job.twiss_best_knowledge.madx --logfile=/user/slops/data/LHC_DATA/OP_DATA/Betabeat/2018-06-15/models/LHCB2/b2_round_25cm/madx_log_best_knowledge.txt

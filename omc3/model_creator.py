@@ -10,7 +10,7 @@ from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.constants import AFSFETCHER, PATHFETCHER
+from omc3.model.constants import Fetcher
 from omc3.model.model_creators import abstract_model_creator
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
     LhcBestKnowledgeCreator,
@@ -20,23 +20,26 @@ from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
+from omc3.utils.misc import StrEnum
 from omc3.utils.parsertools import print_help, require_param
 
 LOGGER = logging_tools.get_logger(__name__)
 
-NOMINAL: str = "nominal"
-BEST_KNOWLEDGE: str = "best_knowledge"
+class CreatorType(StrEnum):
+    NOMINAL = "nominal"
+    BEST_KNOWLEDGE = "best_knowledge"
+
 
 CREATORS = {
     "lhc": {
-        NOMINAL: LhcModelCreator,
-        BEST_KNOWLEDGE: LhcBestKnowledgeCreator,
+        CreatorType.NOMINAL: LhcModelCreator,
+        CreatorType.BEST_KNOWLEDGE: LhcBestKnowledgeCreator,
     },
     "psbooster": {
-        NOMINAL: BoosterModelCreator
+        CreatorType.NOMINAL: BoosterModelCreator
     },
     "ps": {
-        NOMINAL: PsModelCreator
+        CreatorType.NOMINAL: PsModelCreator
     },
 }
 
@@ -44,14 +47,15 @@ CREATORS = {
 def _get_params():
     params = EntryPointParameters()
     params.add_parameter(
-        name="type",
-        choices=(NOMINAL, BEST_KNOWLEDGE),
-        help="Type of model to create. [Required]",
-    )
-    params.add_parameter(
         name="outputdir",
         type=Path,
         help="Output path for model, twiss files will be writen here. [Required]",
+    )
+    params.add_parameter(
+        name="type",
+        choices=tuple(creator_type.value for creator_type in CreatorType),
+        default=CreatorType.NOMINAL.value,
+        help="Type of model to create.",
     )
     params.add_parameter(
         name="logfile",
@@ -64,7 +68,7 @@ def _get_params():
         type=str,
         help=("Select the fetcher which sets up the lattice definition (madx, seq, strength files)."
               "Note: not all fetchers might be available for the chosen Model Creator"),
-        choices=[PATHFETCHER, AFSFETCHER]  # [PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER]
+        choices=[Fetcher.PATH.value, Fetcher.AFS.value]  # tuple(fetcher.value for fetcher in Fetcher) when GIT and LSA are implemented
     )
     params.add_parameter(
         name="path",
@@ -76,7 +80,11 @@ def _get_params():
         action="store_true",
         help="if selected, a list of valid optics files is printed",
     )
-    params.add_parameter(name="show_help", action="store_true", help="instructs the subsequent modules to print a help message")
+    params.add_parameter(
+        name="show_help", 
+        action="store_true", 
+        help="instructs the subsequent modules to print a help message"
+    )
     return params
 
 
@@ -116,7 +124,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
 
             Type of model to create.
 
-            choices: ``('nominal', 'best_knowledge', 'correction', 'segment')``
+            choices: ``('nominal', 'best_knowledge')``
 
 
     Accelerator Keyword Args:

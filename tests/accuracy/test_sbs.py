@@ -5,6 +5,7 @@ import pytest
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
+from omc3.model.constants import Fetcher
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.sbs_propagation import segment_by_segment
 from omc3.segment_by_segment.constants import corrections_madx, logfile
@@ -12,34 +13,31 @@ from omc3.segment_by_segment.definitions import PropagableColumns
 from omc3.segment_by_segment.propagables import Phase, get_all_propagables
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs
 from omc3.utils import logging_tools
+from tests.conftest import INPUTS
 
 LOG = logging_tools.get_logger(__name__)
 
-INPUTS = Path(__file__).parent.parent / 'inputs'
 SBS_DIR = INPUTS / "sbs"
 MAX_DIFF = 1e-10
-OMC3_DIR = Path(__file__).parent.parent.parent / 'omc3'
-LHC_MODEL_DIR = OMC3_DIR / 'model' / 'accelerators' / 'lhc'
-
 
 
 class TestSbSLHC:
 
     @pytest.mark.basic
-    @pytest.mark.parametrize("beam", [1, ])  #TODO get measurements for Beam 2 
-    def test_lhc_segment_creation(self, tmp_path, beam):
+    def test_lhc_segment_creation(self, model_25cm_beam1, tmp_path): #TODO get measurements for Beam 2 
         """ Tests only the creation of the Segment Models via LhcSegmentCreator. 
         A lot of this is actually done in the sbs_propagation as well, but 
         if things fail in the madx model creation, this is a good place to start looking.
         """
+        beam = model_25cm_beam1.beam
         accel_opt = dict(
             accel="lhc",
             year="2018",
             beam=beam,
             nat_tunes=[0.31, 0.32],
             dpp=0.0,
-            energy=6.5,
-            modifiers=[get_model_path(beam, id_="25cm") / "opticsfile.24_ctpps2"],
+            energy=6500,
+            modifiers=[model_25cm_beam1.model_dir / "opticsfile.24_ctpps2"],
         )
         iplabel = "IP1"
         _write_correction_file(tmp_path, iplabel)
@@ -56,7 +54,7 @@ class TestSbSLHC:
         
         
         accel_inst = manager.get_accelerator(accel_opt)
-        accel_inst.model_dir = tmp_path  # if in accel_opt, tries to load from model_dir
+        accel_inst.model_dir = tmp_path  # if set in accel_opt, it tries to load from model_dir
 
         segment_creator = LhcSegmentCreator(
             segment=segment, 
@@ -82,9 +80,9 @@ class TestSbSLHC:
             assert_file_exists_and_nonempty(tmp_path / file_)
 
     @pytest.mark.basic
-    @pytest.mark.parametrize("load_model", [True, False])
-    @pytest.mark.parametrize("with_correction", [True, False])
-    def test_lhc_propagation_sbs(self, tmp_path, model_inj_beams, load_model: bool, with_correction: bool):
+    @pytest.mark.parametrize("load_model", [True, False], ids=("load_model", "create_model"))
+    @pytest.mark.parametrize("with_correction", [True, False], ids=("with_correction", "no_correction"))
+    def test_lhc_propagation_sbs(self, tmp_path, model_inj_beams, load_model: bool, with_correction: bool, acc_models_lhc_2018):
         """Runs the segment creation as well as the parameter propagation.
         TODO: make test with creating the model on the fly 
         TODO: make test with loading model with and without output dir 
@@ -92,13 +90,13 @@ class TestSbSLHC:
         TODO: Find measurements for beam 2
         (works only within cern network unless afs is mocked)
         """
-
         # Preparation ---
-        model_dir = tmp_path / "my_model"
+        model_dir: Path = tmp_path / "my_model"
 
         beam = model_inj_beams.beam
         if beam == 2:
-            return # TODO find measurement
+            pytest.skip("Tests for Beam 2 not yet implemented")
+            # return # TODO find measurement
 
         accel_opt = dict(
             accel="lhc",
@@ -106,7 +104,7 @@ class TestSbSLHC:
             beam=beam,
             nat_tunes=[0.31, 0.32],
             dpp=0.0,
-            energy=6.5,
+            energy=6500,
             modifiers=[model_inj_beams.model_dir / "opticsfile.1"],
         )
 
@@ -116,9 +114,9 @@ class TestSbSLHC:
             accel_opt["nat_tunes"] = None
             shutil.copytree(model_inj_beams.model_dir, model_dir)  # creates model_dir
         else:
-            model_dir.mkdir()
             output_dir = model_dir
-            (model_dir / "lhc.seq").symlink_to(LHC_MODEL_DIR / "2018" / "main.seq")
+            accel_opt["fetch"] = Fetcher.PATH
+            accel_opt["path"] = acc_models_lhc_2018 
 
         segments = [
             Segment("IP1", f"BPM.12L1.B{beam:d}", f"BPM.12R1.B{beam:d}"),
@@ -126,9 +124,9 @@ class TestSbSLHC:
         ]
         
         if with_correction:
+            model_dir.mkdir(exist_ok=True, parents=True)
             for segment in segments:
                 _write_correction_file(model_dir, segment.name)
-
 
         # Run segment creation ---
         sbs_res = segment_by_segment(
@@ -195,7 +193,3 @@ def _write_correction_file(path: Path, label: str):
 def assert_file_exists_and_nonempty(path: Path):
     assert path.exists()
     assert path.stat().st_size
-
-
-def get_model_path(beam: int, id_: str = "25cm") -> Path:
-    return INPUTS / "models" / f"{id_}_beam{beam}" 

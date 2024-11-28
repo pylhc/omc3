@@ -30,6 +30,7 @@ from omc3.model.constants import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
+from generic_parser.entry_datatypes import get_multi_class
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -103,7 +104,7 @@ class Accelerator:
         )
         params.add_parameter(
             name="energy",
-            type=float,
+            type=get_multi_class(float, int),
             help="Energy in GeV.",
         )
         params.add_parameter(

@@ -17,6 +17,7 @@ import tfs
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import (
+    Fetcher,
     B2_ERRORS_TFS,
     B2_SETTINGS_MADX,
     ERROR_DEFFS_TXT,
@@ -31,7 +32,6 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
-    PATHFETCHER, AFSFETCHER,  # GITFETCHER, LSAFETCHER,
     AFS_ACCELERATOR_MODEL_REPOSITORY,
     OPTICS_SUBDIR,
     AFS_B2_ERRORS_ROOT,
@@ -65,10 +65,10 @@ class LhcModelCreator(ModelCreator):
         accel: Lhc = self.accel
         
         # Set the fetcher paths ---
-        if opt.fetch == PATHFETCHER:
+        if opt.fetch == Fetcher.PATH:
             accel.acc_model_path = Path(opt.path)
 
-        elif opt.fetch == AFSFETCHER:
+        elif opt.fetch == Fetcher.AFS:
             # list 'year' choices ---
             accel.acc_model_path = check_folder_choices(
                 AFS_ACCELERATOR_MODEL_REPOSITORY / self.acc_model_name,
@@ -80,7 +80,7 @@ class LhcModelCreator(ModelCreator):
         else:
             raise AttributeError(
                 f"{accel.NAME} model creation requires one of the following fetchers: "
-                f"[{PATHFETCHER}, {AFSFETCHER}]. "
+                f"[{Fetcher.PATH}, {Fetcher.AFS}]. "
                 "Please provide one with the flag `--fetch afs` "
                 "or `--fetch path --path PATH`."
             )
@@ -143,7 +143,7 @@ class LhcModelCreator(ModelCreator):
     def prepare_run(self) -> None:
         super().prepare_run()  # create symlink, find modifiers
 
-        accel = self.accel
+        accel: Lhc = self.accel
         self.check_accelerator_instance()
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR

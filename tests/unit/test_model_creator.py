@@ -8,7 +8,7 @@ import tfs
 from generic_parser import DotDict
 from omc3.model.accelerators.accelerator import Accelerator,AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.accelerators.lhc import Lhc
-from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, PATHFETCHER
+from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
@@ -33,7 +33,7 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
         dpp=0.0,
         energy=0.16,
         modifiers=None,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_psb_2021,
         scenario="lhc",
         cycle_point="0_injection",
@@ -70,7 +70,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
         dpp=0.0,
         energy=0.16,
         modifiers=None,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_psb_2021,
         scenario="lhc",
         cycle_point="0_injection",
@@ -95,7 +95,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
 #         dpp=0.0,
 #         energy=1.4,
 #         year="2018",
-#         fetch=PATHFETCHER,
+#         fetch=Fetcher.PATH,
 #         path=MODEL_CREATOR_INPUT / "ps_2018",
 #         scenario="lhc_proton",
 #         cycle_point="0_injection",
@@ -116,7 +116,7 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
         dpp=0.0,
         energy=1.4,
         year="2018",
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_ps_2021,
         scenario="lhc",
         cycle_point="2_flat_top",
@@ -151,7 +151,7 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
         driven_excitation="acd",
         dpp=0.0,
         energy=6800.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2023,
         modifiers=LHC_30CM_MODIFIERS,
     )
@@ -194,7 +194,7 @@ def test_lhc_creation_nominal_free_high_beta(tmp_path, acc_models_lhc_2018):
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6500.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2018,
         modifiers=HIGH_BETA_MODIFIERS
     )
@@ -213,7 +213,7 @@ def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2023):
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2023,
         modifiers=LHC_30CM_MODIFIERS
     )
@@ -241,7 +241,7 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2023):
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2023,
         modifiers=LHC_30CM_MODIFIERS + [corrections]
     )
@@ -274,7 +274,7 @@ def test_lhc_creation_relative_modifier_path(tmp_path, acc_models_lhc_2022):
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2022,
         modifiers=LHC_30CM_MODIFIERS
     )
@@ -297,7 +297,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path, acc_models_lhc_2018):
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2018,
         modifiers=[NONEXISTENT]
     )
@@ -326,7 +326,7 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path, acc_models_lhc_2
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2022,
         modifiers=[optics_file_relpath],
     )
@@ -377,7 +377,7 @@ def test_lhc_creator_cli(tmp_path, acc_models_lhc_2023, capsys):
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_lhc_2023,
         list_choices=True,
     )
@@ -408,7 +408,7 @@ def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
         dpp=0.0,
         energy=0.16,
         modifiers=None,
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_psb_2021,
         list_choices=True,
     )
@@ -457,7 +457,7 @@ def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
         dpp=0.0,
         energy=1.4,
         year="2018",
-        fetch=PATHFETCHER,
+        fetch=Fetcher.PATH,
         path=acc_models_ps_2021,
         scenario="lhc",
         tune_method="pfw",

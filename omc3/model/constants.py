@@ -5,40 +5,42 @@ Constants
 This module provides high-level functions to manage most functionality of ``model``.
 Specific constants to be used in ``model``, to help with consistency.
 """
-
 from pathlib import Path
 
-MACROS_DIR = "macros"
-OBS_POINTS = "observation_points.def"
-MODIFIERS_MADX = 'modifiers.madx'
-MODIFIER_TAG = "!@modifier"
-TWISS_BEST_KNOWLEDGE_DAT = "twiss_best_knowledge.dat"
-TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT = "twiss_elements_best_knowledge.dat"
-TWISS_ADT_DAT = "twiss_adt.dat"
-TWISS_AC_DAT = "twiss_ac.dat"
-TWISS_ELEMENTS_DAT = "twiss_elements.dat"
-TWISS_DAT = "twiss.dat"
-ERROR_DEFFS_TXT = "error_deffs.txt"
-JOB_MODEL_MADX_MASK = "job.create_model_{}.madx"
-JOB_MODEL_MADX_NOMINAL = JOB_MODEL_MADX_MASK.format("nominal")
-JOB_MODEL_MADX_BEST_KNOWLEDGE = JOB_MODEL_MADX_MASK.format("best_knowledge")
+from omc3.utils.misc import StrEnum
+
+MACROS_DIR: str = "macros"
+OBS_POINTS: str = "observation_points.def"
+MODIFIERS_MADX: str = 'modifiers.madx'
+MODIFIER_TAG: str = "!@modifier"
+TWISS_BEST_KNOWLEDGE_DAT: str = "twiss_best_knowledge.dat"
+TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT: str = "twiss_elements_best_knowledge.dat"
+TWISS_ADT_DAT: str = "twiss_adt.dat"
+TWISS_AC_DAT: str = "twiss_ac.dat"
+TWISS_ELEMENTS_DAT: str = "twiss_elements.dat"
+TWISS_DAT: str = "twiss.dat"
+ERROR_DEFFS_TXT: str = "error_deffs.txt"
+JOB_MODEL_MADX_MASK: str = "job.create_model_{}.madx"
+JOB_MODEL_MADX_NOMINAL: str = JOB_MODEL_MADX_MASK.format("nominal")
+JOB_MODEL_MADX_BEST_KNOWLEDGE: str = JOB_MODEL_MADX_MASK.format("best_knowledge")
 
 # fetcher command names
-PATHFETCHER = "path"
-AFSFETCHER = "afs"
-GITFETCHER = "git"
-LSAFETCHER = "lsa"
+class Fetcher(StrEnum):
+    PATH = "path"
+    AFS = "afs"
+    GIT = "git"
+    LSA = "lsa"
 
-GENERAL_MACROS = "general.macros.madx"
-LHC_MACROS = "lhc.macros.madx"
-LHC_MACROS_RUN3 = "lhc.macros.run3.madx"
+GENERAL_MACROS: str = "general.macros.madx"
+LHC_MACROS: str = "lhc.macros.madx"
+LHC_MACROS_RUN3: str = "lhc.macros.run3.madx"
 
-B2_SETTINGS_MADX = "b2_settings.madx"
-B2_ERRORS_TFS = "b2_errors.tfs"
-PLANE_TO_HV = dict(X="H", Y="V")
+B2_SETTINGS_MADX: str = "b2_settings.madx"
+B2_ERRORS_TFS: str = "b2_errors.tfs"
+PLANE_TO_HV: dict[str, str] = dict(X="H", Y="V")
 
-AFS_ACCELERATOR_MODEL_REPOSITORY = Path("/afs/cern.ch/eng/acc-models")  # /lhc???
-ACC_MODELS_PREFIX = AFS_ACCELERATOR_MODEL_REPOSITORY.name
-OPTICS_SUBDIR = "operation/optics"
+AFS_ACCELERATOR_MODEL_REPOSITORY: Path = Path("/afs/cern.ch/eng/acc-models")
+ACC_MODELS_PREFIX: str = AFS_ACCELERATOR_MODEL_REPOSITORY.name
+OPTICS_SUBDIR: str = "operation/optics"
 
 AFS_B2_ERRORS_ROOT = Path("/afs/cern.ch/eng/sl/lintrack/error_tables/")

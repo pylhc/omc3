@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 from generic_parser import EntryPointParameters, entrypoint
-from generic_parser.entrypoint_parser import add_to_arguments
+from generic_parser.entrypoint_parser import add_to_arguments, ArgumentError
 
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
@@ -202,7 +202,9 @@ def _get_accelerator_instance(accel_opt: dict, output_dir: Path | str) -> Accele
     """Get accelerator instance from ``accel_opt`` and create a nominal model if not present."""
     try:
         accel_inst = manager.get_accelerator(accel_opt)
-    except AcceleratorDefinitionError:
+    except (AcceleratorDefinitionError, ArgumentError) as e:  
+        # ArgumentError can happen for additional arguments only useful if we want to create an instance (e.g. `fetch`)
+        LOGGER.debug(f"Could not get accelerator instance: {e}.\nCreating a new instance.")  
         accel_inst = None
     
     if accel_inst is None or accel_inst.model_dir is None:

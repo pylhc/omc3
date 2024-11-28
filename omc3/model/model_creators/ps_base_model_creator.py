@@ -3,8 +3,7 @@ from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.accelerators.psbooster import Psbooster
-from omc3.model.constants import (AFS_ACCELERATOR_MODEL_REPOSITORY, AFSFETCHER,
-                                  PATHFETCHER)
+from omc3.model.constants import (AFS_ACCELERATOR_MODEL_REPOSITORY, Fetcher)
 from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import logging_tools
 from omc3.utils.iotools import get_check_suffix_func
@@ -25,10 +24,10 @@ class PsBaseModelCreator(ModelCreator, ABC):
         """ Use the fetcher to list choices if requested. """
         accel = self.accel
 
-        if opt.fetch == PATHFETCHER:
+        if opt.fetch == Fetcher.PATH:
             accel.acc_model_path = Path(opt.path)
 
-        elif opt.fetch == AFSFETCHER:
+        elif opt.fetch == Fetcher.AFS:
             accel.acc_model_path = check_folder_choices(
                 AFS_ACCELERATOR_MODEL_REPOSITORY / self.acc_model_name,
                 msg="No optics tag (flag --year) given",
@@ -38,7 +37,7 @@ class PsBaseModelCreator(ModelCreator, ABC):
         else:
             raise AttributeError(
                 f"{accel.NAME} model creation requires one of the following fetchers: "
-                f"[{PATHFETCHER}, {AFSFETCHER}]. "
+                f"[{Fetcher.PATH}, {Fetcher.AFS}]. "
                 "Please provide one with the flag `--fetch afs` "
                 "or `--fetch path --path PATH`."
             )
