@@ -179,7 +179,9 @@ class LhcModelCreator(ModelCreator):
             )
 
     def get_madx_script(self) -> str:  # nominal
-        accel = self.accel
+        """ Get madx script to create a LHC model."""
+        accel: Lhc = self.accel
+
         use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
         use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
         madx_script = self.get_base_madx_script()
@@ -200,6 +202,7 @@ class LhcModelCreator(ModelCreator):
         return madx_script
 
     def get_base_madx_script(self) -> str:
+        """ Returns the base LHC madx script."""
         accel: Lhc = self.accel
         
         madx_script = self._get_sequence_initialize_script()
@@ -217,9 +220,10 @@ class LhcModelCreator(ModelCreator):
         return madx_script
 
     def _get_sequence_initialize_script(self) -> str: 
-        """ Returns the sequence initialization script.
+        """ Returns the LHC sequence initialization script.
         
-        This is split up here from the matching, to accompany the needs of the Best Knowledge Model Creator, 
+        This is split up here from the matching (in the base-script), 
+        to accompany the needs of the Best Knowledge Model Creator, 
         see below.
         """
         accel: Lhc = self.accel
@@ -271,6 +275,33 @@ class LhcModelCreator(ModelCreator):
             "exec, cycle_sequences();\n"
             f"use, sequence = LHCB{accel.beam};\n"
         )
+        return madx_script
+    
+    def get_update_deltap_script(self, deltap: float | str) -> str:
+        """ Update the dpp in the LHC.
+        
+        Args:
+            deltap (float | str): The dpp to update the LHC to.
+        """
+        accel: Lhc = self.accel
+        if not isinstance(deltap, str):
+            deltap = f"{deltap:.15e}"
+
+        madx_script = (
+            f"twiss, deltap={deltap};\n"
+            "correct, mode=svd;\n\n"
+            
+            "! The same as match_tunes, but include deltap in the matching\n"
+            f"exec, find_complete_tunes({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.beam});\n"
+            f"match, deltap={deltap};\n"
+        ) # Works better when split up
+        madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
+        madx_script += (
+            "constraint, range=#E, mux=total_qx, muy=total_qy;\n"
+            "lmdif, tolerance=1e-10;\n"
+            "endmatch;\n"
+        )
+        return madx_script
 
     def _get_madx_script_info_comments(self) -> str:
         accel: Lhc = self.accel
@@ -491,31 +522,6 @@ class LhcCorrectionModelCreator(LhcModelCreator, CorrectionModelCreator):  # ---
         madx_script += f'exec, do_twiss_elements(LHCB{self.beam}, "{str(self.twiss_out)}", {ORBIT_DPP});\n'
         return madx_script
     
-    def get_update_deltap_script(self, deltap: float | str) -> str:
-        """ Update the dpp in the machine.
-        
-        Args:
-            deltap (float | str): The dpp to update the machine to.
-        """
-        if not isinstance(deltap, str):
-            deltap = f"{deltap:.15e}"
-
-        madx_script = (
-            f"twiss, deltap={deltap};\n"
-            "correct, mode=svd;\n\n"
-            
-            "! The same as match_tunes, but include deltap in the matching\n"
-            f"exec, find_complete_tunes({self.nat_tunes[0]}, {self.nat_tunes[1]}, {self.beam});\n"
-            f"match, deltap={deltap};\n"
-        ) # Works better when split up
-        madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
-        madx_script += (
-            "constraint, range=#E, mux=total_qx, muy=total_qy;\n"
-            "lmdif, tolerance=1e-10;\n"
-            "endmatch;\n"
-        )
-        return madx_script
-
     def prepare_run(self) -> None:
         # As the matched/corrected model is created in the same directory as the original model,
         # we do not need to prepare as much.

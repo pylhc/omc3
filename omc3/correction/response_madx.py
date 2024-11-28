@@ -105,6 +105,7 @@ def _generate_madx_jobs(
     compute_deltap: bool = ORBIT_DPP in variables
     no_dpp_vars = [var for var in variables if var != ORBIT_DPP]
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
+    creator = _get_model_creator(accel_inst)
 
     madx_job = _get_madx_job(accel_inst)
     deltap_twiss = ""
@@ -113,7 +114,9 @@ def _generate_madx_jobs(
         # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
         madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n" # Set deltap to 0
-        madx_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP)
+        
+        # get update deltap setup from model creator
+        madx_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
         deltap_twiss = f", deltap={ORBIT_DPP}"
 
     for proc_idx in range(num_proc):
@@ -137,7 +140,7 @@ def _generate_madx_jobs(
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[ORBIT_DPP] = delta_k
                 current_job += f"{ORBIT_DPP} = {ORBIT_DPP}{delta_k:+.15e};\n"
-                current_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
+                current_job += creator.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
                 current_job += f"twiss, deltap={ORBIT_DPP}, file='{str(temp_dir/f'twiss.{ORBIT_DPP}')}';\n"
         jobfile_path.write_text(current_job)
     return incr_dict
@@ -149,11 +152,7 @@ def _get_madx_job(accel_inst: Accelerator) -> str:
     accel_inst.model_dir = Path()
 
     # get nominal setup from creator
-    creator_type = CreatorType.NOMINAL
-    # if accel_inst.model_best_knowledge is not None:
-    #     creator_type = CreatorType.BEST_KNOWLEDGE  # Not 100% sure if we should do this. To be discussed. (jdilly, 2024)
-
-    creator: ModelCreator = CREATORS[accel_inst.NAME][creator_type](accel_inst)
+    creator = _get_model_creator(accel_inst)
     job_content = creator.get_base_madx_script()
     job_content += (
         "select, flag=twiss, clear;\n"
@@ -163,6 +162,14 @@ def _get_madx_job(accel_inst: Accelerator) -> str:
     # restore model_dir
     accel_inst.model_dir = model_dir_backup
     return job_content
+
+
+def _get_model_creator(accel_inst: Accelerator) -> ModelCreator:
+    creator_type = CreatorType.NOMINAL
+    # if accel_inst.model_best_knowledge is not None:
+    #     creator_type = CreatorType.BEST_KNOWLEDGE  # Not 100% sure if we should do this. To be discussed. (jdilly, 2024)
+
+    return CREATORS[accel_inst.NAME][creator_type](accel_inst)
 
 
 def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:

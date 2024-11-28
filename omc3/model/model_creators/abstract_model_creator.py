@@ -121,6 +121,15 @@ class ModelCreator(ABC):
         """
         pass
     
+    @abstractmethod
+    def get_update_deltap_script(self, deltap: float | str) -> str:
+        """ Get the madx snippet that updates the dpp in the machine.
+        
+        Args:
+            deltap (float | str): The dpp to update the machine to.
+         """
+        pass
+    
     def prepare_run(self) -> None:
         """
         Prepares the model creation ``MAD-X`` run. It should check that the appropriate directories
@@ -396,12 +405,3 @@ class CorrectionModelCreator(ModelCreator, ABC):
         self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.corr_files = corr_files
         self.update_dpp = update_dpp
-
-    @abstractmethod
-    def get_update_deltap_script(self, deltap: float | str) -> str:
-        """ Get the madx script that updates the dpp in the machine.
-        
-        Args:
-            deltap (float | str): The dpp to update the machine to.
-         """
-        pass
