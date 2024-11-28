@@ -53,7 +53,7 @@ class ModelCreator(ABC):
     """
     jobfile: str = JOB_MODEL_MADX_NOMINAL
 
-    def __init__(self, accel: Accelerator, logfile: Path = None, *args, **kwargs):
+    def __init__(self, accel: Accelerator, logfile: Path = None):
         """
         Initialize the Model Creator.
 
@@ -63,17 +63,7 @@ class ModelCreator(ABC):
         self.accel = accel
         self.logfile = logfile
         self.output_dir = accel.model_dir
-
-        # Check arguments. This assumes that all arguments have been cosumed by the sub-classes
-        # of ModelCreator, so if there are any "left-over" arguments, warn the user.
-        cleaned_args = [arg for arg in args if arg is not None]
-        if len(cleaned_args):
-            LOGGER.warning(f"Unknown args for Model Creator: {', '.join(cleaned_args)}")
-
-        cleaned_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        if len(cleaned_kwargs):
-            LOGGER.warning(f"Unknown kwargs for Model Creator: {cleaned_kwargs!s}")
-
+    
     @abstractmethod
     def check_options(self, opt) -> bool:
         """

@@ -265,7 +265,7 @@ class LhcCorrectionModelCreator(LhcModelCreator):
     """
     jobfile = None  # set in init
 
-    def __init__(self, accel: Lhc, twiss_out: Path | str, change_params: Sequence[Path], *args, **kwargs):
+    def __init__(self, accel: Lhc, twiss_out: Path | str, change_params: Sequence[Path], update_dpp: bool = False, *args, **kwargs):
         """Model creator for the corrected/matched model of the LHC.
 
         Args:
@@ -280,14 +280,15 @@ class LhcCorrectionModelCreator(LhcModelCreator):
         self.jobfile = self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.madx"
         self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.change_params = change_params
+        self.update_dpp = update_dpp
 
     def get_madx_script(self) -> str:
-        accel = self.accel
-        madx_script = f"! Based on model '{self.accel.model_dir}'\n{self.accel.get_base_madx_script()}" 
-        for corr_file in self.change_params:
-            madx_script += f"call, file = '{str(corr_file)}';\n"
-        madx_script += f"exec, do_twiss_elements(LHCB{accel.beam}, '{str(self.twiss_out)}', {accel.dpp});\n"
-        return madx_script
+        # TODO: put update_correction_script content in here.
+        return self.accel.get_update_correction_script(
+            outpath=self.twiss_out,
+            corr_files=self.change_params,
+            update_dpp=self.update_dpp
+        )
 
     def prepare_run(self) -> None:
         # As the matched/corrected model is created in the same directory as the original model,
