@@ -106,7 +106,7 @@ def _assert_correct_beta_phase_columns(outputdir: Path, plane: str) -> None:
     """Checks the expected columns are present in the beta from phase file in outputdir"""
     dframe = tfs.read(outputdir / f"{BETA_NAME}{plane.lower()}.tfs")
     expected_maybe_dropped_columns = [f"STATBET{plane}", f"SYSBET{plane}", "CORR_ALFABETA",
-                                      f"STATAL", f"F{plane}", f"SYSALF{plane}"]  # disappeared
+                                      "STATAL", f"F{plane}", f"SYSALF{plane}"]  # disappeared
     expected_created_columns = [f"{DELTA}BET{plane}", f"{ERR}{DELTA}BET{plane}",
                                 f"{DELTA}ALF{plane}", f"{ERR}{DELTA}ALF{plane}"]  # new
     expected_renamed_columns = []  # disappeared
