@@ -172,7 +172,7 @@ def _get_model_creator(accel_inst: Accelerator) -> ModelCreator:
     return CREATORS[accel_inst.NAME][creator_type](accel_inst)
 
 
-def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:
+def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None: # type: ignore
     """ Call madx in parallel """
     LOG.debug(f"Starting {num_proc:d} MAD-X jobs...")
     madx_jobs = [_get_jobfiles(temp_dir, index) for index in range(num_proc)]

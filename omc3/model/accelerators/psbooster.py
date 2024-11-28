@@ -65,8 +65,11 @@ from pathlib import Path
 
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import (Accelerator,
-                                                 AcceleratorDefinitionError, AccElementTypes, AccExcitationMode)
+from omc3.model.accelerators.accelerator import (
+    AccElementTypes,
+    Accelerator,
+    AcceleratorDefinitionError,
+)
 from omc3.model.accelerators.psbase import PsBase
 from omc3.model.constants import PLANE_TO_HV
 

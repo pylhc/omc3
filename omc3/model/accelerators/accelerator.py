@@ -6,10 +6,10 @@ This module provides high-level classes to define most functionality of ``model.
 It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
 from __future__ import annotations
+
 import re
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import numpy
 import pandas as pd
@@ -32,8 +32,6 @@ from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 from generic_parser.entry_datatypes import get_multi_class
 
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent

@@ -14,12 +14,16 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 import tfs
+
 from omc3.correction.constants import ORBIT_DPP
-from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
+from omc3.model.accelerators.accelerator import (
+    AcceleratorDefinitionError,
+    AccExcitationMode,
+)
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import (
-    MODIFIER_TAG,
-    Fetcher,
+    AFS_ACCELERATOR_MODEL_REPOSITORY,
+    AFS_B2_ERRORS_ROOT,
     B2_ERRORS_TFS,
     B2_SETTINGS_MADX,
     ERROR_DEFFS_TXT,
@@ -28,19 +32,23 @@ from omc3.model.constants import (
     LHC_MACROS,
     LHC_MACROS_RUN3,
     MACROS_DIR,
+    MODIFIER_TAG,
+    OPTICS_SUBDIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
     TWISS_BEST_KNOWLEDGE_DAT,
     TWISS_DAT,
     TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
-    AFS_ACCELERATOR_MODEL_REPOSITORY,
-    OPTICS_SUBDIR,
-    AFS_B2_ERRORS_ROOT,
+    Fetcher,
 )
-from omc3.model.model_creators.abstract_model_creator import CorrectionModelCreator, ModelCreator, check_folder_choices, SegmentCreator
-from omc3.optics_measurements.constants import NAME
-from omc3.utils.iotools import get_check_suffix_func, create_dirs
+from omc3.model.model_creators.abstract_model_creator import (
+    CorrectionModelCreator,
+    ModelCreator,
+    SegmentCreator,
+    check_folder_choices,
+)
+from omc3.utils.iotools import create_dirs, get_check_suffix_func
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

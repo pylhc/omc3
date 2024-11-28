@@ -59,10 +59,9 @@ from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
-    AccExcitationMode,
 )
 from omc3.utils.parsertools import require_param
-from omc3.model.constants import MODIFIER_TAG, PLANE_TO_HV
+from omc3.model.constants import PLANE_TO_HV
 from omc3.model.accelerators.psbase import PsBase
 
 LOGGER = logging.getLogger(__name__)
