@@ -32,6 +32,7 @@ from omc3.scripts.fake_measurement_from_model import ERRORS, VALUES
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
+from tests.conftest import ids_str
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -173,12 +174,73 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientatio
 
 
 @pytest.mark.basic
-@pytest.mark.parametrize('dpp', (2.5e-4, -1e-4))
-def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: float):
-    response_path = tmp_path / "full_response_dpp.h5"
-    beam = model_inj_beams.beam
+@pytest.mark.parametrize('update_response', (True, False), ids=ids_str("update-{}"))
+def test_lhc_global_correct_dpp(
+    tmp_path: Path, 
+    model_with_dpp_response: DotDict, 
+    fake_dpp_measurement: tuple[float, Path],
+    update_response: bool,
+    ):
 
-    # Create response
+    beam = model_with_dpp_response.beam
+    dpp, meas_dir = fake_dpp_measurement
+
+    # Run global correction
+    iterations = 3
+    global_correction(
+        meas_dir=meas_dir,
+        output_dir=tmp_path,
+        variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}"],
+        optics_params=[f"{PHASE}X", f"{PHASE}Y"],
+        iterations=iterations,
+        update_response=update_response,
+        **model_with_dpp_response,
+    )
+    
+    # Verify final correction stage
+    result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
+    corrected_dpp = -result[DELTA][ORBIT_DPP]
+    assert np.isclose(dpp, corrected_dpp, rtol=2e-2), f"Expected {dpp}, got {corrected_dpp}, diff: {dpp - corrected_dpp}"
+
+    # Verify convergence
+    previous_diff = np.inf
+    for iteration in range(iterations):
+        result = tfs.read(tmp_path / f"changeparameters_iter{iteration}.tfs", index=NAME)
+        current_dpp = -result[DELTA][ORBIT_DPP]
+
+        # Check output accuracy
+        rtol = 2e-2 if iteration else 5e-2  # first iteration is less accurate
+        assert np.isclose(dpp, current_dpp, rtol=rtol), f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
+
+        # Check convergence
+        current_diff = np.abs(dpp - current_dpp) / np.abs(dpp)
+        assert previous_diff > current_diff or np.isclose(previous_diff, current_diff, atol=1e-3), f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
+        previous_diff = current_diff
+
+
+# Helper -----------------------------------------------------------------------
+
+@pytest.fixture(scope="module", params=(2.5e-4, -1e-4), ids=ids_str("dpp{}"))
+def fake_dpp_measurement(request, tmp_path_factory, model_inj_beams: DotDict):
+    """ Fixture for fake measurement with DPP offset. """
+    dpp = request.param
+    beam = model_inj_beams.beam
+    fake_measurement_path = tmp_path_factory.mktemp(f"fake_measurement_dpp_{dpp:.1e}_B{beam}")
+    dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{beam}.dat"
+    model_df = tfs.read(dpp_path, index=NAME)
+    fake_measurement(
+        twiss=model_df,
+        parameters=[f"{PHASE}X", f"{PHASE}Y"],
+        outputdir=fake_measurement_path,
+    )
+    return dpp, fake_measurement_path
+
+
+@pytest.fixture(scope="module")
+def model_with_dpp_response(model_inj_beams: DotDict):
+    """ Fixture for model with DPP response already created. """
+    response_path = model_inj_beams.model_dir / "full_response_dpp.h5"
+    beam = model_inj_beams.beam
     response_dict = create_response(
         outfile_path=response_path,
         variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}", f"kq10.l2b{beam}"],
@@ -188,51 +250,9 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
 
     # Verify response creation
     assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict.keys())
+    model_inj_beams.fullresponse_path = response_path
 
-    # Create fake measurement
-    dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{beam}.dat"
-    model_df = tfs.read(dpp_path, index=NAME)
-    fake_measurement(
-        twiss=model_df,
-        parameters=[f"{PHASE}X", f"{PHASE}Y"],
-        outputdir=tmp_path,
-    )
-
-    # Test global correction with and without response update
-    for update_response in [False, True]:
-        iterations = 3
-        global_correction(
-            meas_dir=tmp_path,
-            output_dir=tmp_path,
-            fullresponse_path=response_path,
-            variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}"],
-            optics_params=[f"{PHASE}X", f"{PHASE}Y"],
-            iterations=iterations,
-            update_response=update_response,
-            **model_inj_beams,
-        )
-        
-        # Verify final correction stage
-        result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
-        corrected_dpp = -result[DELTA][ORBIT_DPP]
-        assert np.isclose(dpp, corrected_dpp, rtol=2e-2), f"Expected {dpp}, got {corrected_dpp}, diff: {dpp - corrected_dpp}"
-
-        # Verify convergence
-        previous_diff = np.inf
-        for iteration in range(iterations):
-            result = tfs.read(tmp_path / f"changeparameters_iter{iteration}.tfs", index=NAME)
-            current_dpp = -result[DELTA][ORBIT_DPP]
-
-            # Check output accuracy
-            rtol = 2e-2 if iteration else 5e-2  # first iteration is less accurate
-            assert np.isclose(dpp, current_dpp, rtol=rtol), f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
-
-            # Check convergence
-            current_diff = np.abs(dpp - current_dpp) / np.abs(dpp)
-            assert previous_diff > current_diff or np.isclose(previous_diff, current_diff, atol=1e-3), f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
-            previous_diff = current_diff
-
-# Helper -----------------------------------------------------------------------
+    return model_inj_beams
 
 
 def _create_fake_measurement(tmp_path, model_path, twiss_path, error_val, optics_params, seed):
