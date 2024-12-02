@@ -68,6 +68,7 @@ class LhcModelCreator(ModelCreator):
     acc_model_name = "lhc"
 
     def __init__(self, accel: Lhc, *args, **kwargs):
+        LOGGER.debug("Initializing LHC Model Creator")
         super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
 
     def check_options(self, opt) -> bool:
@@ -360,7 +361,7 @@ class LhcModelCreator(ModelCreator):
 
     def _uses_ats_knobs(self) -> bool:
         """
-        Returns wether the ATS knobs and macros should be used, based on the instance's year.
+        Returns wether the ATS knobs and macros should be used, based on the accel-instance's year.
         If the **--ats** flag was explicitely provided then the returned value will be `True`.
         """
         try:
@@ -371,67 +372,21 @@ class LhcModelCreator(ModelCreator):
             return False
 
     def _uses_run3_macros(self) -> bool:
-        """Returns whether the Run 3 macros should be called, based on the instance's year."""
+        """Returns whether the Run 3 macros should be called, based on the accel-instance's year."""
         try:
             return int(self.accel.year) >= 2022  # self.year is always a string
         except ValueError:  # if a "hllhc1.x" year is given
             return False
 
-    def _get_corrector_elems(self) -> Path:
-        """ Return the corrector elements file, either from the instance's specific directory,
-        if it exists, or the default directory. """
-        return self._get_corrector_files(f"corrector_elems_b{self.accel.beam}.tfs")[-1]
-    
-    def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
-        """ Get the corrector files from the default directory AND 
-        the instance's specific directory if it exists AND the model directroy if it exists, 
-        in that order. 
-        See also discussion in https://github.com/pylhc/omc3/pull/458#discussion_r1764829247 .
-        """
-        accel: Lhc = self.accel
-
-        # add file from the default directory (i.e. "model/accelerators/lhc/correctors")
-        default_file = Lhc.DEFAULT_CORRECTORS_DIR / file_name
-        if not default_file.exists():
-            msg = (f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
-                  "Something went wrong with the variables getting logic.")
-            raise FileNotFoundError(msg)
-        
-        LOGGER.debug(
-            f"Default corrector file {file_name} found in {default_file.parent}."
-        )
-        corrector_files = [default_file]
-
-        # add file from the accelerator directory (e.g. "model/accelerators/lhc/2024/correctors")
-        accel_dir_file = accel.get_accel_file(Path(Lhc.DEFAULT_CORRECTORS_DIR.name) / file_name)
-        if accel_dir_file.exists():
-            LOGGER.debug(
-                f"Corrector file {file_name} found in {accel_dir_file.parent}. "
-                "Contents will take precedence over defaults."
-            )
-            corrector_files.append(accel_dir_file)
-
-        # add file from the model directory (without "correctors" and subfolders) - bit of a hidden feature
-        if accel.model_dir is not None:
-            model_dir_file = Path(accel.model_dir) / Path(file_name).name
-            if model_dir_file.exists():
-                LOGGER.info(
-                    f"Corrector file {file_name} found in {model_dir_file.parent}. "
-                    "Contents will take precedence over omc3-given defaults."
-                )
-                corrector_files.append(model_dir_file)
-        
-        return corrector_files
-    
     def _get_call_main(self) -> str:
         accel: Lhc = self.accel
 
         call_main = f"call, file = '{accel.get_accel_file('main.seq')}';\n"
-        if self.year == "2012":
+        if accel.year == "2012":
             call_main += (
                 f"call, file = '{accel.get_accel_file('install_additional_elements.madx')}';\n"
             )
-        if self.year == "hllhc1.3":
+        if accel.year == "hllhc1.3":
             call_main += f"call, file = '{accel.get_accel_file('main_update.seq')}';\n"
         return call_main
 
@@ -497,13 +452,13 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
         return madx_script
 
 
-class LhcCorrectionModelCreator(LhcModelCreator, CorrectionModelCreator):  # -------------------------------------------
+class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # -------------------------------------------
     """
     Creates an updated model from multiple changeparameters inputs 
     (used in iterative correction).
     """
 
-    def __init__(self, accel: Lhc, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False, *args, **kwargs):
+    def __init__(self, accel: Lhc, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False):
         """Model creator for the corrected/matched model of the LHC.
 
         Args:
@@ -511,15 +466,16 @@ class LhcCorrectionModelCreator(LhcModelCreator, CorrectionModelCreator):  # ---
             twiss_out (Union[Path, str]): Path to the twiss(-elements) file to write
             change_params (Sequence[Path]): Sequence of correction/matching files
         """
-        LhcModelCreator.__init__(self, accel, *args, **kwargs)  # default init
-        CorrectionModelCreator.__init__(self, accel, twiss_out, corr_files, update_dpp)  # sets correction attributes
+        LOGGER.debug("Initializing LHC Correction Model Creator")
+        super().__init__(accel, twiss_out, corr_files, update_dpp) 
 
     def get_madx_script(self) -> str:
-        """ Get the madx script for the correction model creator, which updates the model after correcion. """
+        """ Get the madx script for the correction model creator, which updates the model after correcion. """  
+        accel: Lhc = self.accel
         madx_script = super().get_madx_script()
 
         # First set the dpp to the value in the accelerator model
-        madx_script += f"{ORBIT_DPP} = {self.accel.dpp};\n"
+        madx_script += f"{ORBIT_DPP} = {accel.dpp};\n"
 
         for corr_file in self.corr_files:  # Load the corrections, can also update ORBIT_DPP
             madx_script += f"call, file = '{str(corr_file)}';\n"
@@ -527,7 +483,7 @@ class LhcCorrectionModelCreator(LhcModelCreator, CorrectionModelCreator):  # ---
         if self.update_dpp: # If we are doing orbit correction, we need to ensure that a correct and a match is done
             madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
 
-        madx_script += f'exec, do_twiss_elements(LHCB{self.beam}, "{str(self.twiss_out)}", {ORBIT_DPP});\n'
+        madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{str(self.twiss_out)}", {ORBIT_DPP});\n'
         return madx_script
     
     def prepare_run(self) -> None:

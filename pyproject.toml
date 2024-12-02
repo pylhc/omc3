@@ -109,5 +109,5 @@ markers = [
     "cern_network: tests that require access to afs or the technical network",
 ]
 # Helpful for pytest-debugging (leave commented out on commit):
-#log_cli = true
-#log_cli_level = "DEBUG"
+# log_cli = true
+# log_cli_level = "DEBUG"

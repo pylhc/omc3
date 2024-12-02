@@ -59,6 +59,7 @@ class ModelCreator(ABC):
         Args:
             accel (Accelerator): Accelerator Instance
         """
+        LOGGER.debug("Initializing Model Creator Base Attributes")
         self.accel = accel
         self.logfile = logfile
         self.output_dir = accel.model_dir
@@ -332,6 +333,7 @@ class SegmentCreator(ModelCreator, ABC):
     def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], 
                  corrections: MADXInputType = None, *args, **kwargs):
         """ Creates Segment of a model. """
+        LOGGER.debug("Initializing Segment Creator")
         super(SegmentCreator, self).__init__(accel, *args, **kwargs)
         self.segment = segment
         self.measurables = measurables
@@ -395,6 +397,7 @@ class CorrectionModelCreator(ModelCreator, ABC):
             change_params (Sequence[Path]): Sequence of correction/matching files.
             update_dpp (bool): Whether to update the dpp in the machine.
         """
+        LOGGER.debug("Initializing Correction Model Creator Base Attributes")
         super(CorrectionModelCreator, self).__init__(accel)
         self.twiss_out = Path(twiss_out)
 

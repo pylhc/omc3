@@ -368,6 +368,52 @@ class Lhc(Accelerator):
     
     def get_accel_file(self, filename: str | Path) -> Path:
         return LHC_DIR / self.year / filename
+    
+    
+    # Private Methods ##############################################################
+    def _get_corrector_elems(self) -> Path:
+        """ Return the corrector elements file, either from the instance's specific directory,
+        if it exists, or the default directory. """
+        return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
+    
+    def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
+        """ Get the corrector files from the default directory AND 
+        the instance's specific directory if it exists AND the model directroy if it exists, 
+        in that order. 
+        See also discussion in https://github.com/pylhc/omc3/pull/458#discussion_r1764829247 .
+        """
+        # add file from the default directory (i.e. "model/accelerators/lhc/correctors")
+        default_file = Lhc.DEFAULT_CORRECTORS_DIR / file_name
+        if not default_file.exists():
+            msg = (f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
+                  "Something went wrong with the variables getting logic.")
+            raise FileNotFoundError(msg)
+        
+        LOGGER.debug(
+            f"Default corrector file {file_name} found in {default_file.parent}."
+        )
+        corrector_files = [default_file]
+
+        # add file from the accelerator directory (e.g. "model/accelerators/lhc/2024/correctors")
+        accel_dir_file = self.get_accel_file(Path(Lhc.DEFAULT_CORRECTORS_DIR.name) / file_name)
+        if accel_dir_file.exists():
+            LOGGER.debug(
+                f"Corrector file {file_name} found in {accel_dir_file.parent}. "
+                "Contents will take precedence over defaults."
+            )
+            corrector_files.append(accel_dir_file)
+
+        # add file from the model directory (without "correctors" and subfolders) - bit of a hidden feature
+        if self.model_dir is not None:
+            model_dir_file = Path(self.model_dir) / Path(file_name).name
+            if model_dir_file.exists():
+                LOGGER.info(
+                    f"Corrector file {file_name} found in {model_dir_file.parent}. "
+                    "Contents will take precedence over omc3-given defaults."
+                )
+                corrector_files.append(model_dir_file)
+        
+        return corrector_files
 
 
 # General functions ##########################################################
