@@ -201,7 +201,8 @@ class LhcModelCreator(ModelCreator):
         if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
             madx_script += (
-                f"use_acd={use_acd};\nuse_adt={use_adt};\n"
+                f"use_acd={use_acd};\n"
+                f"use_adt={use_adt};\n"
                 f"if(use_acd == 1){{\n"
                 f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_AC_DAT}', {accel.dpp});\n"
                 f"}}else if(use_adt == 1){{\n"
@@ -477,7 +478,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
     def get_madx_script(self) -> str:
         """ Get the madx script for the correction model creator, which updates the model after correcion. """  
         accel: Lhc = self.accel
-        madx_script = super().get_madx_script()
+        madx_script = self.get_base_madx_script()  # do not get_madx_script as we don't need the uncorrected output. 
 
         # First set the dpp to the value in the accelerator model
         madx_script += f"{ORBIT_DPP} = {accel.dpp};\n"
