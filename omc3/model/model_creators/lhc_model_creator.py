@@ -461,13 +461,18 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
     def __init__(self, accel: Lhc, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False):
         """Model creator for the corrected/matched model of the LHC.
 
+        Inheritance (i.e. __init__ calls) from here should be as follows:
+        This super() calls CorrectionModelCreator.
+        The super() there calls LhcModelCreator which calls ModelCreator, setting the base-attributes.
+        Then Attributes in CorrectionModelCreator are set.
+
         Args:
             accel (Lhc): Accelerator Class Instance
             twiss_out (Union[Path, str]): Path to the twiss(-elements) file to write
             change_params (Sequence[Path]): Sequence of correction/matching files
         """
         LOGGER.debug("Initializing LHC Correction Model Creator")
-        super().__init__(accel, twiss_out, corr_files, update_dpp) 
+        super().__init__(accel, twiss_out, corr_files, update_dpp)  
 
     def get_madx_script(self) -> str:
         """ Get the madx script for the correction model creator, which updates the model after correcion. """  

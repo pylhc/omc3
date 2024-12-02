@@ -199,24 +199,32 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
     )
 
     # Test global correction with and without response update
-    for update_response in [True, False]:
+    for update_response in [False, True]:
+        iterations = 3
+        global_correction(
+            meas_dir=tmp_path,
+            output_dir=tmp_path,
+            fullresponse_path=response_path,
+            variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}"],
+            optics_params=[f"{PHASE}X", f"{PHASE}Y"],
+            iterations=iterations,
+            update_response=update_response,
+            **model_inj_beams,
+        )
+        
+        # Verify final correction stage
+        result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
+        corrected_dpp = -result[DELTA][ORBIT_DPP]
+        assert np.isclose(dpp, corrected_dpp, rtol=2e-2), f"Expected {dpp}, got {corrected_dpp}, diff: {dpp - corrected_dpp}"
+
+        # Verify convergence
         previous_diff = np.inf
-        for iteration in range(1, 4):
-            global_correction(
-                meas_dir=tmp_path,
-                output_dir=tmp_path,
-                fullresponse_path=response_path,
-                variable_categories=[ORBIT_DPP, f"kq10.l1b{beam}"],
-                optics_params=[f"{PHASE}X", f"{PHASE}Y"],
-                iterations=iteration,
-                update_response=update_response,
-                **model_inj_beams,
-            )
-            result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
+        for iteration in range(iterations):
+            result = tfs.read(tmp_path / f"changeparameters_iter{iteration}.tfs", index=NAME)
             current_dpp = -result[DELTA][ORBIT_DPP]
 
             # Check output accuracy
-            rtol = 5e-2 if iteration == 1 else 2e-2
+            rtol = 2e-2 if iteration else 5e-2  # first iteration is less accurate
             assert np.isclose(dpp, current_dpp, rtol=rtol), f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
 
             # Check convergence

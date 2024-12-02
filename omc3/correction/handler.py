@@ -11,6 +11,8 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 import copy
+import os
+import sys
 
 import numpy as np
 import pandas as pd
@@ -35,6 +37,7 @@ if TYPE_CHECKING:
 
 
 LOG = logging_tools.get_logger(__name__)
+PYTEST_VARIABLE = "PYTEST_CURRENT_TEST"
 
 
 CORRECTION_MODEL_CREATORS = {
@@ -51,7 +54,11 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                        see :mod:`omc3.global_correction` for details.
 
     """
+    opt.knob_path = Path(opt.knob_path)
+    opt.change_params_path = Path(opt.change_params_path)
+    opt.change_params_correct_path = Path(opt.change_params_correct_path)
     method_options = opt.get_subdict(["svd_cut", "n_correctors"])
+    
     # read data from files
     vars_list = _get_varlist(accel_inst, opt.variable_categories)
     update_deltap = ORBIT_DPP in vars_list
@@ -114,9 +121,16 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         # remove unused correctors from vars_list
         delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix, opt.min_corrector_strength)
 
-        writeparams(opt.change_params_path, delta, "Values to match model to measurement.")
-        writeparams(opt.change_params_correct_path, -delta, "Values to correct the measurement.")
+        # ######### Write Results ######### #
+        writeparams(opt.change_params_path, delta, "Values to match model to measurement.")  # needed for MAD-X in next iteration
         LOG.debug(f"Cumulative delta: {np.sum(np.abs(delta.loc[:, DELTA].to_numpy())):.5e}")
+        
+        # write out each stage for testing/debug purposes; avoid for normal runs, to not clutter the output directory
+        if PYTEST_VARIABLE in os.environ or sys.flags.debug:
+            write_knob(opt.knob_path.with_stem(f"{opt.knob_path.stem}{iteration:d}"), delta)
+
+    # ######### Write Final Results ######### #
+    writeparams(opt.change_params_correct_path, -delta, "Values to correct the measurement.")
     write_knob(opt.knob_path, delta)
     LOG.info("Finished Iterative Global Correction.")
 
@@ -393,10 +407,13 @@ def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
 
 
 def writeparams(path_to_file: Path, delta: pd.DataFrame, extra: str = "") -> None:
-    with open(path_to_file, "w") as madx_script:
-        if extra:
-            madx_script.write(f"! {extra} \n")
+    """ Write the changeparams-file that can be run by madx to update the model. """
+    content = ""
+    if extra:
+        content += f"! {extra} \n"
 
-        for var in delta.index.to_numpy():
-            value = delta.loc[var, DELTA]
-            madx_script.write(f"{var} = {var} {value:+e};\n")
+    for var in delta.index.to_numpy():
+        value = delta.loc[var, DELTA]
+        content += f"{var} = {var} {value:+e};\n"
+
+    path_to_file.write_text(content)
