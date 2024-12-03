@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal
+from collections.abc import Sequence
 
 import numpy as np
 import pytest
@@ -239,7 +240,7 @@ def fake_dpp_measurement(request, tmp_path_factory, model_inj_beams: DotDict):
 @pytest.fixture(scope="module")
 def model_with_dpp_response(model_inj_beams: DotDict):
     """ Fixture for model with DPP response already created. """
-    model_inj_beams = model_inj_beams.copy()
+    model_inj_beams = DotDict(model_inj_beams.copy())
     response_path = model_inj_beams.model_dir / "full_response_dpp.h5"
 
     beam = model_inj_beams.beam
