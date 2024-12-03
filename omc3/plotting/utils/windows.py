@@ -17,8 +17,9 @@ which allows to create a `pyplot` handled window from an already existing figure
 This way, figures can be created without manager (which makes them resource friendlier)
 and can either be added to a QT-Window or, if not installed, opened by `pyplot`.
 """
+from __future__ import annotations
+
 import sys
-from typing import Dict, List, Tuple
 
 import matplotlib
 from matplotlib import pyplot as plt, rcParams
@@ -45,12 +46,9 @@ else:
     try:
         matplotlib.use('qtagg')
     except ImportError as e:
-        if not "headless" in str(e):
+        if "headless" not in str(e):
             raise
-        LOG.debug(
-            "Could not change mpl to use QT, "
-            "due to headless mode (i.e. no display connected)."
-            )
+        LOG.debug("Could not change mpl to use QT, due to headless mode (i.e. no display connected).")
 
 # ------------------------------------------------------------------------------
 
@@ -83,8 +81,8 @@ class PlotWidget(QWidget):
         super().__init__()
 
         self.title: str = title
-        self.figures: Tuple[Figure, ...] = figures
-        self._canvas_toolbar_handles: List[Tuple[FigureCanvas, NavigationToolbar]] = []
+        self.figures: tuple[Figure, ...] = figures
+        self._canvas_toolbar_handles: list[tuple[FigureCanvas, NavigationToolbar]] = []
 
         self._layout = QVBoxLayout()
         self.setLayout(self._layout)
@@ -111,7 +109,7 @@ class TabWidget(QTabWidget):
         super().__init__()
 
         self.title: str = title
-        self.tabs: Dict[str, QWidget] = {}
+        self.tabs: dict[str, QWidget] = {}
 
     def add_tab(self, widget: QWidget):
         self.tabs[widget.title] = widget
@@ -120,7 +118,7 @@ class TabWidget(QTabWidget):
 
 class SimpleTabWindow:
 
-    def __init__(self, title: str = "Simple Tab Window", size: Tuple[int, int] = None):
+    def __init__(self, title: str = "Simple Tab Window", size: tuple[int, int] = None):
         """A simple GUI window, i.e. a standalone graphical application, 
         which contains a single Tab-Widget, allowing the user to add tabs to it.
 
@@ -156,7 +154,7 @@ class SimpleTabWindow:
 
 class VerticalTabWindow(SimpleTabWindow):
 
-    def __init__(self, title: str = "Vertical Tab Window", size: Tuple[int, int] = None):
+    def __init__(self, title: str = "Vertical Tab Window", size: tuple[int, int] = None):
         """A Window in which the tabs are aligned vertically on the left-hand side.
         This window assumes that you may want to have tabs within tabs,
         so the convenience function `add_to_tab` is implemented, which allows

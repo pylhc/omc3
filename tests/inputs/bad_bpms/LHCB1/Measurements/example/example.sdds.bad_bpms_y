@@ -1,0 +1,8 @@
+BPMSI.A4R6.B1 not found in model
+BPMSI.B4R6.B1 not found in model
+BPM.31L5.B1 Flat BPM, the difference between min/max is smaller than 1e-05
+BPMSX.A4L6.B1 Flat BPM, the difference between min/max is smaller than 1e-05
+BPM.31L5.B1 Found an exact zero
+BPMSX.A4L6.B1 Found an exact zero
+BPMSE.4L6.B1 Detected from SVD, single peak value is greater then 0.925
+BPMWI.A5L4.B1 Detected from SVD, single peak value is greater then 0.925

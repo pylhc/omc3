@@ -5,9 +5,11 @@ Accelerator
 This module provides high-level classes to define most functionality of ``model.accelerators``.
 It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
+from __future__ import annotations
 import re
+import os
 from pathlib import Path
-from typing import List, Union, Sequence
+from typing import TYPE_CHECKING
 
 import numpy
 import pandas as pd
@@ -16,7 +18,7 @@ from generic_parser.entrypoint_parser import EntryPointParameters
 
 from omc3.model.constants import (
     ERROR_DEFFS_TXT,
-    JOB_MODEL_MADX,
+    JOB_MODEL_MADX_NOMINAL,
     MODIFIER_TAG,
     MODIFIERS_MADX,
     TWISS_AC_DAT,
@@ -27,6 +29,9 @@ from omc3.model.constants import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -59,6 +64,8 @@ class Accelerator:
         AccElementTypes.ARC_BPMS: r".*",
     }
     BPM_INITIAL = "B"
+    NAME=None
+    REPOSITORY=None
 
     @staticmethod
     def get_parameters():
@@ -95,11 +102,11 @@ class Accelerator:
         params.add_parameter(
             name="energy",
             type=float,
-            help="Energy in Tev.",
+            help="Energy in GeV.",
         )
         params.add_parameter(
             name="modifiers",
-            type=Path,
+            type=PathOrStr,
             nargs="*",
             help="Path to the optics file to use (modifiers file).",
         )
@@ -118,6 +125,7 @@ class Accelerator:
         self.model_best_knowledge = None
         self.elements = None
         self.error_defs_file = None
+        self.acc_model_path = None
         self.modifiers = None
         self._beam_direction = 1
         self._beam = None
@@ -137,11 +145,7 @@ class Accelerator:
         else:
             self.init_from_options(opt)
 
-    def init_from_options(self, opt) -> None:
-        if opt.nat_tunes is None:
-            raise AcceleratorDefinitionError("Argument 'nat_tunes' is required.")
-        if (opt.drv_tunes is None) and (opt.driven_excitation is not None):
-            raise AcceleratorDefinitionError("Argument 'drv_tunes' is required.")
+    def init_from_options(self, opt):
         self.nat_tunes = opt.nat_tunes
 
         if opt.driven_excitation is not None:
@@ -193,6 +197,17 @@ class Accelerator:
         if best_knowledge_path.is_file():
             self.model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
 
+        # Base Model ########################################
+        if self.REPOSITORY is not None:
+            acc_models = model_dir / self.REPOSITORY
+
+            if acc_models.is_dir():
+                if acc_models.is_symlink():
+                    self.acc_model_path = Path(os.readlink(acc_models)).absolute()
+                else:
+                    self.acc_model_path = acc_models
+            # else this wasn't an acc-models based model
+
         # Modifiers #########################################
         self.modifiers = _get_modifiers_from_modeldir(model_dir)
 
@@ -204,7 +219,7 @@ class Accelerator:
     # Class methods ###########################################
 
     @classmethod
-    def get_element_types_mask(cls, list_of_elements: List[str], types) -> numpy.ndarray:
+    def get_element_types_mask(cls, list_of_elements: list[str], types) -> numpy.ndarray:
         """
         Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
         specified types.
@@ -256,9 +271,14 @@ class Accelerator:
         """
         Verifies that this instance of an `Accelerator` is properly instantiated.
         """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        # since we removed `required` args, we check here if everything has been passed
+        if self.model_dir is None:
+            if self.nat_tunes is None:
+                raise AttributeError("Natural tunes not set (missing `--nat_tunes` flag?)")
+            if self.excitation != AccExcitationMode.FREE and self.drv_tunes is None:
+                raise AttributeError("Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)")
 
-    def get_exciter_bpm(self, plane: str, commonbpms: List[str]):
+    def get_exciter_bpm(self, plane: str, commonbpms: list[str]):
         """
         Returns the BPM next to the exciter.
         The `Accelerator` instance knows already which excitation method is used.
@@ -301,7 +321,7 @@ class Accelerator:
 
     # Jobs ###################################################################
 
-    def get_update_correction_script(self, outpath: Union[Path, str], corr_files: Sequence[Union[Path, str]]) -> str:
+    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], **kwargs) -> str: #kwargs to be used for additional arguments in different accelerators
         """
         Returns job (string) to create an updated model from changeparameters input (used in
         iterative correction).
@@ -311,6 +331,13 @@ class Accelerator:
     def get_base_madx_script(self, best_knowledge=False):
         """
         Returns job (string) to create the basic accelerator sequence.
+        """
+        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+    
+    def get_update_deltap_script(self, deltap: float | str) -> str:
+        """
+        Returns job (string) to change the magnets for a given deltap (dpp). 
+        i.e. updating the orbit and matching the tunes.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -353,15 +380,18 @@ class AcceleratorDefinitionError(Exception):
 # Helper ----
 
 
-def _get_modifiers_from_modeldir(model_dir: Path) -> List[Path]:
+def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
     """Parse modifiers from job.create_model.madx or use modifiers.madx file."""
-    job_file = model_dir / JOB_MODEL_MADX
+    job_file = model_dir / JOB_MODEL_MADX_NOMINAL
     if job_file.exists():
         job_madx = job_file.read_text()
 
         # find modifier tag in lines and return called file in these lines
+        # the modifier tag is used by the model creator to mark which line defines modifiers
+        # see e.g. `get_base_madx_script()` in `lhc.py`
+        # example for a match to the regex: `call, file = 'modifiers.madx'; MODIFIER_TAG`
         modifiers = re.findall(
-            fr"\s+call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
+            fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
             job_madx,
             flags=re.IGNORECASE,
         )

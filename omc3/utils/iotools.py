@@ -4,19 +4,17 @@ IO Tools
 
 Helper functions for input/output issues.
 """
-import sys
-from typing import Iterable, Any, Union
+from __future__ import annotations
 
 import re
-
-import json
-import os
 import shutil
+import sys
 from pathlib import Path
+from typing import Any
+from collections.abc import Callable, Iterator
 
 from generic_parser.entry_datatypes import get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
-from pandas import DataFrame
 from tfs import TfsDataFrame
 
 from omc3.definitions import formats
@@ -25,44 +23,45 @@ from omc3.utils import logging_tools
 LOG = logging_tools.get_logger(__name__)
 
 
-def copy_content_of_dir(src_dir, dst_dir):
+def copy_content_of_dir(src_dir: Path, dst_dir: Path):
     """Copies all files and directories from ``src_dir`` to ``dst_dir``."""
-    if not os.path.isdir(src_dir):
+    if not src_dir.is_dir():
+        LOG.warning(f"Cannot copy content of {src_dir}, as it is not a directory.")
         return
 
     create_dirs(dst_dir)
 
-    for item in os.listdir(src_dir):
-        src_item = os.path.join(src_dir, item)
-        dst_item = os.path.join(dst_dir, item)
-        copy_item(src_item, dst_item)
+    for item in src_dir.glob("*"):
+        copy_item(src_dir / item, dst_dir / item)
 
 
-def create_dirs(path_to_dir):
-    """Creates all dirs to ``path_to_dir`` if not exists."""
+def create_dirs(path_to_dir: str | Path):
+    """Creates all dirs to ``path_to_dir`` if not exists.
+    TODO: Change all calls to use only Path.
+    """
     path_to_dir = Path(path_to_dir)
     if not path_to_dir.exists():
         path_to_dir.mkdir(parents=True)
         LOG.debug(f"Created directory structure: '{path_to_dir}'")
 
 
-def copy_item(src_item, dest):
+def copy_item(src_item: Path, dst_item: Path):
     """
     Copies a file or a directory to ``dest``, which may be a directory.
     If ``src_item`` is a directory then all containing files and dirs will be copied into ``dest``.
     """
     try:
-        if os.path.isfile(src_item):
-            shutil.copy2(src_item, dest)
-        elif os.path.isdir(src_item):
-            copy_content_of_dir(src_item, dest)
+        if src_item.is_file():
+            shutil.copy2(src_item, dst_item)
+        elif src_item.is_dir():
+            copy_content_of_dir(src_item, dst_item)
         else:
             raise IOError
     except IOError:
         LOG.error(f"Could not copy item because of IOError. Item: '{src_item}'")
 
 
-def glob_regex(path: Path, pattern: str) -> "filter object":
+def glob_regex(path: Path, pattern: str) -> Iterator[str]:
     """ Do a glob on the given `path` based on the regular expression `pattern`.
     Returns only the matching filenames (as strings).
 
@@ -70,6 +69,8 @@ def glob_regex(path: Path, pattern: str) -> "filter object":
         path (Path): Folder path to look in.
         pattern (str): Pattern to match.
 
+    Returns:
+        Iterator[str]: Matching filenames
     """
     return filter(re.compile(pattern).match, (p.name for p in path.glob("*")))
 
@@ -125,6 +126,7 @@ class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
 """A class that allows `float`, 'int' or `None`.
 Can be used in numeric-lists when individual entries can be `None`."""
 OptionalFloat = get_multi_class(float, int, type(None))
+OptionalFloat.__name__ = "OptionalFloat"
 
 
 def strip_quotes(value: Any) -> Any:
@@ -170,6 +172,21 @@ def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
     return dict_
 
 
+def replace_in_path(path: Path, old: Path | str, new: Path | str) -> Path:
+    """ Replace a part of a path with a new path. 
+    Useful for example to replace the original path with a path to a symlink or vice versa.
+
+    Args:
+        path (Path): Path object to replace the subpath in 
+        old (Union[Path, str]): Subpath to be replaced
+        new (Union[Path, str]): Subpath to replace with
+
+    Returns:
+        Path: New Path object with the replacement in.
+    """
+    return Path(str(path).replace(str(old), str(new)))
+
+
 def remove_none_dict_entries(dict_: dict) -> dict:
     """
     Removes ``None`` entries from dict. This can be used as a workaround to
@@ -199,7 +216,7 @@ def maybe_add_command(opt: dict, script: str) -> dict:
 
 
 def save_config(output_dir: Path, opt: dict, script: str,
-                unknown_opt: Union[dict, list] = None):
+                unknown_opt: dict | list = None):
     """
     Quick wrapper for ``save_options_to_config``.
 
@@ -219,3 +236,16 @@ def save_config(output_dir: Path, opt: dict, script: str,
         dict(sorted(opt.items())),
         unknown=unknown_opt
     )
+
+
+def always_true(*args, **kwargs) -> bool:
+    """ A function that is always True. """
+    return True
+
+
+def get_check_suffix_func(suffix: str) -> Callable[[Path],bool]:
+    """ Returns a function that checks the suffix of a given path agains 
+    the suffix. """
+    def check_suffix(path: Path) -> bool:
+        return path.suffix == suffix
+    return check_suffix

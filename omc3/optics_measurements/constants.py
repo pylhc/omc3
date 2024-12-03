@@ -25,6 +25,9 @@ CALIBRATION_FILE: str = "calibration_{plane}.out"
 F1001_NAME: str = "f1001"
 F1010_NAME: str = "f1010"
 
+RDT_FOLDER: str = "rdt"
+CRDT_FOLDER: str = "crdt"
+
 # Column Names -----------------------------------------------------------------
 # Pre- and Suffixe
 ERR: str = "ERR"  # Error of the measurement
@@ -38,11 +41,13 @@ MASKED: str = "MASKED"
 
 # Names
 S: str = "S"
+S2: str = f"{S}2"
 NAME: str = "NAME"
 NAME2: str = f"{NAME}2"
 TUNE: str = "Q"
 NAT_TUNE: str = "NATQ"
 PEAK2PEAK: str = "PK2PK"
+COUNT: str = "COUNT"
 ALPHA: str = "ALF"
 BETA: str = "BET"
 DPP: str = "DPP"
@@ -59,13 +64,16 @@ CLOSED_ORBIT: str = "CO"
 DISPERSION: str = "D"
 NORM_DISPERSION: str = "ND"
 
+MEASUREMENT: str = "MEAS"
+MODEL: str = "MODEL"
+
 SECONDARY_AMPLITUDE_X: str = "AMP01_X"  # amplitude of secondary line in horizontal spectrum
 SECONDARY_AMPLITUDE_Y: str = "AMP10_Y"  # amplitude of secondary line in vertical spectrum
 SECONDARY_FREQUENCY_X: str = "PHASE01_X"  # frequency of secondary line in horizontal spectrum
 SECONDARY_FREQUENCY_Y: str = "PHASE10_Y"  # frequency of secondary line in vertical spectrum
 
 # Kick files
-TIME: str = "TIME"
+TIME: str = "TIME"  # also in K-Mod
 ACTION: str = "2J"
 SQRT_ACTION: str = "sqrt2J"
 
@@ -76,3 +84,34 @@ ERR_CALIBRATION = "ERROR_CALIBRATION"
 # Headers ----------------------------------------------------------------------
 RESCALE_FACTOR: str = "RescalingFactor"
 BPM_RESOLUTION: str = "BPMResolution"
+
+
+# K-Modulation Specific --------------------------------------------------------
+
+# Columns and Column-Prefixes
+EFFECTIVE: str = "EFF"
+LUMINOSITY: str = "LUMI"
+IMBALANCE: str = "IMBALANCE"
+S_LOCATION: str = "_S_LOCATION"
+
+BEAM: str = "BEAM"
+
+STAR: str = "STAR"
+BETASTAR: str = f"{BETA}{STAR}"
+WAIST: str = "WAIST"
+BETAWAIST: str = f"{BETA}{WAIST}"
+LABEL: str = "LABEL"
+KMOD_PHASE_ADV: str = "PHASEADV"
+
+# file names from kmod-application
+BEAM_DIR: str = "B"
+LSA_FILE_NAME: str = "lsa_results"  # contains beta-per-BPM (and IP) results
+RESULTS_FILE_NAME: str = "results"  # contains betastar results
+
+# file names defined by omc3
+AVERAGED_BETASTAR_FILENAME: str = "averaged_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m"
+AVERAGED_BPM_FILENAME: str = "averaged_bpm_beam{beam}_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m"
+EFFECTIVE_BETAS_FILENAME: str = "effective_betas_beta{betastar_x:.2f}m{betastar_y:.2f}m"
+
+BETA_KMOD_FILENAME: str = "beta_kmod_"
+BETA_STAR_FILENAME: str = "betastar_"

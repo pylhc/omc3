@@ -5,8 +5,11 @@ Beta from Phase
 This module contains some of the beta calculation related functionality of ``optics_measurements``.
 It provides functions to calculate beta and alpha functions from phase advance data.
 """
-import os
+from __future__ import annotations
+
 import re
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
@@ -15,10 +18,31 @@ from scipy.linalg import circulant
 
 from omc3 import __version__ as VERSION
 from omc3.definitions.constants import PI2
-from omc3.optics_measurements.constants import (BETA_NAME, DELTA, ERR, EXT,
-                                                MDL)
+from omc3.model.accelerators.accelerator import Accelerator
+from omc3.optics_measurements.constants import (
+    ALPHA,
+    BETA,
+    BETA_NAME,
+    DELTA,
+    ERR,
+    EXT,
+    MDL,
+    MEASUREMENT,
+    MODEL,
+    NAME,
+    PHASE_ADV,
+    S,
+)
+from omc3.optics_measurements.phase import CompensationMode
 from omc3.optics_measurements.toolbox import df_diff, df_ratio, df_rel_diff
 from omc3.utils import logging_tools, stats
+
+if TYPE_CHECKING: 
+    from generic_parser import DotDict
+
+    from omc3.optics_measurements.phase import PhaseDict
+    from omc3.optics_measurements.tune import TuneDict
+
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -27,12 +51,20 @@ ZERO_THRESHOLD = 1e-2
 COT_THRESHOLD = 15.9
 RCOND = 1.0e-14
 
-METH_3BPM = "3BPM method"
-METH_A_NBPM = "Analytical N-BPM method"
-METH_NO_ERR = "No Errors"
+
+class Methods:
+    THREE_BPM: str = "3BPM method"
+    A_NBPM: str = "Analytical N-BPM method"
+    NO_ERR: str = "No Errors"
 
 
-def calculate(meas_input, tunes, phase_dict, header_dict, plane):
+def calculate(
+        meas_input: DotDict,
+        tunes: TuneDict,
+        phase_dict: PhaseDict,
+        header_dict: dict[str, Any],
+        plane: str,
+    ) -> tuple[tfs.TfsDataFrame, dict[str, Any]]:
     """
     Calculates betas and alphas from phase advances.
 
@@ -46,27 +78,38 @@ def calculate(meas_input, tunes, phase_dict, header_dict, plane):
     Returns:
         `BetaDict` object containing specific `TfsDataFrame` with results.
     """
-    meas_and_model_tunes = (tunes[plane]["Q"], tunes[plane]["QM"] % 1) \
-        if meas_input.compensation == "none" else (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
+    meas_and_model_tunes = (
+        (tunes[plane]["Q"], tunes[plane]["QM"] % 1) 
+        if meas_input.compensation == CompensationMode.NONE else 
+        (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
+    )
 
     if meas_input.three_bpm_method:
-        beta_df = three_bpm_method(meas_input, phase_dict['free'], plane, meas_and_model_tunes)
-        error_method = METH_3BPM
+        beta_df = three_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
+        error_method = Methods.THREE_BPM 
     else:
-        beta_df, error_method = n_bpm_method(meas_input, phase_dict['free'], plane, meas_and_model_tunes)
+        beta_df, error_method = n_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
+
     LOGGER.info(f"Errors from {error_method}")
-    rmsbb = stats.weighted_rms(beta_df.loc[:, f"{DELTA}BET{plane}"].to_numpy(), errors=beta_df.loc[:, f"{ERR}{DELTA}BET{plane}"].to_numpy()) * 100
+    rmsbb = stats.weighted_rms(
+        beta_df.loc[:, f"{DELTA}{BETA}{plane}"].to_numpy(), 
+        errors=beta_df.loc[:, f"{ERR}{DELTA}{BETA}{plane}"].to_numpy()) * 100
     LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
     header = _get_header(header_dict, error_method, meas_input.range_of_bpms, rmsbb)
     return beta_df, header
 
 
-def write(beta_df, header, outputdir, plane):
-    tfs.write(os.path.join(outputdir, f"{BETA_NAME}{plane.lower()}{EXT}"), beta_df,
-              header, save_index="NAME")
+def write(beta_df: pd.DataFrame, header: dict[str, Any], outputdir: str|Path, plane: str):
+    output_path = Path(outputdir) / f"{BETA_NAME}{plane.lower()}{EXT}"
+    tfs.write(output_path, beta_df, header, save_index=NAME)
 
 
-def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
+def n_bpm_method(
+    meas_input: DotDict, 
+    phase: pd.DataFrame, 
+    plane: str,
+    meas_and_mdl_tunes: tuple[float, float]
+    ) -> tuple[tfs.TfsDataFrame, str]:
     """
     Calculates betas and alphas from using all BPM combination within **range_of_bpms**. It also
     accounts for systematic errors
@@ -81,7 +124,7 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
         `TfsDataFrame` containing betas and alfas from phase.
     """
     n_bpms = meas_input.range_of_bpms
-    n_bpms_phases = len(phase["MEAS"].index)
+    n_bpms_phases = len(phase[MEASUREMENT].index)
     if n_bpms_phases < n_bpms:
         LOGGER.warning(f"Found {n_bpms_phases} BPMs, but {n_bpms} "
                         "were requested in N-BPM method. Using all available BPMs instead,"
@@ -96,19 +139,19 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     bk_model = _get_filtered_model_df(meas_input, phase, plane, best=True)
     tune, mdltune = meas_and_mdl_tunes
-    betas_alfas = np.zeros((len(phase["MEAS"].index), 4))
+    betas_alfas = np.zeros((len(phase[MEASUREMENT].index), 4))
     nbpms = len(bk_model.index)
     n_comb = np.zeros(nbpms, dtype=int)
     m = int(n_bpms / 2)
     loc_range = np.arange(-m, m + 1)
-    phases_meas = phase["MEAS"] * PI2
-    phases_err = phase["ERRMEAS"] * PI2
+    phases_meas = phase[MEASUREMENT] * PI2
+    phases_err = phase[f"{ERR}{MEASUREMENT}"] * PI2
     phases_err.where(phases_err.notnull(), 1, inplace=True)
 
     for indx, probed_bpm_name in enumerate(bk_model.index):
         indx_el_first = elements.index.get_loc(bk_model.index[(indx - m) % nbpms])
         indx_el_last = elements.index.get_loc(bk_model.index[(indx + m) % nbpms])
-        mu_column = "MU" + plane
+        mu_column = f"{PHASE_ADV}{plane}"
         if indx < m:
             outer_meas_phase_adv = pd.concat((phases_meas.iloc[indx, nbpms + indx - m:] - tune * PI2, phases_meas.iloc[indx, :indx + m + 1]))
             outer_meas_err = pd.concat((phases_err.iloc[indx, nbpms + indx - m:], phases_err.iloc[indx, :indx + m + 1]))
@@ -139,19 +182,28 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
         diag = np.concatenate((np.square(outer_meas_err.to_numpy()), outer_elmts.loc[:]["dK1"],
                                outer_elmts.loc[:]["dX"], outer_elmts.loc[:]["KdS"],
                                outer_elmts.loc[:]["mKdS"]))
-        outer_elmts = outer_elmts.rename(columns={"BET" + plane: "BETA"})
+        outer_elmts = outer_elmts.rename(columns={f"{BETA}{plane}": "BETA"})
         index_tuples = [[x, y] for x in loc_range[patter] + m for y in loc_range[patter] + m
                         if (x < y) and (abs(cot_model[x] - cot_model[y]) > ZERO_THRESHOLD) and
                         (np.sign(cot_model[x] - cot_model[y]) * np.sign(cot_meas[x] - cot_meas[y]) > 0)]
         mat_t_beta, mat_t_alpha = np.zeros((len(index_tuples), len(diag))), np.zeros((len(index_tuples), len(diag)))
         betas, alphas = np.empty(len(index_tuples)), np.empty(len(index_tuples))
         for i, c in enumerate(index_tuples):
-            betas[i], alphas[i], mat_t_beta[i], mat_t_alpha[i] = \
-                calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_elmts, cot_model,
-                                                             cot_meas, outer_meas_phase_adv, probed_bpm_name,
-                                                             bk_model.at[probed_bpm_name, "BET" + plane],
-                                                             bk_model.at[probed_bpm_name, "ALF" + plane], meas_input.range_of_bpms)
-
+            betas[i], alphas[i], mat_t_beta[i], mat_t_alpha[i] = (
+                calculate_beta_alpha_from_single_combination(
+                    c,
+                    sin_squared_elements,
+                    outer_elmts,
+                    cot_model,
+                    cot_meas,
+                    outer_meas_phase_adv,
+                    probed_bpm_name,
+                    bk_model.at[probed_bpm_name, f"{BETA}{plane}"],
+                    bk_model.at[probed_bpm_name, f"{ALPHA}{plane}"],
+                    meas_input.range_of_bpms,
+                )
+            )
+            
         mask = diag != 0
         mat_diag = np.diag(diag[mask])
         mat_v_beta = np.dot(mat_t_beta[:, mask], np.dot(mat_diag, np.transpose(mat_t_beta[:, mask])))
@@ -162,31 +214,38 @@ def n_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
             alfi, alferr = _covariant_weighting(mat_v_alpha, alphas)
             n_comb[indx] = len(betas)
         else:
-            LOGGER.debug(f"ValueError or no combinations left at {probed_bpm_name}.")
-            LOGGER.debug(f"betas:\n{betas}")
-            LOGGER.debug(f"alphas:\n{alphas}")
+            LOGGER.debug(
+                f"ValueError or no combinations left at {probed_bpm_name}.\n"
+                f"betas:\n{betas}\n"
+                f"alphas:\n{alphas}"
+            )
             continue
         betas_alfas[indx, :] = np.array([beti, beterr, alfi, alferr])
 
-    beta_df[f"BET{plane}"] = betas_alfas[:, 0]
-    beta_df[f"{ERR}BET{plane}"] = betas_alfas[:, 1]
-    beta_df[f"ALF{plane}"] = betas_alfas[:, 2]
-    beta_df[f"{ERR}ALF{plane}"] = betas_alfas[:, 3]
+    beta_df[f"{BETA}{plane}"] = betas_alfas[:, 0]
+    beta_df[f"{ERR}{BETA}{plane}"] = betas_alfas[:, 1]
+    beta_df[f"{ALPHA}{plane}"] = betas_alfas[:, 2]
+    beta_df[f"{ERR}{ALPHA}{plane}"] = betas_alfas[:, 3]
     beta_df["NCOMB"] = n_comb
-    LOGGER.debug(f"No valid combinations for BPMs: {list(beta_df.index[beta_df['NCOMB'] == 0])}.")
+
+    invalid_mask = beta_df['NCOMB'] == 0
+    if np.any(invalid_mask):
+        LOGGER.debug(f"No valid combinations for BPMs: {list(beta_df.index[invalid_mask])}.")
+
     beta_df = beta_df.loc[beta_df["NCOMB"] > 0]
-    beta_df = beta_df.loc[beta_df[f"BET{plane}"] > 0]
-    too_high_error_mask = np.logical_or(beta_df[f"BET{plane}"] > beta_df[f"{ERR}BET{plane}"],
-                                        beta_df[f"BET{plane}{MDL}"] > beta_df[f"{ERR}BET{plane}"])
+    beta_df = beta_df.loc[beta_df[f"{BETA}{plane}"] > 0]
+    too_high_error_mask = np.logical_or(beta_df[f"{BETA}{plane}"] > beta_df[f"{ERR}{BETA}{plane}"],
+                                        beta_df[f"{BETA}{plane}{MDL}"] > beta_df[f"{ERR}{BETA}{plane}"])
     beta_df = beta_df.loc[too_high_error_mask]
-    beta_df = _get_delta_columns(beta_df, plane)
+    beta_df = _calc_and_add_delta_columns(beta_df, plane)
     return beta_df, error_method
 
 
-def get_elements_with_errors(meas_input, plane):
+def get_elements_with_errors(meas_input: DotDict, plane: str) -> tuple[pd.DataFrame, str]:
     if meas_input.accelerator.error_defs_file is None:
-        raise IOError(f"Error definition file could not be found")
-    elements = meas_input.accelerator.elements.loc[:, ["S", "K1L", "K2L", f"MU{plane}", f"BET{plane}"]]
+        raise IOError("Error definition file could not be found")
+
+    elements = meas_input.accelerator.elements.loc[:, [S, "K1L", "K2L", f"{PHASE_ADV}{plane}", f"{BETA}{plane}"]]
     LOGGER.debug("Accelerator Error Definition")
     elements = _assign_uncertainties(elements, meas_input.accelerator.error_defs_file)
     errors_assigned = (len(elements["dK1"].to_numpy().nonzero()[0]) + len(
@@ -194,13 +253,22 @@ def get_elements_with_errors(meas_input, plane):
     if not errors_assigned:
         LOGGER.warning("No systematic errors were given or no element was found for the given "
                        "error definitions. The systematic lattice errors are not used.")
-    error_method = METH_A_NBPM if errors_assigned else METH_NO_ERR
+    error_method = Methods.A_NBPM if errors_assigned else Methods.NO_ERR
     return elements, error_method
 
 
-def calculate_beta_alpha_from_single_combination(c, sin_squared_elements, outer_elmts, cot_model,
-                                                 cot_meas, outer_meas_phase_adv, probed_bpm_name,
-                                                 betmdl1, alfmdl1, range_of_bpms):
+def calculate_beta_alpha_from_single_combination(
+    c, 
+    sin_squared_elements, 
+    outer_elmts, 
+    cot_model,
+    cot_meas, 
+    outer_meas_phase_adv, 
+    probed_bpm_name,
+    betmdl1, 
+    alfmdl1, 
+    range_of_bpms
+    ):
     """
     Calculates beta and alpha functions as well as the respective covariance matrix lines for the
     given BPM combination (triplet).
@@ -309,7 +377,7 @@ def _covariant_weighting(mat, col):
     return float(np.dot(wb.T, col) / mat_inv_sum), np.sqrt(np.dot(wb.T, np.dot(mat, wb)) / mat_inv_sum ** 2)
 
 
-def _assign_uncertainties(twiss_full, errordefspath):
+def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: str|Path) -> pd.DataFrame:
     """
     Adds uncertainty information to ``twiss_full``.
 
@@ -321,7 +389,7 @@ def _assign_uncertainties(twiss_full, errordefspath):
     """
     LOGGER.debug("Start creating uncertainty information")
     errdefs = tfs.read(errordefspath)
-    twiss_full = twiss_full.assign(UNC=False, dK1=0, KdS=0, mKdS=0, dX=0, BPMdS=0)
+    twiss_full = twiss_full.assign(UNC=False, dK1=0.0, KdS=0.0, mKdS=0.0, dX=0.0, BPMdS=0.0)
     # loop over uncertainty definitions, fill the respective columns, set UNC to true
     for indx in errdefs.index:
         patt = errdefs.loc[indx, "PATTERN"]
@@ -350,17 +418,22 @@ def _assign_uncertainties(twiss_full, errordefspath):
     return twiss_full.loc[twiss_full["UNC"]]
 
 
-def _get_header(header_dict, error_method, range_of_bpms, rmsbb):
+def _get_header(header_dict: dict[str, Any], error_method: str, range_of_bpms: int, rmsbb: float) -> dict[str, Any]:
     header = header_dict.copy()
     header['BetaAlgorithmVersion'] = VERSION
     header['RCond'] = RCOND
-    header['RangeOfBPMs'] = "Adjacent" if error_method == METH_3BPM else range_of_bpms
+    header['RangeOfBPMs'] = "Adjacent" if error_method == Methods.THREE_BPM else range_of_bpms
     header['ErrorsFrom:'] = error_method
     header["RMS_BETABEAT"] = f"{rmsbb:.3f} %"
     return header
 
 
-def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
+def three_bpm_method(
+    meas_input: DotDict,
+    phase: pd.DataFrame,
+    plane: str,
+    meas_and_mdl_tunes: tuple[float, float],
+    ) -> pd.DataFrame:
     """
     Calculates betas and alphas from using adjacent BPMs (3 combination).
     ``phase["MEAS"]``, ``phase["MODEL"]``, ``phase["ERRMEAS"]`` (from ``get_phases``) are of the
@@ -413,18 +486,18 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     Returns:
         `TfsDataFrame` containing betas and alfas from phase.
     """
-    if len(phase["MEAS"].index) < 3:
+    if len(phase[MEASUREMENT].index) < 3:
         raise ValueError("At least 3 BPMs are required for 3-BPM method!"
                         f"Instead only {len(phase['MEAS'])} were found in input.")
 
     tune, mdltune = meas_and_mdl_tunes
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     # tilt phase advances in order to have the phase advances in a neighbourhood
-    tilted_meas = _tilt_slice_matrix(phase["MEAS"].to_numpy(), 2, 5, tune) * PI2
-    tilted_model = _tilt_slice_matrix(phase["MODEL"].to_numpy(), 2, 5, mdltune) * PI2
-    tilted_errmeas = _tilt_slice_matrix(phase["ERRMEAS"].to_numpy(), 2, 5, 0) * PI2
-    betmdl = beta_df.loc[:, f"BET{plane}{MDL}"].to_numpy()
-    alfmdl = beta_df.loc[:, f"ALF{plane}{MDL}"].to_numpy()
+    tilted_meas = _tilt_slice_matrix(phase[MEASUREMENT].to_numpy(), 2, 5, tune) * PI2
+    tilted_model = _tilt_slice_matrix(phase[MODEL].to_numpy(), 2, 5, mdltune) * PI2
+    tilted_errmeas = _tilt_slice_matrix(phase[f"{ERR}{MEASUREMENT}"].to_numpy(), 2, 5, 0) * PI2
+    betmdl = beta_df.loc[:, f"{BETA}{plane}{MDL}"].to_numpy()
+    alfmdl = beta_df.loc[:, f"{ALPHA}{plane}{MDL}"].to_numpy()
     with np.errstate(divide='ignore'):
         cot_phase_meas = 1 / np.tan(tilted_meas)
         cot_phase_model = 1 / np.tan(tilted_model)
@@ -461,20 +534,20 @@ def three_bpm_method(meas_input, phase, plane, meas_and_mdl_tunes):
     sin_quad_model_shift1 = sin_quadrup_model + np.roll(sin_quadrup_model, -1, axis=0) / np.square(cot_phase_model_shift1)
     sin_quad_model_shift2 = sin_quadrup_model + np.roll(sin_quadrup_model, -2, axis=0) / np.square(cot_phase_model_shift2)
     beterr = np.sqrt(sin_squ_model_shift1[0] + sin_squ_model_shift1[3] + sin_squ_model_shift2[1]) / 3
-    beta_df["BET" + plane] = beti
-    beta_df["ERRBET" + plane] = beterr
-    beta_df["ALF" + plane] = alfi
-    beta_df["ERRALF" + plane] = alf_mdl_term * beterr / betmdl + 0.5 * np.sqrt(
+    beta_df[f"{BETA}{plane}"] = beti
+    beta_df[f"{ERR}{BETA}{plane}"] = beterr
+    beta_df[f"{ALPHA}{plane}"] = alfi
+    beta_df[f"{ERR}{ALPHA}{plane}"] = alf_mdl_term * beterr / betmdl + 0.5 * np.sqrt(
         sin_quad_model_shift1[0] + sin_quad_model_shift1[3] + sin_quad_model_shift2[1])
-    beta_df = _get_delta_columns(beta_df, plane)
+    beta_df = _calc_and_add_delta_columns(beta_df, plane)
     return beta_df
 
 
-def _get_delta_columns(beta_df, plane):
-    beta_df[f"{DELTA}BET{plane}"] = df_rel_diff(beta_df, f"BET{plane}", f"BET{plane}{MDL}")
-    beta_df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(beta_df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
-    beta_df[f"{DELTA}ALF{plane}"] = df_diff(beta_df, f"ALF{plane}", f"ALF{plane}{MDL}")
-    beta_df[f"{ERR}{DELTA}ALF{plane}"] = beta_df.loc[:, f"{ERR}ALF{plane}"].to_numpy()
+def _calc_and_add_delta_columns(beta_df: pd.DataFrame, plane: str) -> pd.DataFrame:
+    beta_df[f"{DELTA}{BETA}{plane}"] = df_rel_diff(beta_df, f"{BETA}{plane}", f"{BETA}{plane}{MDL}")
+    beta_df[f"{ERR}{DELTA}{BETA}{plane}"] = df_ratio(beta_df, f"{ERR}{BETA}{plane}", f"{BETA}{plane}{MDL}")
+    beta_df[f"{DELTA}{ALPHA}{plane}"] = df_diff(beta_df, f"{ALPHA}{plane}", f"{ALPHA}{plane}{MDL}")
+    beta_df[f"{ERR}{DELTA}{ALPHA}{plane}"] = beta_df.loc[:, f"{ERR}{ALPHA}{plane}"].to_numpy()
     return beta_df
 
 
@@ -497,16 +570,27 @@ def _tilt_slice_matrix(matrix, slice_shift, slice_width, tune=0):
                    slice_shift, axis=0)[:slice_width]
 
 
-def _get_filtered_model_df(meas_input, phase, plane, best=False):
-    model = _try_best_model(meas_input) if best else meas_input.accelerator.model
-    df = pd.DataFrame(model).loc[phase["MEAS"].index, ["S", f"BET{plane}", f"ALF{plane}", f"MU{plane}"]]
+def _get_filtered_model_df(meas_input: DotDict, phase: pd.DataFrame, plane: str, best: bool = False):
+    model = _get_accel_model(meas_input, best=best)
+    df = model.loc[phase[MEASUREMENT].index, [S, f"{BETA}{plane}", f"{ALPHA}{plane}", f"{PHASE_ADV}{plane}"]]
     if not best:
-        df.rename(columns={f"BET{plane}": f"BET{plane}{MDL}", f"ALF{plane}": f"ALF{plane}{MDL}", f"MU{plane}": f"MU{plane}{MDL}"}, inplace=True)
+        df = df.rename(
+            columns={
+                f"{BETA}{plane}": f"{BETA}{plane}{MDL}",
+                f"{ALPHA}{plane}": f"{ALPHA}{plane}{MDL}",
+                f"{PHASE_ADV}{plane}": f"{PHASE_ADV}{plane}{MDL}",
+            }
+        )
     return df
 
 
-def _try_best_model(meas_input):
-    if meas_input.accelerator.model_best_knowledge is None:
-        LOGGER.debug("No best knowledge model - using the normal one.")
-        return meas_input.accelerator.model
-    return meas_input.accelerator.model_best_knowledge
+def _get_accel_model(meas_input: DotDict, best: bool) -> pd.DataFrame:
+    accel: Accelerator = meas_input.accelerator
+    if not best:
+        return accel.model
+
+    if accel.model_best_knowledge is None:
+        LOGGER.warning("No best knowledge model - using the normal one.")
+        return accel.model
+
+    return accel.model_best_knowledge

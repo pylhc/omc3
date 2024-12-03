@@ -21,6 +21,7 @@ select_monitors(): macro = {
                                               k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
                                               phiy, dmux, dmuy, keyword, dbx, dby,
                                               r11, r12, r21, r22;
+    select, flag=twiss, pattern="_DOROS$";
 }
 
 
@@ -55,11 +56,11 @@ select_elements(): macro = {
 * @param sequence: name of the sequence to use.
 * @param output_file: path to the file to write, it has to be input in "" to
 * preserve upper case characters.
-* @param dpp: delta p / p to use in the twiss command.
+* @param this_is_the_dpp: delta p / p to use in the twiss command. (Complicated name to prevent filename change)
 */
-do_twiss_monitors(use_sequence, output_file, dpp): macro = {
+do_twiss_monitors(use_sequence, output_file, this_is_the_dpp): macro = {
     exec, select_monitors();
-    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+    twiss, chrom, sequence=use_sequence, deltap=this_is_the_dpp, file=output_file;
 };
 
 
@@ -68,16 +69,16 @@ do_twiss_monitors(use_sequence, output_file, dpp): macro = {
 * @param sequence: name of the sequence to use.
 * @param output_file: path to the file to write, it has to be input in "" to
 * preserve upper case characters.
-* @param dpp: delta p / p to use in the twiss command.
+* @param this_is_the_dpp: delta p / p to use in the twiss command. (Complicated name to prevent filename change)
 */
-do_twiss_monitors_and_ips(use_sequence, output_file, dpp): macro = {
+do_twiss_monitors_and_ips(use_sequence, output_file, this_is_the_dpp): macro = {
     exec, select_monitors();
     select, flag=twiss, pattern='^IP[1-8]$', column=name, s, betx, alfx, bety, alfy,
                                               mux, muy, dx, dy, dpx, dpy, x, y, ddx, ddy,
                                               k1l, k1sl, k2l, k3l, k4l, wx, wy, phix,
                                               phiy, dmux, dmuy, keyword, dbx, dby,
                                               r11, r12, r21, r22;
-    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+    twiss, chrom, sequence=use_sequence, deltap=this_is_the_dpp, file=output_file;
 };
 
 
@@ -86,11 +87,11 @@ do_twiss_monitors_and_ips(use_sequence, output_file, dpp): macro = {
 * @param sequence: name of the sequence to use.
 * @param output_file: path to the file to write, it has to be input in "" to
 * preserve upper case characters.
-* @param dpp: delta p / p to use in the twiss command.
+* @param this_is_the_dpp: delta p / p to use in the twiss command. (Complicated name to prevent filename change)
 */
-do_twiss_elements(use_sequence, output_file, dpp): macro = {
+do_twiss_elements(use_sequence, output_file, this_is_the_dpp): macro = {
     exec, select_elements();
-    twiss, chrom, sequence=use_sequence, deltap=dpp, file=output_file;
+    twiss, chrom, sequence=use_sequence, deltap=this_is_the_dpp, file=output_file;
 };
 
 

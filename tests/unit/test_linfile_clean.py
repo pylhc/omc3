@@ -29,7 +29,7 @@ def test_filter_tune(tmp_path):
 
     for plane in PLANES:
         assert len(filtered[plane]) == 4
-        assert unfiltered[plane][COL_NAME][2] not in filtered[plane][COL_NAME]
+        assert unfiltered[plane][COL_NAME][2] not in filtered[plane][COL_NAME].to_list()
 
 
 def test_filter_tune_limit(tmp_path):
@@ -49,6 +49,49 @@ def test_filter_tune_limit(tmp_path):
 
 
 @pytest.mark.basic
+def test_keep_bpms(tmp_path):
+    """ Test that keeping BPMs works. """
+    columns = [COL_TUNE]
+    plane_columns = [f"{col}{p}" for col in columns for p in PLANES]
+    
+    # To be filtered BPMS are (due to the values in the example linfiles)
+    filtered_bpms = {
+        "X": ["BPM.10L4.B1", "BPM.10L2.B1"],
+        "Y": ["BPM.10L1.B1", "BPM.10L2.B1"],
+    }
+
+    # Test that all BPMs are filtered without the keep-flag --------------------
+    linfiles = _copy_and_modify_linfiles(tmp_path, columns=columns)
+    unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
+
+    # if limit not given, filters two elements in X
+    clean_columns(files=linfiles.values(), columns=plane_columns)
+    filtered = {p: tfs.read(f) for p, f in linfiles.items()}
+    
+
+    for plane in PLANES:
+        assert len(filtered[plane]) == len(unfiltered[plane]) - 2
+        for bpm in filtered_bpms[plane]:
+            assert bpm not in filtered[plane][COL_NAME].to_list()
+            assert bpm in unfiltered[plane][COL_NAME].to_list()
+
+    # Now with keeping one of them ---------------------------------------------
+    linfiles = _copy_and_modify_linfiles(tmp_path, columns=columns)
+    unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
+
+    # if limit not given, filters two elements in X
+    clean_columns(files=linfiles.values(), columns=plane_columns, keep=[filtered_bpms["X"][1]])
+    filtered = {p: tfs.read(f) for p, f in linfiles.items()}
+    for plane in PLANES:
+        assert len(filtered[plane]) == len(unfiltered[plane]) - 1
+        for bpm in filtered_bpms[plane]:
+            assert bpm in unfiltered[plane][COL_NAME].to_list()
+
+        assert filtered_bpms[plane][0] not in filtered[plane][COL_NAME].to_list()
+        assert filtered_bpms[plane][1] in filtered[plane][COL_NAME].to_list()
+
+
+@pytest.mark.basic
 def test_filter_tune_nattune(tmp_path):
     """Tests that filtering works for two columns."""
     columns = [COL_TUNE, COL_NATTUNE]
@@ -62,6 +105,55 @@ def test_filter_tune_nattune(tmp_path):
 
     for plane in PLANES:
         assert len(filtered[plane]) == 2  # empirically determined
+
+
+@pytest.mark.basic
+def test_filter_between_limits(tmp_path):
+    """ Test filtering works on outlier created by modify linfiles function. """
+    columns = [COL_TUNE]
+    plane_columns = [f"{col}{p}" for col in columns for p in PLANES]
+    
+    # Test that no BPMs are filtered by the auto-clean (sanity check) ----------
+    linfiles = _copy_and_modify_linfiles(tmp_path, columns=columns, index=[2, 3], by=0.1)
+    unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
+
+    clean_columns(files=linfiles.values(), columns=plane_columns)
+
+    filtered = {p: tfs.read(f) for p, f in linfiles.items()}
+
+    for plane in PLANES:
+        assert_frame_equal(unfiltered[plane], filtered[plane])
+    
+    # Test that the two BPMs are filtered by the limits-clean ------------------
+    linfiles = _copy_and_modify_linfiles(tmp_path, columns=columns, index=[2, 3], by=0.1)
+    unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
+    
+    # choosing values so that both planes are filtered
+    # X tunes are 0.26 + 0.1, Y tunes are 0.32 + 0.1
+    clean_columns(files=linfiles.values(), columns=plane_columns, limit=(0.20, 0.35))
+
+    filtered = {p: tfs.read(f) for p, f in linfiles.items()}
+
+    for plane in PLANES:
+        assert len(filtered[plane]) == 3
+        assert unfiltered[plane][COL_NAME][2] not in filtered[plane][COL_NAME].to_list()
+        assert unfiltered[plane][COL_NAME][3] not in filtered[plane][COL_NAME].to_list()
+    
+    
+    # Test that keep flag is also respected in the limits-clean ----------------
+    linfiles = _copy_and_modify_linfiles(tmp_path, columns=columns, index=[2, 3], by=0.1)
+    unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
+    
+    # choosing values so that both planes are filtered
+    # X tunes are 0.26 + 0.1, Y tunes are 0.32 + 0.1
+    clean_columns(files=linfiles.values(), columns=plane_columns, limit=(0.20, 0.35), keep=[unfiltered["X"][COL_NAME][2]])
+
+    filtered = {p: tfs.read(f) for p, f in linfiles.items()}
+
+    for plane in PLANES:
+        assert len(filtered[plane]) == 4
+        assert unfiltered[plane][COL_NAME][2] in filtered[plane][COL_NAME].to_list()
+        assert unfiltered[plane][COL_NAME][3] not in filtered[plane][COL_NAME].to_list()
 
 
 @pytest.mark.basic
@@ -106,7 +198,7 @@ def test_main(tmp_path):
     unfiltered = {p: tfs.read(f) for p, f in linfiles.items()}
 
     # if limit not given, would filter two elements in X
-    main(files=list(linfiles.values()), columns=plane_columns, limit=0.01, backup=True)
+    main(files=list(linfiles.values()), columns=plane_columns, limit=[0.01], backup=True)
     _assert_nlinfiles(tmp_path, 2)
 
     filtered = {p: tfs.read(f) for p, f in linfiles.items()}

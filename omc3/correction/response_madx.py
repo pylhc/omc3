@@ -12,25 +12,40 @@ For now, the response matrix is stored in a hdf5 file.
 
 :author: Lukas Malina, Joschua Dilly, Jaime (...) Coello de Portugal
 """
+from __future__ import annotations
+
 import copy
 import multiprocessing
+import zipfile
 from pathlib import Path
-from typing import Dict, Sequence, Tuple, List
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 import tfs
+from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
-                                       NORM_DISPERSION, PHASE_ADV, TUNE, PHASE)
-from omc3.correction.constants import INCR
-from omc3.model.accelerators.accelerator import Accelerator, AccElementTypes
+from omc3.correction.constants import INCR, ORBIT_DPP
+from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
+from omc3.optics_measurements.constants import (
+    BETA,
+    DISPERSION,
+    F1001,
+    F1010,
+    NAME,
+    NORM_DISPERSION,
+    PHASE_ADV,
+    TUNE,
+)
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
 
 LOG = logging_tools.get_logger(__name__)
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 # Full Response Mad-X ##########################################################
@@ -42,7 +57,7 @@ def create_fullresponse(
     delta_k: float = 2e-5,
     num_proc: int = multiprocessing.cpu_count(),
     temp_dir: Path = None
-) -> Dict[str, pd.DataFrame]:
+) -> dict[str, pd.DataFrame]:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
 
@@ -81,13 +96,23 @@ def _generate_madx_jobs(
     delta_k: float,
     num_proc: int,
     temp_dir: Path
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """ Generates madx job-files """
-    LOG.debug("Generating MADX jobfiles.")
+    LOG.debug("Generating MAD-X jobfiles.")
     incr_dict = {'0': 0.0}
-    vars_per_proc = int(np.ceil(len(variables) / num_proc))
+    compute_deltap: bool = ORBIT_DPP in variables
+    no_dpp_vars = [var for var in variables if var != ORBIT_DPP]
+    vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
 
     madx_job = _get_madx_job(accel_inst)
+    deltap_twiss = ""
+    if compute_deltap:
+        # This is here only for multiple iteration of the global correction
+        # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
+        # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
+        madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n" # Set deltap to 0
+        madx_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP)
+        deltap_twiss = f", deltap={ORBIT_DPP}"
 
     for proc_idx in range(num_proc):
         jobfile_path = _get_jobfiles(temp_dir, proc_idx)
@@ -95,17 +120,23 @@ def _generate_madx_jobs(
         current_job = madx_job
         for i in range(vars_per_proc):
             var_idx = proc_idx * vars_per_proc + i
-            if var_idx >= len(variables):
+            if var_idx >= len(no_dpp_vars):
                 break
-            var = variables[var_idx]
+            var = no_dpp_vars[var_idx]
             incr_dict[var] = delta_k
-            current_job += f"{var}={var}{delta_k:+f};\n"
-            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}';\n"
-            current_job += f"{var}={var}{-delta_k:+f};\n\n"
+            current_job += f"{var} = {var}{delta_k:+.15e};\n"
+            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}'{deltap_twiss};\n"
+            current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}';\n"
-
+            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
+            
+            if compute_deltap: # If ORBIT_DPP is in variables, we run this in the last iteration
+                # Due to the match and correction of the orbit, this needs to be run at the end of the process
+                incr_dict[ORBIT_DPP] = delta_k
+                current_job += f"{ORBIT_DPP} = {ORBIT_DPP}{delta_k:+.15e};\n"
+                current_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
+                current_job += f"twiss, deltap={ORBIT_DPP}, file='{str(temp_dir/f'twiss.{ORBIT_DPP}')}';\n"
         jobfile_path.write_text(current_job)
     return incr_dict
 
@@ -139,17 +170,24 @@ def _clean_up(temp_dir: Path, num_proc: int) -> None:
         log_path = job_path.with_name(f"{job_path.name}.log")
         full_log += log_path.read_text()
         log_path.unlink()
-        job_path.unlink()
-    full_log_path = temp_dir / "response_madx_full.log"
-    full_log_path.write_text(full_log)
+        if index:  # keep 0th for reference
+            job_path.unlink()
+    
+    # write compressed full log file
+    full_log_name = "response_madx_full.log"
+    zipfile.ZipFile(
+        temp_dir / f"{full_log_name}.zip", 
+        mode="w", 
+        compression=zipfile.ZIP_DEFLATED
+    ).writestr(full_log_name, full_log)
 
 
 def _load_madx_results(
-    variables: List[str],
-    process_pool: multiprocessing.Pool,
+    variables: list[str],
+    process_pool,
     incr_dict: dict,
     temp_dir: Path
-) -> Dict[str, tfs.TfsDataFrame]:
+) -> dict[str, tfs.TfsDataFrame]:
     """ Load the madx results in parallel and return var-tfs dictionary """
     LOG.debug("Loading Madx Results.")
     vars_and_paths = []
@@ -162,7 +200,7 @@ def _load_madx_results(
     return var_to_twiss
 
 
-def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) -> Dict[str, pd.DataFrame]:
+def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) -> dict[str, pd.DataFrame]:
     """ Convert var-tfs dictionary to fullresponse dictionary. """
     var_to_twiss = _add_coupling(var_to_twiss)
     keys = list(var_to_twiss.keys())
@@ -205,7 +243,7 @@ def _create_fullresponse_from_dict(var_to_twiss: Dict[str, tfs.TfsDataFrame]) ->
     resp = np.divide(resp,resp[columns.index(f"{INCR}")])
     Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T
  
-    with suppress_warnings(np.ComplexWarning):  # raised as everything is complex-type now
+    with suppress_warnings(ComplexWarning):  # raised as everything is complex-type now
         return {
             f"{PHASE_ADV}X": pd.DataFrame(data=resp[columns.index(f"{PHASE_ADV}X")], index=bpms, columns=keys).astype(np.float64),
             f"{PHASE_ADV}Y": pd.DataFrame(data=resp[columns.index(f"{PHASE_ADV}Y")], index=bpms, columns=keys).astype(np.float64),
@@ -234,25 +272,25 @@ def _launch_single_job(inputfile_path: Path) -> None:
     madx_wrapper.run_file(inputfile_path, log_file=log_file, cwd=inputfile_path.parent)
 
 
-def _load_and_remove_twiss(var_and_path: Tuple[str, Path]) -> Tuple[str, tfs.TfsDataFrame]:
+def _load_and_remove_twiss(var_and_path: tuple[str, Path]) -> tuple[str, tfs.TfsDataFrame]:
     """ Function for pool to retrieve results """
     (var, path) = var_and_path
     twissfile = path / f"twiss.{var}"
-    tfs_data = tfs.read(twissfile, index="NAME")
+    tfs_data = tfs.read(twissfile, index=NAME)
     tfs_data[f"{TUNE}1"] = tfs_data.Q1
     tfs_data[f"{TUNE}2"] = tfs_data.Q2
     twissfile.unlink()
     return var, tfs_data
 
 
-def _add_coupling(dict_of_tfs: Dict[str, tfs.TfsDataFrame]) -> Dict[str, tfs.TfsDataFrame]:
+def _add_coupling(dict_of_tfs: dict[str, tfs.TfsDataFrame]) -> dict[str, tfs.TfsDataFrame]:
     """
     For each TfsDataFrame in the input dictionary, computes the coupling RDTs and adds a column for
     the real and imaginary parts of the computed coupling RDTs. Returns a copy of the input dictionary with
     the aforementioned computed columns added for each TfsDataFrame.
 
     Args:
-        dict_of_tfs (Dict[str, tfs.TfsDataFrame]): dictionary of Twiss dataframes.
+        dict_of_tfs (dict[str, tfs.TfsDataFrame]): dictionary of Twiss dataframes.
 
     Returns:
         An identical dictionary of Twiss dataframes, with the computed columns added.

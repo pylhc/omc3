@@ -134,7 +134,6 @@ from omc3.tune_analysis.constants import (
     get_bbq_out_name,
     get_kick_out_name,
     get_timber_bbq_key,
-    get_natq_err_col,
     INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
@@ -504,7 +503,7 @@ def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFram
             LOG.debug(f"Getting bbq data from file '{str(input_):s}'")
             data = read_timed_dataframe(input_)
             if not len(data.index):
-                raise ValueError(f"No entries in {str(input_):s}.")
+                raise ValueError(f"No entries in {str(input_):s}.") from e
 
     else:  # input_ is a number, assumed to be a fill number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")

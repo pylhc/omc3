@@ -4,31 +4,35 @@ Handler
 
 This module contains high-level functions to manage most functionality of the corrections calculations.
 """
+from __future__ import annotations
+
 import datetime
-import os
 import time
 from pathlib import Path
-from typing import Callable, Dict, List, Sequence, Tuple, Union
+from typing import TYPE_CHECKING
+import copy
 
 import numpy as np
 import pandas as pd
 import tfs
-from generic_parser import DotDict
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction import filters, model_appenders, response_twiss
-from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, F1001,
-                                                F1010, NORM_DISPERSION, PHASE, TUNE,
-                                                DISPERSION_NAME, EXT, REAL, IMAG,
-                                                NORM_DISP_NAME, PHASE_NAME, NAME
-                                                )
-from omc3.correction.constants import ERROR, VALUE, WEIGHT, DIFF
+from omc3.correction import filters, model_appenders, response_twiss, response_madx
+from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT, ORBIT_DPP
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
+from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
+                                                F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
+                                                PHASE, PHASE_NAME, TUNE)
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+    from generic_parser import DotDict
+
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -45,6 +49,8 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     method_options = opt.get_subdict(["svd_cut", "n_correctors"])
     # read data from files
     vars_list = _get_varlist(accel_inst, opt.variable_categories)
+    update_deltap = ORBIT_DPP in vars_list
+    
     optics_params, meas_dict = get_measurement_data(
         opt.optics_params,
         opt.meas_dir,
@@ -73,10 +79,10 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
 
         # ######### Update Model and Response ######### #
         if iteration > 0:
-            LOG.debug("Updating model via MADX.")
+            LOG.debug("Updating model via MAD-X.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst)
+            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
@@ -85,11 +91,15 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             meas_dict = model_appenders.add_differences_to_model_to_measurements(corr_model, meas_dict)
 
             if opt.update_response:
-                LOG.debug("Updating response.")
-                # please look away for the next two lines.
-                accel_inst._model = corr_model
-                accel_inst._elements = corr_model_elements
-                resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
+                resp_dict = _update_response(
+                    accel_inst=accel_inst,
+                    corrected_elements=corr_model_elements,
+                    optics_params=optics_params,
+                    corr_files=[opt.change_params_path],
+                    variable_categories=opt.variable_categories,
+                    update_dpp=update_deltap,
+                    update_response=opt.update_response,
+                )
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
@@ -104,6 +114,47 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         LOG.debug(f"Cumulative delta: {np.sum(np.abs(delta.loc[:, DELTA].to_numpy())):.5e}")
     write_knob(opt.knob_path, delta)
     LOG.info("Finished Iterative Global Correction.")
+
+
+
+def _update_response(
+    accel_inst: Accelerator, 
+    corrected_elements: pd.DataFrame,
+    optics_params: Sequence[str],
+    corr_files: Sequence[Path],
+    variable_categories: Sequence[str], 
+    update_dpp: bool, 
+    update_response: bool | str,
+    ) -> dict[str, pd.DataFrame]:
+    """ Create an updated response matrix.
+    
+    If we are to compute the response including the DPP, then we have to do so from MAD-X, 
+    as we do not have the analytical formulae. This therefore requires correction files to be
+    provided.
+    Otherwise we go through the way of computing the response the user requested.
+
+    All other parameters are taken care of in the model/elements for the response_twiss only.
+    """
+    # update model by creating a copy of the accelerator instance
+    accel_inst_cp = copy.copy(accel_inst)
+
+    # Modifiers is None or list, if none, we need to make a list before extending it with the correction files
+    accel_inst_cp.modifiers = list(accel_inst_cp.modifiers or []) + corr_files
+
+    if update_dpp:
+        LOG.info("Updating response via MAD-X, due to delta dpp requested.")
+        resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
+    else:
+        if update_response == "madx":
+            LOG.info("Updating response via MAD-X.")
+            resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
+        else:
+            LOG.info("Updating response via analytical formulae.")
+            accel_inst_cp.elements = corrected_elements
+            # accel_inst_cp.model = corrected_model # - Not needed, don't think it's used by response_twiss (jgray 2024)
+            resp_dict = response_twiss.create_response(accel_inst_cp, variable_categories, optics_params)
+
+    return resp_dict
 
 
 # Input ------------------------------------------------------------------------
@@ -139,8 +190,8 @@ def get_measurement_data(
         keys: Sequence[str],
         meas_dir: Path,
         beta_filename: str,
-        w_dict: Dict[str, float] = None,
-) -> Tuple[List[str], Dict[str, tfs.TfsDataFrame]]:
+        w_dict: dict[str, float] = None,
+) -> tuple[list[str], dict[str, tfs.TfsDataFrame]]:
     """ Loads all measurements defined by `keys` into a dictionary. """
     measurement = {}
     filtered_keys = keys
@@ -213,9 +264,9 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _create_corrected_model(twiss_out: Union[Path, str], change_params: Sequence[Path], accel_inst: Accelerator) -> tfs.TfsDataFrame:
+def _create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    madx_script: str = accel_inst.get_update_correction_script(twiss_out, change_params)
+    madx_script: str = accel_inst.get_update_correction_script(twiss_out, corr_files, update_dpp)
     twiss_out_path = Path(twiss_out)
     madx_script = f"! Based on model '{accel_inst.model_dir}'\n" + madx_script
     madx_wrapper.run_string(
@@ -270,7 +321,7 @@ def _orthogonal_matching_pursuit(response_mat: pd.DataFrame, diff_vec, opt: DotD
     if opt.n_correctors is None:
         raise ValueError("n_correctors setting needed for orthogonal matching pursuit.")
 
-    res = OrthogonalMatchingPursuit(opt.n_correctors).fit(response_mat, diff_vec)
+    res = OrthogonalMatchingPursuit(n_nonzero_coefs=opt.n_correctors).fit(response_mat, diff_vec)
     coef = res.coef_
     LOG.debug(f"Orthogonal Matching Pursuit Results: \n"
               f"  Chosen variables: {response_mat.columns.to_numpy()[coef.nonzero()]}\n"
@@ -311,11 +362,11 @@ def _calculate_delta(
 def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
     """ Prints current RMS status """
     f_str = "{:>20s} : {:.5e}"
-    LOG.debug("RMS Measure - Model (before correction, w/o weigths):")
+    LOG.debug("RMS Measure - Model (before correction, w/o weights):")
     for key in meas:
         LOG.debug(f_str.format(key, rms(meas[key].loc[:, DIFF].to_numpy())))
 
-    LOG.info("RMS Measure - Model (before correction, w/ weigths):")
+    LOG.info("RMS Measure - Model (before correction, w/ weights):")
     for key in meas:
         LOG.info(f_str.format(key, rms(meas[key].loc[:, DIFF].to_numpy() * meas[key].loc[:, WEIGHT].to_numpy())))
 

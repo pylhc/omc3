@@ -81,6 +81,24 @@ def test_converter_more_files_with_noise(_sdds_file, _test_file):
         _compare_tbt(origin, new, True, noiselevel * 10)
 
 
+@pytest.mark.basic
+def test_change_output_format(_sdds_file, _test_file):
+    with pytest.raises(UnicodeError):
+        _sdds_file.read_text()  # making sure this is binary
+
+    # convert ---
+    origin = tbt.read_tbt(_sdds_file, datatype="lhc")
+    converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, output_datatype="ascii")
+
+    # test output ---    
+    _test_file.read_text()  # making sure this is ascii
+    new = tbt.read_tbt(_test_file, datatype="ascii")
+    _compare_tbt(origin, new, True)
+
+
+# Test Helper ------------------------------------------------------------------
+
+
 def _compare_tbt(
     origin: tbt.TbtData, new: tbt.TbtData, no_binary: bool, max_deviation=ASCII_PRECISION
 ) -> None:

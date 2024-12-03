@@ -1,18 +1,10 @@
 import os
-import random
-import string
-import tempfile
-import itertools
 
-import numpy as np
-import pandas as pd
 import pytest
 import tfs
 
 from pathlib import Path
 
-import turn_by_turn as tbt
-from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import hole_in_one_entrypoint
 
 INPUTS = Path(__file__).parent.parent / "inputs"

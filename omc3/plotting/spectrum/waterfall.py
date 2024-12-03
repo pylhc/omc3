@@ -19,7 +19,7 @@ LOG = logging_tools.getLogger(__name__)
 
 def create_waterfall_plots(figures: dict, opt: DotDict) -> None:
     """ Main loop for waterfall plot creation. """
-    LOG.debug(f"  ...creating Waterfall Plot")
+    LOG.debug("  ...creating Waterfall Plot")
 
     for fig_id, fig_cont in figures.items():
         LOG.debug(f'   Plotting Figure: {fig_id}.')
@@ -87,11 +87,15 @@ def _format_axes(fig_cont, limits, ncol):
     for idx_plane, plane in enumerate(PLANES):
         ax = fig_cont.axes[idx_plane]
         if ncol < 1:
-            ax.set_yticklabels([])
-            ax.set_yticks([])
+            ax.set_yticks(ticks=[], labels=[])
         else:
-            ax.set_yticklabels(ylabels, fontdict={'fontsize': get_fontsize_as_float(matplotlib.rcParams[u'axes.labelsize']) * .5})
-            ax.set_yticks(range(len(ylabels)))
+            # Provide ticks and labels together or matplotlib issues a UserWarning
+            # See "Discouraged" admonition at https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html 
+            ax.set_yticks(
+                ticks=range(len(ylabels)),
+                labels=ylabels,
+                fontdict={'fontsize': get_fontsize_as_float(matplotlib.rcParams[u'axes.labelsize']) * .5},
+            )
         ax.set_xlabel(LABEL_X)
         ax.set_ylabel(LABEL_Y_WATERFALL.format(plane=plane.upper()))
         ax.set_xlim(limits.xlim)

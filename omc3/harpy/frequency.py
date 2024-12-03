@@ -9,7 +9,6 @@ This calculation is done using a combination of SVD decomposition zero_padded `f
 analysis.
 Also searches for resonances in the calculated spectra.
 """
-from collections import OrderedDict
 from numbers import Number
 
 import numpy as np
@@ -113,9 +112,11 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
                                                  bpm_matrix.shape[1])
     if tunes[2] > 0:
         df, _ = _get_main_resonances(tunes, spectra, "Z", Z_TOLERANCE, df)
-        df[f"MUZ"] = _realign_phases(df.loc[:, f"MUZ"].to_numpy(),
-                                              df.loc[:, f"TUNEZ"].to_numpy(),
-                                              bpm_matrix.shape[1])
+        df[f"{COL_MU}Z"] = _realign_phases(
+            df.loc[:, f"{COL_MU}Z"].to_numpy(),
+            df.loc[:, f"{COL_TUNE}Z"].to_numpy(),
+            bpm_matrix.shape[1],
+        )
     return df, spectra, bad_bpms_summaries
 
 
@@ -134,7 +135,7 @@ def find_resonances(tunes, nturns, plane, spectra, order_resonances):
     """
     resonance_lines = _get_resonance_lines(order_resonances)
 
-    df = pd.DataFrame(index=spectra["FREQS"].index, columns=OrderedDict())
+    df = pd.DataFrame(index=spectra["FREQS"].index, dtype=pd.Float64Dtype())
     resonances_freqs = _compute_resonances_with_freqs(plane, tunes, resonance_lines)
     if tunes[2] > 0.0:
         resonances_freqs.update(_compute_resonances_with_freqs("Z", tunes, resonance_lines))
@@ -143,10 +144,12 @@ def find_resonances(tunes, nturns, plane, spectra, order_resonances):
         max_coefs, max_freqs = _search_highest_coefs(resonances_freqs[resonance], tolerance,
                                                      spectra["FREQS"], spectra["COEFFS"])
         resstr = _get_resonance_suffix(resonance)
-        df[f"{COL_FREQ}{resstr}"], df[f"{COL_AMP}{resstr}"], df[f"{COL_PHASE}{resstr}"] = _get_freqs_amps_phases(
-            max_freqs, max_coefs, resonances_freqs[resonance])
+        columns = [f"{COL_FREQ}{resstr}", f"{COL_AMP}{resstr}", f"{COL_PHASE}{resstr}"]
+        df_resonance = _get_freqs_amps_phases(max_freqs, max_coefs, resonances_freqs[resonance])
+        df_resonance.columns = columns
+        df.loc[:, columns] = df_resonance
 
-        df[f"{COL_PHASE}{resstr}"] = _realign_phases(df.loc[:, f"{COL_PHASE}{resstr}"].to_numpy(),
+        df.loc[:, f"{COL_PHASE}{resstr}"] = _realign_phases(df.loc[:, f"{COL_PHASE}{resstr}"].to_numpy(),
                                                df.loc[:, f"{COL_FREQ}{resstr}"].to_numpy(), nturns)
 
     return df
@@ -159,25 +162,34 @@ def _get_main_resonances(tunes, spectra, plane, tolerance, df):
         raise ValueError(f"No main {plane} resonances found, "
                          f"try to increase the tolerance or adjust the tunes")
     bad_bpms_by_tune = spectra["COEFFS"].loc[max_coefs == 0.].index
-    df[f"{COL_TUNE}{plane}"], df[f"{COL_AMP}{plane}"], df[f"{COL_MU}{plane}"] = _get_freqs_amps_phases(
-        max_freqs, max_coefs, freq)
+    columns = [f"{COL_TUNE}{plane}", f"{COL_AMP}{plane}", f"{COL_MU}{plane}"]
+    df_main = _get_freqs_amps_phases(max_freqs, max_coefs, freq)
+    df_main.columns = columns
+    df.loc[:, columns] = df_main
     if plane != "Z":
         df = df.loc[df.index.difference(bad_bpms_by_tune)]
     return df, bad_bpms_by_tune
 
 
 def _calculate_natural_tunes(spectra, nattunes, tolerance, plane):
-    df = pd.DataFrame(index=spectra["FREQS"].index, columns=OrderedDict())
+    columns = [f"{COL_NATTUNE}{plane}", f"{COL_NATAMP}{plane}", f"{COL_NATMU}{plane}"]
     x, y, _ = nattunes
     freq = x % 1 if plane == "X" else y % 1
     max_coefs, max_freqs = _search_highest_coefs(freq, tolerance, spectra["FREQS"], spectra["COEFFS"])
-    df[f"{COL_NATTUNE}{plane}"], df[f"{COL_NATAMP}{plane}"], df[f"{COL_NATMU}{plane}"] = _get_freqs_amps_phases(
-        max_freqs, max_coefs, freq)
+    df = _get_freqs_amps_phases(max_freqs, max_coefs, freq)
+    df.columns = columns
     return df
 
 
-def _get_freqs_amps_phases(max_freqs, max_coefs, freq):
-    return max_freqs, np.abs(max_coefs), np.sign(0.5 - freq) * np.angle(max_coefs) / PI2
+def _get_freqs_amps_phases(max_freqs: pd.Series, max_coefs: pd.Series, freq: float) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            f"{COL_FREQ}": max_freqs,
+            f"{COL_AMP}": np.abs(max_coefs),
+            f"{COL_PHASE}": np.sign(0.5 - freq) * np.angle(max_coefs) / PI2,
+        },
+        dtype=pd.Float64Dtype(),
+    )
 
 
 def _realign_phases(phase_data, freq_data, nturns):
