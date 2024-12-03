@@ -68,6 +68,9 @@ class CorrectionParameters:
     weights: Sequence[float]
     fullresponse: str
     seed: int
+    arc_by_arc_phase: bool = False
+    include_ips_in_arc_by_arc: str | None = None
+
     
     
 def get_skew_params(beam):
@@ -94,9 +97,23 @@ def get_normal_params(beam):
     )
 
 
+def get_arc_by_arc_params(beam):
+    return CorrectionParameters(
+        twiss=CORRECTION_INPUTS / f"inj_beam{beam}" / "twiss_mqt_quadrupole_error.dat",
+        correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_arcbyarc.madx",
+        optics_params=[f"{PHASE}X", f"{PHASE}Y"],
+        weights=[1., 1.],
+        variables=["MQT"],
+        fullresponse="fullresponse_MQT.h5",
+        arc_by_arc_phase=True,
+        seed=12368,
+    )
+
+
+
 @pytest.mark.basic
-@pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientation: Literal['skew', 'normal']):
+@pytest.mark.parametrize('correction_type', ('skew', 'normal', 'arc_by_arc'))
+def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction_type: Literal['skew', 'normal', 'arc_by_arc']):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
@@ -105,7 +122,13 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientatio
     but this is kind-of done with the correction test.
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
     beam = model_inj_beams.beam
-    correction_params = get_skew_params(beam) if orientation == 'skew' else get_normal_params(beam)
+    param_map = {
+        "skew": get_skew_params,
+        "normal": get_normal_params,
+        "arc_by_arc": get_arc_by_arc_params,
+    }
+
+    correction_params = param_map[correction_type](beam)
     iterations = 3   # '3' tests a single correction + one iteration, as the last (3rd) correction is not tested itself.
 
     # create and load fake measurement
@@ -126,6 +149,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, orientatio
         weights=correction_params.weights,
         svd_cut=0.01,
         iterations=iterations,
+        arc_by_arc_phase=correction_params.arc_by_arc_phase
     )
 
     # Test if corrected model is closer to model used to create measurement
@@ -223,6 +247,9 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
             current_diff = np.abs(dpp - current_dpp) / np.abs(dpp)
             assert previous_diff > current_diff or np.isclose(previous_diff, current_diff, atol=1e-3), f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
             previous_diff = current_diff
+
+
+
 
 # Helper -----------------------------------------------------------------------
 
