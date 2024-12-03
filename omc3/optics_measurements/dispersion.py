@@ -285,9 +285,6 @@ def _is_single_dpp_bin(dpps: Sequence[float]) -> bool:
     """ Checks if the files would be grouped into a single dpp-bin 
     by :func:`omc3.optics_measurements.dpp._compute_ranges`. """
     # alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1 
-    if len(dpps) <=1: 
-        return True
-    
     if any(np.isnan(dpps)):
         LOGGER.warning("DPPs contain NaN values. Skipping dispersion calculation.")
         return True  # i.e. skip dispersion calculation
