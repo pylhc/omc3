@@ -27,11 +27,15 @@ from omc3.optics_measurements.constants import (
 )
 from omc3.optics_measurements import dpp 
 from omc3.utils import stats
+import logging
 
 if TYPE_CHECKING: 
     from generic_parser import DotDict
 
     from omc3.optics_measurements.data_models import InputFiles
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header, plane):
@@ -277,8 +281,15 @@ def _get_delta_columns(df, plane):
     return df
 
 
-def _is_single_dpp_bin(dpps: Sequence[float], tolerance: float = dpp.DPP_BIN_TOLERANCE) -> bool:
+def _is_single_dpp_bin(dpps: Sequence[float]) -> bool:
     """ Checks if the files would be grouped into a single dpp-bin 
     by :func:`omc3.optics_measurements.dpp._compute_ranges`. """
     # alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1 
-    return np.abs(np.max(dpps) - np.min(dpps)) <= 2 * tolerance
+    if len(dpps) <=1: 
+        return True
+    
+    if any(np.isnan(dpps)):
+        LOGGER.warning("DPPs contain NaN values. Skipping dispersion calculation.")
+        return True  # i.e. skip dispersion calculation
+
+    return np.abs(np.max(dpps) - np.min(dpps)) <= 2 * dpp.DPP_BIN_TOLERANCE 
