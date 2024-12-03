@@ -239,7 +239,9 @@ def fake_dpp_measurement(request, tmp_path_factory, model_inj_beams: DotDict):
 @pytest.fixture(scope="module")
 def model_with_dpp_response(model_inj_beams: DotDict):
     """ Fixture for model with DPP response already created. """
+    model_inj_beams = model_inj_beams.copy()
     response_path = model_inj_beams.model_dir / "full_response_dpp.h5"
+
     beam = model_inj_beams.beam
     response_dict = create_response(
         outfile_path=response_path,
@@ -247,11 +249,11 @@ def model_with_dpp_response(model_inj_beams: DotDict):
         delta_k=2e-5,
         **model_inj_beams,
     )
-
+    
     # Verify response creation
     assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict.keys())
+    
     model_inj_beams.fullresponse_path = response_path
-
     return model_inj_beams
 
 
