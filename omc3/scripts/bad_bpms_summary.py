@@ -55,6 +55,8 @@ their given number of appearances after 'harpy' and 'isolation forest'.
 """
 from __future__ import annotations
 
+from collections import defaultdict
+from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -63,6 +65,7 @@ import pandas as pd
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
+from omc3.optics_measurements.iforest import FEATURE
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, OptionalFloat
 
@@ -82,11 +85,25 @@ NAME = "NAME"
 ACCEL = "ACCELERATOR"
 PLANE = "PLANE"
 SOURCE = "SOURCE"
-REASON = "REASON"
+REASONS = "REASONS"
 COUNT = "COUNT"
 FILE = "FILE"
 FILE_COUNT = "FILE_COUNT"
 PERCENTAGE = "PERCENTAGE"
+
+# Harpy Clean Reasons ---
+
+class HarpyReasons(str, Enum):
+    """ Reasons for bad BPMs in the Harpy clean step. """
+    NOT_IN_MODEL = "not found in model"
+    KNOWN = "known bad bpm"
+    FLAT = "flat bpm"
+    SPIKY = "spiky bpm"
+    EXACT_ZERO = "exact zero"
+    NO_TUNE = "main resonance has not been found"
+    TUNE_CLEAN = "too far from average"
+    SVD_PEAK = "svd"
+
 
 # Files ---
 MEASUREMENTS_DIR = "Measurements"
@@ -140,11 +157,11 @@ def bad_bpms_summary(opt: DotDict) -> tfs.TfsDataFrame:
     
     df_collection = collect_bad_bpms(Path(opt.root), opt.dates, opt.accel_glob)
     if outfile is not None:
-        tfs.write(outfile.with_stem(f"{outfile.stem}_collected"), df_collection)
+        tfs.write(outfile.with_stem(f"{outfile.stem}_collected"), merge_reasons(df_collection))
     
     df_evaluated = evaluate(df_collection)
     if outfile is not None:
-        tfs.write(outfile, df_evaluated)
+        tfs.write(outfile, merge_reasons(df_evaluated))
 
     if opt.print_percentage is not None:
         print_results(df_evaluated, opt.print_percentage)
@@ -156,7 +173,14 @@ def bad_bpms_summary(opt: DotDict) -> tfs.TfsDataFrame:
 
 def get_empty_df() -> tfs.TfsDataFrame:
     """ Create an empty TfsDataFrame with the correct column names. """
-    return tfs.TfsDataFrame(columns=[NAME, ACCEL, PLANE, SOURCE, FILE])
+    return tfs.TfsDataFrame(columns=[NAME, ACCEL, PLANE, SOURCE, FILE, REASONS])
+
+
+def merge_reasons(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+    """ Merge the REASONS column into a string of reasons. """
+    df_out = df.copy()
+    df_out.loc[:, REASONS] = df_out[REASONS].map(lambda reasons: "|".join(reasons))
+    return df_out
 
 
 def collect_bad_bpms(root: Path, dates: Sequence[Path | str], accel_glob: str) -> tfs.TfsDataFrame:
@@ -275,8 +299,8 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
         tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.
 
     """
-    TO_IGNORE = ("not found in model",)
-    TO_MARK = ("known bad bpm",)
+    TO_IGNORE = (HarpyReasons.NOT_IN_MODEL, )
+    TO_MARK = (HarpyReasons.KNOWN, )
     COMMENT = "#"
 
     plane = svd_file.name[-1]
@@ -286,12 +310,26 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
     lines = [line.strip().split(maxsplit=1) for line in lines]
     lines = [(line[0].strip(), line[1].lower().strip()) for line in lines]
 
+    # filter bpms/lines
     lines = [line for line in lines if not line[0].startswith(COMMENT) and line[1] not in TO_IGNORE]
-    bpms = set(f"[{line[0]}]" if line[1] in TO_MARK else line[0] for line in lines)
+    
+    # group bpm names and attach reasons
+    bpms = defaultdict(list)
+    for line in lines:
+        bpm = f"[{line[0]}]" if line[1] in TO_MARK else line[0]
+        for reason in HarpyReasons:
+            if reason.value.lower() in line[1] and reason.name not in bpms[bpm]:
+                    bpms[bpm].append(reason.name)
+                    break
+        else:
+            LOG.warning(f"Unknown reason for BPM {bpm}: {line[1]}")
+            if "unknown" not in bpms[bpm]:
+                bpms[bpm].append("unknown")
 
     # Create DataFrame    
     df = get_empty_df()
-    df.loc[:, NAME] = list(bpms)
+    df.loc[:, NAME] = list(bpms.keys())
+    df.loc[:, REASONS] = pd.Series(bpms.values())  # each entry is a list
     df.loc[:, PLANE] = plane.upper()
     df.loc[:, SOURCE] = HARPY
     df.loc[:, FILE] = str(svd_file)
@@ -310,9 +348,13 @@ def read_iforest_bad_bpms_file(iforest_file: Path) -> tfs.TfsDataFrame:
     """
     df_iforest = tfs.read(iforest_file)
     plane = iforest_file.stem[-1]
+    bpms = defaultdict(list)
+    for _, (bpm, feature) in df_iforest[[NAME, FEATURE]].iterrows():
+        bpms[bpm].append(feature)
 
     df = get_empty_df()
-    df.loc[:, NAME] = list(set(df_iforest[NAME]))  # hint: be sure to ignore index
+    df.loc[:, NAME] = list(bpms.keys())
+    df.loc[:, REASONS] = pd.Series(bpms.values())
     df.loc[:, PLANE] = plane.upper()
     df.loc[:, SOURCE] = IFOREST 
     df.loc[:, FILE] = str(iforest_file)
@@ -337,8 +379,17 @@ def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     Returns:
         tfs.TfsDataFrame: TfsDataFrame with the evaluated results.
     """
-    # Count how often a BPM is bad
-    df_counted = df.groupby([NAME, ACCEL, SOURCE, PLANE]).size().reset_index(name=COUNT)
+    # If the dataframe was read from file, split the REASONS again
+    df[REASONS] = df[REASONS].map(lambda x: x.split("|") if isinstance(x, str) else x)
+
+    # Count how often a BPM is bad, combine reasons
+    df_counted = (
+                    df.groupby([NAME, ACCEL, SOURCE, PLANE], as_index=False)
+                    .agg(
+                        COUNT=(NAME, 'size'),  # Count the number of rows in each group
+                        REASONS=(REASONS, lambda x: list(set(sum(x, []))))  # Flatten and combine the lists
+                    )
+                )
 
     # Count the total number of (unique) files for each combination of accelerator, source and plane
     file_count = df.groupby([ACCEL, SOURCE, PLANE])[FILE].nunique().reset_index(name=FILE_COUNT)
@@ -382,9 +433,12 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                 df_merged['max_pct'] = df_merged[[f"{PERCENTAGE}X", f"{PERCENTAGE}Y"]].max(axis=1)
                 df_merged = df_merged.sort_values(by='max_pct', ascending=False)
                 df_merged = df_merged.loc[df_merged['max_pct'] >= print_percentage, :]
+                df_merged.loc[:, [f'{REASONS}X', f'{REASONS}Y']] = df_merged.loc[:, [f'{REASONS}X', f'{REASONS}Y']].map(
+                    lambda x: [] if not isinstance(x, list) else x  # could be NaN from merging
+                )
 
                 # Print Table ---
-                header = f"{'BPM':>20s}  {'X':^18s}  {'Y':^18s}\n"
+                header = f"{'BPM':>20s}  {'X':^18s}  {'Y':^18s}  {'Reasons'}\n"
                 msg = header + "\n".join(
                     f"{name:>20s}  " + 
                     "  ".join(
@@ -394,7 +448,8 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                         "{:<11s}".format(f"({int(row[f'{COUNT}{plane}']):d}/{int(row[f'{FILE_COUNT}{plane}']):d})")
                         for plane in ('X', 'Y')
                         )
-                    )
+                    ) +
+                    "  " + " | ".join(set(row[f'{REASONS}X'] + row[f'{REASONS}Y']))
                     for name, row in df_merged.iterrows() 
                 )
 
@@ -402,10 +457,10 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                 # Print a list ---
                 df_filtered = df_counted.loc[percentage_mask & source_mask & accel_mask, :]
                 msg = "\n".join(
-                    f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{row[FILE_COUNT]})" 
+                    f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{row[FILE_COUNT]})  {' | '.join(row[REASONS])}" 
                     for _,row in df_filtered.iterrows()
                 )
-            printer(f"Highest bad BPMs of {accel} from {source}:\n{msg}")
+            printer(f"Highest bad BPMs of {accel} from {source}:\n{msg}\n")
 
 
 # Script Mode ------------------------------------------------------------------

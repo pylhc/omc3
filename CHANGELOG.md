@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### IN PROGRESS - v0.18.0 - _jdilly_, _fscarlier_, _fesoubel_
+#### IN PROGRESS - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:
   - Plot Optics Measurements: Added extra mpl style for clearer plots
@@ -13,6 +13,16 @@
   - Script to copy KMod results into optics directory
   - Cleaning: Filter BPMs with NaNs
   - Cleaning: Log bad BPMs with reasons before raising errors.
+
+#### 2024-11-21 - v0.20.2 - _jdilly_, _awegsche_
+
+- Added:
+  - `bad_bpms_summary`: Also collect the reasons for the BPMs being bad.
+
+#### 2024-11-14 - v0.20.1 - _jdilly_
+
+- Fixed:
+  - `kmod_import` fixed issue with too harsh filtering of BPM data.
 
 #### 2024-11-14 - v0.20.0 - _jdilly_, _awegsche_
 
