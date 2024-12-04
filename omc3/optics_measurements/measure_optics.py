@@ -91,9 +91,9 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
 
         # Dispersion - 
         dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
-        dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
-        if plane == "X":
-            dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
+        # dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
+        # if plane == "X":
+        #     dispersion.calculate_normalised_dispersion(measure_input, input_files, beta_df, common_header)
 
     # Coupling ---
     # coupling.calculate_coupling(measure_input, input_files, phase_results, tune_dict, common_header)
