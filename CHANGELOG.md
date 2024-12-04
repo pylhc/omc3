@@ -14,6 +14,12 @@
   - Cleaning: Filter BPMs with NaNs
   - Cleaning: Log bad BPMs with reasons before raising errors.
 
+#### 2024-11-21 - v0.20.3 - _jdilly_
+
+- Fixed:
+  - `analyse_dpp` issues in `beta_from_amplitude`, `chromatic_beating` and `dispersion`.
+    Skips `dispersion` calculation if `NaN`s are present.
+
 #### 2024-11-21 - v0.20.2 - _jdilly_, _awegsche_
 
 - Added:

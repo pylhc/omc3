@@ -86,7 +86,7 @@ class InputFiles(dict):
 
         dpp_dfs = [self[plane][i] for i in self.dpp_frames_indices(plane, dpp_value)]
         if len(dpp_dfs) == 0:
-            raise ValueError(f"No data found for dp/p {dpp}")
+            raise ValueError(f"No data found for dp/p {dpp_value} in plane {plane}")
         return dpp_dfs
     
     def dpp_frames_indices(self, plane: str, dpp_value: float | None):

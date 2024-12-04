@@ -65,8 +65,7 @@ def beta_from_amplitude(meas_input, input_files, plane, tunes):
     df = pd.DataFrame(meas_input.accelerator.model).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
     df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
                        f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
-    dpp_value = meas_input.dpp if "dpp" in meas_input.keys() else 0
-    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=dpp_value),
+    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=meas_input.analyse_dpp),
                   how='inner', left_index=True, right_index=True)
     df['COUNT'] = len(input_files.get_columns(df, f"AMP{plane}"))
 
