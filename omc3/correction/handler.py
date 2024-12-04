@@ -11,18 +11,20 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 import copy
+import os
+import sys
 
 import numpy as np
 import pandas as pd
 import tfs
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
-import omc3.madx_wrapper as madx_wrapper
 from omc3.correction import filters, model_appenders, response_twiss, response_madx
 from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT, ORBIT_DPP
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.model_creators.lhc_model_creator import LhcCorrectionModelCreator
 from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
                                                 F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
                                                 PHASE, PHASE_NAME, TUNE)
@@ -35,6 +37,12 @@ if TYPE_CHECKING:
 
 
 LOG = logging_tools.get_logger(__name__)
+PYTEST_VARIABLE = "PYTEST_CURRENT_TEST"
+
+
+CORRECTION_MODEL_CREATORS = {
+    "lhc": LhcCorrectionModelCreator,
+}
 
 
 def correct(accel_inst: Accelerator, opt: DotDict) -> None:
@@ -46,7 +54,11 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                        see :mod:`omc3.global_correction` for details.
 
     """
+    opt.knob_path = Path(opt.knob_path)
+    opt.change_params_path = Path(opt.change_params_path)
+    opt.change_params_correct_path = Path(opt.change_params_correct_path)
     method_options = opt.get_subdict(["svd_cut", "n_correctors"])
+    
     # read data from files
     vars_list = _get_varlist(accel_inst, opt.variable_categories)
     update_deltap = ORBIT_DPP in vars_list
@@ -82,7 +94,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
             LOG.debug("Updating model via MAD-X.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            corr_model_elements = _create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
+            corr_model_elements = create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
             corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
 
             bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
@@ -109,9 +121,16 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         # remove unused correctors from vars_list
         delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix, opt.min_corrector_strength)
 
-        writeparams(opt.change_params_path, delta, "Values to match model to measurement.")
-        writeparams(opt.change_params_correct_path, -delta, "Values to correct the measurement.")
+        # ######### Write Results ######### #
+        writeparams(opt.change_params_path, delta, "Values to match model to measurement.")  # needed for MAD-X in next iteration
         LOG.debug(f"Cumulative delta: {np.sum(np.abs(delta.loc[:, DELTA].to_numpy())):.5e}")
+        
+        # write out each stage for testing/debug purposes; avoid for normal runs, to not clutter the output directory
+        if PYTEST_VARIABLE in os.environ or sys.flags.debug:
+            write_knob(opt.knob_path.with_stem(f"{opt.knob_path.stem}{iteration:d}"), delta)
+
+    # ######### Write Final Results ######### #
+    writeparams(opt.change_params_correct_path, -delta, "Values to correct the measurement.")
     write_knob(opt.knob_path, delta)
     LOG.info("Finished Iterative Global Correction.")
 
@@ -264,17 +283,15 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def _create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
+def create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    madx_script: str = accel_inst.get_update_correction_script(twiss_out, corr_files, update_dpp)
-    twiss_out_path = Path(twiss_out)
-    madx_script = f"! Based on model '{accel_inst.model_dir}'\n" + madx_script
-    madx_wrapper.run_string(
-        madx_script,
-        output_file=twiss_out_path.parent / f"job.create_{twiss_out_path.stem}.madx",
-        log_file=twiss_out_path.parent / f"job.create_{twiss_out_path.stem}.log",
-        cwd=accel_inst.model_dir,  # models are always run from there
+    model_creator = CORRECTION_MODEL_CREATORS[accel_inst.NAME](
+        accel=accel_inst, 
+        twiss_out=twiss_out, 
+        corr_files=corr_files,
+        update_dpp=update_dpp,
     )
+    model_creator.full_run()
     return tfs.read(twiss_out, index=NAME)
 
 
@@ -390,10 +407,13 @@ def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
 
 
 def writeparams(path_to_file: Path, delta: pd.DataFrame, extra: str = "") -> None:
-    with open(path_to_file, "w") as madx_script:
-        if extra:
-            madx_script.write(f"! {extra} \n")
+    """ Write the changeparams-file that can be run by madx to update the model. """
+    content = ""
+    if extra:
+        content += f"! {extra} \n"
 
-        for var in delta.index.to_numpy():
-            value = delta.loc[var, DELTA]
-            madx_script.write(f"{var} = {var} {value:+e};\n")
+    for var in delta.index.to_numpy():
+        value = delta.loc[var, DELTA]
+        content += f"{var} = {var} {value:+e};\n"
+
+    path_to_file.write_text(content)
