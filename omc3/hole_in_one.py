@@ -303,7 +303,7 @@ def hole_in_one_entrypoint(opt, rest):
         Action: ``store_true``
 
       - **analyse_dpp** *(float)*: Filter files to analyse by this value 
-        (in analysis for tune, phase, rdt and crdt)..
+        (in analysis for tune, phase, rdt and crdt). Use `None` for no filtering.
 
         Flags: **--analyse_dpp**
         Default: ``0``
@@ -617,7 +617,9 @@ def optics_params():
     params.add_parameter(name="chromatic_beating", action="store_true",
                          help="Calculate chromatic beatings: W, PHI and coupling")
     params.add_parameter(name="analyse_dpp", type=iotools.OptionalFloat, default=OPTICS_DEFAULTS["analyse_dpp"],
-                        help="Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt).")
+                        help="Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt). "
+                             "Use `None` for no filtering"
+                        )
     return params
 
 
