@@ -5,7 +5,7 @@ import tfs
 from numpy import abs, angle
 
 from tests.inputs.lhc_rdts.rdt_constants import DATA_DIR, MODEL_NG_PREFIX
-from tests.inputs.lhc_rdts.rdt_functions import (
+from tests.inputs.lhc_rdts.omc3_helpers import (
     get_file_ext,
     get_rdts,
     get_rdts_from_harpy,

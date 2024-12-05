@@ -2,20 +2,22 @@
 import time
 
 from optics_functions.rdt import calculate_rdts
-from tests.inputs.lhc_rdts.rdt_functions import (
+from tests.inputs.lhc_rdts.MAD_helpers import (
     convert_tfs_to_madx,
     create_model_dir,
-    filter_IPs,
-    get_rdts,
-    get_rdts_from_harpy,
     get_twiss_elements,
-    run_harpy,
     run_twiss_rdts,
     save_analytical_model,
     save_ng_model,
     save_x_model,
     to_ng_rdts,
     write_tbt_file,
+)
+from tests.inputs.lhc_rdts.omc3_helpers import (
+    filter_IPs,
+    get_rdts,
+    run_harpy,
+    get_rdts_from_harpy,
 )
 
 save_omc3_analysis = False
