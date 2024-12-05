@@ -66,7 +66,7 @@ SKEW_RDTS4 = [ # Skew Octupole
     "f3010_y",
 ]
 
-NTURNS = 1000
+NTURNS = 1250
 
 MODEL_NG_PREFIX = "model_ng"
 MODEL_X_PREFIX = "model_x"

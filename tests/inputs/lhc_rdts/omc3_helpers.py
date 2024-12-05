@@ -1,7 +1,5 @@
 from pathlib import Path
-
 import tfs
-
 from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements.constants import RDT_FOLDER
 from tests.inputs.lhc_rdts.rdt_constants import (
@@ -16,34 +14,32 @@ from tests.inputs.lhc_rdts.rdt_constants import (
 )
 
 def filter_IPs(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+    """Filter the DataFrame to include only BPMs."""
     return df.filter(regex=r"^BPM\.[1-9][0-9].", axis="index")
 
-def get_file_ext(beam: int, order: int, is_skew: bool) -> str:
-    """Using the test parameters, return the file extension for the test files."""
+def get_file_ext(beam: int, order: int) -> str:
+    """Return the file extension for the test files based on beam and order."""
     assert beam in [1, 2], "Beam must be 1 or 2"
     assert order in [2, 3], "Order must be 2 or 3"
-    assert isinstance(is_skew, bool), "is_skew must be a boolean"
-
     order_name = "oct" if order == 3 else "sext"
-    return f"b{beam}_{order_name}_{'s' if is_skew else 'n'}"
+    return f"b{beam}_{order_name}"
 
-def get_rdts(order: int, is_skew: bool) -> list[str]:
-    """Return the RDTs for the given order and skew."""
-    rdt_map = {
-        (2, True): SKEW_RDTS3,
-        (3, True): SKEW_RDTS4,
-        (2, False): NORMAL_RDTS3,
-        (3, False): NORMAL_RDTS4,
-    }
-    return rdt_map.get((order, is_skew))
+def get_rdts(order: int) -> list[str]:
+    """Return the RDTs for the given order."""
+    if order == 2:
+        return SKEW_RDTS3 + NORMAL_RDTS3
+    elif order == 3:
+        return SKEW_RDTS4 + NORMAL_RDTS4
+    else:
+        raise ValueError("Order must be 2 or 3")
 
-def get_tbt_name(beam: int, order: int, is_skew: bool, sdds: bool = True) -> str:
+def get_tbt_name(beam: int, order: int, sdds: bool = True) -> str:
     """Return the name of the TBT file for the given test parameters."""
-    return f"tbt_data_{get_file_ext(beam, order, is_skew)}.{'sdds' if sdds else 'tfs'}"
+    return f"tbt_data_{get_file_ext(beam, order)}.{'sdds' if sdds else 'tfs'}"
 
-def get_model_dir(beam: int, order: int, is_skew: bool) -> Path:
+def get_model_dir(beam: int, order: int) -> Path:
     """Return the model directory for the given test parameters."""
-    return TEST_DIR / f"model_{get_file_ext(beam, order, is_skew)}"
+    return TEST_DIR / f"model_{get_file_ext(beam, order)}"
 
 def get_max_rdt_order(rdts: list[str]) -> int:
     """Return the maximum order of the RDTs."""
@@ -56,17 +52,22 @@ def get_output_dir(tbt_name: str, output_dir: Path = None) -> Path:
         output_dir.mkdir(exist_ok=True)
     return output_dir
 
-def do_analysis_needed(rdts: list[str], output_dir: Path, rdt_type: str, order_name: str) -> bool:
-    """Check if the analysis needs to be done for the given RDTs."""
-    return any(
-        not (output_dir / f"{RDT_FOLDER}/{rdt_type}_{order_name}/{rdt}.tfs").exists()
+def is_rdt_skew(rdt: str) -> bool:
+    """Check if the RDT is a skew RDT."""
+    rdt_as_list = [int(num) for num in rdt.split("_")[0][1:]]
+    is_skew = (rdt_as_list[2] + rdt_as_list[3]) % 2 == 1
+    return "skew" if is_skew else "normal"
+
+def get_rdt_paths(rdts: list[str], output_dir: Path, order_name: str) -> dict[str, Path]:
+    """Return a dictionary of RDTs and their corresponding file paths."""
+    return {
+        rdt: output_dir / f"{RDT_FOLDER}/{is_rdt_skew(rdt)}_{order_name}/{rdt}.tfs"
         for rdt in rdts
-    )
+    }
 
 def get_rdts_from_harpy(
     beam: int,
     order: int,
-    is_skew: bool,
     output_dir: Path = None,
     check_previous=False,
 ) -> dict[str, tfs.TfsDataFrame]:
@@ -74,20 +75,19 @@ def get_rdts_from_harpy(
     Run the optics analysis for the given test parameters and return the RDTs.
 
     If output_dir is None, the output directory will be created in the rdt_constants.ANALYSIS_DIR.
-    If check_previous is True, the analysis will only be done if the output files do not exist.    
+    If check_previous is True, the analysis will only be done if the output files do not exist.
     """
-    
-    rdts = get_rdts(order, is_skew)
+    rdts = get_rdts(order)
     only_coupling = all(rdt.lower() in ["f1001", "f1010"] for rdt in rdts)
-    
-    rdt_type = "skew" if is_skew else "normal"
     order_name = "octupole" if order == 3 else "sextupole"
     rdt_order = get_max_rdt_order(rdts)
-    
-    tbt_name = get_tbt_name(beam, order, is_skew)
+    tbt_name = get_tbt_name(beam, order)
     output_dir = get_output_dir(tbt_name, output_dir)
 
-    if not check_previous or do_analysis_needed(rdts, output_dir, rdt_type, order_name):
+    rdt_paths = get_rdt_paths(rdts, output_dir, order_name)
+    
+    # Run the analysis if the output files do not exist or check_previous is False
+    if not check_previous or any(not path.exists() for path in rdt_paths.values()):
         hole_in_one_entrypoint(
             files=[FREQ_OUT_DIR / tbt_name],
             outputdir=output_dir,
@@ -96,24 +96,23 @@ def get_rdts_from_harpy(
             beam=beam,
             year="2024",
             energy=6.8,
-            model_dir=get_model_dir(beam, order, is_skew),
+            model_dir=get_model_dir(beam, order),
             only_coupling=only_coupling,
             compensation="none",
             nonlinear=["rdt"],
             rdt_magnet_order=rdt_order,
         )
-
     dfs = {
-        rdt: filter_IPs(tfs.read(output_dir / f"{RDT_FOLDER}/{rdt_type}_{order_name}/{rdt}.tfs", index="NAME"))
-        for rdt in rdts
+        rdt: filter_IPs(tfs.read(path, index="NAME"))
+        for rdt, path in rdt_paths.items()
     }
     return dfs
 
-def run_harpy(beam: int, order: int, is_skew: bool) -> None:
+def run_harpy(beam: int, order: int) -> None:
     """Run Harpy for the given test parameters."""
     hole_in_one_entrypoint(
         harpy=True,
-        files=[DATA_DIR / get_tbt_name(beam, order, is_skew)],
+        files=[DATA_DIR / get_tbt_name(beam, order)],
         outputdir=FREQ_OUT_DIR,
         to_write=["lin", "spectra"],
         opposite_direction=beam == 2,
