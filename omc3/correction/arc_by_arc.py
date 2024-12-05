@@ -8,6 +8,7 @@ def identify_closest_arc_bpm_to_ip(ip, side, beam, bpms):
         bpm = f'BPM.{ii}{side}{ip}.B{beam}'
         if bpm in bpms:
             return bpm
+    # TODO: else!
 
 
 def get_left_right_pair(arc, beam, bpms):
