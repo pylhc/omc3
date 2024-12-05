@@ -1,5 +1,19 @@
 # OMC3 Changelog
 
+#### IN PROGRESS - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
+
+- Fixed:
+  - Plot Optics Measurements: Added extra mpl style for clearer plots
+  - LHC exciter BPM not found: Tells you which BPMs were searched for
+  - Plot Spectrum: Correct error handling for Single-Plane BPMs
+
+- Added:
+  - Global Correction: Total phase correction arc-by-arc
+  - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
+  - Script to copy KMod results into optics directory
+  - Cleaning: Filter BPMs with NaNs
+  - Cleaning: Log bad BPMs with reasons before raising errors.
+
 #### 2024-11-21 - v0.20.3 - _jdilly_
 
 - Fixed:
