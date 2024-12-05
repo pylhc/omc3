@@ -20,41 +20,45 @@ from tests.inputs.lhc_rdts.omc3_helpers import (
     get_rdts_from_harpy,
 )
 
+run_madng = False
 save_omc3_analysis = False
-run_analytical_model = False
+run_analytical_model = True
 
-for beam in [1, 2]:
-    # Create the MAD-X model
-    for is_skew in [False, True]:
-        for order in [2, 3]:
-            # Create the model to this specific beam, order and skew
-            create_model_dir(beam, order, is_skew)
+if run_madng:
+    for beam in [1, 2]:
+        # Create the MAD-X model
+        for is_skew in [False, True]:
+            for order in [2, 3]:
+                # Create the model to this specific beam, order and skew
+                create_model_dir(beam, order, is_skew)
 
-            # Retrieve the RDTs for this specific beam, order and skew
-            ng_rdts = to_ng_rdts(get_rdts(order, is_skew))
+                # Retrieve the RDTs for this specific beam, order and skew
+                ng_rdts = to_ng_rdts(get_rdts(order, is_skew))
 
-            # Run MAD-NG twiss to get the RDTs
-            model_ng = run_twiss_rdts(beam, ng_rdts, order, is_skew) 
-            
-            # Convert the MAD-NG output to a MAD-X style TFS (waiting for TFS update)
-            model_ng = convert_tfs_to_madx(model_ng, beam)
+                # Run MAD-NG twiss to get the RDTs
+                model_ng = run_twiss_rdts(beam, ng_rdts, order, is_skew) 
+                
+                # Convert the MAD-NG output to a MAD-X style TFS (waiting for TFS update)
+                model_ng = convert_tfs_to_madx(model_ng, beam)
 
-            # Remove the BPMs around the IP
-            model_ng = filter_IPs(model_ng)
+                # Remove the BPMs around the IP
+                model_ng = filter_IPs(model_ng)
 
-            # Save the model
-            save_ng_model(model_ng, beam, order, is_skew)
-            
-            # Run MAD-NG track to produce a TBT file
-            write_tbt_file(beam, order, is_skew)
+                # Save the model
+                save_ng_model(model_ng, beam, order, is_skew)
+                
+                # Run MAD-NG track to produce a TBT file
+                write_tbt_file(beam, order, is_skew)
 
-            # Run Harpy to get the RDTs
-            run_harpy(beam, order, is_skew)
+                # Run Harpy to get the RDTs
+                run_harpy(beam, order, is_skew)
 
 if run_analytical_model:
     for beam in [1, 2]:
         for is_skew in [False, True]:
             for order in [2, 3]:
+                create_model_dir(beam, order, is_skew)
+                ng_rdts = to_ng_rdts(get_rdts(order, is_skew))
                 analytical_df = get_twiss_elements(beam, order, is_skew)
                 analytical_df = convert_tfs_to_madx(analytical_df, beam)
                 analytical_df = calculate_rdts(analytical_df, ng_rdts)
