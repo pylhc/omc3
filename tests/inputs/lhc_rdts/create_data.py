@@ -25,7 +25,7 @@ from tests.inputs.lhc_rdts.rdt_constants import DATA_DIR, MODEL_NG_PREFIX
 
 run_madng = True
 save_omc3_analysis = True
-run_analytical_model = False
+run_analytical_model = True
 
 if run_madng:
     for beam in [1, 2]:
@@ -40,7 +40,7 @@ if run_madng:
             model_ng = run_twiss_rdts(beam, ng_rdts, order) 
             
             # Convert the MAD-NG output to a MAD-X style TFS (waiting for TFS update)
-            model_ng = convert_tfs_to_madx(model_ng, beam)
+            model_ng = convert_tfs_to_madx(model_ng)
 
             # Remove the BPMs around the IP
             model_ng = filter_IPs(model_ng)
@@ -60,7 +60,7 @@ if run_analytical_model:
             create_model_dir(beam, order)
             ng_rdts = to_ng_rdts(get_rdts(order))
             analytical_df = get_twiss_elements(beam, order)
-            analytical_df = convert_tfs_to_madx(analytical_df, beam)
+            analytical_df = convert_tfs_to_madx(analytical_df)
             analytical_df = calculate_rdts(analytical_df, ng_rdts)
             analytical_df = filter_IPs(analytical_df) 
             save_analytical_model(analytical_df, beam, order)

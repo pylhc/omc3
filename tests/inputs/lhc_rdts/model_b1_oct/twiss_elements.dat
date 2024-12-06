@@ -2,8 +2,8 @@
 @ TYPE                 %s              "twiss"
 @ TITLE                %s              "LHCB1"
 @ ORIGIN               %s "MAD 1.0.0 Linux 64"
-@ DATE                 %s           "05/12/24"
-@ TIME                 %s           "13:58:01"
+@ DATE                 %s           "06/12/24"
+@ TIME                 %s           "14:38:20"
 @ REFCOL               %s               "name"
 @ DIRECTION            %le                  1.0
 @ OBSERVE              %le                  0.0

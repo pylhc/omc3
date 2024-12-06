@@ -130,9 +130,9 @@ py:send(1)
         assert mad.receive() == 1, "Error in updating model with new optics"
 
     # Read the twiss data tables and then convert all the headers to uppercase and column names to uppercase
-    export_tfs_to_madx(model_dir / "twiss_ac.dat", beam)
-    export_tfs_to_madx(model_dir / "twiss_elements.dat", beam)
-    export_tfs_to_madx(model_dir / "twiss.dat", beam)
+    export_tfs_to_madx(model_dir / "twiss_ac.dat")
+    export_tfs_to_madx(model_dir / "twiss_elements.dat")
+    export_tfs_to_madx(model_dir / "twiss.dat")
 
 def observe_BPMs(mad: MAD, beam: int) -> None:
     mad.send(f"""
@@ -144,12 +144,12 @@ if {beam} == 1 then  -- Cycle the sequence to the correct location
 end
     """)
 
-def export_tfs_to_madx(tfs_file: Path, beam: int) -> None:
+def export_tfs_to_madx(tfs_file: Path) -> None:
     tfs_df = tfs.read(tfs_file)
-    tfs_df = convert_tfs_to_madx(tfs_df, beam)
+    tfs_df = convert_tfs_to_madx(tfs_df)
     tfs.write(tfs_file, tfs_df, save_index="NAME")
 
-def convert_tfs_to_madx(tfs_df: tfs.TfsDataFrame, beam: int) -> tfs.TfsDataFrame:
+def convert_tfs_to_madx(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     # First convert all the headers to uppercase and column names to uppercase
     tfs_df.columns = tfs_df.columns.str.upper()
     tfs_df.headers = {key.upper(): value for key, value in tfs_df.headers.items()}
@@ -184,7 +184,6 @@ def initialise_model(
     beam: int,
     order: int,
     seq_dir: int = 1,
-    kick_amp: float = 1e-3,
 ) -> None:
     assert beam in [1, 2] and isinstance(beam, int), "Beam must be 1 or 2"
     model_dir = get_model_dir(beam, order)
@@ -196,10 +195,8 @@ def initialise_model(
 lhc_beam = beam {{particle="proton", energy=450}}
 MADX.lhcb{beam}.beam = lhc_beam
 MADX.lhcb{beam}.dir = {seq_dir}
-local kick_amp = py:recv()
-print("Initialising model with beam:", {beam}, "dir:", MADX.lhcb{beam}.dir, "kick amplitude:", kick_amp)
-X0 = {{x=kick_amp, y=-kick_amp, px=0, py=0, t=0, pt=0}}
-    """).send(kick_amp)
+print("Initialising model with beam:", {beam}, "dir:", MADX.lhcb{beam}.dir)
+    """)
 
     turnoff_sextupoles(mad, beam)
     for is_skew in [False, True]:
@@ -210,14 +207,15 @@ def add_magnet_strengths(mad: MAD, beam: int, order: int, is_skew: bool) -> None
     assert order in [2, 3], "Order must be 2 or 3"
     if order == 2:
         s_or_o = "s"
-        strength = 1e-4
+        strength = 1e-3
+        strength *= -1 if is_skew else 1 # For additional testing (opposite phase)
     else:
         s_or_o = "o"
         strength = 1e-2
     skew = "s" if is_skew else ""  # s for skew, "" for normal
     mad.send(f"""
-MADX.kc{s_or_o}{skew}x3_r1 = {strength};
-MADX.kc{s_or_o}{skew}x3_l5 =-{strength};
+MADX.kc{s_or_o}{skew}x3_r1 = {strength:+.16e};
+MADX.kc{s_or_o}{skew}x3_l5 = {-strength:+.16e};
 """)
 
 def turnoff_sextupoles(mad: MAD, beam: int) -> None:
@@ -295,18 +293,21 @@ def write_tbt_file(
 ) -> pd.DataFrame:
     tbt_path = DATA_DIR / get_tbt_name(beam, order)
     tfs_path = DATA_DIR / get_tbt_name(beam, order, sdds=False)
-    print(
-        f"Running tracking for beam {beam} over {NTURNS} turns with order {order}"
-    )
     with MAD() as mad:
-        initialise_model(mad, beam, order, kick_amp=kick_amp)
+        initialise_model(mad, beam, order)
         observe_BPMs(mad, beam)
+        if order == 2:
+            kick_amp /= 2
         mad.send(f"""
 local t0 = os.clock()
+local kick_amp = py:recv()
+local X0 = {{x=kick_amp, y=-kick_amp, px=0, py=0, t=0, pt=0}}
+print("Running MAD-NG track with kick amplitude: ", kick_amp)
+
 mtbl = track {{sequence=MADX.lhcb{beam}, nturn={NTURNS}, X0=X0}}
 print("NG Runtime: ", os.clock() - t0)
 mtbl:write("{tfs_path}")
-        """)
+        """).send(kick_amp)
         df = mad.mtbl.to_df()
     tbt_data = madng.read_tbt(df)
     tbt.write(tbt_path, tbt_data)
@@ -348,8 +349,8 @@ def save_x_model(
     rdts = list(dfs.keys())
     print(f"Saving model, with {len(rdts)} rdts, to {outfile}")
     out_dict = {}
-    for reim in ["REAL", "IMAG"]:
+    for column_type in ["REAL", "IMAG", "AMP", "PHASE"]:
         for rdt, df in dfs.items():
-            out_dict[rdt.upper() + reim] = df[reim]
+            out_dict[rdt.upper() + column_type] = df[column_type]
     out_df = pd.DataFrame(out_dict)
     tfs.write(outfile, out_df, save_index="NAME")
