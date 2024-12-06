@@ -110,7 +110,7 @@ def test_lhc_rdts(rdt_config: tuple[str, int, int], initialise_test_paths):
     ng_diff[ng_amplitude.abs() > 1] = (
         ng_diff[ng_amplitude.abs() > 1] / ng_amplitude[ng_amplitude.abs() > 1]
     )
-    assert ng_diff.abs().max() < 2e-2  # 3% difference
+    assert ng_diff.abs().max() < 1.2e-2  # 1.2% difference
 
     # Compare the phases
     ng_phase_diff = np.angle(ng_complex / omc_complex)
