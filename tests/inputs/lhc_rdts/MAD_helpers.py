@@ -210,7 +210,7 @@ def add_magnet_strengths(mad: MAD, beam: int, order: int, is_skew: bool) -> None
     assert order in [2, 3], "Order must be 2 or 3"
     if order == 2:
         s_or_o = "s"
-        strength = 1e-3
+        strength = 1e-4
     else:
         s_or_o = "o"
         strength = 1e-2
