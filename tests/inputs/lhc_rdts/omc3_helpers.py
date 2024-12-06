@@ -17,29 +17,30 @@ def filter_IPs(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     """Filter the DataFrame to include only BPMs."""
     return df.filter(regex=r"^BPM\.[1-9][0-9].", axis="index")
 
-def get_file_ext(beam: int, order: int) -> str:
-    """Return the file extension for the test files based on beam and order."""
+def get_file_suffix(beam: int, order: int) -> str:
+    """Return the file suffix for the test files based on beam and order."""
     assert beam in [1, 2], "Beam must be 1 or 2"
     assert order in [2, 3], "Order must be 2 or 3"
     order_name = "oct" if order == 3 else "sext"
     return f"b{beam}_{order_name}"
 
-def get_rdts(order: int) -> list[str]:
+def get_rdts(beam: int, order: int) -> list[str]:
     """Return the RDTs for the given order."""
-    if order == 2:
-        return SKEW_RDTS3 + NORMAL_RDTS3
-    elif order == 3:
-        return SKEW_RDTS4 + NORMAL_RDTS4
-    else:
-        raise ValueError("Order must be 2 or 3")
+    rdt_map = {
+        (1, 2): SKEW_RDTS3,
+        (2, 3): SKEW_RDTS4,
+        (2, 2): NORMAL_RDTS3,
+        (1, 3): NORMAL_RDTS4,
+    }
+    return rdt_map.get((beam, order))
 
 def get_tbt_name(beam: int, order: int, sdds: bool = True) -> str:
     """Return the name of the TBT file for the given test parameters."""
-    return f"tbt_data_{get_file_ext(beam, order)}.{'sdds' if sdds else 'tfs'}"
+    return f"tbt_data_{get_file_suffix(beam, order)}.{'sdds' if sdds else 'tfs'}"
 
 def get_model_dir(beam: int, order: int) -> Path:
     """Return the model directory for the given test parameters."""
-    return TEST_DIR / f"model_{get_file_ext(beam, order)}"
+    return TEST_DIR / f"model_{get_file_suffix(beam, order)}"
 
 def get_max_rdt_order(rdts: list[str]) -> int:
     """Return the maximum order of the RDTs."""
@@ -77,7 +78,7 @@ def get_rdts_from_harpy(
     If output_dir is None, the output directory will be created in the rdt_constants.ANALYSIS_DIR.
     If check_previous is True, the analysis will only be done if the output files do not exist.
     """
-    rdts = get_rdts(order)
+    rdts = get_rdts(beam, order)
     only_coupling = all(rdt.lower() in ["f1001", "f1010"] for rdt in rdts)
     order_name = "octupole" if order == 3 else "sextupole"
     rdt_order = get_max_rdt_order(rdts)

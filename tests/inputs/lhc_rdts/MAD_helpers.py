@@ -22,7 +22,7 @@ from tests.inputs.lhc_rdts.rdt_constants import (
 ) 
 
 from tests.inputs.lhc_rdts.omc3_helpers import (
-    get_file_ext,
+    get_file_suffix,
     get_max_rdt_order,
     get_model_dir,
     get_tbt_name,
@@ -199,8 +199,11 @@ print("Initialising model with beam:", {beam}, "dir:", MADX.lhcb{beam}.dir)
     """)
 
     turnoff_sextupoles(mad, beam)
-    for is_skew in [False, True]:
-        add_magnet_strengths(mad, beam, order, is_skew)
+    if (beam == 1 and order == 2) or (beam == 2 and order == 3):
+        is_skew = True
+    else:
+        is_skew = False
+    add_magnet_strengths(mad, beam, order, is_skew)
     match_tunes(mad, beam)
 
 def add_magnet_strengths(mad: MAD, beam: int, order: int, is_skew: bool) -> None:
@@ -208,10 +211,10 @@ def add_magnet_strengths(mad: MAD, beam: int, order: int, is_skew: bool) -> None
     if order == 2:
         s_or_o = "s"
         strength = 1e-3
-        strength *= -1 if is_skew else 1 # For additional testing (opposite phase)
     else:
         s_or_o = "o"
-        strength = 1e-2
+        strength = 1e-1
+    strength *= -1 if is_skew else 1 # For additional testing (opposite phase)
     skew = "s" if is_skew else ""  # s for skew, "" for normal
     mad.send(f"""
 MADX.kc{s_or_o}{skew}x3_r1 = {strength:+.16e};
@@ -277,7 +280,7 @@ def get_twiss_elements(beam: int, order: int) -> tfs.TfsDataFrame:
 twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}}
         """)
         add_strengths_to_twiss(mad, "twiss_elements")
-        df: tfs.TfsDataFrame = mad.twiss_elements.to_df()
+        df = mad.twiss_elements.to_df()
     return df
 
 def read_madng_tfs(file_path: Path, columns: list = None) -> tfs.TfsDataFrame:
@@ -296,8 +299,6 @@ def write_tbt_file(
     with MAD() as mad:
         initialise_model(mad, beam, order)
         observe_BPMs(mad, beam)
-        if order == 2:
-            kick_amp /= 2
         mad.send(f"""
 local t0 = os.clock()
 local kick_amp = py:recv()
@@ -328,7 +329,7 @@ def save_cpx_model(
     order: int,
     rdt_columns: list[str],
 ) -> None:
-    file_ext = get_file_ext(beam, order)
+    file_ext = get_file_suffix(beam, order)
     outfile = DATA_DIR / f"{prefix}_{file_ext}.tfs"
     print(
         f"Saving {prefix.replace('_', ' ')}, with {len(rdt_columns)} rdts, to {outfile}"
@@ -344,7 +345,7 @@ def save_cpx_model(
 def save_x_model(
     dfs: dict[str, tfs.TfsDataFrame], beam: int, order: int
 ) -> None:
-    file_ext = get_file_ext(beam, order)
+    file_ext = get_file_suffix(beam, order)
     outfile = DATA_DIR / f"{MODEL_X_PREFIX}_{file_ext}.tfs"
     rdts = list(dfs.keys())
     print(f"Saving model, with {len(rdts)} rdts, to {outfile}")

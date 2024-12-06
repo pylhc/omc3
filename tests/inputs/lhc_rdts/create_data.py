@@ -19,7 +19,7 @@ from tests.inputs.lhc_rdts.omc3_helpers import (
     get_rdts,
     run_harpy,
     get_rdts_from_harpy,
-    get_file_ext,
+    get_file_suffix,
 )
 from tests.inputs.lhc_rdts.rdt_constants import DATA_DIR, MODEL_NG_PREFIX
 
@@ -30,11 +30,11 @@ run_analytical_model = True
 if run_madng:
     for beam in [1, 2]:
         for order in [2, 3]:
-            # Create the model to this specific beam, order and skew
+            # Create the model to this specific beam, order
             create_model_dir(beam, order)
 
-            # Retrieve the RDTs for this specific beam, order and skew
-            ng_rdts = to_ng_rdts(get_rdts(order))
+            # Retrieve the RDTs for this specific beam and order
+            ng_rdts = to_ng_rdts(get_rdts(beam, order))
 
             # Run MAD-NG twiss to get the RDTs
             model_ng = run_twiss_rdts(beam, ng_rdts, order) 
@@ -58,10 +58,10 @@ if run_analytical_model:
     for beam in [1, 2]:
         for order in [2, 3]:
             create_model_dir(beam, order)
-            ng_rdts = to_ng_rdts(get_rdts(order))
+            ng_rdts = to_ng_rdts(get_rdts(beam, order))
             analytical_df = get_twiss_elements(beam, order)
             analytical_df = convert_tfs_to_madx(analytical_df)
-            analytical_df = calculate_rdts(analytical_df, ng_rdts)
+            analytical_df = calculate_rdts(analytical_df, ng_rdts, feeddown=1)
             analytical_df = filter_IPs(analytical_df) 
             save_analytical_model(analytical_df, beam, order)
 
@@ -74,7 +74,7 @@ if save_omc3_analysis:
             rdt_dfs = get_rdts_from_harpy(beam, order)
             print(f"Analysis Runtime: {time.time() - analysis_runtime}")
             
-            file_ext = get_file_ext(beam, order)
+            file_ext = get_file_suffix(beam, order)
             model_ng = tfs.read(DATA_DIR / f"{MODEL_NG_PREFIX}_{file_ext}.tfs", index="NAME")
 
             for rdt, rdt_df in rdt_dfs.items():
