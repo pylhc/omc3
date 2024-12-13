@@ -41,8 +41,8 @@ def to_ng_rdts(rdts: list[str]) -> list[str]:
     return list(set([rdt.split("_")[0] for rdt in rdts]))
 
 
-def create_model_dir(beam: int, order: int) -> None:
-    model_dir = get_model_dir(beam, order)
+def create_model_dir(beam: int) -> None:
+    model_dir = get_model_dir(beam)
     create_instance_and_model(
         accel="lhc",
         fetch="afs",
@@ -63,7 +63,7 @@ def create_model_dir(beam: int, order: int) -> None:
     make_madx_seq(model_dir, lines, beam)
 
     # Update the model by using beam 1 or 2.
-    update_model_with_ng(beam, order)
+    update_model_with_ng(beam)
 
     # If beam 2, now we need to make the sequence as beam 4 for tracking
     if beam == 2:
@@ -94,11 +94,11 @@ set, format= "-.16e";
 save, sequence=lhcb{beam}, file="lhcb{beam}_saved.seq", noexpr=false;
         """)
 
-def update_model_with_ng(beam: int, order: int) -> None:
-    model_dir = get_model_dir(beam, order)
+def update_model_with_ng(beam: int) -> None:
+    model_dir = get_model_dir(beam)
     with MAD() as mad:
         seq_dir = -1 if beam == 2 else 1
-        initialise_model(mad, beam, order, seq_dir=seq_dir)
+        initialise_model(mad, beam, seq_dir=seq_dir)
         # Create twiss_elements and twiss_ac and twiss data tables in model folder
         mad.send(f"""
 hnams = {{
@@ -187,7 +187,7 @@ def convert_tfs_to_madx(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     return tfs_df
 
 
-strength_cols = ["k1l", "k2l", "k3l", "k4l", "k1sl", "k2sl", "k3sl", "k4sl"]
+strength_cols = ["k1l", "k2l", "k3l", "k4l", "k5l", "k1sl", "k2sl", "k3sl", "k4sl", "k5sl"]
 
 
 def add_strengths_to_twiss(mad: MAD, mtable_name: str) -> None:
@@ -200,11 +200,10 @@ MAD.gphys.melmcol({mtable_name}, strength_cols)
 def initialise_model(
     mad: MAD,
     beam: int,
-    order: int,
     seq_dir: int = 1,
 ) -> None:
     assert beam in [1, 2] and isinstance(beam, int), "Beam must be 1 or 2"
-    model_dir = get_model_dir(beam, order)
+    model_dir = get_model_dir(beam)
     mad.MADX.load(
         f"'{model_dir/f'lhcb{beam}_saved.seq'}'",
         f"'{model_dir/f'lhcb{beam}_saved.mad'}'",
@@ -220,25 +219,20 @@ print("Initialising model with beam:", {beam}, "dir:", MADX.lhcb{beam}.dir)
 
     ensure_bends_are_on(mad, beam)
     deactivate_sextupoles(mad, beam)
-    # is_skew = RDT_TYPE_MAP[beam][order] == "skew"
-    add_magnet_strengths(mad, beam, order, False)
-    add_magnet_strengths(mad, beam, order, True)
+    add_magnet_strengths(mad)
     match_tunes(mad, beam)
 
-
-def add_magnet_strengths(mad: MAD, beam: int, order: int, is_skew: bool) -> None:
-    assert order in [2, 3], "Order must be 2 or 3"
-    if order == 2:
-        s_or_o = "s"
-        strength = SEXTUPOLE_STRENGTH
-    else:
-        s_or_o = "o"
-        strength = OCTUPOLE_STRENGTH
-    skew = "s" if is_skew else ""  # s for skew, "" for normal
-    mad.send(f"""
-MADX.kc{s_or_o}{skew}x3_l1 = {strength:+.16e};
-MADX.kc{s_or_o}{skew}x3_r5 = {-strength:+.16e};
-""")
+MAGNET_STRENGTHS = {
+    "s" : SEXTUPOLE_STRENGTH,
+    "o" : OCTUPOLE_STRENGTH
+}
+def add_magnet_strengths(mad: MAD) -> None:
+    for s_or_o, strength in MAGNET_STRENGTHS.items():
+        for skew in ["", "s"]:
+            mad.send(f"""
+        MADX.kc{s_or_o}{skew}x3_r1 = {strength:+.16e};
+        MADX.kc{s_or_o}{skew}x3_l5 = {-strength:+.16e};
+        """)
 
 
 def deactivate_sextupoles(mad: MAD, beam: int) -> None:
@@ -286,26 +280,25 @@ py:send("match complete")
     assert mad.receive() == "match complete", "Error in matching tunes"
 
 
-def run_twiss_rdts(beam: int, rdts: list[str], order: int) -> tfs.TfsDataFrame:
+def run_twiss_rdts(beam: int, rdts: list[str]) -> tfs.TfsDataFrame:
     rdt_order = get_max_rdt_order(rdts)
     with MAD() as mad:
-        initialise_model(mad, beam, order)
+        initialise_model(mad, beam)
         observe_BPMs(mad, beam)
-        rdts = mad.quote_strings(rdts)
         mad["twiss_result", "twiss_mflw"] = mad.twiss(
             sequence=f"MADX.lhcb{beam}",
             coupling=True,
             mapdef=rdt_order + 2,
             observe=1,
-            trkrdt=rdts,
+            trkrdt=mad.quote_strings(rdts),
         )
         df: tfs.TfsDataFrame = mad.twiss_result.to_df()
     return df
 
 
-def get_twiss_elements(beam: int, order: int) -> tfs.TfsDataFrame:
+def get_twiss_elements(beam: int) -> tfs.TfsDataFrame:
     with MAD() as mad:
-        initialise_model(mad, beam, order)
+        initialise_model(mad, beam)
         mad.send(f"""
 twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}}
         """)
@@ -321,18 +314,14 @@ def read_madng_tfs(file_path: Path, columns: list = None) -> tfs.TfsDataFrame:
     return df
 
 
-def write_tbt_file(
-    beam: int,
-    order: int,
-) -> pd.DataFrame:
-    tbt_path = DATA_DIR / get_tbt_name(beam, order)
-    tfs_path = DATA_DIR / get_tbt_name(beam, order, sdds=False)
+def write_tbt_file(beam: int) -> pd.DataFrame:
+    tbt_path = DATA_DIR / get_tbt_name(beam,)
+    tfs_path = DATA_DIR / get_tbt_name(beam, sdds=False)
     with MAD() as mad:
-        initialise_model(mad, beam, order)
+        initialise_model(mad, beam)
         observe_BPMs(mad, beam)
         # Octupolar resonances are harder to observe with only 1000 turns 
         # so we need to increase the kick amplitude for order 3
-        kick_amp_mult = 1 if order == 2 else 10 
         mad.send(f"""
 local t0 = os.clock()
 local kick_amp = py:recv()
@@ -342,44 +331,48 @@ print("Running MAD-NG track with kick amplitude: ", kick_amp)
 mtbl = track {{sequence=MADX.lhcb{beam}, nturn={NTURNS}, X0=X0}}
 print("NG Runtime: ", os.clock() - t0)
 mtbl:write("{tfs_path}")
-        """).send(KICK_AMP * kick_amp_mult)
+        """).send(KICK_AMP)
         df = mad.mtbl.to_df()
     tbt_data = madng.read_tbt(df)
     tbt.write(tbt_path, tbt_data)
 
 
-def save_analytical_model(df: tfs.TfsDataFrame, beam: int, order: int) -> None:
-    save_cpx_model(df, MODEL_ANALYTICAL_PREFIX, beam, order, df.columns)
+def save_analytical_model(df: tfs.TfsDataFrame, beam: int) -> None:
+    save_cpx_model(df, MODEL_ANALYTICAL_PREFIX, beam, df.columns)
 
 
-def save_ng_model(df: tfs.TfsDataFrame, beam: int, order: int) -> None:
+def save_ng_model(df: tfs.TfsDataFrame, beam: int) -> None:
     rdt_columns = [col.upper() for col in df.headers["TRKRDT"]]
-    save_cpx_model(df, MODEL_NG_PREFIX, beam, order, rdt_columns)
+    save_cpx_model(df, MODEL_NG_PREFIX, beam, rdt_columns)
 
 
 def save_cpx_model(
     df: tfs.TfsDataFrame,
     prefix: str,
     beam: int,
-    order: int,
     rdt_columns: list[str],
 ) -> None:
-    file_ext = get_file_suffix(beam, order)
+    assert len(rdt_columns) > 0, "No RDT columns to save"
+    assert beam in [1, 2], "Beam must be 1 or 2"
+
+    file_ext = get_file_suffix(beam)
     outfile = DATA_DIR / f"{prefix}_{file_ext}.tfs"
     print(
         f"Saving {prefix.replace('_', ' ')}, with {len(rdt_columns)} rdts, to {outfile}"
     )
 
+    new_df_dict = {
+        "NAME": df.index,
+    }
     for rdt in rdt_columns:
-        df[rdt + "REAL"] = df[rdt].apply(lambda x: x.real)
-        df[rdt + "IMAG"] = df[rdt].apply(lambda x: x.imag)
+        new_df_dict[rdt + "REAL"] = df[rdt].apply(lambda x: x.real)
+        new_df_dict[rdt + "IMAG"] = df[rdt].apply(lambda x: x.imag)
 
-    out_columns = [col for rdt in rdt_columns for col in (rdt + "REAL", rdt + "IMAG")]
-    tfs.write(outfile, df[out_columns], save_index="NAME")
+    tfs.write(outfile, pd.DataFrame(new_df_dict))
 
 
-def save_x_model(dfs: dict[str, tfs.TfsDataFrame], beam: int, order: int) -> None:
-    file_ext = get_file_suffix(beam, order)
+def save_x_model(dfs: dict[str, tfs.TfsDataFrame], beam: int) -> None:
+    file_ext = get_file_suffix(beam)
     outfile = DATA_DIR / f"{MODEL_X_PREFIX}_{file_ext}.tfs"
     rdts = list(dfs.keys())
     print(f"Saving model, with {len(rdts)} rdts, to {outfile}")
