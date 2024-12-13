@@ -1,7 +1,7 @@
-from pathlib import Path
-import omc3
 import os
+from pathlib import Path
 
+import omc3
 
 PACKAGE_DIR = Path(omc3.__file__).parent.parent.absolute()
 TEST_DIR = PACKAGE_DIR / "tests" / "inputs" / "lhc_rdts"
@@ -17,6 +17,9 @@ COUPLING_RDTS = [
     "f1001",
     "f1010",
 ]
+
+# The RDTs here are all the normal and skew RDTs for sextupoles and octupoles
+# that are not on any of the tune lines, as these are 0 when calculated from OMC3.
 NORMAL_RDTS3 = [  # Normal Sextupole
     "f1200_x",
     "f3000_x",
@@ -37,7 +40,7 @@ SKEW_RDTS3 = [  # Skew Sextupole
     "f0210_y",
     "f2010_y",
 ]
-NORMAL_RDTS4 = [ # Normal Octupole
+NORMAL_RDTS4 = [  # Normal Octupole
     "f1300_x",
     "f4000_x",
     "f0013_y",
@@ -51,7 +54,7 @@ NORMAL_RDTS4 = [ # Normal Octupole
     "f2011_y",
     "f2020_y",
 ]
-SKEW_RDTS4 = [ # Skew Octupole
+SKEW_RDTS4 = [  # Skew Octupole
     "f0112_y",
     "f0130_y",
     "f0310_y",
@@ -66,8 +69,12 @@ SKEW_RDTS4 = [ # Skew Octupole
     "f3010_y",
 ]
 
-NTURNS = 1000
-
 MODEL_NG_PREFIX = "model_ng"
 MODEL_X_PREFIX = "model_x"
 MODEL_ANALYTICAL_PREFIX = "analytical_model"
+
+# RUN SETTINGS
+NTURNS = 1000
+KICK_AMP = 1e-4
+SEXTUPOLE_STRENGTH = 1e-3
+OCTUPOLE_STRENGTH = 5e-3

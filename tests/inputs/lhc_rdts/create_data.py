@@ -24,12 +24,14 @@ from tests.inputs.lhc_rdts.omc3_helpers import (
 from tests.inputs.lhc_rdts.rdt_constants import DATA_DIR, MODEL_NG_PREFIX
 
 run_madng = True
-save_omc3_analysis = True
 run_analytical_model = True
+save_omc3_analysis = True # Only required if you want to analyse everything rather than just run the test.
 
 if run_madng:
     for beam in [1, 2]:
         for order in [2, 3]:
+            # Note: order is the order of the magnetic strength, not the order of the RDTs
+            # For example, order 2 means k2(s) and order 3 means k3(s) with leads to RDTs of order 3 and 4
             # Create the model to this specific beam, order
             create_model_dir(beam, order)
 
@@ -54,39 +56,32 @@ if run_madng:
             # Run Harpy to get the RDTs
             run_harpy(beam, order)
 
-if run_analytical_model:
-    for beam in [1, 2]:
-        for order in [2, 3]:
-            create_model_dir(beam, order)
-            ng_rdts = to_ng_rdts(get_rdts(beam, order))
-            analytical_df = get_twiss_elements(beam, order)
-            analytical_df = convert_tfs_to_madx(analytical_df)
-            analytical_df = calculate_rdts(analytical_df, ng_rdts, feeddown=1)
-            analytical_df = filter_IPs(analytical_df) 
-            save_analytical_model(analytical_df, beam, order)
+            if run_analytical_model:
+                analytical_df = get_twiss_elements(beam, order)
+                analytical_df = convert_tfs_to_madx(analytical_df)
+                analytical_df = calculate_rdts(analytical_df, ng_rdts, feeddown=1)
+                analytical_df = filter_IPs(analytical_df) 
+                save_analytical_model(analytical_df, beam, order)
 
-if save_omc3_analysis:
-    for beam in [1, 2]:
-        for order in [2, 3]:
-            
-            print("Running analysis")
-            analysis_runtime = time.time()
-            rdt_dfs = get_rdts_from_harpy(beam, order)
-            print(f"Analysis Runtime: {time.time() - analysis_runtime}")
-            
-            file_ext = get_file_suffix(beam, order)
-            model_ng = tfs.read(DATA_DIR / f"{MODEL_NG_PREFIX}_{file_ext}.tfs", index="NAME")
+            if save_omc3_analysis:
+                print("Running analysis")
+                analysis_runtime = time.time()
+                rdt_dfs = get_rdts_from_harpy(beam, order)
+                print(f"Analysis Runtime: {time.time() - analysis_runtime}")
+                
+                file_ext = get_file_suffix(beam, order)
+                model_ng = tfs.read(DATA_DIR / f"{MODEL_NG_PREFIX}_{file_ext}.tfs", index="NAME")
 
-            for rdt, rdt_df in rdt_dfs.items():
-                assert len(model_ng.index.intersection(rdt_df.index)) == len(
-                    rdt_df.index
-                ), "Not all BPMs are in the model_ng analysis"
+                for rdt, rdt_df in rdt_dfs.items():
+                    assert len(model_ng.index.intersection(rdt_df.index)) == len(
+                        rdt_df.index
+                    ), "Not all BPMs are in the model_ng analysis"
 
-                # Now we know all the BPMs are the same, make sure they are in the same order
-                rdt_dfs[rdt] = rdt_df.loc[model_ng.index]
+                    # Now we know all the BPMs are the same, make sure they are in the same order
+                    rdt_dfs[rdt] = rdt_df.loc[model_ng.index]
 
-            save_x_model(rdt_dfs, beam, order) 
-            # Remove some unnecessary folders and files
-        print("Done with order", order, "beam", beam)
+                save_x_model(rdt_dfs, beam, order) 
+                # Remove some unnecessary folders and files
+            print("Done with order", order, "beam", beam)
 
 print("Script finished")

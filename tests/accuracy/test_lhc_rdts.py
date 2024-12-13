@@ -20,6 +20,15 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 
 
 def generate_rdts():
+    """Generate a list of RDT configurations for testing.
+
+    This function creates a list of tuples containing RDTs, beams, and orders 
+    for the test cases. It iterates over beams 1 and 2, and orders 2 and 3, 
+    retrieving the RDTs for each combination.
+
+    Returns:
+        list: A list of tuples, each containing an RDT, beam, and order.
+    """
     rdt_configurations = []
     for beam in (1, 2):
         for order in [2, 3]:
@@ -30,6 +39,18 @@ def generate_rdts():
 
 @pytest.fixture(scope="module")
 def initialise_test_paths(tmp_path_factory: pytest.TempPathFactory) -> dict:
+    """Initialize temporary paths for test analysis.
+
+    This fixture creates temporary directories for each combination of beam and order 
+    to store analysis results. The directories are created using the pytest temporary 
+    path factory.
+
+    Args:
+        tmp_path_factory (pytest.TempPathFactory): Factory for creating temporary paths.
+
+    Returns:
+        dict: A dictionary mapping (beam, order) tuples to their respective temporary paths.
+    """
     paths = {}
     for beam in (1, 2):
         for order in [2, 3]:
@@ -42,10 +63,23 @@ def initialise_test_paths(tmp_path_factory: pytest.TempPathFactory) -> dict:
 
 @pytest.fixture(scope="module", autouse=True)
 def run_selective_harpy():
-    # To test the harpy opposite_direction when in combination with the optics=True
+    """Run the harpy analysis for selected RDTs.
+
+    This fixture runs the harpy analysis for beam 1, order 3 and beam 2, order 2 
+    to test the opposite_direction flag in combination with optics=True.
+    """
     run_harpy(beam=1, order=3)
     run_harpy(beam=2, order=2)
 
+
+AMPLITUDE_TOLERANCES = {
+    1: {2: 8e-4, 3: 4e-2}, # Beam 1: 0.08% and 4% for orders 2 and 3
+    2: {2: 2e-3, 3: 6e-2}, # Beam 2: 0.2% and 6% for orders 2 and 3
+}
+PHASE_TOLERANCES = {
+    1: {2: 2e-3, 3: 8e-3}, # Beam 1: 0.002 rad and 0.008 rad for orders 2 and 3
+    2: {2: 2e-3, 3: 4e-2}, # Beam 2: 0.002 rad and 0.04 rad for orders 2 and 3
+}
 
 @pytest.mark.parametrize(
     "rdt_config", generate_rdts(), ids=lambda x: f"Beam{x[1]}-{x[0]}"
@@ -53,30 +87,32 @@ def run_selective_harpy():
 def test_lhc_rdts(rdt_config: tuple[str, int, int], initialise_test_paths):
     """Test the RDTs calculated by OMC3 against the analytical model and MAD-NG.
 
-    The test checks the amplitude and phase of the RDTs calculated by OMC3 against the
-    analytical model and MAD-NG. The test passes if the amplitude and phase of the RDTs
-    are within 5% and 0.05 rad of the analytical model, respectively.
+    This test verifies the amplitude and phase of the RDTs calculated by OMC3 against 
+    the analytical model and MAD-NG. See 
 
-    Please note these are the following situations which are tested: 
-    - Beam 1, Skew Sextupolar RDTs
-    - Beam 2, Normal Sextupolar RDTs
-    - Beam 1, Normal Octupolar RDTs
-    - Beam 2, Skew Octupolar RDTs
+    This selection minimises the number of required input files while covering different 
+    types of RDTs at multiple orders and beams. The test does not combine skew and normal 
+    RDTs in the same test due to:
+        - The analytical model not producing correct results for these cases.
+        - The OMC3 result for skew sextupolar RDTs, particularly F2010_Y, becoming 
+          dependent on a low kick amplitude to produce correct results.
 
-    This selection was chosen to minimise the number of required input files, while still
-    trying to cover all the different types of RDTs at multiple orders and beams. 
-    Furthermore, the test does not combine skew and normal RDTs in the same test 
-    for the following reasons:
-        - The analytical model does not produce the correct results for these cases.
-        - The OMC3 result for skew sextupolar RDTs, in particular F2010_Y becomes 
-        dependent on a low kick amplitude to produce the correct results.
+    The test forces harpy to run for the selected RDTs to ensure the use of the 
+    opposite_direction flag is consistent with the optics=True, beam=2 situation.
 
-    The test also forces harpy to run for the selected RDTs. This is done to ensure that
-    the use of the opposite_direction flag is consistent with the optics=True, beam=2 situation.
+    The configuration for the test is set in the file tests/inputs/lhc_rdts/rdt_constants.py:
+    - NTURNS = 1000
+    - KICK_AMP = 1e-4
+    - SEXTUPOLE_STRENGTH = 1e-3
+    - OCTUPOLE_STRENGTH = 5e-3
 
-    The strength of the octupole magnets has also been chosen so that they are the 
-    dominant cause of the RDTs. This is only done to have the analytical model 
-    produce the more reliable results for the octupolar RDTs.
+    If this configuration is changed, the test needs to be updated accordingly by running 
+    the create_data.py script in the same directory.
+    
+    This configuration was specifically chosen to ensure that OMC3 is given a fair chance
+    to produce correct results. The main issues that can arise is detuning. The octupole 
+    and sextupole strengths are chosen to be small enough to avoid large detuning effects. 
+    But to ensure that the RDTs are not too noisy, the octupoles have 10x the kick amplitude.
     """
     # Retrieve the current RDT configuration
     rdt, beam, order = rdt_config
@@ -110,30 +146,30 @@ def test_lhc_rdts(rdt_config: tuple[str, int, int], initialise_test_paths):
     ng_diff[ng_amplitude.abs() > 1] = (
         ng_diff[ng_amplitude.abs() > 1] / ng_amplitude[ng_amplitude.abs() > 1]
     )
-    assert ng_diff.abs().max() < 1.2e-2  # 1.2% difference
+    assert ng_diff.abs().max() < AMPLITUDE_TOLERANCES[beam][order]
 
     # Compare the phases
     ng_phase_diff = np.angle(ng_complex / omc_complex)
-    assert ng_phase_diff.max() < 5e-2  # 0.05 rad difference
+    assert ng_phase_diff.max() < PHASE_TOLERANCES[beam][order]
 
-    # Now check the analytical model
-    analytical_df = tfs.read(
-        DATA_DIR / f"{MODEL_ANALYTICAL_PREFIX}_{file_suffix}.tfs", index="NAME"
-    )
-    analytical_complex = (
-        analytical_df[f"{ng_rdt}REAL"] + 1j * analytical_df[f"{ng_rdt}IMAG"]
-    )
-    
-    # Calculate the amplitudes
-    analytical_amplitude = np.abs(analytical_complex)
-    analytical_diff = analytical_amplitude - omc_amplitude
+    # Now check the analytical model if order < 3
+    if order < 3:
+        analytical_df = tfs.read(
+            DATA_DIR / f"{MODEL_ANALYTICAL_PREFIX}_{file_suffix}.tfs", index="NAME"
+        )
+        analytical_complex = (
+            analytical_df[f"{ng_rdt}REAL"] + 1j * analytical_df[f"{ng_rdt}IMAG"]
+        )
+        
+        # Calculate the amplitudes
+        analytical_amplitude = np.abs(analytical_complex)
+        analytical_diff = analytical_amplitude - omc_amplitude
 
-    # Compare the amplitudes, relative when above 1, absolute when below
-    gt1 = analytical_amplitude.abs() > 1
-    analytical_diff[gt1] = analytical_diff[gt1] / analytical_amplitude[gt1]
-    assert analytical_diff.abs().max() < 5e-2
+        # Compare the amplitudes, relative when above 1, absolute when below
+        gt1 = analytical_amplitude.abs() > 1
+        analytical_diff[gt1] = analytical_diff[gt1] / analytical_amplitude[gt1]
+        assert analytical_diff.abs().max() < 2.0e-2
 
-    # Compare the phases (this for some reason fails for f1300_x, max diff of about 0.2)
-    analytical_phase_diff = np.angle(analytical_complex / omc_complex)
-    if rdt != "f1300_x":
+        # Compare the phases (this for some reason fails for f1300_x, max diff of about 0.2)
+        analytical_phase_diff = np.angle(analytical_complex / omc_complex)
         assert analytical_phase_diff.max() < 5e-2

@@ -26,13 +26,12 @@ def get_file_suffix(beam: int, order: int) -> str:
 
 def get_rdts(beam: int, order: int) -> list[str]:
     """Return the RDTs for the given order."""
-    rdt_map = {
-        (1, 2): SKEW_RDTS3,
-        (2, 3): SKEW_RDTS4,
-        (2, 2): NORMAL_RDTS3,
-        (1, 3): NORMAL_RDTS4,
-    }
-    return rdt_map.get((beam, order))
+    if order == 2:
+        return NORMAL_RDTS3 + SKEW_RDTS3
+    elif order == 3:
+        return NORMAL_RDTS4 + SKEW_RDTS4
+    else:
+        raise ValueError("Order must be 2 or 3")
 
 def get_tbt_name(beam: int, order: int, sdds: bool = True) -> str:
     """Return the name of the TBT file for the given test parameters."""
@@ -59,12 +58,20 @@ def is_rdt_skew(rdt: str) -> bool:
     is_skew = (rdt_as_list[2] + rdt_as_list[3]) % 2 == 1
     return "skew" if is_skew else "normal"
 
-def get_rdt_paths(rdts: list[str], output_dir: Path, order_name: str) -> dict[str, Path]:
+def get_rdt_paths(rdts: list[str], output_dir: Path, order: int) -> dict[str, Path]:
     """Return a dictionary of RDTs and their corresponding file paths."""
+    # Is there a method for this in the OMC3 source code? (jgray 2024)
+    order_name = "octupole" if order == 3 else "sextupole"
     return {
         rdt: output_dir / f"{RDT_FOLDER}/{is_rdt_skew(rdt)}_{order_name}/{rdt}.tfs"
         for rdt in rdts
     }
+
+def get_tunes(output_dir: Path) -> list[float]:
+    optics_file = output_dir / "beta_amplitude_x.tfs"
+    df = tfs.read(optics_file)
+    tunes = [df.headers["Q1"], df.headers["Q2"]]
+    return tunes
 
 def get_rdts_from_harpy(
     beam: int,
@@ -80,12 +87,11 @@ def get_rdts_from_harpy(
     """
     rdts = get_rdts(beam, order)
     only_coupling = all(rdt.lower() in ["f1001", "f1010"] for rdt in rdts)
-    order_name = "octupole" if order == 3 else "sextupole"
     rdt_order = get_max_rdt_order(rdts)
     tbt_name = get_tbt_name(beam, order)
     output_dir = get_output_dir(tbt_name, output_dir)
 
-    rdt_paths = get_rdt_paths(rdts, output_dir, order_name)
+    rdt_paths = get_rdt_paths(rdts, output_dir, order)
     
     # Run the analysis if the output files do not exist or check_previous is False
     if not check_previous or any(not path.exists() for path in rdt_paths.values()):
@@ -103,6 +109,10 @@ def get_rdts_from_harpy(
             nonlinear=["rdt"],
             rdt_magnet_order=rdt_order,
         )
+        tunes = get_tunes(output_dir)
+        print(f"Tunes for beam {beam} and order {order}: {tunes}")
+        if abs(tunes[0] - 0.28) > 0.0001 or abs(tunes[1] - 0.31) > 0.0001:
+            raise ValueError("Tunes are far from the expected values, rdts will be wrong/outside the tolerance")
     dfs = {
         rdt: filter_IPs(tfs.read(path, index="NAME"))
         for rdt, path in rdt_paths.items()
