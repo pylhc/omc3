@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import bz2
 
 import pandas as pd
 import tfs
@@ -306,14 +307,6 @@ twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}}
         df = mad.twiss_elements.to_df()
     return df
 
-
-def read_madng_tfs(file_path: Path, columns: list = None) -> tfs.TfsDataFrame:
-    with MAD() as mad:
-        mad.send(f"mtbl = mtable:read('{file_path}')")
-        df = mad.mtbl.to_df(columns=columns)
-    return df
-
-
 def write_tbt_file(beam: int) -> pd.DataFrame:
     tbt_path = DATA_DIR / get_tbt_name(beam,)
     tfs_path = DATA_DIR / get_tbt_name(beam, sdds=False)
@@ -330,11 +323,14 @@ print("Running MAD-NG track with kick amplitude: ", kick_amp)
 
 mtbl = track {{sequence=MADX.lhcb{beam}, nturn={NTURNS}, X0=X0}}
 print("NG Runtime: ", os.clock() - t0)
-mtbl:write("{tfs_path}")
         """).send(KICK_AMP)
-        df = mad.mtbl.to_df()
-    tbt_data = madng.read_tbt(df)
+        df = mad.mtbl.to_df(columns=["name", "x", "y", "eidx", "turn", "id"])
+    tfs.write(tfs_path, df)
+    tbt_data = madng.read_tbt(tfs_path)
     tbt.write(tbt_path, tbt_data)
+    with open(tbt_path, "rb") as f:
+        with bz2.open(tbt_path.with_suffix(".bz2"), "wb") as f_bz2:
+            f_bz2.writelines(f)
 
 
 def save_analytical_model(df: tfs.TfsDataFrame, beam: int) -> None:
@@ -368,7 +364,7 @@ def save_cpx_model(
         new_df_dict[rdt + "REAL"] = df[rdt].apply(lambda x: x.real)
         new_df_dict[rdt + "IMAG"] = df[rdt].apply(lambda x: x.imag)
 
-    tfs.write(outfile, pd.DataFrame(new_df_dict))
+    tfs.write(outfile, tfs.TfsDataFrame(new_df_dict))
 
 
 def save_x_model(dfs: dict[str, tfs.TfsDataFrame], beam: int) -> None:
@@ -380,5 +376,5 @@ def save_x_model(dfs: dict[str, tfs.TfsDataFrame], beam: int) -> None:
     for column_type in ["REAL", "IMAG", "AMP", "PHASE"]:
         for rdt, df in dfs.items():
             out_dict[rdt.upper() + column_type] = df[column_type]
-    out_df = pd.DataFrame(out_dict)
+    out_df = tfs.TfsDataFrame(out_dict)
     tfs.write(outfile, out_df, save_index="NAME")
