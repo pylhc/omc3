@@ -1,4 +1,5 @@
 from pathlib import Path
+import bz2 
 
 import tfs
 
@@ -34,7 +35,7 @@ def get_rdts() -> list[str]:
 
 def get_tbt_name(beam: int, sdds: bool = True) -> str:
     """Return the name of the TBT file for the given test parameters."""
-    return f"tbt_data_{get_file_suffix(beam)}.{'sdds' if sdds else 'tfs'}"
+    return f"tbt_data_{get_file_suffix(beam)}.{'sdds' if sdds else 'tfs.bz2'}"
 
 
 def get_model_dir(beam: int) -> Path:
@@ -128,9 +129,15 @@ def get_rdts_from_harpy(
 
 def run_harpy(beam: int) -> None:
     """Run Harpy for the given test parameters."""
+
+    tbt_file = DATA_DIR / get_tbt_name(beam, sdds=True)
+    bz2_file = tbt_file.with_suffix(".bz2")
+    with bz2.open(bz2_file, "rb") as f:
+        with open(tbt_file, "wb") as new_f:
+            new_f.write(f.read())
     hole_in_one_entrypoint(
         harpy=True,
-        files=[DATA_DIR / get_tbt_name(beam)],
+        files=[tbt_file],
         outputdir=FREQ_OUT_DIR,
         to_write=["lin", "spectra"],
         opposite_direction=beam == 2,
