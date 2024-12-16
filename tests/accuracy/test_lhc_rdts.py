@@ -1,15 +1,16 @@
 from pathlib import Path
 
+import numpy as np
 import pytest
 import tfs
-import numpy as np
 
+from omc3.definitions.constants import PI2
 from tests.inputs.lhc_rdts.omc3_helpers import (
     get_file_suffix,
+    get_rdt_type,
     get_rdts,
     get_rdts_from_harpy,
     run_harpy,
-    get_rdt_type,
 )
 from tests.inputs.lhc_rdts.rdt_constants import (
     DATA_DIR,
@@ -24,7 +25,7 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 def initialise_test_paths(tmp_path_factory: pytest.TempPathFactory) -> dict:
     """Initialize temporary paths for test analysis.
 
-    This fixture creates temporary directories for each beam to store analysis results. 
+    This fixture creates temporary directories for each beam to store analysis results.
     The directories are created using the pytest temporary path factory.
 
     Args:
@@ -52,21 +53,21 @@ def run_selective_harpy():
 
 
 AMPLITUDE_TOLERANCES = {
-    1: { # Beam 1: 0.6% and 4% for sextupoles and octupoles respectively
+    1: {  # Beam 1: 0.6% and 4% for sextupoles and octupoles respectively
         "sextupole": 6e-3,
         "octupole": 4e-2,
     },
-    2: { # Beam 2: 0.6% and 5% for sextupoles and octupoles respectively
+    2: {  # Beam 2: 0.6% and 5% for sextupoles and octupoles respectively
         "sextupole": 6e-3,
         "octupole": 5e-2,
     },
 }
 PHASE_TOLERANCES = {
-    1: { # Beam 1: 0.04 rad and 0.03 rad for orders 2 and 3 respectively
+    1: {  # Beam 1: 0.04 rad and 0.03 rad for orders 2 and 3 respectively
         "sextupole": 4e-2,
         "octupole": 3e-2,
     },
-    2: { # Beam 2: 0.07 rad and 0.05 rad for orders 2 and 3 respectively
+    2: {  # Beam 2: 0.07 rad and 0.05 rad for orders 2 and 3 respectively
         "sextupole": 7e-2,
         "octupole": 5e-2,
     },
@@ -103,7 +104,7 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
     This configuration was specifically chosen to ensure that OMC3 is given a fair chance
     to produce correct results. The main issues that can arise is detuning. The octupole
     and sextupole strengths are chosen to be small enough to avoid large detuning effects,
-    but also large enough to produce a measurable effect. Furthermore, the larger each 
+    but also large enough to produce a measurable effect. Furthermore, the larger each
     strength, the more likely the regime will become nonlinear, which can lead to larger
     errors in the RDT calculations.
     """
@@ -138,6 +139,12 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
         ng_diff[ng_amplitude.abs() > 1] / ng_amplitude[ng_amplitude.abs() > 1]
     )
     assert ng_diff.abs().max() < AMPLITUDE_TOLERANCES[beam][order]
+
+    # Compare OMC3 phase to real and imaginary parts
+    omc_phase = np.angle(omc_complex) / PI2
+    diff = omc_phase - omc_df["PHASE"]
+    diff = (diff + 0.5) % 1 - 0.5
+    assert diff.abs().max() < 1e-11
 
     # Compare the phases
     ng_phase_diff = np.angle(ng_complex / omc_complex)
