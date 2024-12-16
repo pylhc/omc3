@@ -131,10 +131,6 @@ def run_harpy(beam: int) -> None:
     """Run Harpy for the given test parameters."""
 
     tbt_file = DATA_DIR / get_tbt_name(beam, sdds=True)
-    bz2_file = tbt_file.with_suffix(".bz2")
-    with bz2.open(bz2_file, "rb") as f:
-        with open(tbt_file, "wb") as new_f:
-            new_f.write(f.read())
     hole_in_one_entrypoint(
         harpy=True,
         files=[tbt_file],

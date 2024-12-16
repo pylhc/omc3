@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import bz2
 
 import pandas as pd
 import tfs
@@ -328,10 +327,6 @@ print("NG Runtime: ", os.clock() - t0)
     tfs.write(tfs_path, df)
     tbt_data = madng.read_tbt(tfs_path)
     tbt.write(tbt_path, tbt_data)
-    with open(tbt_path, "rb") as f:
-        with bz2.open(tbt_path.with_suffix(".bz2"), "wb") as f_bz2:
-            f_bz2.writelines(f)
-
 
 def save_analytical_model(df: tfs.TfsDataFrame, beam: int) -> None:
     save_cpx_model(df, MODEL_ANALYTICAL_PREFIX, beam, df.columns)
