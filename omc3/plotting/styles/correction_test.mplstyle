@@ -1,1 +1,2 @@
- lines.linestyle: None
+lines.linestyle: -
+lines.marker: .

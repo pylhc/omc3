@@ -55,6 +55,10 @@ class FigureContainer(object):
     def add_data(self, label: str, new_data: dict) -> None:
         self.data[label] = new_data
         for plane in PLANES:
+            if new_data[plane] is None:
+                LOG.warning(f'No data in plane {plane.upper()} found for {label}.')
+                continue
+
             # Add tunes
             try:
                 self.tunes[plane].append(new_data[plane][LIN].loc[f'TUNE{plane.upper()}'])

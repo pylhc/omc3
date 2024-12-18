@@ -124,7 +124,7 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
     Which plotting styles to use, either from plotting.styles.*.mplstyles
     or default mpl.
 
-    default: ``['standard']``
+    default: ``['standard', 'optics_measurements']``
 
 
 - **share_xaxis**:
@@ -229,6 +229,7 @@ def get_params() -> EntryPointParameters:
         type=PathOrStr,
     )
     params.update(get_plottfs_style_params())
+    params["plot_styles"]["default"] = params["plot_styles"]["default"] + ["optics_measurements"]
     return params
 
 def get_optics_style_params() -> EntryPointParameters:

@@ -1,0 +1,6 @@
+lines.marker:          .     # the default marker (Default: None)
+lines.markersize:      3     # marker size, in points (Default: 6)
+markers.fillstyle:  none     # {full, left, right, bottom, top, none} (Default: full)
+font.size:          15.0     # (Default: 10.0)
+axes.linewidth:     1.5      # edge line width  (Default: 0.8)
+axes.titlesize:     large    # font size of the axes title (Default: large)
