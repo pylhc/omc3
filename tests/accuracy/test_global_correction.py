@@ -75,6 +75,7 @@ RELATIVE_ERRORS = {
 }
 
 
+
 # Correction Input Parameters ---
 @dataclass
 class CorrectionParameters:
@@ -205,8 +206,8 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
         "errors": twiss_errors_df,
     }
     
-    if correction_type == "arc_by_arc":
-        twiss_errors_df = reset_phase_advances(twiss_errors_df, beam)
+    # if correction_type == "arc_by_arc":
+    #     twiss_errors_df = reset_phase_advances(twiss_errors_df, beam)
 
 
     # Test if corrected model is closer to model used to create measurement
@@ -219,8 +220,8 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
             model_iter_df = add_coupling_to_model(model_iter_df)
             models[f"iter{iter_step}"] = model_iter_df
         
-        if correction_type == "arc_by_arc":
-            model_iter_df = reset_phase_advances(model_iter_df, beam)
+        # if correction_type == "arc_by_arc":
+        #     model_iter_df = reset_phase_advances(model_iter_df, beam)
 
         diff_df = diff_twiss_parameters(model_iter_df, twiss_errors_df, correction_params.optics_params)
         if TUNE in correction_params.optics_params:
@@ -257,6 +258,105 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
 
         diff_rms_prev = diff_rms
     
+    ############ FOR DEBUGGING #############
+    if correction_type == "arc_by_arc":
+        _plot_arc_by_arc(beam, **models)
+    #########################################
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize('correction_type', ('arc_by_arc',))
+def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict, correction_type: Literal['skew', 'normal', 'arc_by_arc']):
+    """Creates a fake measurement from a modfied model-twiss with (skew)
+    quadrupole errors and runs global correction on this measurement.
+    It is asserted that the resulting model approaches the modified twiss.
+    In principle one could also check the last model, build from the final
+    correction (as this correction is not plugged in to MAD-X again),
+    but this is kind-of done with the correction test.
+    Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
+    beam = model_inj_beams.beam
+    param_map = {
+        "arc_by_arc": get_arc_by_arc_params,
+    }
+
+    correction_params = param_map[correction_type](beam)
+    iterations = 2   # '3' tests a single correction + one iteration, as the last (3rd) correction is not tested itself.
+
+    # create and load model and twiss-with-errors
+    model_df = tfs.read(model_inj_beams.model_dir / "twiss.dat", index=NAME)
+    model_df = add_coupling_to_model(model_df)
+
+    twiss_errors_df = tfs.read(correction_params.twiss, index=NAME)
+    twiss_errors_df = add_coupling_to_model(twiss_errors_df)
+
+    # create fake measurement data
+    params, errors = zip(
+        *[(k, v) for k, v in RELATIVE_ERRORS.items() 
+        if k in correction_params.optics_params or f"{k}R" in correction_params.optics_params]
+    )
+    
+    randomize = []
+    if correction_type != "arc_by_arc":
+        randomize = [VALUES, ERRORS]
+
+    fake_measurement(
+        model=model_df,
+        twiss=twiss_errors_df,
+        randomize=randomize,
+        parameters=list(params),
+        relative_errors=list(errors),
+        seed=correction_params.seed,
+        outputdir=tmp_path,
+    )
+
+    # Perform global correction
+    global_correction(
+        **model_inj_beams,
+        # correction params
+        meas_dir=tmp_path,
+        output_dir=tmp_path,
+        svd_cut=0.01,
+        iterations=iterations,
+        variable_categories=correction_params.variables,
+        fullresponse_path=model_inj_beams.model_dir / correction_params.fullresponse,
+        optics_params=correction_params.optics_params,
+        weights=correction_params.weights,
+        arc_by_arc_phase=correction_params.arc_by_arc_phase,
+        modelcut=correction_params.modelcut,
+        errorcut=correction_params.errorcut,
+    )
+
+    models = {  # gather models for plotting at the end (debugging)
+        "model": tfs.read(model_inj_beams.model_dir / "twiss_elements.dat", index=NAME),
+        "errors": twiss_errors_df,
+    }
+    
+    # if correction_type == "arc_by_arc":
+    #     twiss_errors_df = reset_phase_advances(twiss_errors_df, beam)
+
+
+    # Test if corrected model is closer to model used to create measurement
+    model_iter_df = tfs.read(tmp_path / f"twiss_1.tfs", index=NAME)
+    models['iter1'] = model_iter_df
+
+    for plane in ("X", "Y"):
+        index = twiss_errors_df.index.intersection(model_df.index)
+        diff_mu_errors = twiss_errors_df.loc[index, f"MU{plane}"] - model_df.loc[index, f"MU{plane}"]
+        diff_mu_iter = model_iter_df.loc[index, f"MU{plane}"] - model_df.loc[index, f"MU{plane}"]
+        corrected_mu = diff_mu_errors - diff_mu_iter
+        for arc in ['12', '23', '34', '45', '56', '67', '78', '81']:
+            bpm_start  = f'BPM.8R{arc[0]}.B{beam}'
+            bpm_end  = f'BPM.8L{arc[1]}.B{beam}'
+            abs_phase_diff_arc_after = abs(corrected_mu.loc[bpm_end] - corrected_mu.loc[bpm_start]) 
+            abs_phase_diff_arc_before = abs(diff_mu_errors.loc[bpm_end] - diff_mu_errors.loc[bpm_start]) 
+
+            # Failing arcs are the ones without errors. Failing because MQTs are used in those arcs to compensate other arcs. 
+            # TODO: In arc-by-arc corrections implements use of MQTs in arc per arc to avoid compensations from another arc.
+
+            print(plane, arc, abs_phase_diff_arc_after < abs_phase_diff_arc_before, abs_phase_diff_arc_after, abs_phase_diff_arc_before)
+            # assert abs_phase_diff_arc_after < abs_phase_diff_arc_before
+
+
     ############ FOR DEBUGGING #############
     if correction_type == "arc_by_arc":
         _plot_arc_by_arc(beam, **models)
@@ -322,19 +422,16 @@ def reset_phase_advances(df, beam):
     df = df.copy()
     df = df.loc[df.index.str.match("B"), :]
 
-    for plane in ("X", "Y"):
-        phase_adv_column = f"{PHASE_ADV}{plane}"
 
-        # Find the BPMs where the model changes from L# to R# and reset phase advances
-        left_of_ip = False
-        for name in df.index:
-            right_of_ip = re.match(fr".*R\d\.B{beam}", name)        
-            if left_of_ip and right_of_ip:
-                df.loc[name:, phase_adv_column] = df.loc[name:, phase_adv_column] - df.loc[name, phase_adv_column]
-                left_of_ip = False
+    # Find the BPMs where the model changes from L# to R# and reset phase advances
+    left_of_ip = False
+    for name in df.index:
+        right_of_ip = re.match(fr".*R\d\.B{beam}", name)        
+        if left_of_ip and right_of_ip:
+            left_of_ip = False
 
-            if not left_of_ip and not right_of_ip:        
-                left_of_ip = True
+        if not left_of_ip and not right_of_ip:        
+            left_of_ip = True
     
     return df
 
@@ -351,9 +448,12 @@ def _plot_arc_by_arc(beam, **kwargs):
 
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     df_model = kwargs["model"]
+    df_error = kwargs["errors"]
+    df_iter1 = kwargs["iter1"]
 
-    for name, df in kwargs.items():
-        kwargs[name] = reset_phase_advances(df, beam)
+
+    # for name, df in kwargs.items():
+    #     kwargs[name] = reset_phase_advances(df, beam)
 
     for ax, plane in zip(axs, ["X", "Y"]):
         for ip in df_model.index[df_model.index.str.startswith("IP")]:
@@ -364,6 +464,9 @@ def _plot_arc_by_arc(beam, **kwargs):
             )
         
         for name, df in kwargs.items():
-            ax.plot(df["S"],df[f"MU{plane}"], label=name)
+            ax.plot(df["S"],df[f"MU{plane}"] - df_model.loc[df.index, f"MU{plane}"], label=name)
+        
+        ax.plot(df_error["S"],df_error[f"MU{plane}"] - df_iter1.loc[df_error.index, f"MU{plane}"], label='predicted corrected')
+        
         ax.legend()
     plt.show()
