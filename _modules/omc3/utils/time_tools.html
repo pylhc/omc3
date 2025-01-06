@@ -337,12 +337,11 @@
             <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;tzinfo&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>  <span class="c1"># allows forcing tz to `None`</span>
-                <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
                                 <span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
-                                <span class="n">tzinfo</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">,</span> <span class="n">fold</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">fold</span><span class="p">)</span>
+                                <span class="n">tzinfo</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">datetime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -457,7 +456,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_timestamp</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ts</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create `AccDatetime` object from timestamp.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">UTC</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="AccDatetime.now">
