@@ -1,7 +1,7 @@
+from datetime import datetime
+
 import dateutil.tz as tz
 import pytest
-
-from datetime import datetime
 
 from omc3.utils import time_tools as tt
 
@@ -41,10 +41,10 @@ def test_strings(now):
 
 @pytest.mark.basic
 def test_accelerator_datetime(now):
-    lhc = tt.AcceleratorDatetime['lhc'](now)
+    lhc = tt.AcceleratorDatetime["lhc"](now)
+    ps = tt.AcceleratorDatetime["ps"](now)
+    sps = tt.AcceleratorDatetime["sps"](now)
 
-    ps = tt.AcceleratorDatetime['ps'](now)
-    sps = tt.AcceleratorDatetime['sps'](now)
     assert lhc.local.time() == ps.local.time()
     assert lhc.local.time() == sps.local.time()
     assert lhc.local.time() != lhc.utc.time()
@@ -55,12 +55,17 @@ def test_accelerator_datetime(now):
 
 @pytest.mark.basic
 def test_fold():
-    folded = tt.AcceleratorDatetime['lhc'](2020, 10, 25, 1, 0, 0)
-    no_fold = tt.AcceleratorDatetime['lhc'](2020, 10, 25, 0, 0, 0)
+    # due to daylight saving time change on the 25th of October 2020
+    # 01:00 UTC and 00:00 UTC corresponded to the same local time,
+    # which is indicated by the fold attribute (0 == earlier time, 1 == later time)
+    # see https://peps.python.org/pep-0495/
+    folded = tt.AcceleratorDatetime["lhc"](2020, 10, 25, 1, 0, 0)
+    no_fold = tt.AcceleratorDatetime["lhc"](2020, 10, 25, 0, 0, 0)
     
     assert folded.local.hour == no_fold.local.hour
     assert folded.local.fold == 1
     assert no_fold.local.fold == 0
+
 
 # Fixtures #####################################################################
 
