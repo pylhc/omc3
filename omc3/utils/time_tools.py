@@ -133,7 +133,7 @@ class AccDatetime(datetime):
     @property
     def local(self):
         """Get local datetime object."""
-        return self.datetime.astimezone(self._LOCAL_TIMEZONE)
+        return self.astimezone(self._LOCAL_TIMEZONE)
 
     @property
     def local_string(self):
