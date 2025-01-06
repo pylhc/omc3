@@ -50,7 +50,6 @@ dependencies = [
   "pandas >= 2.1",
   "tfs-pandas >= 3.8",
   "matplotlib >= 3.8",
-  # "Pillow >= 6.2.2",  # not our dependency but older versions crash with mpl
   "generic-parser >= 1.1",
   "sdds >= 0.4",
   "optics-functions >= 0.1",
