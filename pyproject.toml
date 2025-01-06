@@ -24,7 +24,7 @@ authors = [
 ]
 license = "MIT"
 dynamic = ["version"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -32,10 +32,10 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Visualization",
@@ -44,15 +44,13 @@ classifiers = [
     "Typing :: Typed",
 ]
 
-# TODO: when we drop python 3.9, require pytables 3.10.1 minimum and stop caring about numpy 2 compability
 dependencies = [
-  "numpy >= 1.24, < 2.0; python_version < '3.10'",  # first pytables compatible with numpy 2 is 3.10 but does not support python 3.9
-  "numpy >= 1.24; python_version >= '3.10'",  # otherwise we can use numpy 2 as on python 3.10 there is a pytables which is ok with it
+  "numpy >= 1.24",
   "scipy >= 1.10",
   "pandas >= 2.1",
   "tfs-pandas >= 3.8",
   "matplotlib >= 3.8",
-  "Pillow >= 6.2.2",  # not our dependency but older versions crash with mpl
+  # "Pillow >= 6.2.2",  # not our dependency but older versions crash with mpl
   "generic-parser >= 1.1",
   "sdds >= 0.4",
   "optics-functions >= 0.1",
@@ -60,7 +58,7 @@ dependencies = [
   "uncertainties >= 3.1",
   "scikit-learn >= 1.0",
   "h5py >= 2.9",
-  "tables >= 3.9",  # TODO: require 3.10.1 minimum when it's out and we drop python 3.9 support
+  "tables >= 3.10.1",
   "requests >= 2.27",
 ]
 
