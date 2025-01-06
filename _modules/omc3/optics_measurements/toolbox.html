@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.optics_measurements.toolbox &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,12 +206,12 @@
 <span class="sd">This module contains helper functionality for ``optics_measurements``.</span>
 <span class="sd">It provides functions to perform regularly used simple calculations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 <div class="viewcode-block" id="df_diff">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_diff">[docs]</a>
-<span class="k">def</span> <span class="nf">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the difference between a_col and b_col &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
 
@@ -219,7 +219,7 @@
 
 <div class="viewcode-block" id="df_sum">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum">[docs]</a>
-<span class="k">def</span> <span class="nf">df_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the sum of a_col and b_col &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">+</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
 
@@ -227,7 +227,7 @@
 
 <div class="viewcode-block" id="df_ratio">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio">[docs]</a>
-<span class="k">def</span> <span class="nf">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the ratio between a_col and b_col &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
 
@@ -235,7 +235,7 @@
 
 <div class="viewcode-block" id="df_prod">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_prod">[docs]</a>
-<span class="k">def</span> <span class="nf">df_prod</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_prod</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the product of a_col and b_col &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
 
@@ -243,7 +243,7 @@
 
 <div class="viewcode-block" id="df_rel_diff">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff">[docs]</a>
-<span class="k">def</span> <span class="nf">df_rel_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_rel_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the difference between a_col and b_col relative to b_col &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span></div>
 
@@ -254,7 +254,7 @@
 
 <div class="viewcode-block" id="df_err_sum">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_err_sum">[docs]</a>
-<span class="k">def</span> <span class="nf">df_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the root of the sum-of-squares of a_err_col and b_err_col &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_err_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_err_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()))</span></div>
 
@@ -262,7 +262,7 @@
 
 <div class="viewcode-block" id="df_rel_err_sum">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_err_sum">[docs]</a>
-<span class="k">def</span> <span class="nf">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the root of the relative sum-of-square of a_col/a_err_col and b_col/b_err_col &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">a_col</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">)))</span></div>
 
@@ -270,7 +270,7 @@
 
 <div class="viewcode-block" id="df_sum_with_err">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum_with_err">[docs]</a>
-<span class="k">def</span> <span class="nf">df_sum_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_sum_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns two columns containing the sum and the total errors of the given columns.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">df_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">),</span> <span class="n">df_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
 
@@ -278,7 +278,7 @@
 
 <div class="viewcode-block" id="df_diff_with_err">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_diff_with_err">[docs]</a>
-<span class="k">def</span> <span class="nf">df_diff_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_diff_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns two columns containing the difference and the total errors of the given columns.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">),</span> <span class="n">df_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
 
@@ -286,7 +286,7 @@
 
 <div class="viewcode-block" id="df_rel_diff_with_err">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff_with_err">[docs]</a>
-<span class="k">def</span> <span class="nf">df_rel_diff_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_rel_diff_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns two columns containing the relative difference and the total errors of the given columns.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">df_rel_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">))</span> <span class="o">*</span> <span class="n">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">))</span></div>
@@ -295,7 +295,7 @@
 
 <div class="viewcode-block" id="df_ratio_with_err">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio_with_err">[docs]</a>
-<span class="k">def</span> <span class="nf">df_ratio_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_ratio_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns two columns containing the ratio and the total errors of the given columns.&quot;&quot;&quot;</span>
     <span class="n">ratio</span> <span class="o">=</span> <span class="n">df_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span> <span class="o">*</span> <span class="n">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
@@ -304,7 +304,7 @@
 
 <div class="viewcode-block" id="df_prod_with_err">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_prod_with_err">[docs]</a>
-<span class="k">def</span> <span class="nf">df_prod_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_prod_with_err</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns two columns containing the product and the total errors of the given columns.&quot;&quot;&quot;</span>
     <span class="n">prod</span> <span class="o">=</span> <span class="n">df_prod</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prod</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">prod</span><span class="p">)</span> <span class="o">*</span> <span class="n">df_rel_err_sum</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">,</span> <span class="n">a_err_col</span><span class="p">,</span> <span class="n">b_err_col</span><span class="p">)</span></div>
@@ -316,19 +316,19 @@
 
 <div class="viewcode-block" id="df_ang_diff">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ang_diff">[docs]</a>
-<span class="k">def</span> <span class="nf">df_ang_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_ang_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">a_col</span><span class="p">,</span> <span class="n">b_col</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the angular difference between angles a and b in [-0.5 , 0.5] &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">ang_diff</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">a_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">b_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">ang_diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ang_diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">ang_interval_check</span><span class="p">(</span><span class="n">ang_interval_check</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="n">ang_interval_check</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="ang_sum">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.ang_sum">[docs]</a>
-<span class="k">def</span> <span class="nf">ang_sum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ang_sum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a column containing the angular sum between angles a and b in [-0.5 , 0.5] &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">ang_interval_check</span><span class="p">(</span><span class="n">ang_interval_check</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">ang_interval_check</span><span class="p">(</span><span class="n">b</span><span class="p">))</span></div>
 
@@ -336,7 +336,7 @@
 
 <div class="viewcode-block" id="ang_interval_check">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.toolbox.ang_interval_check">[docs]</a>
-<span class="k">def</span> <span class="nf">ang_interval_check</span><span class="p">(</span><span class="n">ang</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ang_interval_check</span><span class="p">(</span><span class="n">ang</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns ang wrapped into [-0.5, 0.5] &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ang</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">ang</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">ang</span><span class="p">),</span> <span class="n">ang</span><span class="p">)</span></div>
 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.optics_measurements.interaction_point &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -210,22 +210,22 @@
 <span class="sd">    - Put columns into the constants</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PI2</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">IP_NAME</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">,</span> <span class="n">MEASUREMENT</span><span class="p">,</span> <span class="n">ERR</span> 
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PI2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">IP_NAME</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">,</span> <span class="n">MEASUREMENT</span><span class="p">,</span> <span class="n">ERR</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span> 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
-    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span> 
-    <span class="kn">from</span> <span class="nn">omc3.optics_measurements</span> <span class="kn">import</span> <span class="n">phase</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span> 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="n">phase</span>
 
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -234,7 +234,7 @@
 
 <div class="viewcode-block" id="betastar_from_phase">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.betastar_from_phase">[docs]</a>
-<span class="k">def</span> <span class="nf">betastar_from_phase</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">phase_d</span><span class="p">:</span> <span class="n">phase</span><span class="o">.</span><span class="n">PhaseDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">betastar_from_phase</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">phase_d</span><span class="p">:</span> <span class="n">phase</span><span class="o">.</span><span class="n">PhaseDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate beta* and l* from the phase advance of the IP-BPMs.</span>
 
@@ -269,7 +269,7 @@
 
 <div class="viewcode-block" id="write">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.write">[docs]</a>
-<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">df_ips</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">df_ips</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Write the interaction point data to disk. </span>
 <span class="sd">    Empty DataFrames are skipped on write.</span>
 <span class="sd">    </span>
@@ -287,7 +287,7 @@
 
 <div class="viewcode-block" id="phase_to_betastar">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.phase_to_betastar">[docs]</a>
-<span class="k">def</span> <span class="nf">phase_to_betastar</span><span class="p">(</span><span class="n">lstar</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">errphase</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">phase_to_betastar</span><span class="p">(</span><span class="n">lstar</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">errphase</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the betastar and its error given the phase advance across the IP.</span>
 
@@ -309,16 +309,16 @@
 
 
 
-<span class="k">def</span> <span class="nf">_phase_to_betastar_value</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_phase_to_betastar_value</span><span class="p">(</span><span class="n">lstar</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
     <span class="n">tan_phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">lstar</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tan_phase</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">/</span> <span class="n">tan_phase</span>
 
 
-<span class="k">def</span> <span class="nf">_phase_to_betastar_error</span><span class="p">(</span><span class="n">lstar</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">errphase</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_phase_to_betastar_error</span><span class="p">(</span><span class="n">lstar</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">errphase</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">abs</span><span class="p">((</span><span class="n">errphase</span> <span class="o">*</span> <span class="n">lstar</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phase</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_get_meas_phase</span><span class="p">(</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span><span class="p">,</span> <span class="n">phases_df</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_meas_phase</span><span class="p">(</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span><span class="p">,</span> <span class="n">phases_df</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">phases_df</span><span class="p">[</span><span class="n">MEASUREMENT</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span><span class="p">],</span>
         <span class="n">phases_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">MEASUREMENT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span><span class="p">],</span>
@@ -326,7 +326,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_lstar</span><span class="p">(</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_lstar</span><span class="p">(</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_right</span><span class="p">,</span> <span class="n">S</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.</span>
 </pre></div>
 

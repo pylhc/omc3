@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.tbt_converter &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,27 +206,27 @@
 <span class="sd">Top-level script to convert turn-by-turn files from various formats to ``LHC`` binary SDDS files.</span>
 <span class="sd">Optionally, it can replicate files with added noise.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">EntryPointParameters</span><span class="p">,</span>
     <span class="n">entrypoint</span><span class="p">,</span>
     <span class="n">save_options_to_config</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">turn_by_turn</span> <span class="k">as</span> <span class="nn">tbt</span>
-<span class="kn">from</span> <span class="nn">omc3.definitions</span> <span class="kn">import</span> <span class="n">formats</span>
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">turn_by_turn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tbt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">DEFAULT_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;converter_</span><span class="si">{time:s}</span><span class="s2">.ini&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">converter_params</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">converter_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;TbT files to analyse&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory.&quot;</span><span class="p">)</span>
@@ -264,7 +264,7 @@
 <div class="viewcode-block" id="converter_entrypoint">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.tbt_converter.converter_entrypoint">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">converter_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">converter_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">converter_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts turn-by-turn files from various formats to ``LHC`` binary SDDS files.</span>
 <span class="sd">    Optionally can replicate files with added noise.</span>
@@ -318,7 +318,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_read_and_write_files</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_and_write_files</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">input_file</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
         <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">tbt</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">tbt_datatype</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">drop_elements</span><span class="p">:</span>
@@ -343,7 +343,7 @@
                     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_drop_elements</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">elements_to_drop</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_drop_elements</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">elements_to_drop</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drops the provided elements from the matrices in the provided TbtData object.</span>
 <span class="sd">    For any element not found in the matrices, a warning is logged and the element is skipped.</span>
@@ -368,7 +368,7 @@
     <span class="k">return</span> <span class="n">copied_data</span>
 
 
-<span class="k">def</span> <span class="nf">_file_name_without_sdds</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_file_name_without_sdds</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the file name without suffix if the suffix is **.sdds**, else the filename.</span>
 <span class="sd">    Previous elements in the file path are discarded.</span>

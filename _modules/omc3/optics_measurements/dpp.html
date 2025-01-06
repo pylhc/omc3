@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.optics_measurements.dpp &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,19 +206,19 @@
 <span class="sd">This module contains deltap over p calculations related functionality of ``optics_measurements``.</span>
 <span class="sd">It provides functions to computes and arrange dp over p.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">tfs</span>
-    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
-    <span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="n">InputFiles</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputFiles</span>
 
 <span class="n">DPP_BIN_TOLERANCE</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span>
 <span class="n">DPP_TOLERANCE</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span>  <span class="c1"># not sure if these should be different! (jdilly)</span>
@@ -228,7 +228,7 @@
 
 <div class="viewcode-block" id="arrange_dpps">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dpp.arrange_dpps">[docs]</a>
-<span class="k">def</span> <span class="nf">arrange_dpps</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DPP_BIN_TOLERANCE</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">arrange_dpps</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DPP_BIN_TOLERANCE</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -248,15 +248,15 @@
 
 
 
-<span class="k">def</span> <span class="nf">_values_in_range</span><span class="p">(</span><span class="n">range_to_use</span><span class="p">,</span> <span class="n">dpp_values</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_values_in_range</span><span class="p">(</span><span class="n">range_to_use</span><span class="p">,</span> <span class="n">dpp_values</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">dpp_values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">range_to_use</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_find_range_with_element</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_range_with_element</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">dpp_range</span> <span class="k">for</span> <span class="n">dpp_range</span> <span class="ow">in</span> <span class="n">ranges</span> <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">dpp_range</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_compute_ranges</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_ranges</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Groups the indices of dpps in bins of tolerance. </span>
 <span class="sd">    The function first sorts the indices by their dpp value </span>
 <span class="sd">    adds a new group whenever the dpp of the next index is larger than the first value in the group.</span>
@@ -279,7 +279,7 @@
 
 <div class="viewcode-block" id="append_amp_dpp">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dpp.append_amp_dpp">[docs]</a>
-<span class="k">def</span> <span class="nf">append_amp_dpp</span><span class="p">(</span><span class="n">list_of_tfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsFile</span><span class="p">],</span> <span class="n">dpp_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append_amp_dpp</span><span class="p">(</span><span class="n">list_of_tfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsFile</span><span class="p">],</span> <span class="n">dpp_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Add the dpp values to the DPP-header of the tfs files, if larger than the DPP-tolerance, otherwise set to zero.</span>
 <span class="sd">    This is intended to the DPP value for on-momentum files to zero. &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dpp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dpp_values</span><span class="p">):</span>
@@ -290,7 +290,7 @@
 
 <div class="viewcode-block" id="append_dpp">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dpp.append_dpp">[docs]</a>
-<span class="k">def</span> <span class="nf">append_dpp</span><span class="p">(</span><span class="n">list_of_tfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsFile</span><span class="p">],</span> <span class="n">dpp_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append_dpp</span><span class="p">(</span><span class="n">list_of_tfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsFile</span><span class="p">],</span> <span class="n">dpp_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Add the dpp values to the DPP-header of the tfs files. &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dpp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dpp_values</span><span class="p">):</span>
         <span class="n">list_of_tfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;DPP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp</span>
@@ -298,7 +298,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">calculate_dpoverp</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_dpoverp</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span> 
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;DX&#39;</span><span class="p">]]</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CORMS&#39;</span><span class="p">]),</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span>
                         <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -316,7 +316,7 @@
     <span class="k">return</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span>
 
 
-<span class="k">def</span> <span class="nf">calculate_amp_dpoverp</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_amp_dpoverp</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;DX&#39;</span><span class="p">]]</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;AMPX&#39;</span><span class="p">,</span> <span class="s1">&#39;AMPZ&#39;</span><span class="p">]),</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span>
                         <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

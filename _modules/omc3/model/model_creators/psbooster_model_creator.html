@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.model.model_creators.psbooster_model_creator &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
 
@@ -205,22 +205,22 @@
 
 <span class="sd">This module provides convenience functions for model creation of the ``PSB``.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">AccExcitationMode</span>
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.psbooster</span> <span class="kn">import</span> <span class="n">PsBase</span>
-<span class="kn">from</span> <span class="nn">omc3.model.model_creators.ps_base_model_creator</span> <span class="kn">import</span> <span class="n">PsBaseModelCreator</span>
-<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">ERROR_DEFFS_TXT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccExcitationMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.psbooster</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.ps_base_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsBaseModelCreator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERROR_DEFFS_TXT</span>
 
 <div class="viewcode-block" id="BoosterModelCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.psbooster_model_creator.BoosterModelCreator">[docs]</a>
-<span class="k">class</span> <span class="nc">BoosterModelCreator</span><span class="p">(</span><span class="n">PsBaseModelCreator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BoosterModelCreator</span><span class="p">(</span><span class="n">PsBaseModelCreator</span><span class="p">):</span>
     <span class="n">acc_model_name</span> <span class="o">=</span> <span class="s2">&quot;psb&quot;</span>
 
 <div class="viewcode-block" id="BoosterModelCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.psbooster_model_creator.BoosterModelCreator.get_madx_script">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">PsBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">PsBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)),</span>
@@ -236,7 +236,7 @@
 <div class="viewcode-block" id="BoosterModelCreator.prepare_run">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.psbooster_model_creator.BoosterModelCreator.prepare_run">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">prepare_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">PsBase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">PsBase</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
             <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error_deff_ring</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">ring</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">),</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span>
         <span class="p">)</span></div>

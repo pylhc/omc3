@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.tune_analysis.kick_file_modifiers &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -205,20 +205,20 @@
 
 <span class="sd">Functions to add data to or extract data from **kick_ac** files.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Sequence</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">tfs</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">odr</span>
-<span class="kn">from</span> <span class="nn">tfs</span> <span class="kn">import</span> <span class="n">TfsDataFrame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">odr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">KICK_NAME</span><span class="p">,</span> <span class="n">TIME</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">NAT_TUNE</span><span class="p">,</span> <span class="n">ACTION</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">bbq_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis.bbq_tools</span> <span class="kn">import</span> <span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">FilterOpts</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_odr_header_coeff_corrected</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">KICK_NAME</span><span class="p">,</span> <span class="n">TIME</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">NAT_TUNE</span><span class="p">,</span> <span class="n">ACTION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">bbq_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis.bbq_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">FilterOpts</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">get_odr_header_coeff_corrected</span><span class="p">,</span>
                                           <span class="n">get_odr_header_err_coeff_corrected</span><span class="p">,</span>
                                           <span class="n">get_odr_header_err_coeff</span><span class="p">,</span> <span class="n">get_odr_header_coeff</span><span class="p">,</span>
                                           <span class="n">get_natq_corr_col</span><span class="p">,</span> <span class="n">get_corr_natq_err_col</span><span class="p">,</span>
@@ -231,20 +231,20 @@
                                           <span class="n">AmpDetData</span><span class="p">,</span> <span class="n">FakeOdrOutput</span><span class="p">,</span> <span class="n">get_kick_out_name</span><span class="p">,</span> <span class="n">COEFFICIENT</span><span class="p">,</span> <span class="n">CORRECTED</span><span class="p">,</span>
                                           <span class="n">get_odr_header_default</span><span class="p">,</span>
                                           <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.time_tools</span> <span class="kn">import</span> <span class="n">CERNDatetime</span><span class="p">,</span> <span class="n">get_cern_time_format</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.time_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">CERNDatetime</span><span class="p">,</span> <span class="n">get_cern_time_format</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_odr_headers</span><span class="p">(</span><span class="n">corrected</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_odr_headers</span><span class="p">(</span><span class="n">corrected</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return Headers needed for ODR.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">corrected</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_odr_header_coeff_corrected</span><span class="p">,</span> <span class="n">get_odr_header_err_coeff_corrected</span>
     <span class="k">return</span> <span class="n">get_odr_header_coeff</span><span class="p">,</span> <span class="n">get_odr_header_err_coeff</span>
 
 
-<span class="k">def</span> <span class="nf">_get_ampdet_columns</span><span class="p">(</span><span class="n">corrected</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_ampdet_columns</span><span class="p">(</span><span class="n">corrected</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get columns needed for amplitude detuning.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">corrected</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_natq_corr_col</span><span class="p">,</span> <span class="n">get_corr_natq_err_col</span>
@@ -256,7 +256,7 @@
 
 <div class="viewcode-block" id="add_bbq_data">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_bbq_data">[docs]</a>
-<span class="k">def</span> <span class="nf">add_bbq_data</span><span class="p">(</span><span class="n">kick_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bbq_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_bbq_data</span><span class="p">(</span><span class="n">kick_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bbq_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add BBQ values from column to kickac dataframe into same column.</span>
 
@@ -286,7 +286,7 @@
 
 <div class="viewcode-block" id="add_moving_average">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_moving_average">[docs]</a>
-<span class="k">def</span> <span class="nf">add_moving_average</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">FilterOpts</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_moving_average</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">FilterOpts</span><span class="p">,</span>
                        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds the moving average of the bbq data to kickac_df and bbq_df.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculating moving average.&quot;</span><span class="p">)</span>
@@ -303,7 +303,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_filter_bbq_outliers</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_bbq_outliers</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="n">header_limit</span> <span class="o">=</span> <span class="n">get_outlier_limit_header</span><span class="p">()</span>
     <span class="n">header_window</span> <span class="o">=</span> <span class="n">get_mav_window_header</span><span class="p">()</span>
 
@@ -329,7 +329,7 @@
     <span class="k">return</span> <span class="n">bbq_df</span>
 
 
-<span class="k">def</span> <span class="nf">_filter_bbq_cut</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">MinMaxFilterOpt</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_bbq_cut</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">MinMaxFilterOpt</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="n">bbq_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">get_mav_window_header</span><span class="p">()]</span> <span class="o">=</span> <span class="n">filter_opts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">window</span>
     <span class="n">bbq_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">get_fine_window_header</span><span class="p">()]</span> <span class="o">=</span> <span class="n">filter_opts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fine_window</span>
     <span class="n">bbq_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">get_fine_cut_header</span><span class="p">()]</span> <span class="o">=</span> <span class="n">filter_opts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fine_cut</span>
@@ -348,7 +348,7 @@
 
 <div class="viewcode-block" id="add_corrected_natural_tunes">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes">[docs]</a>
-<span class="k">def</span> <span class="nf">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds the corrected natural tunes to ``kickac_df``.</span>
 <span class="sd">    Add also the total standard deviation of the natural tune to the kickac dataframe.</span>
@@ -378,7 +378,7 @@
 
 <div class="viewcode-block" id="add_odr">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_odr">[docs]</a>
-<span class="k">def</span> <span class="nf">add_odr</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">add_odr</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> 
             <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.</span>
@@ -405,7 +405,7 @@
 
 <div class="viewcode-block" id="get_odr_data">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_odr_data">[docs]</a>
-<span class="k">def</span> <span class="nf">get_odr_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_odr_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FakeOdrOutput</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract the data from kickac.</span>
@@ -435,7 +435,7 @@
 
 <div class="viewcode-block" id="get_ampdet_data">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data">[docs]</a>
-<span class="k">def</span> <span class="nf">get_ampdet_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ampdet_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                     <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dropna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AmpDetData</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract the data needed for the (un)corrected amplitude detuning from ``kickac_df``.</span>
@@ -488,29 +488,29 @@
 <span class="c1"># Timed DataFrames -------------------------------------------------------------</span>
 
 
-<span class="k">def</span> <span class="nf">get_timestamp_index</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp_index</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">read_timed_dataframe</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_timed_dataframe</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">get_time_col</span><span class="p">())</span>
     <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="n">CERNDatetime</span><span class="o">.</span><span class="n">from_cern_utc_string</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span>
 
 
-<span class="k">def</span> <span class="nf">write_timed_dataframe</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_timed_dataframe</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">):</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">get_cern_time_format</span><span class="p">())</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">get_time_col</span><span class="p">(),</span> <span class="n">headerswidth</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
 
-<span class="k">def</span> <span class="nf">read_two_kick_files_from_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_two_kick_files_from_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">merge_two_plane_kick_dfs</span><span class="p">(</span>
         <span class="o">*</span><span class="p">[</span><span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">folder</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">KICK_NAME</span><span class="si">}{</span><span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">.tfs&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">]</span>
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">merge_two_plane_kick_dfs</span><span class="p">(</span><span class="n">df_x</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">df_y</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">merge_two_plane_kick_dfs</span><span class="p">(</span><span class="n">df_x</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">df_y</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="n">df_xy</span> <span class="o">=</span> <span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_x</span><span class="p">,</span> <span class="n">df_y</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="n">PLANES</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_xy</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_x</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_xy</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_y</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The kick-files for each plane seem to have different indices.&quot;</span><span class="p">)</span>
@@ -523,7 +523,7 @@
 
 <div class="viewcode-block" id="convert_bbs_kickfile">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickfile">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_bbs_kickfile</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_bbs_kickfile</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Wrapper for :meth:`omc3.tune_analysis.kick_file_modifiers.convert_old_kickdataframe`</span>
 <span class="sd">    with read/write capabilities.&quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
@@ -534,7 +534,7 @@
 
 <div class="viewcode-block" id="convert_bbs_kickdataframe">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickdataframe">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_bbs_kickdataframe</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_bbs_kickdataframe</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a kick-dataframe created with the python2 amplitude detuning</span>
 <span class="sd">    analysis into a dataframe compatible with omc3&#39;s detuning analysis.</span>
 <span class="sd">    Beware that the old files may not contain the error coefficients for</span>
@@ -582,7 +582,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_rename_old_header</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rename_old_header</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">tune</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
             <span class="n">old</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ODR_J</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">Q</span><span class="si">{</span><span class="n">tune</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -602,7 +602,7 @@
     <span class="k">return</span> <span class="n">key</span>
 
 
-<span class="k">def</span> <span class="nf">_rename_old_column</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rename_old_column</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="k">if</span> <span class="s2">&quot;STD&quot;</span> <span class="ow">in</span> <span class="n">column</span> <span class="ow">or</span> <span class="s2">&quot;RMS&quot;</span> <span class="ow">in</span> <span class="n">column</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">column</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;STD&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;RMS&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">return</span> <span class="n">column</span>

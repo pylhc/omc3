@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.utils.mock &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -212,22 +212,22 @@
 <span class="sd">    pytimber = cern_network_import(&quot;pytimber&quot;)</span>
 <span class="sd">    db = pytimber.LoggingDB(source=&quot;nxcals&quot;)  # will raise if pytimber not installed</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
 
 
 <div class="viewcode-block" id="CERNNetworkMockPackage">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.CERNNetworkMockPackage">[docs]</a>
-<span class="k">class</span> <span class="nc">CERNNetworkMockPackage</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CERNNetworkMockPackage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mock class to raise an error if the desired package functionality is called when the package is not</span>
 <span class="sd">    actually installed. Designed for packages installable only from inside the CERN network,</span>
 <span class="sd">    that are declared as ``cern`` extra. See module documentation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; package does not seem to be installed but is needed for this function. &quot;</span>
             <span class="s2">&quot;Install it with the &#39;cern&#39; extra dependency, which requires to be on the CERN network and to &quot;</span>
@@ -238,7 +238,7 @@
 
 <div class="viewcode-block" id="cern_network_import">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.cern_network_import">[docs]</a>
-<span class="k">def</span> <span class="nf">cern_network_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cern_network_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function to try and import packages only available (and installable) on the CERN network.</span>
 <span class="sd">    If installed, the module is returned, otherwise a mock class is returned, which will raise an</span>

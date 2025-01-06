@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.model.accelerators.petra &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,22 +206,22 @@
 <span class="sd">Accelerator-Class for the ``PETRA`` machine.</span>
 <span class="sd">Model creation not implemented yet.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AcceleratorDefinitionError</span>
-<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">PLANE_TO_HV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AcceleratorDefinitionError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_HV</span>
 
 <span class="n">EXCITER_BPM</span> <span class="o">=</span> <span class="s2">&quot;BPM_SOR_13&quot;</span>
 
 
 <div class="viewcode-block" id="Petra">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.petra.Petra">[docs]</a>
-<span class="k">class</span> <span class="nc">Petra</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Petra</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;petra&quot;</span>
 
     <span class="c1"># Public Methods ##########################################################</span>
 
 <div class="viewcode-block" id="Petra.verify_object">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.petra.Petra.verify_object">[docs]</a>
-    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># TODO: Maybe more checks?</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># TODO: Maybe more checks?</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># is the class is used to create full response?</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;PETRA doesn&#39;t have a model creation yet, calling it this &quot;</span>
                                              <span class="s2">&quot;way is most probably wrong.&quot;</span><span class="p">)</span></div>
@@ -229,7 +229,7 @@
 
 <div class="viewcode-block" id="Petra.get_exciter_bpm">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.petra.Petra.get_exciter_bpm">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">commonbpms</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">commonbpms</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">commonbpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">EXCITER_BPM</span><span class="p">),</span> <span class="n">EXCITER_BPM</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;KIFB</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">N&quot;</span></div>
 </div>
 

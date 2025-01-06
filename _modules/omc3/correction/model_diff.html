@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.correction.model_diff &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -208,19 +208,19 @@
 <span class="sd">yet operates on two twiss files instead.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">tfs</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">DELTA</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.toolbox</span> <span class="kn">import</span> <span class="n">ang_diff</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">DELTA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.toolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">ang_diff</span>
 
 
 <div class="viewcode-block" id="diff_twiss_parameters">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.model_diff.diff_twiss_parameters">[docs]</a>
-<span class="k">def</span> <span class="nf">diff_twiss_parameters</span><span class="p">(</span><span class="n">model_a</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">diff_twiss_parameters</span><span class="p">(</span><span class="n">model_a</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
                           <span class="n">model_b</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
                           <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a TfsDataFrame containing of the given parameters between</span>
@@ -254,7 +254,7 @@
 <span class="c1"># Helper -----------------------------------------------------------------------</span>
 
 
-<span class="k">def</span> <span class="nf">_get_mapping</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_mapping</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">_diff</span><span class="p">,</span>
         <span class="p">{</span>
@@ -266,15 +266,15 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">model_a</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column</span><span class="p">]</span> <span class="o">-</span> <span class="n">model_b</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_tune_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_tune_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">model_a</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">model_b</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span>
 
 
-<span class="k">def</span> <span class="nf">_phase_advance_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_phase_advance_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
     <span class="n">column</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">column</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># in case it&#39;s &quot;PHASE&quot;, which is a parameter of the measurement</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">model_a</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">name2</span> <span class="o">=</span> <span class="n">model_a</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -287,11 +287,11 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_beta_beating</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_beta_beating</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">model_a</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column</span><span class="p">],</span> <span class="n">model_b</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
 
 
-<span class="k">def</span> <span class="nf">_normalized_dispersion_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalized_dispersion_diff</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
     <span class="n">plane</span> <span class="o">=</span> <span class="n">column</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">([</span>
         <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]))</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>

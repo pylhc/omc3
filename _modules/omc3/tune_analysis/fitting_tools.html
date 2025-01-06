@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.tune_analysis.fitting_tools &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -207,17 +207,17 @@
 <span class="sd">It provides tools for fitting functions, mainly via odr.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">numpy.polynomial</span> <span class="kn">import</span> <span class="n">Polynomial</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
-<span class="kn">from</span> <span class="nn">scipy.odr</span> <span class="kn">import</span> <span class="n">RealData</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ODR</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.polynomial</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polynomial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.odr</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealData</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ODR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
 
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis.constants</span> <span class="kn">import</span> <span class="n">FakeOdrOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FakeOdrOutput</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -227,9 +227,9 @@
 
 <div class="viewcode-block" id="get_poly_fun">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.get_poly_fun">[docs]</a>
-<span class="k">def</span> <span class="nf">get_poly_fun</span><span class="p">(</span><span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_poly_fun</span><span class="p">(</span><span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the function of polynomial order. (is this pythonic enough?).&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">poly_func</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">poly_func</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">poly_func</span></div>
 
@@ -237,7 +237,7 @@
 
 <div class="viewcode-block" id="do_odr">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.do_odr">[docs]</a>
-<span class="k">def</span> <span class="nf">do_odr</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">xerr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">do_odr</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">xerr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the odr fit.</span>
 
@@ -282,7 +282,7 @@
 
 <div class="viewcode-block" id="first_order_detuning_2d">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.first_order_detuning_2d">[docs]</a>
-<span class="k">def</span> <span class="nf">first_order_detuning_2d</span><span class="p">(</span><span class="n">beta</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">first_order_detuning_2d</span><span class="p">(</span><span class="n">beta</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the 2D tune array (Qx, Qy)</span>
 <span class="sd">        Qx = qx0 + dqx/dex * ex + dqx/dey * ey</span>
 <span class="sd">        Qy = qy0 + dqy/dex * ex + dqy/dey * ey</span>
@@ -302,7 +302,7 @@
 
 <div class="viewcode-block" id="first_order_detuning_2d_jacobian">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jacobian">[docs]</a>
-<span class="k">def</span> <span class="nf">first_order_detuning_2d_jacobian</span><span class="p">(</span><span class="n">beta</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">first_order_detuning_2d_jacobian</span><span class="p">(</span><span class="n">beta</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Jacobian of the 2D tune array:</span>
 <span class="sd">        [[dqx/dex, dqx/dey ],</span>
 <span class="sd">         [dqy/dex, dqy/dey ]]</span>
@@ -322,7 +322,7 @@
 
 <div class="viewcode-block" id="map_odr_fit_to_planes">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.map_odr_fit_to_planes">[docs]</a>
-<span class="k">def</span> <span class="nf">map_odr_fit_to_planes</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FakeOdrOutput</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_odr_fit_to_planes</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FakeOdrOutput</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Maps the calculated odr fit to fake odr fits with `beta` and `sd_beta`</span>
 <span class="sd">    attributes. These would be the results of first-order amplitude detuning</span>
 <span class="sd">    odr-fits when done independently by tune and kick plane.</span>
@@ -331,7 +331,7 @@
 <span class="sd">             string gives the kick-plane, the outer the tune-plane..</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">get_fit</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fit</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">FakeOdrOutput</span><span class="p">(</span>
             <span class="n">beta</span><span class="o">=</span><span class="p">[</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">odr_fit</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">b</span><span class="p">]],</span>
             <span class="n">sd_beta</span><span class="o">=</span><span class="p">[</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">odr_fit</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">[</span><span class="n">b</span><span class="p">]]</span>
@@ -352,7 +352,7 @@
 
 <div class="viewcode-block" id="do_2d_kicks_odr">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.do_2d_kicks_odr">[docs]</a>
-<span class="k">def</span> <span class="nf">do_2d_kicks_odr</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">xerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">do_2d_kicks_odr</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">xerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the odr fit.</span>
 
@@ -370,7 +370,7 @@
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_filter_nans</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span><span class="p">)</span>
 
     <span class="c1"># Curve-Fit for starting point ---</span>
-    <span class="k">def</span> <span class="nf">curve_fit_fun</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">curve_fit_fun</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">first_order_detuning_2d</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
 
     <span class="n">beta</span><span class="p">,</span> <span class="n">beta_cov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">curve_fit_fun</span><span class="p">,</span> <span class="n">xdata</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">ydata</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span>
@@ -393,7 +393,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_filter_nans</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_nans</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all data points containing a NaN.</span>
 <span class="sd">    Assumes input arrays are all of shape 2xN.</span>
 <span class="sd">    TODO:</span>
@@ -405,13 +405,13 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_check_exact_zero_errors</span><span class="p">(</span><span class="n">xerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_exact_zero_errors</span><span class="p">(</span><span class="n">xerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if errors are exact zero and replace with minimum error, if so.</span>
 <span class="sd">    Done because ODR crashes on exact zero error-bars.</span>
 
 <span class="sd">    Beware that the output will always be np.arrays, even if the input is pd.Series.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">check_exact_zero_per_plane</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_exact_zero_per_plane</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>  <span class="c1"># no problem</span>
             <span class="k">return</span> <span class="n">err</span>
 

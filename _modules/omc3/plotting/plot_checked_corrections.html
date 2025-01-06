@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.plotting.plot_checked_corrections &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -353,25 +353,25 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">import</span> <span class="nn">tfs</span>
-<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
 
-<span class="kn">from</span> <span class="nn">omc3.correction.constants</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CORRECTED_LABEL</span><span class="p">,</span>
     <span class="n">CORRECTION_LABEL</span><span class="p">,</span>
     <span class="n">COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX</span><span class="p">,</span>
     <span class="n">EXPECTED_LABEL</span><span class="p">,</span>
     <span class="n">UNCORRECTED_LABEL</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.definitions.optics</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.optics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FILE_COLUMN_MAPPING</span><span class="p">,</span>
     <span class="n">RDT_AMPLITUDE_COLUMN</span><span class="p">,</span>
     <span class="n">RDT_COLUMN_MAPPING</span><span class="p">,</span>
@@ -381,29 +381,29 @@
     <span class="n">ColumnsAndLabels</span><span class="p">,</span>
     <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">EXT</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.plot_optics_measurements</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_optics_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_ip_positions</span><span class="p">,</span>
     <span class="n">_get_x_axis_column_and_label</span><span class="p">,</span>
     <span class="n">get_optics_style_params</span><span class="p">,</span>
     <span class="n">get_plottfs_style_params</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.plot_tfs</span> <span class="kn">import</span> <span class="n">get_full_output_path</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.plot_tfs</span> <span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">plot_tfs</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.utils.windows</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_full_output_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">plot_tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils.windows</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">PlotWidget</span><span class="p">,</span>
     <span class="n">TabWidget</span><span class="p">,</span>
     <span class="n">VerticalTabWindow</span><span class="p">,</span>
     <span class="n">create_pyplot_window_from_fig</span><span class="p">,</span>
     <span class="n">log_no_qtpy_many_windows</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
-    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -413,7 +413,7 @@
 
 <span class="n">SINGLE_PLANE_FILES</span> <span class="o">=</span> <span class="p">(</span><span class="n">NORM_DISP_NAME</span><span class="p">,)</span>
 
-<span class="k">def</span> <span class="nf">get_plotting_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_plotting_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;input_dir&quot;</span><span class="p">,</span>
                          <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -441,7 +441,7 @@
 
 <div class="viewcode-block" id="get_plotting_style_parameters">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters">[docs]</a>
-<span class="k">def</span> <span class="nf">get_plotting_style_parameters</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_plotting_style_parameters</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Parameters related to the style of the plots. &quot;&quot;&quot;</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;individual_to_input&quot;</span><span class="p">,</span>
@@ -460,7 +460,7 @@
 <div class="viewcode-block" id="plot_checked_corrections">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_plotting_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">plot_checked_corrections</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_checked_corrections</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Entrypoint for the plotting function. &quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting checked corrections.&quot;</span><span class="p">)</span>
 
@@ -543,7 +543,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_create_correction_plots_per_filename</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_correction_plots_per_filename</span><span class="p">(</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
         <span class="n">measurements</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> 
         <span class="n">correction_dirs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> 
@@ -634,7 +634,7 @@
 
 <div class="viewcode-block" id="save_plots">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots">[docs]</a>
-<span class="k">def</span> <span class="nf">save_plots</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">figure_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">],</span> <span class="n">input_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_plots</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">figure_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">],</span> <span class="n">input_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Save the plots. &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">figname</span><span class="p">,</span> <span class="n">fig</span> <span class="ow">in</span> <span class="n">figure_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">outdir</span> <span class="o">=</span> <span class="n">output_dir</span>
@@ -669,7 +669,7 @@
 
 <div class="viewcode-block" id="show_plots">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots">[docs]</a>
-<span class="k">def</span> <span class="nf">show_plots</span><span class="p">(</span><span class="n">figure_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_plots</span><span class="p">(</span><span class="n">figure_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Displays the provided figures.</span>
 <span class="sd">    If `qtpy` is installed, they are shown in a single window.</span>
 <span class="sd">    The individual corrections are sorted into vertical tabs,</span>
@@ -744,7 +744,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_corrected_measurement_names</span><span class="p">(</span><span class="n">correction_dirs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_corrected_measurement_names</span><span class="p">(</span><span class="n">correction_dirs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Check all the corrections dirs for common tfs files.&quot;&quot;&quot;</span>
     <span class="n">tfs_files</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">correction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">correction_dirs</span><span class="p">):</span>

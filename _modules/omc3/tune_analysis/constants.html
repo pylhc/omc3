@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.tune_analysis.constants &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -205,12 +205,12 @@
 
 <span class="sd">Specific constants and helpers to be used in ``tune_analysis``, to help with consistency.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANE_TO_NUM</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="n">ACTION</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">KICK_NAME</span><span class="p">,</span> <span class="n">NAT_TUNE</span><span class="p">,</span> <span class="n">RES</span><span class="p">,</span> <span class="n">TIME</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ACTION</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">KICK_NAME</span><span class="p">,</span> <span class="n">NAT_TUNE</span><span class="p">,</span> <span class="n">RES</span><span class="p">,</span> <span class="n">TIME</span>
 
 <span class="c1"># Global &#39;Parameters&#39; for easy editing #########################################</span>
 
@@ -227,7 +227,7 @@
 
 <div class="viewcode-block" id="get_timber_bbq_key">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_timber_bbq_key">[docs]</a>
-<span class="k">def</span> <span class="nf">get_timber_bbq_key</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_timber_bbq_key</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Key to extract bbq from timber. &quot;&quot;&quot;</span>
     <span class="c1"># return f&quot;lhc.bofsu:eigen_freq_{PLANE_TO_NUM[plane]:d}_b{beam:d}&quot;.upper()  # pre run 3</span>
     <span class="c1"># return f&quot;BFC.LHC:TuneFBAcq:TUNEB{beam:d}{PLANE_TO_HV[plane]}&quot;  # contains less data</span>
@@ -235,18 +235,18 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_kick_out_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_kick_out_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KICK_NAME</span><span class="si">}</span><span class="s2">ampdet_xy</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">get_bbq_out_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bbq_out_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="s2">&quot;bbq_ampdet.tfs&quot;</span>
 
 
 <div class="viewcode-block" id="AmpDetData">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.AmpDetData">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">AmpDetData</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AmpDetData</span><span class="p">:</span>
     <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">action</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span>
@@ -259,7 +259,7 @@
 <div class="viewcode-block" id="FakeOdrOutput">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.FakeOdrOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FakeOdrOutput</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FakeOdrOutput</span><span class="p">:</span>
     <span class="n">beta</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="n">sd_beta</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span></div>
 
@@ -270,7 +270,7 @@
 
 <div class="viewcode-block" id="get_tstart_head">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_tstart_head">[docs]</a>
-<span class="k">def</span> <span class="nf">get_tstart_head</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_tstart_head</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for fill start time from header. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;START_TIME&quot;</span></div>
 
@@ -278,19 +278,19 @@
 
 <div class="viewcode-block" id="get_tend_head">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_tend_head">[docs]</a>
-<span class="k">def</span> <span class="nf">get_tend_head</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_tend_head</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for fill end time from header. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;END_TIME&quot;</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">get_odr_header_default</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_odr_header_default</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ODR_PREF</span><span class="si">}</span><span class="s2">dQ</span><span class="si">{</span><span class="n">q_plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">d2J</span><span class="si">{</span><span class="n">j_plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
 <div class="viewcode-block" id="get_odr_header_coeff">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_coeff">[docs]</a>
-<span class="k">def</span> <span class="nf">get_odr_header_coeff</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_odr_header_coeff</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header key for odr coefficient for term of given order (i.e. beta[order]) &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_odr_header_default</span><span class="p">(</span><span class="n">q_plane</span><span class="p">,</span><span class="w"> </span><span class="n">j_plane</span><span class="p">)</span><span class="w"> </span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -298,7 +298,7 @@
 
 <div class="viewcode-block" id="get_odr_header_err_coeff">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_err_coeff">[docs]</a>
-<span class="k">def</span> <span class="nf">get_odr_header_err_coeff</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_odr_header_err_coeff</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header key for odr coefficient standard deviation for term of given order (i.e. sd_beta[order]) &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_odr_header_default</span><span class="p">(</span><span class="n">q_plane</span><span class="p">,</span><span class="w"> </span><span class="n">j_plane</span><span class="p">)</span><span class="w"> </span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -306,7 +306,7 @@
 
 <div class="viewcode-block" id="get_odr_header_coeff_corrected">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_coeff_corrected">[docs]</a>
-<span class="k">def</span> <span class="nf">get_odr_header_coeff_corrected</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_odr_header_coeff_corrected</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header key for corrected odr coefficient for term of given order (i.e. beta[order]) &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_odr_header_default</span><span class="p">(</span><span class="n">q_plane</span><span class="p">,</span><span class="w"> </span><span class="n">j_plane</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">CORRECTED</span><span class="si">}{</span><span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -314,7 +314,7 @@
 
 <div class="viewcode-block" id="get_odr_header_err_coeff_corrected">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_err_coeff_corrected">[docs]</a>
-<span class="k">def</span> <span class="nf">get_odr_header_err_coeff_corrected</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_odr_header_err_coeff_corrected</span><span class="p">(</span><span class="n">q_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">j_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header key for corrected odr coefficient standard deviation for term of given order (i.e. sd_beta[order]) &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_odr_header_default</span><span class="p">(</span><span class="n">q_plane</span><span class="p">,</span><span class="w"> </span><span class="n">j_plane</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">CORRECTED</span><span class="si">}{</span><span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -322,7 +322,7 @@
 
 <div class="viewcode-block" id="get_mav_window_header">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_mav_window_header">[docs]</a>
-<span class="k">def</span> <span class="nf">get_mav_window_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mav_window_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header to store the moving average window length &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;MOVINGAV_WINDOW&quot;</span></div>
 
@@ -330,7 +330,7 @@
 
 <div class="viewcode-block" id="get_fine_window_header">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_fine_window_header">[docs]</a>
-<span class="k">def</span> <span class="nf">get_fine_window_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fine_window_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header to store the moving average fine window length &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;FINE_WINDOW&quot;</span></div>
 
@@ -338,7 +338,7 @@
 
 <div class="viewcode-block" id="get_fine_cut_header">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_fine_cut_header">[docs]</a>
-<span class="k">def</span> <span class="nf">get_fine_cut_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fine_cut_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header to store the fine cut. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;FINE_CUT&quot;</span></div>
 
@@ -346,7 +346,7 @@
 
 <div class="viewcode-block" id="get_outlier_limit_header">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_outlier_limit_header">[docs]</a>
-<span class="k">def</span> <span class="nf">get_outlier_limit_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_outlier_limit_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header to store the outlier limit.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;OUTLIER_LIMIT&quot;</span></div>
 
@@ -354,7 +354,7 @@
 
 <div class="viewcode-block" id="get_min_tune_header">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_min_tune_header">[docs]</a>
-<span class="k">def</span> <span class="nf">get_min_tune_header</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_min_tune_header</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header to store the minimum tune cut. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;MIN_Q</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -362,7 +362,7 @@
 
 <div class="viewcode-block" id="get_max_tune_header">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_max_tune_header">[docs]</a>
-<span class="k">def</span> <span class="nf">get_max_tune_header</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_max_tune_header</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Header to store the maximum tune cut. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;MAX_Q</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -373,7 +373,7 @@
 
 <div class="viewcode-block" id="get_time_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_time_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_time_col</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_time_col</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the TIME column.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">TIME</span></div>
 
@@ -381,7 +381,7 @@
 
 <div class="viewcode-block" id="get_bbq_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_bbq_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_bbq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bbq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the BBQ column &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BBQ</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -389,7 +389,7 @@
 
 <div class="viewcode-block" id="get_mav_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_mav_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_mav_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mav_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the moving average BBQ column. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_bbq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}{</span><span class="n">MOVING_AV</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -397,7 +397,7 @@
 
 <div class="viewcode-block" id="get_used_in_mav_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_used_in_mav_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_used_in_mav_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_used_in_mav_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the column showing if BBQ value was used in moving average. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_bbq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">IN</span><span class="si">{</span><span class="n">MOVING_AV</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -405,7 +405,7 @@
 
 <div class="viewcode-block" id="get_mav_err_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_mav_err_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_mav_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mav_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the standard deviation of the moving average data. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">get_bbq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}{</span><span class="n">MOVING_AV</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -413,7 +413,7 @@
 
 <div class="viewcode-block" id="get_corr_natq_err_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_corr_natq_err_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_corr_natq_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_corr_natq_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Return the standard deviation for the corrected natural tune. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">get_natq_corr_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -421,7 +421,7 @@
 
 <div class="viewcode-block" id="get_natq_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_natq_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_natq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_natq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the natural tune column. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -429,7 +429,7 @@
 
 <div class="viewcode-block" id="get_natq_corr_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_natq_corr_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_natq_corr_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_natq_corr_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the corrected natural tune column. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_natq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}{</span><span class="n">CORRECTED</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -437,7 +437,7 @@
 
 <div class="viewcode-block" id="get_natq_err_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_natq_err_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_natq_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_natq_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the natural tune error column. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">get_natq_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -445,7 +445,7 @@
 
 <div class="viewcode-block" id="get_action_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_action_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_action_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the action column. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">:</span><span class="s2">s</span><span class="si">}{</span><span class="n">RES</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -453,7 +453,7 @@
 
 <div class="viewcode-block" id="get_action_err_col">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_err_col">[docs]</a>
-<span class="k">def</span> <span class="nf">get_action_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_action_err_col</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Label for the action error column. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">get_action_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
@@ -464,7 +464,7 @@
 
 <div class="viewcode-block" id="get_tune_label">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_tune_label">[docs]</a>
-<span class="k">def</span> <span class="nf">get_tune_label</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_tune_label</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Tune label for the action/tune plots. &quot;&quot;&quot;</span>
     <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">if</span> <span class="n">scale</span><span class="p">:</span>
@@ -475,7 +475,7 @@
 
 <div class="viewcode-block" id="get_action_label">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_label">[docs]</a>
-<span class="k">def</span> <span class="nf">get_action_label</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_action_label</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Action label for the action/tune plots. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;um&quot;</span><span class="p">:</span>
         <span class="n">unit</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\mu m&quot;</span>
@@ -485,7 +485,7 @@
 
 <div class="viewcode-block" id="get_detuning_exponent_for_order">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.constants.get_detuning_exponent_for_order">[docs]</a>
-<span class="k">def</span> <span class="nf">get_detuning_exponent_for_order</span><span class="p">(</span><span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_detuning_exponent_for_order</span><span class="p">(</span><span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the default exponent for detuning orders. Highly Empirical. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">15</span><span class="p">}[</span><span class="n">order</span><span class="p">]</span></div>
 

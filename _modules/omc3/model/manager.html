@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.model.manager &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,10 +206,10 @@
 <span class="sd">This module provides high-level functions to manage most functionality of ``model``.</span>
 <span class="sd">It contains entrypoint wrappers to get accelerator classes or their instances.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span>
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators</span> <span class="kn">import</span> <span class="n">lhc</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">esrf</span><span class="p">,</span> <span class="n">psbooster</span><span class="p">,</span> <span class="n">skekb</span><span class="p">,</span> <span class="n">petra</span><span class="p">,</span> <span class="n">iota</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">lhc</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">esrf</span><span class="p">,</span> <span class="n">psbooster</span><span class="p">,</span> <span class="n">skekb</span><span class="p">,</span> <span class="n">petra</span><span class="p">,</span> <span class="n">iota</span>
 
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">Accelerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
 
 <span class="n">ACCELS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="p">,</span>
@@ -223,7 +223,7 @@
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_get_params</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;accel&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ACCELS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the accelerator to use.Can be the class already.&quot;</span><span class="p">)</span>
@@ -233,7 +233,7 @@
 <div class="viewcode-block" id="get_accelerator">
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">get_accelerator</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_accelerator</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns (opt.accel, help_requested):</span>
 <span class="sd">        `opt.accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.</span>
@@ -252,7 +252,7 @@
 <div class="viewcode-block" id="get_accelerator_class">
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator_class">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">get_accelerator_class</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_accelerator_class</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -262,7 +262,7 @@
 <div class="viewcode-block" id="get_parsed_opt">
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_parsed_opt">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">get_parsed_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_parsed_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all accelerator related options as a `dict`.&quot;&quot;&quot;</span>
     <span class="n">accel</span> <span class="o">=</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">]</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.harpy.handler &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -207,20 +207,20 @@
 <span class="sd">Tools are provided to handle the cleaning, frequency analysis and resonance search for a</span>
 <span class="sd">single-bunch `TbtData`.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">join</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">join</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions</span> <span class="kn">import</span> <span class="n">formats</span>
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">PLANE_TO_NUM</span> <span class="k">as</span> <span class="n">P2N</span>
-<span class="kn">from</span> <span class="nn">omc3.harpy</span> <span class="kn">import</span> <span class="n">clean</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">kicker</span>
-<span class="kn">from</span> <span class="nn">omc3.harpy.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">FILE_AMPS_EXT</span><span class="p">,</span> <span class="n">FILE_FREQS_EXT</span><span class="p">,</span> <span class="n">FILE_LIN_EXT</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">PLANE_TO_NUM</span> <span class="k">as</span> <span class="n">P2N</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">clean</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">kicker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">FILE_AMPS_EXT</span><span class="p">,</span> <span class="n">FILE_FREQS_EXT</span><span class="p">,</span> <span class="n">FILE_LIN_EXT</span><span class="p">,</span>
                                   <span class="n">COL_NAME</span><span class="p">,</span> <span class="n">COL_TUNE</span><span class="p">,</span> <span class="n">COL_AMP</span><span class="p">,</span> <span class="n">COL_MU</span><span class="p">,</span>
                                   <span class="n">COL_NATTUNE</span><span class="p">,</span> <span class="n">COL_NATAMP</span><span class="p">,</span> <span class="n">COL_PHASE</span><span class="p">,</span> <span class="n">COL_ERR</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.contexts</span> <span class="kn">import</span> <span class="n">timeit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ALL_PLANES</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">PLANES</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">)</span>
@@ -229,7 +229,7 @@
 
 <div class="viewcode-block" id="run_per_bunch">
 <a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.handler.run_per_bunch">[docs]</a>
-<span class="k">def</span> <span class="nf">run_per_bunch</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_per_bunch</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleans data, analyses frequencies and searches for resonances.</span>
 
@@ -285,19 +285,19 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_cut_tbt_matrix</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">turn_indices</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_cut_tbt_matrix</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">turn_indices</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">turn_indices</span><span class="p">))</span>
     <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">turn_indices</span><span class="p">),</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
 
-<span class="k">def</span> <span class="nf">_scale_to_meters</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_scale_to_meters</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
     <span class="n">scales_to_meters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;um&#39;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s1">&#39;mm&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;cm&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
     <span class="n">bpm_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">scales_to_meters</span><span class="p">[</span><span class="n">unit</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">bpm_data</span>
 
 
-<span class="k">def</span> <span class="nf">_closed_orbit_analysis</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">bpm_res</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_closed_orbit_analysis</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">bpm_res</span><span class="p">):</span>
     <span class="n">lin_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
         <span class="n">index</span><span class="o">=</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
         <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
@@ -318,7 +318,7 @@
     <span class="k">return</span> <span class="n">lin_frame</span><span class="p">,</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_orbit_data</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_orbit_data</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">):</span>
     <span class="n">lin_frame</span><span class="p">[</span><span class="s1">&#39;PK2PK&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">lin_frame</span><span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">lin_frame</span><span class="p">[</span><span class="s1">&#39;CORMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -327,7 +327,7 @@
     <span class="k">return</span> <span class="n">lin_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_add_calculated_phase_errors</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_calculated_phase_errors</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">):</span>
     <span class="n">noise</span> <span class="o">=</span> <span class="n">lin_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;NOISE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">lin_frame</span>   <span class="c1"># Do not calculated errors when no noise was calculated</span>
@@ -339,7 +339,7 @@
     <span class="k">return</span> <span class="n">lin_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_get_spectral_phase_error</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">noise</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_spectral_phase_error</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">noise</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    When the error is too big (&gt; 2*pi*0.25 more or less) the noise is not Gaussian anymore.</span>
 <span class="sd">    In such a case the distribution is almost uniform, so we set the error to be 0.3, which is</span>
@@ -350,7 +350,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">error</span> <span class="o">&gt;</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_sync_phase</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_sync_phase</span><span class="p">(</span><span class="n">lin_frame</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces ``MUXSYNC`` and ``MUYSYNC`` columns that are ``MUX/MUY`` but shifted such that for</span>
 <span class="sd">    BPM at index 0 is always 0. It allows to compare phases of consecutive measurements and if</span>
@@ -362,7 +362,7 @@
     <span class="k">return</span> <span class="n">lin_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_compute_headers</span><span class="p">(</span><span class="n">panda</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_headers</span><span class="p">(</span><span class="n">panda</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">ALL_PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;NAT&quot;</span><span class="p">):</span>
@@ -378,26 +378,26 @@
     <span class="k">return</span> <span class="n">headers</span>
 
 
-<span class="k">def</span> <span class="nf">_write_bad_bpms</span><span class="p">(</span><span class="n">output_path_without_suffix</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bad_bpms_with_reasons</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_bad_bpms</span><span class="p">(</span><span class="n">output_path_without_suffix</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bad_bpms_with_reasons</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path_without_suffix</span><span class="si">}</span><span class="s2">.bad_bpms_</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">bad_bpms_file</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">bad_bpms_with_reasons</span><span class="p">:</span>
             <span class="n">bad_bpms_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_spectrum</span><span class="p">(</span><span class="n">output_path_without_suffix</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">spectra</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_spectrum</span><span class="p">(</span><span class="n">output_path_without_suffix</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">spectra</span><span class="p">):</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path_without_suffix</span><span class="si">}{</span><span class="n">FILE_AMPS_EXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;COEFFS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path_without_suffix</span><span class="si">}{</span><span class="n">FILE_FREQS_EXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">spectra</span><span class="p">[</span><span class="s2">&quot;FREQS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_lin_tfs</span><span class="p">(</span><span class="n">output_path_without_suffix</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">lin_frame</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_lin_tfs</span><span class="p">(</span><span class="n">output_path_without_suffix</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">lin_frame</span><span class="p">):</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path_without_suffix</span><span class="si">}{</span><span class="n">FILE_LIN_EXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">lin_frame</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_output_path_without_suffix</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_output_path_without_suffix</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_rescale_amps_to_main_line_and_compute_noise</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rescale_amps_to_main_line_and_compute_noise</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TODO    follows non-transpararent convention</span>
 <span class="sd">    TODO    the consequent analysis has to be changed if removed</span>

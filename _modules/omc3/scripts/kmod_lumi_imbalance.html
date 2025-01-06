@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.scripts.kmod_lumi_imbalance &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -251,17 +251,17 @@
 <span class="sd">    Path to the directory where to write the output files.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tfs</span>
-<span class="kn">from</span> <span class="nn">generic_parser.entrypoint_parser</span> <span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BEAM</span><span class="p">,</span>
     <span class="n">BETASTAR</span><span class="p">,</span>
     <span class="n">EFFECTIVE_BETAS_FILENAME</span><span class="p">,</span>
@@ -272,16 +272,16 @@
     <span class="n">MDL</span><span class="p">,</span>
     <span class="n">NAME</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span> <span class="n">save_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span> <span class="n">save_config</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">IPS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ip1&quot;</span><span class="p">,</span> <span class="s2">&quot;ip2&quot;</span><span class="p">,</span> <span class="s2">&quot;ip5&quot;</span><span class="p">,</span> <span class="s2">&quot;ip8&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function to initialize and return parameters for kmod luminosity calculation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -309,7 +309,7 @@
 <div class="viewcode-block" id="calculate_lumi_imbalance">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.calculate_lumi_imbalance">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">calculate_lumi_imbalance</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_lumi_imbalance</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Perform the luminosity imbalance calculation. &quot;&quot;&quot;</span>
     <span class="n">output_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> 
     <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -340,7 +340,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_read_and_check_dataframes</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_and_check_dataframes</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read the given DataFrames if needed, check them for validity and return a dictionary.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -359,7 +359,7 @@
                     <span class="s2">&quot;You need to run the `kmod_average` script on data for both beams &quot;</span>
                     <span class="s2">&quot;before you can calulate the luminosity imbalance.&quot;</span>
                 <span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="k">if</span> <span class="n">BEAM</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">BEAM</span><span class="p">)</span>
@@ -387,7 +387,7 @@
 
 <div class="viewcode-block" id="get_lumi_imbalance_df">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_lumi_imbalance_df">[docs]</a>
-<span class="k">def</span> <span class="nf">get_lumi_imbalance_df</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_lumi_imbalance_df</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the effective beta stars and the luminosity imbalance from the input dataframes.</span>
 
@@ -417,7 +417,7 @@
 
 <div class="viewcode-block" id="get_imbalance_w_err">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_imbalance_w_err">[docs]</a>
-<span class="k">def</span> <span class="nf">get_imbalance_w_err</span><span class="p">(</span><span class="n">ipA_beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipA_beta_err</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipB_beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipB_beta_err</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_imbalance_w_err</span><span class="p">(</span><span class="n">ipA_beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipA_beta_err</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipB_beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipB_beta_err</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the luminosity imbalance IP_A / IP_B  and its error, based on the effective betas for IP_A and IP_B.</span>
 <span class="sd">    This implies, that all the other beam parameters (see e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf) </span>
@@ -431,7 +431,7 @@
 
 <div class="viewcode-block" id="get_effective_beta_star_w_err">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_effective_beta_star_w_err">[docs]</a>
-<span class="k">def</span> <span class="nf">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the effective beta*, i.e. the denominator of the luminosity as given in e.g. </span>
 <span class="sd">    Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf , without any constants </span>
 <span class="sd">    as we assume here that these are equal for both IPs, and we only care about the ratio. </span>
@@ -453,12 +453,12 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_betastar_beams</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_betastar_beams</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Get betastar x and y for both beam 1 and beam 2. Order: b1x, b1y, b2x, b2y &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="n">_get_betastar_xy</span><span class="p">(</span><span class="n">df_ip</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="p">),</span> <span class="o">*</span><span class="n">_get_betastar_xy</span><span class="p">(</span><span class="n">df_ip</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">errors</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_get_betastar_xy</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_betastar_xy</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Get betastar x and y for the given beam. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">df_ip</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">]])</span>

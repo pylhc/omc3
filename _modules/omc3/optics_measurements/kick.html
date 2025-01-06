@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.optics_measurements.kick &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,34 +206,34 @@
 <span class="sd">This module contains kick functionality of ``optics_measurements``.</span>
 <span class="sd">It provides functions to compute kick actions.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">tfs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANE_TO_NUM</span>
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="n">AccElementTypes</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ACTION</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">DPP</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccElementTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">ACTION</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">DPP</span><span class="p">,</span>
                                                 <span class="n">DPPAMP</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">KICK_NAME</span><span class="p">,</span>
                                                 <span class="n">NAT_TUNE</span><span class="p">,</span> <span class="n">PEAK2PEAK</span><span class="p">,</span>
                                                 <span class="n">RES</span><span class="p">,</span>
                                                 <span class="n">RESCALE_FACTOR</span><span class="p">,</span> <span class="n">RMS</span><span class="p">,</span>
                                                 <span class="n">SQRT_ACTION</span><span class="p">,</span> <span class="n">TIME</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">CLOSED_ORBIT</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.stats</span> <span class="kn">import</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="n">weighted_error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="n">weighted_error</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
-    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
-    <span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="n">InputFiles</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputFiles</span>
 
 
 <div class="viewcode-block" id="calculate">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.kick.calculate">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Args:</span>
@@ -257,19 +257,19 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_header</span><span class="p">(</span><span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_header</span><span class="p">(</span><span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">header_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">header</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">RESCALE_FACTOR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scale</span>
     <span class="k">return</span> <span class="n">header</span>
 
 
-<span class="k">def</span> <span class="nf">_rescale_actions</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rescale_actions</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
         <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="si">}{</span><span class="n">RES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">scaling_factor</span>
     <span class="k">return</span> <span class="n">df</span>
 
 
-<span class="k">def</span> <span class="nf">_get_kick</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_kick</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="n">load_columns</span><span class="p">,</span> <span class="n">calc_columns</span><span class="p">,</span> <span class="n">column_types</span> <span class="o">=</span> <span class="n">_get_column_mapping</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
     <span class="n">kick_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
                               <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="n">plane</span><span class="p">])),</span>
@@ -288,7 +288,7 @@
     <span class="k">return</span> <span class="n">kick_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_get_action</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">lin</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_action</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">lin</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates action (2J and sqrt(2J)) and its errors from BPM data in lin-df.</span>
 <span class="sd">    Takes either PK2PK/2 for kicker excitation or AMP for AC-dipole excitation,</span>
@@ -339,14 +339,14 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mean_sqrt2j</span><span class="p">,</span> <span class="n">err_sqrt2j</span><span class="p">,</span> <span class="n">mean_2j</span><span class="p">,</span> <span class="n">err_2j</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">_get_model_arc_betas</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_model_arc_betas</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="n">accel</span> <span class="o">=</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">accelerator</span>
     <span class="n">model</span> <span class="o">=</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_driven</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="k">else</span> <span class="n">accel</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">S</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
            <span class="n">accel</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">]),</span> <span class="p">:]</span>
 
 
-<span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_column_mapping</span><span class="p">(</span><span class="n">plane</span><span class="p">):</span>
     <span class="n">plane_number</span> <span class="o">=</span> <span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
     <span class="n">load_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span>
         <span class="p">(</span><span class="n">TIME</span><span class="p">,</span>                      <span class="s2">&quot;TIME&quot;</span><span class="p">),</span>

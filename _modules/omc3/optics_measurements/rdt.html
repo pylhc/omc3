@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.optics_measurements.rdt &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,23 +206,23 @@
 <span class="sd">This module contains RDT calculations related functionality of ``optics_measurements``.</span>
 <span class="sd">It provides functions to compute global resonance driving terms **f_jklm**.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">tfs</span>
-<span class="kn">from</span> <span class="nn">optics_functions.rdt</span> <span class="kn">import</span> <span class="n">get_all_to_order</span><span class="p">,</span> <span class="n">jklm2str</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">OptimizeWarning</span><span class="p">,</span> <span class="n">curve_fit</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">diags</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">optics_functions.rdt</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_all_to_order</span><span class="p">,</span> <span class="n">jklm2str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptimizeWarning</span><span class="p">,</span> <span class="n">curve_fit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">diags</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span> <span class="nn">omc3.harpy.constants</span> <span class="kn">import</span> <span class="n">COL_AMP</span><span class="p">,</span> <span class="n">COL_PHASE</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.constants</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">COL_AMP</span><span class="p">,</span> <span class="n">COL_PHASE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AMPLITUDE</span><span class="p">,</span>
     <span class="n">COUNT</span><span class="p">,</span>
     <span class="n">ERR</span><span class="p">,</span>
@@ -238,24 +238,24 @@
     <span class="n">S2</span><span class="p">,</span>
     <span class="n">S</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.data_models</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">InputFiles</span><span class="p">,</span>
     <span class="n">check_and_warn_about_offmomentum_data</span><span class="p">,</span>
     <span class="n">filter_for_dpp</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.phase</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.phase</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">COMPENSATED</span><span class="p">,</span>
     <span class="n">UNCOMPENSATED</span><span class="p">,</span>
     <span class="n">CompensationMode</span><span class="p">,</span>
     <span class="n">PhaseDict</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.toolbox</span> <span class="kn">import</span> <span class="n">df_diff</span>
-<span class="kn">from</span> <span class="nn">omc3.optics_measurements.tune</span> <span class="kn">import</span> <span class="n">TuneDict</span>
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.toolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">df_diff</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.tune</span><span class="w"> </span><span class="kn">import</span> <span class="n">TuneDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">stats</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
-    <span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span>
-    <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
 
 <span class="n">NBPMS_FOR_90</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -264,7 +264,7 @@
 <span class="n">LineTuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_generate_plane_rdts</span><span class="p">(</span><span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">RDTTuple</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">RDTTuple</span><span class="p">]]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_plane_rdts</span><span class="p">(</span><span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">RDTTuple</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">RDTTuple</span><span class="p">]]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function generates two dictionnaries representing on what plane(s)</span>
 <span class="sd">    a RDT can be seen and which tune it is a multiple of.</span>
@@ -304,7 +304,7 @@
 
 <div class="viewcode-block" id="calculate">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.rdt.calculate">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span>
     <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span>
     <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span>
     <span class="n">tunes</span><span class="p">:</span> <span class="n">TuneDict</span><span class="p">,</span>
@@ -361,14 +361,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
     <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="n">RDT_FOLDER</span> <span class="o">/</span> <span class="n">_rdt_to_order_and_type</span><span class="p">(</span><span class="n">rdt</span><span class="p">)</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;f</span><span class="si">{</span><span class="n">_rdt_to_str</span><span class="p">(</span><span class="n">rdt</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
 
 
 <span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">_check_amp_error</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_amp_error</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Context manager to catch a specific type of ValueError, regarding the AMP_ column not found in the output,</span>
 <span class="sd">    as raised by get_line_sign_and_suffix. </span>
 <span class="sd">    </span>
@@ -380,17 +380,17 @@
         <span class="n">message</span>  <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RDT calculation failed for </span><span class="si">{</span><span class="n">jklm2str</span><span class="p">(</span><span class="o">*</span><span class="n">rdt</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
 
         <span class="k">if</span> <span class="s2">&quot;column AMP&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">error_str</span><span class="p">:</span>  <span class="c1"># raise unexpected Value errors </span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
             
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  
 
 
-<span class="k">def</span> <span class="nf">_rdt_to_str</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rdt_to_str</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
     <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">rdt</span>  <span class="c1"># noqa: E741</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">j</span><span class="si">}{</span><span class="n">k</span><span class="si">}{</span><span class="n">l</span><span class="si">}{</span><span class="n">m</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_rdt_to_order_and_type</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_rdt_to_order_and_type</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
     <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">rdt</span>  <span class="c1"># noqa: E741</span>
     <span class="n">rdt_type</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">+</span> <span class="n">m</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;skew&quot;</span>
     <span class="n">orders</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(((</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dipole&quot;</span><span class="p">),</span> 
@@ -405,7 +405,7 @@
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rdt_type</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">orders</span><span class="p">[</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_best_90_degree_phases</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">bpm_names</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_best_90_degree_phases</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">bpm_names</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="n">phase_dict</span><span class="p">:</span> <span class="n">PhaseDict</span> <span class="o">=</span> <span class="n">phases</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">UNCOMPENSATED</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">phase_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">phase_dict</span> <span class="o">=</span> <span class="n">phases</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">COMPENSATED</span><span class="p">]</span>
@@ -428,18 +428,18 @@
     <span class="k">return</span> <span class="n">for_rdts</span>
 
 
-<span class="k">def</span> <span class="nf">_get_n_upper_diagonals</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_n_upper_diagonals</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">diags</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_determine_line</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LineTuple</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_determine_line</span><span class="p">(</span><span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LineTuple</span><span class="p">]:</span>
     <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">rdt</span>  <span class="c1"># noqa: E741</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                  <span class="n">Y</span><span class="o">=</span><span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">l</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">lines</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">add_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
     <span class="n">mod_header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">line</span> <span class="o">=</span> <span class="n">_determine_line</span><span class="p">(</span><span class="n">rdt</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">line</span><span class="nd">@np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;Q1&#39;</span><span class="p">],</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;Q2&#39;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
@@ -447,7 +447,7 @@
     <span class="k">return</span> <span class="n">mod_header</span>
 
 
-<span class="k">def</span> <span class="nf">_process_rdt</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_rdt</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
     <span class="n">dpp_value</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">analyse_dpp</span> 
 
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">phase_data</span><span class="p">)</span>
@@ -484,7 +484,7 @@
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">S</span><span class="p">,</span> <span class="n">COUNT</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">]]</span>
 
 
-<span class="k">def</span> <span class="nf">_add_tunes_if_in_second_turn</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">phase2</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_tunes_if_in_second_turn</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">phase2</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">):</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">df_diff</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">S2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="n">tunes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">))))</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PLANES</span><span class="p">):</span>
@@ -493,7 +493,7 @@
     <span class="k">return</span> <span class="n">phase2</span>
 
 
-<span class="k">def</span> <span class="nf">_calculate_rdt_phases_from_line_phases</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">line_phase</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_calculate_rdt_phases_from_line_phases</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">line_phase</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">):</span>
     <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">))))</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PLANES</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -501,16 +501,16 @@
     <span class="k">return</span> <span class="n">line_phase</span> <span class="o">-</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">phases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">phases</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.25</span>
 
 
-<span class="k">def</span> <span class="nf">_fit_rdt_amplitudes</span><span class="p">(</span><span class="n">invariants</span><span class="p">,</span> <span class="n">line_amp</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">rdt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_fit_rdt_amplitudes</span><span class="p">(</span><span class="n">invariants</span><span class="p">,</span> <span class="n">line_amp</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">rdt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
     <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">line_amp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">line_amp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">kick_data</span> <span class="o">=</span> <span class="n">get_linearized_problem</span><span class="p">(</span><span class="n">invariants</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">rdt</span><span class="p">)</span>  <span class="c1"># corresponding to actions in meters</span>
     <span class="n">guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">line_amp</span> <span class="o">/</span> <span class="n">kick_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">fitting</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fitting</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">f</span> <span class="o">*</span> <span class="n">x</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bpm_rdt_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line_amp</span><span class="p">):</span>
@@ -533,7 +533,7 @@
 
 <div class="viewcode-block" id="get_linearized_problem">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.rdt.get_linearized_problem">[docs]</a>
-<span class="k">def</span> <span class="nf">get_linearized_problem</span><span class="p">(</span><span class="n">invs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_linearized_problem</span><span class="p">(</span><span class="n">invs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit</span>
 <span class="sd">    we use sqrt(2J): unit is sqrt(m).</span>
@@ -547,7 +547,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_line_sign_and_suffix</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="n">LineTuple</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_line_sign_and_suffix</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="n">LineTuple</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}{</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
     <span class="n">conj_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="o">-</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}{</span><span class="o">-</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">input_files</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
@@ -563,7 +563,7 @@
 
 <div class="viewcode-block" id="complex_secondary_lines">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.rdt.complex_secondary_lines">[docs]</a>
-<span class="k">def</span> <span class="nf">complex_secondary_lines</span><span class="p">(</span><span class="n">phase_adv</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">err_padv</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">sig1</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">complex</span><span class="p">],</span> <span class="n">sig2</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">complex</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">complex_secondary_lines</span><span class="p">(</span><span class="n">phase_adv</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">err_padv</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">sig1</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">complex</span><span class="p">],</span> <span class="n">sig2</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">[</span><span class="nb">complex</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Args:</span>
@@ -586,7 +586,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">to_complex</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">phases</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_complex</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">phases</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>

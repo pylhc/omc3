@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.plotting.plot_amplitude_detuning &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -312,37 +312,37 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
-<span class="kn">from</span> <span class="nn">generic_parser.entry_datatypes</span> <span class="kn">import</span> <span class="n">DictAsString</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">MatplotlibDeprecationWarning</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">mcolors</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
-<span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
-<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
-<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">odr</span>
-<span class="kn">from</span> <span class="nn">tfs.tools</span> <span class="kn">import</span> <span class="n">significant_digits</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictAsString</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatplotlibDeprecationWarning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">mcolors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.axes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">odr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tfs.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">significant_digits</span>
 
-<span class="kn">from</span> <span class="nn">omc3.definitions.constants</span> <span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">UNIT_IN_METERS</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">pcolors</span>
-<span class="kn">from</span> <span class="nn">omc3.plotting.utils</span> <span class="kn">import</span> <span class="n">style</span> <span class="k">as</span> <span class="n">pstyle</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">const</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">fitting_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis</span> <span class="kn">import</span> <span class="n">kick_file_modifiers</span> <span class="k">as</span> <span class="n">kick_mod</span>
-<span class="kn">from</span> <span class="nn">omc3.tune_analysis.kick_file_modifiers</span> <span class="kn">import</span> <span class="n">AmpDetData</span>
-<span class="kn">from</span> <span class="nn">omc3.utils</span> <span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.contexts</span> <span class="kn">import</span> <span class="n">suppress_warnings</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.iotools</span> <span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">UnionPathStr</span><span class="p">,</span> <span class="n">save_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">UNIT_IN_METERS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span> <span class="k">as</span> <span class="n">pannot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">pcolors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">style</span> <span class="k">as</span> <span class="n">pstyle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">const</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">fitting_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">kick_file_modifiers</span> <span class="k">as</span> <span class="n">kick_mod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis.kick_file_modifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmpDetData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress_warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">UnionPathStr</span><span class="p">,</span> <span class="n">save_config</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -350,7 +350,7 @@
 <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">PLANES</span>
 
 
-<span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">kicks</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
             <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
@@ -435,7 +435,7 @@
 
 
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting Amplitude Detuning Results.&quot;</span><span class="p">)</span>
     <span class="n">_save_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
     <span class="n">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
@@ -460,7 +460,7 @@
 
 <span class="c1"># 2D Plots ----------------------------</span>
 
-<span class="k">def</span> <span class="nf">_plot_2d</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_2d</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 2D Plots per kick-plane and with/without BBQ correction. &quot;&quot;&quot;</span>
     <span class="n">figs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">limits</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="s1">&#39;y_lim&#39;</span><span class="p">])</span>
@@ -546,7 +546,7 @@
 
 <div class="viewcode-block" id="plot_odr">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_odr</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> <span class="n">xmax</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_odr</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> <span class="n">xmax</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds a quadratic odr fit to axes.&quot;&quot;&quot;</span>
 
     <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span> <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">color</span>
@@ -572,7 +572,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_plot_detuning</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">AmpDetData</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_detuning</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">AmpDetData</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">limits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the detuning and the ODR into axes.&quot;&quot;&quot;</span>
     <span class="n">x_lim</span> <span class="o">=</span> <span class="n">_get_default</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">action</span><span class="o">+</span><span class="n">data</span><span class="o">.</span><span class="n">action_err</span><span class="p">)])</span>
@@ -590,7 +590,7 @@
                 <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_format_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
     <span class="c1"># labels</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -607,7 +607,7 @@
 
 <span class="c1"># 3D Plots ----------------------------</span>
 
-<span class="k">def</span> <span class="nf">_plot_3d</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_3d</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 3D Plots for both kick-planes, one plot each with/without BBQ correction. &quot;&quot;&quot;</span>
     <span class="n">figs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">limits</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="s1">&#39;y_lim&#39;</span><span class="p">])</span>
@@ -704,7 +704,7 @@
     <span class="k">return</span> <span class="n">figs</span>
 
 
-<span class="k">def</span> <span class="nf">_plot_detuning_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AmpDetData</span><span class="p">],</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_fits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_detuning_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AmpDetData</span><span class="p">],</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_fits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Plot the detuning and the ODR into axes.&quot;&quot;&quot;</span>
     <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">jx</span><span class="p">,</span> <span class="n">jx_err</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">.</span><span class="n">action_err</span>
@@ -742,20 +742,20 @@
 <div class="viewcode-block" id="FitFuncs">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">FitFuncs</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FitFuncs</span><span class="p">:</span>
     <span class="n">fit</span><span class="p">:</span> <span class="nb">callable</span>
     <span class="n">upper</span><span class="p">:</span> <span class="nb">callable</span>
     <span class="n">lower</span><span class="p">:</span> <span class="nb">callable</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">fit_fun_odr_1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="n">qdx</span><span class="p">,</span> <span class="n">qdy</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_fun_odr_1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="n">qdx</span><span class="p">,</span> <span class="n">qdy</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">q0</span> <span class="o">+</span> <span class="n">qdx</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">qdy</span> <span class="o">*</span> <span class="n">y</span>
 
 
 <div class="viewcode-block" id="plot_odr_3d">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr_3d">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_odr_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">odr_fits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">],</span> <span class="n">xymax</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_odr_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">odr_fits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">],</span> <span class="n">xymax</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the odr fit in 3D.&quot;&quot;&quot;</span>
 
     <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span> <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">color</span>
@@ -802,7 +802,7 @@
 
 <div class="viewcode-block" id="plot_cube">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_cube</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">f_low</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span> <span class="n">f_upp</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_cube</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">f_low</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span> <span class="n">f_upp</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plots a cube-like plot with f_low and f_upp as surfaces. &quot;&quot;&quot;</span>
     <span class="c1"># lower</span>
     <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -835,7 +835,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_format_axes_3d</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_axes_3d</span><span class="p">(</span>
         <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">ax_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">acd</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="c1"># labels</span>
@@ -878,7 +878,7 @@
 
 <span class="c1"># Labels -----------------------------------------------------------------------</span>
 
-<span class="k">def</span> <span class="nf">_get_odr_label</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_odr_label</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                    <span class="n">action_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">do_acd_correction</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the label for the ODR fit, nicely formatted and scaled. &quot;&quot;&quot;</span>
     <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -903,7 +903,7 @@
     <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_list</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_scaled_odr_label</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">action_unit</span><span class="p">,</span> <span class="n">acd_correction</span><span class="p">,</span> <span class="n">magnitude_exponent</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_scaled_odr_label</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">action_unit</span><span class="p">,</span> <span class="n">acd_correction</span><span class="p">,</span> <span class="n">magnitude_exponent</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the label for the ODR fit after scaling to readable units and accounting for AC-Dipole correction.&quot;&quot;&quot;</span>
     <span class="n">str_acd_scale</span> <span class="o">=</span> <span class="s2">&quot;$^*$&quot;</span> <span class="k">if</span> <span class="n">acd_correction</span> <span class="o">!=</span> <span class="mi">1</span>  <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
@@ -915,14 +915,14 @@
     <span class="k">return</span> <span class="sa">fr</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">str_val</span><span class="si">}</span><span class="s1"> $\pm$ </span><span class="si">{</span><span class="n">str_std</span><span class="si">}</span><span class="s1">)</span><span class="si">{</span><span class="n">str_acd_scale</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">str_mag</span><span class="si">}</span><span class="s1"> m$^</span><span class="se">{{</span><span class="s1">-</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="se">}}</span><span class="s1">$&#39;</span>
 
 
-<span class="k">def</span> <span class="nf">_get_scaled_labels</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_scaled_labels</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
     <span class="n">scaled_vas</span><span class="p">,</span> <span class="n">scaled_std</span> <span class="o">=</span> <span class="n">val</span><span class="o">*</span><span class="n">scale</span><span class="p">,</span> <span class="n">std</span><span class="o">*</span><span class="n">scale</span>
     <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">scaled_std</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">scaled_std</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">scaled_vas</span><span class="p">))</span><span class="si">:</span><span class="s1">d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">scaled_std</span><span class="p">))</span><span class="si">:</span><span class="s1">d</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="k">return</span> <span class="n">significant_digits</span><span class="p">(</span><span class="n">scaled_vas</span><span class="p">,</span> <span class="n">scaled_std</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_labels_with_odr_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_labels_with_odr_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">):</span>
     <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">odr_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span>
@@ -940,13 +940,13 @@
 
 <span class="c1"># Helper -----------------------------------------------------------------------</span>
 
-<span class="k">def</span> <span class="nf">_save_options</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_options</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
         <span class="n">out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
         <span class="n">save_config</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">bbq_corrected</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">opt</span><span class="o">.</span><span class="n">bbq_corrected</span> <span class="o">=</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># loop both</span>
     <span class="k">else</span><span class="p">:</span>
@@ -956,14 +956,14 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;kicks&#39; and &#39;labels&#39; need to be of same size!&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_default</span><span class="p">(</span><span class="n">ddict</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_default</span><span class="p">(</span><span class="n">ddict</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns ``default`` if either the dict itself or the entry is ``None``.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ddict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ddict</span> <span class="ow">or</span> <span class="n">ddict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">default</span>
     <span class="k">return</span> <span class="n">ddict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_scale_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">AmpDetData</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_scale_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">AmpDetData</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">,</span>
                 <span class="n">action_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action_plot_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale data to plot-units (y=tune_scale, x=um).&quot;&quot;&quot;</span>
     <span class="n">x_scale</span> <span class="o">=</span> <span class="n">UNIT_IN_METERS</span><span class="p">[</span><span class="n">action_unit</span><span class="p">]</span> <span class="o">/</span> <span class="n">UNIT_IN_METERS</span><span class="p">[</span><span class="n">action_plot_unit</span><span class="p">]</span>

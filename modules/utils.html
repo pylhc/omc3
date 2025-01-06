@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Utils &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
 
@@ -585,7 +585,7 @@ It won’t open the file, so only the files path is returned.</p>
 <h2>Mock<a class="headerlink" href="#mock" title="Link to this heading"></a></h2>
 <p>Provides mock functionality for packages necessitating the <code class="docutils literal notranslate"><span class="pre">CERN</span> <span class="pre">GPN</span></code> and only installable from the
 <code class="docutils literal notranslate"><span class="pre">acc-py</span></code> package index, such as <code class="docutils literal notranslate"><span class="pre">pytimber</span></code>, <code class="docutils literal notranslate"><span class="pre">pjlsa</span></code> etc.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">omc3.utils.mock</span> <span class="kn">import</span> <span class="n">cern_network_import</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 <span class="n">pytimber</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pytimber&quot;</span><span class="p">)</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">)</span>  <span class="c1"># will raise if pytimber not installed</span>
 </pre></div>

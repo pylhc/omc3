@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.utils.logging_tools &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
 
@@ -206,19 +206,19 @@
 <span class="sd">Functions for easier use of logging, like automatic logger setup</span>
 <span class="sd">(see: :meth:`~utils.logging_tools.get_logger`).</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">NOTSET</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>  <span class="c1"># make them available directly</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">NOTSET</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>  <span class="c1"># make them available directly</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="n">DIVIDER</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span>
 <span class="n">NEWLINE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># levelname + divider + 2</span>
@@ -239,19 +239,19 @@
 
 <div class="viewcode-block" id="MaxFilter">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.MaxFilter">[docs]</a>
-<span class="k">class</span> <span class="nc">MaxFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MaxFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;To get messages only up to a certain level.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__level</span> <span class="o">=</span> <span class="n">level</span>
 
-    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_record</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_record</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">log_record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__level</span></div>
 
 
 
 <div class="viewcode-block" id="DebugMode">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.DebugMode">[docs]</a>
-<span class="k">class</span> <span class="nc">DebugMode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DebugMode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context Manager for the debug mode.</span>
 <span class="sd">    Hint: Does not work with ``@contextmanager`` from contextlib (even though nicer code),</span>
@@ -261,7 +261,7 @@
 <span class="sd">        active (bool): Defines if this manager is doing anything. Defaults to ``True``.</span>
 <span class="sd">        log_file (str): File to log into.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="n">active</span>
         <span class="k">if</span> <span class="n">active</span><span class="p">:</span>
             <span class="c1"># get current logger</span>
@@ -293,10 +293,10 @@
             <span class="c1"># stop time</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
             <span class="c1"># summarize</span>
             <span class="n">time_used</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
@@ -313,7 +313,7 @@
 
 <div class="viewcode-block" id="TempFile">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.TempFile">[docs]</a>
-<span class="k">class</span> <span class="nc">TempFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TempFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context Manager. Lets another function write into a temporary file and logs its contents.</span>
 <span class="sd">    It won&#39;t open the file, so only the files path is returned.</span>
@@ -323,14 +323,14 @@
 <span class="sd">        log_func (func): The function with which the content should be logged (e.g. LOG.info).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">log_func</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">log_func</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">file_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_func</span> <span class="o">=</span> <span class="n">log_func</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -345,7 +345,7 @@
 <div class="viewcode-block" id="log_pandas_settings_with_copy">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.log_pandas_settings_with_copy">[docs]</a>
 <span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">log_pandas_settings_with_copy</span><span class="p">(</span><span class="n">log_func</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_pandas_settings_with_copy</span><span class="p">(</span><span class="n">log_func</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Logs pandas ``SettingsWithCopy`` warning to loc_func instead of printing the warning.&quot;&quot;&quot;</span>
     <span class="n">caller_line</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_lineno</span>  <span class="c1"># one frame for contextmanager</span>
     <span class="n">old_mode</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span>
@@ -367,7 +367,7 @@
 <div class="viewcode-block" id="logging_silence">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.logging_silence">[docs]</a>
 <span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">logging_silence</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logging_silence</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove temporarily all loggers from root logger.&quot;&quot;&quot;</span>
     <span class="n">root_logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">handlers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">root_logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
@@ -382,7 +382,7 @@
 <div class="viewcode-block" id="unformatted_console_logging">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.unformatted_console_logging">[docs]</a>
 <span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">unformatted_console_logging</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unformatted_console_logging</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log only to console and only unformatted.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">logging_silence</span><span class="p">():</span>
         <span class="n">handler</span> <span class="o">=</span> <span class="n">stream_handler</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">NOTSET</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -397,7 +397,7 @@
 
 <div class="viewcode-block" id="TempStringLogger">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.TempStringLogger">[docs]</a>
-<span class="k">class</span> <span class="nc">TempStringLogger</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TempStringLogger</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Temporarily log into a string that can be retrieved by ``get_log``.</span>
 
@@ -405,7 +405,7 @@
 <span class="sd">        module: module to log, defaults to the caller file.</span>
 <span class="sd">        level: logging level, defaults to ``INFO``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">INFO</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">INFO</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">module</span> <span class="o">=</span> <span class="n">_get_caller_logger_name</span><span class="p">()</span>
 
@@ -414,18 +414,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">stream_handler</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TempStringLogger.get_log">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.TempStringLogger.get_log">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Get the log as string. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 </div>
@@ -434,7 +434,7 @@
 
 <div class="viewcode-block" id="odr_pprint">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.odr_pprint">[docs]</a>
-<span class="k">def</span> <span class="nf">odr_pprint</span><span class="p">(</span><span class="n">printer</span><span class="p">,</span> <span class="n">odr_out</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">odr_pprint</span><span class="p">(</span><span class="n">printer</span><span class="p">,</span> <span class="n">odr_out</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Logs the odr output results. Adapted from odr_output pretty print.&quot;&quot;&quot;</span>
     <span class="n">old_opts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">get_printoptions</span><span class="p">()</span>
     <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -457,7 +457,7 @@
 
 <div class="viewcode-block" id="list2str">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.list2str">[docs]</a>
-<span class="k">def</span> <span class="nf">list2str</span><span class="p">(</span><span class="n">list_</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">list2str</span><span class="p">(</span><span class="n">list_</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns string representation of ``list_``, but without brackets.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)</span></div>
 
@@ -467,7 +467,7 @@
 
 <div class="viewcode-block" id="get_logger">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.get_logger">[docs]</a>
-<span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">level_root</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">level_console</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">level_root</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">level_console</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up logger if name is **__main__**. Returns logger based on module name.</span>
 
@@ -537,7 +537,7 @@
 
 <div class="viewcode-block" id="file_handler">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.file_handler">[docs]</a>
-<span class="k">def</span> <span class="nf">file_handler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">file_handler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience function so the caller does not have to import logging.&quot;&quot;&quot;</span>
     <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="p">)</span>
     <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
@@ -549,7 +549,7 @@
 
 <div class="viewcode-block" id="stream_handler">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.stream_handler">[docs]</a>
-<span class="k">def</span> <span class="nf">stream_handler</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">,</span> <span class="n">max_level</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stream_handler</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">BASIC_FORMAT</span><span class="p">,</span> <span class="n">max_level</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience function so the caller does not have to import logging.&quot;&quot;&quot;</span>
     <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
     <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
@@ -563,7 +563,7 @@
 
 <div class="viewcode-block" id="add_module_handler">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.add_module_handler">[docs]</a>
-<span class="k">def</span> <span class="nf">add_module_handler</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_module_handler</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add handler at current module level.&quot;&quot;&quot;</span>
     <span class="n">current_module</span> <span class="o">=</span> <span class="n">_get_current_module</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">current_module</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span></div>
@@ -572,7 +572,7 @@
 
 <div class="viewcode-block" id="add_root_handler">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.add_root_handler">[docs]</a>
-<span class="k">def</span> <span class="nf">add_root_handler</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_root_handler</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add handler at root level.&quot;&quot;&quot;</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span></div>
 
@@ -580,7 +580,7 @@
 
 <div class="viewcode-block" id="getLogger">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.getLogger">[docs]</a>
-<span class="k">def</span> <span class="nf">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience function so the caller does not have to import logging.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
@@ -588,7 +588,7 @@
 
 <div class="viewcode-block" id="get_my_logger_name">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.get_my_logger_name">[docs]</a>
-<span class="k">def</span> <span class="nf">get_my_logger_name</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_my_logger_name</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the logger name for the caller.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_get_caller_logger_name</span><span class="p">()</span></div>
 
@@ -597,7 +597,7 @@
 <span class="c1"># Private Methods ##############################################################</span>
 
 
-<span class="k">def</span> <span class="nf">_get_caller</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_caller</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the caller of the current log-function.&quot;&quot;&quot;</span>
     <span class="n">this_file</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">caller_file</span> <span class="o">=</span> <span class="n">this_file</span>
@@ -609,7 +609,7 @@
     <span class="k">return</span> <span class="n">caller_file</span>
 
 
-<span class="k">def</span> <span class="nf">_get_current_module</span><span class="p">(</span><span class="n">current_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_current_module</span><span class="p">(</span><span class="n">current_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the name of the current module.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">current_file</span><span class="p">:</span>
         <span class="n">current_file</span> <span class="o">=</span> <span class="n">_get_caller</span><span class="p">()</span>
@@ -623,14 +623,14 @@
     <span class="k">return</span> <span class="n">current_module</span>
 
 
-<span class="k">def</span> <span class="nf">_get_caller_logger_name</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_caller_logger_name</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns logger name of the caller.&quot;&quot;&quot;</span>
     <span class="n">caller_file</span> <span class="o">=</span> <span class="n">_get_caller</span><span class="p">()</span>
     <span class="n">current_module</span> <span class="o">=</span> <span class="n">_get_current_module</span><span class="p">(</span><span class="n">caller_file</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">current_module</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">caller_file</span><span class="p">)])</span>
 
 
-<span class="k">def</span> <span class="nf">_maybe_bring_color</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="n">colorlevel</span><span class="o">=</span><span class="n">INFO</span><span class="p">,</span> <span class="n">color_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_maybe_bring_color</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="n">colorlevel</span><span class="o">=</span><span class="n">INFO</span><span class="p">,</span> <span class="n">color_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds color to the logs (can only be used in a terminal).&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">color_flag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">color_flag</span> <span class="o">=</span> <span class="n">_isatty</span><span class="p">()</span>
@@ -663,7 +663,7 @@
     <span class="k">return</span> <span class="n">format_string</span>
 
 
-<span class="k">def</span> <span class="nf">_isatty</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_isatty</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if stdout is a tty, which means it should support color-codes.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="s1">&#39;isatty&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">()</span>
 </pre></div>

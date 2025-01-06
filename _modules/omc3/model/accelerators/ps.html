@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>omc3.model.accelerators.ps &mdash; omc3 0.20.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
 
@@ -253,18 +253,18 @@
 
 <span class="sd">        action: ``store_true``</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">generic_parser</span> <span class="kn">import</span> <span class="n">EntryPoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPoint</span>
 
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.accelerator</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AccElementTypes</span><span class="p">,</span>
     <span class="n">AccExcitationMode</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">omc3.utils.parsertools</span> <span class="kn">import</span> <span class="n">require_param</span>
-<span class="kn">from</span> <span class="nn">omc3.model.constants</span> <span class="kn">import</span> <span class="n">MODIFIER_TAG</span><span class="p">,</span> <span class="n">PLANE_TO_HV</span>
-<span class="kn">from</span> <span class="nn">omc3.model.accelerators.psbase</span> <span class="kn">import</span> <span class="n">PsBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.parsertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_param</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">MODIFIER_TAG</span><span class="p">,</span> <span class="n">PLANE_TO_HV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.psbase</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsBase</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
@@ -280,7 +280,7 @@
 
 <div class="viewcode-block" id="Ps">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps">[docs]</a>
-<span class="k">class</span> <span class="nc">Ps</span><span class="p">(</span><span class="n">PsBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Ps</span><span class="p">(</span><span class="n">PsBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parent Class for PS-types.&quot;&quot;&quot;</span>
 
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;ps&quot;</span>
@@ -291,14 +291,14 @@
 
     <span class="c1"># Public Methods ##########################################################</span>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">():</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="n">Ps</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tune_method&quot;</span><span class="p">,</span>
                              <span class="n">choices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">TUNE_METHODS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
                              <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tune method&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">opt</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
@@ -312,13 +312,13 @@
 
 <div class="viewcode-block" id="Ps.verify_object">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.verify_object">[docs]</a>
-    <span class="k">def</span> <span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="Ps.get_file">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_file">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get filepaths for PS files.&quot;&quot;&quot;</span>
         <span class="n">ps_dir</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span>
         <span class="n">ps_year_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()</span>
@@ -335,7 +335,7 @@
 
 <div class="viewcode-block" id="Ps.get_exciter_bpm">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_exciter_bpm">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">bpms_to_find</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PR.BPM00&quot;</span><span class="p">,</span> <span class="s2">&quot;PR.BPM03&quot;</span><span class="p">]</span>
@@ -347,7 +347,7 @@
 
 <div class="viewcode-block" id="Ps.get_base_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_base_madx_script">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">best_knowledge</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">best_knowledge</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No best knowledge model for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2"> (yet).&quot;</span><span class="p">)</span>
 
@@ -379,9 +379,9 @@
 
 
 
-<span class="k">class</span> <span class="nc">_PsSegmentMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_PsSegmentMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="kc">None</span>
