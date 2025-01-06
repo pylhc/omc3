@@ -55,9 +55,13 @@ def test_accelerator_datetime(now):
 
 @pytest.mark.basic
 def test_fold():
+    # due to daylight saving time change on the 25th of October 2020
+    # 01:00 UTC and 00:00 UTC corresponded to the same local time,
+    # which is indicated by the fold attribute (0 == earlier time, 1 == later time)
+    # see https://peps.python.org/pep-0495/
     folded = tt.AcceleratorDatetime["lhc"](2020, 10, 25, 1, 0, 0)
     no_fold = tt.AcceleratorDatetime["lhc"](2020, 10, 25, 0, 0, 0)
-
+    
     assert folded.local.hour == no_fold.local.hour
     assert folded.local.fold == 1
     assert no_fold.local.fold == 0
