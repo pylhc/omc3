@@ -1,0 +1,2 @@
+pymadng >= 0.6.0
+cpymad >= 1.16.3
