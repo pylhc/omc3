@@ -9,13 +9,8 @@ from cpymad.madx import Madx
 from pymadng import MAD
 from turn_by_turn import madng
 
+from omc3.model.constants import TWISS_AC_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 from omc3.model_creator import create_instance_and_model
-from tests.utils.lhc_rdts.functions import (
-    get_file_suffix,
-    get_max_rdt_order,
-    get_model_dir,
-    get_tbt_name,
-)
 from tests.utils.lhc_rdts.constants import (
     ANALYSIS_DIR,
     DATA_DIR,
@@ -27,6 +22,12 @@ from tests.utils.lhc_rdts.constants import (
     NTURNS,
     OCTUPOLE_STRENGTH,
     SEXTUPOLE_STRENGTH,
+)
+from tests.utils.lhc_rdts.functions import (
+    get_file_suffix,
+    get_max_rdt_order,
+    get_model_dir,
+    get_tbt_name,
 )
 
 ACC_MODELS = Path("/afs/cern.ch/eng/acc-models/lhc/2024/")
@@ -130,7 +131,7 @@ twiss_elements:deselect{{pattern="drift"}}
         add_strengths_to_twiss(mad, "twiss_elements")
         mad.send(
             # True below is to make sure only selected rows are written
-            f"""twiss_elements:write("{model_dir / 'twiss_elements.dat'}", cols, hnams, true)"""
+            f"""twiss_elements:write("{model_dir / TWISS_ELEMENTS_DAT}", cols, hnams, true)"""
         )
         observe_BPMs(mad, beam)
         mad.send(f"""
@@ -140,17 +141,17 @@ twiss_data = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true, observe=
         add_strengths_to_twiss(mad, "twiss_ac")
         add_strengths_to_twiss(mad, "twiss_data")
         mad.send(f"""
-twiss_ac:write("{model_dir / 'twiss_ac.dat'}", cols, hnams)
-twiss_data:write("{model_dir / 'twiss.dat'}", cols, hnams)
+twiss_ac:write("{model_dir / TWISS_AC_DAT}", cols, hnams)
+twiss_data:write("{model_dir / TWISS_DAT}", cols, hnams)
 print("Replaced twiss data tables")
 py:send(1)
 """)
         assert mad.receive() == 1, "Error in updating model with new optics"
 
     # Read the twiss data tables and then convert all the headers to uppercase and column names to uppercase
-    export_tfs_to_madx(model_dir / "twiss_ac.dat")
-    export_tfs_to_madx(model_dir / "twiss_elements.dat")
-    export_tfs_to_madx(model_dir / "twiss.dat")
+    export_tfs_to_madx(model_dir / TWISS_AC_DAT)
+    export_tfs_to_madx(model_dir / TWISS_ELEMENTS_DAT)
+    export_tfs_to_madx(model_dir / TWISS_DAT)
 
 
 def observe_BPMs(mad: MAD, beam: int) -> None:

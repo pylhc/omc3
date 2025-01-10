@@ -1,8 +1,8 @@
 import matplotlib
 import pytest
 
+from omc3.model.constants import TWISS_ELEMENTS_DAT
 from omc3.plotting.plot_optics_measurements import plot
-
 from tests.conftest import INPUTS, MODELS
 
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
@@ -77,7 +77,7 @@ def test_orbit_ip_positions_location_manual(tmp_path):
     _default_test(
         "orbit",
         x_axis="location",
-        ip_positions=MODELS / "2018_col_b1_25cm" / "twiss_elements.dat",
+        ip_positions=MODELS / "2018_col_b1_25cm" / TWISS_ELEMENTS_DAT,
         output_dir=tmp_path,
     )
 
