@@ -16,6 +16,7 @@ from tests.inputs.lhc_rdts.rdt_constants import (
     DATA_DIR,
     MODEL_ANALYTICAL_PREFIX,
     MODEL_NG_PREFIX,
+    FREQ_OUT_DIR,
 )
 
 INPUTS = Path(__file__).parent.parent / "inputs"
@@ -50,6 +51,12 @@ def run_selective_harpy():
     """
     run_harpy(beam=1)
     run_harpy(beam=2)
+    yield # Run the tests
+
+    # Clean up the analysis files
+    for analysis_path in FREQ_OUT_DIR.iterdir():
+        analysis_path.unlink()
+    FREQ_OUT_DIR.rmdir()
 
 
 AMPLITUDE_TOLERANCES = {
