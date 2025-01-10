@@ -132,7 +132,7 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
     ng_rdt = rdt.split("_")[0].upper()
 
     # Reconstruct the complex numbers from the real and imaginary parts
-    ng_complex = ng_df[f"{ng_rdt}REAL"] + 1j * ng_df[f"{ng_rdt}IMAG"]
+    ng_complex = ng_df[ng_rdt]
     omc_complex = omc_df["REAL"] + 1j * omc_df["IMAG"]
 
     # Calculate the amplitudes
@@ -162,9 +162,7 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
         analytical_df = tfs.read(
             DATA_DIR / f"{MODEL_ANALYTICAL_PREFIX}_{file_suffix}.tfs", index="NAME"
         )
-        analytical_complex = (
-            analytical_df[f"{ng_rdt}REAL"] + 1j * analytical_df[f"{ng_rdt}IMAG"]
-        )
+        analytical_complex = analytical_df[{ng_rdt}]
 
         # Calculate the amplitudes
         analytical_amplitude = np.abs(analytical_complex)

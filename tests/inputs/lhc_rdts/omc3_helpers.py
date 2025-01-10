@@ -19,7 +19,7 @@ from tests.inputs.lhc_rdts.rdt_constants import (
 LOGGER = logging.getLogger(__name__)
 
 
-def filter_IPs(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+def filter_out_BPM_near_IPs(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     """Filter the DataFrame to include only BPMs."""
     return df.filter(regex=r"^BPM\.[1-9][0-9].", axis="index")
 
@@ -124,7 +124,7 @@ def get_rdts_from_harpy(
                 "Tunes are far from the expected values, rdts will be wrong/outside the tolerance"
             )
     dfs = {
-        rdt: filter_IPs(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
+        rdt: filter_out_BPM_near_IPs(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
     }
     return dfs
 

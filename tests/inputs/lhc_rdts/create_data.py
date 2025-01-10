@@ -1,4 +1,21 @@
-# Convert a MAD-NG output into a fake measurement, then use OMC3 to calculate this fake measurement.
+"""
+Creating data for lhc_rdts test
+-------------------------------
+
+This script creates the data required for the lhc_rdts test. The order of operations is as follows:
+1. Create the model for the specific beam, these are stored in seperate folders.
+2. Retrieve the RDTs - could be a constant. Is a function for flexibility.
+3. Run MAD-NG twiss to get the values of the RDTs.
+4. Convert the MAD-NG output to a MAD-X style TFS. This must be done as OMC3 only 
+reads MAD-X TFS files for the model, and expects some things about the file. 
+Also, this function reduces the file size.
+5. Remove the BPMs around the IP, as due to the phase advances, these RDTs are 
+less accurate when calculated from OMC3.
+6. Save just the RDTS to a TFS file.
+7. Run MAD-NG track to produce a TBT file - a fake measurement.
+8. Run the analytical model to get the RDTs.
+9. Other OMC3 analysis - this is only required if you want to analyse everything rather than just run the test. 
+"""
 import time
 import tfs
 
@@ -15,7 +32,7 @@ from tests.inputs.lhc_rdts.MAD_helpers import (
     write_tbt_file,
 )
 from tests.inputs.lhc_rdts.omc3_helpers import (
-    filter_IPs,
+    filter_out_BPM_near_IPs,
     get_rdts,
     run_harpy,
     get_rdts_from_harpy,
@@ -25,7 +42,7 @@ from tests.inputs.lhc_rdts.rdt_constants import DATA_DIR, MODEL_NG_PREFIX
 
 run_madng = True
 run_analytical_model = True
-save_omc3_analysis = True # Only required if you want to analyse everything rather than just run the test.
+save_omc3_analysis = False # Only required if you want to analyse everything rather than just run the test.
 
 for beam in [1, 2]:
     # Note: order is the order of the magnetic strength, not the order of the RDTs
@@ -43,7 +60,7 @@ for beam in [1, 2]:
     model_ng = convert_tfs_to_madx(model_ng)
 
     # Remove the BPMs around the IP
-    model_ng = filter_IPs(model_ng)
+    model_ng = filter_out_BPM_near_IPs(model_ng)
 
     # Save the model
     save_ng_model(model_ng, beam)
@@ -52,17 +69,18 @@ for beam in [1, 2]:
         # Run MAD-NG track to produce a TBT file
         write_tbt_file(beam)
 
-        # Run Harpy to get the RDTs
-        run_harpy(beam)
-
     if run_analytical_model:
         analytical_df = get_twiss_elements(beam)
         analytical_df = convert_tfs_to_madx(analytical_df)
         analytical_df = calculate_rdts(analytical_df, ng_rdts, feeddown=2)
-        analytical_df = filter_IPs(analytical_df) 
+        analytical_df = filter_out_BPM_near_IPs(analytical_df) 
         save_analytical_model(analytical_df, beam)
 
     if save_omc3_analysis:
+        print("Running Harpy")
+        # Run Harpy to get the RDTs
+        run_harpy(beam)
+
         print("Running analysis")
         analysis_runtime = time.time()
         rdt_dfs = get_rdts_from_harpy(beam)

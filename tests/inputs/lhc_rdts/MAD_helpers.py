@@ -67,34 +67,35 @@ def create_model_dir(beam: int) -> None:
     # Update the model by using beam 1 or 2.
     update_model_with_ng(beam)
 
-    # If beam 2, now we need to make the sequence as beam 4 for tracking
+    # If beam 2, now we need to make the sequence as beam 4 for tracking (seperate to the model)
     if beam == 2:
         make_madx_seq(model_dir, lines, beam, beam4=True)
 
-
+SEQUENCE_WRITE_LINE = 32
 def make_madx_seq(
     model_dir: Path, lines: list[str], beam: int, beam4: bool = False
 ) -> None:
     with Madx(stdout=False) as madx:
         madx.chdir(str(model_dir))
         for i, line in enumerate(lines):
-            if beam4:
-                if "define_nominal_beams" in line:
-                    madx.input(
-                        "beam, sequence=LHCB2, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;\n"
-                    )
-                    continue
-                elif "acc-models-lhc/lhc.seq" in line:
-                    line = line.replace(
-                            "acc-models-lhc/lhc.seq", "acc-models-lhc/lhcb4.seq"
-                        )
-            if i < 32:
+            if i < SEQUENCE_WRITE_LINE:
+                if beam4: # Change the beam definition to beam 4, if needed
+                    line = handle_beam4(line)
                 madx.input(line)
+        # Save the sequence, so that MAD-NG can use it
         madx.input(
             f"""
 set, format= "-.16e";
 save, sequence=lhcb{beam}, file="lhcb{beam}_saved.seq", noexpr=false;
-        """)
+        """
+        )
+
+def handle_beam4(line: str) -> str:
+    if "define_nominal_beams" in line: # replace the beam definition with beam 4 (bv=1 not -1)
+        return "beam, sequence=LHCB2, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;\n"
+    elif "acc-models-lhc/lhc.seq" in line: # replace the sequence with beam 4
+        return line.replace("acc-models-lhc/lhc.seq", "acc-models-lhc/lhcb4.seq")
+    return line
 
 def update_model_with_ng(beam: int) -> None:
     model_dir = get_model_dir(beam)
@@ -356,10 +357,8 @@ def save_cpx_model(
 
     new_df_dict = {
         "NAME": df.index,
+        **{rdt: df[rdt] for rdt in rdt_columns}
     }
-    for rdt in rdt_columns:
-        new_df_dict[rdt + "REAL"] = df[rdt].apply(lambda x: x.real)
-        new_df_dict[rdt + "IMAG"] = df[rdt].apply(lambda x: x.imag)
 
     tfs.write(outfile, tfs.TfsDataFrame(new_df_dict))
 
