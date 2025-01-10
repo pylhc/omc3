@@ -5,7 +5,7 @@ import tfs
 
 from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements.constants import RDT_FOLDER
-from tests.inputs.lhc_rdts.rdt_constants import (
+from tests.accuracy.utils_lhc_rdts_consts import (
     ANALYSIS_DIR,
     DATA_DIR,
     FREQ_OUT_DIR,

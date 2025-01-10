@@ -20,7 +20,7 @@ import time
 import tfs
 
 from optics_functions.rdt import calculate_rdts
-from tests.inputs.lhc_rdts.MAD_helpers import (
+from tests.inputs.lhc_rdts.helper_lhc_rdts import (
     convert_tfs_to_madx,
     create_model_dir,
     get_twiss_elements,
@@ -31,14 +31,14 @@ from tests.inputs.lhc_rdts.MAD_helpers import (
     to_ng_rdts,
     write_tbt_file,
 )
-from tests.inputs.lhc_rdts.omc3_helpers import (
+from tests.accuracy.utils_lhc_rdts import (
     filter_out_BPM_near_IPs,
     get_rdt_names,
     run_harpy,
     get_rdts_from_optics_analysis,
     get_file_suffix,
 )
-from tests.inputs.lhc_rdts.rdt_constants import DATA_DIR, MODEL_NG_PREFIX
+from tests.accuracy.utils_lhc_rdts_consts import DATA_DIR, MODEL_NG_PREFIX
 
 run_madng = True
 run_analytical_model = True

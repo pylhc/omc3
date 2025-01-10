@@ -10,13 +10,13 @@ from pymadng import MAD
 from turn_by_turn import madng
 
 from omc3.model_creator import create_instance_and_model
-from tests.inputs.lhc_rdts.omc3_helpers import (
+from tests.accuracy.utils_lhc_rdts import (
     get_file_suffix,
     get_max_rdt_order,
     get_model_dir,
     get_tbt_name,
 )
-from tests.inputs.lhc_rdts.rdt_constants import (
+from tests.accuracy.utils_lhc_rdts_consts import (
     ANALYSIS_DIR,
     DATA_DIR,
     FREQ_OUT_DIR,
