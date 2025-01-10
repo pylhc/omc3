@@ -82,7 +82,7 @@ def get_tunes(output_dir: Path) -> list[float]:
 def get_rdts_from_harpy(
     beam: int,
     output_dir: Path = None,
-    check_previous=False,
+    check_previous: bool = False,
 ) -> dict[str, tfs.TfsDataFrame]:
     """
     Run the optics analysis for the given test parameters and return the RDTs.
@@ -99,7 +99,7 @@ def get_rdts_from_harpy(
     rdt_paths = get_rdt_paths(rdts, output_dir)
 
     # Run the analysis if the output files do not exist or check_previous is False
-    if not check_previous or any(not path.exists() for path in rdt_paths.values()):
+    if check_previous is False or any(not path.exists() for path in rdt_paths.values()):
         hole_in_one_entrypoint(
             files=[FREQ_OUT_DIR / tbt_name],
             outputdir=output_dir,
