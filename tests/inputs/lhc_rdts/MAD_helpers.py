@@ -5,9 +5,9 @@ from pathlib import Path
 import pandas as pd
 import tfs
 import turn_by_turn as tbt
+from cpymad.madx import Madx
 from pymadng import MAD
 from turn_by_turn import madng
-from cpymad.madx import Madx
 
 from omc3.model_creator import create_instance_and_model
 from tests.inputs.lhc_rdts.omc3_helpers import (
@@ -17,7 +17,6 @@ from tests.inputs.lhc_rdts.omc3_helpers import (
     get_tbt_name,
 )
 from tests.inputs.lhc_rdts.rdt_constants import (
-    ACC_MODELS,
     ANALYSIS_DIR,
     DATA_DIR,
     FREQ_OUT_DIR,
@@ -29,6 +28,9 @@ from tests.inputs.lhc_rdts.rdt_constants import (
     OCTUPOLE_STRENGTH,
     SEXTUPOLE_STRENGTH,
 )
+
+ACC_MODELS = Path("/afs/cern.ch/eng/acc-models/lhc/2024/")
+assert ACC_MODELS.exists(), "ACC_MODELS does not exist"
 
 # Ensure directories exist
 ANALYSIS_DIR.mkdir(exist_ok=True)

@@ -1,17 +1,13 @@
-import os
 from pathlib import Path
 
 import omc3
 
 PACKAGE_DIR = Path(omc3.__file__).parent.parent.absolute()
-TEST_DIR = PACKAGE_DIR / "tests" / "inputs" / "lhc_rdts"
+LHC_RDTS_TEST_DIR = PACKAGE_DIR / "tests" / "inputs" / "lhc_rdts"
 
-ANALYSIS_DIR = TEST_DIR / "analysis"
+ANALYSIS_DIR = LHC_RDTS_TEST_DIR / "analysis"
 FREQ_OUT_DIR = ANALYSIS_DIR / "lin_files"
-DATA_DIR = TEST_DIR / "data"
-ACC_MODELS = TEST_DIR / "acc-models-lhc"
-if not ACC_MODELS.exists():
-    os.system(f"ln -s /afs/cern.ch/eng/acc-models/lhc/2024/ {ACC_MODELS}")
+DATA_DIR = LHC_RDTS_TEST_DIR / "data"
 
 COUPLING_RDTS = [
     "f1001",
