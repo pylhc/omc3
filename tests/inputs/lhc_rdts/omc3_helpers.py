@@ -77,8 +77,8 @@ def get_rdt_paths(rdts: list[str], output_dir: Path) -> dict[str, Path]:
 
 def get_tunes(output_dir: Path) -> list[float]:
     optics_file = output_dir / "beta_amplitude_x.tfs"
-    df = tfs.read(optics_file)
-    tunes = [df.headers["Q1"], df.headers["Q2"]]
+    headers = tfs.reader.read_headers(optics_file)
+    tunes = [headers["Q1"], headers["Q2"]]
     return tunes
 
 
