@@ -5,18 +5,20 @@ import pytest
 import tfs
 
 from omc3.definitions.constants import PI2
-from tests.utils.lhc_rdts.functions import (
-    get_file_suffix,
-    get_rdt_type,
-    get_rdt_names,
-    get_rdts_from_optics_analysis,
-    run_harpy,
-)
+from tests.utils.compression import compress_model, decompress_model
 from tests.utils.lhc_rdts.constants import (
     DATA_DIR,
+    FREQ_OUT_DIR,
     MODEL_ANALYTICAL_PREFIX,
     MODEL_NG_PREFIX,
-    FREQ_OUT_DIR,
+)
+from tests.utils.lhc_rdts.functions import (
+    get_file_suffix,
+    get_model_dir,
+    get_rdt_names,
+    get_rdt_type,
+    get_rdts_from_optics_analysis,
+    run_harpy,
 )
 
 INPUTS = Path(__file__).parent.parent / "inputs"
@@ -50,8 +52,12 @@ def run_selective_harpy():
     """
     run_harpy(beam=1)
     run_harpy(beam=2)
+    decompress_model(get_model_dir(beam=1))
+    decompress_model(get_model_dir(beam=2))
     yield # Run the tests
 
+    compress_model(get_model_dir(beam=1))
+    compress_model(get_model_dir(beam=2))
     # Clean up the analysis files
     for analysis_path in FREQ_OUT_DIR.iterdir():
         analysis_path.unlink()
