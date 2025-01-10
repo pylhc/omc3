@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import tfs
@@ -12,8 +13,10 @@ from tests.inputs.lhc_rdts.rdt_constants import (
     NORMAL_RDTS4,
     SKEW_RDTS3,
     SKEW_RDTS4,
-    TEST_DIR,
+    LHC_RDTS_TEST_DIR,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 
 def filter_IPs(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
@@ -39,7 +42,7 @@ def get_tbt_name(beam: int, sdds: bool = True) -> str:
 
 def get_model_dir(beam: int) -> Path:
     """Return the model directory for the given test parameters."""
-    return TEST_DIR / f"model_{get_file_suffix(beam)}"
+    return LHC_RDTS_TEST_DIR / f"model_{get_file_suffix(beam)}"
 
 
 def get_max_rdt_order(rdts: list[str]) -> int:
@@ -115,7 +118,7 @@ def get_rdts_from_harpy(
             rdt_magnet_order=rdt_order,
         )
         tunes = get_tunes(output_dir)
-        print(f"Tunes for beam {beam}: {tunes}")
+        LOGGER.info(f"Tunes for beam {beam}: {tunes}")
         if abs(tunes[0] - 0.28) > 0.0001 or abs(tunes[1] - 0.31) > 0.0001:
             raise ValueError(
                 "Tunes are far from the expected values, rdts will be wrong/outside the tolerance"
