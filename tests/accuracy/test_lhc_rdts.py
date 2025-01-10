@@ -162,7 +162,7 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
         analytical_df = tfs.read(
             DATA_DIR / f"{MODEL_ANALYTICAL_PREFIX}_{file_suffix}.tfs", index="NAME"
         )
-        analytical_complex = analytical_df[{ng_rdt}]
+        analytical_complex = analytical_df[ng_rdt]
 
         # Calculate the amplitudes
         analytical_amplitude = np.abs(analytical_complex)
