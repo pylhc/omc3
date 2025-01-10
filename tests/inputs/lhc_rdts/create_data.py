@@ -50,7 +50,7 @@ for beam in [1, 2]:
     # Create the model to this specific beam, order
     create_model_dir(beam)
 
-    # Retrieve the RDTs for this specific beam and order
+    # Retrieve the RDTs for this specific beam and order and convert them into the MAD-NG format
     ng_rdts = to_ng_rdts(get_rdts())
 
     # Run MAD-NG twiss to get the RDTs
