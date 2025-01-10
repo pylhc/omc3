@@ -2,21 +2,16 @@ from pathlib import Path
 
 import omc3
 
-PACKAGE_DIR = Path(omc3.__file__).parent.parent.absolute()
-LHC_RDTS_TEST_DIR = PACKAGE_DIR / "tests" / "inputs" / "lhc_rdts"
+PACKAGE_DIR: Path = Path(omc3.__file__).parent.parent.absolute()
+LHC_RDTS_TEST_DIR: Path = PACKAGE_DIR / "tests" / "inputs" / "lhc_rdts"
 
-ANALYSIS_DIR = LHC_RDTS_TEST_DIR / "analysis"
-FREQ_OUT_DIR = ANALYSIS_DIR / "lin_files"
-DATA_DIR = LHC_RDTS_TEST_DIR / "data"
-
-COUPLING_RDTS = [
-    "f1001",
-    "f1010",
-]
+ANALYSIS_DIR : Path = LHC_RDTS_TEST_DIR / "analysis"
+DATA_DIR     : Path = LHC_RDTS_TEST_DIR / "data"
+FREQ_OUT_DIR : Path = ANALYSIS_DIR / "lin_files"
 
 # The RDTs here are all the normal and skew RDTs for sextupoles and octupoles
-# that are not on any of the tune lines, as these are 0 when calculated from OMC3.
-NORMAL_RDTS3 = [  # Normal Sextupole
+# that are not on any of the tune lines, as these will not be calculated in OMC3 correctly.
+NORMAL_SEXTUPOLE_RDTS: tuple[str] = (
     "f1200_x",
     "f3000_x",
     "f1002_x",
@@ -25,8 +20,8 @@ NORMAL_RDTS3 = [  # Normal Sextupole
     "f0120_y",
     "f1011_y",
     "f1020_y",
-]
-SKEW_RDTS3 = [  # Skew Sextupole
+)
+SKEW_SEXTUPOLE_RDTS: tuple[str] = (
     "f0012_y",
     "f0030_y",
     "f1101_x",
@@ -35,8 +30,8 @@ SKEW_RDTS3 = [  # Skew Sextupole
     "f2010_x",
     "f0210_y",
     "f2010_y",
-]
-NORMAL_RDTS4 = [  # Normal Octupole
+)
+NORMAL_OCTUPOLE_RDTS: tuple[str] = (
     "f1300_x",
     "f4000_x",
     "f0013_y",
@@ -49,8 +44,8 @@ NORMAL_RDTS4 = [  # Normal Octupole
     "f0220_y",
     "f2011_y",
     "f2020_y",
-]
-SKEW_RDTS4 = [  # Skew Octupole
+)
+SKEW_OCTUPOLE_RDTS: tuple[str] = (
     "f0112_y",
     "f0130_y",
     "f0310_y",
@@ -63,14 +58,14 @@ SKEW_RDTS4 = [  # Skew Octupole
     "f3001_x",
     "f3010_x",
     "f3010_y",
-]
+)
 
-MODEL_NG_PREFIX = "model_ng"
-MODEL_X_PREFIX = "model_x"
-MODEL_ANALYTICAL_PREFIX = "analytical_model"
+MODEL_NG_PREFIX: str = "model_ng"
+MODEL_X_PREFIX : str = "model_x"
+MODEL_ANALYTICAL_PREFIX: str = "analytical_model"
 
 # RUN SETTINGS
-NTURNS = 1000
-KICK_AMP = 1e-3
-SEXTUPOLE_STRENGTH = 3e-5
-OCTUPOLE_STRENGTH = 3e-3
+NTURNS: int = 1000
+KICK_AMP: float = 1e-3
+SEXTUPOLE_STRENGTH: float = 3e-5
+OCTUPOLE_STRENGTH : float = 3e-3

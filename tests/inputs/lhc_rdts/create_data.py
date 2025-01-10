@@ -33,9 +33,9 @@ from tests.inputs.lhc_rdts.MAD_helpers import (
 )
 from tests.inputs.lhc_rdts.omc3_helpers import (
     filter_out_BPM_near_IPs,
-    get_rdts,
+    get_rdt_names,
     run_harpy,
-    get_rdts_from_harpy,
+    get_rdts_from_optics_analysis,
     get_file_suffix,
 )
 from tests.inputs.lhc_rdts.rdt_constants import DATA_DIR, MODEL_NG_PREFIX
@@ -51,7 +51,7 @@ for beam in [1, 2]:
     create_model_dir(beam)
 
     # Retrieve the RDTs for this specific beam and order and convert them into the MAD-NG format
-    ng_rdts = to_ng_rdts(get_rdts())
+    ng_rdts = to_ng_rdts(get_rdt_names())
 
     # Run MAD-NG twiss to get the RDTs
     model_ng = run_twiss_rdts(beam, ng_rdts) 
@@ -83,7 +83,7 @@ for beam in [1, 2]:
 
         print("Running analysis")
         analysis_runtime = time.time()
-        rdt_dfs = get_rdts_from_harpy(beam)
+        rdt_dfs = get_rdts_from_optics_analysis(beam)
         print(f"Analysis Runtime: {time.time() - analysis_runtime}")
         
         file_ext = get_file_suffix(beam)

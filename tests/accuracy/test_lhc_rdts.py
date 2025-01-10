@@ -8,8 +8,8 @@ from omc3.definitions.constants import PI2
 from tests.inputs.lhc_rdts.omc3_helpers import (
     get_file_suffix,
     get_rdt_type,
-    get_rdts,
-    get_rdts_from_harpy,
+    get_rdt_names,
+    get_rdts_from_optics_analysis,
     run_harpy,
 )
 from tests.inputs.lhc_rdts.rdt_constants import (
@@ -23,23 +23,22 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 
 
 @pytest.fixture(scope="module")
-def initialise_test_paths(tmp_path_factory: pytest.TempPathFactory) -> dict:
-    """Initialize temporary paths for test analysis.
+def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> dict:
+    """Run the optics analysis for the selected RDTs.
 
-    This fixture creates temporary directories for each beam to store analysis results.
-    The directories are created using the pytest temporary path factory.
+    This fixture runs the optics analysis for the selected RDTs for both beams.
 
     Args:
-        tmp_path_factory (pytest.TempPathFactory): Factory for creating temporary paths.
+        initialise_test_paths (dict): A dictionary mapping beam number to the temporary path.
 
     Returns:
-        dict: A dictionary mapping beam number to the temporary path.
+        dict: A dictionary mapping beam number to the RDTs calculated by OMC3.
     """
-    paths = {}
+    dfs = {}
     for beam in (1, 2):
-        path = tmp_path_factory.mktemp(f"analysis_beam{beam}", numbered=False)
-        paths[beam] = path
-    return paths
+        analysis_path = tmp_path_factory.mktemp(f"analysis_beam{beam}", numbered=False)
+        dfs[beam] = get_rdts_from_optics_analysis(beam, output_dir=analysis_path)
+    return dfs
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -81,9 +80,9 @@ PHASE_TOLERANCES = {
 }
 
 
-@pytest.mark.parametrize("rdt", get_rdts())
+@pytest.mark.parametrize("rdt", get_rdt_names())
 @pytest.mark.parametrize("beam", [1, 2], ids=lambda x: f"Beam{x}")
-def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
+def test_lhc_rdts(beam: int, rdt: str, rdts_from_optics_analysis):
     """Test the RDTs calculated by OMC3 against the analytical model and MAD-NG.
 
     The test forces harpy to run for the selected RDTs to ensure the use of the
@@ -108,12 +107,8 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
     # Retrieve the current RDT configuration
     _, order = get_rdt_type(rdt)
 
-    # Get the temporary analysis path
-    analysis_path = initialise_test_paths[beam]
-
-    # Now perform the optics calculations from the harpy output
-    # As this is run per RDT, the check_previous is set to True to avoid rerunning the analysis
-    rdt_dfs = get_rdts_from_harpy(beam, output_dir=analysis_path, check_previous=True)
+    # Now retrieve the optics calculations from the OMC3 analysis
+    rdt_dfs = rdts_from_optics_analysis[beam]
     omc_df = rdt_dfs[rdt]  # get the result of a specific RDT
 
     # Retrieve the MAD-NG results for the set of RDTs
@@ -125,29 +120,30 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
     ng_complex = ng_df[ng_rdt]
     omc_complex = omc_df["REAL"] + 1j * omc_df["IMAG"]
 
-    # Calculate the amplitudes
+    # Calculate the OMC3 and MAD-NG amplitudes from the complex numbers
     ng_amplitude = np.abs(ng_complex)
     omc_amplitude = np.abs(omc_complex)
-    assert np.allclose(omc_amplitude, omc_df["AMP"], rtol=1e-10)
 
-    # Compare the amplitudes
+    # Compare omc3 vs MAD-NG amplitudes, relative when above 1, absolute when below
     ng_diff = ng_amplitude - omc_amplitude
     ng_diff[ng_amplitude.abs() > 1] = (
         ng_diff[ng_amplitude.abs() > 1] / ng_amplitude[ng_amplitude.abs() > 1]
     )
     assert ng_diff.abs().max() < AMPLITUDE_TOLERANCES[beam][order]
 
-    # Compare OMC3 phase to real and imaginary parts
+    # Compare omc3 vs MAD-NG phases
+    ng_phase_diff = np.angle(ng_complex / omc_complex)
+    assert ng_phase_diff.max() < PHASE_TOLERANCES[beam][order]
+
+    # Check amplitude and phase vs real and imaginary calculations in omc3 is correct
     omc_phase = np.angle(omc_complex) / PI2
     diff = omc_phase - omc_df["PHASE"]
     diff = (diff + 0.5) % 1 - 0.5
     assert diff.abs().max() < 1e-11
-
-    # Compare the phases
-    ng_phase_diff = np.angle(ng_complex / omc_complex)
-    assert ng_phase_diff.max() < PHASE_TOLERANCES[beam][order]
+    assert np.allclose(omc_amplitude, omc_df["AMP"], rtol=1e-10)
 
     # Now check the analytical model for sextupoles
+    # Analytical seems to disagree with MAD-NG and OMC3 for octupoles
     if order == "sextupole":
         analytical_df = tfs.read(
             DATA_DIR / f"{MODEL_ANALYTICAL_PREFIX}_{file_suffix}.tfs", index="NAME"
@@ -163,6 +159,6 @@ def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
         analytical_diff[gt1] = analytical_diff[gt1] / analytical_amplitude[gt1]
         assert analytical_diff.abs().max() < 1.1e-2
 
-        # Compare the phases (this for some reason fails for f1300_x, max diff of about 0.2)
+        # Compare the phases
         analytical_phase_diff = np.angle(analytical_complex / omc_complex)
         assert analytical_phase_diff.max() < 6e-2

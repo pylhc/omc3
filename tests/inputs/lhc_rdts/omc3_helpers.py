@@ -9,10 +9,10 @@ from tests.inputs.lhc_rdts.rdt_constants import (
     ANALYSIS_DIR,
     DATA_DIR,
     FREQ_OUT_DIR,
-    NORMAL_RDTS3,
-    NORMAL_RDTS4,
-    SKEW_RDTS3,
-    SKEW_RDTS4,
+    NORMAL_SEXTUPOLE_RDTS,
+    NORMAL_OCTUPOLE_RDTS,
+    SKEW_SEXTUPOLE_RDTS,
+    SKEW_OCTUPOLE_RDTS,
     LHC_RDTS_TEST_DIR,
 )
 
@@ -30,9 +30,9 @@ def get_file_suffix(beam: int) -> str:
     return f"b{beam}"
 
 
-def get_rdts() -> list[str]:
+def get_rdt_names() -> list[str]:
     """Return the all the RDTs."""
-    return NORMAL_RDTS3 + SKEW_RDTS3 + NORMAL_RDTS4 + SKEW_RDTS4
+    return NORMAL_SEXTUPOLE_RDTS + SKEW_SEXTUPOLE_RDTS + NORMAL_OCTUPOLE_RDTS + SKEW_OCTUPOLE_RDTS
 
 
 def get_tbt_name(beam: int, sdds: bool = True) -> str:
@@ -82,18 +82,16 @@ def get_tunes(output_dir: Path) -> list[float]:
     return tunes
 
 
-def get_rdts_from_harpy(
+def get_rdts_from_optics_analysis(
     beam: int,
     output_dir: Path = None,
-    check_previous: bool = False,
 ) -> dict[str, tfs.TfsDataFrame]:
     """
     Run the optics analysis for the given test parameters and return the RDTs.
 
     If output_dir is None, the output directory will be created in the rdt_constants.ANALYSIS_DIR.
-    If check_previous is True, the analysis will only be done if the output files do not exist.
     """
-    rdts = get_rdts()
+    rdts = get_rdt_names()
     only_coupling = all(rdt.lower() in ["f1001", "f1010"] for rdt in rdts)
     rdt_order = get_max_rdt_order(rdts)
     tbt_name = get_tbt_name(beam)
@@ -101,8 +99,8 @@ def get_rdts_from_harpy(
 
     rdt_paths = get_rdt_paths(rdts, output_dir)
 
-    # Run the analysis if the output files do not exist or check_previous is False
-    if check_previous is False or any(not path.exists() for path in rdt_paths.values()):
+    # Run the analysis if the output files do not exist
+    if any(not path.exists() for path in rdt_paths.values()):
         hole_in_one_entrypoint(
             files=[FREQ_OUT_DIR / tbt_name],
             outputdir=output_dir,
