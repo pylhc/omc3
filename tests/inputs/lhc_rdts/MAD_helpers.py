@@ -277,7 +277,6 @@ match {{
 }}
 local tbl = twiss {{sequence=MADX.lhcb{beam}, mapdef=4}}
 print("Final tunes: ", tbl.q1, tbl.q2, tbl.x[1], tbl.y[1])
-tbl:write("twiss_match.dat")
 py:send("match complete")
 """)
     assert mad.receive() == "match complete", "Error in matching tunes"
