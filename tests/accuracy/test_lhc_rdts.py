@@ -86,24 +86,14 @@ PHASE_TOLERANCES = {
 def test_lhc_rdts(beam: int, rdt: str, initialise_test_paths):
     """Test the RDTs calculated by OMC3 against the analytical model and MAD-NG.
 
-    This test verifies the amplitude and phase of the RDTs calculated by OMC3 against
-    the analytical model and MAD-NG. See
-
-    This selection minimises the number of required input files while covering different
-    types of RDTs at multiple orders and beams. The test does not combine skew and normal
-    RDTs in the same test due to:
-        - The analytical model not producing correct results for these cases.
-        - The OMC3 result for skew sextupolar RDTs, particularly F2010_Y, becoming
-          dependent on a low kick amplitude to produce correct results.
-
     The test forces harpy to run for the selected RDTs to ensure the use of the
     opposite_direction flag is consistent with the optics=True, beam=2 situation.
 
     The configuration for the test is set in the file tests/inputs/lhc_rdts/rdt_constants.py:
     - NTURNS = 1000
     - KICK_AMP = 1e-3
-    - SEXTUPOLE_STRENGTH = 1e-3
-    - OCTUPOLE_STRENGTH = 5e-3
+    - SEXTUPOLE_STRENGTH = 3e-5
+    - OCTUPOLE_STRENGTH = 3e-3
 
     If this configuration is changed, the test needs to be updated accordingly by running
     the create_data.py script in the same directory.
