@@ -170,7 +170,7 @@ def convert_tfs_to_madx(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     tfs_df.headers = {key.upper(): value for key, value in tfs_df.headers.items()}
 
     # Change the columns mu1 and mu2 to mux and muy
-    tfs_df.rename(columns={"MU1": "MUX", "MU2": "MUY"}, inplace=True)
+    tfs_df = tfs_df.rename(columns={"MU1": "MUX", "MU2": "MUY"})
 
     # Change all the drift numbers (the # in DRIFT_#) are consecutive and start from 0
     drifts = tfs_df[tfs_df["KIND"] == "drift"]
@@ -180,7 +180,7 @@ def convert_tfs_to_madx(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     # Remove all rows that has a "vkicker" or "hkicker" in the KIND column (not seen in MADX)
     tfs_df = tfs_df[~tfs_df["KIND"].str.contains("vkicker|hkicker")]
 
-    tfs_df.set_index("NAME", inplace=True)
+    tfs_df = tfs_df.set_index("NAME")
 
     # Remove the rows with "$start" and "$end" in the NAME column
     tfs_df = tfs_df.filter(regex=r"^(?!\$start|\$end).*$", axis="index")
