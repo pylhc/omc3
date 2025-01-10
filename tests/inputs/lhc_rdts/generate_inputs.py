@@ -31,14 +31,14 @@ from tests.inputs.lhc_rdts.helper_lhc_rdts import (
     to_ng_rdts,
     write_tbt_file,
 )
-from tests.accuracy.utils_lhc_rdts import (
+from tests.utils.lhc_rdts.functions import (
     filter_out_BPM_near_IPs,
     get_rdt_names,
     run_harpy,
     get_rdts_from_optics_analysis,
     get_file_suffix,
 )
-from tests.accuracy.utils_lhc_rdts_consts import DATA_DIR, MODEL_NG_PREFIX
+from tests.utils.lhc_rdts.constants import DATA_DIR, MODEL_NG_PREFIX
 
 run_madng = True
 run_analytical_model = True

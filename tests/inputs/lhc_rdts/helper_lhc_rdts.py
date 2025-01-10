@@ -10,13 +10,13 @@ from pymadng import MAD
 from turn_by_turn import madng
 
 from omc3.model_creator import create_instance_and_model
-from tests.accuracy.utils_lhc_rdts import (
+from tests.utils.lhc_rdts.functions import (
     get_file_suffix,
     get_max_rdt_order,
     get_model_dir,
     get_tbt_name,
 )
-from tests.accuracy.utils_lhc_rdts_consts import (
+from tests.utils.lhc_rdts.constants import (
     ANALYSIS_DIR,
     DATA_DIR,
     FREQ_OUT_DIR,
@@ -39,7 +39,7 @@ DATA_DIR.mkdir(exist_ok=True)
 
 MADX_FILENAME = "job.create_model_nominal.madx"
 
-def to_ng_rdts(rdts: list[str]) -> list[str]:
+def to_ng_rdts(rdts: list[str] | tuple[str]) -> list[str]:
     return list(set([rdt.split("_")[0] for rdt in rdts]))
 
 

@@ -5,14 +5,14 @@ import pytest
 import tfs
 
 from omc3.definitions.constants import PI2
-from tests.accuracy.utils_lhc_rdts import (
+from tests.utils.lhc_rdts.functions import (
     get_file_suffix,
     get_rdt_type,
     get_rdt_names,
     get_rdts_from_optics_analysis,
     run_harpy,
 )
-from tests.accuracy.utils_lhc_rdts_consts import (
+from tests.utils.lhc_rdts.constants import (
     DATA_DIR,
     MODEL_ANALYTICAL_PREFIX,
     MODEL_NG_PREFIX,

@@ -5,7 +5,7 @@ import tfs
 
 from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements.constants import RDT_FOLDER
-from tests.accuracy.utils_lhc_rdts_consts import (
+from tests.utils.lhc_rdts.constants import (
     ANALYSIS_DIR,
     DATA_DIR,
     FREQ_OUT_DIR,
@@ -30,7 +30,7 @@ def get_file_suffix(beam: int) -> str:
     return f"b{beam}"
 
 
-def get_rdt_names() -> list[str]:
+def get_rdt_names() -> tuple[str]:
     """Return the all the RDTs."""
     return NORMAL_SEXTUPOLE_RDTS + SKEW_SEXTUPOLE_RDTS + NORMAL_OCTUPOLE_RDTS + SKEW_OCTUPOLE_RDTS
 
