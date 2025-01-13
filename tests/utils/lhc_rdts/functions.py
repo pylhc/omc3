@@ -84,6 +84,7 @@ def get_tunes(output_dir: Path) -> list[float]:
 
 def get_rdts_from_optics_analysis(
     beam: int,
+    model_dir: Path = None,
     linfile_dir: Path = None,
     output_dir: Path = None,
 ) -> dict[str, tfs.TfsDataFrame]:
@@ -99,8 +100,9 @@ def get_rdts_from_optics_analysis(
     
     if linfile_dir is None:
         linfile_dir = FREQ_OUT_DIR
+    if model_dir is None:
+        model_dir = get_model_dir(beam)
     output_dir = get_output_dir(tbt_name, output_dir)
-    model_dir = get_model_dir(beam)
 
     rdt_paths = get_rdt_paths(rdts, output_dir)
 

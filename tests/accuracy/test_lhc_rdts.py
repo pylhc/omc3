@@ -1,12 +1,12 @@
+import shutil
 from pathlib import Path
-from typing import Generator
 
 import numpy as np
 import pytest
 import tfs
 
 from omc3.definitions.constants import PI2
-from tests.utils.compression import decompress_model, delete_decompressed_files
+from tests.utils.compression import decompress_model
 from tests.utils.lhc_rdts.constants import (
     DATA_DIR,
     MODEL_ANALYTICAL_PREFIX,
@@ -25,7 +25,7 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 
 
 @pytest.fixture(scope="module")
-def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> Generator[dict, None, None]:
+def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> dict:
     """Run harpy and then retrieve all the rdts from the optics analysis
 
     This fixture decompresses the model files for both beams, runs harpy to calculate the
@@ -39,18 +39,20 @@ def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> Gener
     """
     dfs = {}
     for beam in (1, 2):
-        analysis_dir = tmp_path_factory.mktemp(f"analysis_beam{beam}", numbered=False)
-        linfile_dir = analysis_dir / "lin_files"
-        
-        decompress_model(get_model_dir(beam=beam))
-        run_harpy(beam=beam, linfile_dir=linfile_dir)
-        
-        dfs[beam] = get_rdts_from_optics_analysis(beam, linfile_dir=linfile_dir, output_dir=analysis_dir)
-    yield dfs
+        temp_dir = tmp_path_factory.mktemp(f"temp_lhc_rdt_b{beam}", numbered=False)
+        linfile_dir = temp_dir / "lin_files"
+        model_dir = get_model_dir(beam=beam)
+        tmp_model_dir = temp_dir / model_dir.name
 
-    # Clean up the analysis files and the decompressed model files
-    for beam in (1, 2):
-        delete_decompressed_files(get_model_dir(beam=beam))
+        shutil.copytree(model_dir, tmp_model_dir)
+        decompress_model(tmp_model_dir)
+        run_harpy(beam=beam, linfile_dir=linfile_dir)
+
+        dfs[beam] = get_rdts_from_optics_analysis(
+            beam, linfile_dir=linfile_dir, output_dir=temp_dir, model_dir=tmp_model_dir
+        )
+    return dfs
+
 
 AMPLITUDE_TOLERANCES = {
     1: {  # Beam 1: 0.6% and 4% for sextupoles and octupoles respectively
