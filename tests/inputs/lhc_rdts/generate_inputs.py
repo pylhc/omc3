@@ -20,6 +20,7 @@ import time
 import tfs
 
 from optics_functions.rdt import calculate_rdts
+from tests.utils.compression import compress_model
 from tests.inputs.lhc_rdts.helper_lhc_rdts import (
     convert_tfs_to_madx,
     create_model_dir,
@@ -30,6 +31,7 @@ from tests.inputs.lhc_rdts.helper_lhc_rdts import (
     save_x_model,
     to_ng_rdts,
     write_tbt_file,
+    get_model_dir,
 )
 from tests.utils.lhc_rdts.functions import (
     filter_out_BPM_near_IPs,
@@ -49,6 +51,9 @@ for beam in [1, 2]:
     # For example, order 2 means k2(s) and order 3 means k3(s) with leads to RDTs of order 3 and 4
     # Create the model to this specific beam, order
     create_model_dir(beam)
+
+    # Compress the model for source control
+    compress_model(get_model_dir(beam))
 
     # Retrieve the RDTs for this specific beam and order and convert them into the MAD-NG format
     ng_rdts = to_ng_rdts(get_rdt_names())
@@ -98,7 +103,6 @@ for beam in [1, 2]:
             rdt_dfs[rdt] = rdt_df.loc[model_ng.index]
 
         save_x_model(rdt_dfs, beam) 
-        # Remove some unnecessary folders and files
     print("Done with beam", beam)
 
 print("Script finished")
