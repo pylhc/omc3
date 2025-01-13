@@ -84,6 +84,7 @@ def get_tunes(output_dir: Path) -> list[float]:
 
 def get_rdts_from_optics_analysis(
     beam: int,
+    linfile_dir: Path = None,
     output_dir: Path = None,
 ) -> dict[str, tfs.TfsDataFrame]:
     """
@@ -95,21 +96,25 @@ def get_rdts_from_optics_analysis(
     only_coupling = all(rdt.lower() in ["f1001", "f1010"] for rdt in rdts)
     rdt_order = get_max_rdt_order(rdts)
     tbt_name = get_tbt_name(beam)
+    
+    if linfile_dir is None:
+        linfile_dir = FREQ_OUT_DIR
     output_dir = get_output_dir(tbt_name, output_dir)
+    model_dir = get_model_dir(beam)
 
     rdt_paths = get_rdt_paths(rdts, output_dir)
 
     # Run the analysis if the output files do not exist
     if any(not path.exists() for path in rdt_paths.values()):
         hole_in_one_entrypoint(
-            files=[FREQ_OUT_DIR / tbt_name],
+            files=[linfile_dir / tbt_name],
             outputdir=output_dir,
             optics=True,
             accel="lhc",
             beam=beam,
             year="2024",
             energy=6.8,
-            model_dir=get_model_dir(beam),
+            model_dir=model_dir,
             only_coupling=only_coupling,
             compensation="none",
             nonlinear=["rdt"],
@@ -127,14 +132,16 @@ def get_rdts_from_optics_analysis(
     return dfs
 
 
-def run_harpy(beam: int) -> None:
+def run_harpy(beam: int, linfile_dir: Path = None) -> None:
     """Run Harpy for the given test parameters."""
+    if linfile_dir is None:
+        linfile_dir = FREQ_OUT_DIR
 
     tbt_file = DATA_DIR / get_tbt_name(beam, sdds=True)
     hole_in_one_entrypoint(
         harpy=True,
         files=[tbt_file],
-        outputdir=FREQ_OUT_DIR,
+        outputdir=linfile_dir,
         to_write=["lin", "spectra"],
         opposite_direction=beam == 2,
         tunes=[0.28, 0.31, 0.0],

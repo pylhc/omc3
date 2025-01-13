@@ -20,9 +20,25 @@ def file_compression(file_path: Path, compress: bool = True) -> None:
     if read_path.exists():
         data = tfs.read(read_path)
         tfs.write(write_path, data)
-        read_path.unlink()
     else:
-        LOGGER.warning(f"File {read_path} does not exist.")
+        LOGGER.warning(f"File {read_path} does not exist. Cannot {'' if compress else 'de'}compress.")
+
+def model_files(model_dir: Path) -> list[Path]:
+    """Return all possible twiss files in the model directory.
+    
+    Args:
+        model_dir (Path): The directory containing the twiss files.
+    
+    Returns:
+        list[Path]: The twiss files in the model directory.
+    """
+    return [
+        model_dir / TWISS_ELEMENTS_DAT,
+        model_dir / TWISS_DAT,
+        model_dir / TWISS_AC_DAT,
+        model_dir / TWISS_ADT_DAT,
+    ]
+    
 
 def model_compression(model_dir: Path, compress: bool = True) -> None:
     """Compress or decompress the twiss files in the model directory.
@@ -31,14 +47,9 @@ def model_compression(model_dir: Path, compress: bool = True) -> None:
         model_dir (Path): The directory containing the twiss files.
         compress (bool, optional): Whether to compress the files. Defaults to True.
     """
-    twiss_elements = model_dir / TWISS_ELEMENTS_DAT
-    twiss = model_dir / TWISS_DAT
-    twiss_acd = model_dir / TWISS_AC_DAT
-    twiss_adt = model_dir / TWISS_ADT_DAT
-    file_compression(twiss_elements, compress)
-    file_compression(twiss, compress)
-    file_compression(twiss_acd, compress)
-    file_compression(twiss_adt, compress)
+    files = model_files(model_dir)
+    for file in files:
+        file_compression(file, compress)
 
 def compress_model(model_dir: Path) -> None:
     """Compress the twiss files in the model directory.
@@ -55,3 +66,16 @@ def decompress_model(model_dir: Path) -> None:
         model_dir (Path): The directory containing the twiss files.
     """
     model_compression(model_dir, compress=False)
+
+def delete_decompressed_files(model_dir: Path) -> None:
+    """Delete the decompressed twiss files in the model directory.
+    
+    Args:
+        model_dir (Path): The directory containing the twiss files.
+    """
+    files = model_files(model_dir)
+    for file in files:
+        if file.exists():
+            file.unlink()
+        else:
+            LOGGER.warning(f"File {file} does not exist. Cannot delete.")

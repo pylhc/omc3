@@ -11,7 +11,7 @@ FREQ_OUT_DIR : Path = ANALYSIS_DIR / "lin_files"
 
 # The RDTs here are all the normal and skew RDTs for sextupoles and octupoles
 # that are not on any of the tune lines, as these will not be calculated in OMC3 correctly.
-NORMAL_SEXTUPOLE_RDTS: tuple[str] = (
+NORMAL_SEXTUPOLE_RDTS: tuple[str, ...] = (
     "f1200_x",
     "f3000_x",
     "f1002_x",
@@ -21,7 +21,7 @@ NORMAL_SEXTUPOLE_RDTS: tuple[str] = (
     "f1011_y",
     "f1020_y",
 )
-SKEW_SEXTUPOLE_RDTS: tuple[str] = (
+SKEW_SEXTUPOLE_RDTS: tuple[str, ...] = (
     "f0012_y",
     "f0030_y",
     "f1101_x",
@@ -31,7 +31,7 @@ SKEW_SEXTUPOLE_RDTS: tuple[str] = (
     "f0210_y",
     "f2010_y",
 )
-NORMAL_OCTUPOLE_RDTS: tuple[str] = (
+NORMAL_OCTUPOLE_RDTS: tuple[str, ...] = (
     "f1300_x",
     "f4000_x",
     "f0013_y",
@@ -45,7 +45,7 @@ NORMAL_OCTUPOLE_RDTS: tuple[str] = (
     "f2011_y",
     "f2020_y",
 )
-SKEW_OCTUPOLE_RDTS: tuple[str] = (
+SKEW_OCTUPOLE_RDTS: tuple[str, ...] = (
     "f0112_y",
     "f0130_y",
     "f0310_y",

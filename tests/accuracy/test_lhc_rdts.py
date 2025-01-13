@@ -5,7 +5,7 @@ import pytest
 import tfs
 
 from omc3.definitions.constants import PI2
-from tests.utils.compression import compress_model, decompress_model
+from tests.utils.compression import decompress_model, delete_decompressed_files
 from tests.utils.lhc_rdts.constants import (
     DATA_DIR,
     FREQ_OUT_DIR,
@@ -38,30 +38,41 @@ def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> dict:
     """
     dfs = {}
     for beam in (1, 2):
-        analysis_path = tmp_path_factory.mktemp(f"analysis_beam{beam}", numbered=False)
-        dfs[beam] = get_rdts_from_optics_analysis(beam, output_dir=analysis_path)
-    return dfs
+        analysis_dir = tmp_path_factory.mktemp(f"analysis_beam{beam}", numbered=False)
+        linfile_dir = analysis_dir / "lin_files"
+        
+        decompress_model(get_model_dir(beam=beam))
+        run_harpy(beam=beam, linfile_dir=linfile_dir)
+        
+        dfs[beam] = get_rdts_from_optics_analysis(beam, linfile_dir=linfile_dir, output_dir=analysis_dir)
+    yield dfs
+
+    # Clean up the analysis files and the decompressed model files
+    for beam in (1, 2):
+        delete_decompressed_files(get_model_dir(beam=beam))
 
 
-@pytest.fixture(scope="module", autouse=True)
-def run_selective_harpy():
-    """Run the harpy analysis for selected RDTs.
+# @pytest.fixture(scope="module", autouse=True)
+# def run_selective_harpy():
+#     """Run the harpy analysis for selected RDTs.
 
-    This fixture runs the harpy analysis for beam 1 and beam 2 to test the
-    opposite_direction flag in combination with optics=True.
-    """
-    run_harpy(beam=1)
-    run_harpy(beam=2)
-    decompress_model(get_model_dir(beam=1))
-    decompress_model(get_model_dir(beam=2))
-    yield # Run the tests
+#     This fixture runs the harpy analysis for beam 1 and beam 2 to test the
+#     opposite_direction flag in combination with optics=True.
+#     """
+#     run_harpy(beam=1)
+#     run_harpy(beam=2)
+#     b1_model_dir = get_model_dir(beam=1)
+#     b2_model_dir = get_model_dir(beam=2)
+#     decompress_model(b1_model_dir)
+#     decompress_model(b2_model_dir)
+#     yield # Run the tests
 
-    compress_model(get_model_dir(beam=1))
-    compress_model(get_model_dir(beam=2))
-    # Clean up the analysis files
-    for analysis_path in FREQ_OUT_DIR.iterdir():
-        analysis_path.unlink()
-    FREQ_OUT_DIR.rmdir()
+#     # Clean up the analysis files and the decompressed model files
+#     delete_decompressed_files(b1_model_dir)
+#     delete_decompressed_files(b2_model_dir)
+#     for analysis_path in FREQ_OUT_DIR.iterdir():
+#         analysis_path.unlink()
+#     FREQ_OUT_DIR.rmdir()
 
 
 AMPLITUDE_TOLERANCES = {
