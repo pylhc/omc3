@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Generator
 
 import numpy as np
 import pytest
@@ -8,7 +9,6 @@ from omc3.definitions.constants import PI2
 from tests.utils.compression import decompress_model, delete_decompressed_files
 from tests.utils.lhc_rdts.constants import (
     DATA_DIR,
-    FREQ_OUT_DIR,
     MODEL_ANALYTICAL_PREFIX,
     MODEL_NG_PREFIX,
 )
@@ -25,10 +25,11 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 
 
 @pytest.fixture(scope="module")
-def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> dict:
-    """Run the optics analysis for the selected RDTs.
+def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> Generator[dict, None, None]:
+    """Run harpy and then retrieve all the rdts from the optics analysis
 
-    This fixture runs the optics analysis for the selected RDTs for both beams.
+    This fixture decompresses the model files for both beams, runs harpy to calculate the
+    optics, and then retrieves the RDTs from the optics analysis.
 
     Args:
         initialise_test_paths (dict): A dictionary mapping beam number to the temporary path.
@@ -50,30 +51,6 @@ def rdts_from_optics_analysis(tmp_path_factory: pytest.TempPathFactory) -> dict:
     # Clean up the analysis files and the decompressed model files
     for beam in (1, 2):
         delete_decompressed_files(get_model_dir(beam=beam))
-
-
-# @pytest.fixture(scope="module", autouse=True)
-# def run_selective_harpy():
-#     """Run the harpy analysis for selected RDTs.
-
-#     This fixture runs the harpy analysis for beam 1 and beam 2 to test the
-#     opposite_direction flag in combination with optics=True.
-#     """
-#     run_harpy(beam=1)
-#     run_harpy(beam=2)
-#     b1_model_dir = get_model_dir(beam=1)
-#     b2_model_dir = get_model_dir(beam=2)
-#     decompress_model(b1_model_dir)
-#     decompress_model(b2_model_dir)
-#     yield # Run the tests
-
-#     # Clean up the analysis files and the decompressed model files
-#     delete_decompressed_files(b1_model_dir)
-#     delete_decompressed_files(b2_model_dir)
-#     for analysis_path in FREQ_OUT_DIR.iterdir():
-#         analysis_path.unlink()
-#     FREQ_OUT_DIR.rmdir()
-
 
 AMPLITUDE_TOLERANCES = {
     1: {  # Beam 1: 0.6% and 4% for sextupoles and octupoles respectively
