@@ -6,10 +6,10 @@ This module provides high-level classes to define most functionality of ``model.
 It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
 from __future__ import annotations
+
 import re
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import numpy
 import pandas as pd
@@ -25,13 +25,13 @@ from omc3.model.constants import (
     TWISS_ADT_DAT,
     TWISS_BEST_KNOWLEDGE_DAT,
     TWISS_DAT,
+    TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT,
     TWISS_ELEMENTS_DAT,
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
+from generic_parser.entry_datatypes import get_multi_class
 
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -57,6 +57,7 @@ class Accelerator:
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
+    NAME: str
     # RE_DICT needs to use MAD-X compatible patterns (jdilly, 2021)
     RE_DICT = {
         AccElementTypes.BPMS: r".*",
@@ -101,7 +102,7 @@ class Accelerator:
         )
         params.add_parameter(
             name="energy",
-            type=float,
+            type=get_multi_class(float, int),
             help="Energy in GeV.",
         )
         params.add_parameter(
@@ -124,6 +125,7 @@ class Accelerator:
         self._model_driven = None
         self.model_best_knowledge = None
         self.elements = None
+        self.elements_best_knowledge = None
         self.error_defs_file = None
         self.acc_model_path = None
         self.modifiers = None
@@ -186,8 +188,8 @@ class Accelerator:
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
         for key in driven_filenames.keys():
             if driven_filenames[key].is_file():
-                self._model_driven = tfs.read(driven_filenames[key], index="NAME")
                 self.excitation = DRIVEN_EXCITATIONS[key]
+                self.model_driven = tfs.read(driven_filenames[key], index="NAME")
 
         if not self.excitation == AccExcitationMode.FREE:
             self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
@@ -196,6 +198,10 @@ class Accelerator:
         best_knowledge_path = model_dir / TWISS_BEST_KNOWLEDGE_DAT
         if best_knowledge_path.is_file():
             self.model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
+
+        best_knowledge_elements_path = model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT
+        if best_knowledge_elements_path.is_file():
+            self.elements_best_knowledge = tfs.read(best_knowledge_elements_path, index="NAME")
 
         # Base Model ########################################
         if self.REPOSITORY is not None:
@@ -301,6 +307,12 @@ class Accelerator:
             raise AttributeError("No driven model given in this accelerator instance.")
         return self._model_driven
 
+    @model_driven.setter
+    def model_driven(self, value):
+        if self.excitation == AccExcitationMode.FREE:
+            raise AcceleratorDefinitionError("Driven model cannot be set for accelerator with free excitation mode.")
+        self._model_driven = value
+
     @classmethod
     def get_dir(cls) -> Path:
         """Default directory for accelerator. Should be overwritten if more specific."""
@@ -319,27 +331,6 @@ class Accelerator:
             f"File {file_path.name} not available for accelerator {cls.NAME}."
         )
 
-    # Jobs ###################################################################
-
-    def get_update_correction_script(self, outpath: Path | str, corr_files: Sequence[Path | str], **kwargs) -> str: #kwargs to be used for additional arguments in different accelerators
-        """
-        Returns job (string) to create an updated model from changeparameters input (used in
-        iterative correction).
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    def get_base_madx_script(self, best_knowledge=False):
-        """
-        Returns job (string) to create the basic accelerator sequence.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-    
-    def get_update_deltap_script(self, deltap: float | str) -> str:
-        """
-        Returns job (string) to change the magnets for a given deltap (dpp). 
-        i.e. updating the orbit and matching the tunes.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
     ##########################################################################
 

@@ -16,6 +16,11 @@ Utils
     :noindex:
 
 
+.. automodule:: omc3.utils.misc
+    :members:
+    :noindex:
+
+
 .. automodule:: omc3.utils.mock
     :members:
     :noindex:

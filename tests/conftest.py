@@ -11,7 +11,8 @@ import string
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 import git
 
 
@@ -22,9 +23,11 @@ import pytest
 
 from generic_parser import DotDict
 from omc3 import model
+import omc3
 
 INPUTS = Path(__file__).parent / 'inputs'
 MODELS = INPUTS / "models"
+OMC3_DIR = Path(omc3.__file__).parent
 MADX_MACROS = Path(model.__file__).parent / "madx_macros"
 GITLAB_REPO_ACC_MODELS = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
 
@@ -120,6 +123,12 @@ def model_inj_beam1(request, tmp_path_factory):
 def model_inj_beam2(request, tmp_path_factory):
     """ Fixture for inj beam 2 model"""
     return tmp_model(tmp_path_factory, beam=2, year="2018", tunes="inj", beta="11m")
+
+
+@pytest.fixture(scope="module", params=[1, 2])
+def model_25cm_beams(request, tmp_path_factory):
+    """ Fixture for inj model for both beams"""
+    return tmp_model(tmp_path_factory, beam=request.param, id_='25cm')
 
 
 @pytest.fixture(scope="module")

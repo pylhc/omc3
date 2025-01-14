@@ -31,32 +31,6 @@ def test_lhc_adt_b2():
     _check_exciter_bpm_detection(accel, "Y", "BPMWA.B5L4.B2", "BPMWA.A5L4.B2")
 
 @pytest.mark.basic
-def test_psbase_best_knowledge():
-    # PS and Booster don't have best knowledge models (yet)
-
-    accel = Ps(
-            year="2021",
-            scenario="lhc",
-            cycle_point="0_injection",
-            str_file="ps_inj_lhc.str",
-            tune_method="qf"
-            )
-
-    with pytest.raises(AttributeError):
-        _ = accel.get_base_madx_script(best_knowledge=True)
-
-    accel = Psbooster(
-            year="2021",
-            scenario="lhc",
-            cycle_point="0_injection",
-            str_file="psb_inj_lhc.str",
-            ring=1,
-            )
-
-    with pytest.raises(AttributeError):
-        _ = accel.get_base_madx_script(best_knowledge=True)
-
-@pytest.mark.basic
 def test_skekb():
 
     accel = SKekB(ring="ler")

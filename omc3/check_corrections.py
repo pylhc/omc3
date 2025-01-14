@@ -466,18 +466,24 @@ def _create_model_and_write_diff_to_measurements(
     """ Create a new model with the corrections (well, the "matchings") applied and calculate
     the difference to the nominal model, i.e. the expected improvement of the measurements
     (for detail see main docstring in this file).
-    This will be written out then into individual tfs-files in the output folder(s). """
+    This will be written out then into individual tfs-files in the output folder(s). 
+    
+    TODO After merge with new model creation: should crossing angles be deactivated and nominal model redone? 
+         Can be done by calling the create_corrected_model function with and without correction files
+         and different paths.
+    (jdilly 2023)
+    """
     if correction_name:
         output_dir = output_dir / correction_name
     LOG.info(f"Checking correction for {output_dir.name}")
 
     # Created matched model
     corr_model_path = output_dir / MODEL_MATCHED_FILENAME
-    corr_model_elements = global_correction._create_corrected_model(corr_model_path, correction_files, accel_inst)  # writes out twiss file!
+    corr_model_elements = global_correction.create_corrected_model(corr_model_path, correction_files, accel_inst)  # writes out twiss file!
     corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, measurement)
     LOG.debug(f"Matched model created in {str(corr_model_path.absolute())}.")
 
-    # Get diff to nominal model
+    # Get diff to nominal model 
     diff_columns = (
             list(OPTICS_PARAMS_CHOICES[:-4]) +
             [col for col in corr_model_elements.columns if col.startswith("F1")] +
