@@ -4,17 +4,25 @@ Clean
 
 This module contains the cleaning functionality of ``harpy``.
 """
+
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
+from generic_parser import DotDict
 
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 LOGGER = logging_tools.getLogger(__name__)
-NTS_LIMIT = 8.  # Noise to signal limit
+NTS_LIMIT = 8.0  # Noise to signal limit
 
 
-def clean(harpy_input, bpm_data, model):
+def clean(
+    harpy_input: DotDict, bpm_data: pd.DataFrame, model: None | pd.DataFrame
+) -> tuple[
+    pd.DataFrame, None | tuple[pd.DataFrame, np.ndarray], list[str], None | pd.Series
+]:
     """
     Cleans BPM TbT matrix: removes BPMs not present in the model and based on specified cuts.
     Also cleans the noise using singular value decomposition.
@@ -29,18 +37,25 @@ def clean(harpy_input, bpm_data, model):
     """
     bpm_data, bpms_not_in_model = _get_only_model_bpms(bpm_data, model)
     if bpm_data.empty:
-        raise AssertionError("Check BPMs names! None of the BPMs were found in the model!")
+        raise AssertionError(
+            "Check BPMs names! None of the BPMs were found in the model!"
+        )
     if not harpy_input.clean:
         return bpm_data, None, bpms_not_in_model, None
+
     with timeit(lambda spanned: LOGGER.debug(f"Time for filtering: {spanned}")):
         bpm_data, bad_bpms_clean = _cut_cleaning(harpy_input, bpm_data, model)
+
     with timeit(lambda spanned: LOGGER.debug(f"Time for SVD clean: {spanned}")):
         bpm_data, bpm_res, bad_bpms_svd, usv = _svd_clean(bpm_data, harpy_input)
         all_bad_bpms = bpms_not_in_model + bad_bpms_clean + bad_bpms_svd
+
     return bpm_data, usv, all_bad_bpms, bpm_res
 
 
-def _get_only_model_bpms(bpm_data, model):
+def _get_only_model_bpms(
+    bpm_data: pd.DataFrame, model: None | pd.DataFrame
+) -> tuple[pd.DataFrame, list[str]]:
     if model is None:
         return bpm_data, []
     bpm_data_in_model = bpm_data.loc[model.index.intersection(bpm_data.index)]
@@ -48,7 +63,9 @@ def _get_only_model_bpms(bpm_data, model):
     return bpm_data_in_model, [f"{bpm} not found in model" for bpm in not_in_model]
 
 
-def _cut_cleaning(harpy_input, bpm_data, model):
+def _cut_cleaning(
+    harpy_input: DotDict, bpm_data: pd.DataFrame, model: None | pd.DataFrame
+) -> tuple[pd.DataFrame, list[str]]:
     LOGGER.debug(f"Number of BPMs in the input {bpm_data.index.size}")
     known_bad_bpms = _detect_known_bad_bpms(bpm_data, harpy_input.bad_bpms)
     bpm_flatness = _detect_flat_bpms(bpm_data, harpy_input.peak_to_peak)
@@ -68,14 +85,19 @@ def _cut_cleaning(harpy_input, bpm_data, model):
     return bpm_data, bad_bpms_with_reasons
 
 
-def _svd_clean(bpm_data, harpy_input):
+def _svd_clean(
+    bpm_data: pd.DataFrame, harpy_input: DotDict
+) -> tuple[pd.DataFrame, pd.Series, list[str], tuple[pd.DataFrame, np.ndarray]]:
     bpm_data_mean = np.mean(bpm_data.to_numpy(), axis=1)
-    u_mat, sv_mat, u_mask = svd_decomposition(bpm_data - bpm_data_mean[:, None],
-                                              harpy_input.sing_val,
-                                              dominance_limit=harpy_input.svd_dominance_limit,
-                                              num_iter=harpy_input.num_svd_iterations)
-
-    clean_u, dominant_bpms = _clean_dominant_bpms(u_mat, u_mask, harpy_input.svd_dominance_limit)
+    u_mat, sv_mat, u_mask = svd_decomposition(
+        bpm_data - bpm_data_mean[:, None],
+        harpy_input.sing_val,
+        dominance_limit=harpy_input.svd_dominance_limit,
+        num_iter=harpy_input.num_svd_iterations,
+    )
+    clean_u, dominant_bpms = _clean_dominant_bpms(
+        u_mat, u_mask, harpy_input.svd_dominance_limit
+    )
     clean_data = clean_u.dot(sv_mat) + bpm_data_mean[np.all(u_mask, axis=1), None]
     bpm_res = (clean_data - bpm_data.loc[clean_u.index]).std(axis=1)
     orbit_offset = (clean_data - bpm_data.loc[clean_u.index]).mean(axis=1)
@@ -84,27 +106,38 @@ def _svd_clean(bpm_data, harpy_input):
     average_signal = np.mean(np.std(clean_data, axis=1))
     LOGGER.debug(f"np.mean(np.std(A, axis=1): {average_signal}")
     if np.mean(bpm_res) > NTS_LIMIT * average_signal:
-        raise ValueError("The data is too noisy. The most probable explanation "
-                         "is that there was no excitation or it was very low.")
-    return clean_data, bpm_res, dominant_bpms, (clean_u, sv_mat - np.mean(sv_mat, axis=1)[:, None])
+        raise ValueError(
+            "The data is too noisy. The most probable explanation "
+            "is that there was no excitation or it was very low."
+        )
+    return (
+        clean_data,
+        bpm_res,
+        dominant_bpms,
+        (clean_u, sv_mat - np.mean(sv_mat, axis=1)[:, None]),
+    )
 
 
-def _detect_known_bad_bpms(bpm_data, list_of_bad_bpms):
+def _detect_known_bad_bpms(
+    bpm_data: pd.DataFrame, list_of_bad_bpms: list[str]
+) -> pd.Index:
     """Searches for known bad BPMs."""
     return bpm_data.index.intersection(list_of_bad_bpms)
 
 
-def _detect_flat_bpms(bpm_data, min_peak_to_peak):
+def _detect_flat_bpms(bpm_data: pd.DataFrame, min_peak_to_peak: float) -> pd.Index:
     """Detects BPMs with the same values for all turns."""
-    cond = ((bpm_data.max(axis=1) - bpm_data.min(axis=1)).abs() < min_peak_to_peak)
+    cond = (bpm_data.max(axis=1) - bpm_data.min(axis=1)).abs() < min_peak_to_peak
     bpm_flatness = bpm_data[cond].index
     if bpm_flatness.size:
-        LOGGER.debug(f"Flat BPMS detected (diff min/max <= {min_peak_to_peak}. "
-                     f"BPMs removed: {bpm_flatness.size}")
+        LOGGER.debug(
+            f"Flat BPMS detected (diff min/max <= {min_peak_to_peak}. "
+            f"BPMs removed: {bpm_flatness.size}"
+        )
     return bpm_flatness
 
 
-def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
+def _detect_bpms_with_spikes(bpm_data: pd.DataFrame, max_peak_cut: float) -> pd.Index:
     """Detects BPMs with spikes > `max_peak_cut`."""
     too_high = bpm_data[bpm_data.max(axis=1) > max_peak_cut].index
     too_low = bpm_data[bpm_data.min(axis=1) < -max_peak_cut].index
@@ -114,7 +147,9 @@ def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
     return bpm_spikes
 
 
-def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
+def _detect_bpms_with_exact_zeros(
+    bpm_data: pd.DataFrame, keep_exact_zeros: bool
+) -> pd.Index:
     """Detects BPMs with exact zeros due to OP workaround."""
     if keep_exact_zeros:
         LOGGER.debug("Skipped exact zero check")
@@ -139,9 +174,11 @@ def _report_clean_stats(n_total_bpms, n_good_bpms):
     if n_good_bpms == 0:
         raise ValueError("Total Number of BPMs after filtering is zero.")
     n_bad_bpms = n_total_bpms - n_good_bpms
-    LOGGER.debug(f"(Statistics for file reading) Total BPMs: {n_total_bpms}, "
-                 f"Good BPMs: {n_good_bpms} ({(100 * n_good_bpms / n_total_bpms):2.2f}%), "
-                 f"Bad BPMs: {n_bad_bpms} ({(100 * n_bad_bpms / n_total_bpms):2.2f}%)")
+    LOGGER.debug(
+        f"(Statistics for file reading) Total BPMs: {n_total_bpms}, "
+        f"Good BPMs: {n_good_bpms} ({(100 * n_good_bpms / n_total_bpms):2.2f}%), "
+        f"Bad BPMs: {n_bad_bpms} ({(100 * n_bad_bpms / n_total_bpms):2.2f}%)"
+    )
     if (n_good_bpms / n_total_bpms) < 0.5:
         raise ValueError("More than half of BPMs are bad. "
                          "This could be because a bunch not present in the machine has been "
@@ -155,13 +192,19 @@ def _index_union(*indices):
     return new_index
 
 
-def _fix_polarity(wrong_polarity_names, bpm_data):
+def _fix_polarity(
+    wrong_polarity_names: list[str], bpm_data: pd.DataFrame
+) -> pd.DataFrame:
     """Fixes wrong polarity."""
-    bpm_data.loc[wrong_polarity_names, :] = -1 * bpm_data.loc[wrong_polarity_names, :].to_numpy()
+    bpm_data.loc[wrong_polarity_names, :] = (
+        -1 * bpm_data.loc[wrong_polarity_names, :].to_numpy()
+    )
     return bpm_data
 
 
-def _resync_bpms(harpy_input, bpm_data, model):
+def _resync_bpms(
+    harpy_input: DotDict, bpm_data: pd.DataFrame, model: pd.DataFrame
+) -> pd.DataFrame:
     """Resynchronizes BPMs between the injection point and start of the lattice."""
     LOGGER.debug("Will resynchronize BPMs")
     bpm_pos = model.index.get_loc(harpy_input.first_bpm)
@@ -173,7 +216,12 @@ def _resync_bpms(harpy_input, bpm_data, model):
     return bpm_data.iloc[:, :-1]
 
 
-def svd_decomposition(matrix, num_singular_values, dominance_limit=None, num_iter=None):
+def svd_decomposition(
+    matrix: pd.DataFrame,
+    num_singular_values: int,
+    dominance_limit: float = None,
+    num_iter: int = None,
+) -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
     """
     Computes reduced (K largest values) singular value decomposition of a matrix.
     Requiring K singular values from MxN matrix results in matrices sized:
@@ -191,21 +239,27 @@ def svd_decomposition(matrix, num_singular_values, dominance_limit=None, num_ite
         and the U matrix mask for cleaned elements.
     """
     u_mat, s_mat, vt_mat = np.linalg.svd(matrix, full_matrices=False)
-    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=num_iter)
+    u_mat, s_mat, u_mat_mask = _remove_dominant_elements(
+        u_mat, s_mat, dominance_limit, num_iter=num_iter
+    )
 
-    available = np.sum(s_mat > 0.)
+    available = np.sum(s_mat > 0.0)
     if num_singular_values > available:
         LOGGER.warning(f"Requested more singular values than available(={available})")
     keep = min(num_singular_values, available)
     LOGGER.debug(f"Number of singular values to keep: {keep}")
 
     indices = np.argsort(s_mat)[::-1][:keep]
-    return (pd.DataFrame(index=matrix.index, data=u_mat[:, indices]),
-            np.dot(np.diag(s_mat[indices]), vt_mat[indices, :]),
-            u_mat_mask[:, :int(np.max(indices))+1])
+    return (
+        pd.DataFrame(index=matrix.index, data=u_mat[:, indices]),
+        np.dot(np.diag(s_mat[indices]), vt_mat[indices, :]),
+        u_mat_mask[:, : int(np.max(indices)) + 1],
+    )
 
 
-def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=3):
+def _remove_dominant_elements(
+    u_mat: np.ndarray, s_mat: np.ndarray, dominance_limit: float, num_iter: int = 3
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     u_mat_mask = np.ones(u_mat.shape, dtype=bool)
     if dominance_limit is None:
         return u_mat, s_mat, u_mat_mask
@@ -215,8 +269,10 @@ def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=3):
     for i in range(num_iter):
         if np.all(np.abs(u_mat) <= dominance_limit):
             break
-        condition = np.logical_and(np.abs(u_mat) > dominance_limit,
-                                   np.abs(u_mat) == np.max(np.abs(u_mat), axis=0))
+        condition = np.logical_and(
+            np.abs(u_mat) > dominance_limit,
+            np.abs(u_mat) == np.max(np.abs(u_mat), axis=0),
+        )
         u_mat_mask[condition] = False
         u_mat[condition] = 0.0
         norms = np.sqrt(np.sum(np.square(u_mat), axis=0))
@@ -225,10 +281,16 @@ def _remove_dominant_elements(u_mat, s_mat, dominance_limit, num_iter=3):
     return u_mat, s_mat, u_mat_mask
 
 
-def _clean_dominant_bpms(u_mat, u_mat_mask, svd_dominance_limit):
+def _clean_dominant_bpms(
+    u_mat: pd.DataFrame, u_mat_mask: np.ndarray, svd_dominance_limit: float
+) -> tuple[pd.DataFrame, list[str]]:
     dominant_bpms = u_mat[np.any(~u_mat_mask, axis=1)].index
     if dominant_bpms.size > 0:
-        LOGGER.debug(f"Bad BPMs from SVD detected. Number of BPMs removed: {dominant_bpms.size}")
+        LOGGER.debug(
+            f"Bad BPMs from SVD detected. Number of BPMs removed: {dominant_bpms.size}"
+        )
     clean_u = u_mat.loc[u_mat.index.difference(dominant_bpms, sort=False)]
-    return clean_u, [f"{bpm_name} Dominant BPM in SVD, peak value > {svd_dominance_limit}"
-                     for bpm_name in dominant_bpms]
+    return clean_u, [
+        f"{bpm_name} Dominant BPM in SVD, peak value > {svd_dominance_limit}"
+        for bpm_name in dominant_bpms
+    ]

@@ -281,7 +281,7 @@ def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invar
 
 
 def _add_tunes_if_in_second_turn(df: pd.DataFrame, input_files: InputFiles, line, phase2, dpp_value):
-    mask = df_diff(df, S, S2) > 0
+    mask = df_diff(df, S, S2) > 0 # Get all the S2 positions that are less than S
     tunes = np.empty((2, len(input_files.dpp_frames("X", dpp_value))))
     for i, plane in enumerate(PLANES):
         tunes[i] = np.array([lin.headers[f"Q{i+1}"] for lin in input_files.dpp_frames(plane, dpp_value)])
@@ -289,7 +289,7 @@ def _add_tunes_if_in_second_turn(df: pd.DataFrame, input_files: InputFiles, line
     return phase2
 
 
-def _calculate_rdt_phases_from_line_phases(df, input_files, line, line_phase, dpp_value):
+def _calculate_rdt_phases_from_line_phases(df: pd.DataFrame, input_files: InputFiles, line, line_phase, dpp_value):
     phases = np.zeros((2, df.index.size, len(input_files.dpp_frames("X", dpp_value))))
     for i, plane in enumerate(PLANES):
         if line[i] != 0:
@@ -340,15 +340,15 @@ def get_linearized_problem(invs: dict[str, np.ndarray], plane: str, rdt: RDTTupl
     return 2 * l * act_x ** (j + k) * act_y ** (l + m - 2)
 
 
-def get_line_sign_and_suffix(line: LineTuple, input_files: InputFiles, plane: str):
-    suffix = f"{line[0]}{line[1]}".replace("-", "_")
+def get_line_sign_and_suffix(line: LineTuple, input_files: InputFiles, plane: str) -> tuple[int, str]:
+    suffix = f"{line[0]}{line[1]}".replace("-", "_") # link to harpy, for consistency? (jgray 2024)
     conj_suffix = f"{-line[0]}{-line[1]}".replace("-", "_")
     if f"{COL_AMP}{suffix}" in input_files[plane][0].columns:
         return 1, suffix
     if f"{COL_AMP}{conj_suffix}" in input_files[plane][0].columns:
         return -1, conj_suffix
 
-    # The specified AMP column hasn't been found in the lin file
+    # The specified AMP column hasn't been found in the lin file 
     msg = (f"The column AMP{suffix} has not been found in the lin{plane.lower()} file. "
             "Consider re-running the frequency analysis with a higher order resonance term")
     raise ValueError(msg)
@@ -367,8 +367,8 @@ def complex_secondary_lines(phase_adv: ArrayLike[float], err_padv: ArrayLike[flo
          `Tuple` with amplitudes, phases err_amplitudes and err_phases of the complex signal.
     """
     tp = 2.0 * np.pi
-    # computing complex secondary line (h-)
-    sig = (sig1 * (1 + 1j / np.tan(phase_adv * tp)) - sig2 * 1j / np.sin(phase_adv * tp)) / 2
+    # computing complex secondary line (h-) = x - ip_x. Why do we divide by 2? (jgray 2024)
+    sig = (sig1 * (1 + 1j / np.tan(phase_adv * tp)) - sig2 * 1j / np.sin(phase_adv * tp)) / 2 
     # computing error secondary line (h-) # TODO is this really the error?
     esig = (sig1 * 1j / np.square(np.sin(phase_adv * tp)) +
             sig2 * -1j * np.cos(phase_adv * tp) / np.square(np.sin(phase_adv * tp))) * err_padv / 2
@@ -377,14 +377,10 @@ def complex_secondary_lines(phase_adv: ArrayLike[float], err_padv: ArrayLike[flo
 
 
 def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1):
-    try:
+    # Is there a better way to do this? (jgray 2024)
+    if hasattr(amplitudes, 'to_numpy'):
         amplitudes = amplitudes.to_numpy()
-    except AttributeError:
-        pass
-
-    try:
+    if hasattr(phases, 'to_numpy'):
         phases = phases.to_numpy()
-    except AttributeError:
-        pass
 
     return amplitudes * np.exp(2j * np.pi * phases / period)
