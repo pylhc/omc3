@@ -1,5 +1,19 @@
 # OMC3 Changelog
 
+#### 2025-01-06 - v0.20.4 - _fsoubelet_
+
+- Fixed:
+  - Solved an issue in datetime operations occuring on `Python 3.13`.
+
+- Changed:
+  - Dropped support for `Python 3.9`.
+
+#### 2024-11-21 - v0.20.3 - _jdilly_
+
+- Fixed:
+  - `analyse_dpp` issues in `beta_from_amplitude`, `chromatic_beating` and `dispersion`.
+    Skips `dispersion` calculation if `NaN`s are present.
+
 #### 2024-11-21 - v0.20.2 - _jdilly_, _awegsche_
 
 - Added:
