@@ -1,22 +1,27 @@
 from pathlib import Path
 
 import numpy as np
-import tfs
 import pytest
+import tfs
 
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
-from omc3.optics_measurements.toolbox import ang_diff, ang_sum
+from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import (
-    NAME, DELTA, BETA, TUNE, NORM_DISPERSION, DISPERSION, PHASE_ADV, PHASE
+    BETA,
+    DELTA,
+    DISPERSION,
+    NAME,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
 )
-
+from omc3.optics_measurements.toolbox import ang_diff, ang_sum
 from tests.conftest import INPUTS, MODELS
 
-INPUTS = Path(__file__).parent.parent / 'inputs'
-
-MODEL_INJ_BEAM1 = MODELS / "2018_inj_b1_11m" / "twiss.dat"
+MODEL_INJ_BEAM1 = MODELS / "2018_inj_b1_11m" / TWISS_DAT
 MODEL_INJ_BEAM1_MQ_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_quadrupole_error.dat"
 MODEL_INJ_BEAM1_MQS_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
 
