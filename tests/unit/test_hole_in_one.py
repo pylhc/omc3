@@ -21,17 +21,31 @@ one of the following reasons:
 
 """
 from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
 
-from omc3.hole_in_one import hole_in_one_entrypoint, DEFAULT_CONFIG_FILENAME, LINFILES_SUBFOLDER
-from omc3.harpy.constants import FILE_LIN_EXT, FILE_AMPS_EXT, FILE_FREQS_EXT
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.hole_in_one import (
+    DEFAULT_CONFIG_FILENAME,
+    LINFILES_SUBFOLDER,
+    hole_in_one_entrypoint,
+)
+from omc3.model.constants import TWISS_ELEMENTS_DAT
 from omc3.optics_measurements import phase
 from omc3.optics_measurements.constants import (
-    EXT, 
-    BETA_NAME, AMP_BETA_NAME, F1001_NAME, F1010_NAME, PHASE_NAME, TOTAL_PHASE_NAME, KICK_NAME, ORBIT_NAME,
-    DISPERSION_NAME, NORM_DISP_NAME,
+    AMP_BETA_NAME,
+    BETA_NAME,
+    DISPERSION_NAME,
+    EXT,
+    F1001_NAME,
+    F1010_NAME,
+    KICK_NAME,
+    NORM_DISP_NAME,
+    ORBIT_NAME,
+    PHASE_NAME,
+    TOTAL_PHASE_NAME,
 )
 from tests.conftest import INPUTS, ids_str
 
@@ -67,7 +81,7 @@ def test_hole_in_two(tmp_path, clean, which_files, caplog):
         autotunes="transverse",
         outputdir=analysis_output,
         files=sdds_files,
-        model=MODEL_DIR / "twiss_elements.dat",
+        model=MODEL_DIR / TWISS_ELEMENTS_DAT,
         to_write=["lin", "spectra"],
         unit="mm"
     )
@@ -126,7 +140,7 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         autotunes="transverse",
         outputdir=output,
         files=files,
-        model=MODEL_DIR / "twiss_elements.dat",
+        model=MODEL_DIR / TWISS_ELEMENTS_DAT,
         to_write=["lin", "spectra", "bpm_summary"],
         window="hann",
         compensation=phase.CompensationMode.NONE,

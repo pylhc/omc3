@@ -14,6 +14,14 @@
   - Cleaning: Filter BPMs with NaNs
   - Cleaning: Log bad BPMs with reasons before raising errors.
 
+#### 2025-01-06 - v0.20.4 - _fsoubelet_
+
+- Fixed:
+  - Solved an issue in datetime operations occuring on `Python 3.13`.
+
+- Changed:
+  - Dropped support for `Python 3.9`.
+
 #### 2024-11-21 - v0.20.3 - _jdilly_
 
 - Fixed:
