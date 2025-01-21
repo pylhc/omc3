@@ -70,7 +70,9 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
     meas_dict = model_appenders.add_differences_to_model_to_measurements(nominal_model, meas_dict)
 
-    if opt.arc_by_arc_phase and isinstance(accel_inst, lhc.Lhc):
+    if opt.arc_by_arc_phase: 
+        if not isinstance(accel_inst, lhc.Lhc):
+            raise NotImplementedError("Arc-by-Arc correction is only implemented for the LHC.")
         meas_dict = abba.reduce_phase_measurements_to_arcs(meas_dict, nominal_model, opt.include_ips_in_arc_by_arc)
 
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
