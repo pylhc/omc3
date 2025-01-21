@@ -281,7 +281,7 @@ def correction_params():
                          help="Set to perform arc-by-arc total phase correction.", )
     params.add_parameter(name="include_ips_in_arc_by_arc",
                          type=str,
-                         choices=("left", "right"),
+                         choices=("left", "right", "both"),
                          default=CORRECTION_DEFAULTS["include_ips_in_arc_by_arc"],
                          help="If not specified only takes pure arcs. Otherwise it includes IPs left or right of arcs.", )
     return params

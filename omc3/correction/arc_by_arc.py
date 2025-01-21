@@ -38,7 +38,7 @@ LHC_ARCS = ('81', '12', '23', '34', '45', '56', '67', '78')
 
 def reduce_phase_measurements_to_arcs(
     meas_dict: dict[str, pd.DataFrame], 
-    nominal_model: tfs.TfsDataFrame, 
+    model: tfs.TfsDataFrame, 
     include_ips: str | None = None
     ):
     """ Reduce the phase-advance in the given measurement to the phase-advance 
@@ -46,7 +46,7 @@ def reduce_phase_measurements_to_arcs(
 
     Args:
         meas_dict (dict[str, pd.DataFrame]): Dictionary of measurements as used in Global Correction.
-        nominal_model (tfs.TfsDataFrame): Model of the machine, used only the get the tunes from the headers.
+        model (tfs.TfsDataFrame): Model of the machine, used only the get the tunes from the headers.
         include_ips (str | None): Include the IPs of each arc. Can be either 'left', 'right', 'both' or None
 
     Returns:
@@ -57,8 +57,8 @@ def reduce_phase_measurements_to_arcs(
     for plane, tune in (("X", "Q1"), ("Y", "Q2")):
         phase_df = meas_dict[f"{PHASE}{plane}"]
 
-        bpm_pairs = get_arc_by_arc_bpm_pairs(phase_df.index, include_ips, plane=plane)
-        new_phase_df = get_bpm_pair_phases(phase_df, bpm_pairs=bpm_pairs, tune=nominal_model.headers[tune], plane=plane)
+        bpm_pairs = get_arc_by_arc_bpm_pairs(phase_df.index, include_ips)
+        new_phase_df = get_bpm_pair_phases(phase_df, bpm_pairs=bpm_pairs, tune=model.headers[tune])
 
         meas_dict[f"{PHASE}{plane}"] = new_phase_df
     return meas_dict
