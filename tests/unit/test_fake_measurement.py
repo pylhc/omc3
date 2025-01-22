@@ -73,10 +73,10 @@ def test_get_data_dataframe(beam1_path):
 
 
 @pytest.mark.basic
-def test_get_data_model():
+def test_get_data_model(beam1_path):
     """ Test that twiss and model are different if two are given. 
     Needs to be from the same beam, as `_get_data` does intersection on the index. """
-    twiss, model = _get_data(twiss=beam_path("1"), model=beam1_coupling_path())
+    twiss, model = _get_data(twiss=beam1_path, model=beam1_coupling_path())
     assert twiss.any().any()
     assert model.any().any()
     assert not twiss.equals(model)

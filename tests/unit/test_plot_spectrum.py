@@ -94,6 +94,28 @@ def test_no_tunes_in_files_plot(tmp_path, file_path, bpms):
 
 
 @pytest.mark.basic
+def test_single_plane_bpms_stem_plot(tmp_path):
+    """ Use the SPS data to check that also single-plane BPMs can be plotted.
+    (this caused an error prior v0.21.0 as it was trying to plot `None`)
+    """
+    file_path = INPUT_DIR / "sps_data" / "lin_files" / "sps_200turns.sdds"
+    bpms = ["BPH.23608", "BPV.60108"]  # one from each plane
+    stem, waterfall = plot_spectrum(
+        files=[file_path],
+        output_dir=str(tmp_path),
+        bpms=bpms + ["unknown_bpm"],
+        lines_manual=[{"x": 0.44, "loc": "top", "text": "nothing here"}],
+        combine_by=["bpms"],
+    )
+    _, filename = list(get_unique_filenames([file_path]))[0]
+    filename = "_".join(filename)
+    assert len(list(_get_output_dir(tmp_path, file_path).iterdir())) == 1
+    assert len(waterfall) == 0
+    assert len(stem) == 1
+    assert (filename in stem) and isinstance(stem[filename], Figure)
+
+
+@pytest.mark.basic
 def test_crash_too_low_amplimit(tmp_path):
     with pytest.raises(ValueError):
         plot_spectrum(
@@ -115,7 +137,7 @@ def _get_output_dir(tmp_path, file_path):
 
 @pytest.fixture
 def file_path():
-    return INPUT_DIR / "spec_test.sdds"
+    return INPUT_DIR / "plot_spectrum" / "spec_test.sdds"
 
 
 @pytest.fixture
