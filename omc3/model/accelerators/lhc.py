@@ -325,7 +325,9 @@ class Lhc(Accelerator):
         LOGGER.info(f"> Driven Tune Y     [{self.drv_tunes[1]:10.3f}]")
 
 
-    def get_exciter_bpm(self, plane: str, commonbpms: list[str]):
+    def get_exciter_bpm(self, plane: str, commonbpms: list[str]) -> tuple[str, str]:
+        """ Returns the name of the BPM closest to the exciter (i.e. ADT or AC-Dipole)
+        as well as the name of the exciter element. """
         beam = self.beam
         adt = "H.C" if plane == "X" else "V.B"
         l_r = "L" if ((beam == 1) != (plane == "Y")) else "R"
