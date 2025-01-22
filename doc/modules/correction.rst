@@ -16,6 +16,11 @@ Correction
     :noindex:
 
 
+.. automodule:: omc3.correction.arc_by_arc
+    :members:
+    :noindex:
+
+
 .. automodule:: omc3.correction.model_appenders
     :members:
     :noindex:
