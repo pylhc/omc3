@@ -10,6 +10,7 @@ from omc3.plotting.plot_spectrum import main as plot_spectrum
 from omc3.plotting.spectrum.utils import PLANES, get_unique_filenames
 
 INPUT_DIR = Path(__file__).parent.parent / "inputs"
+INPUT_DIR_SPECTRUM = INPUT_DIR / "plot_spectrum"
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
 matplotlib.use("Agg")
 
@@ -81,7 +82,7 @@ def test_no_tunes_in_files_plot(tmp_path, file_path, bpms):
 
     for f in glob(f"{file_path}*"):
         print(f)
-    for f in INPUT_DIR.glob(f"{file_path.name}*"):
+    for f in INPUT_DIR_SPECTRUM.glob(f"{file_path.name}*"):
         copy(f, tmp_path)
     file_path = tmp_path / file_path.name
     for p in PLANES:
@@ -137,7 +138,7 @@ def _get_output_dir(tmp_path, file_path):
 
 @pytest.fixture
 def file_path():
-    return INPUT_DIR / "plot_spectrum" / "spec_test.sdds"
+    return INPUT_DIR_SPECTRUM / "spec_test.sdds"
 
 
 @pytest.fixture

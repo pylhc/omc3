@@ -10,12 +10,13 @@ from omc3.scripts import create_logbook_entry
 from tests.conftest import cli_args
 
 INPUT = Path(__file__).parent.parent / "inputs"
+INPUT_SPEC_FILES = INPUT / "plot_spectrum"
 
 
 # noinspection PyTypeChecker
 class TestMain:
     text = "Here is some text"
-    files = (INPUT / "spec_test.sdds.linx", INPUT / "spec_test.sdds.liny")
+    files = (INPUT_SPEC_FILES / "spec_test.sdds.linx", INPUT_SPEC_FILES / "spec_test.sdds.liny")
     filenames = ("testfile1.linx", "testfile2.liny")
     tags=["Beam_1_Analysis", "Shift_Summary"]
 
