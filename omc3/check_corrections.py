@@ -251,7 +251,7 @@ from omc3.definitions.optics import (
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, TUNE
+from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, PHASE_ADV, TUNE
 from omc3.optics_measurements.toolbox import ang_diff
 from omc3.plotting.plot_checked_corrections import plot_checked_corrections, get_plotting_style_parameters
 from omc3.utils import logging_tools
@@ -482,7 +482,7 @@ def _create_model_and_write_diff_to_measurements(
             list(OPTICS_PARAMS_CHOICES[:-4]) +
             [col for col in corr_model_elements.columns if col.startswith("F1")] +
             list(PLANES) +
-            ['MUX', 'MUY']
+            [f'{PHASE_ADV}{plane}' for plane in PLANES]
     )
 
     diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)

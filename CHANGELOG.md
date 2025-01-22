@@ -1,18 +1,18 @@
 # OMC3 Changelog
 
-#### IN PROGRESS - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
+#### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:
-  - Plot Optics Measurements: Added extra mpl style for clearer plots
-  - LHC exciter BPM not found: Tells you which BPMs were searched for
-  - Plot Spectrum: Correct error handling for Single-Plane BPMs
+  - Plot Optics Measurements: Added extra mpl style for clearer plots.
+  - LHC exciter BPM not found: Tells you which BPMs were searched for.
+  - Plot Spectrum: Correct error handling for Single-Plane BPMs.
 
 - Added:
-  - Global Correction: Total phase correction arc-by-arc
-  - Global Correction: New MQM-knob categories `MQM_INJ_2024` and `MQM_TOP_2024` without Q4 and Q4-6 
-  - Script to copy KMod results into optics directory
-  - Cleaning: Filter BPMs with NaNs
+  - A `generic` accelerator class, that can be used for non-specifc accelerators.
+  - Global Correction: Total arc phase correction (`arc-by-arc`).
+  - Cleaning: Filter BPMs with NaNs.
   - Cleaning: Log bad BPMs with reasons before raising errors.
+  - MAD-X wrapper: Inform about failed twiss.
 
 #### 2025-01-06 - v0.20.4 - _fsoubelet_
 
