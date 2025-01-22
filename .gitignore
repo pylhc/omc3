@@ -203,7 +203,7 @@ Temporary Items
 
 # Neovim
 .nvimlog
-
+*.swap
 
 ### OMC Users
 # files for testing things (jdilly convention)
