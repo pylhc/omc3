@@ -16,15 +16,14 @@ the given correctors.
 In a future implementation this should be extended to loop over each arc and 
 correct each individually with only the correctors available in the respective arc.
 
-For now, the everything is very LHC specific, a future implementation should also
-extract the accelator specific parts into the accelerator class.
+For now everything is very LHC specific, a future implementation should also
+extract the accelerator specific parts into the accelerator class.
 
 See https://github.com/pylhc/omc3/issues/480 .
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Literal
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -32,6 +31,11 @@ import tfs
 
 from omc3.correction.constants import DIFF, ERROR, MODEL, VALUE, WEIGHT
 from omc3.optics_measurements.constants import NAME, NAME2, PHASE
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from typing import Literal
+
 
 LHC_ARCS = ('81', '12', '23', '34', '45', '56', '67', '78')
 

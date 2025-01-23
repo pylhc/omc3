@@ -400,26 +400,6 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
             previous_diff = current_diff
 
 
-def reset_phase_advances(df, beam):
-    """ Reset phase advances to zero for each arc, i.e after the BPM name changes from L# to R#."""
-    # Do only BPMs in that arc, as the correction is based on these
-    df = df.copy()
-    df = df.loc[df.index.str.match("B"), :]
-
-
-    # Find the BPMs where the model changes from L# to R# and reset phase advances
-    left_of_ip = False
-    for name in df.index:
-        right_of_ip = re.match(fr".*R\d\.B{beam}", name)        
-        if left_of_ip and right_of_ip:
-            left_of_ip = False
-
-        if not left_of_ip and not right_of_ip:        
-            left_of_ip = True
-    
-    return df
-
-
 def _plot_arc_by_arc(beam, **kwargs):
     """ Plot the arc-by-arc phase advance. 
 
@@ -434,10 +414,6 @@ def _plot_arc_by_arc(beam, **kwargs):
     df_model = kwargs["model"]
     df_error = kwargs["errors"]
     df_iter1 = kwargs["iter1"]
-
-
-    # for name, df in kwargs.items():
-    #     kwargs[name] = reset_phase_advances(df, beam)
 
     for ax, plane in zip(axs, ["X", "Y"]):
         for ip in df_model.index[df_model.index.str.startswith("IP")]:

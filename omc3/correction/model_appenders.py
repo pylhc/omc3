@@ -9,7 +9,7 @@ the measurement data (for corrections).
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -21,6 +21,11 @@ from omc3.optics_measurements.constants import (BETA, NAME2, NORM_DISPERSION, PH
 from omc3.correction.constants import DIFF, MODEL, VALUE
 from omc3.utils import logging_tools
 from omc3.optics_measurements.toolbox import df_diff, df_rel_diff
+
+
+if TYPE_CHECKING:   
+    from collections.abc import Callable, Sequence
+
 
 LOG = logging_tools.get_logger(__name__)
 
