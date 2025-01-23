@@ -51,7 +51,7 @@ def _create_response(beam: int, correction_params: CorrectionParameters, creator
             creator=creator,
             delta_k=DELTA_K,
             variable_categories=correction_params.variables,
-            outfile_path=correction_params.fullresponse,
+            outfile_path=model_dir / correction_params.fullresponse,
         )
 
 
