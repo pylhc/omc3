@@ -110,7 +110,7 @@ def test_remove_some_not_found():
 
 
 def _get_input_dir():
-    return INPUTS /  'plot_spectrum'
+    return INPUTS /  'lhc_harpy_output'
 
 
 def _get_input_file():

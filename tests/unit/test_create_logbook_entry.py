@@ -10,7 +10,7 @@ from omc3.scripts import create_logbook_entry
 from tests.conftest import cli_args
 
 INPUT = Path(__file__).parent.parent / "inputs"
-INPUT_SPEC_FILES = INPUT / "plot_spectrum"
+INPUT_SPEC_FILES = INPUT / "lhc_harpy_output"
 
 
 # noinspection PyTypeChecker
