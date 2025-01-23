@@ -6,13 +6,19 @@ Run as module to avoid import errors.
 python -m tests.inputs.models.create_responses_2018_inj_11m
 ```  
 """
-import shutil
 import os
-from omc3.response_creator import create_response_entrypoint
-from omc3 import model
-from tests.accuracy.test_global_correction import get_skew_params, get_normal_params, get_arc_by_arc_params
-from pathlib import Path
+import shutil
 from contextlib import contextmanager
+from pathlib import Path
+
+from omc3 import model
+from omc3.response_creator import create_response_entrypoint
+from tests.accuracy.test_global_correction import (
+    CorrectionParameters,
+    get_arc_by_arc_params,
+    get_normal_params,
+    get_skew_params,
+)
 
 DELTA_K = 2e-5
 MODEL_DIR = Path(__file__).parent
@@ -32,7 +38,7 @@ def create_mqt_response():
         _create_response(beam, correction_params, 'madx')
 
 
-def _create_response(beam: int, correction_params, creator: str):
+def _create_response(beam: int, correction_params: CorrectionParameters, creator: str):
     model_dir = MODEL_DIR / f"2018_inj_b{beam}_11m"
     with cleanup(model_dir):
         create_response_entrypoint(
@@ -45,7 +51,7 @@ def _create_response(beam: int, correction_params, creator: str):
             creator=creator,
             delta_k=DELTA_K,
             variable_categories=correction_params.variables,
-            outfile_path=model_dir / f"fullresponse_{'_'.join(sorted(correction_params.variables))}.h5"
+            outfile_path=correction_params.fullresponse,
         )
 
 
