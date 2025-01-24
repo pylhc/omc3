@@ -26,7 +26,7 @@ def run_dpp(offset, beam):
     exec, cycle_sequences();
     exec, define_nominal_beams();
     
-    call, file = '{omc3_dir}/tests/inputs/models/inj_beam{beam}/opticsfile.1'; !@modifier
+    call, file = '{omc3_dir}/tests/inputs/models/2018_inj_b{beam}_11m/opticsfile.1'; !@modifier
 
     select, flag = twiss, pattern = 'BPM.*B[12]', column = name, s, {PHASE_ADV}x, {PHASE_ADV}y;
     use, sequence = LHCB{beam};

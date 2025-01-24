@@ -1,17 +1,15 @@
 import os
 import shutil
 from pathlib import Path
+
+import pytest
+import tfs
 from pandas.testing import assert_frame_equal
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import COL_TUNE, COL_NATTUNE, COL_NAME
-from omc3.scripts.linfile_clean import main, clean_columns, restore_files
-
-
-import tfs
-import pytest
-
-INPUT_DIR = Path(__file__).parent.parent / "inputs"
+from omc3.harpy.constants import COL_NAME, COL_NATTUNE, COL_TUNE
+from omc3.scripts.linfile_clean import clean_columns, main, restore_files
+from tests.conftest import INPUTS
 
 
 @pytest.mark.basic
@@ -249,4 +247,4 @@ def _copy_and_modify_linfiles(out_path: Path, columns=None, index=None, by=0.0):
 
 
 def _get_inputs_linfile(plane: str):
-    return INPUT_DIR / f"spec_test.sdds.lin{plane.lower()}"
+    return INPUTS / "lhc_harpy_output" / f"spec_test.sdds.lin{plane.lower()}"

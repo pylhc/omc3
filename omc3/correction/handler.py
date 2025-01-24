@@ -18,10 +18,11 @@ import tfs
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
 import omc3.madx_wrapper as madx_wrapper
-from omc3.correction import filters, model_appenders, response_twiss, response_madx
+from omc3.correction import filters, model_appenders, response_twiss, response_madx, arc_by_arc as abba
 from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT, ORBIT_DPP
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
+from omc3.model.accelerators import lhc
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
                                                 F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
@@ -68,6 +69,11 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     # apply filters to data
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
     meas_dict = model_appenders.add_differences_to_model_to_measurements(nominal_model, meas_dict)
+
+    if opt.arc_by_arc_phase: 
+        if not isinstance(accel_inst, lhc.Lhc):
+            raise NotImplementedError("Arc-by-Arc correction is only implemented for the LHC.")
+        meas_dict = abba.reduce_phase_measurements_to_arcs(meas_dict, nominal_model, opt.include_ips_in_arc_by_arc)
 
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
     resp_matrix = _join_responses(resp_dict, optics_params, vars_list)

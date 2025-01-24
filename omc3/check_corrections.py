@@ -246,12 +246,12 @@ from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.response_twiss import PLANES
 from omc3.definitions.optics import (
     OpticsMeasurement, ColumnsAndLabels,
-    FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING, TUNE_COLUMN
+    FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING, TUNE_COLUMN, TOTAL_PHASE_NAME, MU_COLUMN
 )
 from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, TUNE
+from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, PHASE_ADV, TUNE
 from omc3.optics_measurements.toolbox import ang_diff
 from omc3.plotting.plot_checked_corrections import plot_checked_corrections, get_plotting_style_parameters
 from omc3.utils import logging_tools
@@ -481,8 +481,10 @@ def _create_model_and_write_diff_to_measurements(
     diff_columns = (
             list(OPTICS_PARAMS_CHOICES[:-4]) +
             [col for col in corr_model_elements.columns if col.startswith("F1")] +
-            list(PLANES)
+            list(PLANES) +
+            [f'{PHASE_ADV}{plane}' for plane in PLANES]
     )
+
     diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
     LOG.debug("Differences to nominal model calculated.")
 
@@ -520,12 +522,17 @@ def _create_model_and_write_diff_to_measurements(
             LOG.debug(f"Checking correction for {attribute}")
             plane = filename[-1].upper()
             cols = colmap.set_plane(plane)
+            if filename[:-1] == TOTAL_PHASE_NAME:
+                model_cols = MU_COLUMN.set_plane(plane)
+            else:
+                model_cols = cols
+
             _create_check_columns(
                 measurement=measurement,
                 output_measurement=output_measurement,
                 diff_models=diff_models,
                 colmap_meas=cols,
-                colmap_model=cols,
+                colmap_model=model_cols,
                 attribute=attribute,
                 rms_mask=rms_mask,
             )
@@ -577,7 +584,7 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
     diff = diff_models.loc[df.index, colmap_model.delta_column]
 
     df[colmap_meas.diff_correction_column] = diff
-    if colmap_meas.column == PHASE:
+    if colmap_meas.column[:-1] == PHASE:
         df[colmap_meas.expected_column] = pd.to_numeric(ang_diff(df[colmap_meas.delta_column], diff))  # assumes period 1
         df.headers[colmap_meas.delta_rms_header] =  circular_rms(df[colmap_meas.delta_column], period=1)
         df.headers[colmap_meas.expected_rms_header] = circular_rms(df[colmap_meas.expected_column], period=1)

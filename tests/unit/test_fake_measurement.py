@@ -73,9 +73,10 @@ def test_get_data_dataframe(beam1_path):
 
 
 @pytest.mark.basic
-def test_get_data_model(beam1_path, beam2_path):
-    """ Test that twiss and model are different if two are given. """
-    twiss, model = _get_data(twiss=beam1_path, model=beam2_path)
+def test_get_data_model(beam1_path):
+    """ Test that twiss and model are different if two are given. 
+    Needs to be from the same beam, as `_get_data` does intersection on the index. """
+    twiss, model = _get_data(twiss=beam1_path, model=beam1_coupling_path())
     assert twiss.any().any()
     assert model.any().any()
     assert not twiss.equals(model)
@@ -394,7 +395,7 @@ def beam2_path():
 
 
 def beam1_coupling_path():
-    return INPUTS / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
+    return INPUTS / "correction" / "2018_inj_b1_11m" / "twiss_skew_quadrupole_error.dat"
 
 
 def beam_path(beam):

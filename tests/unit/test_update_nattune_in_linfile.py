@@ -9,6 +9,8 @@ import tfs
 from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_TUNE, COL_AMP
 from omc3.scripts.update_nattune_in_linfile import main as update_nattune, PLANES
 
+from tests.conftest import INPUTS 
+
 RENAME_SUFFIX = '_mytest'
 
 
@@ -108,7 +110,7 @@ def test_remove_some_not_found():
 
 
 def _get_input_dir():
-    return Path(__file__).parent.parent / 'inputs'
+    return INPUTS /  'lhc_harpy_output'
 
 
 def _get_input_file():

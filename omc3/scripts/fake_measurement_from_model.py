@@ -435,23 +435,30 @@ def append_model(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
 def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
               add_coupling: bool = False) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """ Gets the input data as TfsDataFrames. """
-    LOG.debug("Loading data.")
+    # Helper ---
     def try_reading(df_or_path):
         try:
             return tfs.read(df_or_path, index=NAME)
         except TypeError:
             return df_or_path
-
+    # ---
+    LOG.debug("Loading data.")
+    # do twiss ---
     twiss = try_reading(twiss)
     if add_coupling:
         twiss = add_coupling_to_model(twiss)
 
+    # do model ---
     if model is None:
         model = twiss.copy()
     else:
         model = try_reading(model)
         if add_coupling:
             model = add_coupling_to_model(model)
+    
+    # intersect index ---
+    index = twiss.index.intersection(model.index)
+    twiss, model = twiss.loc[index, :], model.loc[index, :]
     return twiss, model
 
 
@@ -481,6 +488,9 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> 
 def _get_random_errors(errors: np.array, values: np.array) -> np.array:
     """ Creates normal distributed error-values that will not be lower than EPSILON. """
     LOG.debug("Calculating normal distributed random errors.")
+    if any(errors == 0):
+        raise ValueError("Errors were requested but given relative error was zero.")
+
     random_errors = np.zeros_like(errors)
     too_small = np.ones_like(errors, dtype=bool)
     n_too_small = 1

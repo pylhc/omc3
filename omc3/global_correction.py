@@ -175,7 +175,7 @@ from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
                                                 NORM_DISPERSION, PHASE, TUNE)
 from omc3.model import manager
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, save_config
+from omc3.utils.iotools import PathOrStr, OptionalStr, save_config
 
 if TYPE_CHECKING:
     from generic_parser import DotDict
@@ -190,7 +190,6 @@ OPTICS_PARAMS_CHOICES = (f"{PHASE}X", f"{PHASE}Y",
                          f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I")
 
 CORRECTION_DEFAULTS = {
-    "optics_file": None,
     "output_filename": "changeparameters_iter",
     "svd_cut": 0.01,
     "optics_params": OPTICS_PARAMS_CHOICES[:6],
@@ -198,6 +197,7 @@ CORRECTION_DEFAULTS = {
     "beta_filename": "beta_phase_",
     "method": "pinv",
     "iterations": 4,
+    "include_ips_in_arc_by_arc": None,
 }
 
 
@@ -276,6 +276,14 @@ def correction_params():
     params.add_parameter(name="update_response",
                          action="store_true",
                          help="Update the (analytical) response per iteration.", )
+    params.add_parameter(name="arc_by_arc_phase",
+                         action="store_true",
+                         help="Set to perform arc-by-arc total phase correction.", )
+    params.add_parameter(name="include_ips_in_arc_by_arc",
+                         type=str,
+                         choices=("left", "right", "both"),
+                         default=CORRECTION_DEFAULTS["include_ips_in_arc_by_arc"],
+                         help="If not specified only takes pure arcs. Otherwise it includes IPs left or right of arcs.", )
     return params
 
 

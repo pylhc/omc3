@@ -8,18 +8,18 @@ exec, define_nominal_beams();
 call, file = '../../models/2018_inj_b2_11m/opticsfile.1'; !@modifier
 exec, cycle_sequences();
 exec, set_default_crossing_scheme();
-#exec, set_crossing_scheme_ON();
+!exec, set_crossing_scheme_ON();
 
 use, sequence = LHCB2;
 exec, match_tunes_ats(0.28, 0.31, 2);
 
-#exec, do_twiss_monitors(LHCB2, 'twiss_reference.dat', 0.0);
+!exec, do_twiss_monitors(LHCB2, 'twiss_reference.dat', 0.0);
 
 ! Quadrupole Error
 kq5.l4b2 = kq5.l4b2 - 0.0001;
 kq4.l8b2 = kq4.l8b2 - 0.00013;
 
-exec, do_twiss_monitors(LHCB2, 'twiss_quadrupole_error.dat', 0.0);
+!exec, do_twiss_monitors(LHCB2, 'twiss_quadrupole_error.dat', 0.0);
 
 kq5.l4b2 = kq5.l4b2 + 0.0001;
 kq4.l8b2 = kq4.l8b2 + 0.00013;
@@ -30,7 +30,22 @@ kq4.l8b2 = kq4.l8b2 + 0.00013;
 kqs.r2b2 = kqs.r2b2 - 0.0001;
 kqs.r6b2 = kqs.r6b2 + 0.00023;
 
-exec, do_twiss_monitors(LHCB2, 'twiss_skew_quadrupole_error.dat', 0.0);
+!exec, do_twiss_monitors(LHCB2, 'twiss_skew_quadrupole_error.dat', 0.0);
 
 kqs.r2b2 = kqs.r2b2 + 0.0001;
 kqs.r6b2 = kqs.r6b2 - 0.00023;
+
+
+! MQT Quadrupole Error
+kqtf.a23b2 = kqtf.a23b2 -2.5e-03;
+kqtf.a34b2 = kqtf.a34b2 +5.6e-04;
+kqtd.a67b2 = kqtd.a67b2 +3.6e-04;
+kqtf.a78b2 = kqtf.a78b2 +4.8e-04;
+
+exec, do_twiss_monitors(LHCB2, 'twiss_mqt_quadrupole_error.dat', 0.0);
+
+kqtf.a23b2 = kqtf.a23b2 +2.5e-03;
+kqtf.a34b2 = kqtf.a34b2 -5.6e-04;
+kqtd.a67b2 = kqtd.a67b2 -3.6e-04;
+kqtf.a78b2 = kqtf.a78b2 -4.8e-04;
+

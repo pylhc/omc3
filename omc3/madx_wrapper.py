@@ -186,12 +186,20 @@ def _raise_madx_error(log=None, file=None):
     message = "MADX run failed."
     if log is not None:
         try:
-            with open(log, "r") as f:
-                content = f.readlines()
-            if content[-1].startswith("+="):
-                message += f" '{content[-1].replace('+=+=+=', '').strip()}'."
-        except (IOError, IndexError):
+            content = Path(log).read_text()
+        except IOError:
             pass
+        else:
+            if "warning: Twiss failed:  MAD-X continues" in content:
+                message += " At least one twiss failed."
+
+            try: 
+                last_line = content.splitlines()[-1]
+            except IndexError:
+                pass
+            else:
+                if last_line.startswith("+="):  # MAD-X decorator for an error message
+                    message += f" '{last_line.replace('+=', '').strip()}'."
 
     if file is not None:
         message += f" Run on File: '{file}'."
