@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.20.4 documentation</title>
+  <title>Correction &mdash; omc3 0.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=495d7bca"></script>
+      <script src="../_static/documentation_options.js?v=c4f92b34"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#filters">Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response-mad-x">Response MAD-X</a></li>
@@ -206,6 +207,7 @@
 <li><a class="reference internal" href="#constants">Constants</a></li>
 <li><a class="reference internal" href="#filters">Filters</a></li>
 <li><a class="reference internal" href="#handler">Handler</a></li>
+<li><a class="reference internal" href="#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
 <li><a class="reference internal" href="#model-appenders">Model Appenders</a></li>
 <li><a class="reference internal" href="#model-diff">Model Diff</a></li>
 <li><a class="reference internal" href="#response-mad-x">Response MAD-X</a></li>
@@ -279,6 +281,130 @@ see <code class="xref py py-mod docutils literal notranslate"><span class="pre">
 <dd><p>Loads all measurements defined by <cite>keys</cite> into a dictionary.</p>
 </dd></dl>
 
+<section id="arc-by-arc-global-correction">
+<h2>Arc-by-Arc Global Correction<a class="headerlink" href="#arc-by-arc-global-correction" title="Link to this heading"></a></h2>
+<p>In this module, functions are provided to modify the linear equation problem
+in global correction, correcting the phase advance at each BPM, into a
+problem of correcting the phase-advances over the whole arcs.</p>
+<p>This is done by identifying the closest BPM to the IPs defining the arc,
+available in the measurement data and summing all measured phase-advances between these.</p>
+<p>In the current implementation, only the measured data is modified
+to contain the arc phase advances, which will then be globally corrected with
+the given correctors.</p>
+<p>In a future implementation this should be extended to loop over each arc and
+correct each individually with only the correctors available in the respective arc.</p>
+<p>For now everything is very LHC specific, a future implementation should also
+extract the accelerator specific parts into the accelerator class.</p>
+<p>See <a class="reference external" href="https://github.com/pylhc/omc3/issues/480">https://github.com/pylhc/omc3/issues/480</a> .</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.arc_by_arc.</span></span><span class="sig-name descname"><span class="pre">circular_sum_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpm_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/arc_by_arc.html#circular_sum_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the sum of the phases from bpm to bpm
+of the given bpm pair, taking into account the circularity of the accelerator.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.arc_by_arc.</span></span><span class="sig-name descname"><span class="pre">circular_sum_phase_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpm_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/arc_by_arc.html#circular_sum_phase_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the sum of the phases errors from bpm to bpm
+of the given bpm pair, taking into account the circularity of the accelerator.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.arc_by_arc.</span></span><span class="sig-name descname"><span class="pre">get_arc_by_arc_bpm_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_ips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/arc_by_arc.html#get_arc_by_arc_bpm_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get a dictionary of bpm_pairs for each arc, defining the start and end of each arc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bpms</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) -- List of BPMs.</p></li>
+<li><p><strong>include_ips</strong> (<em>str</em><em> | </em><em>None</em>) -- Include the IPs of each arc. Can be either ‘left’, ‘right’, ‘both’ or None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping of arc to BPM pairs to use for each arc.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, tuple[str, str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.arc_by_arc.</span></span><span class="sig-name descname"><span class="pre">get_bpm_pair_phases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bpm_pairs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/correction/arc_by_arc.html#get_bpm_pair_phases"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a new DataFrame containing as entries the phase advances between the given bpm pairs.
+The format/columns are the same as used by global correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase_df</strong> (<em>pd.DataFrame</em>) -- Old DataFrame containing all the phase advances between the measured BPMs.</p></li>
+<li><p><strong>bpm_pairs</strong> (<em>dict</em><em>[</em><em>tuple</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) -- Identified BPM pairs to be used.</p></li>
+<li><p><strong>tune</strong> (<em>float</em>) -- Model tune of the machine.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New DataFrame containing the phase advances between the given bpm pairs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.arc_by_arc.</span></span><span class="sig-name descname"><span class="pre">get_left_right_pair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/arc_by_arc.html#get_left_right_pair"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get the pair of BPMs that are furthest apart in the given arc, i.e.
+the ones closest to the IPs defining the arc, left and right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bpms</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) -- List of BPMs.</p></li>
+<li><p><strong>arc</strong> (<em>str</em>) -- Arc to find the BPMs in (e.g. ‘12’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The found BPM pair.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.arc_by_arc.</span></span><span class="sig-name descname"><span class="pre">identify_closest_arc_bpm_to_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">side</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'L'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'R'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/correction/arc_by_arc.html#identify_closest_arc_bpm_to_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Pick the BPM with the lowest index from the given sequence, that is on the
+given side of the given IP.</p>
+<p>TODO: Use a regex instead, filtering the list by [LR]IP and choose the lowest via sort.
+This would assure that also BPMW etc. could be used. (jdilly, 2025)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.arc_by_arc.</span></span><span class="sig-name descname"><span class="pre">reduce_phase_measurements_to_arcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_ips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/correction/arc_by_arc.html#reduce_phase_measurements_to_arcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reduce the phase-advance in the given measurement to the phase-advance
+between two BPM-pairs at the extremities of each arc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>meas_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>pd.DataFrame</em><em>]</em>) -- Dictionary of measurements as used in Global Correction.</p></li>
+<li><p><strong>model</strong> (<em>tfs.TfsDataFrame</em>) -- Model of the machine, used only the get the tunes from the headers.</p></li>
+<li><p><strong>include_ips</strong> (<em>str</em><em> | </em><em>None</em>) -- Include the IPs of each arc. Can be either ‘left’, ‘right’, ‘both’ or None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The modified measurement dict.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, pd.DataFrame]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="model-appenders">
 <h2>Model Appenders<a class="headerlink" href="#model-appenders" title="Link to this heading"></a></h2>
 <p>Utilities to append new columns to measurement and model dataframes.
@@ -302,7 +428,7 @@ columns for the real and imaginary parts of the computed coupling RDTs.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.correction.model_appenders.</span></span><span class="sig-name descname"><span class="pre">add_differences_to_model_to_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/model_appenders.html#add_differences_to_model_to_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.model_appenders.</span></span><span class="sig-name descname"><span class="pre">add_differences_to_model_to_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/model_appenders.html#add_differences_to_model_to_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Provided with DataFrames from a model and a measurement, and a number of keys to be found in both,
 returns a dictionary with the variation from measurement to model for each key.</p>
 <dl class="field-list simple">
@@ -329,7 +455,7 @@ yet operates on two twiss files instead.</p>
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.correction.model_diff.</span></span><span class="sig-name descname"><span class="pre">diff_twiss_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/correction/model_diff.html#diff_twiss_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Create a TfsDataFrame containing of the given parameters between
+<dd><p>Create a TfsDataFrame containing the difference of the given parameters between
 model_a and model_b.</p>
 </dd></dl>
 

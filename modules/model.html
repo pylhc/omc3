@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.20.4 documentation</title>
+  <title>Model &mdash; omc3 0.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=495d7bca"></script>
+      <script src="../_static/documentation_options.js?v=c4f92b34"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="correction.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#filters">Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-mad-x">Response MAD-X</a></li>
@@ -447,6 +448,11 @@ modified.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.esrf.</span></span><span class="sig-name descname"><span class="pre">Esrf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/esrf.html#Esrf"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.generic.</span></span><span class="sig-name descname"><span class="pre">Generic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/generic.html#Generic"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
 <section id="lhc">
 <h2>LHC<a class="headerlink" href="#lhc" title="Link to this heading"></a></h2>
 <p>Accelerator-Class for the <code class="docutils literal notranslate"><span class="pre">LHC</span></code> collider.</p>
@@ -533,23 +539,9 @@ modified.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commonbpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns the BPM next to the exciter.
-The <cite>Accelerator</cite> instance knows already which excitation method is used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>plane</strong> -- <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>commonbpms</strong> -- list of common BPMs (e.g. intersection of input BPMs.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple(int, str), str)`</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a href="#id3"><span class="problematic" id="id4">`</span></a>((index, bpm_name), exciter_name)</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">get_exciter_bpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commonbpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/lhc.html#Lhc.get_exciter_bpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns the name of the BPM closest to the exciter (i.e. ADT or AC-Dipole)
+as well as the name of the exciter element.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -693,7 +685,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dd class="field-even"><p>tuple(int, str), str)`</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a href="#id5"><span class="problematic" id="id6">`</span></a>((index, bpm_name), exciter_name)</p>
+<dd class="field-odd"><p><a href="#id3"><span class="problematic" id="id4">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -797,7 +789,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dd class="field-even"><p>tuple(int, str), str)`</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a href="#id7"><span class="problematic" id="id8">`</span></a>((index, bpm_name), exciter_name)</p>
+<dd class="field-odd"><p><a href="#id5"><span class="problematic" id="id6">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -978,7 +970,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 <dd class="field-even"><p>tuple(int, str), str)`</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a href="#id9"><span class="problematic" id="id10">`</span></a>((index, bpm_name), exciter_name)</p>
+<dd class="field-odd"><p><a href="#id7"><span class="problematic" id="id8">`</span></a>((index, bpm_name), exciter_name)</p>
 </dd>
 </dl>
 </dd></dl>

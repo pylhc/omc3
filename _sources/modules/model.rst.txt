@@ -21,6 +21,11 @@ Model
     :noindex:
 
 
+.. automodule:: omc3.model.accelerators.generic
+    :members:
+    :noindex:
+
+
 .. automodule:: omc3.model.accelerators.lhc
     :members:
     :noindex:

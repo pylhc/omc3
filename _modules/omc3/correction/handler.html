@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.handler &mdash; omc3 0.20.4 documentation</title>
+  <title>omc3.correction.handler &mdash; omc3 0.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=495d7bca"></script>
+      <script src="../../../_static/documentation_options.js?v=c4f92b34"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
@@ -219,10 +220,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMatchingPursuit</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">omc3.madx_wrapper</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">madx_wrapper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction</span><span class="w"> </span><span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span><span class="p">,</span> <span class="n">response_madx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction</span><span class="w"> </span><span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span><span class="p">,</span> <span class="n">response_madx</span><span class="p">,</span> <span class="n">arc_by_arc</span> <span class="k">as</span> <span class="n">abba</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span><span class="p">,</span> <span class="n">ORBIT_DPP</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.model_appenders</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_coupling_to_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.response_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_fullresponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">lhc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span>
                                                 <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span>
@@ -271,6 +273,11 @@
     <span class="c1"># apply filters to data</span>
     <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">filter_measurement</span><span class="p">(</span><span class="n">optics_params</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">nominal_model</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span>
     <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">model_appenders</span><span class="o">.</span><span class="n">add_differences_to_model_to_measurements</span><span class="p">(</span><span class="n">nominal_model</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">arc_by_arc_phase</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Arc-by-Arc correction is only implemented for the LHC.&quot;</span><span class="p">)</span>
+        <span class="n">meas_dict</span> <span class="o">=</span> <span class="n">abba</span><span class="o">.</span><span class="n">reduce_phase_measurements_to_arcs</span><span class="p">(</span><span class="n">meas_dict</span><span class="p">,</span> <span class="n">nominal_model</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">include_ips_in_arc_by_arc</span><span class="p">)</span>
 
     <span class="n">resp_dict</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="n">filter_response_index</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">meas_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
     <span class="n">resp_matrix</span> <span class="o">=</span> <span class="n">_join_responses</span><span class="p">(</span><span class="n">resp_dict</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">,</span> <span class="n">vars_list</span><span class="p">)</span>

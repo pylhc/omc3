@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.model_diff &mdash; omc3 0.20.4 documentation</title>
+  <title>omc3.correction.model_diff &mdash; omc3 0.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=495d7bca"></script>
+      <script src="../../../_static/documentation_options.js?v=c4f92b34"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
@@ -223,7 +224,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">diff_twiss_parameters</span><span class="p">(</span><span class="n">model_a</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
                           <span class="n">model_b</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
                           <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a TfsDataFrame containing of the given parameters between</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a TfsDataFrame containing the difference of the given parameters between</span>
 <span class="sd">    model_a and model_b.&quot;&quot;&quot;</span>
     <span class="c1"># preparation ---</span>
     <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -258,7 +259,6 @@
     <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">_diff</span><span class="p">,</span>
         <span class="p">{</span>
-            <span class="n">PHASE_ADV</span><span class="p">:</span> <span class="n">_phase_advance_diff</span><span class="p">,</span>
             <span class="n">PHASE</span><span class="p">:</span> <span class="n">_phase_advance_diff</span><span class="p">,</span>
             <span class="n">BETA</span><span class="p">:</span> <span class="n">_beta_beating</span><span class="p">,</span>
             <span class="n">NORM_DISPERSION</span><span class="p">:</span> <span class="n">_normalized_dispersion_diff</span><span class="p">,</span>

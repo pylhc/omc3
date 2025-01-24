@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.manager &mdash; omc3 0.20.4 documentation</title>
+  <title>omc3.model.manager &mdash; omc3 0.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=495d7bca"></script>
+      <script src="../../../_static/documentation_options.js?v=c4f92b34"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
@@ -207,7 +208,7 @@
 <span class="sd">It contains entrypoint wrappers to get accelerator classes or their instances.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">lhc</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">esrf</span><span class="p">,</span> <span class="n">psbooster</span><span class="p">,</span> <span class="n">skekb</span><span class="p">,</span> <span class="n">petra</span><span class="p">,</span> <span class="n">iota</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">lhc</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">esrf</span><span class="p">,</span> <span class="n">psbooster</span><span class="p">,</span> <span class="n">skekb</span><span class="p">,</span> <span class="n">petra</span><span class="p">,</span> <span class="n">iota</span><span class="p">,</span> <span class="n">generic</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
 
@@ -219,7 +220,8 @@
     <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="p">,</span>
     <span class="s2">&quot;JPARC&quot;</span><span class="p">:</span> <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="p">,</span>
     <span class="n">petra</span><span class="o">.</span><span class="n">Petra</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">petra</span><span class="o">.</span><span class="n">Petra</span><span class="p">,</span>
-    <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span>
+    <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span><span class="p">,</span>
+    <span class="n">generic</span><span class="o">.</span><span class="n">Generic</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">generic</span><span class="o">.</span><span class="n">Generic</span><span class="p">,</span>
 <span class="p">}</span>
 
 

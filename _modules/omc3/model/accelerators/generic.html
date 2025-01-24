@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.esrf &mdash; omc3 0.21.0 documentation</title>
+  <title>omc3.model.accelerators.generic &mdash; omc3 0.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
@@ -188,7 +188,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">omc3.model.accelerators.esrf</li>
+      <li class="breadcrumb-item active">omc3.model.accelerators.generic</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -199,74 +199,21 @@
   
            <div itemprop="articleBody">
              
-  <h1>Source code for omc3.model.accelerators.esrf</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">ESRF</span>
-<span class="sd">----</span>
-
-<span class="sd">Accelerator-Class for the ``ESRF`` machine.</span>
-
-<span class="sd">Model Creation Keyword Args:</span>
-<span class="sd">    *--Optional--*</span>
-
-<span class="sd">    - **dpp** *(float)*:</span>
-
-<span class="sd">        Deltap/p to use.</span>
-
-<span class="sd">        default: ``0.0``</span>
-
-
-<span class="sd">    - **driven_excitation** *(str)*:</span>
-
-<span class="sd">        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)</span>
-
-<span class="sd">        choices: ``(&#39;acd&#39;, &#39;adt&#39;)``</span>
-
-
-<span class="sd">    - **drv_tunes** *(float)*:</span>
-
-<span class="sd">        Driven tunes without integer part.</span>
-
-
-<span class="sd">    - **energy** *(float)*:</span>
-
-<span class="sd">        Energy in **Tev**.</span>
-
-
-<span class="sd">    - **model_dir** *(str)*:</span>
-
-<span class="sd">        Path to model directory; loads tunes and excitation from model!</span>
-
-
-<span class="sd">    - **modifiers** *(str)*:</span>
-
-<span class="sd">        Path to the optics file to use (modifiers file).</span>
-
-
-<span class="sd">    - **nat_tunes** *(float)*:</span>
-
-<span class="sd">        Natural tunes without integer part.</span>
-
-
-<span class="sd">    - **xing**:</span>
-
-<span class="sd">        If True, x-ing angles will be applied to model</span>
-
-<span class="sd">        action: ``store_true``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+  <h1>Source code for omc3.model.accelerators.generic</h1><div class="highlight"><pre>
+<span></span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPoint</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccElementTypes</span><span class="p">,</span> <span class="n">Accelerator</span>
 
 
-<div class="viewcode-block" id="Esrf">
-<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.esrf.Esrf">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Esrf</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
-    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;esrf&quot;</span>
-    <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BPM&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="Generic">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.generic.Generic">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Generic</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;generic&quot;</span>
+    <span class="n">RE_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
                <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
-               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BPM\.(\d*[02468]\.[1-5]|\d*[13579]\.[3-7])&quot;</span><span class="p">,</span>
-               <span class="p">}</span>  <span class="c1"># bpms 1-5 in even cells and bpms 3-7 in odd cells.</span>
+               <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
+               <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

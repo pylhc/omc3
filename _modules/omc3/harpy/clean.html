@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.clean &mdash; omc3 0.20.4 documentation</title>
+  <title>omc3.harpy.clean &mdash; omc3 0.21.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=495d7bca"></script>
+      <script src="../../../_static/documentation_options.js?v=c4f92b34"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
@@ -258,14 +259,20 @@
     <span class="n">bpm_flatness</span> <span class="o">=</span> <span class="n">_detect_flat_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">peak_to_peak</span><span class="p">)</span>
     <span class="n">bpm_spikes</span> <span class="o">=</span> <span class="n">_detect_bpms_with_spikes</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">max_peak</span><span class="p">)</span>
     <span class="n">exact_zeros</span> <span class="o">=</span> <span class="n">_detect_bpms_with_exact_zeros</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">keep_exact_zeros</span><span class="p">)</span>
-    <span class="n">all_bad_bpms</span> <span class="o">=</span> <span class="n">_index_union</span><span class="p">(</span><span class="n">known_bad_bpms</span><span class="p">,</span> <span class="n">bpm_flatness</span><span class="p">,</span> <span class="n">bpm_spikes</span><span class="p">,</span> <span class="n">exact_zeros</span><span class="p">)</span>
+    <span class="n">bpm_nans</span> <span class="o">=</span> <span class="n">_detect_bpms_with_nans</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">)</span>
+    <span class="n">all_bad_bpms</span> <span class="o">=</span> <span class="n">_index_union</span><span class="p">(</span><span class="n">known_bad_bpms</span><span class="p">,</span> <span class="n">bpm_flatness</span><span class="p">,</span> <span class="n">bpm_spikes</span><span class="p">,</span> <span class="n">exact_zeros</span><span class="p">,</span> <span class="n">bpm_nans</span><span class="p">)</span>
     <span class="n">original_bpms</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span>
 
     <span class="n">bpm_data</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_bad_bpms</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
     <span class="n">bad_bpms_with_reasons</span> <span class="o">=</span> <span class="n">_get_bad_bpms_summary</span><span class="p">(</span>
-        <span class="n">harpy_input</span><span class="p">,</span> <span class="n">known_bad_bpms</span><span class="p">,</span> <span class="n">bpm_flatness</span><span class="p">,</span> <span class="n">bpm_spikes</span><span class="p">,</span> <span class="n">exact_zeros</span>
+        <span class="n">harpy_input</span><span class="p">,</span> 
+        <span class="n">known</span><span class="o">=</span><span class="n">known_bad_bpms</span><span class="p">,</span> 
+        <span class="n">flat</span><span class="o">=</span><span class="n">bpm_flatness</span><span class="p">,</span> 
+        <span class="n">spike</span><span class="o">=</span><span class="n">bpm_spikes</span><span class="p">,</span> 
+        <span class="n">zero</span><span class="o">=</span><span class="n">exact_zeros</span><span class="p">,</span> 
+        <span class="n">nan</span><span class="o">=</span><span class="n">bpm_nans</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">_report_clean_stats</span><span class="p">(</span><span class="n">original_bpms</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">_report_clean_stats</span><span class="p">(</span><span class="n">original_bpms</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">bad_bpms_with_reasons</span><span class="p">)</span>
     <span class="n">bpm_data</span> <span class="o">=</span> <span class="n">_fix_polarity</span><span class="p">(</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">wrong_polarity_bpms</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">first_bpm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bpm_data</span> <span class="o">=</span> <span class="n">_resync_bpms</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
@@ -314,8 +321,22 @@
     <span class="n">too_low</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">max_peak_cut</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="n">bpm_spikes</span> <span class="o">=</span> <span class="n">too_high</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">too_low</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bpm_spikes</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spikes &gt; </span><span class="si">{</span><span class="n">max_peak_cut</span><span class="si">}</span><span class="s2"> detected. BPMs removed: </span><span class="si">{</span><span class="n">bpm_spikes</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Spikes &gt; </span><span class="si">{</span><span class="n">max_peak_cut</span><span class="si">}</span><span class="s2"> detected. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_spikes</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> BPMs removed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bpm_spikes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">bpm_spikes</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_bpms_with_nans</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Detects BPMs with NaN values.&quot;&quot;&quot;</span>
+    <span class="n">nan_bpms</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
+    <span class="k">if</span> <span class="n">nan_bpms</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;NaN BPMs detected. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nan_bpms</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> BPMs removed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nan_bpms</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">nan_bpms</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_detect_bpms_with_exact_zeros</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">keep_exact_zeros</span><span class="p">):</span>
@@ -325,31 +346,56 @@
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([])</span>
     <span class="n">exact_zeros</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">if</span> <span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exact zeros detected. BPMs removed: </span><span class="si">{</span><span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Exact zeros detected. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> BPMs removed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exact_zeros</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">exact_zeros</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_bad_bpms_summary</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">known_bad_bpms</span><span class="p">,</span> <span class="n">bpm_flatness</span><span class="p">,</span> <span class="n">bpm_spikes</span><span class="p">,</span> <span class="n">exact_zeros</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> Known bad BPM&quot;</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">known_bad_bpms</span><span class="p">]</span> <span class="o">+</span>
-            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> Flat BPM, the difference between min/max is smaller than &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">peak_to_peak</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">bpm_flatness</span><span class="p">]</span> <span class="o">+</span>
-            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> Spiky BPM, found spike higher than &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">max_peak</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">bpm_spikes</span><span class="p">]</span> <span class="o">+</span>
-            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> Found an exact zero&quot;</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">exact_zeros</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_bad_bpms_summary</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">human_readable</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;known&quot;</span><span class="p">:</span> <span class="s2">&quot;Known bad BPM&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;flat&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Flat BPM, the difference between min/max is smaller than </span><span class="si">{</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">peak_to_peak</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;spike&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Spiky BPM, found spike higher than </span><span class="si">{</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">max_peak</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;zero&quot;</span><span class="p">:</span> <span class="s2">&quot;Found an exact zero&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nan&quot;</span><span class="p">:</span> <span class="s2">&quot;Found NaN&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Quick check that catches coding errors/typos:</span>
+    <span class="n">unknown_kwargs</span> <span class="o">=</span> <span class="p">[</span><span class="n">kwarg</span> <span class="k">for</span> <span class="n">kwarg</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">if</span> <span class="n">kwarg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">human_readable</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unknown_kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown reason(s) for Bad-BPMs: </span><span class="si">{</span><span class="n">unknown_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">reason</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">human_readable</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">reason</span><span class="p">]</span>
+    <span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_report_clean_stats</span><span class="p">(</span><span class="n">n_total_bpms</span><span class="p">,</span> <span class="n">n_good_bpms</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_report_clean_stats</span><span class="p">(</span><span class="n">n_total_bpms</span><span class="p">,</span> <span class="n">n_good_bpms</span><span class="p">,</span> <span class="n">bad_bpms_with_reasons</span><span class="p">):</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering done:&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># As it not written out yet, provide more info in case of raising errors:</span>
+    <span class="n">bad_bpms_message</span> <span class="o">=</span> <span class="s2">&quot;Bad BPMs found:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">bad_bpms_message</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bad_bpms_with_reasons</span><span class="p">)</span>
+    
+    <span class="c1"># If all BPMs have been bad ---</span>
     <span class="k">if</span> <span class="n">n_good_bpms</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">bad_bpms_message</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Total Number of BPMs after filtering is zero.&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># The good, the bad and the ugly BPMs ---</span>
     <span class="n">n_bad_bpms</span> <span class="o">=</span> <span class="n">n_total_bpms</span> <span class="o">-</span> <span class="n">n_good_bpms</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(Statistics for file reading) Total BPMs: </span><span class="si">{</span><span class="n">n_total_bpms</span><span class="si">}</span><span class="s2">, &quot;</span>
                  <span class="sa">f</span><span class="s2">&quot;Good BPMs: </span><span class="si">{</span><span class="n">n_good_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_good_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%), &quot;</span>
                  <span class="sa">f</span><span class="s2">&quot;Bad BPMs: </span><span class="si">{</span><span class="n">n_bad_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_bad_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_good_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">bad_bpms_message</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than half of BPMs are bad. &quot;</span>
                          <span class="s2">&quot;This could be because a bunch not present in the machine has been &quot;</span>
                          <span class="s2">&quot;selected or because of a problem with the phasing of the BPMs.&quot;</span><span class="p">)</span>
+    
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">bad_bpms_message</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_index_union</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">):</span>
