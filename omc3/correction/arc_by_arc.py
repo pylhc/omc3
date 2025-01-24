@@ -87,7 +87,8 @@ def get_arc_by_arc_bpm_pairs(bpms:  Sequence[str],  include_ips: str | None = No
     if include_ips is None:
         return bpm_pairs
 
-    # Include IPs within each arc --- 
+    # Include IPs within each arc
+    # i.e. choose the closest BPMs on the other side of the IP ---
     bpm_pairs_with_ips = {}
     for idx, arc in enumerate(LHC_ARCS):
         prev_arc = LHC_ARCS[idx-1]

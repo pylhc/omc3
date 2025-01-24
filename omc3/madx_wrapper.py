@@ -198,8 +198,8 @@ def _raise_madx_error(log=None, file=None):
             except IndexError:
                 pass
             else:
-                if last_line.startswith("+="):
-                    message += f" '{last_line.replace('+=+=+=', '').strip()}'."
+                if last_line.startswith("+="):  # MAD-X decorator for an error message
+                    message += f" '{last_line.replace('+=', '').strip()}'."
 
     if file is not None:
         message += f" Run on File: '{file}'."
