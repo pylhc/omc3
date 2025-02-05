@@ -21,22 +21,38 @@ one of the following reasons:
 
 """
 from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
 
-from omc3.hole_in_one import hole_in_one_entrypoint, DEFAULT_CONFIG_FILENAME, LINFILES_SUBFOLDER
-from omc3.harpy.constants import FILE_LIN_EXT, FILE_AMPS_EXT, FILE_FREQS_EXT
+from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
+from omc3.hole_in_one import (
+    DEFAULT_CONFIG_FILENAME,
+    LINFILES_SUBFOLDER,
+    hole_in_one_entrypoint,
+)
+from omc3.model.constants import TWISS_ELEMENTS_DAT
 from omc3.optics_measurements import phase
 from omc3.optics_measurements.constants import (
-    EXT, 
-    BETA_NAME, AMP_BETA_NAME, F1001_NAME, F1010_NAME, PHASE_NAME, TOTAL_PHASE_NAME, KICK_NAME, ORBIT_NAME,
-    DISPERSION_NAME, NORM_DISP_NAME,
+    AMP_BETA_NAME,
+    BETA_NAME,
+    DISPERSION_NAME,
+    EXT,
+    F1001_NAME,
+    F1010_NAME,
+    KICK_NAME,
+    NORM_DISP_NAME,
+    ORBIT_NAME,
+    PHASE_NAME,
+    TOTAL_PHASE_NAME,
 )
 from tests.conftest import INPUTS, ids_str
 
 MODEL_DIR = INPUTS / "models" / "2022_inj_b1_acd"
 SDDS_DIR = INPUTS / "lhcb1_tbt_inj_on_off_mom"
+SPS_DIR = INPUTS / "sps_data"
+SPS_MODEL_DIR = SPS_DIR / "model_Q20_noacd"
 
 # These are 2024 injection optics files from Beam1, should work with the 2022 model as well.
 SDDS_FILES = {
@@ -52,6 +68,7 @@ SDDS_FILES = {
 @pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
 def test_hole_in_two(tmp_path, clean, which_files, caplog):
     """
+    Runs harpy and then optics analysis as separate function calls.
     Test that is closely related to how actual analysis are done.
     """
     # Run harpy on the SDDS file
@@ -67,7 +84,7 @@ def test_hole_in_two(tmp_path, clean, which_files, caplog):
         autotunes="transverse",
         outputdir=analysis_output,
         files=sdds_files,
-        model=MODEL_DIR / "twiss_elements.dat",
+        model=MODEL_DIR / TWISS_ELEMENTS_DAT,
         to_write=["lin", "spectra"],
         unit="mm"
     )
@@ -111,7 +128,7 @@ def test_hole_in_two(tmp_path, clean, which_files, caplog):
 @pytest.mark.parametrize("clean", (True, False), ids=ids_str("clean={}"))
 def test_hole_in_one(tmp_path, clean, which_files, caplog):
     """
-    This test runs harpy, optics and optics analysis in one.
+    This test runs harpy, cleaning and optics analysis in one.
     """
     rdt_order = 3
     output = tmp_path / "output"
@@ -126,7 +143,7 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         autotunes="transverse",
         outputdir=output,
         files=files,
-        model=MODEL_DIR / "twiss_elements.dat",
+        model=MODEL_DIR / TWISS_ELEMENTS_DAT,
         to_write=["lin", "spectra", "bpm_summary"],
         window="hann",
         compensation=phase.CompensationMode.NONE,
@@ -154,6 +171,54 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         phase_compensation=False,  # phase compensation set to "none" above
     )
 
+
+@pytest.mark.extended
+def test_hole_in_one_sps(tmp_path, caplog):
+    """
+    This test runs harpy and optics analysis in one for SPS data.
+    This data is representative for single-plane BPMs
+    and BPMs with NaNs which caused some errors prior to v0.21.0 .
+    """
+    rdt_order = 3
+    output = tmp_path / "output"
+    files = [SPS_DIR / "sps_200turns.sdds"]
+    nan_bpms = ["BPH.31808", "BPH.32008", "BPV.31708", "BPV.31908"]
+
+    hole_in_one_entrypoint(
+        harpy=True,
+        optics=True,  # do not need to run optics, but good to test if it works
+        clean=True,
+        tbt_datatype="sps",
+        compensation=phase.CompensationMode.NONE,
+        output_bits=8,
+        turn_bits=12,  # lower and rdt calculation fails for coupling
+        resonances=rdt_order+1,
+        # nattunes = [0.13, 0.18, 0.0],
+        autotunes="transverse",
+        outputdir=output,
+        files=files,
+        model=SPS_MODEL_DIR / TWISS_ELEMENTS_DAT,
+        to_write=["lin", "spectra",],
+        window="hann",
+        coupling_method=2,
+        nonlinear=['rdt',],
+        rdt_magnet_order=rdt_order,
+        unit="mm",
+        accel="generic",
+        model_dir=SPS_MODEL_DIR,
+        three_bpm_method=True,  # n-bpm method needs error-def file
+    )
+
+    for sdds_file in files:
+        _check_all_harpy_files(output / LINFILES_SUBFOLDER, sdds_file)
+
+    _check_linear_optics_files(output, off_momentum=False)
+    _check_nonlinear_optics_files(output, "rdt", order=rdt_order)
+    
+    assert "NaN BPMs detected." in caplog.text
+    for bpm in nan_bpms:
+        assert bpm in caplog.text
+    
 
 # Helper -----------------------------------------------------------------------
 

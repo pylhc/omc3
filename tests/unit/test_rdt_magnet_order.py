@@ -1,11 +1,11 @@
 import os
+from pathlib import Path
 
 import pytest
 import tfs
 
-from pathlib import Path
-
 from omc3.hole_in_one import hole_in_one_entrypoint
+from omc3.model.constants import TWISS_DAT
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 
@@ -22,7 +22,7 @@ def test_default_harpy_resonance(tmp_path):
     '''
     Check that the --resonances flag indeed gives us up to 4th order by default
     '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    model = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
     # First run the frequency analysis with default resonances value
@@ -67,7 +67,7 @@ def test_harpy_bad_resonance_order(tmp_path, order):
     '''
     Check that the --resonances maximum order is 8
     '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    model = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
     # First run the frequency analysis with default resonances value
@@ -92,7 +92,7 @@ def test_harpy_high_order_resonance(tmp_path):
     '''
     Check the --resonances flag  with higher magnet orders: dodecapole (6)
     '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    model = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
     # First run the frequency analysis with default resonances value
@@ -128,7 +128,7 @@ def test_optics_default_rdt_order(tmp_path):
     '''
     Check the --rdt_magnet_order default (4)
     '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    model = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
     # First run the frequency analysis with default resonances value
@@ -182,7 +182,7 @@ def test_optics_wrong_rdt_magnet_order(tmp_path, order):
     '''
     Check that --rdt_magnet_order raises when > 8
     '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    model = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
     # First run the frequency analysis with default resonances value
@@ -217,7 +217,7 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
     '''
     Check the --rdt_magnet_order with higher magnet orders: dodecapole (6)
     '''
-    model = INPUTS / "models" / f"2022_inj_b1_acd" / 'twiss.dat'
+    model = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
     # First run the frequency analysis with default resonances value

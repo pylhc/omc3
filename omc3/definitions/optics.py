@@ -195,6 +195,7 @@ DISPERSION_COLUMN =      ColumnsAndLabels(DISPERSION, _label=ylabels['dispersion
 NORM_DISPERSION_COLUMN = ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion')
 PHASE_COLUMN =           ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase')
 TOTAL_PHASE_COLUMN =     ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase')
+MU_COLUMN =              ColumnsAndLabels(PHASE_ADV, _label=ylabels['phasetot'], _text_label='total phase')
 PHASE_ADVANCE_COLUMN =   ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', _label=r'Phase Advance [$2 \pi$]', _text_label='phase advance')
 S_COLUMN =               ColumnsAndLabels(S, _label='Location [m]', _text_label='longitudinal location', needs_plane=False)
 

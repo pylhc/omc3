@@ -54,14 +54,20 @@ def _cut_cleaning(harpy_input, bpm_data, model):
     bpm_flatness = _detect_flat_bpms(bpm_data, harpy_input.peak_to_peak)
     bpm_spikes = _detect_bpms_with_spikes(bpm_data, harpy_input.max_peak)
     exact_zeros = _detect_bpms_with_exact_zeros(bpm_data, harpy_input.keep_exact_zeros)
-    all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros)
+    bpm_nans = _detect_bpms_with_nans(bpm_data)
+    all_bad_bpms = _index_union(known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros, bpm_nans)
     original_bpms = bpm_data.index
 
     bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms, sort=False)]
     bad_bpms_with_reasons = _get_bad_bpms_summary(
-        harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros
+        harpy_input, 
+        known=known_bad_bpms, 
+        flat=bpm_flatness, 
+        spike=bpm_spikes, 
+        zero=exact_zeros, 
+        nan=bpm_nans,
     )
-    _report_clean_stats(original_bpms.size, bpm_data.index.size)
+    _report_clean_stats(original_bpms.size, bpm_data.index.size, bad_bpms_with_reasons)
     bpm_data = _fix_polarity(harpy_input.wrong_polarity_bpms, bpm_data)
     if model is not None and harpy_input.first_bpm is not None:
         bpm_data = _resync_bpms(harpy_input, bpm_data, model)
@@ -110,8 +116,22 @@ def _detect_bpms_with_spikes(bpm_data, max_peak_cut):
     too_low = bpm_data[bpm_data.min(axis=1) < -max_peak_cut].index
     bpm_spikes = too_high.union(too_low)
     if bpm_spikes.size:
-        LOGGER.debug(f"Spikes > {max_peak_cut} detected. BPMs removed: {bpm_spikes.size}")
+        LOGGER.debug(
+            f"Spikes > {max_peak_cut} detected. "
+            f"{bpm_spikes.size} BPMs removed: {', '.join(bpm_spikes)}"
+        )
     return bpm_spikes
+
+
+def _detect_bpms_with_nans(bpm_data) -> pd.Index:
+    """Detects BPMs with NaN values."""
+    nan_bpms = bpm_data[bpm_data.isna().any(axis=1)].index
+    if nan_bpms.size:
+        LOGGER.warning(
+            f"NaN BPMs detected. "
+            f"{nan_bpms.size} BPMs removed: {', '.join(nan_bpms)}"
+        )
+    return nan_bpms
 
 
 def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
@@ -121,31 +141,56 @@ def _detect_bpms_with_exact_zeros(bpm_data, keep_exact_zeros):
         return pd.Index([])
     exact_zeros = bpm_data[~np.all(bpm_data, axis=1)].index
     if exact_zeros.size:
-        LOGGER.debug(f"Exact zeros detected. BPMs removed: {exact_zeros.size}")
+        LOGGER.debug(
+            f"Exact zeros detected. "
+            f"{exact_zeros.size} BPMs removed: {', '.join(exact_zeros)} "
+        )
     return exact_zeros
 
 
-def _get_bad_bpms_summary(harpy_input, known_bad_bpms, bpm_flatness, bpm_spikes, exact_zeros):
-    return ([f"{bpm_name} Known bad BPM" for bpm_name in known_bad_bpms] +
-            [f"{bpm_name} Flat BPM, the difference between min/max is smaller than "
-            f"{harpy_input.peak_to_peak}" for bpm_name in bpm_flatness] +
-            [f"{bpm_name} Spiky BPM, found spike higher than "
-            f"{harpy_input.max_peak}" for bpm_name in bpm_spikes] +
-            [f"{bpm_name} Found an exact zero" for bpm_name in exact_zeros])
+def _get_bad_bpms_summary(harpy_input, **kwargs):
+    human_readable = {
+        "known": "Known bad BPM",
+        "flat": f"Flat BPM, the difference between min/max is smaller than {harpy_input.peak_to_peak}",
+        "spike": f"Spiky BPM, found spike higher than {harpy_input.max_peak}",
+        "zero": "Found an exact zero",
+        "nan": "Found NaN",
+    }
+
+    # Quick check that catches coding errors/typos:
+    unknown_kwargs = [kwarg for kwarg in kwargs if kwarg not in human_readable.keys()]
+    if len(unknown_kwargs):
+        raise NameError(f"Unknown reason(s) for Bad-BPMs: {unknown_kwargs}")
+
+    return [
+        f"{bpm_name} {msg}" for reason, msg in human_readable.items() for bpm_name in kwargs[reason]
+    ]
 
 
-def _report_clean_stats(n_total_bpms, n_good_bpms):
+def _report_clean_stats(n_total_bpms, n_good_bpms, bad_bpms_with_reasons):
     LOGGER.debug("Filtering done:")
+    
+    # As it not written out yet, provide more info in case of raising errors:
+    bad_bpms_message = "Bad BPMs found:\n"
+    bad_bpms_message += "\n".join(bad_bpms_with_reasons)
+    
+    # If all BPMs have been bad ---
     if n_good_bpms == 0:
+        LOGGER.info(bad_bpms_message)
         raise ValueError("Total Number of BPMs after filtering is zero.")
+    
+    # The good, the bad and the ugly BPMs ---
     n_bad_bpms = n_total_bpms - n_good_bpms
     LOGGER.debug(f"(Statistics for file reading) Total BPMs: {n_total_bpms}, "
                  f"Good BPMs: {n_good_bpms} ({(100 * n_good_bpms / n_total_bpms):2.2f}%), "
                  f"Bad BPMs: {n_bad_bpms} ({(100 * n_bad_bpms / n_total_bpms):2.2f}%)")
     if (n_good_bpms / n_total_bpms) < 0.5:
+        LOGGER.info(bad_bpms_message)
         raise ValueError("More than half of BPMs are bad. "
                          "This could be because a bunch not present in the machine has been "
                          "selected or because of a problem with the phasing of the BPMs.")
+    
+    LOGGER.debug(bad_bpms_message)
 
 
 def _index_union(*indices):

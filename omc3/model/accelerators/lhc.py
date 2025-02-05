@@ -317,37 +317,31 @@ class Lhc(Accelerator):
         LOGGER.info(f"> Driven Tune Y     [{self.drv_tunes[1]:10.3f}]")
 
 
-    def get_exciter_bpm(self, plane: str, commonbpms: list[str]):
+    def get_exciter_bpm(self, plane: str, commonbpms: list[str]) -> tuple[str, str]:
+        """ Returns the name of the BPM closest to the exciter (i.e. ADT or AC-Dipole)
+        as well as the name of the exciter element. """
         beam = self.beam
         adt = "H.C" if plane == "X" else "V.B"
         l_r = "L" if ((beam == 1) != (plane == "Y")) else "R"
         a_b = "B" if beam == 1 else "A"
         if self.excitation == AccExcitationMode.ACD:
-            try:
-                return (
-                    _is_one_of_in(
-                        [f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"], commonbpms
-                    ),
-                    f"MKQA.6L4.B{beam}",
-                )
-            except KeyError as e:
-                raise KeyError(
-                    "AC-Dipole BPM not found in the common BPMs. Maybe cleaned?"
-                ) from e
-        if self.excitation == AccExcitationMode.ADT:
-            try:
-                return (
-                    _is_one_of_in(
-                        [f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"],
-                        commonbpms,
-                    ),
-                    f"ADTK{adt}5{l_r}4.B{beam}",
-                )
-            except KeyError as e:
-                raise KeyError(
-                    "ADT BPM not found in the common BPMs. Maybe cleaned?"
-                ) from e
-        return None
+            excitation_name = "AC-Dipole"
+            possible_bpms = [f"BPMY{a_b}.6L4.B{beam}", f"BPM.7L4.B{beam}"]
+            element = f"MKQA.6L4.B{beam}"
+        elif self.excitation == AccExcitationMode.ADT:
+            excitation_name = "ADT-AC-Dipole"
+            possible_bpms = [f"BPMWA.B5{l_r}4.B{beam}", f"BPMWA.A5{l_r}4.B{beam}"]
+            element = f"ADTK{adt}5{l_r}4.B{beam}"
+        else:
+            return None
+
+        try:
+            return _first_one_in(possible_bpms, commonbpms), element
+        except KeyError as e:
+            raise KeyError(
+                f"{excitation_name} BPM (either {possible_bpms[0]} or {possible_bpms[1]}) "
+                "not found in the common BPMs. Maybe cleaned?"
+            ) from e
 
     def important_phase_advances(self) -> list[list[str]]:
         if "hl" in self.year.lower(): 
@@ -438,7 +432,7 @@ def _list_intersect_keep_order(primary_list: Iterable, secondary_list: Iterable)
     return [elem for elem in primary_list if elem in secondary_list]
 
 
-def _is_one_of_in(bpms_to_find: Sequence[str], bpms: Sequence[str]):
+def _first_one_in(bpms_to_find: Sequence[str], bpms: Sequence[str]):
     found_bpms = [bpm for bpm in bpms_to_find if bpm in bpms]
     if len(found_bpms):
         return list(bpms).index(found_bpms[0]), found_bpms[0]

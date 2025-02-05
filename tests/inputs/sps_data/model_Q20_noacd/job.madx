@@ -1,0 +1,70 @@
+!system,"[ ! -e sps ] && [ -d /afs/cern.ch/eng/acc-models/sps/2021 ] && ln -nfs /afs/cern.ch/eng/acc-models/sps/2021 sps";
+!system,"[ ! -e sps ] && git clone https://gitlab.cern.ch/acc-models/acc-models-sps -b 2021 sps";
+
+option, -echo;
+
+call,file="/afs/cern.ch/eng/acc-models/sps/2021/sps.seq";
+call,file="/afs/cern.ch/eng/acc-models/sps/2021/strengths/lhc_q20.str";
+
+beam;
+
+call,file="/afs/cern.ch/eng/acc-models/sps/2021/toolkit/macro.madx";
+
+qx0=20.13;
+qy0=20.18;
+
+qxD=.29;
+qyD=.262;
+
+ hacmap21 = 0;
+ vacmap43 = 0;
+ hacmap: matrix, l=0, rm21 := hacmap21;
+ vacmap: matrix, l=0, rm43 := vacmap43;
+
+ZKH_MARKER: marker;
+ZKV_MARKER: marker;
+
+seqedit, sequence=sps;
+  flatten;
+
+  !replace, element=ZKHA.21991, by=ZKH_MARKER;
+  !replace, element=ZKV.21993,  by=ZKV_MARKER;
+  
+  !install, element=hacmap, at=0.0, from=ZKH_MARKER;
+  !install, element=vacmap, at=0.0, from=ZKV_MARKER;
+
+  cycle, start= BPH.13008;
+ endedit;
+
+
+use,sequence=sps;
+
+
+
+exec, sps_match_tunes(qx0,qy0);
+
+twiss,file="sps.tfs";
+
+select,flag=twiss,clear;
+select,flag=twiss,pattern="BP", column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dy,dpy,px,py,phix,phiy;
+twiss,file=twiss.dat;
+
+select,flag=twiss,clear;
+select, flag=twiss,column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dy,dpy,px,py,phix,phiy;
+twiss,file=twiss_elements.dat;
+
+/*
+betxac = table(twiss, hacmap, betx);
+betyac = table(twiss, vacmap, bety);
+
+hacmap21 := 2*(cos(2*pi*Qxd)-cos(2*pi*Qx0))/(betxac*sin(2*pi*Qx0));
+vacmap43 := 2*(cos(2*pi*Qyd)-cos(2*pi*Qy0))/(betyac*sin(2*pi*Qy0));
+
+select,flag=twiss,clear;
+select,flag=twiss,pattern="BPH";
+select,flag=twiss,pattern="BPV";
+select, flag=twiss,column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dy,dpy,px,py,phix,phiy;
+twiss,file=twiss_ac.dat;
+*/
+
+stop;

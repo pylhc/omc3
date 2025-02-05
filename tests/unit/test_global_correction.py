@@ -13,6 +13,7 @@ from omc3.correction.handler import (
 from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.global_correction import global_correction_entrypoint as global_correction
 from omc3.model import manager
+from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import (
     BETA,
     BETA_NAME,
@@ -58,7 +59,7 @@ def test_read_measurement_data(tmp_path, model_inj_beams, orientation):
     beam = model_inj_beams.beam
     correction_params = get_skew_params(beam) if is_skew else get_normal_params(beam)
     meas_fake = fake_measurement(
-        model=model_inj_beams.model_dir / "twiss.dat",
+        model=model_inj_beams.model_dir / TWISS_DAT,
         twiss=correction_params.twiss,
         randomize=[],
         relative_errors=[0.1],
@@ -95,7 +96,7 @@ def test_lhc_global_correct_methods(tmp_path, model_inj_beams, method):
     n_correctors = 5
 
     fake_measurement(
-        model=model_inj_beams.model_dir / "twiss.dat",
+        model=model_inj_beams.model_dir / TWISS_DAT,
         twiss=correction_params.twiss,
         randomize=[],
         relative_errors=[0.1],

@@ -1,5 +1,33 @@
 # OMC3 Changelog
 
+#### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
+
+- Fixed:
+  - Plot Optics Measurements: Added extra mpl style for clearer plots.
+  - LHC exciter BPM not found: Tells you which BPMs were searched for.
+  - Plot Spectrum: Correct error handling for Single-Plane BPMs.
+
+- Added:
+  - A `generic` accelerator class, that can be used for non-specifc accelerators.
+  - Global Correction: Total arc phase correction (`arc-by-arc`).
+  - Cleaning: Filter BPMs with NaNs.
+  - Cleaning: Log bad BPMs with reasons before raising errors.
+  - MAD-X wrapper: Inform about failed twiss.
+
+#### 2025-01-06 - v0.20.4 - _fsoubelet_
+
+- Fixed:
+  - Solved an issue in datetime operations occuring on `Python 3.13`.
+
+- Changed:
+  - Dropped support for `Python 3.9`.
+
+#### 2024-11-21 - v0.20.3 - _jdilly_
+
+- Fixed:
+  - `analyse_dpp` issues in `beta_from_amplitude`, `chromatic_beating` and `dispersion`.
+    Skips `dispersion` calculation if `NaN`s are present.
+
 #### 2024-11-21 - v0.20.2 - _jdilly_, _awegsche_
 
 - Added:

@@ -20,7 +20,7 @@ from omc3.optics_measurements.toolbox import ang_diff
 def diff_twiss_parameters(model_a: tfs.TfsDataFrame,
                           model_b: tfs.TfsDataFrame,
                           parameters: Sequence[str] = None) -> tfs.TfsDataFrame:
-    """Create a TfsDataFrame containing of the given parameters between
+    """Create a TfsDataFrame containing the difference of the given parameters between
     model_a and model_b."""
     # preparation ---
     if parameters is None:
@@ -54,7 +54,6 @@ def _get_mapping():
     return defaultdict(
         lambda: _diff,
         {
-            PHASE_ADV: _phase_advance_diff,
             PHASE: _phase_advance_diff,
             BETA: _beta_beating,
             NORM_DISPERSION: _normalized_dispersion_diff,
