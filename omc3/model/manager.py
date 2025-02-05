@@ -22,10 +22,14 @@ ACCELS = {
 }
 
 
-def _get_params():
+def _get_params() -> EntryPointParameters:
     params = EntryPointParameters()
-    params.add_parameter(name="accel", required=True, choices=list(ACCELS.keys()),
-                         help="Choose the accelerator to use.Can be the class already.")
+    params.add_parameter(
+        name="accel", 
+        required=True, 
+        choices=list(ACCELS.keys()),
+        help="Choose the accelerator to use.Can be the class already."
+    )
     return params
 
 
@@ -35,9 +39,7 @@ def get_accelerator(opt, other_opt) -> Accelerator:
     Returns (opt.accel, help_requested):
         `opt.accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.
         `help_requested` is a boolean stating if help was requested at any point
-
     """
-
     if not isinstance(opt.accel, str):
         # if it's the class already, we just return it
         return opt.accel
@@ -46,14 +48,16 @@ def get_accelerator(opt, other_opt) -> Accelerator:
 
 
 @entrypoint(_get_params())
-def get_accelerator_class(opt, other):
+def get_accelerator_class(opt, other) -> type[Accelerator]:
+    """ 
+    Returns only the accelerator-class (non-instanciated).
+    Only opt.accel is needed.
     """
-    """
-
     return ACCELS[opt.accel]
 
+
 @entrypoint(_get_params())
-def get_parsed_opt(opt, other_opt):
+def get_parsed_opt(opt, other_opt) -> dict:
     """Get all accelerator related options as a `dict`."""
     accel = ACCELS[opt.accel]
     parser = EntryPoint(accel.get_parameters(), strict=True)
