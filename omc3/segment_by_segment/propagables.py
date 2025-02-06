@@ -168,7 +168,7 @@ class Phase(Propagable):
     def corrected_forward(self, plane):
         return self._compute_corrected(plane,
                                        self.segment_models.forward,
-                                       self.segment_models.forward_corrected)
+                                       self.segment_models.forward_corrected, 1)
 
     @cache
     def measured_backward(self, plane):
@@ -178,7 +178,7 @@ class Phase(Propagable):
     def corrected_backward(self, plane):
         return self._compute_corrected(plane,
                                        self.segment_models.backward,
-                                       self.segment_models.backward_corrected)
+                                       self.segment_models.backward_corrected, -1)
 
     def add_differences(self, segment_diffs: SegmentDiffs):
         for plane in PLANES:
