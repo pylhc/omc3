@@ -7,9 +7,11 @@ through the segment, are defined.
 Each prpagable has a corresponding class, which contains the functions that
 describe the forward and backward propagation for the respective parameter.
 """
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from functools import lru_cache as cache  # in 3.9 one could use functools.cache
-from typing import Any, Sequence, Tuple, Union
+from functools import cache
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -22,16 +24,17 @@ from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModel
 from omc3.segment_by_segment.definitions import Measurement, PropagableColumns as Columns, PropagableBoundaryConditions as BoundaryConditions
 from omc3.utils import logging_tools
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    IndexType = Sequence[str] | str | slice | pd.Index
+    ValueErrorType = tuple[pd.Series, pd.Series] | tuple[float, float]
+
 LOG = logging_tools.get_logger(__name__)
 
 
-def get_all_propagables() -> Tuple:
+def get_all_propagables() -> tuple:
     """ Return all defined Propagables. """
     return Phase, BetaPhase, AlphaPhase
-
-
-IndexType = Union[Sequence[str], str, slice, pd.Index]
-ValueErrorType = Union[Tuple[pd.Series, pd.Series], Tuple[float, float]]
 
 
 class Propagable(ABC):
@@ -228,7 +231,7 @@ class Phase(Propagable):
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.phase[plane] = df
 
-    def _compute_measured(self, plane: str, seg_model: pd.DataFrame, direction: int):
+    def _compute_measured(self, plane: str, seg_model: pd.DataFrame, direction: int) -> tuple[pd.Series, pd.Series]:
         """ Compute the difference between the given segment model and the measured values."""
         if direction not in (1, -1):
             raise ValueError("Direction should be 1 (forward) or -1 (backward).")
@@ -258,24 +261,19 @@ class Phase(Propagable):
             total_err = _quadratic_add(meas_err, propagated_err)
             return phase_beating, total_err
         else:
-            # Element segment
+            # Element segment - TODO: Not correct
             propagated_phase = model_phase.iloc[0]
             propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
             return propagated_phase, propagated_err
 
-    def _compute_corrected(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame):
-        """Compute the difference between the nominal and the corrected model."""
-        model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
-        corrected_phase = seg_model_corr.loc[:, f"{PHASE_ADV}{plane}"]
-        init_condition = self._init_start(plane)
-        if not self._segment.element:
-            phase_beating = (corrected_phase - model_phase) % 1.
-            propagated_err = math.propagate_error_phase(model_phase, init_condition)
-            return phase_beating, propagated_err
-        else:
-            propagated_phase = model_phase.iloc[0]
-            propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
-            return propagated_phase, propagated_err
+    def _compute_corrected(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame, direction: int):
+        """Compute the difference between the nominal and the corrected model.
+        
+        TODO: What do we want to show? To be discussed.
+        """
+        model_diff = seg_model.loc[:, [f"{PHASE_ADV}{plane}"]]
+        corrected_phase = seg_model_corr.loc[:, [f"{PHASE_ADV}{plane}"]]
+        return self._compute_measured(plane, corrected_phase, direction)
 
 
 class BetaPhase(Propagable):

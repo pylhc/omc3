@@ -4,14 +4,17 @@ Segment by Segment: Maths functions
 
 This module provides mathematical helper functions, e.g. to propagate errors.
 """
-from typing import Union
+from __future__ import annotations
 
 import numpy as np
 from pandas import Series
+from typing import TYPE_CHECKING
 
 from omc3.segment_by_segment.definitions import PropagableBoundaryConditions
 
-NumericOrArray = Union[float, np.array, Series]
+if TYPE_CHECKING:
+    NumericOrArray = float | np.array | Series
+
 
 def propagate_error_phase(dphi: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
     """Propagates the phase-error.
@@ -109,6 +112,7 @@ def propagate_error_coupling_1001_re(dphix: NumericOrArray, dphiy: NumericOrArra
     )
     return res
 
+
 def propagate_error_coupling_1001_im(dphix: NumericOrArray, dphiy: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
     """Propagates the error on the imagary part of f1001 through dphix and dphiy phaseadvance,
        based on the initial amplitude and phase error of f1001.
@@ -130,6 +134,7 @@ def propagate_error_coupling_1001_im(dphix: NumericOrArray, dphiy: NumericOrArra
         (errphase0 * amp0 * np.cos(phase))**2
     )
     return res
+
 
 def propagate_error_coupling_1010_re(dphix: NumericOrArray, dphiy: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
     """Propagates the error on the real part of f1010 through dphix and dphiy phaseadvance,
@@ -153,6 +158,7 @@ def propagate_error_coupling_1010_re(dphix: NumericOrArray, dphiy: NumericOrArra
         (errphase0 * amp0 * np.sin(phase))**2
     )
     return res
+
 
 def propagate_error_coupling_1010_im(dphix: NumericOrArray, dphiy: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
     """Propagates the error on the imaginary part of f1010 through dphix and dphiy phaseadvance,

@@ -29,6 +29,7 @@ from omc3.model.constants import (
     ERROR_DEFFS_TXT,
     GENERAL_MACROS,
     JOB_MODEL_MADX_BEST_KNOWLEDGE,
+    JOB_MODEL_MADX_NOMINAL,
     LHC_MACROS,
     LHC_MACROS_RUN3,
     MACROS_DIR,
@@ -174,7 +175,9 @@ class LhcModelCreator(ModelCreator):
 
         if accel.modifiers is None or not len(accel.modifiers):
             raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete: no modifiers could be found."
+                "The accelerator definition is incomplete: No modifiers could be found. "
+                "Hint: If the accelerator class was instantiated from a model dir, "
+                f"make sure {JOB_MODEL_MADX_NOMINAL} exists and contains the '{MODIFIER_TAG}' tag."
             )
 
         # hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)

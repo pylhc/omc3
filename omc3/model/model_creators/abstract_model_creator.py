@@ -143,6 +143,7 @@ class ModelCreator(ABC):
             accel (Accelerator): Accelerator Instance used for the model creation.
         """
         LOGGER.info("Preparing MAD-X run for model creation.")
+        
         # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
         if self.accel.modifiers is not None:
             self.accel.modifiers = [self._find_modifier(m) for m in self.accel.modifiers]

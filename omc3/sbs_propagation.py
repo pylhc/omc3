@@ -79,7 +79,7 @@ def get_parameters():
 @entrypoint(get_parameters(), strict=False)
 def segment_by_segment(opt, accel_opt) -> dict[str, SegmentDiffs]:
     """
-    TODO
+    Run the segment-by-segment propagation.
     """
     accel = _get_accelerator_instance(accel_opt, opt.output_dir)
     if opt.output_dir is not None and  Path(opt.output_dir) != accel.model_dir:
@@ -126,7 +126,6 @@ def create_segment(accel: Accelerator, segment_in: Segment,
 
     propagables = [propg(segment, measurement) for propg in get_all_propagables()]
     propagables = [measbl for measbl in propagables if measbl]
-
 
     # Create the segment via madx
     segment_creator = CREATORS[accel.NAME](
@@ -323,12 +322,19 @@ def _copy_needed_model_files(model_dir: Path, output_dir: Path) -> None:
     LOGGER.debug("Copying model files...")
     output_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy(model_dir / TWISS_ELEMENTS_DAT, output_dir / TWISS_ELEMENTS_DAT)
+
     for file in model_dir.glob("*"):
         if file.name.startswith(ACC_MODELS_PREFIX) or file.name == MACROS_DIR:
-            dst_file = output_dir / file.name
-            if dst_file.exists():
-                LOGGER.debug(f"Skipping {dst_file!s}, already exists.")
-                continue
+            continue  # will be set by the model creator
+
+        dst_file = output_dir / file.name
+        if dst_file.exists():
+            LOGGER.debug(f"Skipping {dst_file!s}, already exists.")
+            continue
+        
+        if file.is_dir():
+            shutil.copytree(file, dst_file, symlinks=True)  # copies symlinks as symlinks
+        else:
             shutil.copy(file, dst_file, follow_symlinks=False)
 
 
