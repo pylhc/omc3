@@ -18,10 +18,22 @@ import pandas as pd
 
 from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import OpticsMeasurement
-from omc3.optics_measurements.constants import ALPHA, BETA, ERR, NAME, PHASE, PHASE_ADV, S
+from omc3.optics_measurements.constants import (
+    ALPHA,
+    BETA,
+    ERR,
+    NAME,
+    PHASE,
+    PHASE_ADV,
+    S,
+)
 from omc3.segment_by_segment import math
+from omc3.segment_by_segment.definitions import Measurement
+from omc3.segment_by_segment.definitions import (
+    PropagableBoundaryConditions as BoundaryConditions,
+)
+from omc3.segment_by_segment.definitions import PropagableColumns as Columns
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
-from omc3.segment_by_segment.definitions import Measurement, PropagableColumns as Columns, PropagableBoundaryConditions as BoundaryConditions
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
@@ -49,7 +61,7 @@ class Propagable(ABC):
     def segment_models(self):
         """TfsCollection of the segment models."""
         if self._segment_models is None:
-            raise ValueError("segment_models have not been set.")
+            raise ValueError("Segment_models have not been set.")
         return self._segment_models
 
     @segment_models.setter
@@ -116,27 +128,39 @@ class Propagable(ABC):
     @cache
     @abstractmethod
     def measured_forward(self, plane: str):
-        """Interpolation or measured deviations to forward propagated model."""
+        """Interpolation of measured deviations to forward propagated model."""
         ...
 
     @cache
     @abstractmethod
     def measured_backward(self, plane: str):
-        """Interpolation or measured deviations to backward propagated model."""
+        """Interpolation of measured deviations to backward propagated model."""
+        ...
+    
+    @cache
+    @abstractmethod
+    def expected_forward(self, plane: str):
+        """Interpolation of measured deviations to corrected forward propagated model."""
         ...
 
     @cache
     @abstractmethod
-    def corrected_forward(self, plane: str):
-        """Interpolation or corrected deviations to forward propagated model."""
+    def expected_backward(self, plane: str):
+        """Interpolation of measured deviations to corrected backward propagated model."""
         ...
 
     @cache
     @abstractmethod
-    def corrected_backward(self, plane: str):
-        """Interpolation or corrected deviations to backward propagated model."""
+    def correction_forward(self, plane: str):
+        """Deviations between forward propagated models with and without correction."""
         ...
 
+    @cache
+    @abstractmethod
+    def correction_backward(self, plane: str):
+        """Deviations between backward propagated models with and without correction."""
+        ...
+    
     @abstractmethod
     def add_differences(self, segment_diffs: SegmentDiffs):
         """This function calculates the differences between the propagated 
@@ -162,25 +186,33 @@ class Phase(Propagable):
 
     @cache
     def measured_forward(self, plane):
-        return self._compute_measured(plane, self._segment_models.forward, 1)
+        return self._compute_measured(plane, self.segment_models.forward, 1)
 
     @cache
-    def corrected_forward(self, plane):
-        return self._compute_corrected(plane,
+    def correction_forward(self, plane):
+        return self._compute_correction(plane,
                                        self.segment_models.forward,
-                                       self.segment_models.forward_corrected, 1)
+                                       self.segment_models.forward_corrected)
+    @cache
+    def expected_forward(self, plane):
+        return self._compute_measured(plane, self.segment_models.forward_corrected, 1)
 
     @cache
     def measured_backward(self, plane):
-        return self._compute_measured(plane, self._segment_models.backward, -1)
+        return self._compute_measured(plane, self.segment_models.backward, -1)
 
     @cache
-    def corrected_backward(self, plane):
-        return self._compute_corrected(plane,
+    def correction_backward(self, plane):
+        return self._compute_correction(plane,
                                        self.segment_models.backward,
-                                       self.segment_models.backward_corrected, -1)
+                                       self.segment_models.backward_corrected)
+    
+    @cache
+    def expected_backward(self, plane):
+        return self._compute_measured(plane, self.segment_models.backward_corrected, -1)
 
     def add_differences(self, segment_diffs: SegmentDiffs):
+        """ Calculate the differences between the propagated models and the measured values."""
         for plane in PLANES:
             names = _common_indices(self.segment_models.forward.index,
                                     self._meas.total_phase[plane].index)
@@ -190,7 +222,7 @@ class Phase(Propagable):
             df[S] = self.segment_models.forward.loc[names, S]
 
             meas_ph, err_meas_ph = Phase.get_at(names, self._meas, plane)
-            df.loc[:, c.column] = (meas_ph - meas_ph.iloc[0]) % 1.
+            df.loc[:, c.column] = math.phase_diff(meas_ph, meas_ph.iloc[0])
             df.loc[:, c.error_column] = err_meas_ph
 
             phs, err_phs = self.measured_forward(plane)
@@ -202,31 +234,22 @@ class Phase(Propagable):
             df.loc[:, c.error_backward] = err_phs
 
             if self.segment_models.get_path("forward_corrected").exists(): 
-                phs, err_phs = self.corrected_forward(plane)
-                df.loc[:, c.forward_corrected] = phs
-                df.loc[:, c.error_forward_corrected] = err_phs
+                phs, err_phs = self.correction_forward(plane)
+                df.loc[:, c.forward_correction] = phs
+                df.loc[:, c.error_forward_correction] = err_phs
+
+                phs, err_phs = self.expected_forward(plane)
+                df.loc[:, c.forward_expected] = phs
+                df.loc[:, c.error_forward_expected] = err_phs
 
             if self.segment_models.get_path("backward_corrected").exists(): 
-                phs, err_phs = self.corrected_backward(plane)
-                df.loc[:, c.backward_corrected] = phs
-                df.loc[:, c.error_backward_corrected] = err_phs
+                phs, err_phs = self.correction_backward(plane)
+                df.loc[:, c.backward_correction] = phs
+                df.loc[:, c.error_backward_correction] = err_phs
 
-            # ============== Plot for Debugging ================================
-            # from matplotlib import pyplot as plt
-            # fig, ax = plt.subplots()
-            # ax.set_title(f"{segment_diffs.segment_name} - {plane}")
-            # ax.set_xlabel("Distance from Segment start [m]")
-            # ax.set_ylabel("Phase")
-            # ax.errorbar(df[S], df[c.column], df[c.error_column], label="measured")
-            # ax.errorbar(df[S], df[c.forward], df[c.error_forward], label="forward")   
-            # ax.errorbar(df[S], df[c.backward], df[c.error_backward], label="backward")
-            # if self.segment_models.get_path("forward_corrected").exists(): 
-            #     ax.errorbar(df[S], df[c.forward_corrected], df[c.error_forward_corrected], label="forward corrected")
-            # if self.segment_models.get_path("backward_corrected").exists(): 
-            #     ax.errorbar(df[S], df[c.backward_corrected], df[c.error_backward_corrected], label="backward corrected")
-            # ax.legend()
-            # plt.show()
-            # ==================================================================
+                phs, err_phs = self.expected_backward(plane)
+                df.loc[:, c.backward_expected] = phs
+                df.loc[:, c.error_backward_expected] = err_phs
 
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.phase[plane] = df
@@ -236,7 +259,7 @@ class Phase(Propagable):
         if direction not in (1, -1):
             raise ValueError("Direction should be 1 (forward) or -1 (backward).")
 
-        model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
+        model_phase = seg_model.loc[:, self._model_column(plane)]
         init_condition = self._init_start(plane) if direction == 1 else self._init_end(plane)
         if not self._segment.element:
             # Segment
@@ -251,29 +274,37 @@ class Phase(Propagable):
             # calculate phase with reference to segment (start/end)
             segment_model_phase = (model_phase - model_phase.loc[reference_element]) % 1.
             segment_meas_phase = (meas_phase - meas_phase.loc[reference_element]) % 1.
-
-            # calculate phase beating
-            phase_beating = (segment_meas_phase - segment_model_phase) % 1.
-            phase_beating[phase_beating > 0.5] = phase_beating[phase_beating > 0.5] - 1
+            phase_beating = math.phase_diff(segment_meas_phase, segment_model_phase)
 
             # propagate the error
             propagated_err = math.propagate_error_phase(model_phase, init_condition)
             total_err = _quadratic_add(meas_err, propagated_err)
             return phase_beating, total_err
+
         else:
-            # Element segment - TODO: Not correct
-            propagated_phase = model_phase.iloc[0]
+            # Element segment
+            propagated_phase = model_phase.iloc[0]  # no measurement value exists at the element
             propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
             return propagated_phase, propagated_err
 
-    def _compute_corrected(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame, direction: int):
-        """Compute the difference between the nominal and the corrected model.
+    def _compute_correction(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame):
+        """Compute the difference between the nominal and the corrected model."""
+        model_phase = seg_model.loc[:, self._model_column(plane)]
+        corrected_phase = seg_model_corr.loc[:, self._model_column(plane)]
+        if self._segment.element:
+            model_phase = model_phase.iloc[0]
+            corrected_phase = corrected_phase.iloc[0]
         
-        TODO: What do we want to show? To be discussed.
-        """
-        model_diff = seg_model.loc[:, [f"{PHASE_ADV}{plane}"]]
-        corrected_phase = seg_model_corr.loc[:, [f"{PHASE_ADV}{plane}"]]
-        return self._compute_measured(plane, corrected_phase, direction)
+        init_condition = self._init_start(plane)
+
+        phase_beating = math.phase_diff(corrected_phase, model_phase)
+        propagated_err = math.propagate_error_phase(model_phase, init_condition)
+        return phase_beating, propagated_err
+    
+    @staticmethod
+    def _model_column(plane: str):
+        """ Helper function to get the phase-column in the model, as it has a different name as in the measurement."""
+        return f"{PHASE_ADV}{plane}"
 
 
 class BetaPhase(Propagable):
@@ -290,18 +321,26 @@ class BetaPhase(Propagable):
 
     @cache
     def measured_forward(self, plane):
-        return self._compute_measured(plane, self.segment_models.forward)
+        return self._compute_measured(plane, self.segment_models.forward, 1)
 
     @cache
-    def corrected_forward(self, plane):
+    def correction_forward(self, plane):
+        pass
+
+    @cache
+    def expected_forward(self, plane):
         pass
 
     @cache
     def measured_backward(self, plane):
-        return self._compute_measured(plane, self.segment_models.backward)
+        return self._compute_measured(plane, self.segment_models.backward, -1)
 
     @cache
-    def corrected_backward(self, plane):
+    def correction_backward(self, plane):
+        pass
+    
+    @cache
+    def expected_backward(self, plane):
         pass
     
     def add_differences(self, segment_diffs: SegmentDiffs):
@@ -350,7 +389,11 @@ class AlphaPhase(Propagable):
         pass
 
     @cache
-    def corrected_forward(self, plane):
+    def correction_forward(self, plane):
+        pass
+
+    @cache
+    def expected_forward(self, plane):
         pass
 
     @cache
@@ -358,7 +401,11 @@ class AlphaPhase(Propagable):
         pass
 
     @cache
-    def corrected_backward(self, plane):
+    def correction_backward(self, plane):
+        pass
+
+    @cache
+    def expected_backward(self, plane):
         pass
     
     def add_differences(self, segment_diffs: SegmentDiffs):

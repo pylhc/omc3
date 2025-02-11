@@ -212,3 +212,9 @@ def weighted_average_for_SbS_elements(value1, sigma1, value2, sigma2):
                            (1/sigma1**2 + 1/sigma2**2))
     final_error = np.sqrt(uncertainty_of_average**2 + weighted_rms**2)
     return weighted_average, final_error
+
+    
+def phase_diff(phase_a: NumericOrArray, phase_b: NumericOrArray) -> NumericOrArray:
+    """ Returns the phase difference between phase_a and phase_b, mapped to [-0.5, 0.5]. """
+    phase_diff = (phase_a - phase_b) % 1
+    return np.where(phase_diff > 0.5, phase_diff - 1, phase_diff)

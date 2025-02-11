@@ -80,10 +80,10 @@ class SegmentDiffs(TfsCollection):
     """
     PREFIX = "sbs_"
 
+    phase = Tfs(f"{PREFIX}{PHASE_NAME}{{plane}}_{{name}}{EXT}")
     beta_phase = Tfs(f"{PREFIX}{BETA_NAME}{{plane}}_{{name}}{EXT}")
     beta_kmod = Tfs(f"{PREFIX}{KMOD_BETA_NAME}{{plane}}_{{name}}{EXT}")
     beta_amp = Tfs(f"{PREFIX}{AMP_BETA_NAME}{{plane}}_{{name}}{EXT}")
-    phase = Tfs(f"{PREFIX}{PHASE_NAME}{{plane}}_{{name}}{EXT}")
     dispersion = Tfs(f"{PREFIX}{DISPERSION_NAME}{{plane}}_{{name}}{EXT}")
     norm_dispersion = Tfs(f"{PREFIX}{NORM_DISP_NAME}{{plane}}_{{name}}{EXT}")
     # TODO: Add coupling!

@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, fields
 
-from uncertainties.core import Variable 
+from uncertainties.core import Variable
 
 from omc3.optics_measurements.constants import ERR
-from omc3.segment_by_segment.constants import BACKWARD, CORRECTED, FORWARD
+from omc3.segment_by_segment.constants import BACKWARD, CORRECTION, EXPECTED, FORWARD
 
 
 class PropagableColumns:
@@ -36,6 +36,7 @@ class PropagableColumns:
     def error_column(self):
         return f"{ERR}{self.column}"
     
+    # Propagation ---
     @property
     def forward(self):
         return f"{FORWARD}{self.column}"
@@ -52,21 +53,39 @@ class PropagableColumns:
     def error_backward(self):
         return f"{ERR}{self.backward}"
     
+    # Correction ---
     @property
-    def forward_corrected(self):
-        return f"{CORRECTED}{self.forward}"
+    def forward_correction(self):
+        return f"{CORRECTION}{self.forward}"
 
     @property
-    def error_forward_corrected(self):
-        return f"{ERR}{self.forward_corrected}"
+    def error_forward_correction(self):
+        return f"{ERR}{self.forward_correction}"
         
     @property
-    def backward_corrected(self):
-        return f"{CORRECTED}{self.backward}"
+    def backward_correction(self):
+        return f"{CORRECTION}{self.backward}"
     
     @property
-    def error_backward_corrected(self):
-        return f"{ERR}{self.backward_corrected}"
+    def error_backward_correction(self):
+        return f"{ERR}{self.backward_correction}"
+
+    # Expectation --- 
+    @property
+    def forward_expected(self):
+        return f"{EXPECTED}{self.forward}"
+
+    @property
+    def error_forward_expected(self):
+        return f"{ERR}{self.forward_expected}"
+        
+    @property
+    def backward_expected(self):
+        return f"{EXPECTED}{self.backward}"
+    
+    @property
+    def error_backward_expected(self):
+        return f"{ERR}{self.backward_expected}"
 
 
 class Measurement(Variable):
