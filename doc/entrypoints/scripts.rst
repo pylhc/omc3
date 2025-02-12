@@ -44,3 +44,8 @@ Scripts
 .. automodule:: omc3.scripts.bad_bpms_summary
     :members:
     :noindex:
+
+
+.. automodule:: omc3.scripts.lhc_corrector_list_check
+    :members:
+    :noindex:
