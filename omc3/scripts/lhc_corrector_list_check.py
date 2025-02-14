@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import AFS_ACCELERATOR_MODEL_REPOSITORY
+from argparse import ArgumentParser
 
 ACC_MODELS_LHC: Path = AFS_ACCELERATOR_MODEL_REPOSITORY / "lhc" 
 LHC_SEQ_FILE: str = "lhc.seq"
@@ -51,7 +52,7 @@ def get_lhc_correctors(variables: list[str], beam: int, year: str) -> set[str]:
     return set(used_correctors)
 
 
-def main(variables: list[str], year: str):
+def check_variables(variables: list[str], year: str):
     """ Main function to check the corrector lists.
     Runs both beams and prints out the remaining correctors.
 
@@ -67,18 +68,40 @@ def main(variables: list[str], year: str):
             beam=beam,
             year=year,
         )
-        remaining_correctors = lhc_correctors[beam] - used_correctors
+        unused_correctors = lhc_correctors[beam] - used_correctors
+        unknown_correctors = used_correctors - lhc_correctors[beam]
 
         print(f"Beam {beam} ({year})")
         print(f"Variables: {', '.join(variables)}")
-        print(f"Unused correctors: {', '.join(sorted(remaining_correctors))}")
+        print(f"Unused correctors: {', '.join(sorted(unused_correctors))}")
+        print(f"Unknown correctors: {', '.join(sorted(unknown_correctors))}")
         print()
 
 
+def main():
+    """ Main function with argument parsing. """
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--year", 
+        type=str, 
+        required=True, 
+        help="Year of the optics (or hllhc1.x version)."
+    )
+    parser.add_argument(
+        "--variables", 
+        type=str, 
+        required=True, 
+        nargs="+", 
+        help="Variables to check."
+    )
+    args = parser.parse_args()
+    check_variables(variables=args.variables, year=args.year)
 
-if __name__ == "__main__":
+
+def example():
+    """ Example usage, comparing INJ and TOP correctors for 2024 and 2025."""
     for mqms in ["MQM_INJ_2024", "MQM_TOP_2024"]:
-        main(
+        check_variables(
             variables=[mqms, "MQT", "MQTL", "MQY"],
             year="2024",
         )
@@ -86,7 +109,12 @@ if __name__ == "__main__":
     print("--------------------\n")
 
     for mqms in ["MQM_INJ", "MQM_TOP"]:
-        main(
+        check_variables(
             variables=[mqms, "MQT", "MQTL", "MQY"],
             year="2025",
         )
+
+
+if __name__ == "__main__":
+    main()
+    # example()
