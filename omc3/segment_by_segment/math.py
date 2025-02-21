@@ -8,12 +8,12 @@ from __future__ import annotations
 
 import numpy as np
 from pandas import Series
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias
 
 from omc3.segment_by_segment.definitions import PropagableBoundaryConditions
 
 if TYPE_CHECKING:
-    NumericOrArray = float | np.array | Series
+    NumericOrArray: TypeAlias = float | np.array | Series
 
 
 def propagate_error_phase(dphi: NumericOrArray, init: PropagableBoundaryConditions) -> NumericOrArray:
@@ -217,4 +217,4 @@ def weighted_average_for_SbS_elements(value1, sigma1, value2, sigma2):
 def phase_diff(phase_a: NumericOrArray, phase_b: NumericOrArray) -> NumericOrArray:
     """ Returns the phase difference between phase_a and phase_b, mapped to [-0.5, 0.5]. """
     phase_diff = (phase_a - phase_b) % 1
-    return np.where(phase_diff > 0.5, phase_diff - 1, phase_diff)
+    return phase_diff - np.where(phase_diff > 0.5, 1, 0)  # this way keeps input type as is (!`where` returns np.array)

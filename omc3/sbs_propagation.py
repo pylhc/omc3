@@ -1,8 +1,45 @@
 """ 
-Segment-by-Segment Correction
------------------------------
+Segment-by-Segment Propagation 
+------------------------------
 
-TODO
+Runs the Segment-by-Segment propagation,
+i.e. it uses the measured values at the beginning of the segments as inputs 
+to propagate via MAD-X through the given segments.
+It then compares the propagated values with the measured values in that segment.
+
+
+**Arguments:**
+
+*--Required--*
+
+- **measurement_dir** *(PathOrStr)*:
+
+    Path to the measurement files.
+
+
+*--Optional--*
+
+- **corrections** *(PathOrStrOrDict)*:
+
+    Corrections to use. Can be a dict of knob-value pairs, a MAD-X string
+    or a path to a file. Note: all segements will have these corrections.
+
+
+- **elements** *(str)*:
+
+    Element name list to run in element mode.
+
+
+- **segments** *(str)*:
+
+    Segments to run in segment mode with format:
+    ``segment_name,start,end``, where start and end must be existing BPM
+    names.
+
+
+- **output_dir** *(PathOrStr)*:
+
+    Output directory. If not given, the model-directory is used.
 
 """
 from __future__ import annotations
@@ -14,7 +51,7 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 from generic_parser import EntryPointParameters, entrypoint
-from generic_parser.entrypoint_parser import add_to_arguments, ArgumentError
+from generic_parser.entrypoint_parser import ArgumentError, add_to_arguments
 
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
@@ -24,16 +61,22 @@ from omc3.model.constants import ACC_MODELS_PREFIX, MACROS_DIR, TWISS_ELEMENTS_D
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
-from omc3.segment_by_segment.segments import (SbsDefinitionError, Segment, SegmentDiffs,
-                                              SegmentModels)
+from omc3.segment_by_segment.segments import (
+    SbsDefinitionError,
+    Segment,
+    SegmentDiffs,
+    SegmentModels,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDict
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
-    from omc3.model.model_creators.abstract_model_creator import MADXInputType
+
     from pandas import DataFrame
+
     from omc3.model.accelerators.accelerator import Accelerator
+    from omc3.model.model_creators.abstract_model_creator import MADXInputType
 
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -44,7 +87,7 @@ CREATORS = {
 }
 
 
-def get_parameters():
+def get_params():
     return EntryPointParameters(
         measurement_dir=dict(
             help="Path to the measurement files.",
@@ -76,13 +119,13 @@ def get_parameters():
     )
 
 
-@entrypoint(get_parameters(), strict=False)
+@entrypoint(get_params(), strict=False)
 def segment_by_segment(opt, accel_opt) -> dict[str, SegmentDiffs]:
     """
     Run the segment-by-segment propagation.
     """
     accel = _get_accelerator_instance(accel_opt, opt.output_dir)
-    if opt.output_dir is not None and  Path(opt.output_dir) != accel.model_dir:
+    if opt.output_dir is not None and Path(opt.output_dir) != accel.model_dir:
         _copy_needed_model_files(accel.model_dir, opt.output_dir)
         accel.model_dir = opt.output_dir
 
@@ -97,8 +140,12 @@ def segment_by_segment(opt, accel_opt) -> dict[str, SegmentDiffs]:
     return results
 
 
-def create_segment(accel: Accelerator, segment_in: Segment, 
-                   measurement: OpticsMeasurement, corrections: MADXInputType) -> list[Propagable]:
+def create_segment(
+    accel: Accelerator,
+    segment_in: Segment,
+    measurement: OpticsMeasurement,
+    corrections: MADXInputType,
+) -> list[Propagable]:
     """Perform the computations on the segment.
     The segment is adapted fist, so that the given start and end bpms a in the measurement.
     Then madx is run to create the specified segments and the output files
@@ -111,7 +158,6 @@ def create_segment(accel: Accelerator, segment_in: Segment,
         measurement (OpticsMeasurement): TfsCollection of the optics measurments files.
         corrections (MADXInputType): Corrections to use. Can be a dict of knob-value pairs, 
                                      a MAD-X string or a path to a file.
-        output (Path): Path to the output directory.
 
     Returns:
         List of propagables with access to the created segment models.

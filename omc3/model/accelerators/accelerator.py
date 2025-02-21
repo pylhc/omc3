@@ -7,6 +7,7 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 import re
 import os
 from pathlib import Path
@@ -335,28 +336,34 @@ class Accelerator:
     ##########################################################################
 
 
+@dataclass
 class Variable:
     """
-    Generic corrector variable class that holds `name`, `position (s)` and physical elements it
-    affects. These variables should be logical variables that have and effect in the model if
+    Generic corrector variable class that holds its name (e.g. 'kqs.5l1''),
+    the physical elements it affects and the classes (e.g. 'MQT', 'coupling_knobs')
+    it belongs to.
+    These variables should be logical variables that have and effect in the model if
     modified.
+
+    TODO: Not used. Should probably be removed and replaced with xsuite/cpymad,
+          which can get you these infos from the sequence/model. (jdilly 2025)
     """
-
-    def __init__(self, name, elements, classes):
-        self.name = name
-        self.elements = elements
-        self.classes = classes
+    name: str 
+    elements: list[Element]
+    classes: list[str]
 
 
+@dataclass
 class Element:
     """
-    Generic corrector element class that holds `name` and `position (s)` of the corrector. This
-    element should represent a physical element of the accelerator.
+    Generic corrector element class that holds `name` and `position (s)` of the corrector. 
+    This element should represent a physical element (i.e. magnet) of the accelerator.
+    
+    TODO: Not used. Should probably be removed and replaced with xsuite/cpymad,
+          which can get you these infos from the sequence/model. (jdilly 2025)
     """
-
-    def __init__(self, name, s):
-        self.name = name
-        self.s = s
+    name: str
+    s: float
 
 
 class AcceleratorDefinitionError(Exception):

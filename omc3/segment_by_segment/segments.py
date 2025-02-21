@@ -1,12 +1,25 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
 
 from tfs.collection import Tfs, TfsCollection
 
-from omc3.optics_measurements.constants import (AMP_BETA_NAME, BETA_NAME, DISPERSION_NAME, EXT,
-                                                KMOD_BETA_NAME, NORM_DISP_NAME, PHASE_NAME)
-from omc3.segment_by_segment.constants import (TWISS_BACKWARD, TWISS_BACKWARD_CORRECTED,
-                                               TWISS_FORWARD, TWISS_FORWARD_CORRECTED)
+from omc3.optics_measurements.constants import (
+    AMP_BETA_NAME,
+    BETA_NAME,
+    DISPERSION_NAME,
+    EXT,
+    KMOD_BETA_NAME,
+    NORM_DISP_NAME,
+    PHASE_NAME,
+)
+from omc3.segment_by_segment.constants import (
+    TWISS_BACKWARD,
+    TWISS_BACKWARD_CORRECTED,
+    TWISS_FORWARD,
+    TWISS_FORWARD_CORRECTED,
+)
 
 
 @ dataclass

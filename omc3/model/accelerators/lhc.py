@@ -242,7 +242,7 @@ class Lhc(Accelerator):
         # Sort variables by S (nice for comparing different files)
         return self.sort_variables_by_location(vars, frm, to)
 
-    def sort_variables_by_location(self, variables: Iterable[str], frm: float = None, to: str = None) -> list[str]:
+    def sort_variables_by_location(self, variables: Iterable[str], frm: float | None = None, to: str | None = None) -> list[str]:
         """ Sorts the variables by location and filters them between `frm` and `to`.
         If `frm` is larger than `to` it loops back around to the start the accelerator.
         This is a useful function for the LHC that's why it is "public"

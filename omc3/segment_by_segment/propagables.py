@@ -15,17 +15,18 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
+from tfs import TfsDataFrame
 
-from omc3.definitions.constants import PLANES
+from omc3.definitions.constants import PLANE_TO_NUM, PLANES
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import (
     ALPHA,
     BETA,
-    ERR,
     NAME,
     PHASE,
     PHASE_ADV,
     S,
+    TUNE,
 )
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.definitions import Measurement
@@ -184,9 +185,12 @@ class Phase(Propagable):
         error = meas.total_phase[plane].loc[names, columns.error_column]
         return phase, error
 
+    def _get_s(self, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        return meas.total_phase[plane].loc[names, S]
+
     @cache
     def measured_forward(self, plane):
-        return self._compute_measured(plane, self.segment_models.forward, 1)
+        return self._compute_measured(plane, self.segment_models.forward, forward=True)
 
     @cache
     def correction_forward(self, plane):
@@ -195,11 +199,11 @@ class Phase(Propagable):
                                        self.segment_models.forward_corrected)
     @cache
     def expected_forward(self, plane):
-        return self._compute_measured(plane, self.segment_models.forward_corrected, 1)
+        return self._compute_measured(plane, self.segment_models.forward_corrected, forward=True)
 
     @cache
     def measured_backward(self, plane):
-        return self._compute_measured(plane, self.segment_models.backward, -1)
+        return self._compute_measured(plane, self.segment_models.backward, forward=False)
 
     @cache
     def correction_backward(self, plane):
@@ -209,21 +213,21 @@ class Phase(Propagable):
     
     @cache
     def expected_backward(self, plane):
-        return self._compute_measured(plane, self.segment_models.backward_corrected, -1)
+        return self._compute_measured(plane, self.segment_models.backward_corrected, forward=False)
 
     def add_differences(self, segment_diffs: SegmentDiffs):
         """ Calculate the differences between the propagated models and the measured values."""
         for plane in PLANES:
             names = _common_indices(self.segment_models.forward.index,
-                                    self._meas.total_phase[plane].index)
+                                    self._meas.total_phase[plane].index)  # measurement points/BPMs
             c = self.columns.planed(plane)
             df = pd.DataFrame(index=names)
             df[NAME] = names
             df[S] = self.segment_models.forward.loc[names, S]
 
-            meas_ph, err_meas_ph = Phase.get_at(names, self._meas, plane)
-            df.loc[:, c.column] = math.phase_diff(meas_ph, meas_ph.iloc[0])
-            df.loc[:, c.error_column] = err_meas_ph
+            phs, err_phs = Phase.get_at(names, self._meas, plane)
+            df.loc[:, c.column] = math.phase_diff(phs, phs.iloc[0])
+            df.loc[:, c.error_column] = err_phs
 
             phs, err_phs = self.measured_forward(plane)
             df.loc[:, c.forward] = phs
@@ -235,8 +239,8 @@ class Phase(Propagable):
 
             if self.segment_models.get_path("forward_corrected").exists(): 
                 phs, err_phs = self.correction_forward(plane)
-                df.loc[:, c.forward_correction] = phs
-                df.loc[:, c.error_forward_correction] = err_phs
+                df.loc[:, c.forward_correction] = phs.loc[names]
+                df.loc[:, c.error_forward_correction] = err_phs.loc[names]
 
                 phs, err_phs = self.expected_forward(plane)
                 df.loc[:, c.forward_expected] = phs
@@ -244,8 +248,8 @@ class Phase(Propagable):
 
             if self.segment_models.get_path("backward_corrected").exists(): 
                 phs, err_phs = self.correction_backward(plane)
-                df.loc[:, c.backward_correction] = phs
-                df.loc[:, c.error_backward_correction] = err_phs
+                df.loc[:, c.backward_correction] = phs.loc[names]
+                df.loc[:, c.error_backward_correction] = err_phs.loc[names]
 
                 phs, err_phs = self.expected_backward(plane)
                 df.loc[:, c.backward_expected] = phs
@@ -254,27 +258,37 @@ class Phase(Propagable):
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.phase[plane] = df
 
-    def _compute_measured(self, plane: str, seg_model: pd.DataFrame, direction: int) -> tuple[pd.Series, pd.Series]:
+    def _compute_measured(self, plane: str, seg_model: TfsDataFrame, forward: bool) -> tuple[pd.Series, pd.Series]:
         """ Compute the difference between the given segment model and the measured values."""
-        if direction not in (1, -1):
-            raise ValueError("Direction should be 1 (forward) or -1 (backward).")
-
         model_phase = seg_model.loc[:, self._model_column(plane)]
-        init_condition = self._init_start(plane) if direction == 1 else self._init_end(plane)
+        tune = seg_model.headers[f"{TUNE}{PLANE_TO_NUM[plane]}"]
+
+        init_condition = self._init_start(plane) if forward else self._init_end(plane)
         if not self._segment.element:
             # Segment
             meas_phase, meas_err = Phase.get_at(slice(None), self._meas, plane)  # slice(None) gives all, i.e. `:`
             
             # filter names for segment
-            names = _common_indices(meas_phase.index, seg_model.index)  # meas first, so we keep direction 
+            segment_elements = seg_model.index
+            if not forward:
+                segment_elements = pd.Index(reversed(segment_elements))
+            names = _common_indices(segment_elements, meas_phase.index)  # keep same order as segment
+
             meas_phase = meas_phase.loc[names]
             model_phase = model_phase.loc[names]
-            reference_element = names[0 if direction == 1 else -1]
+
+            # take care of circularity of accelerator
+            s = self._get_s(names, self._meas, plane)
+            meas_phase = meas_phase - np.where(s > s.iloc[-1], tune, 0)
 
             # calculate phase with reference to segment (start/end)
-            segment_model_phase = (model_phase - model_phase.loc[reference_element]) % 1.
-            segment_meas_phase = (meas_phase - meas_phase.loc[reference_element]) % 1.
-            phase_beating = math.phase_diff(segment_meas_phase, segment_model_phase)
+            reference_element = names[0 if forward else -1]  # start of the propagation
+            segment_model_phase = model_phase - model_phase.loc[reference_element]
+            segment_meas_phase = meas_phase - meas_phase.loc[reference_element]
+            if forward:
+                phase_beating = math.phase_diff(segment_meas_phase, segment_model_phase)
+            else:
+                phase_beating = math.phase_diff(segment_model_phase, segment_meas_phase)
 
             # propagate the error
             propagated_err = math.propagate_error_phase(model_phase, init_condition)
@@ -287,7 +301,7 @@ class Phase(Propagable):
             propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
             return propagated_phase, propagated_err
 
-    def _compute_correction(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame):
+    def _compute_correction(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
         """Compute the difference between the nominal and the corrected model."""
         model_phase = seg_model.loc[:, self._model_column(plane)]
         corrected_phase = seg_model_corr.loc[:, self._model_column(plane)]
@@ -298,7 +312,7 @@ class Phase(Propagable):
         init_condition = self._init_start(plane)
 
         phase_beating = math.phase_diff(corrected_phase, model_phase)
-        propagated_err = math.propagate_error_phase(model_phase, init_condition)
+        propagated_err = math.propagate_error_phase(corrected_phase, init_condition)
         return phase_beating, propagated_err
     
     @staticmethod
@@ -321,7 +335,7 @@ class BetaPhase(Propagable):
 
     @cache
     def measured_forward(self, plane):
-        return self._compute_measured(plane, self.segment_models.forward, 1)
+        return self._compute_measured(plane, self.segment_models.forward, forward=True)
 
     @cache
     def correction_forward(self, plane):
@@ -333,7 +347,7 @@ class BetaPhase(Propagable):
 
     @cache
     def measured_backward(self, plane):
-        return self._compute_measured(plane, self.segment_models.backward, -1)
+        return self._compute_measured(plane, self.segment_models.backward, forward=False)
 
     @cache
     def correction_backward(self, plane):
@@ -346,10 +360,10 @@ class BetaPhase(Propagable):
     def add_differences(self, segment_diffs: SegmentDiffs):
         pass
 
-    def _compute_measured(self, plane: str, seg_model: pd.DataFrame, direction: int):
+    def _compute_measured(self, plane: str, seg_model: pd.DataFrame, forward: bool):
         model_beta = seg_model.loc[:, f"{BETA}{plane}"]
         model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
-        init_condition = self._init_start(plane) if direction == 1 else self._init_end(plane)
+        init_condition = self._init_start(plane) if forward else self._init_end(plane)
         if not self._segment.element:
             beta, err_beta = BetaPhase.get_at(slice(None), self._meas, plane)
 
