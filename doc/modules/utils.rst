@@ -15,6 +15,10 @@ Utils
     :members:
     :noindex:
 
+.. automodule:: omc3.utils.math_classes
+    :members:
+    :noindex:
+
 
 .. automodule:: omc3.utils.misc
     :members:

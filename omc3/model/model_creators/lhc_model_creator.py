@@ -129,30 +129,6 @@ class LhcModelCreator(ModelCreator):
         shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
         shutil.copy(lib_path / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
 
-        # reconstruct path to b2_errors
-        b2_error_path = None
-        if accel.b2_errors is not None:
-            LOGGER.debug("copying B2 error tables")
-
-            b2_error_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.errors"
-            b2_madx_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.madx"
-            shutil.copy(
-                b2_madx_path,
-                accel.model_dir / B2_SETTINGS_MADX,
-            )
-            b2_table = tfs.read(b2_error_path, index="NAME")
-            gen_df = pd.DataFrame(
-                data=np.zeros((b2_table.index.size, len(_b2_columns()))),
-                index=b2_table.index,
-                columns=_b2_columns(),
-            )
-            gen_df["K1L"] = b2_table.loc[:, "K1L"].to_numpy()
-            tfs.write(
-                accel.model_dir / B2_ERRORS_TFS,
-                gen_df,
-                headers_dict={"NAME": "EFIELD", "TYPE": "EFIELD"},
-                save_index="NAME",
-            )
 
         if accel.energy is not None:
             core = f"{int(accel.energy):04d}"
@@ -281,6 +257,13 @@ class LhcModelCreator(ModelCreator):
                 f"}}else{{\n"
                 f"    exec, set_default_crossing_scheme();\n"
                 f"}}\n"
+            )
+        
+        if accel.acc_model_path is not None:
+            madx_script += (
+            "\n! ----- Remove IR symmetry definitions -----\n"
+            f"\ncall, file=\"{accel.acc_model_path!s}/toolkit/remove-triplet-symmetry-knob.madx\"; "
+            "! removes 'ktqx.r1 := -ktqx.l1'-type issues\n"
             )
 
         madx_script += (
@@ -413,18 +396,48 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
 
         return super().check_options(opt)
 
-    def get_madx_script(self) -> str:
+    def check_accelerator_instance(self):
         accel: Lhc = self.accel
-
+        super().check_accelerator_instance()
+        
+        if accel.b2_errors is None:
+            raise AcceleratorDefinitionError(
+                "No b2 errors specified. These are neccessary for the best knowledge model."
+            )
+        
         if accel.excitation is not AccExcitationMode.FREE:
             raise AcceleratorDefinitionError(
                 "Don't set ACD or ADT for best knowledge model."
             )
-        if accel.energy is None:
-            raise AcceleratorDefinitionError(
-                "Best knowledge model requires energy."
-            )
 
+    def prepare_run(self):
+        accel: Lhc = self.accel
+        super().prepare_run()
+
+        LOGGER.debug("Copying B2 error tables")
+
+        b2_error_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.errors"
+        b2_madx_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.madx"
+        shutil.copy(
+            b2_madx_path,
+            accel.model_dir / B2_SETTINGS_MADX,
+        )
+        b2_table = tfs.read(b2_error_path, index="NAME")
+        gen_df = pd.DataFrame(
+            data=np.zeros((b2_table.index.size, len(_b2_columns()))),
+            index=b2_table.index,
+            columns=_b2_columns(),
+        )
+        gen_df["K1L"] = b2_table.loc[:, "K1L"].to_numpy()
+        tfs.write(
+            accel.model_dir / B2_ERRORS_TFS,
+            gen_df,
+            headers_dict={"NAME": "EFIELD", "TYPE": "EFIELD"},
+            save_index="NAME",
+        )
+
+    def get_madx_script(self) -> str:
+        accel: Lhc = self.accel
         madx_script = self.get_base_madx_script()
 
         madx_script += "\n! ----- Load MQTs -----\n"
@@ -446,7 +459,6 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
         # which we skip here as we are using the data from the machine.
         madx_script = self._get_sequence_initialize_script()  
 
-        # madx_script += f"exec, load_average_error_table({self.energy}, {self.beam});\n"
         madx_script += (
             f"\n! ----- For Best Knowledge Model -----\n"
             f"readmytable, file = '{accel.model_dir / B2_ERRORS_TFS}', table=errtab;\n"
@@ -481,7 +493,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
     def get_madx_script(self) -> str:
         """ Get the madx script for the correction model creator, which updates the model after correcion. """  
         accel: Lhc = self.accel
-        madx_script = self.get_base_madx_script()  # do not get_madx_script as we don't need the uncorrected output. 
+        madx_script = self.get_base_madx_script()  # do not super().get_madx_script as we don't need the uncorrected output. 
 
         # First set the dpp to the value in the accelerator model
         madx_script += f"{ORBIT_DPP} = {accel.dpp};\n"
@@ -509,7 +521,6 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         return [self.twiss_out, self.jobfile, self.logfile]
 
 
-
 # LHC Segment Creator ----------------------------------------------------------
 
 class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
@@ -521,6 +532,12 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
         madx_script += "\n".join([
             "",
             f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
+            "",
+            "! Cycle the sequence to avoid negative length.",
+            f"seqedit, sequence=LHCB{accel.beam};",
+            "flatten;",
+            f"cycle, start={self.segment.start};",
+            "endedit;",
             "",
             f"use, period = LHCB{accel.beam};",
             "option, echo;",
@@ -543,14 +560,15 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
             f"    {self.segment.end},",
             ");",
             "",
-            f"exec, beam_LHCB{accel.beam}(forward_LHCB{accel.beam});",  # TODO: use engery in macro
-            f"exec, beam_LHCB{accel.beam}(backward_LHCB{accel.beam});",  # TODO: use engery in macro
+            f"exec, beam_LHCB{accel.beam}(forward_LHCB{accel.beam});",  # TODO: use engery in macro (450GeV now)
+            f"exec, beam_LHCB{accel.beam}(backward_LHCB{accel.beam});",  
+            "",
             f"exec, twiss_segment(forward_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",
             f"exec, twiss_segment(backward_LHCB{accel.beam}, \"{self.twiss_backward!s}\", bendLHCB{accel.beam});",
             "",
         ])
 
-        if (self.output_dir / self.corrections_madx).is_file():
+        if self.corrections is not None:
             madx_script += "\n".join([
                 f"call, file=\"{self.corrections_madx!s}\";",
                 f"exec, twiss_segment(forward_LHCB{accel.beam}, "
@@ -565,6 +583,6 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
     @property
     def files_to_check(self) -> list[str]:
         check_files = [self.twiss_forward, self.twiss_backward]
-        if (self.output_dir / self.corrections_madx).is_file():
+        if self.corrections is not None:
             check_files += [self.twiss_backward_corrected, self.twiss_backward_corrected]
         return check_files

@@ -40,7 +40,7 @@ from omc3.utils import iotools, logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
-    MADXInputType = Path | str | dict[str, str]
+    MADXInputType = Path | str | dict[str, str] | None
 
 LOGGER = logging_tools.get_logger(__file__)
 
@@ -351,8 +351,15 @@ class SegmentCreator(ModelCreator, ABC):
 
     def prepare_run(self) -> None:
         super(SegmentCreator, self).prepare_run()
+        self._clean_models()
         self._create_measurement_file()
         self._create_corrections_file()
+    
+    def _clean_models(self):
+        """ Remove models from previous runs. """
+        for twiss_file in (self.twiss_forward, self.twiss_forward_corrected, self.twiss_backward, self.twiss_backward_corrected):
+            output_twiss: Path = self.output_dir / twiss_file
+            output_twiss.unlink(missing_ok=True)
 
     def _create_measurement_file(self):
         meas_dict = {}
@@ -363,15 +370,14 @@ class SegmentCreator(ModelCreator, ABC):
         output_file.write_text(meas_file_content)
 
     def _create_corrections_file(self):
+        output_file = self.output_dir / self.corrections_madx
         if self.corrections is None:
+            output_file.unlink(missing_ok=True)
             return
 
-        output_file = self.output_dir / self.corrections_madx
-        if output_file.exists():
-            LOGGER.warning(f"Segment corrections file {output_file!s} already exists. Overwriting.")
-        output_file.write_text(self._get_corrections_text())
+        content = self._get_corrections_text()
+        output_file.write_text(content)
         
-    
     def _get_corrections_text(self) -> str:
         if self.corrections is None:
             return ""

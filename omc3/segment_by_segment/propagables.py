@@ -103,9 +103,12 @@ class Propagable(ABC):
         )
     
     def _init_end(self, plane: str) -> BoundaryConditions:
-        """Get the end condition  for all propagables at the given plane."""
+        """Get the end condition  for all propagables at the given plane.
+        Note: Alpha needs to be "reversed" as the end-condition is only used in backward
+              propagation and alpha is anti-symmetric in time.
+        """
         return BoundaryConditions(
-            alpha=Measurement(*AlphaPhase.get_at(self._segment.end, self._meas, plane)),
+            alpha=-Measurement(*AlphaPhase.get_at(self._segment.end, self._meas, plane)),
             beta=Measurement(*BetaPhase.get_at(self._segment.end, self._meas, plane))
         )
     
@@ -190,30 +193,53 @@ class Phase(Propagable):
 
     @cache
     def measured_forward(self, plane):
-        return self._compute_measured(plane, self.segment_models.forward, forward=True)
+        return self._compute_measured(
+            plane, 
+            self.segment_models.forward, 
+            forward=True
+        )
 
     @cache
     def correction_forward(self, plane):
-        return self._compute_correction(plane,
-                                       self.segment_models.forward,
-                                       self.segment_models.forward_corrected)
+        return self._compute_correction(
+            plane,
+            self.segment_models.forward,
+            self.segment_models.forward_corrected,
+            forward=True,
+        )
+
     @cache
     def expected_forward(self, plane):
-        return self._compute_measured(plane, self.segment_models.forward_corrected, forward=True)
+        return self._compute_measured(
+            plane, 
+            self.segment_models.forward_corrected, 
+            forward=True
+        )
 
     @cache
     def measured_backward(self, plane):
-        return self._compute_measured(plane, self.segment_models.backward, forward=False)
+        return self._compute_measured(
+            plane, 
+            self.segment_models.backward, 
+            forward=False
+        )
 
     @cache
     def correction_backward(self, plane):
-        return self._compute_correction(plane,
-                                       self.segment_models.backward,
-                                       self.segment_models.backward_corrected)
+        return self._compute_correction(
+            plane,
+            self.segment_models.backward,
+            self.segment_models.backward_corrected,
+            forward=False,
+        )
     
     @cache
     def expected_backward(self, plane):
-        return self._compute_measured(plane, self.segment_models.backward_corrected, forward=False)
+        return self._compute_measured(
+            plane, 
+            self.segment_models.backward_corrected, 
+            forward=False
+        )
 
     def add_differences(self, segment_diffs: SegmentDiffs):
         """ Calculate the differences between the propagated models and the measured values."""
@@ -285,11 +311,10 @@ class Phase(Propagable):
             reference_element = names[0 if forward else -1]  # start of the propagation
             segment_model_phase = model_phase - model_phase.loc[reference_element]
             segment_meas_phase = meas_phase - meas_phase.loc[reference_element]
-            if forward:
-                phase_beating = math.phase_diff(segment_meas_phase, segment_model_phase)
-            else:
-                phase_beating = math.phase_diff(segment_model_phase, segment_meas_phase)
+            if not forward:
+                segment_model_phase = -segment_model_phase  # TODO: Why?
 
+            phase_beating = math.phase_diff(segment_meas_phase, segment_model_phase)
             # propagate the error
             propagated_err = math.propagate_error_phase(model_phase, init_condition)
             total_err = _quadratic_add(meas_err, propagated_err)
@@ -301,7 +326,7 @@ class Phase(Propagable):
             propagated_err = math.propagate_error_phase(propagated_phase, init_condition)
             return propagated_phase, propagated_err
 
-    def _compute_correction(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
+    def _compute_correction(self, plane: str, seg_model: pd.DataFrame, seg_model_corr: pd.DataFrame, forward: bool) -> tuple[pd.Series, pd.Series]:
         """Compute the difference between the nominal and the corrected model."""
         model_phase = seg_model.loc[:, self._model_column(plane)]
         corrected_phase = seg_model_corr.loc[:, self._model_column(plane)]
@@ -310,8 +335,10 @@ class Phase(Propagable):
             corrected_phase = corrected_phase.iloc[0]
         
         init_condition = self._init_start(plane)
-
-        phase_beating = math.phase_diff(corrected_phase, model_phase)
+        if forward: 
+            phase_beating = math.phase_diff(corrected_phase, model_phase)
+        else:
+            phase_beating = math.phase_diff(model_phase, corrected_phase)
         propagated_err = math.propagate_error_phase(corrected_phase, init_condition)
         return phase_beating, propagated_err
     
@@ -397,6 +424,14 @@ class AlphaPhase(Propagable):
         alpha = meas.beta_phase[plane].loc[names, c.column]
         error = meas.beta_phase[plane].loc[names, c.error_column]
         return alpha, error
+    
+    def init_conditions_dict(self):
+        # alpha needs to be inverted for backward propagation, i.e. the end-init
+        init_cond = super().init_conditions_dict()
+        for key, value in init_cond.items():
+            if "end" in key:
+                init_cond[key] = -value
+        return init_cond
 
     @cache
     def measured_forward(self, plane):
