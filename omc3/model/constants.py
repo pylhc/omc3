@@ -41,6 +41,7 @@ PLANE_TO_HV: dict[str, str] = dict(X="H", Y="V")
 
 AFS_ACCELERATOR_MODEL_REPOSITORY: Path = Path("/afs/cern.ch/eng/acc-models")
 ACC_MODELS_PREFIX: str = AFS_ACCELERATOR_MODEL_REPOSITORY.name
-OPTICS_SUBDIR: str = "operation/optics"
+OPTICS_SUBDIR: Path = Path("operation/optics")
+LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH: Path = Path("toolkit/remove-triplet-symmetry-knob.madx")
 
 AFS_B2_ERRORS_ROOT = Path("/afs/cern.ch/eng/sl/lintrack/error_tables/")

@@ -177,7 +177,7 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
         accel_duplicate = copy.deepcopy(accel)
         accel_duplicate.modifiers = None
         LhcModelCreator(accel_duplicate).check_accelerator_instance()
-    assert "no modifiers could be found" in str(excinfo.value)
+    assert "no modifiers could be found" in str(excinfo.value).lower()
 
     with pytest.raises(AttributeError):
         create_instance_and_model(

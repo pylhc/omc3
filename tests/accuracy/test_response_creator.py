@@ -1,15 +1,20 @@
 import numpy as np
 import pytest
 
-from omc3.correction.response_io import read_fullresponse, read_varmap
+from omc3.correction.response_io import (
+    read_fullresponse,
+    read_varmap,
+    write_fullresponse,
+)
 from omc3.correction.sequence_evaluation import evaluate_for_variables
 from omc3.global_correction import OPTICS_PARAMS_CHOICES
 from omc3.model.manager import get_accelerator
-from omc3.optics_measurements.constants import (DISPERSION, PHASE, PHASE_ADV)
+from omc3.optics_measurements.constants import DISPERSION, PHASE, PHASE_ADV
 from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.utils import logging_tools
 from omc3.utils.stats import rms
-from tests.accuracy.test_global_correction import get_skew_params, get_normal_params
+from tests.accuracy.test_global_correction import get_normal_params, get_skew_params
+from tests.conftest import INPUTS
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -42,10 +47,18 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
         variable_categories=correction_params.variables,
     )
 
+    # UPDATE TEST RESPONSE -----------------------------------------------------
+    # last done with MADX 5.09 2025-02-25 (jdilly)
+    # if creator == "twiss":
+    #     return
+    # write_fullresponse(INPUTS / "models" / f"2018_inj_b{beam}_11m" / correction_params.fullresponse, new_response)  
+    # return
+    # --------------------------------------------------------------------------
+
     # compare to original response matrix
     original_response = read_fullresponse(model_inj_beams.model_dir / correction_params.fullresponse)
     for key in optics_params:
-        original = original_response[key.replace("_Q4", "")]  # renaming of category since response creation 
+        original = original_response[key]
         new = new_response[key].loc[original.index, original.columns]
 
         # ######## Relative RMS check ###############

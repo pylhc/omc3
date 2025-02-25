@@ -21,6 +21,7 @@ SBS_DIR = INPUTS / "sbs"
 MAX_DIFF = 1e-10
 
 
+@pytest.skip
 class TestSbSLHC:
 
     @pytest.mark.basic

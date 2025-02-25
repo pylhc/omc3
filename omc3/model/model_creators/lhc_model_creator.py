@@ -30,6 +30,7 @@ from omc3.model.constants import (
     GENERAL_MACROS,
     JOB_MODEL_MADX_BEST_KNOWLEDGE,
     JOB_MODEL_MADX_NOMINAL,
+    LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH,
     LHC_MACROS,
     LHC_MACROS_RUN3,
     MACROS_DIR,
@@ -260,11 +261,13 @@ class LhcModelCreator(ModelCreator):
             )
         
         if accel.acc_model_path is not None:
-            madx_script += (
-            "\n! ----- Remove IR symmetry definitions -----\n"
-            f"\ncall, file=\"{accel.acc_model_path!s}/toolkit/remove-triplet-symmetry-knob.madx\"; "
-            "! removes 'ktqx.r1 := -ktqx.l1'-type issues\n"
-            )
+            remove_symmetry_knob_madx = accel.acc_model_path / LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH
+            if remove_symmetry_knob_madx.exists():  # alternatively check if year != 2018/2021
+                madx_script += (
+                "\n! ----- Remove IR symmetry definitions -----\n"
+                f"\ncall, file=\"{remove_symmetry_knob_madx!s}\"; "
+                "! removes 'ktqx.r1 := -ktqx.l1'-type issues\n"
+                )
 
         madx_script += (
             "\n! ----- Finalize Sequence -----\n"
