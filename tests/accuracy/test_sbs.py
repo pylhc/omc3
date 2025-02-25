@@ -21,8 +21,8 @@ SBS_DIR = INPUTS / "sbs"
 MAX_DIFF = 1e-10
 
 
-@pytest.skip
 class TestSbSLHC:
+    __test__ = False  # ignore for now
 
     @pytest.mark.basic
     def test_lhc_segment_creation(self, model_25cm_beam1, tmp_path): #TODO get measurements for Beam 2 
