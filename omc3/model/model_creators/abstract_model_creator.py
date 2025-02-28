@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 import tfs
 
 from omc3.madx_wrapper import run_string
-from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode
+from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode, AcceleratorDefinitionError
 from omc3.model.constants import (
     JOB_MODEL_MADX_NOMINAL,
     OPTICS_SUBDIR,
@@ -50,9 +50,9 @@ class ModelCreator(ABC):
     Abstract class for the implementation of a model creator. 
     All mandatory methods and convenience functions are defined here.
     """
-    jobfile: str = JOB_MODEL_MADX_NOMINAL
+    jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__ 
 
-    def __init__(self, accel: Accelerator, logfile: Path = None):
+    def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
         """
         Initialize the Model Creator.
 
@@ -60,25 +60,28 @@ class ModelCreator(ABC):
             accel (Accelerator): Accelerator Instance
         """
         LOGGER.debug("Initializing Model Creator Base Attributes")
-        self.accel = accel
-        self.logfile = logfile
-        self.output_dir = accel.model_dir
+        self.accel: Accelerator = accel
+        self.acc_models_path: Path = acc_models_path
+        self.logfile: Path = logfile
+        self.output_dir: Path = accel.model_dir
     
     @abstractmethod
-    def check_options(self, opt) -> bool:
+    def prepare_options(self, opt):
         """
-        Parses additional commandline options (if any) and checks if they are valid.
-        If there are options missing, return False. 
-        This function is different from the normal parsing of options, as it allows the 
-        model creator to print possible choices for the user.        
+        Checks the options specific to the accelerator and 
+        applies them to the instance, if they are valid.
+        If there are options missing or wrongly set, raise an AcceleratorDefinitionError.
+
+        This function should different from the normal parsing of options, 
+        as it is used to print possible choices for the user.
+        In particular it is used for the "fetcher" and sets up the paths to be
+        used later by the model creator.
 
         Args:
             opt: The remaining options (i.e. those not yet consumed by the model creator)
 
-        Returns: True if enough options are given to provide a valid model
-
         """
-        return True
+        pass
 
     def full_run(self):
         """ Does the full run: preparation, running madx, post_run. """
@@ -224,28 +227,29 @@ class ModelCreator(ABC):
         This functions can be used by all model creators supporting the acc-models creation.
         """
         accel = self.accel
-        if accel.acc_model_path is None or accel.REPOSITORY is None:
+        if accel.acc_model_path is None or accel.LOCAL_REPO_NAME is None:
             LOGGER.debug(f"No symlink required for accel {accel.NAME}.")
             return
 
         LOGGER.debug("Preparing acc-models-symlink")
         target = accel.acc_model_path
-        link: Path = Path(accel.model_dir) / accel.REPOSITORY
+        link: Path = Path(accel.model_dir) / accel.LOCAL_REPO_NAME
 
         if link.is_symlink() or link.exists():
             # something is here
             if not link.resolve().samefile(target.resolve()):
                 # and it's not pointing at the right target
                 LOGGER.warning(
-                    f"{accel.REPOSITORY} already exists in model dir {accel.model_dir}. "
+                    f"{accel.LOCAL_REPO_NAME} already exists in model dir {accel.model_dir}. "
                     f"It will be reset to {target}."
                 )
                 link.unlink()
                 link.absolute().symlink_to(target)
-            # else: link already points to the right target -> leave as is
+            # else: link already points to the right target (or is the target) -> leave as is
 
         else:
             # no symlink so we create one
+            link.parent.mkdir(parents=True, exist_ok=True)
             link.absolute().symlink_to(target)
         
         # use the link from now on as model path and for modifiers;
@@ -257,7 +261,9 @@ class ModelCreator(ABC):
                 for m in accel.modifiers
             ]
     
-    def _find_modifier(self, modifier: Path):
+    def _find_modifier(self, modifier: Path | str) -> Path:
+        modifier = Path(modifier)
+        
         # first case: if modifier exists as is, take it
         if modifier.exists():
             return modifier
@@ -268,23 +274,26 @@ class ModelCreator(ABC):
             return model_dir_path.absolute()
 
         # and last case, try to find it in the acc-models rep
-        if self.accel.acc_model_path is not None:
-            optics_path: Path = self.accel.acc_model_path / OPTICS_SUBDIR / modifier
+        accel = self.accel
+        if accel.acc_model_path is not None:
+            optics_path: Path = accel.acc_model_path / OPTICS_SUBDIR / modifier
             if optics_path.exists():
                 return optics_path.absolute()
 
         # if you are here, all attempts failed
-        msg = (
-            f"couldn't find modifier {modifier}. "
-            f"Tried in {self.accel.model_dir} and {self.accel.acc_model_path}/{OPTICS_SUBDIR}"
-        )
+        msg = f"Couldn't find modifier {modifier}.\nTried in {accel.model_dir}"
+        if accel.acc_model_path is not None:
+            msg += f" and in {accel.acc_model_path}"
         raise FileNotFoundError(msg)
 
 
-def check_folder_choices(parent: Path, msg: str,
-                         selection: str,
-                         list_choices: bool = False,
-                         predicate=iotools.always_true) -> Path:
+def check_folder_choices(
+    parent: Path,
+    msg: str,
+    selection: str,
+    list_choices: bool = False,
+    predicate=iotools.always_true,
+    ) -> Path:
     """
     A helper function that scans a selected folder for children, which will then be displayed as possible choices.
     This funciton allows the model-creator to get only the file/folder names, check
@@ -317,14 +326,13 @@ def check_folder_choices(parent: Path, msg: str,
     """
     choices = [d.name for d in parent.iterdir() if predicate(d)]
 
-    if selection is not None and selection in choices:
+    if selection in choices:
         return parent / selection
 
     if list_choices:
         for choice in choices:
             print(choice)
-        return None
-    raise AttributeError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
+    raise AcceleratorDefinitionError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
 
 
 

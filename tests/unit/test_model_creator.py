@@ -8,7 +8,7 @@ import tfs
 from generic_parser import DotDict
 from omc3.model.accelerators.accelerator import Accelerator,AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.accelerators.lhc import Lhc
-from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
+from omc3.model.constants import ACC_MODELS_PREFIX, JOB_MODEL_MADX_NOMINAL, OPTICS_SUBDIR, TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
 from omc3.model_creator import create_instance_and_model
@@ -16,8 +16,8 @@ from omc3.optics_measurements.constants import NAME
 from tests.conftest import assert_frame_equal
 
 INPUTS = Path(__file__).parent.parent / "inputs"
-LHC_30CM_MODIFIERS = [Path("R2023a_A30cmC30cmA10mL200cm.madx")]
-HIGH_BETA_MODIFIERS = [Path("R2018h_A90mC90mA10mL10m.madx")]
+LHC_2025_30CM_MODIFIERS = [Path("R2025aRP_A30cmC30cmA10mL200cm_Flat.madx")]
+LHC_2018_HIGH_BETA_MODIFIERS = [Path("R2018h_A90mC90mA10mL10m.madx")]
 UNAVAILABLE_FETCHER = "unavailable_fetcher"
 
 # ---- creation tests ------------------------------------------------------------------------------
@@ -48,17 +48,21 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
 
     accel_opt_duplicate = accel_opt.copy()
     accel_opt_duplicate["scenario"] = None
-    with pytest.raises(AttributeError):
+    with pytest.raises(AcceleratorDefinitionError) as e:
         create_instance_and_model(
             type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
         )
+    assert "flag --scenario" in str(e.value)
+    assert "Selected: 'None'" in str(e.value)
 
     accel_opt_duplicate = accel_opt.copy()
     accel_opt_duplicate["str_file"] = None
-    with pytest.raises(AttributeError):
+    with pytest.raises(AcceleratorDefinitionError) as e:
         create_instance_and_model(
             type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
         )
+    assert "flag --str_file" in str(e.value)
+    assert "Selected: 'None'" in str(e.value)
 
 
 @pytest.mark.basic
@@ -141,10 +145,10 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
 
 
 @pytest.mark.basic
-def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
+def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2025):
     accel_opt = dict(
         accel="lhc",
-        year="2023",
+        year="2025",
         beam=1,
         nat_tunes=[0.31, 0.32],
         drv_tunes=[0.298, 0.335],
@@ -152,8 +156,8 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
         dpp=0.0,
         energy=6800.0,
         fetch=Fetcher.PATH,
-        path=acc_models_lhc_2023,
-        modifiers=LHC_30CM_MODIFIERS,
+        path=acc_models_lhc_2025,
+        modifiers=LHC_2025_30CM_MODIFIERS,
     )
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -179,10 +183,11 @@ def test_lhc_creation_nominal_driven(tmp_path, acc_models_lhc_2023):
         LhcModelCreator(accel_duplicate).check_accelerator_instance()
     assert "no modifiers could be found" in str(excinfo.value).lower()
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError) as excinfo:
         create_instance_and_model(
             type="nominal", outputdir=None, logfile=tmp_path / "madx_log.txt", **accel_opt
         )
+    assert "Missing flag `outputdir`" in str(excinfo.value)
 
 
 @pytest.mark.basic
@@ -196,7 +201,7 @@ def test_lhc_creation_nominal_free_high_beta(tmp_path, acc_models_lhc_2018):
         energy=6500.0,
         fetch=Fetcher.PATH,
         path=acc_models_lhc_2018,
-        modifiers=HIGH_BETA_MODIFIERS
+        modifiers=LHC_2018_HIGH_BETA_MODIFIERS
     )
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -205,17 +210,17 @@ def test_lhc_creation_nominal_free_high_beta(tmp_path, acc_models_lhc_2018):
 
 
 @pytest.mark.basic
-def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2023):
+def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2025):
     accel_opt = dict(
         accel="lhc",
-        year="2023",
+        year="2025",
         beam=1,
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
         fetch=Fetcher.PATH,
-        path=acc_models_lhc_2023,
-        modifiers=LHC_30CM_MODIFIERS
+        path=acc_models_lhc_2025,
+        modifiers=LHC_2025_30CM_MODIFIERS
     )
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -224,7 +229,24 @@ def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2023):
 
 
 @pytest.mark.basic
-def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2023):
+def test_lhc_creation_nominal_2016(tmp_path):
+    accel_opt = dict(
+        accel="lhc",
+        year="2016",
+        beam=1,
+        nat_tunes=[0.31, 0.32],
+        dpp=0.0,
+        energy=6500.0,
+        modifiers=[INPUTS / "models" / "modifiers_2016" / "opt_400_10000_400_3000.madx"]
+    )
+    accel = create_instance_and_model(
+        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+    check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
+
+
+@pytest.mark.basic
+def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
     (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
     
     corrections = tmp_path / "other_corrections.madx"
@@ -235,15 +257,15 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2023):
 
     accel_opt = dict(
         accel="lhc",
-        year="2023",
+        year="2025",
         ats=True,
         beam=1,
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
         fetch=Fetcher.PATH,
-        path=acc_models_lhc_2023,
-        modifiers=LHC_30CM_MODIFIERS + [corrections]
+        path=acc_models_lhc_2025,
+        modifiers=LHC_2025_30CM_MODIFIERS + [corrections]
     )
 
     # like from the GUI, dump best knowledge on top of nominal
@@ -265,7 +287,8 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2023):
 
 
 @pytest.mark.basic
-def test_lhc_creation_relative_modifier_path(tmp_path, acc_models_lhc_2022):
+def test_lhc_creation_absolute_modifier_path(tmp_path: Path, acc_models_lhc_2022: Path):
+    rel_path = OPTICS_SUBDIR / "R2022a_A30cmC30cmA10mL200cm.madx"
     accel_opt = dict(
         accel="lhc",
         year="2022",
@@ -276,13 +299,15 @@ def test_lhc_creation_relative_modifier_path(tmp_path, acc_models_lhc_2022):
         energy=6800.0,
         fetch=Fetcher.PATH,
         path=acc_models_lhc_2022,
-        modifiers=LHC_30CM_MODIFIERS
+        modifiers=[(acc_models_lhc_2022 / rel_path).absolute()]
     )
-    #shutil.copy(MODEL_CREATOR_INPUT / "lhc_2022/operation/optics" / "R2022a_A30cmC30cmA10mL200cm.madx", tmp_path / "R2022a_A30cmC30cmA10mL200cm.madx")
-
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
+    absolute_path = tmp_path / f"{ACC_MODELS_PREFIX}-{accel.NAME}" / rel_path  # replaced in model creation
+    madx_string = f"call, file = '{absolute_path!s}"
+    assert madx_string in (tmp_path / JOB_MODEL_MADX_NOMINAL).read_text()
+    assert madx_string in (tmp_path / "madx_log.txt").read_text()
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 
@@ -367,18 +392,18 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
 # ---- cli tests -----------------------------------------------------------------------------------
 
 @pytest.mark.basic
-def test_lhc_creator_cli(tmp_path, acc_models_lhc_2023, capsys):
+def test_lhc_creator_cli(tmp_path, acc_models_lhc_2025, capsys):
 
     accel_opt = dict(
         accel="lhc",
-        year="2023",
+        year="2025",
         ats=True,
         beam=1,
         nat_tunes=[0.31, 0.32],
         dpp=0.0,
         energy=6800.0,
         fetch=Fetcher.PATH,
-        path=acc_models_lhc_2023,
+        path=acc_models_lhc_2025,
         list_choices=True,
     )
     create_instance_and_model(

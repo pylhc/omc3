@@ -106,18 +106,18 @@ class Lhc(Accelerator):
     """
     Accelerator class for the ``LHC`` collider.
     """
-    NAME = "lhc"
-    REPOSITORY = "acc-models-lhc"
+    NAME: str = "lhc"
+    LOCAL_REPO_NAME: str = "acc-models-lhc"
     RE_DICT: dict[str, str] = {
         AccElementTypes.BPMS: r"BPM",
         AccElementTypes.MAGNETS: r"M",
         AccElementTypes.ARC_BPMS: r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]",
     }  # bpms > 14 L or R of IP
 
-    LHC_IPS = ("1", "2", "5", "8")
-    NORMAL_IP_BPMS = "BPMSW.1{side}{ip}.B{beam}"
-    DOROS_IP_BPMS = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
-    DEFAULT_CORRECTORS_DIR = LHC_DIR / "correctors"
+    LHC_IPS: tuple[str] = ("1", "2", "5", "8")
+    NORMAL_IP_BPMS: str = "BPMSW.1{side}{ip}.B{beam}"
+    DOROS_IP_BPMS: str = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
+    DEFAULT_CORRECTORS_DIR: Path = LHC_DIR / "correctors"
 
     @staticmethod
     def get_parameters():

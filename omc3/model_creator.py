@@ -9,7 +9,7 @@ from pathlib import Path
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.model import manager
-from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.constants import Fetcher
 from omc3.model.model_creators import abstract_model_creator
 from omc3.model.model_creators.lhc_model_creator import (  # noqa
@@ -64,6 +64,17 @@ def _get_params():
               "If not provided it will be written to sys.stdout.")
     )
     params.add_parameter(
+        name="show_help", 
+        action="store_true", 
+        help="Instructs the subsequent modules to print a help message"
+    )
+    params.update(get_fetcher_params())
+    return params
+
+
+def get_fetcher_params():
+    params = EntryPointParameters()
+    params.add_parameter(
         name="fetch",
         type=str,
         help=("Select the fetcher which sets up the lattice definition (madx, seq, strength files)."
@@ -78,12 +89,7 @@ def _get_params():
     params.add_parameter(
         name="list_choices",
         action="store_true",
-        help="if selected, a list of valid optics files is printed",
-    )
-    params.add_parameter(
-        name="show_help", 
-        action="store_true", 
-        help="instructs the subsequent modules to print a help message"
+        help="If selected, a list of valid optics files is printed",
     )
     return params
 
@@ -92,7 +98,7 @@ def _get_params():
 
 
 @entrypoint(_get_params())
-def create_instance_and_model(opt, accel_opt) -> Accelerator:
+def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
     """
     Manager Keyword Args:
         *--Required--*
@@ -175,8 +181,14 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator:
     # Check if the options (i.e. the values of the arguments given) are valid choices.
     # This needs to be done by the creator itself, as it should know what valid options are
     # and can then also print them. If this fails, we have to abort.
-    if not creator.check_options(opt):
-        return None
+    #
+    # !! NOTE: If succesfull, THIS CAN MODIFY THE ACCELERATOR INSTANCE on creator.accel !!
+    try:
+        creator.prepare_options(opt)
+    except AcceleratorDefinitionError:
+        if not opt.list_choices:
+            raise
+        return
     
     # Save config only now, to not being written out for each time the choices are listed
     save_config(outputdir, opt=opt, unknown_opt=accel_opt, script=__file__)

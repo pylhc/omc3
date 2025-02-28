@@ -67,57 +67,59 @@ def _b2_columns() -> list[str]:
 
 
 class LhcModelCreator(ModelCreator):
-    acc_model_name = "lhc"
 
     def __init__(self, accel: Lhc, *args, **kwargs):
         LOGGER.debug("Initializing LHC Model Creator")
         super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
 
-    def check_options(self, opt) -> bool:
+    def prepare_options(self, opt):
         """ Use the fetcher to list choices if requested. """
         accel: Lhc = self.accel
-        
+
         # Set the fetcher paths ---
         if opt.fetch == Fetcher.PATH:
-            accel.acc_model_path = Path(opt.path)
+            if opt.path is None:
+                raise AcceleratorDefinitionError(
+                    "Path fetcher chosen, but no path proivided."
+                )
+            acc_model_path = Path(opt.path)
 
         elif opt.fetch == Fetcher.AFS:
             # list 'year' choices ---
-            accel.acc_model_path = check_folder_choices(
-                AFS_ACCELERATOR_MODEL_REPOSITORY / self.acc_model_name,
+            acc_model_path = check_folder_choices(
+                AFS_ACCELERATOR_MODEL_REPOSITORY / accel.NAME,
                 msg="No optics tag (flag --year) given",
                 selection=accel.year,
                 list_choices=opt.list_choices,
                 predicate=Path.is_dir
-            )
+            )  # raises AcceleratorDefintionError if not valid choice
         else:
-            raise AttributeError(
-                f"{accel.NAME} model creation requires one of the following fetchers: "
-                f"[{Fetcher.PATH}, {Fetcher.AFS}]. "
-                "Please provide one with the flag `--fetch afs` "
-                "or `--fetch path --path PATH`."
+            LOGGER.warning(
+                f"{accel.NAME} model creation is expected to run via a fetcher these days. "
+                "If you are creating an older model, this might all be correct "
+                "and you can ignore this warning. Otherwise you will soon run into "
+                "a MAD-X error. In this case, please provide a fetcher for the model via --fetch flag. "
             )
-
-        if accel.acc_model_path is None:
-            return False
+            return
 
         # list optics choices ---
         if opt.list_choices:  # assumes we want to list optics. Invoked even if modifiers are given!
-            check_folder_choices(
-                accel.acc_model_path / OPTICS_SUBDIR,
+            check_folder_choices(  
+                acc_model_path / OPTICS_SUBDIR,
                 msg="No modifier given",
                 selection=None,  # TODO: could check if user made valid choice
                 list_choices=opt.list_choices,
                 predicate=get_check_suffix_func(".madx")
-            )
-            return False
-
-        return True
+            )  # raises AcceleratorDefintionError
+        
+        # Set acc model path to be used in model creator ---
+        accel.acc_model_path = acc_model_path
 
     def prepare_run(self) -> None:
         super().prepare_run()  # create symlink, find modifiers
 
         accel: Lhc = self.accel
+
         self.check_accelerator_instance()
         LOGGER.debug("Preparing model creation structure")
         macros_path = accel.model_dir / MACROS_DIR
@@ -305,20 +307,28 @@ class LhcModelCreator(ModelCreator):
     def _get_madx_script_info_comments(self) -> str:
         accel: Lhc = self.accel
         info_comments = (
-            f'title, "LHC Model created by omc3";\n'
-            f"! Model directory: {Path(accel.model_dir).absolute()}\n"
-            f"! Natural Tune X         [{accel.nat_tunes[0]:10.3f}]\n"
-            f"! Natural Tune Y         [{accel.nat_tunes[1]:10.3f}]\n"
-            f"! Best Knowledge:        [{'NO' if accel.model_best_knowledge is None else 'YES':>10s}]\n"
+                f'title, "LHC Model created by omc3";\n'
+                f"! Model directory        {Path(accel.model_dir).absolute()}\n"
+        )
+        if accel.acc_model_path is not None:
+            info_comments += (
+                f"! Acc-Models             {Path(accel.acc_model_path).absolute()}\n"
+            )
+        info_comments += (
+                f"! LHC year               {accel.year}\n"
+                f"! Natural Tune X         {accel.nat_tunes[0]:10.3f}\n"
+                f"! Natural Tune Y         {accel.nat_tunes[1]:10.3f}\n"
+                f"! Best Knowledge         {'NO' if accel.model_best_knowledge is None else 'YES':>10s}\n"
         )
         if accel.excitation == AccExcitationMode.FREE:
-            info_comments += f"! Excitation             [{'NO':>10s}]\n"
+            info_comments += (
+                f"! Excitation             {'NO':>10s}\n"
+            )
         else:
             info_comments += (
-                f"! Excitation             [{'ACD' if accel.excitation == AccExcitationMode.ACD else 'ADT':>10s}]\n"
-                f"! > Driven Tune X        [{accel.drv_tunes[0]:10.3f}]\n"
-                f"! > Driven Tune Y        [{accel.drv_tunes[1]:10.3f}]\n"
-
+                f"! Excitation             {'ACD' if accel.excitation == AccExcitationMode.ACD else 'ADT':>10s}\n"
+                f"! > Driven Tune X        {accel.drv_tunes[0]:10.3f}\n"
+                f"! > Driven Tune Y        {accel.drv_tunes[1]:10.3f}\n"
             )
         return info_comments
 

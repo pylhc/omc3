@@ -17,6 +17,7 @@ import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters
 
+from omc3.harpy.constants import COL_NAME as NAME
 from omc3.model.constants import (
     ERROR_DEFFS_TXT,
     JOB_MODEL_MADX_NOMINAL,
@@ -49,9 +50,9 @@ DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
 class AccElementTypes:
     """Defines the strings for the element types ``BPMS``, ``MAGNETS`` and ``ARC_BPMS``."""
 
-    BPMS = "bpm"
-    MAGNETS = "magnet"
-    ARC_BPMS = "arc_bpm"
+    BPMS: str = "bpm"
+    MAGNETS: str = "magnet"
+    ARC_BPMS: str = "arc_bpm"
 
 
 class Accelerator:
@@ -59,15 +60,15 @@ class Accelerator:
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
     NAME: str
-    # RE_DICT needs to use MAD-X compatible patterns (jdilly, 2021)
-    RE_DICT = {
+    LOCAL_REPO_NAME: str | None = None
+    # RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)
+    RE_DICT: dict[str, str] = {
         AccElementTypes.BPMS: r".*",
         AccElementTypes.MAGNETS: r".*",
         AccElementTypes.ARC_BPMS: r".*",
     }
-    BPM_INITIAL = "B"
-    NAME=None
-    REPOSITORY=None
+    BPM_INITIAL: str = "B"
+    NAME: str = None
 
     @staticmethod
     def get_parameters():
@@ -128,8 +129,8 @@ class Accelerator:
         self.elements = None
         self.elements_best_knowledge = None
         self.error_defs_file = None
-        self.acc_model_path = None
         self.modifiers = None
+        self.acc_model_path = None
         self._beam_direction = 1
         self._beam = None
         self._ring = None
@@ -143,7 +144,15 @@ class Accelerator:
                     "Arguments 'nat_tunes' and 'driven_tunes' are "
                     "not allowed when loading from model directory."
                 )
+
             self.init_from_model_dir(Path(opt.model_dir))
+
+            if opt.modifiers is not None:
+                if self.modifiers is not None:
+                    LOG.warning(
+                        "Modifier defintions given but also found in model directory. Using the user-given ones."
+                    )  # useful if model was copied to a new location, but modifier paths have changed
+                self.modifiers = opt.modifiers
 
         else:
             self.init_from_options(opt)
@@ -170,11 +179,11 @@ class Accelerator:
         elements_path = model_dir / TWISS_ELEMENTS_DAT
         if not elements_path.is_file():
             raise AcceleratorDefinitionError("Elements twiss not found")
-        self.elements = tfs.read(elements_path, index="NAME")
+        self.elements = tfs.read(elements_path, index=NAME)
 
         LOG.debug(f"  model path = {model_dir / TWISS_DAT}")
         try:
-            self.model = tfs.read(model_dir / TWISS_DAT, index="NAME")
+            self.model = tfs.read(model_dir / TWISS_DAT, index=NAME)
         except IOError:
             bpm_index = [
                 idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)
@@ -190,7 +199,7 @@ class Accelerator:
         for key in driven_filenames.keys():
             if driven_filenames[key].is_file():
                 self.excitation = DRIVEN_EXCITATIONS[key]
-                self.model_driven = tfs.read(driven_filenames[key], index="NAME")
+                self.model_driven = tfs.read(driven_filenames[key], index=NAME)
 
         if not self.excitation == AccExcitationMode.FREE:
             self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
@@ -198,15 +207,15 @@ class Accelerator:
         # Best Knowledge #####################################
         best_knowledge_path = model_dir / TWISS_BEST_KNOWLEDGE_DAT
         if best_knowledge_path.is_file():
-            self.model_best_knowledge = tfs.read(best_knowledge_path, index="NAME")
+            self.model_best_knowledge = tfs.read(best_knowledge_path, index=NAME)
 
         best_knowledge_elements_path = model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT
         if best_knowledge_elements_path.is_file():
-            self.elements_best_knowledge = tfs.read(best_knowledge_elements_path, index="NAME")
+            self.elements_best_knowledge = tfs.read(best_knowledge_elements_path, index=NAME)
 
         # Base Model ########################################
-        if self.REPOSITORY is not None:
-            acc_models = model_dir / self.REPOSITORY
+        if self.LOCAL_REPO_NAME is not None:
+            acc_models = model_dir / self.LOCAL_REPO_NAME
 
             if acc_models.is_dir():
                 if acc_models.is_symlink():

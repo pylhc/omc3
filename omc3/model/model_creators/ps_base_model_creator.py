@@ -14,60 +14,57 @@ LOGGER = logging_tools.get_logger(__name__)
 class PsBaseModelCreator(ModelCreator, ABC):
     acc_model_name = None
 
-    def check_options(self, opt) -> bool:
+    def prepare_options(self, opt) -> bool:
         """ Use the fetcher to list choices if requested. """
         accel: PsBase = self.accel
-
+        
         if opt.fetch == Fetcher.PATH:
-            accel.acc_model_path = Path(opt.path)
+            if opt.path is None:
+                raise AcceleratorDefinitionError(
+                    "Path fetcher chosen, but no path proivided."
+                )
+            acc_model_path = Path(opt.path)
 
         elif opt.fetch == Fetcher.AFS:
-            accel.acc_model_path = check_folder_choices(
+            # list 'year' choices ---
+            acc_model_path = check_folder_choices(
                 AFS_ACCELERATOR_MODEL_REPOSITORY / self.acc_model_name,
                 msg="No optics tag (flag --year) given",
                 selection=accel.year,
-                list_choices=opt.list_choices
-            )
+                list_choices=opt.list_choices,
+                predicate=Path.is_dir
+            )  # raises AcceleratorDefintionError if not valid choice
         else:
-            raise AttributeError(
-                f"{accel.NAME} model creation requires one of the following fetchers: "
-                f"[{Fetcher.PATH}, {Fetcher.AFS}]. "
-                "Please provide one with the flag `--fetch afs` "
-                "or `--fetch path --path PATH`."
+            LOGGER.warning(
+                f"{accel.NAME} model creation is expected to run via a fetcher these days. "
+                "If you are creating an older model, this might all be correct "
+                "and you can ignore this warning. Otherwise you will soon run into "
+                "a MAD-X error. In this case, please provide a fetcher for the model via --fetch flag. "
             )
-
-        if accel.acc_model_path is None:
-            return False
+            return
 
         scenario_path = check_folder_choices(
-            accel.acc_model_path / "scenarios",
-            msg="No scenario (flag --scenario) selected",
+            acc_model_path / "scenarios",
+            msg="No/Unknown scenario (flag --scenario) selected",
             selection=accel.scenario,
             list_choices=opt.list_choices
         )
-        if scenario_path is None:
-            return False
 
         cycle_point_path = check_folder_choices(
             scenario_path,
-            msg="No cycle_point (flag --cycle_point) selected",
+            msg="No/Unknown cycle_point (flag --cycle_point) selected",
             selection=accel.cycle_point,
             list_choices=opt.list_choices
         )
-        if cycle_point_path is None:
-            return False
 
         str_file = check_folder_choices(
             cycle_point_path,
-            msg="No strength file (flag --str_file) selected",
+            msg="No/Unknown strength file (flag --str_file) selected",
             selection=accel.str_file,
             list_choices=opt.list_choices,
             predicate=get_check_suffix_func(".str")
         )
-        if str_file is None:
-            return False
 
-        accel.str_file = str_file
         possible_beam_files = list(cycle_point_path.glob("*.beam"))
 
         # if now `.beam` file is found, try any madx job file, maybe we get lucky there
@@ -75,17 +72,21 @@ class PsBaseModelCreator(ModelCreator, ABC):
             possible_beam_files = list(cycle_point_path.glob("*.*job"))
         
             if not len(possible_beam_files):
-                raise AcceleratorDefinitionError(f"no beam file found in {cycle_point_path}")
+                raise AcceleratorDefinitionError(f"No beam file found in {cycle_point_path}")
 
         if len(possible_beam_files) > 1:
             LOGGER.error(f"More than one beam file found in {cycle_point_path}. "
                          f"Taking first one: {possible_beam_files[0]}")
 
-        accel.beam_file = possible_beam_files[0]
+        beam_file = possible_beam_files[0]
 
         if opt.list_choices:
             with open(accel.beam_file) as beamf:
                 print(beamf.read())
-            return False
+            raise AcceleratorDefinitionError()  # not really an error, just indicates to stop
+        
+        # Set the found paths ---
+        accel.acc_model_path = acc_model_path
+        accel.str_file = str_file
+        accel.beam_file = beam_file
 
-        return True

@@ -45,19 +45,21 @@ It then compares the propagated values with the measured values in that segment.
 from __future__ import annotations
 
 import functools
+import re
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
-from generic_parser import EntryPointParameters, entrypoint
+from generic_parser import DotDict, EntryPointParameters, entrypoint
 from generic_parser.entrypoint_parser import ArgumentError, add_to_arguments
 
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
-from omc3.model.constants import ACC_MODELS_PREFIX, MACROS_DIR, TWISS_ELEMENTS_DAT
+from omc3.model.accelerators import lhc
+from omc3.model.constants import ACC_MODELS_PREFIX, JOB_MODEL_MADX_NOMINAL, MACROS_DIR, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
@@ -76,19 +78,21 @@ if TYPE_CHECKING:
     from pandas import DataFrame
 
     from omc3.model.accelerators.accelerator import Accelerator
-    from omc3.model.model_creators.abstract_model_creator import MADXInputType
+    from omc3.model.model_creators.abstract_model_creator import MADXInputType, ModelCreator
 
 
 LOGGER = logging_tools.get_logger(__name__)
 
 
 CREATORS = {
-    "lhc": LhcSegmentCreator,
+    lhc.Lhc.NAME: LhcSegmentCreator,
 }
+
+FETCHER_OPTIONS = ["fetch", "path", "list_choices"]
 
 
 def get_params():
-    return EntryPointParameters(
+    params = EntryPointParameters(
         measurement_dir=dict(
             help="Path to the measurement files.",
             required=True,
@@ -117,27 +121,51 @@ def get_params():
             type=PathOrStr,
         )
     )
+    params.update(model_creator.get_fetcher_params())
+    return params     
 
 
 @entrypoint(get_params(), strict=False)
-def segment_by_segment(opt, accel_opt) -> dict[str, SegmentDiffs]:
+def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, SegmentDiffs]:
     """
     Run the segment-by-segment propagation.
     """
-    accel = _get_accelerator_instance(accel_opt, opt.output_dir)
-    if opt.output_dir is not None and Path(opt.output_dir) != accel.model_dir:
-        _copy_needed_model_files(accel.model_dir, opt.output_dir)
-        accel.model_dir = opt.output_dir
+    fetcher_opts = DotDict({key: opt[key] for key in model_creator.get_fetcher_params().keys()})
+
+    accel: Accelerator = manager.get_accelerator(accel_opt)
+    accel.model_dir = _check_output_directory(opt.output_dir, accel)
+    _maybe_create_nominal_model(accel, fetcher_opts)
 
     measurement = OpticsMeasurement(opt.measurement_dir)
     segments, elements = _check_segments_and_elements(opt.segments, opt.elements)
 
     results: dict[str, SegmentDiffs] = {}
     for segment in segments + elements:
-        propagables = create_segment(accel, segment, measurement, opt.corrections)
+        propagables = create_segment(accel, segment, measurement, opt.corrections, fetcher_opts)
         results[segment.name] = get_differences(propagables, segment.name, accel.model_dir)
 
     return results
+
+
+def _maybe_create_nominal_model(accel: Accelerator, fetcher_opts: DotDict):
+    """ Creates a nominal model in the accel.model_dir. 
+    This is only needed, if the twiss-elements file is missing. """
+    if accel.elements is not None: # No need to create a nominal model
+        return 
+
+    creator: ModelCreator = model_creator.CREATORS[accel.NAME][model_creator.CreatorType.NOMINAL](
+        accel, logfile=Path(JOB_MODEL_MADX_NOMINAL).with_suffix(".log")
+    )
+
+    try:
+        creator.prepare_options(fetcher_opts)
+    except AcceleratorDefinitionError:
+        if fetcher_opts.list_choices:
+            exit()
+        raise
+
+    # Run the actual model creation
+    creator.full_run()
 
 
 def create_segment(
@@ -145,6 +173,7 @@ def create_segment(
     segment_in: Segment,
     measurement: OpticsMeasurement,
     corrections: MADXInputType,
+    fetcher_opts: DotDict,
 ) -> list[Propagable]:
     """Perform the computations on the segment.
     The segment is adapted fist, so that the given start and end bpms a in the measurement.
@@ -158,6 +187,7 @@ def create_segment(
         measurement (OpticsMeasurement): TfsCollection of the optics measurments files.
         corrections (MADXInputType): Corrections to use. Can be a dict of knob-value pairs, 
                                      a MAD-X string or a path to a file.
+        fetcher_opts (DotDict): Options for the fetcher, if needed.
 
     Returns:
         List of propagables with access to the created segment models.
@@ -179,6 +209,15 @@ def create_segment(
         corrections=corrections,
         logfile=accel.model_dir / logfile.format(segment.name),
     )
+
+    # !! NOTE: If succesfull, THIS CAN MODIFY THE ACCELERATOR INSTANCE on creator.accel !!
+    try:
+        segment_creator.prepare_options(fetcher_opts)
+    except AcceleratorDefinitionError:
+        if fetcher_opts.list_choices:
+            exit()
+        raise
+
     segment_creator.full_run()
 
     # Make the created segment accessible to all propagables via SegmentModels
@@ -241,23 +280,6 @@ def get_differences(propagables: list[Propagable], segment_name: str = "", outpu
         except NotImplementedError:
             pass
     return segment_diffs 
-
-
-def _get_accelerator_instance(accel_opt: dict, output_dir: Path | str) -> Accelerator:
-    """Get accelerator instance from ``accel_opt`` and create a nominal model if not present."""
-    try:
-        accel_inst = manager.get_accelerator(accel_opt)
-    except (AcceleratorDefinitionError, ArgumentError) as e:  
-        # ArgumentError can happen for additional arguments only useful if we want to create an instance (e.g. `fetch`)
-        LOGGER.debug(f"Could not get accelerator instance: {e}.\nCreating a new instance.")  
-        accel_inst = None
-    
-    if accel_inst is None or accel_inst.model_dir is None:
-        return model_creator.create_instance_and_model(
-            add_to_arguments(accel_opt, model_creator._get_params(), outputdir=output_dir)
-        )
-    
-    return accel_inst
 
 
 def _check_segments_and_elements(segments: list[str], elements: list[str]) -> tuple[list[Segment], list[Segment]]:
@@ -357,9 +379,21 @@ def _select_closest(name: str, all_names: pd.Index, eval_cond: Callable[[str], b
     return new_name
 
 
-def _copy_needed_model_files(model_dir: Path, output_dir: Path) -> None:
+def _check_output_directory(output_dir: Path | None, accel: Accelerator) -> Path:
+    """Check and return the desired output directory. """
+    if output_dir is None:
+        return accel.model_dir
+
+    output_dir = Path(output_dir)
+    if accel.model_dir is not None and output_dir != accel.model_dir:
+        _copy_files_from_model_dir(accel.model_dir, output_dir)
+
+    return output_dir
+
+
+def _copy_files_from_model_dir(model_dir: Path, output_dir: Path) -> None:
     """Copy the required model files from the model-dir to the output dir.
-    This is done, as the paths are usually relative to the model-dir.
+    This is done, as the paths in some .madx files are relative to the model-dir.
 
     Args:
         model_dir (Path): Path to the model directory.
@@ -367,11 +401,16 @@ def _copy_needed_model_files(model_dir: Path, output_dir: Path) -> None:
     """
     LOGGER.debug("Copying model files...")
     output_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy(model_dir / TWISS_ELEMENTS_DAT, output_dir / TWISS_ELEMENTS_DAT)
+    
+    for twiss in (TWISS_DAT, TWISS_ELEMENTS_DAT):
+        shutil.copy(model_dir / twiss, output_dir / twiss)
 
     for file in model_dir.glob("*"):
         if file.name.startswith(ACC_MODELS_PREFIX) or file.name == MACROS_DIR:
             continue  # will be set by the model creator
+
+        if file.suffix in (".log", ".zip", ".dat"):
+            continue  # no log files, no other previously created models
 
         dst_file = output_dir / file.name
         if dst_file.exists():
