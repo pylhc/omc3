@@ -3,7 +3,12 @@
 #### 2025-03-05 - v0.22.0 - _jdilly_
 
 - Added:
-    - Segment-by-Segment with phase-propagation.
+  - Segment-by-Segment with phase-propagation.
+  - Listing of entry-points on calling `python -m omc3`, `python -m omc3.scripts` and `python -m omc3.plotting`.
+  - Measurement from model faker now also adds alpha (ALF) columns to the beta-outpuf files.
+
+- Updated:
+  - MAD-X binaries to version 5.09.00.
 
 #### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
 

@@ -17,9 +17,9 @@ from omc3.segment_by_segment.constants import BACKWARD, CORRECTION, EXPECTED, FO
 
 class PropagableColumns:
     """ Class to define columns for propagables. 
-    One could also implicitly defile the error-columns,
+    One could also implicitly define the error-columns,
     either via __getattr__ or as a wrapper, but I decided to
-    explicityly define these columns, so that the IDEs can see them 
+    explicityly name these columns, so that the IDEs can see them 
     and can help in renaming and autocompletion (jdilly 2023).
     """
     def __init__(self, column: str, plane: str = "{}") -> None:

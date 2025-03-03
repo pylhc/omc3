@@ -9,9 +9,11 @@ proper conversion after maths operations.
 class MathMixin:
     """ A Mixin Class to be able to inherit from a numerical class and  
         perform operations with it, while returning an instance of the inheriting class. 
-        This assumes that the inheriting class accepts an instance of 
-        it's parent class in its initialization method.
-        Use this as the FIRST class in inheritance.
+        
+        Caveats:
+         - This assumes that the inheriting class accepts an instance of its parent class 
+           in its initialization method !!
+         - Use this as the FIRST class in inheritance !
     """
 
     def __neg__(self):

@@ -6,13 +6,14 @@ This module provides mathematical helper functions, e.g. to propagate errors.
 """
 from __future__ import annotations
 
-import numpy as np
-from pandas import Series
 from typing import TYPE_CHECKING, TypeAlias
 
-from omc3.segment_by_segment.definitions import PropagableBoundaryConditions
+import numpy as np
 
 if TYPE_CHECKING:
+    from pandas import Series
+
+    from omc3.segment_by_segment.definitions import PropagableBoundaryConditions
     NumericOrArray: TypeAlias = float | np.array | Series
 
 

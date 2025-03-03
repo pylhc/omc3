@@ -68,7 +68,6 @@ class Accelerator:
         AccElementTypes.ARC_BPMS: r".*",
     }
     BPM_INITIAL: str = "B"
-    NAME: str = None
 
     @staticmethod
     def get_parameters():
