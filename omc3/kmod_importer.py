@@ -52,7 +52,6 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 
 
 """
-
 from __future__ import annotations
 
 from collections import defaultdict
@@ -104,10 +103,16 @@ def _get_params():
         "These need to be the paths to the root-folders containing B1 and B2 sub-dirs.",
     )
     params.add_parameter(
-        name="model", required=True, type=PathOrStr, help="Path to the model."
+        name="model",
+        required=True,
+        type=PathOrStr,
+        help="Path to the model.",
     )
     params.add_parameter(
-        name="beam", required=True, type=int, help="Beam for which to import."
+        name="beam",
+        required=True,
+        type=int,
+        help="Beam for which to import.",
     )
     params.add_parameter(
         name="output_dir",
@@ -195,7 +200,7 @@ def average_all_results(
     beam: int,
     output_dir: Path | str,
     show_plots: bool = False,
-) -> dict[str, dict[int, tfs.TfsDataFrame]]:
+    ) -> dict[str, dict[int, tfs.TfsDataFrame]]:
     """Averages all kmod results.
 
     Args:
@@ -229,7 +234,7 @@ def average_all_results(
 
 def _sort_paths_by_ip(
     paths: Sequence[str | Path], beam: int
-) -> dict[str, list[str | Path]]:
+    ) -> dict[str, list[str | Path]]:
     """Sorts the kmod results files by IP.
 
     Identification of the IP is done by reading the `lsa_results.tfs` files.
@@ -252,7 +257,7 @@ def calculate_all_lumi_imbalances(
     averaged_results: dict[str, dict[int, tfs.TfsDataFrame]],
     df_model: tfs.TfsDataFrame,
     output_dir: Path | str = None,
-) -> None:
+    ) -> None:
     """Calculates the luminosity imbalance between two IPs.
 
     Args:
@@ -273,9 +278,7 @@ def calculate_all_lumi_imbalances(
         # Calculate luminosity imbalance
         data = {ip.lower(): averaged_results[ip][0] for ip in (ipA, ipB)}
         try:
-            df = calculate_lumi_imbalance(
-                **data, output_dir=output_dir, betastar=betastar
-            )
+            df = calculate_lumi_imbalance(**data, output_dir=output_dir, betastar=betastar)
         except KeyError as e:
             # Most likely because not all data available (e.g. only one beam).
             LOG.debug(
@@ -285,13 +288,8 @@ def calculate_all_lumi_imbalances(
             continue
 
         # Print luminosity imbalance
-        imb, err_imb = (
-            df.headers[f"{LUMINOSITY}{IMBALANCE}"],
-            df.headers[f"{ERR}{LUMINOSITY}{IMBALANCE}"],
-        )
-        LOG.info(
-            f"Luminosity imbalance between {ipA} and {ipB}: {imb:.2e} +/- {err_imb:.2e}"
-        )
+        imb, err_imb = df.headers[f"{LUMINOSITY}{IMBALANCE}"], df.headers[f"{ERR}{LUMINOSITY}{IMBALANCE}"]
+        LOG.info(f"Luminosity imbalance between {ipA} and {ipB}: {imb:.2e} +/- {err_imb:.2e}")
 
 
 def _get_betastar(df_model: tfs.TfsDataFrame, ip: str) -> list[float, float]:
