@@ -254,7 +254,7 @@ def convert_betastar_results(
             kmod_results = kmod_results.drop(columns=[BEAM])
         except KeyError:
             # already as index
-            kmod_results = kmod_results.loc[beam, :]
+            kmod_results = kmod_results.loc[[beam], :]
 
         kmod_results = kmod_results.set_index(NAME, drop=True)
     
