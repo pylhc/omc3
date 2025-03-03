@@ -10,6 +10,12 @@
 - Updated:
   - MAD-X binaries to version 5.09.00.
 
+#### 2025-03-03 - v0.21.1 - _fscarlier_
+
+- Fixed:
+  - Correct function call in `omc3.kmod_importer` when running as script.
+  - Fixed k-mod import for single-IP imports.
+
 #### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:

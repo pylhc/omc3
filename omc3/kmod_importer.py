@@ -1,4 +1,4 @@
-""" 
+"""
 Full Import of K-Modulation Results
 -----------------------------------
 
@@ -9,11 +9,11 @@ to the main output folder of a K-modulation run, containing `B1` and `B2` folder
 The results are first sorted by IP and averaged. The averaged results are
 written into a sub-folder of the given `output_dir`.
 
-If data for both beams is present, these averages are then used to calculate the 
-luminosity imbalance between each combination of IPs. 
+If data for both beams is present, these averages are then used to calculate the
+luminosity imbalance between each combination of IPs.
 These results are again written out into the same sub-folder of the given `output_dir`.
 
-Finally, the averaged results for the given `beam` are then written out into 
+Finally, the averaged results for the given `beam` are then written out into
 the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 
 
@@ -23,7 +23,7 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 
 - **meas_paths** *(PathOrStr)*:
 
-    Directories of K-modulation results to import. 
+    Directories of K-modulation results to import.
     These need to be the paths to the root-folders containing B1 and B2 sub-dirs.
 
 
@@ -35,7 +35,7 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 - **beam** *(int)*:
 
     Beam for which to import.
-    
+
 
 - **output_dir** *(PathOrStr)*:
 
@@ -91,34 +91,34 @@ AVERAGE_DIR = "kmod_averaged"
 def _get_params():
     """
     Creates and returns the parameters for the kmod_output function.
-    
+
     """
     params = EntryPointParameters()
     params.add_parameter(
         name="meas_paths",
         required=True,
-        nargs='+',
+        nargs="+",
         type=PathOrStr,
         help="Directories of K-modulation results to import. "
-             "These need to be the paths to the root-folders containing B1 and B2 sub-dirs."
+        "These need to be the paths to the root-folders containing B1 and B2 sub-dirs.",
     )
     params.add_parameter(
         name="model",
         required=True,
         type=PathOrStr,
-        help="Path to the model."
+        help="Path to the model.",
     )
     params.add_parameter(
         name="beam",
         required=True,
         type=int,
-        help="Beam for which to import."
+        help="Beam for which to import.",
     )
     params.add_parameter(
         name="output_dir",
         type=PathOrStr,
         required=True,
-        help="Path to the directory where to write the output files."
+        help="Path to the directory where to write the output files.",
     )
     params.add_parameter(
         name="show_plots", 
@@ -132,32 +132,32 @@ def _get_params():
 def import_kmod_results(opt: DotDict) -> None:
     """
     Performs the full import procedure of the "raw" K-Modulation results.
-    
+
     Args:
         meas_paths (Sequence[Path|str]):
             Directories of K-modulation results to import.
             These need to be the paths to the root-folders containing B1 and B2 sub-dirs.
-        
+
         model (Path|str):
             Path to the model Twiss file.
-        
+
         beam (int):
             Beam for which to import.
-        
+
         output_dir (Path|str):
-            Path to the output directory, i.e. the optics-measurement directory 
+            Path to the output directory, i.e. the optics-measurement directory
             into which to import these K-Modulation results.
-        
+
         show_plots (bool):
             If True, show the plots. Default: False.
 
-    
+
     Returns:
         Dictionary of kmod-DataFrames by planes.
     """
     LOG.info("Starting full K-modulation import.")
 
-    # Prepare IO ---    
+    # Prepare IO ---
     opt.output_dir = Path(opt.output_dir)
     opt.output_dir.mkdir(exist_ok=True)
     save_config(opt.output_dir, opt, __file__)
@@ -166,27 +166,25 @@ def import_kmod_results(opt: DotDict) -> None:
     average_output_dir.mkdir(exist_ok=True)
 
     df_model = read_model_df(opt.model)
-    
+
     # Perform averaging and import ---
     averaged_results = average_all_results(
-        meas_paths=opt.meas_paths, 
-        df_model=df_model, 
-        beam=opt.beam, 
-        output_dir=average_output_dir
+        meas_paths=opt.meas_paths,
+        df_model=df_model,
+        beam=opt.beam,
+        output_dir=average_output_dir,
     )
-    
+
     calculate_all_lumi_imbalances(
-        averaged_results, 
-        df_model=df_model, 
-        output_dir=average_output_dir
+        averaged_results, df_model=df_model, output_dir=average_output_dir
     )
 
     results_list = [
-        df 
-        for ip in averaged_results.keys() 
+        df
+        for ip in averaged_results.keys()
         for df in (
-            averaged_results[ip][0], # beta-star results
-            averaged_results[ip][opt.beam]  # bpm results of the specific beam
+            averaged_results[ip][0],  # beta-star results
+            averaged_results[ip][opt.beam],  # bpm results of the specific beam
         )
     ]
     import_kmod_data(
@@ -199,6 +197,7 @@ def import_kmod_results(opt: DotDict) -> None:
 
 # Averaging ---
 
+
 def average_all_results(
     meas_paths: Sequence[Path | str],
     df_model: tfs.TfsDataFrame,
@@ -206,17 +205,17 @@ def average_all_results(
     output_dir: Path | str,
     show_plots: bool = False,
     ) -> dict[str, dict[int, tfs.TfsDataFrame]]:
-    """ Averages all kmod results.
+    """Averages all kmod results.
 
     Args:
-        meas_paths (Sequence[Path | str]): Paths to the K-modulation results. 
-        df_model (tfs.TfsDataFrame): DataFrame with the model. 
-        beam (int): Beam for which to average. 
+        meas_paths (Sequence[Path | str]): Paths to the K-modulation results.
+        df_model (tfs.TfsDataFrame): DataFrame with the model.
+        beam (int): Beam for which to average.
         output_dir (Path | str, optional): Path to the output directory. Defaults to None.
         show_plots (bool, optional): If True, show the plots. Defaults to False.
 
     Returns:
-        dict[int, tfs.TfsDataFrame]: Averaged kmod results, sorted by IP. 
+        dict[int, tfs.TfsDataFrame]: Averaged kmod results, sorted by IP.
     """
     sorted_paths = _sort_paths_by_ip(meas_paths, beam)
 
@@ -230,16 +229,18 @@ def average_all_results(
             meas_paths=paths,
             output_dir=output_dir,
             plot=True,
-            show_plots=show_plots
+            show_plots=show_plots,
         )
         averaged_results[ip] = average
 
     return averaged_results
 
 
-def _sort_paths_by_ip(paths: Sequence[str | Path], beam: int) -> dict[str, list[str | Path]]:
-    """ Sorts the kmod results files by IP. 
-    
+def _sort_paths_by_ip(
+    paths: Sequence[str | Path], beam: int
+    ) -> dict[str, list[str | Path]]:
+    """Sorts the kmod results files by IP.
+
     Identification of the IP is done by reading the `lsa_results.tfs` files.
     """
     sorted_paths = defaultdict(list)
@@ -255,25 +256,28 @@ def _sort_paths_by_ip(paths: Sequence[str | Path], beam: int) -> dict[str, list[
 
 # Lumi Imbalance ---
 
+
 def calculate_all_lumi_imbalances(
-    averaged_results: dict[str, dict[int, tfs.TfsDataFrame]], 
+    averaged_results: dict[str, dict[int, tfs.TfsDataFrame]],
     df_model: tfs.TfsDataFrame,
-    output_dir: Path | str = None
+    output_dir: Path | str = None,
     ) -> None:
-    """ Calculates the luminosity imbalance between two IPs.
-    
+    """Calculates the luminosity imbalance between two IPs.
+
     Args:
-        averaged_results (dict[str, dict[int, tfs.TfsDataFrame]]): Averaged kmod results, sorted by IP. 
-        df_model (tfs.TfsDataFrame): DataFrame with the model. 
+        averaged_results (dict[str, dict[int, tfs.TfsDataFrame]]): Averaged kmod results, sorted by IP.
+        df_model (tfs.TfsDataFrame): DataFrame with the model.
         output_dir (Path | str, optional): Path to the output directory. Defaults to None.
 
     Returns:
         tfs.TfsDataFrame: DataFrame with the luminosity imbalance.
     """
     sets_of_ips = list(combinations(averaged_results.keys(), 2))
-    for (ipA, ipB) in sets_of_ips:
+    for ipA, ipB in sets_of_ips:
         LOG.debug(f"Calculating lumi imbalance between {ipA} and {ipB}")
-        betastar = _get_betastar(df_model, ipA)  # does not really matter which IP, for output name only
+        betastar = _get_betastar(
+            df_model, ipA
+        )  # does not really matter which IP, for output name only
 
         # Calculate luminosity imbalance
         data = {ip.lower(): averaged_results[ip][0] for ip in (ipA, ipB)}
@@ -281,7 +285,10 @@ def calculate_all_lumi_imbalances(
             df = calculate_lumi_imbalance(**data, output_dir=output_dir, betastar=betastar)
         except KeyError as e:
             # Most likely because not all data available (e.g. only one beam).
-            LOG.debug(f"Could not calculate lumi imbalance between {ipA} and {ipB}. Skipping.", exc_info=e)
+            LOG.debug(
+                f"Could not calculate lumi imbalance between {ipA} and {ipB}. Skipping.",
+                exc_info=e,
+            )
             continue
 
         # Print luminosity imbalance
@@ -297,4 +304,4 @@ def _get_betastar(df_model: tfs.TfsDataFrame, ip: str) -> list[float, float]:
 # Script Mode ------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import_kmod_data()
+    import_kmod_results()
