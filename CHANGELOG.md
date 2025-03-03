@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-03-05 - v0.22.0 - _jdilly_
+
+- Added:
+    - Segment-by-Segment with phase-propagation.
+
 #### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:
