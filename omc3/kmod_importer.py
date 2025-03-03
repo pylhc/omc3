@@ -120,7 +120,11 @@ def _get_params():
         required=True,
         help="Path to the directory where to write the output files.",
     )
-    params.add_parameter(name="show_plots", action="store_true", help="Show the plots.")
+    params.add_parameter(
+        name="show_plots", 
+        action="store_true", 
+        help="Show the plots."
+    )
     return params
 
 
