@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-03-03 - v0.21.1 - _fscarlier_
+
+- Fixed:
+  - Correct function call in `omc3.kmod_importer` when running as script.
+
 #### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:
