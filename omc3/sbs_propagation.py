@@ -3,7 +3,7 @@ Segment-by-Segment Propagation
 ------------------------------
 
 Runs the Segment-by-Segment propagation,
-i.e. it uses the measured values at the beginning of the segments as inputs 
+i.e. it uses the measured values at the beginning (or the end) of the segments as inputs 
 to propagate via MAD-X through the given segments.
 It then compares the propagated values with the measured values in that segment.
 
@@ -45,21 +45,25 @@ It then compares the propagated values with the measured values in that segment.
 from __future__ import annotations
 
 import functools
-import re
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
 from generic_parser import DotDict, EntryPointParameters, entrypoint
-from generic_parser.entrypoint_parser import ArgumentError, add_to_arguments
 
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
-from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.accelerators import lhc
-from omc3.model.constants import ACC_MODELS_PREFIX, JOB_MODEL_MADX_NOMINAL, MACROS_DIR, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
+from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
+from omc3.model.constants import (
+    ACC_MODELS_PREFIX,
+    JOB_MODEL_MADX_NOMINAL,
+    MACROS_DIR,
+    TWISS_DAT,
+    TWISS_ELEMENTS_DAT,
+)
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
@@ -78,7 +82,10 @@ if TYPE_CHECKING:
     from pandas import DataFrame
 
     from omc3.model.accelerators.accelerator import Accelerator
-    from omc3.model.model_creators.abstract_model_creator import MADXInputType, ModelCreator
+    from omc3.model.model_creators.abstract_model_creator import (
+        MADXInputType,
+        ModelCreator,
+    )
 
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -87,8 +94,6 @@ LOGGER = logging_tools.get_logger(__name__)
 CREATORS = {
     lhc.Lhc.NAME: LhcSegmentCreator,
 }
-
-FETCHER_OPTIONS = ["fetch", "path", "list_choices"]
 
 
 def get_params():
@@ -129,6 +134,12 @@ def get_params():
 def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, SegmentDiffs]:
     """
     Run the segment-by-segment propagation.
+
+    Note: The corrections are the same for each segement, which means we only need to create 
+          them once, and for the remaining segments, we could just give the path to the output
+          file (as the segment creator checks if the file exists). 
+          But as we do not really know the output file here, and creation of the file is quick,
+          we just let the segment creator overwrite the file.
     """
     fetcher_opts = DotDict({key: opt[key] for key in model_creator.get_fetcher_params().keys()})
 

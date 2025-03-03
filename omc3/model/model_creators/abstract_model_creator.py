@@ -337,6 +337,16 @@ def check_folder_choices(
 
 
 class SegmentCreator(ModelCreator, ABC):
+    """ Model creator for Segments, to be used in the Segment-by-Segment algorithm. 
+    These segments propagate the measured values from the beginning of the segment to the end.
+
+    This only handles the MAD-X part of things. 
+    The input is determined by the passed measurables (Propagable objects), 
+    which provide the values via `init_conditions_dict()` method.
+
+    The output is stored in the `twiss_forward` and `twiss_backward` files,
+    which in turn can be used for further processing by the implemented Propagables.
+    """
     jobfile = None  # set in init
 
     def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], 
@@ -350,8 +360,8 @@ class SegmentCreator(ModelCreator, ABC):
 
         # Filenames
         self.jobfile = jobfile.format(segment.name)
+        self.corrections_madx = corrections_madx  # use same correction file for all segments.
         self.measurement_madx = measurement_madx.format(segment.name)
-        self.corrections_madx = corrections_madx.format(segment.name)
         self.twiss_forward = TWISS_FORWARD.format(segment.name)
         self.twiss_backward = TWISS_BACKWARD.format(segment.name)
         self.twiss_forward_corrected = TWISS_FORWARD_CORRECTED.format(segment.name)
@@ -383,21 +393,23 @@ class SegmentCreator(ModelCreator, ABC):
             output_file.unlink(missing_ok=True)
             return
 
-        content = self._get_corrections_text()
-        output_file.write_text(content)
-        
-    def _get_corrections_text(self) -> str:
-        if self.corrections is None:
-            return ""
-
         if isinstance(self.corrections, dict):
-            return "\n".join(f"{k!s} = {v!s};" for k, v in self.corrections.items())
-        
-        input_file = Path(self.corrections)
-        if input_file.exists():
-            return input_file.read_text()
-        
-        return self.corrections
+            content = "\n".join(f"{k!s} = {v!s};" for k, v in self.corrections.items())
+            output_file.write_text(content)
+            return
+
+        if isinstance(self.corrections, str | Path):
+            corrections = Path(self.corrections)
+            if not corrections.exists():
+                raise FileNotFoundError(f"File {corrections!s} does not exist.")
+
+            if corrections.resolve() == output_file.resolve():
+                return  # already exists -> do nothing
+            
+            output_file.write_text(corrections.read_text())  # copy
+            return
+
+        raise NotImplementedError("Could not determine type of corrections. Aborting.")
 
 
 class CorrectionModelCreator(ModelCreator, ABC):
