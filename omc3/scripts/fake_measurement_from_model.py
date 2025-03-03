@@ -157,7 +157,7 @@ def get_params():
     )
     params.add_parameter(
         name="parameters",
-        help="Optics parameters to use",
+        help="Optics parameters to use.",
         choices=list(OUTPUTNAMES_MAP.keys()),
         default=list(OUTPUTNAMES_MAP.keys()),
         type=str,
@@ -256,14 +256,16 @@ def create_beta(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
     LOG.info(f"Creating fake beta for {parameter}.")
     plane = parameter[-1]
 
+    # create beta
     df = create_measurement(df_twiss, parameter, relative_error, randomize)
     df[parameter] = np.abs(df[parameter])
     df = append_model_param(df, df_model, parameter, beat=True)
 
+    # create alpha
     df_alpha = create_measurement(df_twiss, f'{ALPHA}{plane}', relative_error, randomize)
-    df_alpha = append_model_param(df_alpha, df_model, f'{ALPHA}{plane}', plane)
-
+    df_alpha = append_model_param(df_alpha, df_model, f'{ALPHA}{plane}')
     df = tfs.concat([df, df_alpha], axis=1, join='inner')
+
     df = append_model_s_and_phaseadv(df, df_model, planes=plane)
 
     df.headers = headers.copy()
@@ -483,7 +485,7 @@ def append_model_s_and_phaseadv(df: pd.DataFrame, df_model: pd.DataFrame, planes
 
 # Other Functions --------------------------------------------------------------
 
-def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
+def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame | None = None,
               add_coupling: bool = False) -> tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """ Gets the input data as TfsDataFrames. """
     # Helper ---
@@ -513,7 +515,7 @@ def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
     return twiss, model
 
 
-def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> list[str]:
+def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float] | None) -> list[str]:
     """ Special care for normalized dispersion"""
     parameters = list(parameters)
     if errors is None:
