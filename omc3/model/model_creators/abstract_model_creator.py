@@ -159,7 +159,7 @@ class ModelCreator(ABC):
         """
         Checks that the model creation ``MAD-X`` run was successful. It should check that the
         appropriate directories are created, and that macros and other files are in place.
-        Also assings the created model output to the accelerator instance (e.g. `elements`, `model`, ...).
+        Also assigns the created model output to the accelerator instance (e.g. `elements`, `model`, ...).
 
         Hint: If you only need to check a different set of files, you can simply override the `files_to_check` property,
               instead of this whole function.
