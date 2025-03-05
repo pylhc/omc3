@@ -67,7 +67,7 @@ class PsBaseModelCreator(ModelCreator, ABC):
 
         possible_beam_files = list(cycle_point_path.glob("*.beam"))
 
-        # if now `.beam` file is found, try any madx job file, maybe we get lucky there
+        # if no `.beam` file is found, try any madx job file, maybe we get lucky there
         if not len(possible_beam_files):
             possible_beam_files = list(cycle_point_path.glob("*.*job"))
         
@@ -81,7 +81,7 @@ class PsBaseModelCreator(ModelCreator, ABC):
         beam_file = possible_beam_files[0]
 
         if opt.list_choices:
-            with open(accel.beam_file) as beamf:
+            with open(beam_file) as beamf:
                 print(beamf.read())
             raise AcceleratorDefinitionError()  # not really an error, just indicates to stop
         

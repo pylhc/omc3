@@ -6,39 +6,51 @@ This module contains high-level functions to manage most functionality of the co
 """
 from __future__ import annotations
 
+import copy
 import datetime
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING
-import copy
-import os
-import sys
 
 import numpy as np
 import pandas as pd
 import tfs
 from sklearn.linear_model import OrthogonalMatchingPursuit
 
-from omc3.correction import filters, model_appenders, response_twiss, response_madx, arc_by_arc as abba
-from omc3.correction.constants import DIFF, ERROR, VALUE, WEIGHT, ORBIT_DPP
+from omc3.correction import arc_by_arc as abba
+from omc3.correction import filters, model_appenders, response_madx, response_twiss
+from omc3.correction.constants import DIFF, ERROR, ORBIT_DPP, VALUE, WEIGHT
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators import lhc
 from omc3.model.accelerators.accelerator import Accelerator
 from omc3.model.model_creators.lhc_model_creator import LhcCorrectionModelCreator
-from omc3.optics_measurements.constants import (BETA, DELTA, DISPERSION, DISPERSION_NAME, EXT,
-                                                F1001, F1010, NAME, NORM_DISP_NAME, NORM_DISPERSION,
-                                                PHASE, PHASE_NAME, TUNE)
+from omc3.optics_measurements.constants import (
+    BETA,
+    DELTA,
+    DISPERSION,
+    DISPERSION_NAME,
+    EXT,
+    F1001,
+    F1010,
+    NAME,
+    NORM_DISP_NAME,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_NAME,
+    TUNE,
+)
 from omc3.utils import logging_tools
+from omc3.utils.debugging import is_debug, is_pytest
 from omc3.utils.stats import rms
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+
     from generic_parser import DotDict
 
 
 LOG = logging_tools.get_logger(__name__)
-PYTEST_VARIABLE = "PYTEST_CURRENT_TEST"
 
 
 CORRECTION_MODEL_CREATORS = {
@@ -132,7 +144,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
         LOG.debug(f"Cumulative delta: {np.sum(np.abs(delta.loc[:, DELTA].to_numpy())):.5e}")
         
         # write out each stage for testing/debug purposes; avoid for normal runs, to not clutter the output directory
-        if PYTEST_VARIABLE in os.environ or sys.flags.debug:
+        if is_debug() or is_pytest():
             write_knob(opt.knob_path.with_stem(f"{opt.knob_path.stem}{iteration:d}"), delta)
 
     # ######### Write Final Results ######### #
@@ -403,6 +415,15 @@ def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
 
 
 def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
+    """ Write the current delta-values into a tfs file. 
+    The values are written out with opposite sign to what is used above, 
+    i.e. they will show the correction to be applied in the machine.
+
+    Args:
+        knob_path (Path): Path to the file to be written.
+        delta (pd.DataFrame): DataFrame containing a DELTA column and 
+                              the corrector names as index.
+    """
     a = datetime.datetime.fromtimestamp(time.time())
     delta_out = -delta.loc[:, [DELTA]]
     delta_out.headers["PATH"] = str(knob_path.parent)
@@ -413,13 +434,20 @@ def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
 
 
 def writeparams(path_to_file: Path, delta: pd.DataFrame, extra: str = "") -> None:
-    """ Write the changeparams-file that can be run by madx to update the model. """
+    """ Write the changeparams-file that can be run by madx to update the model. 
+    
+    Args:
+        path_to_file (Path): Path to the file to be written.
+        delta (pd.DataFrame): DataFrame containing a DELTA column and 
+                              the corrector names as index.
+        extra (str): Extra text to be added to the top of the file as a comment.
+    """
     content = ""
     if extra:
         content += f"! {extra} \n"
 
-    for var in delta.index.to_numpy():
-        value = delta.loc[var, DELTA]
-        content += f"{var} = {var} {value:+e};\n"
+    for knob in delta.index.to_numpy():
+        value = delta.loc[knob, DELTA]
+        content += f"{knob} = {knob} {value:+e};\n"
 
     path_to_file.write_text(content)

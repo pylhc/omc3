@@ -32,26 +32,31 @@ class Segment:
 
     @classmethod
     def init_from_element_name(cls, element_name: str):
+        """ Initialize from the string representation for elements 
+        as used in inputs."""
         segment = cls(element_name, element_name, element_name)
         segment.element = element_name
         return segment
     
     @classmethod
     def init_from_segment_definition(cls, segment: str):
-        """ Initialize from the string representation for segemnts
+        """ Initialize from the string representation for segments
         as used in inputs."""
         return cls(*segment.split(","))
     
     @classmethod
-    def init_from_input(cls, segment: str):
-        """ Initialize from the string representation as used in inputs."""
+    def init_from_input(cls, input_str: str):
+        """ Initialize from the string representation for segments or elements
+        as used in inputs."""
         try:
-            return cls.init_from_segment_definition(segment)
+            return cls.init_from_segment_definition(input_str)
         except ValueError:
-            return cls.init_from_element_name(segment)
+            return cls.init_from_element_name(input_str)
 
     def to_input_string(self):
         """ String representation of the segment as used in inputs."""
+        if self.element is not None:
+            return self.element
         return f"{self.name},{self.start},{self.end}"
 
     def __str__(self):

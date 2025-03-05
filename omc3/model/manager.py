@@ -27,8 +27,6 @@ from omc3.model.accelerators import (
 )
 
 if TYPE_CHECKING:
-    from generic_parser import DotDict
-
     from omc3.model.accelerators.accelerator import Accelerator
 
 ACCELS = {

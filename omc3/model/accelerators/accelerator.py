@@ -149,7 +149,7 @@ class Accelerator:
             if opt.modifiers is not None:
                 if self.modifiers is not None:
                     LOG.warning(
-                        "Modifier defintions given but also found in model directory. Using the user-given ones."
+                        "Modifier definitions given but also found in model directory. Using the user-given ones."
                     )  # useful if model was copied to a new location, but modifier paths have changed
                 self.modifiers = opt.modifiers
 

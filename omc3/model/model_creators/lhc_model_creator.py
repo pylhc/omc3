@@ -80,7 +80,7 @@ class LhcModelCreator(ModelCreator):
         if opt.fetch == Fetcher.PATH:
             if opt.path is None:
                 raise AcceleratorDefinitionError(
-                    "Path fetcher chosen, but no path proivided."
+                    "Path fetcher chosen, but no path provided."
                 )
             acc_model_path = Path(opt.path)
 
@@ -110,7 +110,7 @@ class LhcModelCreator(ModelCreator):
                 selection=None,  # TODO: could check if user made valid choice
                 list_choices=opt.list_choices,
                 predicate=get_check_suffix_func(".madx")
-            )  # raises AcceleratorDefintionError
+            )  # raises AcceleratorDefinitionError
         
         # Set acc model path to be used in model creator ---
         accel.acc_model_path = acc_model_path
@@ -173,8 +173,6 @@ class LhcModelCreator(ModelCreator):
         """ Get madx script to create a LHC model."""
         accel: Lhc = self.accel
 
-        use_acd = "1" if (accel.excitation == AccExcitationMode.ACD) else "0"
-        use_adt = "1" if (accel.excitation == AccExcitationMode.ADT) else "0"
         madx_script = self.get_base_madx_script()
         madx_script += (
             f"exec, do_twiss_monitors(LHCB{accel.beam}, '{accel.model_dir / TWISS_DAT}', {accel.dpp});\n"
@@ -182,9 +180,11 @@ class LhcModelCreator(ModelCreator):
         )
         if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
+            use_acd = accel.excitation == AccExcitationMode.ACD
+            use_adt = accel.excitation == AccExcitationMode.ADT
             madx_script += (
-                f"use_acd={use_acd};\n"
-                f"use_adt={use_adt};\n"
+                f"use_acd={use_acd:d};\n"
+                f"use_adt={use_adt:d};\n"
                 f"if(use_acd == 1){{\n"
                 f"exec, twiss_ac_dipole({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.drv_tunes[0]}, {accel.drv_tunes[1]}, {accel.beam}, '{accel.model_dir / TWISS_AC_DAT}', {accel.dpp});\n"
                 f"}}else if(use_adt == 1){{\n"
@@ -573,7 +573,7 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
             f"    {self.segment.end},",
             ");",
             "",
-            f"exec, beam_LHCB{accel.beam}(forward_LHCB{accel.beam});",  # TODO: use engery in macro (450GeV now)
+            f"exec, beam_LHCB{accel.beam}(forward_LHCB{accel.beam});",  # TODO: use energy in macro (450GeV now)
             f"exec, beam_LHCB{accel.beam}(backward_LHCB{accel.beam});",  
             "",
             f"exec, twiss_segment(forward_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",

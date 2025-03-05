@@ -5,7 +5,7 @@
 - Added:
   - Segment-by-Segment with phase-propagation.
   - Listing of entry-points on calling `python -m omc3`, `python -m omc3.scripts` and `python -m omc3.plotting`.
-  - Measurement from model faker now also adds alpha (ALF) columns to the beta-outpuf files.
+  - Measurement from model faker now also adds alpha (ALF) columns to the beta-output files.
 
 - Updated:
   - MAD-X binaries to version 5.09.00.

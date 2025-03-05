@@ -22,7 +22,7 @@ It then compares the propagated values with the measured values in that segment.
 - **corrections** *(PathOrStrOrDict)*:
 
     Corrections to use. Can be a dict of knob-value pairs, a MAD-X string
-    or a path to a file. Note: all segements will have these corrections.
+    or a path to a file. Note: all segments will have these corrections.
 
 
 - **elements** *(str)*:
@@ -54,7 +54,7 @@ from generic_parser import DotDict, EntryPointParameters, entrypoint
 
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
-from omc3.model import manager
+from omc3.model import manager as model_manager
 from omc3.model.accelerators import lhc
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.constants import (
@@ -135,7 +135,7 @@ def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, Segmen
     """
     Run the segment-by-segment propagation.
 
-    Note: The corrections are the same for each segement, which means we only need to create 
+    Note: The corrections are the same for each segment, which means we only need to create 
           them once, and for the remaining segments, we could just give the path to the output
           file (as the segment creator checks if the file exists). 
           But as we do not really know the output file here, and creation of the file is quick,
@@ -143,7 +143,7 @@ def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, Segmen
     """
     fetcher_opts = DotDict({key: opt[key] for key in model_creator.get_fetcher_params().keys()})
 
-    accel: Accelerator = manager.get_accelerator(accel_opt)
+    accel: Accelerator = model_manager.get_accelerator(accel_opt)
     accel.model_dir = _check_output_directory(opt.output_dir, accel)
     _maybe_create_nominal_model(accel, fetcher_opts)
 
@@ -187,7 +187,7 @@ def create_segment(
     fetcher_opts: DotDict,
 ) -> list[Propagable]:
     """Perform the computations on the segment.
-    The segment is adapted fist, so that the given start and end bpms a in the measurement.
+    The segment is adapted fist, so that the given start and end bpms are in the measurement.
     Then madx is run to create the specified segments and the output files
     are made accessible by a SegmentModels TfsCollection by all propagables, which
     are then returned.
@@ -195,7 +195,7 @@ def create_segment(
     Args:
         accel (Accelerator): Accelerator instance. Needs to be loaded from model directory
         segment_in (Segment): Rough Segment specification. Might be refined later.
-        measurement (OpticsMeasurement): TfsCollection of the optics measurments files.
+        measurement (OpticsMeasurement): TfsCollection of the optics measurement files.
         corrections (MADXInputType): Corrections to use. Can be a dict of knob-value pairs, 
                                      a MAD-X string or a path to a file.
         fetcher_opts (DotDict): Options for the fetcher, if needed.
@@ -221,7 +221,7 @@ def create_segment(
         logfile=accel.model_dir / logfile.format(segment.name),
     )
 
-    # !! NOTE: If succesfull, THIS CAN MODIFY THE ACCELERATOR INSTANCE on creator.accel !!
+    # !! NOTE: If successful, THIS CAN MODIFY THE ACCELERATOR INSTANCE on creator.accel !!
     try:
         segment_creator.prepare_options(fetcher_opts)
     except AcceleratorDefinitionError:

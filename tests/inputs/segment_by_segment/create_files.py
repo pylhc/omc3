@@ -5,8 +5,9 @@ Create input files for Segment-by-Segment tests
 This module creates the input files for the Segment-by-Segment tests,
 including the lhc-models (with reduced twiss-elements).
 
-Measurements are created from models, modified with the here written `my_errors.madx`
-file via the `fake_measurement_from_model` module.
+Measurements are created directly from the LHC model, disturbed by the errors 
+specified in the here written `my_errors.madx` file 
+via the `fake_measurement_from_model` module.
 
 If you want to test the segment-by-segment manually (e.g. with the GUI), 
 you need to `KEEP_ACC_MODELS` set to `True`, as otherwise

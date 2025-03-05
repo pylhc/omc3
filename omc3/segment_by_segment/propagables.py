@@ -4,7 +4,7 @@ Segment by Segment: Propagables
 
 In this module, the propagables, i.e. the parameters that can be propagated
 through the segment, are defined. 
-Each prpagable has a corresponding class, which contains the functions that
+Each propagable has a corresponding class, which contains the functions that
 describe the forward and backward propagation for the respective parameter.
 """
 from __future__ import annotations
@@ -70,11 +70,11 @@ class Propagable(ABC):
         self._segment_models = segment_models
 
     def init_conditions_dict(self):
-        """Return a dictionary containing the inital values for this propagable at start and end
+        """Return a dictionary containing the initial values for this propagable at start and end
         of the segment.
 
         For the naming, see `save_initial_and_final_values` macro in 
-        `omc3/model/madx_macros/geeral.macros.madx`.
+        `omc3/model/madx_macros/general.macros.madx`.
         """
         if self._init_pattern is None:
             raise NotImplementedError(
@@ -103,7 +103,7 @@ class Propagable(ABC):
         )
     
     def _init_end(self, plane: str) -> BoundaryConditions:
-        """Get the end condition  for all propagables at the given plane.
+        """Get the end condition for all propagables at the given plane.
         Note: Alpha needs to be "reversed" as the end-condition is only used in backward
               propagation and alpha is anti-symmetric in time.
         """
@@ -251,35 +251,35 @@ class Phase(Propagable):
             df[NAME] = names
             df[S] = self.segment_models.forward.loc[names, S]
 
-            phs, err_phs = Phase.get_at(names, self._meas, plane)
-            df.loc[:, c.column] = math.phase_diff(phs, phs.iloc[0])
-            df.loc[:, c.error_column] = err_phs
+            phase, err_phase = Phase.get_at(names, self._meas, plane)
+            df.loc[:, c.column] = math.phase_diff(phase, phase.iloc[0])
+            df.loc[:, c.error_column] = err_phase
 
-            phs, err_phs = self.measured_forward(plane)
-            df.loc[:, c.forward] = phs
-            df.loc[:, c.error_forward] = err_phs
+            phase, err_phase = self.measured_forward(plane)
+            df.loc[:, c.forward] = phase
+            df.loc[:, c.error_forward] = err_phase
             
-            phs, err_phs = self.measured_backward(plane)
-            df.loc[:, c.backward] = phs
-            df.loc[:, c.error_backward] = err_phs
+            phase, err_phase = self.measured_backward(plane)
+            df.loc[:, c.backward] = phase
+            df.loc[:, c.error_backward] = err_phase
 
             if self.segment_models.get_path("forward_corrected").exists(): 
-                phs, err_phs = self.correction_forward(plane)
-                df.loc[:, c.forward_correction] = phs.loc[names]
-                df.loc[:, c.error_forward_correction] = err_phs.loc[names]
+                phase, err_phase = self.correction_forward(plane)
+                df.loc[:, c.forward_correction] = phase.loc[names]
+                df.loc[:, c.error_forward_correction] = err_phase.loc[names]
 
-                phs, err_phs = self.expected_forward(plane)
-                df.loc[:, c.forward_expected] = phs
-                df.loc[:, c.error_forward_expected] = err_phs
+                phase, err_phase = self.expected_forward(plane)
+                df.loc[:, c.forward_expected] = phase
+                df.loc[:, c.error_forward_expected] = err_phase
 
             if self.segment_models.get_path("backward_corrected").exists(): 
-                phs, err_phs = self.correction_backward(plane)
-                df.loc[:, c.backward_correction] = phs.loc[names]
-                df.loc[:, c.error_backward_correction] = err_phs.loc[names]
+                phase, err_phase = self.correction_backward(plane)
+                df.loc[:, c.backward_correction] = phase.loc[names]
+                df.loc[:, c.error_backward_correction] = err_phase.loc[names]
 
-                phs, err_phs = self.expected_backward(plane)
-                df.loc[:, c.backward_expected] = phs
-                df.loc[:, c.error_backward_expected] = err_phs
+                phase, err_phase = self.expected_backward(plane)
+                df.loc[:, c.backward_expected] = phase
+                df.loc[:, c.error_backward_expected] = err_phase
 
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.phase[plane] = df
@@ -303,7 +303,7 @@ class Phase(Propagable):
             meas_phase = meas_phase.loc[names]
             model_phase = model_phase.loc[names]
 
-            # take care of circularity of accelerator
+            # take care of circularity of accelerator (when the segment start is before first bpm in measurement)
             s = self._get_s(names, self._meas, plane)
             meas_phase = meas_phase - np.where(s > s.iloc[-1], tune, 0)
 

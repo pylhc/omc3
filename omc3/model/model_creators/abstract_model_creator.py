@@ -117,7 +117,8 @@ class ModelCreator(ABC):
     @abstractmethod
     def get_base_madx_script(self) -> str:
         """
-        Returns the ``MAD-X`` script used to set-up the machine, without creating the model (twiss-output).
+        Returns the ``MAD-X`` script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
+        as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).
 
         Returns:
             The string of the ``MAD-X`` script used to used to set-up the machine.
@@ -158,7 +159,7 @@ class ModelCreator(ABC):
         """
         Checks that the model creation ``MAD-X`` run was successful. It should check that the
         appropriate directories are created, and that macros and other files are in place.
-        Also assings created models to the accelerator instance.
+        Also assings the created model output to the accelerator instance (e.g. `elements`, `model`, ...).
 
         Hint: If you only need to check a different set of files, you can simply override the `files_to_check` property,
               instead of this whole function.
@@ -265,12 +266,12 @@ class ModelCreator(ABC):
         modifier = Path(modifier)
         
         # first case: if modifier exists as is, take it
-        if modifier.exists():
+        if modifier.is_file():
             return modifier
 
         # second case: try if it is already in the output dir
         model_dir_path: Path = self.accel.model_dir / modifier
-        if model_dir_path.exists():
+        if model_dir_path.is_dir():
             return model_dir_path.absolute()
 
         # and last case, try to find it in the acc-models rep
@@ -281,7 +282,7 @@ class ModelCreator(ABC):
                 return optics_path.absolute()
 
         # if you are here, all attempts failed
-        msg = f"Couldn't find modifier {modifier}.\nTried in {accel.model_dir}"
+        msg = f"Couldn't find modifier {modifier}.\nAlso tried in {accel.model_dir}"
         if accel.acc_model_path is not None:
             msg += f" and in {accel.acc_model_path}"
         raise FileNotFoundError(msg)

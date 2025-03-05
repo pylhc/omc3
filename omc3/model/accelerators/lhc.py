@@ -104,7 +104,7 @@ LHC_DIR = CURRENT_DIR / "lhc"
 
 class Lhc(Accelerator):
     """
-    Accelerator class for the ``LHC`` collider.
+    Accelerator class for the Large Hadron Collider.
     """
     NAME: str = "lhc"
     LOCAL_REPO_NAME: str = "acc-models-lhc"
@@ -115,8 +115,8 @@ class Lhc(Accelerator):
     }  # bpms > 14 L or R of IP
 
     LHC_IPS: tuple[str] = ("1", "2", "5", "8")
-    NORMAL_IP_BPMS: str = "BPMSW.1{side}{ip}.B{beam}"
-    DOROS_IP_BPMS: str = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
+    NORMAL_IR_BPMS: str = "BPMSW.1{side}{ip}.B{beam}"
+    DOROS_IR_BPMS: str = "LHC.BPM.1{side}{ip}.B{beam}_DOROS"
     DEFAULT_CORRECTORS_DIR: Path = LHC_DIR / "correctors"
 
     @staticmethod
@@ -288,13 +288,13 @@ class Lhc(Accelerator):
         for ip in Lhc.LHC_IPS:
             yield (
                 f"IP{ip}",
-                Lhc.NORMAL_IP_BPMS.format(side="L", ip=ip, beam=self.beam),
-                Lhc.NORMAL_IP_BPMS.format(side="R", ip=ip, beam=self.beam),
+                Lhc.NORMAL_IR_BPMS.format(side="L", ip=ip, beam=self.beam),
+                Lhc.NORMAL_IR_BPMS.format(side="R", ip=ip, beam=self.beam),
             )
             yield (
                 f"IP{ip}_DOROS",
-                Lhc.DOROS_IP_BPMS.format(side="L", ip=ip, beam=self.beam),
-                Lhc.DOROS_IP_BPMS.format(side="R", ip=ip, beam=self.beam),
+                Lhc.DOROS_IR_BPMS.format(side="L", ip=ip, beam=self.beam),
+                Lhc.DOROS_IR_BPMS.format(side="R", ip=ip, beam=self.beam),
             )
 
     def log_status(self) -> None:

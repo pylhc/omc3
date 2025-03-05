@@ -165,10 +165,7 @@ def _get_madx_job(accel_inst: Accelerator) -> str:
 
 
 def _get_model_creator(accel_inst: Accelerator) -> ModelCreator:
-    creator_type = CreatorType.NOMINAL
-    # if accel_inst.model_best_knowledge is not None:
-    #     creator_type = CreatorType.BEST_KNOWLEDGE  # Not 100% sure if we should do this. To be discussed. (jdilly, 2024)
-
+    creator_type = CreatorType.NOMINAL  # always use nominal as this makes corrections consistent
     return CREATORS[accel_inst.NAME][creator_type](accel_inst)
 
 
