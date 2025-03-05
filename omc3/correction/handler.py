@@ -23,8 +23,7 @@ from omc3.correction.constants import DIFF, ERROR, ORBIT_DPP, VALUE, WEIGHT
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.response_io import read_fullresponse
 from omc3.model.accelerators import lhc
-from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.model_creators.lhc_model_creator import LhcCorrectionModelCreator
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.optics_measurements.constants import (
     BETA,
     DELTA,
@@ -49,13 +48,10 @@ if TYPE_CHECKING:
 
     from generic_parser import DotDict
 
+    from omc3.model.accelerators.accelerator import Accelerator
+
 
 LOG = logging_tools.get_logger(__name__)
-
-
-CORRECTION_MODEL_CREATORS = {
-    "lhc": LhcCorrectionModelCreator,
-}
 
 
 def correct(accel_inst: Accelerator, opt: DotDict) -> None:
@@ -303,7 +299,8 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
 
 def create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
     """ Use the calculated deltas in changeparameters.madx to create a corrected model """
-    model_creator = CORRECTION_MODEL_CREATORS[accel_inst.NAME](
+    creator_class = get_model_creator_class(accel_inst, CreatorType.CORRECTION)
+    model_creator = creator_class(
         accel=accel_inst, 
         twiss_out=twiss_out, 
         corr_files=corr_files,

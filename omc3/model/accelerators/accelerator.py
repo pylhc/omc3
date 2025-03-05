@@ -344,36 +344,6 @@ class Accelerator:
     ##########################################################################
 
 
-@dataclass
-class Variable:
-    """
-    Generic corrector variable class that holds its name (e.g. 'kqs.5l1''),
-    the physical elements it affects and the classes (e.g. 'MQT', 'coupling_knobs')
-    it belongs to.
-    These variables should be logical variables that have and effect in the model if
-    modified.
-
-    TODO: Not used. Should probably be removed and replaced with xsuite/cpymad,
-          which can get you these infos from the sequence/model. (jdilly 2025)
-    """
-    name: str 
-    elements: list[Element]
-    classes: list[str]
-
-
-@dataclass
-class Element:
-    """
-    Generic corrector element class that holds `name` and `position (s)` of the corrector. 
-    This element should represent a physical element (i.e. magnet) of the accelerator.
-    
-    TODO: Not used. Should probably be removed and replaced with xsuite/cpymad,
-          which can get you these infos from the sequence/model. (jdilly 2025)
-    """
-    name: str
-    s: float
-
-
 class AcceleratorDefinitionError(Exception):
     """
     Raised when an `Accelerator` instance is wrongly used, for example by calling a method that

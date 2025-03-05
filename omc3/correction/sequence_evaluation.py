@@ -14,21 +14,22 @@ from __future__ import annotations
 import multiprocessing
 from contextlib import suppress
 from pathlib import Path
-from typing import TYPE_CHECKING 
+from typing import TYPE_CHECKING
 
 import numpy as np
 import tfs
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.response_io import write_varmap
-from omc3.model.accelerators.accelerator import Accelerator
-from omc3.model.model_creators.abstract_model_creator import ModelCreator
-from omc3.model_creator import CREATORS, CreatorType
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+    from omc3.model.accelerators.accelerator import Accelerator
+    from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -40,10 +41,10 @@ EXT = "h5"  # Extension Standard
 
 def evaluate_for_variables(
     accel_inst: Accelerator,
-    variable_categories,
+    variable_categories: Sequence[str],
     order: int = 4,
     num_proc: int = multiprocessing.cpu_count(),
-    temp_dir: Path = None
+    temp_dir: Path | None = None
 ) -> dict:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
@@ -236,11 +237,8 @@ def _create_basic_job(accel_inst: Accelerator, k_values: list[str], variables: S
         TEMPFILE needs to be replaced in the returned string.
     """
     # get nominal setup from creator
-    creator_type = CreatorType.NOMINAL
-    # if accel_inst.model_best_knowledge is not None:
-    #     creator_type = CreatorType.BEST_KNOWLEDGE  # Not 100% sure if we should do this. To be discussed. (jdilly, 2024)
-
-    creator: ModelCreator = CREATORS[accel_inst.NAME][creator_type](accel_inst)
+    creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
+    creator: ModelCreator = creator_class(accel_inst)
     job_content = creator.get_base_madx_script()
 
     # create a survey and save it to a temporary file

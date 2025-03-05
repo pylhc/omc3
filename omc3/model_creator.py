@@ -4,44 +4,22 @@ Model Creator
 
 Entrypoint to run the model creator for LHC, PSBooster and PS models.
 """
+from __future__ import annotations
+
 from pathlib import Path
 
 from generic_parser import EntryPointParameters, entrypoint
 
-from omc3.model import manager
+from omc3.model import manager as model_manager
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.constants import Fetcher
-from omc3.model.model_creators import abstract_model_creator
-from omc3.model.model_creators.lhc_model_creator import (  # noqa
-    LhcBestKnowledgeCreator,
-    LhcModelCreator,
-)
-from omc3.model.model_creators.ps_model_creator import PsModelCreator
-from omc3.model.model_creators.psbooster_model_creator import BoosterModelCreator
+from omc3.model.model_creators.abstract_model_creator import ModelCreator 
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
-from omc3.utils.misc import StrEnum
 from omc3.utils.parsertools import print_help, require_param
 
 LOGGER = logging_tools.get_logger(__name__)
-
-class CreatorType(StrEnum):
-    NOMINAL = "nominal"
-    BEST_KNOWLEDGE = "best_knowledge"
-
-
-CREATORS = {
-    "lhc": {
-        CreatorType.NOMINAL: LhcModelCreator,
-        CreatorType.BEST_KNOWLEDGE: LhcBestKnowledgeCreator,
-    },
-    "psbooster": {
-        CreatorType.NOMINAL: BoosterModelCreator
-    },
-    "ps": {
-        CreatorType.NOMINAL: PsModelCreator
-    },
-}
 
 
 def _get_params():
@@ -53,7 +31,7 @@ def _get_params():
     )
     params.add_parameter(
         name="type",
-        choices=tuple(creator_type.value for creator_type in CreatorType),
+        choices=(CreatorType.NOMINAL.value, CreatorType.BEST_KNOWLEDGE.value),  # this script manages only these two
         default=CreatorType.NOMINAL.value,
         help="Type of model to create.",
     )
@@ -154,7 +132,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
     if opt.show_help:
         try:
             #with silence():
-            accel_class = manager.get_accelerator_class(accel_opt)
+            accel_class = model_manager.get_accelerator_class(accel_opt)
             print(f"---- Accelerator {accel_class.__name__}  | Usage ----\n")
             print_help(accel_class.get_parameters())
         except Exception as e:
@@ -162,12 +140,12 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
             pass
 
         print("---- Model Creator | Usage ----\n")
-        print_help(manager._get_params())
+        print_help(model_manager._get_params())
         print_help(_get_params())
         return 
 
     # proceed to the creator
-    accel_inst: Accelerator = manager.get_accelerator(accel_opt)
+    accel_inst: Accelerator = model_manager.get_accelerator(accel_opt)
     require_param("type", _get_params(), opt)
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
     
@@ -176,7 +154,8 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
     outputdir = Path(opt.outputdir)
     accel_inst.model_dir = outputdir.absolute()
 
-    creator: abstract_model_creator.ModelCreator = CREATORS[accel_inst.NAME][opt.type](accel_inst, logfile=opt.logfile)
+    creator_class = get_model_creator_class(accel_inst, opt.type)
+    creator: ModelCreator = creator_class(accel_inst, logfile=opt.logfile)
 
     # Check if the options (i.e. the values of the arguments given) are valid choices.
     # This needs to be done by the creator itself, as it should know what valid options are

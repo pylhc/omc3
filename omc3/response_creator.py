@@ -57,7 +57,6 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 
 """
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -71,8 +70,13 @@ from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
+from omc3.utils.misc import StrEnum
 
 LOG = logging_tools.get_logger(__name__)
+
+class ResponseCreatorType(StrEnum):
+    TWISS: str = "twiss"
+    MADX: str = "madx"
 
 
 def response_params():
@@ -80,8 +84,8 @@ def response_params():
     params.add_parameter(
         name="creator",
         type=str,
-        choices=("madx", "twiss"),
-        default="madx",
+        choices=tuple(rct.value for rct in ResponseCreatorType),
+        default=ResponseCreatorType.MADX.value,
         help="Create either with madx or analytically from twiss file.",
     )
     params.add_parameter(
@@ -128,13 +132,15 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFram
 
     accel_inst = manager.get_accelerator(other_opt)
 
-    if opt.creator.lower() == "madx":
+    if opt.creator.lower() == ResponseCreatorType.MADX:
         fullresponse = response_madx.create_fullresponse(
             accel_inst, opt.variable_categories, delta_k=opt.delta_k
         )
 
-    elif opt.creator.lower() == "twiss":
-        fullresponse = response_twiss.create_response(accel_inst, opt.variable_categories, opt.optics_params)
+    elif opt.creator.lower() == ResponseCreatorType.TWISS:
+        fullresponse = response_twiss.create_response(
+            accel_inst, opt.variable_categories, opt.optics_params
+        )
 
     if opt.outfile_path is not None:
         write_fullresponse(opt.outfile_path, fullresponse)

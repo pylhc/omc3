@@ -26,8 +26,7 @@ import tfs
 from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.model.model_creators.abstract_model_creator import ModelCreator
-from omc3.model_creator import CREATORS, CreatorType
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.constants import INCR, ORBIT_DPP
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
@@ -48,6 +47,7 @@ LOG = logging_tools.get_logger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 
 # Full Response Mad-X ##########################################################
@@ -58,7 +58,7 @@ def create_fullresponse(
     variable_categories: Sequence[str],
     delta_k: float = 2e-5,
     num_proc: int = multiprocessing.cpu_count(),
-    temp_dir: Path = None
+    temp_dir: Path | None = None
 ) -> dict[str, pd.DataFrame]:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
@@ -105,7 +105,7 @@ def _generate_madx_jobs(
     compute_deltap: bool = ORBIT_DPP in variables
     no_dpp_vars = [var for var in variables if var != ORBIT_DPP]
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
-    creator = _get_model_creator(accel_inst)
+    creator = _get_nominal_model_creator(accel_inst)
 
     madx_job = _get_madx_job(accel_inst)
     deltap_twiss = ""
@@ -152,7 +152,7 @@ def _get_madx_job(accel_inst: Accelerator) -> str:
     accel_inst.model_dir = Path()
 
     # get nominal setup from creator
-    creator = _get_model_creator(accel_inst)
+    creator = _get_nominal_model_creator(accel_inst)
     job_content = creator.get_base_madx_script()
     job_content += (
         "select, flag=twiss, clear;\n"
@@ -164,9 +164,15 @@ def _get_madx_job(accel_inst: Accelerator) -> str:
     return job_content
 
 
-def _get_model_creator(accel_inst: Accelerator) -> ModelCreator:
-    creator_type = CreatorType.NOMINAL  # always use nominal as this makes corrections consistent
-    return CREATORS[accel_inst.NAME][creator_type](accel_inst)
+def _get_nominal_model_creator(accel_inst: Accelerator) -> ModelCreator:
+    """ Get the nominal model creator, to which we can add the change of parameters.
+    
+    This is always done on the nominal model, not the best knowledge model, to ensure
+    that the response matrix is in the most linear regime and therefore most accurate 
+    (for most scenarios).
+    """
+    creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
+    return creator_class(accel_inst)
 
 
 def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None: # type: ignore

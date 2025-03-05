@@ -11,7 +11,7 @@ from omc3.model.accelerators.psbooster import Psbooster
 from omc3.model.model_creators.ps_base_model_creator import PsBaseModelCreator
 from omc3.model.constants import ERROR_DEFFS_TXT
 
-class BoosterModelCreator(PsBaseModelCreator):
+class PsboosterModelCreator(PsBaseModelCreator):
     acc_model_name = "psb"
 
     def get_madx_script(self) -> str:

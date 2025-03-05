@@ -1,16 +1,33 @@
+import copy
 import os
 import shutil
-import copy
 from pathlib import Path
 
 import pytest
 import tfs
 from generic_parser import DotDict
-from omc3.model.accelerators.accelerator import Accelerator,AcceleratorDefinitionError, AccExcitationMode
+
+from omc3.model.accelerators.accelerator import (
+    Accelerator,
+    AcceleratorDefinitionError,
+    AccExcitationMode,
+)
 from omc3.model.accelerators.lhc import Lhc
-from omc3.model.constants import ACC_MODELS_PREFIX, JOB_MODEL_MADX_NOMINAL, OPTICS_SUBDIR, TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
+from omc3.model.constants import (
+    ACC_MODELS_PREFIX,
+    JOB_MODEL_MADX_NOMINAL,
+    OPTICS_SUBDIR,
+    TWISS_AC_DAT,
+    TWISS_ADT_DAT,
+    TWISS_DAT,
+    TWISS_ELEMENTS_DAT,
+    Fetcher,
+)
 from omc3.model.manager import get_accelerator
-from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator, LhcModelCreator
+from omc3.model.model_creators.lhc_model_creator import (
+    LhcBestKnowledgeCreator,
+    LhcModelCreator,
+)
 from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import NAME
 from tests.conftest import assert_frame_equal

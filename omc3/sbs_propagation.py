@@ -55,7 +55,7 @@ from generic_parser import DotDict, EntryPointParameters, entrypoint
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager as model_manager
-from omc3.model.accelerators import lhc
+from omc3.model.model_creators.manager import get_model_creator_class, CreatorType
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.constants import (
     ACC_MODELS_PREFIX,
@@ -64,7 +64,6 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_DAT,
 )
-from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
 from omc3.segment_by_segment.segments import (
@@ -89,11 +88,6 @@ if TYPE_CHECKING:
 
 
 LOGGER = logging_tools.get_logger(__name__)
-
-
-CREATORS = {
-    lhc.Lhc.NAME: LhcSegmentCreator,
-}
 
 
 def get_params():
@@ -164,7 +158,8 @@ def _maybe_create_nominal_model(accel: Accelerator, fetcher_opts: DotDict):
     if accel.elements is not None: # No need to create a nominal model
         return 
 
-    creator: ModelCreator = model_creator.CREATORS[accel.NAME][model_creator.CreatorType.NOMINAL](
+    creator_class = get_model_creator_class(accel, CreatorType.NOMINAL)
+    creator: ModelCreator = creator_class(
         accel, logfile=Path(JOB_MODEL_MADX_NOMINAL).with_suffix(".log")
     )
 
@@ -215,7 +210,8 @@ def create_segment(
     propagables = [measbl for measbl in propagables if measbl]
 
     # Create the segment via madx
-    segment_creator = CREATORS[accel.NAME](
+    creator_class = get_model_creator_class(accel, CreatorType.SEGMENT)
+    segment_creator = creator_class(
         accel, segment, propagables, 
         corrections=corrections,
         logfile=accel.model_dir / logfile.format(segment.name),
@@ -338,7 +334,7 @@ def _parse_segments(segment_definitions: Sequence[Segment | str]) -> list[Segmen
     return list(segments.values())
 
 
-def _parse_elements(elements: Sequence[Segment | str]) -> list[Segment]:
+def _parse_elements(elements: Sequence[Segment | str] | None) -> list[Segment]:
     """Convert all elements to Segments.
 
     Args:
