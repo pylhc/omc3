@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.model_creators.ps_model_creator &mdash; omc3 0.21.1 documentation</title>
+  <title>omc3.model.model_creators.ps_model_creator &mdash; omc3 0.22.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=6081af2d"></script>
+      <script src="../../../../_static/documentation_options.js?v=5686f5df"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/other.html">Other</a><ul>
@@ -125,7 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -153,6 +153,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -165,6 +172,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/utils.html#stats">Stats</a></li>
@@ -206,10 +215,16 @@
 
 <span class="sd">This module provides convenience functions for model creation of the ``PS``.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccExcitationMode</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.psbooster</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.ps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">,</span> <span class="n">MODIFIER_TAG</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.ps_base_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsBaseModelCreator</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="PsModelCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator">[docs]</a>
@@ -218,11 +233,11 @@
 
 <div class="viewcode-block" id="PsModelCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator.get_madx_script">[docs]</a>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">PsBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">accel</span><span class="p">:</span> <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;PS model creation currently relies on manual Energy management. Please provide the --energy ENERGY flag&quot;</span><span class="p">)</span>
-        <span class="n">madx_script</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)),</span>
             <span class="s2">&quot;DPP&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="p">,</span>
@@ -231,6 +246,44 @@
         <span class="n">madx_template</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;twiss.mask&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="n">madx_template</span> <span class="o">%</span> <span class="n">replace_dict</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
+
+    
+<div class="viewcode-block" id="PsModelCreator.get_base_madx_script">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator.get_base_madx_script">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">accel</span><span class="p">:</span> <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
+        <span class="n">use_acd</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span>
+        <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;FILES_DIR&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()),</span>
+            <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">use_acd</span><span class="p">)),</span>
+            <span class="s2">&quot;NAT_TUNE_X&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;NAT_TUNE_Y&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;KINETICENERGY&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
+            <span class="s2">&quot;USE_CUSTOM_PC&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ACC_MODELS_DIR&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">,</span>
+            <span class="s2">&quot;BEAM_FILE&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">beam_file</span><span class="p">,</span>
+            <span class="s2">&quot;STR_FILE&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">str_file</span><span class="p">,</span>
+            <span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MODIFIERS&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;USE_MACROS&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;2018&quot;</span> <span class="k">else</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>  <span class="c1"># 2018 doesn&#39;t provide a macros file</span>
+            <span class="s2">&quot;PS_TUNE_METHOD&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">tune_method</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span><span class="p">:</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;MODIFIERS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot; call, file = &#39;</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">use_acd</span><span class="p">:</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s1">&#39;base.madx&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">mask</span> <span class="o">%</span> <span class="n">replace_dict</span></div>
+
+
+<div class="viewcode-block" id="PsModelCreator.prepare_run">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator.prepare_run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">()</span>
+        <span class="c1"># get path of file from PS model directory (without year at the end)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;error_deff.txt&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

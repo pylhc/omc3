@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utils &mdash; omc3 0.21.1 documentation</title>
+  <title>Utils &mdash; omc3 0.22.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6081af2d"></script>
+      <script src="../_static/documentation_options.js?v=5686f5df"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
@@ -128,7 +129,6 @@
 <li class="toctree-l2"><a class="reference internal" href="model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model.html#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
@@ -156,6 +156,13 @@
 <li class="toctree-l2"><a class="reference internal" href="plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -168,6 +175,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stats">Stats</a></li>
@@ -206,6 +215,8 @@
 <li><a class="reference internal" href="#contexts">Contexts</a></li>
 <li><a class="reference internal" href="#io-tools">IO Tools</a></li>
 <li><a class="reference internal" href="#logging-tools">Logging Tools</a></li>
+<li><a class="reference internal" href="#math-classes">Math Classes</a></li>
+<li><a class="reference internal" href="#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li><a class="reference internal" href="#mock">Mock</a></li>
 <li><a class="reference internal" href="#outliers">Outliers</a></li>
 <li><a class="reference internal" href="#stats">Stats</a></li>
@@ -269,7 +280,14 @@ Can be used in string-lists when individual entries can be <cite>None</cite>.</p
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">PathOrStrOrDataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#PathOrStrOrDataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>A class that behaves like a Path when possible, otherwise like a string.</p>
+<dd><p>A class that behaves like a Path when possible, otherwise maybe a TfsDataFrame, otherwise like a string.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.iotools.</span></span><span class="sig-name descname"><span class="pre">PathOrStrOrDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/iotools.html#PathOrStrOrDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A class that tries to parse/behaves like a dict when possible,
+otherwise either like a Path or like a string.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -580,6 +598,39 @@ It won’t open the file, so only the files path is returned.</p>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.logging_tools.</span></span><span class="sig-name descname"><span class="pre">unformatted_console_logging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/logging_tools.html#unformatted_console_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Log only to console and only unformatted.</p>
+</dd></dl>
+
+<section id="math-classes">
+<h2>Math Classes<a class="headerlink" href="#math-classes" title="Link to this heading"></a></h2>
+<p>Provides a mixin class to inherit numerical classes, which ensures
+proper conversion after maths operations.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.math_classes.</span></span><span class="sig-name descname"><span class="pre">MathMixin</span></span><a class="reference internal" href="../_modules/omc3/utils/math_classes.html#MathMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A Mixin Class to be able to inherit from a numerical class and
+perform operations with it, while returning an instance of the inheriting class.</p>
+<dl class="simple">
+<dt>Caveats:</dt><dd><ul class="simple">
+<li><p>This assumes that the inheriting class accepts an instance of its parent class
+in its initialization method !!</p></li>
+<li><p>Use this as the FIRST class in inheritance !</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="miscellaneous-tools">
+<h2>Miscellaneous Tools<a class="headerlink" href="#miscellaneous-tools" title="Link to this heading"></a></h2>
+<p>Miscellaneous tools for the <cite>omc3</cite> package.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.utils.misc.</span></span><span class="sig-name descname"><span class="pre">StrEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_class_name</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/utils/misc.html#StrEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Enum for strings.</p>
+<p>From python 3.11 there will be a built-in StrEnum type,
+with the same, plus additional, functionality.</p>
+<p>See: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.StrEnum">https://docs.python.org/3/library/enum.html#enum.StrEnum</a></p>
 </dd></dl>
 
 <section id="mock">

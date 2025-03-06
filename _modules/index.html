@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview: module code &mdash; omc3 0.21.1 documentation</title>
+  <title>Overview: module code &mdash; omc3 0.22.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6081af2d"></script>
+      <script src="../_static/documentation_options.js?v=5686f5df"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
@@ -125,7 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -153,6 +153,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -165,6 +172,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#stats">Stats</a></li>
@@ -228,6 +237,7 @@
 <li><a href="omc3/model/accelerators/ps.html">omc3.model.accelerators.ps</a></li>
 <li><a href="omc3/model/accelerators/psbooster.html">omc3.model.accelerators.psbooster</a></li>
 <li><a href="omc3/model/accelerators/skekb.html">omc3.model.accelerators.skekb</a></li>
+<li><a href="omc3/model/constants.html">omc3.model.constants</a></li>
 <li><a href="omc3/model/manager.html">omc3.model.manager</a></li>
 <li><a href="omc3/model/model_creators/lhc_model_creator.html">omc3.model.model_creators.lhc_model_creator</a></li>
 <li><a href="omc3/model/model_creators/ps_model_creator.html">omc3.model.model_creators.ps_model_creator</a></li>
@@ -263,12 +273,17 @@
 <li><a href="omc3/plotting/utils/style.html">omc3.plotting.utils.style</a></li>
 <li><a href="omc3/plotting/utils/windows.html">omc3.plotting.utils.windows</a></li>
 <li><a href="omc3/response_creator.html">omc3.response_creator</a></li>
+<li><a href="omc3/sbs_propagation.html">omc3.sbs_propagation</a></li>
 <li><a href="omc3/scripts/bad_bpms_summary.html">omc3.scripts.bad_bpms_summary</a></li>
 <li><a href="omc3/scripts/betabeatsrc_output_converter.html">omc3.scripts.betabeatsrc_output_converter</a></li>
 <li><a href="omc3/scripts/fake_measurement_from_model.html">omc3.scripts.fake_measurement_from_model</a></li>
 <li><a href="omc3/scripts/kmod_import.html">omc3.scripts.kmod_import</a></li>
 <li><a href="omc3/scripts/kmod_lumi_imbalance.html">omc3.scripts.kmod_lumi_imbalance</a></li>
 <li><a href="omc3/scripts/linfile_clean.html">omc3.scripts.linfile_clean</a></li>
+<li><a href="omc3/segment_by_segment/definitions.html">omc3.segment_by_segment.definitions</a></li>
+<li><a href="omc3/segment_by_segment/math.html">omc3.segment_by_segment.math</a></li>
+<li><a href="omc3/segment_by_segment/propagables.html">omc3.segment_by_segment.propagables</a></li>
+<li><a href="omc3/segment_by_segment/segments.html">omc3.segment_by_segment.segments</a></li>
 <li><a href="omc3/tbt_converter.html">omc3.tbt_converter</a></li>
 <li><a href="omc3/tune_analysis/bbq_tools.html">omc3.tune_analysis.bbq_tools</a></li>
 <li><a href="omc3/tune_analysis/constants.html">omc3.tune_analysis.constants</a></li>
@@ -278,6 +293,8 @@
 <li><a href="omc3/utils/contexts.html">omc3.utils.contexts</a></li>
 <li><a href="omc3/utils/iotools.html">omc3.utils.iotools</a></li>
 <li><a href="omc3/utils/logging_tools.html">omc3.utils.logging_tools</a></li>
+<li><a href="omc3/utils/math_classes.html">omc3.utils.math_classes</a></li>
+<li><a href="omc3/utils/misc.html">omc3.utils.misc</a></li>
 <li><a href="omc3/utils/mock.html">omc3.utils.mock</a></li>
 <li><a href="omc3/utils/outliers.html">omc3.utils.outliers</a></li>
 <li><a href="omc3/utils/stats.html">omc3.utils.stats</a></li>

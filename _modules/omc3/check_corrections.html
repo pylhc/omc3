@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.check_corrections &mdash; omc3 0.21.1 documentation</title>
+  <title>omc3.check_corrections &mdash; omc3 0.22.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6081af2d"></script>
+      <script src="../../_static/documentation_options.js?v=5686f5df"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#global-correction">Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../entrypoints/other.html">Other</a><ul>
@@ -125,7 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -153,6 +153,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -165,6 +172,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#stats">Stats</a></li>
@@ -671,18 +680,24 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a new model with the corrections (well, the &quot;matchings&quot;) applied and calculate</span>
 <span class="sd">    the difference to the nominal model, i.e. the expected improvement of the measurements</span>
 <span class="sd">    (for detail see main docstring in this file).</span>
-<span class="sd">    This will be written out then into individual tfs-files in the output folder(s). &quot;&quot;&quot;</span>
+<span class="sd">    This will be written out then into individual tfs-files in the output folder(s). </span>
+<span class="sd">    </span>
+<span class="sd">    TODO After merge with new model creation: should crossing angles be deactivated and nominal model redone? </span>
+<span class="sd">         Can be done by calling the create_corrected_model function with and without correction files</span>
+<span class="sd">         and different paths.</span>
+<span class="sd">    (jdilly 2023)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">correction_name</span><span class="p">:</span>
         <span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">correction_name</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checking correction for </span><span class="si">{</span><span class="n">output_dir</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Created matched model</span>
     <span class="n">corr_model_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">MODEL_MATCHED_FILENAME</span>
-    <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">global_correction</span><span class="o">.</span><span class="n">_create_corrected_model</span><span class="p">(</span><span class="n">corr_model_path</span><span class="p">,</span> <span class="n">correction_files</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">)</span>  <span class="c1"># writes out twiss file!</span>
+    <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">global_correction</span><span class="o">.</span><span class="n">create_corrected_model</span><span class="p">(</span><span class="n">corr_model_path</span><span class="p">,</span> <span class="n">correction_files</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">)</span>  <span class="c1"># writes out twiss file!</span>
     <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_maybe_add_coupling_to_model</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="p">,</span> <span class="n">measurement</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Matched model created in </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">corr_model_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Get diff to nominal model</span>
+    <span class="c1"># Get diff to nominal model </span>
     <span class="n">diff_columns</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span><span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span>
             <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">corr_model_elements</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;F1&quot;</span><span class="p">)]</span> <span class="o">+</span>

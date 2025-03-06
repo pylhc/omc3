@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.correction.handler &mdash; omc3 0.21.1 documentation</title>
+  <title>omc3.correction.handler &mdash; omc3 0.22.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=6081af2d"></script>
+      <script src="../../../_static/documentation_options.js?v=5686f5df"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
@@ -125,7 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -153,6 +153,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -165,6 +172,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
@@ -208,33 +217,49 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMatchingPursuit</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">omc3.madx_wrapper</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">madx_wrapper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction</span><span class="w"> </span><span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_twiss</span><span class="p">,</span> <span class="n">response_madx</span><span class="p">,</span> <span class="n">arc_by_arc</span> <span class="k">as</span> <span class="n">abba</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span><span class="p">,</span> <span class="n">ORBIT_DPP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction</span><span class="w"> </span><span class="kn">import</span> <span class="n">arc_by_arc</span> <span class="k">as</span> <span class="n">abba</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction</span><span class="w"> </span><span class="kn">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">model_appenders</span><span class="p">,</span> <span class="n">response_madx</span><span class="p">,</span> <span class="n">response_twiss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">ORBIT_DPP</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.model_appenders</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_coupling_to_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.response_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_fullresponse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">lhc</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span>
-                                                <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span>
-                                                <span class="n">PHASE</span><span class="p">,</span> <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreatorType</span><span class="p">,</span> <span class="n">get_model_creator_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">DELTA</span><span class="p">,</span>
+    <span class="n">DISPERSION</span><span class="p">,</span>
+    <span class="n">DISPERSION_NAME</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">F1001</span><span class="p">,</span>
+    <span class="n">F1010</span><span class="p">,</span>
+    <span class="n">NAME</span><span class="p">,</span>
+    <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
+    <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">,</span>
+    <span class="n">PHASE_NAME</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.debugging</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_debug</span><span class="p">,</span> <span class="n">is_pytest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">rms</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -251,7 +276,11 @@
 <span class="sd">                       see :mod:`omc3.global_correction` for details.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">)</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">change_params_correct_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_correct_path</span><span class="p">)</span>
     <span class="n">method_options</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s2">&quot;svd_cut&quot;</span><span class="p">,</span> <span class="s2">&quot;n_correctors&quot;</span><span class="p">])</span>
+    
     <span class="c1"># read data from files</span>
     <span class="n">vars_list</span> <span class="o">=</span> <span class="n">_get_varlist</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">)</span>
     <span class="n">update_deltap</span> <span class="o">=</span> <span class="n">ORBIT_DPP</span> <span class="ow">in</span> <span class="n">vars_list</span>
@@ -292,7 +321,7 @@
             <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating model via MAD-X.&quot;</span><span class="p">)</span>
             <span class="n">corr_model_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;twiss_</span><span class="si">{</span><span class="n">iteration</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
 
-            <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_create_corrected_model</span><span class="p">(</span><span class="n">corr_model_path</span><span class="p">,</span> <span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">,</span> <span class="n">update_deltap</span><span class="p">)</span>
+            <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">create_corrected_model</span><span class="p">(</span><span class="n">corr_model_path</span><span class="p">,</span> <span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">,</span> <span class="n">update_deltap</span><span class="p">)</span>
             <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_maybe_add_coupling_to_model</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="p">,</span> <span class="n">optics_params</span><span class="p">)</span>
 
             <span class="n">bpms_index_mask</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;bpm&quot;</span><span class="p">])</span>
@@ -319,9 +348,16 @@
         <span class="c1"># remove unused correctors from vars_list</span>
         <span class="n">delta</span><span class="p">,</span> <span class="n">resp_matrix</span><span class="p">,</span> <span class="n">vars_list</span> <span class="o">=</span> <span class="n">_filter_by_strength</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">resp_matrix</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">min_corrector_strength</span><span class="p">)</span>
 
-        <span class="n">writeparams</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="s2">&quot;Values to match model to measurement.&quot;</span><span class="p">)</span>
-        <span class="n">writeparams</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_correct_path</span><span class="p">,</span> <span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="s2">&quot;Values to correct the measurement.&quot;</span><span class="p">)</span>
+        <span class="c1"># ######### Write Results ######### #</span>
+        <span class="n">writeparams</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="s2">&quot;Values to match model to measurement.&quot;</span><span class="p">)</span>  <span class="c1"># needed for MAD-X in next iteration</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cumulative delta: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="w"> </span><span class="n">DELTA</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()))</span><span class="si">:</span><span class="s2">.5e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># write out each stage for testing/debug purposes; avoid for normal runs, to not clutter the output directory</span>
+        <span class="k">if</span> <span class="n">is_debug</span><span class="p">()</span> <span class="ow">or</span> <span class="n">is_pytest</span><span class="p">():</span>
+            <span class="n">write_knob</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span><span class="o">.</span><span class="n">with_stem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}{</span><span class="n">iteration</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">delta</span><span class="p">)</span>
+
+    <span class="c1"># ######### Write Final Results ######### #</span>
+    <span class="n">writeparams</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">change_params_correct_path</span><span class="p">,</span> <span class="o">-</span><span class="n">delta</span><span class="p">,</span> <span class="s2">&quot;Values to correct the measurement.&quot;</span><span class="p">)</span>
     <span class="n">write_knob</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished Iterative Global Correction.&quot;</span><span class="p">)</span></div>
 
@@ -478,18 +514,20 @@
     <span class="k">return</span> <span class="n">model</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_create_corrected_model</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">update_dpp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="create_corrected_model">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.create_corrected_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_corrected_model</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">update_dpp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Use the calculated deltas in changeparameters.madx to create a corrected model &quot;&quot;&quot;</span>
-    <span class="n">madx_script</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_update_correction_script</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">,</span> <span class="n">update_dpp</span><span class="p">)</span>
-    <span class="n">twiss_out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">)</span>
-    <span class="n">madx_script</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;! Based on model &#39;</span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">madx_script</span>
-    <span class="n">madx_wrapper</span><span class="o">.</span><span class="n">run_string</span><span class="p">(</span>
-        <span class="n">madx_script</span><span class="p">,</span>
-        <span class="n">output_file</span><span class="o">=</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;job.create_</span><span class="si">{</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.madx&quot;</span><span class="p">,</span>
-        <span class="n">log_file</span><span class="o">=</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;job.create_</span><span class="si">{</span><span class="n">twiss_out_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">,</span>
-        <span class="n">cwd</span><span class="o">=</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span>  <span class="c1"># models are always run from there</span>
+    <span class="n">creator_class</span> <span class="o">=</span> <span class="n">get_model_creator_class</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">CORRECTION</span><span class="p">)</span>
+    <span class="n">model_creator</span> <span class="o">=</span> <span class="n">creator_class</span><span class="p">(</span>
+        <span class="n">accel</span><span class="o">=</span><span class="n">accel_inst</span><span class="p">,</span> 
+        <span class="n">twiss_out</span><span class="o">=</span><span class="n">twiss_out</span><span class="p">,</span> 
+        <span class="n">corr_files</span><span class="o">=</span><span class="n">corr_files</span><span class="p">,</span>
+        <span class="n">update_dpp</span><span class="o">=</span><span class="n">update_dpp</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+    <span class="n">model_creator</span><span class="o">.</span><span class="n">full_run</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_join_responses</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">varslist</span><span class="p">):</span>
@@ -593,24 +631,49 @@
 <span class="c1"># Output -----------------------------------------------------------------------</span>
 
 
+<div class="viewcode-block" id="write_knob">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.write_knob">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write_knob</span><span class="p">(</span><span class="n">knob_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Write the current delta-values into a tfs file. </span>
+<span class="sd">    The values are written out with opposite sign to what is used above, </span>
+<span class="sd">    i.e. they will show the correction to be applied in the machine.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        knob_path (Path): Path to the file to be written.</span>
+<span class="sd">        delta (pd.DataFrame): DataFrame containing a DELTA column and </span>
+<span class="sd">                              the corrector names as index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
     <span class="n">delta_out</span> <span class="o">=</span> <span class="o">-</span><span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">DELTA</span><span class="p">]]</span>
     <span class="n">delta_out</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">knob_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
     <span class="n">delta_out</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;DATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ctime</span><span class="p">())</span>
     <span class="n">delta_out</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;HINT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The values in this file are already the correction values,&quot;</span>
                                  <span class="sa">f</span><span class="s2">&quot; i.e. with the same sign as in </span><span class="si">{</span><span class="n">knob_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_correct.madx&quot;</span><span class="p">)</span>
-    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">knob_path</span><span class="p">,</span> <span class="n">delta_out</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">knob_path</span><span class="p">,</span> <span class="n">delta_out</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span></div>
 
 
+
+<div class="viewcode-block" id="writeparams">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.handler.writeparams">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">writeparams</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">extra</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">madx_script</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
-            <span class="n">madx_script</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;! </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Write the changeparams-file that can be run by madx to update the model. </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        path_to_file (Path): Path to the file to be written.</span>
+<span class="sd">        delta (pd.DataFrame): DataFrame containing a DELTA column and </span>
+<span class="sd">                              the corrector names as index.</span>
+<span class="sd">        extra (str): Extra text to be added to the top of the file as a comment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;! </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">delta</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">():</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">var</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">]</span>
-            <span class="n">madx_script</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">+e</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">delta</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">():</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">delta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">knob</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">]</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">+e</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="n">path_to_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

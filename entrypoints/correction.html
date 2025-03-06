@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.21.1 documentation</title>
+  <title>Correction &mdash; omc3 0.22.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6081af2d"></script>
+      <script src="../_static/documentation_options.js?v=5686f5df"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -56,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#global-correction">Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other.html">Other</a><ul>
@@ -129,7 +130,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -157,6 +157,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -169,6 +176,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#stats">Stats</a></li>
@@ -207,6 +216,7 @@
 <li><a class="reference internal" href="#global-correction">Global Correction</a></li>
 <li><a class="reference internal" href="#response-creator">Response Creator</a></li>
 <li><a class="reference internal" href="#correction-test">Correction Test</a></li>
+<li><a class="reference internal" href="#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 </ul>
@@ -418,6 +428,11 @@ to use. Check <a class="reference internal" href="../modules/model.html#model"><
 </li>
 </ul>
 </section>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">ResponseCreatorType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#ResponseCreatorType"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -644,6 +659,131 @@ also <cite>ncol_legend</cite>).</p>
 dictionaries of the TFSDataFrames and Figures.
 But I don’t see a usecase at the moment (jdilly 2023)</p>
 </div>
+</dd></dl>
+
+<section id="segment-by-segment-propagation">
+<h2>Segment-by-Segment Propagation<a class="headerlink" href="#segment-by-segment-propagation" title="Link to this heading"></a></h2>
+<p>Runs the Segment-by-Segment propagation,
+i.e. it uses the measured values at the beginning (or the end) of the segments as inputs
+to propagate via MAD-X through the given segments.
+It then compares the propagated values with the measured values in that segment.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>measurement_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the measurement files.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>corrections</strong> <em>(PathOrStrOrDict)</em>:</p>
+<blockquote>
+<div><p>Corrections to use. Can be a dict of knob-value pairs, a MAD-X string
+or a path to a file. Note: all segments will have these corrections.</p>
+</div></blockquote>
+</li>
+<li><p><strong>elements</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Element name list to run in element mode.</p>
+</div></blockquote>
+</li>
+<li><p><strong>segments</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Segments to run in segment mode with format:
+<code class="docutils literal notranslate"><span class="pre">segment_name,start,end</span></code>, where start and end must be existing BPM
+names.</p>
+</div></blockquote>
+</li>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Output directory. If not given, the model-directory is used.</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">create_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MADXInputType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetcher_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#create_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Perform the computations on the segment.
+The segment is adapted fist, so that the given start and end bpms are in the measurement.
+Then madx is run to create the specified segments and the output files
+are made accessible by a SegmentModels TfsCollection by all propagables, which
+are then returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel</strong> (<em>Accelerator</em>) -- Accelerator instance. Needs to be loaded from model directory</p></li>
+<li><p><strong>segment_in</strong> (<em>Segment</em>) -- Rough Segment specification. Might be refined later.</p></li>
+<li><p><strong>measurement</strong> (<em>OpticsMeasurement</em>) -- TfsCollection of the optics measurement files.</p></li>
+<li><p><strong>corrections</strong> (<em>MADXInputType</em>) -- Corrections to use. Can be a dict of knob-value pairs,
+a MAD-X string or a path to a file.</p></li>
+<li><p><strong>fetcher_opts</strong> (<em>DotDict</em>) -- Options for the fetcher, if needed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of propagables with access to the created segment models.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">extend_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Segment</span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#extend_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns a new segment with elements that are contained in the measurement.</p>
+<p>This function takes a segment with start and end that might not
+be in the measurement and searches the next element that satisfies
+it, returning a new segment with the new start and end elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>segment</strong> (<em>Segment</em>) -- The segment to be processed (see Segment class).</p></li>
+<li><p><strong>model</strong> (<em>DataFrame</em>) -- The model where to take all the element names from. Both the
+start and end of the segment have to be present in this model
+NAME attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new segment with generally different start and end but always the
+same name and element attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">get_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propagables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SegmentDiffs</span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#get_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the differences of the propagated model and the measurement and write
+them out into files (if <code class="docutils literal notranslate"><span class="pre">output</span></code> had been given).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>propagables</strong> (<em>Iterable</em><em>[</em><em>Propagable</em><em>]</em>) -- List of propagables to calculate the differences.</p></li>
+<li><p><strong>segment_name</strong> (<em>str</em>) -- Name of the segment to calculate the differences for.</p></li>
+<li><p><strong>output_dir</strong> (<em>Path</em><em>, </em><em>optional</em>) -- Output directory. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TfsCollection of the differences per propagable.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>SegmentDiffs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">segment_by_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">SegmentDiffs</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#segment_by_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Run the segment-by-segment propagation.</p>
+<dl class="simple">
+<dt>Note: The corrections are the same for each segment, which means we only need to create</dt><dd><p>them once, and for the remaining segments, we could just give the path to the output
+file (as the segment creator checks if the file exists).
+But as we do not really know the output file here, and creation of the file is quick,
+we just let the segment creator overwrite the file.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

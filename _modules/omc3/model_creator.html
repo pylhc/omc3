@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model_creator &mdash; omc3 0.21.1 documentation</title>
+  <title>omc3.model_creator &mdash; omc3 0.22.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6081af2d"></script>
+      <script src="../../_static/documentation_options.js?v=5686f5df"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#global-correction">Global Correction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../entrypoints/other.html">Other</a><ul>
@@ -125,7 +126,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#segment-creator">Segment Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -153,6 +153,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/tune_analysis.html">Tune Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
@@ -165,6 +172,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#contexts">Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#io-tools">IO Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#mock">Mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#outliers">Outliers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#stats">Stats</a></li>
@@ -206,53 +215,36 @@
 
 <span class="sd">Entrypoint to run the model creator for LHC, PSBooster and PS models.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.madx_wrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_string</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">manager</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">JOB_MODEL_MADX_MASK</span><span class="p">,</span> <span class="n">PATHFETCHER</span><span class="p">,</span> <span class="n">AFSFETCHER</span><span class="p">,</span> <span class="n">OPTICS_SUBDIR</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.lhc_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa</span>
-    <span class="n">LhcBestKnowledgeCreator</span><span class="p">,</span>
-    <span class="n">LhcCouplingCreator</span><span class="p">,</span>
-    <span class="n">LhcModelCreator</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.ps_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsModelCreator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.psbooster_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoosterModelCreator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.segment_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegmentCreator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_dirs</span><span class="p">,</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">manager</span> <span class="k">as</span> <span class="n">model_manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AcceleratorDefinitionError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fetcher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.abstract_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCreator</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreatorType</span><span class="p">,</span> <span class="n">get_model_creator_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.parsertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_help</span><span class="p">,</span> <span class="n">require_param</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstract_model_creator</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<span class="n">CREATORS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;lhc&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;nominal&quot;</span><span class="p">:</span> <span class="n">LhcModelCreator</span><span class="p">,</span>
-            <span class="s2">&quot;best_knowledge&quot;</span><span class="p">:</span> <span class="n">LhcBestKnowledgeCreator</span><span class="p">,</span>
-            <span class="s2">&quot;segment&quot;</span><span class="p">:</span> <span class="n">SegmentCreator</span><span class="p">,</span>
-            <span class="s2">&quot;coupling_correction&quot;</span><span class="p">:</span> <span class="n">LhcCouplingCreator</span><span class="p">},</span>
-    <span class="s2">&quot;psbooster&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;nominal&quot;</span><span class="p">:</span> <span class="n">BoosterModelCreator</span><span class="p">,</span>
-                  <span class="s2">&quot;segment&quot;</span><span class="p">:</span> <span class="n">SegmentCreator</span><span class="p">},</span>
-    <span class="s2">&quot;ps&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;nominal&quot;</span><span class="p">:</span> <span class="n">PsModelCreator</span><span class="p">,</span>
-           <span class="s2">&quot;segment&quot;</span><span class="p">:</span> <span class="n">SegmentCreator</span><span class="p">},</span>
-<span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;nominal&quot;</span><span class="p">,</span> <span class="s2">&quot;best_knowledge&quot;</span><span class="p">,</span> <span class="s2">&quot;coupling_correction&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Type of model to create. [Required]&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">Path</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output path for model, twiss files will be writen here. [Required]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">BEST_KNOWLEDGE</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>  <span class="c1"># this script manages only these two</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Type of model to create.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;logfile&quot;</span><span class="p">,</span>
@@ -261,11 +253,22 @@
               <span class="s2">&quot;If not provided it will be written to sys.stdout.&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;show_help&quot;</span><span class="p">,</span> 
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> 
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Instructs the subsequent modules to print a help message&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">get_fetcher_params</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fetcher_params</span><span class="p">():</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fetch&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Select the fetcher which sets up the lattice definition (madx, seq, strength files).&quot;</span>
               <span class="s2">&quot;Note: not all fetchers might be available for the chosen Model Creator&quot;</span><span class="p">),</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="n">PATHFETCHER</span><span class="p">,</span> <span class="n">AFSFETCHER</span><span class="p">]</span>  <span class="c1"># [PATHFETCHER, AFSFETCHER, GITFETCHER, LSAFETCHER]</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="n">Fetcher</span><span class="o">.</span><span class="n">PATH</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Fetcher</span><span class="o">.</span><span class="n">AFS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>  <span class="c1"># tuple(fetcher.value for fetcher in Fetcher) when GIT and LSA are implemented</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
@@ -275,9 +278,8 @@
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;list_choices&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;if selected, a list of valid optics files is printed&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If selected, a list of valid optics files is printed&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;show_help&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;instructs the subsequent modules to print a help message&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
 
@@ -287,7 +289,7 @@
 <div class="viewcode-block" id="create_instance_and_model">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.model_creator.create_instance_and_model">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_instance_and_model</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_instance_and_model</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manager Keyword Args:</span>
 <span class="sd">        *--Required--*</span>
@@ -319,7 +321,7 @@
 
 <span class="sd">            Type of model to create.</span>
 
-<span class="sd">            choices: ``(&#39;nominal&#39;, &#39;best_knowledge&#39;, &#39;coupling_correction&#39;)``</span>
+<span class="sd">            choices: ``(&#39;nominal&#39;, &#39;best_knowledge&#39;)``</span>
 
 
 <span class="sd">    Accelerator Keyword Args:</span>
@@ -343,7 +345,7 @@
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">show_help</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1">#with silence():</span>
-            <span class="n">accel_class</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_accelerator_class</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
+            <span class="n">accel_class</span> <span class="o">=</span> <span class="n">model_manager</span><span class="o">.</span><span class="n">get_accelerator_class</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---- Accelerator </span><span class="si">{</span><span class="n">accel_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">  | Usage ----</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">print_help</span><span class="p">(</span><span class="n">accel_class</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">())</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -351,71 +353,43 @@
             <span class="k">pass</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---- Model Creator | Usage ----</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">print_help</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">_get_params</span><span class="p">())</span>
+        <span class="n">print_help</span><span class="p">(</span><span class="n">model_manager</span><span class="o">.</span><span class="n">_get_params</span><span class="p">())</span>
         <span class="n">print_help</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> 
 
-    
     <span class="c1"># proceed to the creator</span>
-    <span class="n">accel_inst</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
+    <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span> <span class="o">=</span> <span class="n">model_manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
     <span class="n">require_param</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">_get_params</span><span class="p">(),</span> <span class="n">opt</span><span class="p">)</span>
-
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator Instance </span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">, model type </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">creator</span><span class="p">:</span> <span class="n">abstract_model_creator</span><span class="o">.</span><span class="n">ModelCreator</span> <span class="o">=</span> <span class="n">CREATORS</span><span class="p">[</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">NAME</span><span class="p">][</span><span class="n">opt</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
-
-    <span class="c1"># now that the creator is initialised, we can ask for modifiers that are actually present</span>
-    <span class="c1"># using the fetcher we chose</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">creator</span><span class="o">.</span><span class="n">check_options</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="n">accel_inst</span><span class="o">.</span><span class="n">verify_object</span><span class="p">()</span>
+    
+    <span class="c1"># model_dir is used as the output directory</span>
     <span class="n">require_param</span><span class="p">(</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">_get_params</span><span class="p">(),</span> <span class="n">opt</span><span class="p">)</span>
+    <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
+    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">outputdir</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
 
-    <span class="c1"># Prepare model-dir output directory</span>
-    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+    <span class="n">creator_class</span> <span class="o">=</span> <span class="n">get_model_creator_class</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+    <span class="n">creator</span><span class="p">:</span> <span class="n">ModelCreator</span> <span class="o">=</span> <span class="n">creator_class</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">logfile</span><span class="p">)</span>
 
-    <span class="c1"># adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)</span>
-    <span class="k">if</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">accel_inst</span><span class="o">.</span><span class="n">modifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">_find_modifier</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">modifiers</span><span class="p">]</span>
+    <span class="c1"># Check if the options (i.e. the values of the arguments given) are valid choices.</span>
+    <span class="c1"># This needs to be done by the creator itself, as it should know what valid options are</span>
+    <span class="c1"># and can then also print them. If this fails, we have to abort.</span>
+    <span class="c1">#</span>
+    <span class="c1"># !! NOTE: If succesfull, THIS CAN MODIFY THE ACCELERATOR INSTANCE on creator.accel !!</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">creator</span><span class="o">.</span><span class="n">prepare_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">AcceleratorDefinitionError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">return</span>
+    
+    <span class="c1"># Save config only now, to not being written out for each time the choices are listed</span>
+    <span class="n">save_config</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> <span class="n">unknown_opt</span><span class="o">=</span><span class="n">accel_opt</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="vm">__file__</span><span class="p">)</span>
 
-    <span class="c1"># Prepare paths</span>
-    <span class="n">create_dirs</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-    <span class="n">creator</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
+    <span class="c1"># Run the actual model creation</span>
+    <span class="n">creator</span><span class="o">.</span><span class="n">full_run</span><span class="p">()</span>
     
-    <span class="n">madx_script</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">get_madx_script</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
-    <span class="c1"># Run madx to create model</span>
-    <span class="n">run_string</span><span class="p">(</span><span class="n">madx_script</span><span class="p">,</span>
-               <span class="n">output_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">/</span> <span class="n">JOB_MODEL_MADX_MASK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">type</span><span class="p">),</span>
-               <span class="n">log_file</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span>
-               <span class="n">cwd</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-    
-    <span class="c1"># Save config at the end, to not being written out for each time the choices are listed</span>
-    <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">),</span> <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> <span class="n">unknown_opt</span><span class="o">=</span><span class="n">accel_opt</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="vm">__file__</span><span class="p">)</span>
-    
-    <span class="c1"># Return accelerator instance</span>
-    <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span>
     <span class="k">return</span> <span class="n">accel_inst</span></div>
 
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_find_modifier</span><span class="p">(</span><span class="n">modifier</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">):</span>
-    <span class="c1"># first case: if modifier exists as is, take it</span>
-    <span class="k">if</span> <span class="n">modifier</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">modifier</span>
-
-    <span class="c1"># second case: try if it is already in the output dir</span>
-    <span class="n">model_dir_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">modifier</span>
-    <span class="k">if</span> <span class="n">model_dir_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">model_dir_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
-
-    <span class="c1"># and last case, try to find it in the acc-models rep</span>
-    <span class="k">if</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">optics_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="o">/</span> <span class="n">OPTICS_SUBDIR</span> <span class="o">/</span> <span class="n">modifier</span>
-        <span class="k">if</span> <span class="n">optics_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">optics_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
-
-    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;couldn&#39;t find modifier </span><span class="si">{</span><span class="n">modifier</span><span class="si">}</span><span class="s2">. Tried in </span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">acc_model_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">OPTICS_SUBDIR</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

@@ -1,0 +1,843 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.segment_by_segment.propagables &mdash; omc3 0.22.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5686f5df"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.segment_by_segment.propagables</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.segment_by_segment.propagables</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Segment by Segment: Propagables</span>
+<span class="sd">-------------------------------</span>
+
+<span class="sd">In this module, the propagables, i.e. the parameters that can be propagated</span>
+<span class="sd">through the segment, are defined. </span>
+<span class="sd">Each propagable has a corresponding class, which contains the functions that</span>
+<span class="sd">describe the forward and backward propagation for the respective parameter.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span><span class="p">,</span> <span class="n">PLANES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.optics</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpticsMeasurement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ALPHA</span><span class="p">,</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">NAME</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment</span><span class="w"> </span><span class="kn">import</span> <span class="n">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Measurement</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PropagableBoundaryConditions</span> <span class="k">as</span> <span class="n">BoundaryConditions</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropagableColumns</span> <span class="k">as</span> <span class="n">Columns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.segments</span><span class="w"> </span><span class="kn">import</span> <span class="n">Segment</span><span class="p">,</span> <span class="n">SegmentDiffs</span><span class="p">,</span> <span class="n">SegmentModels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="n">IndexType</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span>
+    <span class="n">ValueErrorType</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_all_propagables">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.get_all_propagables">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_all_propagables</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Return all defined Propagables. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Phase</span><span class="p">,</span> <span class="n">BetaPhase</span><span class="p">,</span> <span class="n">AlphaPhase</span></div>
+
+
+
+<div class="viewcode-block" id="Propagable">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Propagable</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="n">_init_pattern</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># see init_conditions_dict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="n">Segment</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="p">:</span> <span class="n">Segment</span> <span class="o">=</span> <span class="n">segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span> <span class="o">=</span> <span class="n">meas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_segment_models</span><span class="p">:</span> <span class="n">SegmentModels</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">segment_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;TfsCollection of the segment models.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment_models</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Segment_models have not been set.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment_models</span>
+
+    <span class="nd">@segment_models</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">segment_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment_models</span><span class="p">:</span> <span class="n">SegmentModels</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_segment_models</span> <span class="o">=</span> <span class="n">segment_models</span>
+
+<div class="viewcode-block" id="Propagable.init_conditions_dict">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.init_conditions_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_conditions_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dictionary containing the initial values for this propagable at start and end</span>
+<span class="sd">        of the segment.</span>
+
+<span class="sd">        For the naming, see `save_initial_and_final_values` macro in </span>
+<span class="sd">        `omc3/model/madx_macros/general.macros.madx`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_pattern</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> has no ``_init_pattern`` implemented.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Contact a developer.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="c1"># get start value</span>
+            <span class="n">start_cond</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">start_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="s2">&quot;ini&quot;</span><span class="p">)</span>
+            <span class="n">init_dict</span><span class="p">[</span><span class="n">start_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_cond</span>
+
+            <span class="c1"># get end value</span>
+            <span class="n">end_cond</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">end_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span>
+            <span class="n">init_dict</span><span class="p">[</span><span class="n">end_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_cond</span>
+        <span class="k">return</span> <span class="n">init_dict</span></div>
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoundaryConditions</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the start condition for all propagables at the given plane.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">Measurement</span><span class="p">(</span><span class="o">*</span><span class="n">AlphaPhase</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)),</span>
+            <span class="n">beta</span><span class="o">=</span><span class="n">Measurement</span><span class="p">(</span><span class="o">*</span><span class="n">BetaPhase</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">))</span>
+        <span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoundaryConditions</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the end condition for all propagables at the given plane.</span>
+<span class="sd">        Note: Alpha needs to be &quot;reversed&quot; as the end-condition is only used in backward</span>
+<span class="sd">              propagation and alpha is anti-symmetric in time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
+            <span class="n">alpha</span><span class="o">=-</span><span class="n">Measurement</span><span class="p">(</span><span class="o">*</span><span class="n">AlphaPhase</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)),</span>
+            <span class="n">beta</span><span class="o">=</span><span class="n">Measurement</span><span class="p">(</span><span class="o">*</span><span class="n">BetaPhase</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">))</span>
+        <span class="p">)</span>
+    
+
+<div class="viewcode-block" id="Propagable.get_at">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.get_at">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_at</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">IndexType</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span>
+               <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValueErrorType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get corresponding measurement values at the elements ``names``</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            names: element name(s)</span>
+<span class="sd">            measurement: Measurement Collection</span>
+<span class="sd">            plane: plane to use</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Series or float containing the required values at ``names``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Propagable.measured_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.measured_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolation of measured deviations to forward propagated model.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Propagable.measured_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.measured_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolation of measured deviations to backward propagated model.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+    
+<div class="viewcode-block" id="Propagable.expected_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.expected_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolation of measured deviations to corrected forward propagated model.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Propagable.expected_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.expected_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolation of measured deviations to corrected backward propagated model.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Propagable.correction_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.correction_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deviations between forward propagated models with and without correction.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Propagable.correction_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.correction_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deviations between backward propagated models with and without correction.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+    
+<div class="viewcode-block" id="Propagable.add_differences">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Propagable.add_differences">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_differences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment_diffs</span><span class="p">:</span> <span class="n">SegmentDiffs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This function calculates the differences between the propagated </span>
+<span class="sd">        forward and backward models and the measured values.</span>
+<span class="sd">        It then adds the results to the segment_diffs class </span>
+<span class="sd">        (which writes them out, if its ``allow_write`` is set to ``True``).&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Phase">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Phase</span><span class="p">(</span><span class="n">Propagable</span><span class="p">):</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="n">Columns</span> <span class="o">=</span> <span class="n">Columns</span><span class="p">(</span><span class="n">PHASE</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Phase.init_conditions_dict">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.init_conditions_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_conditions_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># The phase is not necessary for the initial conditions.</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="Phase.get_at">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.get_at">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_at</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">IndexType</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValueErrorType</span><span class="p">:</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">planed</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">total_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">columns</span><span class="o">.</span><span class="n">column</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">total_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">columns</span><span class="o">.</span><span class="n">error_column</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">phase</span><span class="p">,</span> <span class="n">error</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">IndexType</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValueErrorType</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">meas</span><span class="o">.</span><span class="n">total_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Phase.measured_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.measured_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measured</span><span class="p">(</span>
+            <span class="n">plane</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> 
+            <span class="n">forward</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Phase.correction_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.correction_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_correction</span><span class="p">(</span>
+            <span class="n">plane</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">forward_corrected</span><span class="p">,</span>
+            <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Phase.expected_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.expected_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measured</span><span class="p">(</span>
+            <span class="n">plane</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">forward_corrected</span><span class="p">,</span> 
+            <span class="n">forward</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Phase.measured_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.measured_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measured</span><span class="p">(</span>
+            <span class="n">plane</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">backward</span><span class="p">,</span> 
+            <span class="n">forward</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Phase.correction_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.correction_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_correction</span><span class="p">(</span>
+            <span class="n">plane</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">backward</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">backward_corrected</span><span class="p">,</span>
+            <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Phase.expected_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.expected_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measured</span><span class="p">(</span>
+            <span class="n">plane</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">backward_corrected</span><span class="p">,</span> 
+            <span class="n">forward</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Phase.add_differences">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.Phase.add_differences">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_differences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment_diffs</span><span class="p">:</span> <span class="n">SegmentDiffs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Calculate the differences between the propagated models and the measured values.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">_common_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">forward</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="o">.</span><span class="n">total_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># measurement points/BPMs</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">planed</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">S</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">forward</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">S</span><span class="p">]</span>
+
+            <span class="n">phase</span><span class="p">,</span> <span class="n">err_phase</span> <span class="o">=</span> <span class="n">Phase</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">phase_diff</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">phase</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_phase</span>
+
+            <span class="n">phase</span><span class="p">,</span> <span class="n">err_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_forward</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">forward</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_forward</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_phase</span>
+            
+            <span class="n">phase</span><span class="p">,</span> <span class="n">err_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_backward</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">backward</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_backward</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_phase</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;forward_corrected&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span> 
+                <span class="n">phase</span><span class="p">,</span> <span class="n">err_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction_forward</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">forward_correction</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_forward_correction</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+
+                <span class="n">phase</span><span class="p">,</span> <span class="n">err_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_forward</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">forward_expected</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_forward_expected</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_phase</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;backward_corrected&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span> 
+                <span class="n">phase</span><span class="p">,</span> <span class="n">err_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correction_backward</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">backward_correction</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_backward_correction</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+
+                <span class="n">phase</span><span class="p">,</span> <span class="n">err_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_backward</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">backward_expected</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_backward_expected</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_phase</span>
+
+            <span class="c1"># save to diffs/write to file (if allow_write is set)</span>
+            <span class="n">segment_diffs</span><span class="o">.</span><span class="n">phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_measured</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seg_model</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">forward</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute the difference between the given segment model and the measured values.&quot;&quot;&quot;</span>
+        <span class="n">model_phase</span> <span class="o">=</span> <span class="n">seg_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_column</span><span class="p">(</span><span class="n">plane</span><span class="p">)]</span>
+        <span class="n">tune</span> <span class="o">=</span> <span class="n">seg_model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+        <span class="n">init_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_start</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="k">if</span> <span class="n">forward</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_end</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">element</span><span class="p">:</span>
+            <span class="c1"># Segment</span>
+            <span class="n">meas_phase</span><span class="p">,</span> <span class="n">meas_err</span> <span class="o">=</span> <span class="n">Phase</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>  <span class="c1"># slice(None) gives all, i.e. `:`</span>
+            
+            <span class="c1"># filter names for segment</span>
+            <span class="n">segment_elements</span> <span class="o">=</span> <span class="n">seg_model</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">forward</span><span class="p">:</span>
+                <span class="n">segment_elements</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">segment_elements</span><span class="p">))</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">_common_indices</span><span class="p">(</span><span class="n">segment_elements</span><span class="p">,</span> <span class="n">meas_phase</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># keep same order as segment</span>
+
+            <span class="n">meas_phase</span> <span class="o">=</span> <span class="n">meas_phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+            <span class="n">model_phase</span> <span class="o">=</span> <span class="n">model_phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+
+            <span class="c1"># take care of circularity of accelerator (when the segment start is before first bpm in measurement)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_s</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+            <span class="n">meas_phase</span> <span class="o">=</span> <span class="n">meas_phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span> <span class="o">&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">tune</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># calculate phase with reference to segment (start/end)</span>
+            <span class="n">reference_element</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">forward</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># start of the propagation</span>
+            <span class="n">segment_model_phase</span> <span class="o">=</span> <span class="n">model_phase</span> <span class="o">-</span> <span class="n">model_phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reference_element</span><span class="p">]</span>
+            <span class="n">segment_meas_phase</span> <span class="o">=</span> <span class="n">meas_phase</span> <span class="o">-</span> <span class="n">meas_phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reference_element</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">forward</span><span class="p">:</span>
+                <span class="n">segment_model_phase</span> <span class="o">=</span> <span class="o">-</span><span class="n">segment_model_phase</span>  <span class="c1"># TODO: Why?</span>
+
+            <span class="n">phase_beating</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">phase_diff</span><span class="p">(</span><span class="n">segment_meas_phase</span><span class="p">,</span> <span class="n">segment_model_phase</span><span class="p">)</span>
+            <span class="c1"># propagate the error</span>
+            <span class="n">propagated_err</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">propagate_error_phase</span><span class="p">(</span><span class="n">model_phase</span><span class="p">,</span> <span class="n">init_condition</span><span class="p">)</span>
+            <span class="n">total_err</span> <span class="o">=</span> <span class="n">_quadratic_add</span><span class="p">(</span><span class="n">meas_err</span><span class="p">,</span> <span class="n">propagated_err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">phase_beating</span><span class="p">,</span> <span class="n">total_err</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Element segment</span>
+            <span class="n">propagated_phase</span> <span class="o">=</span> <span class="n">model_phase</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># no measurement value exists at the element</span>
+            <span class="n">propagated_err</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">propagate_error_phase</span><span class="p">(</span><span class="n">propagated_phase</span><span class="p">,</span> <span class="n">init_condition</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">propagated_phase</span><span class="p">,</span> <span class="n">propagated_err</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seg_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">seg_model_corr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">forward</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the difference between the nominal and the corrected model.&quot;&quot;&quot;</span>
+        <span class="n">model_phase</span> <span class="o">=</span> <span class="n">seg_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_column</span><span class="p">(</span><span class="n">plane</span><span class="p">)]</span>
+        <span class="n">corrected_phase</span> <span class="o">=</span> <span class="n">seg_model_corr</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_column</span><span class="p">(</span><span class="n">plane</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">element</span><span class="p">:</span>
+            <span class="n">model_phase</span> <span class="o">=</span> <span class="n">model_phase</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">corrected_phase</span> <span class="o">=</span> <span class="n">corrected_phase</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="n">init_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_start</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">forward</span><span class="p">:</span> 
+            <span class="n">phase_beating</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">phase_diff</span><span class="p">(</span><span class="n">corrected_phase</span><span class="p">,</span> <span class="n">model_phase</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">phase_beating</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">phase_diff</span><span class="p">(</span><span class="n">model_phase</span><span class="p">,</span> <span class="n">corrected_phase</span><span class="p">)</span>
+        <span class="n">propagated_err</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">propagate_error_phase</span><span class="p">(</span><span class="n">corrected_phase</span><span class="p">,</span> <span class="n">init_condition</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">phase_beating</span><span class="p">,</span> <span class="n">propagated_err</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_model_column</span><span class="p">(</span><span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Helper function to get the phase-column in the model, as it has a different name as in the measurement.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="BetaPhase">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BetaPhase</span><span class="p">(</span><span class="n">Propagable</span><span class="p">):</span>
+
+    <span class="n">_init_pattern</span> <span class="o">=</span> <span class="s2">&quot;bet</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="n">Columns</span> <span class="o">=</span> <span class="n">Columns</span><span class="p">(</span><span class="n">BETA</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BetaPhase.get_at">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.get_at">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_at</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">IndexType</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValueErrorType</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">planed</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">beta_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">column</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">beta_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_column</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">beta</span><span class="p">,</span> <span class="n">error</span></div>
+
+
+<div class="viewcode-block" id="BetaPhase.measured_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.measured_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measured</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BetaPhase.correction_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.correction_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BetaPhase.expected_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.expected_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BetaPhase.measured_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.measured_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_measured</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">segment_models</span><span class="o">.</span><span class="n">backward</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BetaPhase.correction_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.correction_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    
+<div class="viewcode-block" id="BetaPhase.expected_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.expected_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    
+<div class="viewcode-block" id="BetaPhase.add_differences">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.BetaPhase.add_differences">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_differences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment_diffs</span><span class="p">:</span> <span class="n">SegmentDiffs</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_measured</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seg_model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">forward</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">model_beta</span> <span class="o">=</span> <span class="n">seg_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">model_phase</span> <span class="o">=</span> <span class="n">seg_model</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">init_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_start</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="k">if</span> <span class="n">forward</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_end</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segment</span><span class="o">.</span><span class="n">element</span><span class="p">:</span>
+            <span class="n">beta</span><span class="p">,</span> <span class="n">err_beta</span> <span class="o">=</span> <span class="n">BetaPhase</span><span class="o">.</span><span class="n">get_at</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meas</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
+
+            <span class="c1"># filter model indices</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">_common_indices</span><span class="p">(</span><span class="n">seg_model</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">beta</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">model_beta</span> <span class="o">=</span> <span class="n">model_beta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+            <span class="n">model_phase</span> <span class="o">=</span> <span class="n">model_phase</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">]</span>
+
+            <span class="c1"># calculate beta beating</span>
+            <span class="n">beta_beating</span> <span class="o">=</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="n">model_beta</span><span class="p">)</span> <span class="o">/</span> <span class="n">model_beta</span>
+
+            <span class="c1"># propagate the error</span>
+            <span class="n">err_beta</span> <span class="o">=</span> <span class="n">err_beta</span> <span class="o">/</span> <span class="n">model_beta</span>
+            <span class="n">propagated_err</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">propagate_error_beta</span><span class="p">(</span><span class="n">model_beta</span><span class="p">,</span> <span class="n">model_phase</span><span class="p">,</span> <span class="n">init_condition</span><span class="p">)</span>
+            <span class="n">total_err</span> <span class="o">=</span> <span class="n">_quadratic_add</span><span class="p">(</span><span class="n">err_beta</span><span class="p">,</span> <span class="n">propagated_err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">beta_beating</span><span class="p">,</span> <span class="n">total_err</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prop_beta</span> <span class="o">=</span> <span class="n">model_beta</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">propagated_err</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">propagate_error_beta</span><span class="p">(</span><span class="n">prop_beta</span><span class="p">,</span> <span class="n">model_phase</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">init_condition</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">prop_beta</span><span class="p">,</span> <span class="n">propagated_err</span></div>
+
+
+
+<div class="viewcode-block" id="AlphaPhase">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AlphaPhase</span><span class="p">(</span><span class="n">Propagable</span><span class="p">):</span>
+
+    <span class="n">_init_pattern</span> <span class="o">=</span> <span class="s2">&quot;alf</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="n">Columns</span> <span class="o">=</span> <span class="n">Columns</span><span class="p">(</span><span class="n">ALPHA</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AlphaPhase.get_at">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.get_at">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_at</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">IndexType</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValueErrorType</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">planed</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">beta_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">column</span><span class="p">]</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">meas</span><span class="o">.</span><span class="n">beta_phase</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">names</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">error_column</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">error</span></div>
+
+    
+<div class="viewcode-block" id="AlphaPhase.init_conditions_dict">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.init_conditions_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_conditions_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># alpha needs to be inverted for backward propagation, i.e. the end-init</span>
+        <span class="n">init_cond</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init_conditions_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">init_cond</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;end&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">init_cond</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">init_cond</span></div>
+
+
+<div class="viewcode-block" id="AlphaPhase.measured_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.measured_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AlphaPhase.correction_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.correction_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AlphaPhase.expected_forward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.expected_forward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AlphaPhase.measured_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.measured_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measured_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AlphaPhase.correction_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.correction_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correction_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AlphaPhase.expected_backward">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.expected_backward">[docs]</a>
+    <span class="nd">@cache</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    
+<div class="viewcode-block" id="AlphaPhase.add_differences">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.propagables.AlphaPhase.add_differences">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_differences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment_diffs</span><span class="p">:</span> <span class="n">SegmentDiffs</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<span class="c1"># Helper -----------------------------------------------------------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_common_indices</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Common indices between the sets of given indices.&quot;&quot;&quot;</span>
+    <span class="n">common</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">common</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">common</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quadratic_add</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the root-sum-squared of the given values.</span>
+<span class="sd">    The individual &quot;values&quot; can be ``pd.Series`` and then their </span>
+<span class="sd">    elements are summed by indexs.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="n">value</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
