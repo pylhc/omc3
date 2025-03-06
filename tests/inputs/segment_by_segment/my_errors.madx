@@ -1,0 +1,2 @@
+ktqx2.r1 = ktqx2.r1 + 1e-5;
+ktqx1.r5 = ktqx1.r5 - 2.2e-5;

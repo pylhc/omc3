@@ -11,7 +11,8 @@ import string
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 import git
 
 
@@ -22,11 +23,14 @@ import pytest
 
 from generic_parser import DotDict
 from omc3 import model
+import omc3
 
 INPUTS = Path(__file__).parent / 'inputs'
 MODELS = INPUTS / "models"
+OMC3_DIR = Path(omc3.__file__).parent
 MADX_MACROS = Path(model.__file__).parent / "madx_macros"
 GITLAB_REPO_ACC_MODELS = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
+INPUTS_MODEL_DIR_FORMAT = "{year}_{tunes}_b{beam}_{beta}{suffix}"
 
 
 @contextmanager
@@ -102,7 +106,6 @@ def assert_tfsdataframe_equal(df1, df2, compare_keys=True, **kwargs):
 
 
 # Model fixtures from /inputs/models -------------------------------------------
-# Hint: Before adding 25cm models, update files (see inj model folders, jdilly 2021)
 
 @pytest.fixture(scope="module", params=[1, 2], ids=ids_str("beam{}"))
 def model_inj_beams(request, tmp_path_factory):
@@ -122,6 +125,12 @@ def model_inj_beam2(request, tmp_path_factory):
     return tmp_model(tmp_path_factory, beam=2, year="2018", tunes="inj", beta="11m")
 
 
+@pytest.fixture(scope="module", params=[1, 2])
+def model_25cm_beams(request, tmp_path_factory):
+    """ Fixture for 25cm model for both beams"""
+    return tmp_model(tmp_path_factory, beam=request.param, year="2018", tunes="col", beta="25cm")
+
+
 @pytest.fixture(scope="module")
 def model_25cm_beam1(request, tmp_path_factory):
     """ Fixture for 25cm beam 1 model"""
@@ -132,6 +141,12 @@ def model_25cm_beam1(request, tmp_path_factory):
 def model_25cm_beam2(request, tmp_path_factory):
     """ Fixture for 25cm beam 2 model"""
     return tmp_model(tmp_path_factory, beam=2, year="2018", tunes="col", beta="25cm")
+
+
+@pytest.fixture(scope="module", params=[1, 2])
+def model_30cm_flat_beams(request, tmp_path_factory):
+    """ Fixture for inj model for both beams"""
+    return tmp_model(tmp_path_factory, beam=request.param, year="2025", tunes="inj", beta="30cm", suffix="_flat")
 
 
 def tmp_model(factory, year: str, beam: int, tunes: str, beta: str, suffix: str = ""):
@@ -151,7 +166,7 @@ def tmp_model(factory, year: str, beam: int, tunes: str, beta: str, suffix: str 
         A DotDict with the attributes ``path``, the path to the model directory
         and ``settings``, the accelerator class settings for this model.
     """
-    model_name = f"{year}_{tunes}_b{beam}_{beta}{suffix}"
+    model_name = INPUTS_MODEL_DIR_FORMAT.format(year=year, beam=beam, tunes=tunes, beta=beta, suffix=suffix)
     tmp_model_path = factory.mktemp(f"model_{model_name}")
     tmp_model_path.rmdir()  # otherwise copytree will complain
 
@@ -174,26 +189,26 @@ def tmp_model(factory, year: str, beam: int, tunes: str, beta: str, suffix: str 
 # Acc-Models Fixtures ---
 
 @pytest.fixture(scope="session")
-def acc_models_lhc_2023(tmp_path_factory):
-    return acc_models_lhc(tmp_path_factory, "lhc", 2023)
+def acc_models_lhc_2025(tmp_path_factory):
+    return clone_acc_models(tmp_path_factory, "lhc", 2025)
 
 @pytest.fixture(scope="session")
 def acc_models_lhc_2022(tmp_path_factory):
-    return acc_models_lhc(tmp_path_factory, "lhc", 2022)
+    return clone_acc_models(tmp_path_factory, "lhc", 2022)
 
 @pytest.fixture(scope="session")
 def acc_models_lhc_2018(tmp_path_factory):
-    return acc_models_lhc(tmp_path_factory, "lhc", 2018)
+    return clone_acc_models(tmp_path_factory, "lhc", 2018)
 
 @pytest.fixture(scope="session")
 def acc_models_psb_2021(tmp_path_factory):
-    return acc_models_lhc(tmp_path_factory, "psb", 2021)
+    return clone_acc_models(tmp_path_factory, "psb", 2021)
 
 @pytest.fixture(scope="session")
 def acc_models_ps_2021(tmp_path_factory):
-    return acc_models_lhc(tmp_path_factory, "ps", 2021)
+    return clone_acc_models(tmp_path_factory, "ps", 2021)
 
-def acc_models_lhc(tmp_path_factory, accel: str, year: int):
+def clone_acc_models(tmp_path_factory, accel: str, year: int):
     """ Clone the acc-models directory for the specified accelerator from github into a temporary directory. """
     tmp_path = tmp_path_factory.mktemp(f"acc-models-{accel}-{year}")
     git.Repo.clone_from(GITLAB_REPO_ACC_MODELS.format(accel), tmp_path, branch=str(year)) 

@@ -118,6 +118,7 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
 
 """
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -125,15 +126,27 @@ import pandas as pd
 
 from omc3.correction.response_io import read_varmap
 from omc3.correction.sequence_evaluation import check_varmap_file
-from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (
-    BETA, DISPERSION, F1001, F1010, NORM_DISPERSION, PHASE_ADV, TUNE, S, PHASE
+    BETA,
+    DISPERSION,
+    F1001,
+    F1010,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+    S,
 )
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from pathlib import Path
+
+    import tfs
+
+    from omc3.model.accelerators.accelerator import Accelerator
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -162,8 +175,11 @@ class TwissResponse:
     #            INIT
     ################################
 
-    def __init__(self, accel_inst, variable_categories, varmap_or_path, at_elements="bpms"):
-
+    def __init__(self, 
+        accel_inst: Accelerator, 
+        variable_categories: Sequence[str], 
+        varmap_or_path: dict | str | Path, 
+        at_elements: str = "bpms"):
         LOG.debug("Initializing TwissResponse.")
         with timeit(lambda t: LOG.debug(f"  Time initializing TwissResponse: {t} s")):
             # Get input
@@ -199,7 +215,7 @@ class TwissResponse:
             self._norm_dispersion_mapped = None
 
     @staticmethod
-    def _get_model_twiss(accel_inst):
+    def _get_model_twiss(accel_inst: Accelerator) -> tfs.TfsDataFrame:
         """ Load model, but keep only BPMs and Magnets """
         model = accel_inst.elements
         LOG.debug("Removing non-necessary entries:")
@@ -212,7 +228,7 @@ class TwissResponse:
         model.loc[DUMMY_ID, [f"{S}", f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]] = 0.0
         return model
 
-    def _get_variable_mapping(self, varmap_or_path):
+    def _get_variable_mapping(self, varmap_or_path: dict | str | Path):
         """Get variable mapping as dictionary
 
         Dev hint: Define _variables first!

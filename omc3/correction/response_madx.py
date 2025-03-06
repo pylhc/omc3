@@ -26,6 +26,7 @@ import tfs
 from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.constants import INCR, ORBIT_DPP
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
@@ -46,6 +47,7 @@ LOG = logging_tools.get_logger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 
 # Full Response Mad-X ##########################################################
@@ -56,7 +58,7 @@ def create_fullresponse(
     variable_categories: Sequence[str],
     delta_k: float = 2e-5,
     num_proc: int = multiprocessing.cpu_count(),
-    temp_dir: Path = None
+    temp_dir: Path | None = None
 ) -> dict[str, pd.DataFrame]:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
@@ -103,6 +105,7 @@ def _generate_madx_jobs(
     compute_deltap: bool = ORBIT_DPP in variables
     no_dpp_vars = [var for var in variables if var != ORBIT_DPP]
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
+    creator = _get_nominal_model_creator(accel_inst)
 
     madx_job = _get_madx_job(accel_inst)
     deltap_twiss = ""
@@ -111,7 +114,9 @@ def _generate_madx_jobs(
         # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
         madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n" # Set deltap to 0
-        madx_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP)
+        
+        # get update deltap setup from model creator
+        madx_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
         deltap_twiss = f", deltap={ORBIT_DPP}"
 
     for proc_idx in range(num_proc):
@@ -135,25 +140,42 @@ def _generate_madx_jobs(
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[ORBIT_DPP] = delta_k
                 current_job += f"{ORBIT_DPP} = {ORBIT_DPP}{delta_k:+.15e};\n"
-                current_job += accel_inst.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
+                current_job += creator.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
                 current_job += f"twiss, deltap={ORBIT_DPP}, file='{str(temp_dir/f'twiss.{ORBIT_DPP}')}';\n"
         jobfile_path.write_text(current_job)
     return incr_dict
 
 
 def _get_madx_job(accel_inst: Accelerator) -> str:
-    model_dir_backup = accel_inst.model_dir  # use relative paths as we use model_dir as cwd
+    # use relative paths as we use model_dir as cwd
+    model_dir_backup = accel_inst.model_dir  
     accel_inst.model_dir = Path()
-    job_content = accel_inst.get_base_madx_script()
-    accel_inst.model_dir = model_dir_backup
+
+    # get nominal setup from creator
+    creator = _get_nominal_model_creator(accel_inst)
+    job_content = creator.get_base_madx_script()
     job_content += (
         "select, flag=twiss, clear;\n"
         f"select, flag=twiss, pattern='{accel_inst.RE_DICT[AccElementTypes.BPMS]}', "
         "column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;\n\n")
+
+    # restore model_dir
+    accel_inst.model_dir = model_dir_backup
     return job_content
 
 
-def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:
+def _get_nominal_model_creator(accel_inst: Accelerator) -> ModelCreator:
+    """ Get the nominal model creator, to which we can add the change of parameters.
+    
+    This is always done on the nominal model, not the best knowledge model, to ensure
+    that the response matrix is in the most linear regime and therefore most accurate 
+    (for most scenarios).
+    """
+    creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
+    return creator_class(accel_inst)
+
+
+def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None: # type: ignore
     """ Call madx in parallel """
     LOG.debug(f"Starting {num_proc:d} MAD-X jobs...")
     madx_jobs = [_get_jobfiles(temp_dir, index) for index in range(num_proc)]

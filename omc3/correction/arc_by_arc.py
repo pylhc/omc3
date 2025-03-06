@@ -30,7 +30,8 @@ import pandas as pd
 import tfs
 
 from omc3.correction.constants import DIFF, ERROR, MODEL, VALUE, WEIGHT
-from omc3.optics_measurements.constants import NAME, NAME2, PHASE
+from omc3.definitions.constants import PLANE_TO_NUM 
+from omc3.optics_measurements.constants import NAME, NAME2, PHASE, TUNE
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -58,11 +59,11 @@ def reduce_phase_measurements_to_arcs(
     """
     meas_dict = meas_dict.copy()
 
-    for plane, tune in (("X", "Q1"), ("Y", "Q2")):
+    for plane, tune_num in PLANE_TO_NUM.items():
         phase_df = meas_dict[f"{PHASE}{plane}"]
 
         bpm_pairs = get_arc_by_arc_bpm_pairs(phase_df.index, include_ips)
-        new_phase_df = get_bpm_pair_phases(phase_df, bpm_pairs=bpm_pairs, tune=model.headers[tune])
+        new_phase_df = get_bpm_pair_phases(phase_df, bpm_pairs=bpm_pairs, tune=model.headers[f"{TUNE}{tune_num}"])
 
         meas_dict[f"{PHASE}{plane}"] = new_phase_df
     return meas_dict
