@@ -24,6 +24,9 @@ JOB_MODEL_MADX_MASK: str = "job.create_model_{}.madx"
 JOB_MODEL_MADX_NOMINAL: str = JOB_MODEL_MADX_MASK.format("nominal")
 JOB_MODEL_MADX_BEST_KNOWLEDGE: str = JOB_MODEL_MADX_MASK.format("best_knowledge")
 
+MADX_ENERGY_VAR: str = "omc3_beam_energy"
+
+
 # fetcher command names
 class Fetcher(StrEnum):
     PATH = "path"

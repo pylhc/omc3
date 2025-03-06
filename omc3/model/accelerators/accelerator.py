@@ -189,7 +189,7 @@ class Accelerator:
             ]
             self.model = self.elements.loc[bpm_index, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
-        # self.energy = float(self.model.headers["ENERGY"]) * 1e-3  # TODO not the same Energy (jdilly, 2021)
+        self.energy = float(self.model.headers["ENERGY"])  # always 450GeV because we do not set it anywhere properly...
 
         # Excitations #####################################
         driven_filenames = dict(acd=model_dir / TWISS_AC_DAT, adt=model_dir / TWISS_ADT_DAT)

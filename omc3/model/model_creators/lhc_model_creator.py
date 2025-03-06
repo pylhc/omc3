@@ -34,6 +34,7 @@ from omc3.model.constants import (
     LHC_MACROS,
     LHC_MACROS_RUN3,
     MACROS_DIR,
+    MADX_ENERGY_VAR,
     MODIFIER_TAG,
     OPTICS_SUBDIR,
     TWISS_AC_DAT,
@@ -67,7 +68,6 @@ def _b2_columns() -> list[str]:
 
 
 class LhcModelCreator(ModelCreator):
-    _energy_madx_var: str = "omc3_beam_energy"
 
     def __init__(self, accel: Lhc, *args, **kwargs):
         LOGGER.debug("Initializing LHC Model Creator")
@@ -226,7 +226,7 @@ class LhcModelCreator(ModelCreator):
             f"call, file = '{accel.model_dir / MACROS_DIR / GENERAL_MACROS}';\n"
             f"call, file = '{accel.model_dir / MACROS_DIR / LHC_MACROS}';\n"
         )
-        madx_script += f"{self._energy_madx_var} = {accel.energy};\n"
+        madx_script += f"{MADX_ENERGY_VAR} = {accel.energy};\n"
         madx_script += "exec, define_nominal_beams();\n\n"
         if self._uses_run3_macros():
             LOGGER.debug(
@@ -574,8 +574,8 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
             f"    {self.segment.end},",
             ");",
             "",
-            f"beam, particle = proton, sequence=forward_LHCB{accel.beam}, energy = {self._energy_madx_var}, bv={accel.beam_direction:d};",
-            f"beam, particle = proton, sequence=backward_LHCB{accel.beam}, energy = {self._energy_madx_var}, bv={accel.beam_direction:d};",
+            f"beam, particle = proton, sequence=forward_LHCB{accel.beam}, energy = {MADX_ENERGY_VAR}, bv={accel.beam_direction:d};",
+            f"beam, particle = proton, sequence=backward_LHCB{accel.beam}, energy = {MADX_ENERGY_VAR}, bv={accel.beam_direction:d};",
             "",
             f"exec, twiss_segment(forward_LHCB{accel.beam}, \"{self.twiss_forward!s}\", biniLHCB{accel.beam});",
             f"exec, twiss_segment(backward_LHCB{accel.beam}, \"{self.twiss_backward!s}\", bendLHCB{accel.beam});",
