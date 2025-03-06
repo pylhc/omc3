@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-03-06 - v0.22.1 - _jdilly_
+
+- Fixed:
+  - Error in list b2 error choices for lhc best knowledge models.
+
 #### 2025-03-05 - v0.22.0 - _jdilly_
 
 - Added:

@@ -399,7 +399,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
     jobfile: str = JOB_MODEL_MADX_BEST_KNOWLEDGE
     files_to_check: tuple[str] = (TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT)
 
-    def check_options(self, opt) -> bool:
+    def prepare_options(self, opt) -> bool:
         accel: Lhc = self.accel
         check_folder_choices(  
             AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}",
@@ -410,7 +410,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
             stem_only=True,
         )  # raises AcceleratorDefinitionError
 
-        return super().check_options(opt)
+        return super().prepare_options(opt)
 
     def check_accelerator_instance(self):
         accel: Lhc = self.accel
