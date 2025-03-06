@@ -88,7 +88,8 @@ class ModelCreator(ABC):
         # Prepare model-dir output directory
         self.prepare_run()
         
-        # get madx-script with relative output-paths
+        # get madx-script with relative output-paths 
+        # (model_dir is base-path in get_madx_script)
         self.accel.model_dir = Path()
         madx_script = self.get_madx_script()
         self.accel.model_dir = self.output_dir
