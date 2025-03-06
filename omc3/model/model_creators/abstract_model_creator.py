@@ -295,7 +295,8 @@ def check_folder_choices(
     selection: str,
     list_choices: bool = False,
     predicate=iotools.always_true,
-    ) -> Path:
+    stem_only: bool = False,
+    ) -> Path | str:
     """
     A helper function that scans a selected folder for children, which will then be displayed as possible choices.
     This funciton allows the model-creator to get only the file/folder names, check
@@ -309,9 +310,10 @@ def check_folder_choices(
                              In that case `None` is returned, instead of an error
         predicate (callable): A function that takes a path and returns True.
                               if the path results in a valid choice.
+        stem_only (bool): If True, only the stem of the path is checked/returned
     
     Returns:
-       Path: Full path of the selected choice in `parent`.
+       Path: Full path of the selected choice in `parent`. Or the stem if `stem_only` is selected.
 
     Examples:
         Let's say we expect a choice for a sequence file in the folder `model_root`.
@@ -326,9 +328,11 @@ def check_folder_choices(
         check_folder_choices(scenarios, "Expected scenario folder", predicate=lambda p: p.is_dir())
         ```
     """
-    choices = [d.name for d in parent.iterdir() if predicate(d)]
+    choices = [d.stem if stem_only else d.name for d in parent.iterdir() if predicate(d)]
 
     if selection in choices:
+        if stem_only:
+            return selection
         return parent / selection
 
     if list_choices:

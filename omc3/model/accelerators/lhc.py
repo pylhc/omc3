@@ -144,11 +144,6 @@ class Lhc(Accelerator):
             type=str,
             help="The B2 error table to load for the best knowledge model.",
         )
-        params.add_parameter(
-            name="list_b2_errors",
-            action="store_true",
-            help="Lists all available b2 error tables",
-        )
         return params
 
     def __init__(self, *args, **kwargs):
@@ -158,7 +153,6 @@ class Lhc(Accelerator):
         self.year = opt.year
         self.ats = opt.ats
         self.b2_errors = opt.b2_errors
-        self.list_b2_errors = opt.list_b2_errors
         self.beam = opt.beam
         beam_to_beam_direction = {1: 1, 2: -1}
         self.beam_direction = beam_to_beam_direction[self.beam]

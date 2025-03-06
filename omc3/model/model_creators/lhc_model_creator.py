@@ -51,7 +51,7 @@ from omc3.model.model_creators.abstract_model_creator import (
     SegmentCreator,
     check_folder_choices,
 )
-from omc3.utils.iotools import create_dirs, get_check_suffix_func
+from omc3.utils.iotools import create_dirs, get_check_by_regex_func, get_check_suffix_func
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -401,12 +401,14 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
 
     def check_options(self, opt) -> bool:
         accel: Lhc = self.accel
-        if accel.list_b2_errors:
-            errors_dir = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}"
-            for d in errors_dir.iterdir():
-                if d.suffix==".errors" and d.name.startswith("MB2022"):
-                    print(d.stem)
-            return False
+        check_folder_choices(  
+            AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}",
+            msg="No valid b2 errors given.",
+            selection=accel.b2_errors, 
+            list_choices=opt.list_choices,
+            predicate=get_check_by_regex_func(r"MB2022.+\.errors$"),
+            stem_only=True,
+        )  # raises AcceleratorDefinitionError
 
         return super().check_options(opt)
 
