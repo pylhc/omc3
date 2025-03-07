@@ -264,8 +264,13 @@ def always_true(*args, **kwargs) -> bool:
 
 
 def get_check_suffix_func(suffix: str) -> Callable[[Path],bool]:
-    """ Returns a function that checks the suffix of a given path agains 
-    the suffix. """
+    """ Returns a function that checks the suffix of a given path against the suffix. """
     def check_suffix(path: Path) -> bool:
         return path.suffix == suffix
     return check_suffix
+
+def get_check_by_regex_func(pattern: str) -> Callable[[Path],bool]:
+    """ Returns a function that checks the name of a given path against the pattern. """
+    def check(path: Path) -> bool:
+        return re.match(pattern, path.name) is not None
+    return check 
