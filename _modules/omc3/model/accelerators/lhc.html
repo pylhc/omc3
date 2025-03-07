@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.lhc &mdash; omc3 0.22.0 documentation</title>
+  <title>omc3.model.accelerators.lhc &mdash; omc3 0.22.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5686f5df"></script>
+      <script src="../../../../_static/documentation_options.js?v=f2fe71c6"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -357,11 +357,6 @@
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The B2 error table to load for the best knowledge model.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;list_b2_errors&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Lists all available b2 error tables&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -371,7 +366,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">year</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ats</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">ats</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b2_errors</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">b2_errors</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">list_b2_errors</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_b2_errors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">beam</span>
         <span class="n">beam_to_beam_direction</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beam_direction</span> <span class="o">=</span> <span class="n">beam_to_beam_direction</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">beam</span><span class="p">]</span>

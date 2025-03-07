@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.model_creators.lhc_model_creator &mdash; omc3 0.22.0 documentation</title>
+  <title>omc3.model.model_creators.lhc_model_creator &mdash; omc3 0.22.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5686f5df"></script>
+      <script src="../../../../_static/documentation_options.js?v=f2fe71c6"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -262,7 +262,8 @@
     <span class="n">SegmentCreator</span><span class="p">,</span>
     <span class="n">check_folder_choices</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_dirs</span><span class="p">,</span> <span class="n">get_check_suffix_func</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">NAME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_dirs</span><span class="p">,</span> <span class="n">get_check_by_regex_func</span><span class="p">,</span> <span class="n">get_check_suffix_func</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
@@ -319,7 +320,7 @@
             <span class="k">return</span>
 
         <span class="c1"># list optics choices ---</span>
-        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>  <span class="c1"># assumes we want to list optics. Invoked even if modifiers are given!</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>  <span class="c1"># assumes we only want to list optics. Invoked even if modifiers are given!</span>
             <span class="n">check_folder_choices</span><span class="p">(</span>  
                 <span class="n">acc_model_path</span> <span class="o">/</span> <span class="n">OPTICS_SUBDIR</span><span class="p">,</span>
                 <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No modifier given&quot;</span><span class="p">,</span>
@@ -630,16 +631,35 @@
     <span class="n">jobfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JOB_MODEL_MADX_BEST_KNOWLEDGE</span>
     <span class="n">files_to_check</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span> <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="LhcBestKnowledgeCreator.prepare_options">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.prepare_options">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
-        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">list_b2_errors</span><span class="p">:</span>
-            <span class="n">errors_dir</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">errors_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">suffix</span><span class="o">==</span><span class="s2">&quot;.errors&quot;</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;MB2022&quot;</span><span class="p">):</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+        <span class="c1"># Check given B2 errors ---</span>
+        <span class="n">exists</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="c1"># check if user gave absolute path (! with_suffix does not work, due to &#39;.&#39; in name)</span>
+            <span class="n">exists</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="si">!s}</span><span class="s2">.errors&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">:</span>
+            <span class="n">afs_dir</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">AFS_B2_ERRORS_ROOT</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Given b2 errors do not exist and neither does the AFS path: &#39;</span><span class="si">{</span><span class="n">afs_dir</span><span class="si">!s}</span><span class="s2">&#39;.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span> <span class="o">=</span> <span class="n">check_folder_choices</span><span class="p">(</span>  <span class="c1"># returns full path</span>
+                <span class="n">afs_dir</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No valid b2 errors given.&quot;</span><span class="p">,</span>
+                <span class="n">selection</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="p">,</span> 
+                <span class="n">list_choices</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">,</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">get_check_by_regex_func</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;MB2022.+\.errors$&quot;</span><span class="p">),</span>
+                <span class="n">stem_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>  <span class="c1"># raises AcceleratorDefinitionError</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
@@ -663,15 +683,20 @@
 
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Copying B2 error tables&quot;</span><span class="p">)</span>
 
-        <span class="n">b2_error_path</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="si">}</span><span class="s2">.errors&quot;</span>
-        <span class="n">b2_madx_path</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="si">}</span><span class="s2">.madx&quot;</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
-            <span class="n">b2_madx_path</span><span class="p">,</span>
-            <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_SETTINGS_MADX</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">b2_table</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">b2_error_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+        <span class="n">b2_stem_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="si">!s}</span><span class="s2">.fakesuffix&quot;</span><span class="p">)</span>  <span class="c1"># makes `with_suffix`` work</span>
+        <span class="c1"># hint: if b2_stem_path is absolute, the following AFS parts are ignored</span>
+        <span class="n">b2_error_path</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="n">b2_stem_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.errors&quot;</span><span class="p">)</span>
+        <span class="n">b2_madx_path</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="n">b2_stem_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.madx&quot;</span><span class="p">)</span>
+
+        <span class="c1"># copy madx ---</span>
+        <span class="n">output_madx</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_SETTINGS_MADX</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;! Source: </span><span class="si">{</span><span class="n">b2_madx_path</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">b2_madx_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">output_madx</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+        <span class="c1"># copy errors table ---</span>
+        <span class="n">b2_table</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">b2_error_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
         <span class="n">gen_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">b2_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_b2_columns</span><span class="p">()))),</span>
+            <span class="n">data</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="n">b2_table</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
             <span class="n">columns</span><span class="o">=</span><span class="n">_b2_columns</span><span class="p">(),</span>
         <span class="p">)</span>
@@ -679,8 +704,8 @@
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
             <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">B2_ERRORS_TFS</span><span class="p">,</span>
             <span class="n">gen_df</span><span class="p">,</span>
-            <span class="n">headers_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">},</span>
-            <span class="n">save_index</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span>
+            <span class="n">headers_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;EFIELD&quot;</span><span class="p">,</span> <span class="s2">&quot;SOURCE&quot;</span><span class="p">:</span> <span class="n">b2_error_path</span><span class="p">},</span>
+            <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
