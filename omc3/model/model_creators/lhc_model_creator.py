@@ -51,6 +51,7 @@ from omc3.model.model_creators.abstract_model_creator import (
     SegmentCreator,
     check_folder_choices,
 )
+from omc3.optics_measurements.constants import NAME
 from omc3.utils.iotools import create_dirs, get_check_by_regex_func, get_check_suffix_func
 
 if TYPE_CHECKING:
@@ -104,7 +105,7 @@ class LhcModelCreator(ModelCreator):
             return
 
         # list optics choices ---
-        if opt.list_choices:  # assumes we want to list optics. Invoked even if modifiers are given!
+        if opt.list_choices:  # assumes we only want to list optics. Invoked even if modifiers are given!
             check_folder_choices(  
                 acc_model_path / OPTICS_SUBDIR,
                 msg="No modifier given",
@@ -401,14 +402,28 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
 
     def prepare_options(self, opt) -> bool:
         accel: Lhc = self.accel
-        check_folder_choices(  
-            AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}",
-            msg="No valid b2 errors given.",
-            selection=accel.b2_errors, 
-            list_choices=opt.list_choices,
-            predicate=get_check_by_regex_func(r"MB2022.+\.errors$"),
-            stem_only=True,
-        )  # raises AcceleratorDefinitionError
+
+        # Check given B2 errors ---
+        exists = False
+        if accel.b2_errors is not None: 
+            # check if user gave absolute path (! with_suffix does not work, due to '.' in name)
+            exists = Path(f"{accel.b2_errors!s}.errors").is_file()
+
+        if not exists:
+            afs_dir = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}"
+            if not AFS_B2_ERRORS_ROOT.is_dir():
+                raise AcceleratorDefinitionError(
+                    f"Given b2 errors do not exist and neither does the AFS path: '{afs_dir!s}'."
+                )
+
+            accel.b2_errors = check_folder_choices(  # returns full path
+                afs_dir,
+                msg="No valid b2 errors given.",
+                selection=accel.b2_errors, 
+                list_choices=opt.list_choices,
+                predicate=get_check_by_regex_func(r"MB2022.+\.errors$"),
+                stem_only=True,
+            )  # raises AcceleratorDefinitionError
 
         return super().prepare_options(opt)
 
@@ -432,15 +447,20 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
 
         LOGGER.debug("Copying B2 error tables")
 
-        b2_error_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.errors"
-        b2_madx_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / f"{accel.b2_errors}.madx"
-        shutil.copy(
-            b2_madx_path,
-            accel.model_dir / B2_SETTINGS_MADX,
-        )
-        b2_table = tfs.read(b2_error_path, index="NAME")
+        b2_stem_path = Path(f"{accel.b2_errors!s}.fakesuffix")  # makes `with_suffix`` work
+        # hint: if b2_stem_path is absolute, the following AFS parts are ignored
+        b2_error_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / b2_stem_path.with_suffix(".errors")
+        b2_madx_path = AFS_B2_ERRORS_ROOT / f"Beam{accel.beam}" / b2_stem_path.with_suffix(".madx")
+
+        # copy madx ---
+        output_madx = accel.model_dir / B2_SETTINGS_MADX
+        content = f"! Source: {b2_madx_path}\n{b2_madx_path.read_text()}"
+        output_madx.write_text(content)
+
+        # copy errors table ---
+        b2_table = tfs.read(b2_error_path, index=NAME)
         gen_df = pd.DataFrame(
-            data=np.zeros((b2_table.index.size, len(_b2_columns()))),
+            data=0.,
             index=b2_table.index,
             columns=_b2_columns(),
         )
@@ -448,8 +468,8 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
         tfs.write(
             accel.model_dir / B2_ERRORS_TFS,
             gen_df,
-            headers_dict={"NAME": "EFIELD", "TYPE": "EFIELD"},
-            save_index="NAME",
+            headers_dict={"NAME": "EFIELD", "TYPE": "EFIELD", "SOURCE": b2_error_path},
+            save_index=NAME,
         )
 
     def get_madx_script(self) -> str:

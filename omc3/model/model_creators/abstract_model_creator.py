@@ -289,59 +289,6 @@ class ModelCreator(ABC):
         raise FileNotFoundError(msg)
 
 
-def check_folder_choices(
-    parent: Path,
-    msg: str,
-    selection: str,
-    list_choices: bool = False,
-    predicate=iotools.always_true,
-    stem_only: bool = False,
-    ) -> Path | str:
-    """
-    A helper function that scans a selected folder for children, which will then be displayed as possible choices.
-    This funciton allows the model-creator to get only the file/folder names, check
-    in the desired folder if the choice is present and return the full path to the selected folder.
-    
-    Args:
-        parent (Path): The folder to scan.
-        msg (str): The message to display, on failure.
-        selection (str): The current selection.
-        list_choices (bool): Whether to just list the choices. 
-                             In that case `None` is returned, instead of an error
-        predicate (callable): A function that takes a path and returns True.
-                              if the path results in a valid choice.
-        stem_only (bool): If True, only the stem of the path is checked/returned
-    
-    Returns:
-       Path: Full path of the selected choice in `parent`. Or the stem if `stem_only` is selected.
-
-    Examples:
-        Let's say we expect a choice for a sequence file in the folder `model_root`.
-
-        ```
-        check_folder_choices(model_root, "Expected sequence file", predicate=lambda p: p.suffix == ".seq")
-        ```
-
-        Or we want all subfolder of `scenarios`
-
-        ```
-        check_folder_choices(scenarios, "Expected scenario folder", predicate=lambda p: p.is_dir())
-        ```
-    """
-    choices = [d.stem if stem_only else d.name for d in parent.iterdir() if predicate(d)]
-
-    if selection in choices:
-        if stem_only:
-            return selection
-        return parent / selection
-
-    if list_choices:
-        for choice in choices:
-            print(choice)
-    raise AcceleratorDefinitionError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
-
-
-
 class SegmentCreator(ModelCreator, ABC):
     """ Model creator for Segments, to be used in the Segment-by-Segment algorithm. 
     These segments propagate the measured values from the beginning of the segment to the end.
@@ -439,3 +386,55 @@ class CorrectionModelCreator(ModelCreator, ABC):
         self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.corr_files = corr_files
         self.update_dpp = update_dpp
+
+
+# Helper functions -------------------------------------------------------------
+
+def check_folder_choices(
+    parent: Path,
+    msg: str,
+    selection: str,
+    list_choices: bool = False,
+    predicate=iotools.always_true,
+    stem_only: bool = False,
+    ) -> Path | str:
+    """
+    A helper function that scans a selected folder for children, which will then be displayed as possible choices.
+    This funciton allows the model-creator to get only the file/folder names, check
+    in the desired folder if the choice is present and return the full path to the selected folder.
+    
+    Args:
+        parent (Path): The folder to scan.
+        msg (str): The message to display, on failure.
+        selection (str): The current selection.
+        list_choices (bool): Whether to just list the choices. 
+                             In that case `None` is returned, instead of an error
+        predicate (callable): A function that takes a path and returns True.
+                              if the path results in a valid choice.
+        stem_only (bool): If True, only the stem of the path is checked.
+    
+    Returns:
+       Path: Full path of the selected choice in `parent`. 
+
+    Examples:
+        Let's say we expect a choice for a sequence file in the folder `model_root`.
+
+        ```
+        check_folder_choices(model_root, "Expected sequence file", predicate=lambda p: p.suffix == ".seq")
+        ```
+
+        Or we want all subfolder of `scenarios`
+
+        ```
+        check_folder_choices(scenarios, "Expected scenario folder", predicate=lambda p: p.is_dir())
+        ```
+    """
+    choices = [d.stem if stem_only else d.name for d in parent.iterdir() if predicate(d)]
+
+    if selection in choices:
+        return parent / selection
+
+    if list_choices:
+        for choice in choices:
+            print(choice)
+    raise AcceleratorDefinitionError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
