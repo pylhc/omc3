@@ -79,11 +79,13 @@ CURRENT_DIR = Path(__file__).parent
 
 class Psbooster(PsBase):
     """Parent Class for Psbooster-types."""
-    NAME = "psbooster"
-    RE_DICT = {AccElementTypes.BPMS: r"BR\d\.BPM[^T]",
-               AccElementTypes.MAGNETS: r".*",
-               AccElementTypes.ARC_BPMS: r"BR\d\.BPM[^T]"
-               }
+    NAME: str = "psbooster"
+    LOCAL_REPO_NAME: str = "acc-models-psb"
+    RE_DICT: dict[str, str] = {
+        AccElementTypes.BPMS: r"BR\d\.BPM[^T]",
+        AccElementTypes.MAGNETS: r".*",
+        AccElementTypes.ARC_BPMS: r"BR\d\.BPM[^T]",
+    }
 
     @staticmethod
     def get_parameters():

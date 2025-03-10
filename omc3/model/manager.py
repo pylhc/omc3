@@ -24,6 +24,7 @@ from omc3.model.accelerators import (
     ps,
     psbooster,
     skekb,
+    sps,
 )
 
 if TYPE_CHECKING:
@@ -38,6 +39,7 @@ ACCELS = {
     "JPARC": skekb.SKekB,
     petra.Petra.NAME: petra.Petra,
     iota.Iota.NAME: iota.Iota,
+    sps.Sps.NAME: sps.Sps,
     generic.Generic.NAME: generic.Generic,
 }
 

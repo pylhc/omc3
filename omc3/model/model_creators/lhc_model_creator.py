@@ -11,7 +11,6 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 import tfs
 
@@ -535,12 +534,12 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         madx_script += f"{ORBIT_DPP} = {accel.dpp};\n"
 
         for corr_file in self.corr_files:  # Load the corrections, can also update ORBIT_DPP
-            madx_script += f"call, file = '{str(corr_file)}';\n"
+            madx_script += f"call, file = '{corr_file!s}';\n"
         
         if self.update_dpp: # If we are doing orbit correction, we need to ensure that a correct and a match is done
             madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
 
-        madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{str(self.twiss_out)}", {ORBIT_DPP});\n'
+        madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{self.twiss_out!s}", {ORBIT_DPP});\n'
         return madx_script
     
     def prepare_run(self) -> None:
@@ -550,7 +549,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         LOGGER.debug("Preparing model creation structure")
         macros_path = self.accel.model_dir / MACROS_DIR
         if not macros_path.exists():
-            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path:s}.")
+            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path!s}.")
     
     @property
     def files_to_check(self) -> list[str]:

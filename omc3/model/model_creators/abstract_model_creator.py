@@ -15,7 +15,9 @@ import tfs
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode, AcceleratorDefinitionError
 from omc3.model.constants import (
+    GENERAL_MACROS,
     JOB_MODEL_MADX_NOMINAL,
+    MACROS_DIR,
     OPTICS_SUBDIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
@@ -288,6 +290,19 @@ class ModelCreator(ABC):
             msg += f" and in {accel.acc_model_path}"
         raise FileNotFoundError(msg)
 
+    @staticmethod
+    def _get_select_command(pattern: str | None = None, indent: int = 0):
+        """ Returns a basic select command with the given pattern, the default columns and correct indentation. """
+        space = " " * indent
+        pattern_str = f" pattern=\"{pattern}\"," if pattern is not None else ""
+        return (
+            f"{space}select, flag=twiss, clear;\n"
+            f"{space}select, flag=twiss,{pattern_str} column="
+            "name, s, keyword, l, betx, bety, mux, muy, angle, "
+            "k1l, k2l,k3l, x,y, r11, r12, r21, r22, "
+            "alfx, alfy, dx, dpx, dy, dpy, px, py, phix, phiy;\n"
+        )
+
 
 class SegmentCreator(ModelCreator, ABC):
     """ Model creator for Segments, to be used in the Segment-by-Segment algorithm. 
@@ -301,6 +316,7 @@ class SegmentCreator(ModelCreator, ABC):
     which in turn can be used for further processing by the implemented Propagables.
     """
     jobfile = None  # set in init
+    _sequence_name: str = None  # to be set by any accelerator using the default `get_madx_script`
 
     def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], 
                  corrections: MADXInputType = None, *args, **kwargs):
@@ -363,9 +379,73 @@ class SegmentCreator(ModelCreator, ABC):
             return
 
         raise NotImplementedError("Could not determine type of corrections. Aborting.")
+    
+    def get_madx_script(self):
+        accel: Accelerator = self.accel
+        madx_script = self.get_base_madx_script()
+
+        madx_script += "\n".join([
+            "",
+            f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
+            "",
+            f"call, file = '{accel.model_dir / MACROS_DIR / GENERAL_MACROS}';"
+            ""
+            "! Cycle the sequence to avoid negative length.",
+            f"seqedit, sequence={self._sequence_name};",
+            "flatten;",
+            f"cycle, start={self.segment.start};",
+            "endedit;",
+            "",
+            f"use, period = {self._sequence_name};",
+            "option, echo;",
+            "",
+            "twiss;",
+            "exec, save_initial_and_final_values(",
+            f"    {self._sequence_name},",
+            f"    {self.segment.start},",
+            f"    {self.segment.end}, ",
+            f"    \"{accel.model_dir / self.measurement_madx!s}\",",
+            "    biniSbSParams,",
+            "    bendSbSParams",
+            ");",
+            "",
+            "exec, extract_segment_sequence(",
+            f"    {self._sequence_name},",
+            "    forward_SbSSEQ,",
+            "    backward_SbSSEQ,",
+            f"    {self.segment.start},",
+            f"    {self.segment.end},",
+            ");",
+            "",
+            "beam, particle = proton, sequence=forward_SbSSEQ;",
+            "beam, particle = proton, sequence=backward_SbSSEQ;",
+            "",
+            f"exec, twiss_segment(forward_SbSSEQ, \"{self.twiss_forward!s}\", biniSbSParams);",
+            f"exec, twiss_segment(backward_SbSSEQ, \"{self.twiss_backward!s}\", bendSbSParams);",
+            "",
+        ])
+
+        if self.corrections is not None:
+            madx_script += "\n".join([
+                f"call, file=\"{self.corrections_madx!s}\";",
+                f"exec, twiss_segment(forward_SbSSEQ, "
+                f"\"{self.twiss_forward_corrected}\", biniSbSParams);",
+                f"exec, twiss_segment(backward_SbSSEQ, "
+                f"\"{self.twiss_backward_corrected}\", bendSbSParams);",
+                "",
+            ])
+
+        return madx_script
+    
+    @property
+    def files_to_check(self) -> list[str]:
+        check_files = [self.twiss_forward, self.twiss_backward]
+        if self.corrections is not None:
+            check_files += [self.twiss_backward_corrected, self.twiss_backward_corrected]
+        return check_files
 
 
-class CorrectionModelCreator(ModelCreator, ABC):
+class CorrectionModelCreator(ModelCreator):
     jobfile = None  # set in __init__ 
     
     def __init__(self, accel: Accelerator, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False):
@@ -386,6 +466,32 @@ class CorrectionModelCreator(ModelCreator, ABC):
         self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.corr_files = corr_files
         self.update_dpp = update_dpp
+    
+    def get_madx_script(self) -> str:
+        """ Get the madx script for the correction model creator, which updates the model after correcion. 
+        
+        This is a basic implementation which does not update the dpp, but should work for generic accelerators.
+        """  
+        if self.update_dpp:
+            raise NotImplementedError(
+                f"Updating the dpp is not implemented for correction model creator of {self.accel.NAME}."
+            )
+
+        madx_script = self.get_base_madx_script()  # do not get_madx_script as we don't need the uncorrected output. 
+
+        for corr_file in self.corr_files:  # Load the corrections
+            madx_script += f"call, file = '{corr_file!s}';\n"
+
+        madx_script += (
+            f"{self._get_select_command()}\n"
+            f"twiss, file = {self.twiss_out!s};\n"
+        )
+        return madx_script
+    
+    
+    @property
+    def files_to_check(self) -> list[str]:
+        return [self.twiss_out, self.jobfile, self.logfile]
 
 
 # Helper functions -------------------------------------------------------------

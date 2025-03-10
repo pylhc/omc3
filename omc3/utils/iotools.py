@@ -6,6 +6,7 @@ Helper functions for input/output issues.
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import sys
@@ -269,8 +270,19 @@ def get_check_suffix_func(suffix: str) -> Callable[[Path],bool]:
         return path.suffix == suffix
     return check_suffix
 
+
 def get_check_by_regex_func(pattern: str) -> Callable[[Path],bool]:
     """ Returns a function that checks the name of a given path against the pattern. """
     def check(path: Path) -> bool:
         return re.match(pattern, path.name) is not None
     return check 
+
+
+def load_multiple_jsons(*files) -> dict:
+    """ Load multiple json files into a single dict. 
+    In case of duplicate keys, later files overwrite the earlier ones. """
+    full_dict = {}
+    for json_file in files:
+        with open(json_file, "r") as json_data:
+            full_dict.update(json.load(json_data))
+    return full_dict

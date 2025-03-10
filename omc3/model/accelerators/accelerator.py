@@ -63,11 +63,10 @@ class Accelerator:
     LOCAL_REPO_NAME: str | None = None
     # RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)
     RE_DICT: dict[str, str] = {
-        AccElementTypes.BPMS: r".*",
+        AccElementTypes.BPMS: r"B.*",
         AccElementTypes.MAGNETS: r".*",
-        AccElementTypes.ARC_BPMS: r".*",
+        AccElementTypes.ARC_BPMS: r"B.*",
     }
-    BPM_INITIAL: str = "B"
 
     @staticmethod
     def get_parameters():
@@ -184,10 +183,8 @@ class Accelerator:
         try:
             self.model = tfs.read(model_dir / TWISS_DAT, index=NAME)
         except IOError:
-            bpm_index = [
-                idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)
-            ]
-            self.model = self.elements.loc[bpm_index, :]
+            bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
+            self.model = self.elements.loc[bpm_mask, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
         self.energy = float(self.model.headers["ENERGY"])  # always 450GeV because we do not set it anywhere properly...
 
@@ -261,14 +258,6 @@ class Accelerator:
         """
         Gets the variables with elements in the given range and the given classes. ``None`` means
         everything.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    @classmethod
-    def get_correctors_variables(cls, frm=None, to=None, classes=None):
-        """
-        Returns the set of corrector variables between ``frm`` and ``to``, with classes in
-        classes. ``None`` means select all.
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
@@ -359,20 +348,8 @@ class AcceleratorDefinitionError(Exception):
 def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
     """Parse modifiers from job.create_model.madx or use modifiers.madx file."""
     job_file = model_dir / JOB_MODEL_MADX_NOMINAL
-    if job_file.exists():
-        job_madx = job_file.read_text()
-
-        # find modifier tag in lines and return called file in these lines
-        # the modifier tag is used by the model creator to mark which line defines modifiers
-        # see e.g. `get_base_madx_script()` in `lhc.py`
-        # example for a match to the regex: `call, file = 'modifiers.madx'; MODIFIER_TAG`
-        modifiers = re.findall(
-            fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
-            job_madx,
-            flags=re.IGNORECASE,
-        )
-        modifiers = [Path(m) for m in modifiers]
-        return modifiers or None
+    if job_file.is_file():
+        return find_called_files_with_tag(job_file, MODIFIER_TAG)
 
     # Legacy
     modifiers_file = model_dir / MODIFIERS_MADX
@@ -380,3 +357,28 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
         return [modifiers_file]
 
     return None
+
+
+def find_called_files_with_tag(madx_file: Path, tag: str) -> list[Path] | None:
+    """ Parse lines that call a file and are tagged with the given tag and return 
+    a list of paths to these files. 
+    
+    This is mainly used to find the modifier tag in lines and return called file in these lines.
+
+    The modifier tag is used by the model creator to mark which line defines modifiers
+    see e.g. `get_base_madx_script()` in `lhc.py`
+
+    An example for a match to the regex: `call, file = 'modifiers.madx'; !@modifiers`.
+    """
+    if not madx_file.is_file():
+        return None
+
+    job_madx = madx_file.read_text()
+
+    called_files = re.findall(
+        fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{tag}",
+        job_madx,
+        flags=re.IGNORECASE,
+    )
+    called_files = [Path(m) for m in called_files]
+    return called_files or None
