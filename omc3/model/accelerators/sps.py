@@ -3,18 +3,25 @@ SPS
 ---
 
 """
+from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator, AcceleratorDefinitionError, find_called_files_with_tag
+from omc3.model.accelerators.accelerator import (
+    AccElementTypes,
+    Accelerator,
+    AcceleratorDefinitionError,
+    find_called_files_with_tag,
+)
 from omc3.model.constants import JOB_MODEL_MADX_NOMINAL
-from omc3.utils.iotools import load_multiple_jsons
 from omc3.utils import logging_tools
+from omc3.utils.iotools import load_multiple_jsons
 from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
     from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)

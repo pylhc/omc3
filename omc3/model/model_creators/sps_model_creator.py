@@ -15,7 +15,6 @@ from omc3.model.accelerators.accelerator import (
 from omc3.model.accelerators.sps import Sps
 from omc3.model.constants import (
     AFS_ACCELERATOR_MODEL_REPOSITORY,
-    MACROS_DIR,
     TWISS_AC_DAT,
     TWISS_DAT,
     TWISS_ELEMENTS_DAT,
