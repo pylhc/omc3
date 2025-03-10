@@ -106,12 +106,12 @@ class SpsModelCreator(ModelCreator, ABC):
 
         madx_script = (
             "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
-            f"call, file = '{accel.acc_model_path / "sps.seq"!s}';\n"
+            f"call, file = '{accel.acc_model_path / 'sps.seq'!s}';\n"
             f"call, file = '{accel.str_file!s}'; {accel.STRENGTH_FILE_TAG}\n\n"
             "beam;\n\n"
             "use, sequence=sps;\n\n"
             "twiss;\n\n"  # not sure if needed, but is in the scenarios scripts
-            f"call, file ='{accel.acc_model_path / "toolkit" / "macro.madx"!s}';\n\n"
+            f"call, file ='{accel.acc_model_path / 'toolkit' / 'macro.madx'!s}';\n\n"
             f"qx0={accel.nat_tunes[0]};\n"
             f"qy0={accel.nat_tunes[1]};\n\n"
             "exec, sps_match_tunes(qx0,qy0);\n\n"

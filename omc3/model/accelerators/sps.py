@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
     Accelerator,
-    AcceleratorDefinitionError,
     find_called_files_with_tag,
 )
 from omc3.model.constants import JOB_MODEL_MADX_NOMINAL
@@ -62,5 +61,3 @@ class Sps(Accelerator):
         str_file = find_called_files_with_tag(job_file, self.STRENGTH_FILE_TAG)
         if str_file is not None:
             self.str_file = str_file[0].name  # assumes we always use acc-models, so we don't need the full path
-
-        
