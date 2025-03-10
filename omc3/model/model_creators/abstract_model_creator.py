@@ -341,6 +341,12 @@ class SegmentCreator(ModelCreator, ABC):
         self._clean_models()
         self._create_measurement_file()
         self._create_corrections_file()
+        self._check_macros_path()
+    
+    def _check_macros_path(self):
+        macros_path = self.accel.model_dir / MACROS_DIR / GENERAL_MACROS
+        if not macros_path.is_file():
+            raise AcceleratorDefinitionError(f"General macros file does not exist at {macros_path!s}.")
     
     def _clean_models(self):
         """ Remove models from previous runs. """

@@ -155,16 +155,10 @@ class SpsCorrectionModelCreator(CorrectionModelCreator, SpsModelCreator):
     Creates an updated model from multiple changeparameters inputs 
     (used in iterative correction).
     """
-    
     def prepare_run(self) -> None:
         # As the matched/corrected model is created in the same directory as the original model,
         # we do not need to prepare as much.
         self.check_accelerator_instance()
-        LOGGER.debug("Preparing model creation structure")
-        macros_path = self.accel.model_dir / MACROS_DIR
-        if not macros_path.exists():
-            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path:s}.")
-
 
 class SpsSegmentCreator(SegmentCreator, SpsModelCreator):
     _squence_name = "sps"
