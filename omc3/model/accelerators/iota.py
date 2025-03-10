@@ -75,7 +75,6 @@ class Iota(Accelerator):
     RE_DICT = {AccElementTypes.BPMS: r"IBPM*",
                AccElementTypes.MAGNETS: r"Q*",
                AccElementTypes.ARC_BPMS: r"IBPM*"}
-    BPM_INITIAL = 'I'
 
     @staticmethod
     def get_parameters():

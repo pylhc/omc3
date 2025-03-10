@@ -79,11 +79,13 @@ TUNE_METHODS = {
 class Ps(PsBase):
     """Parent Class for PS-types."""
 
-    NAME = "ps"
-    RE_DICT = {AccElementTypes.BPMS: r"PR\.BPM",
-               AccElementTypes.MAGNETS: r".*",
-               AccElementTypes.ARC_BPMS: r"PR\.BPM"
-               }
+    NAME: str = "ps"
+    LOCAL_REPO_NAME: str = "acc-models-ps"
+    RE_DICT: dict[str, str] = {
+        AccElementTypes.BPMS: r"PR\.BPM",
+        AccElementTypes.MAGNETS: r".*",
+        AccElementTypes.ARC_BPMS: r"PR\.BPM",
+    }
 
     # Public Methods ##########################################################
     @staticmethod

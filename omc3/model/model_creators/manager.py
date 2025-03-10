@@ -8,18 +8,24 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from omc3.model.accelerators.lhc import Lhc
+from omc3.model.accelerators.ps import Ps
+from omc3.model.accelerators.psbooster import Psbooster
+from omc3.model.accelerators.sps import Sps
 from omc3.model.model_creators.lhc_model_creator import (
     LhcBestKnowledgeCreator,
-    LhcModelCreator,
     LhcCorrectionModelCreator,
-    LhcSegmentCreator
+    LhcModelCreator,
+    LhcSegmentCreator,
 )
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
+from omc3.model.model_creators.sps_model_creator import (
+    SpsCorrectionModelCreator,
+    SpsModelCreator,
+    SpsSegmentCreator,
+)
 from omc3.utils.misc import StrEnum
-from omc3.model.accelerators.lhc import Lhc
-from omc3.model.accelerators.psbooster import Psbooster
-from omc3.model.accelerators.ps import Ps
 
 if TYPE_CHECKING:
     from omc3.model.accelerators.accelerator import Accelerator
@@ -38,10 +44,15 @@ CREATORS: dict[str, dict[CreatorType, type]] = {
         CreatorType.NOMINAL: LhcModelCreator,
         CreatorType.BEST_KNOWLEDGE: LhcBestKnowledgeCreator,
         CreatorType.CORRECTION: LhcCorrectionModelCreator,
-        CreatorType.SEGMENT: LhcSegmentCreator
+        CreatorType.SEGMENT: LhcSegmentCreator,
+    },
+    Sps.NAME: {
+        CreatorType.NOMINAL: SpsModelCreator,
+        CreatorType.CORRECTION: SpsCorrectionModelCreator,
+        CreatorType.SEGMENT: SpsSegmentCreator
     },
     Psbooster.NAME: {
-        CreatorType.NOMINAL: PsboosterModelCreator
+        CreatorType.NOMINAL: PsboosterModelCreator,
     },
     Ps.NAME: {
         CreatorType.NOMINAL: PsModelCreator

@@ -1,10 +1,21 @@
+""" 
+PS Base Model Creator
+---------------------
+
+Base-Class for both PS and PSB model creation.
+"""
+from __future__ import annotations
+
 from abc import ABC
 from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.accelerators.psbase import PsBase
 from omc3.model.constants import AFS_ACCELERATOR_MODEL_REPOSITORY, Fetcher
-from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
+from omc3.model.model_creators.abstract_model_creator import (
+    ModelCreator,
+    check_folder_choices,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import get_check_suffix_func
 
@@ -12,7 +23,7 @@ LOGGER = logging_tools.get_logger(__name__)
 
 
 class PsBaseModelCreator(ModelCreator, ABC):
-    acc_model_name = None
+    acc_model_name: str
 
     def prepare_options(self, opt) -> bool:
         """ Use the fetcher to list choices if requested. """

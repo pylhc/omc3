@@ -79,7 +79,6 @@ Model Creation Keyword Args:
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -93,6 +92,8 @@ from omc3.model.accelerators.accelerator import (
     AccExcitationMode,
 )
 from omc3.utils import logging_tools
+from omc3.utils.iotools import load_multiple_jsons
+from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Sequence
@@ -201,37 +202,15 @@ class Lhc(Accelerator):
     def get_lhc_error_dir() -> Path:
         return LHC_DIR / "systematic_errors"
 
-    def get_variables(self, frm: float = None, to: float = None, classes: Iterable[str] = None):
+    def get_variables(self, frm: float | None = None, to: float | None = None, classes: Iterable[str] | None = None):
         corrector_beam_dir = Path(f"correctors_b{self.beam}")
-        all_vars_by_class = _load_jsons(
+        all_vars_by_class = load_multiple_jsons(
             *self._get_corrector_files(corrector_beam_dir / "beta_correctors.json"),
             *self._get_corrector_files(corrector_beam_dir / "coupling_correctors.json"),
             *self._get_corrector_files("triplet_correctors.json"),
         )
-        if classes is not None:
-            if isinstance(classes, str):
-                # if not checked, lead to each char being treates as a knob. 
-                raise TypeError(f"Classes must be an iterable, not a string: {classes}")  
 
-            known_classes = [c for c in classes if c in all_vars_by_class]
-            unknown_classes = [c for c  in classes if c not in all_vars_by_class]
-
-            # names without the prefix '-' are simply added to the list
-            add_knobs = set(knob for knob in unknown_classes if knob[0] != "-")
-            if add_knobs:
-                LOGGER.info("The following names are not found as corrector/variable classes and "
-                            f"are assumed to be the variable names directly instead:\n{str(add_knobs)}")
-
-            # if the correction variable name is prepended with '-' it is taken out of the ones we use
-            remove_knobs = set(knob[1:] for knob in unknown_classes if knob[0] == "-")
-            if remove_knobs:
-                LOGGER.info(f"The following names will not be used as correctors, as requested:\n{str(remove_knobs)}")
-            
-            vars = set(_flatten_list(all_vars_by_class[corr_cls] for corr_cls in known_classes))
-            vars = list((vars | add_knobs) - remove_knobs)
-        
-        else:
-            vars = list(set(_flatten_list([vars_ for vars_ in all_vars_by_class.values()])))
+        vars = get_vars_by_classes(classes, all_vars_by_class)  
 
         # Sort variables by S (nice for comparing different files)
         return self.sort_variables_by_location(vars, frm, to)
@@ -405,14 +384,6 @@ class Lhc(Accelerator):
 
 
 # General functions ##########################################################
-
-def _load_jsons(*files) -> dict:
-    full_dict = {}
-    for json_file in files:
-        with open(json_file, "r") as json_data:
-            full_dict.update(json.load(json_data))
-    return full_dict
-
 
 def _flatten_list(my_list: Iterable) -> list:
     return [item for sublist in my_list for item in sublist]
