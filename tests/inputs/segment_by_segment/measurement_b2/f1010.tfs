@@ -1,4 +1,4 @@
-@ Q1                   %le          62.31000002
+@ Q1                   %le          62.31000003
 @ Q2                   %le                60.32
 @ FAKED_FROM           %s "/mnt/volume/jdilly/projects/omc3/tests/inputs/segment_by_segment/2025_inj_b2_30cm_flat/twiss.dat"
 @ Model_directory      %s "/mnt/volume/jdilly/projects/omc3/tests/inputs/models/2025_inj_b2_30cm_flat"

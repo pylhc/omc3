@@ -188,7 +188,6 @@ class TestSbSLHC:
 
             # In-Depth check per segments ---------------------------
             meas_df = tfs.read(INPUT_SBS / f"measurement_b{beam}" / f"{file_name}_{plane}.tfs", index=NAME)
-            meas_df = meas_df.loc[~meas_df.index.str.match("BPMSX\.7R1\.B1"), :]  # BPM was removed from sequence on 2025-03-10
 
             for segment in segments:
                 sbs_created: SegmentDiffs = sbs_res[segment.name]
