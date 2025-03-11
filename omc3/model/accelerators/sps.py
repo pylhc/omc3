@@ -8,9 +8,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from generic_parser import EntryPoint
+
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
     Accelerator,
+    AcceleratorDefinitionError,
     find_called_files_with_tag,
 )
 from omc3.model.constants import JOB_MODEL_MADX_NOMINAL
@@ -38,15 +41,15 @@ class Sps(Accelerator):
 
     @staticmethod
     def get_parameters():
-        params = super().get_parameters()
+        params = Accelerator.get_parameters()
         params.add_parameter(name="year", type=str, help="Optics tag.")
         params.add_parameter(name="str_file", type=str, help="Strength File")
         return params
 
-    def __init__(self, opt: DotDict):
+    def __init__(self, *args, **kwargs):
+        parser = EntryPoint(self.get_parameters(), strict=True)
+        opt = parser.parse(*args, **kwargs)
         super().__init__(opt)
-        self.year: str | None = opt.year
-        self.str_file: str | None = opt.str_file
     
     def get_variables(self, frm: float | None = None, to: float | None = None, classes: Iterable[str] | None = None):
         correctors_file = self.get_file("correctors.json")
@@ -54,10 +57,18 @@ class Sps(Accelerator):
         knobs_to_use = get_vars_by_classes(classes, all_vars_by_class)
         return knobs_to_use
     
+    def init_from_options(self, opt: DotDict) -> None:
+        super().init_from_options(opt)
+
+        self.year: str | None = opt.year
+        self.str_file: str | None = opt.str_file
+    
     def init_from_model_dir(self, model_dir: Path) -> None:
         super().init_from_model_dir(model_dir)
         
         job_file = model_dir / JOB_MODEL_MADX_NOMINAL
         str_file = find_called_files_with_tag(job_file, self.STRENGTH_FILE_TAG)
-        if str_file is not None:
-            self.str_file = str_file[0].name  # assumes we always use acc-models, so we don't need the full path
+        if str_file is None:
+            raise AcceleratorDefinitionError(f"Could not find strength file in {job_file}")
+
+        self.str_file = str_file[0]

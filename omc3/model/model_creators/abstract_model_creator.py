@@ -299,7 +299,7 @@ class ModelCreator(ABC):
             f"{space}select, flag=twiss, clear;\n"
             f"{space}select, flag=twiss,{pattern_str} column="
             "name, s, keyword, l, betx, bety, mux, muy, angle, "
-            "k1l, k2l,k3l, x,y, r11, r12, r21, r22, "
+            "k1l, k2l, k3l, x, y, r11, r12, r21, r22, "
             "alfx, alfy, dx, dpx, dy, dpy, px, py, phix, phiy;\n"
         )
 
