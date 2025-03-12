@@ -59,14 +59,14 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
 
     Returns:
     """
-    LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
-
-    if measure_input.accelerator.model is None:
-        raise AttributeError("No accelerator model was provided. Cannot perform optics analysis.")
-
     outputdir = Path(measure_input.outputdir)
     iotools.create_dirs(outputdir)
     logging_tools.add_module_handler(logging_tools.file_handler(outputdir / LOG_FILE))
+    
+    LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
+    
+    if measure_input.accelerator.model is None:
+        raise AttributeError("No accelerator model was provided. Cannot perform optics analysis.")
     
     # Tune ---
     tune_dict = tune.calculate(measure_input, input_files)
