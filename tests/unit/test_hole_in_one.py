@@ -51,8 +51,6 @@ from tests.conftest import INPUTS, ids_str
 
 MODEL_DIR = INPUTS / "models" / "2022_inj_b1_acd"
 SDDS_DIR = INPUTS / "lhcb1_tbt_inj_on_off_mom"
-SPS_DIR = INPUTS / "sps_data"
-SPS_MODEL_DIR = SPS_DIR / "model_Q20_noacd"
 
 # These are 2024 injection optics files from Beam1, should work with the 2022 model as well.
 SDDS_FILES = {
@@ -171,54 +169,6 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         phase_compensation=False,  # phase compensation set to "none" above
     )
 
-
-@pytest.mark.extended
-def test_hole_in_one_sps(tmp_path, caplog):
-    """
-    This test runs harpy and optics analysis in one for SPS data.
-    This data is representative for single-plane BPMs
-    and BPMs with NaNs which caused some errors prior to v0.21.0 .
-    """
-    rdt_order = 3
-    output = tmp_path / "output"
-    files = [SPS_DIR / "sps_200turns.sdds"]
-    nan_bpms = ["BPH.31808", "BPH.32008", "BPV.31708", "BPV.31908"]
-
-    hole_in_one_entrypoint(
-        harpy=True,
-        optics=True,  # do not need to run optics, but good to test if it works
-        clean=True,
-        tbt_datatype="sps",
-        compensation=phase.CompensationMode.NONE,
-        output_bits=8,
-        turn_bits=12,  # lower and rdt calculation fails for coupling
-        resonances=rdt_order+1,
-        # nattunes = [0.13, 0.18, 0.0],
-        autotunes="transverse",
-        outputdir=output,
-        files=files,
-        model=SPS_MODEL_DIR / TWISS_ELEMENTS_DAT,
-        to_write=["lin", "spectra",],
-        window="hann",
-        coupling_method=2,
-        nonlinear=['rdt',],
-        rdt_magnet_order=rdt_order,
-        unit="mm",
-        accel="generic",
-        model_dir=SPS_MODEL_DIR,
-        three_bpm_method=True,  # n-bpm method needs error-def file
-    )
-
-    for sdds_file in files:
-        _check_all_harpy_files(output / LINFILES_SUBFOLDER, sdds_file)
-
-    _check_linear_optics_files(output, off_momentum=False)
-    _check_nonlinear_optics_files(output, "rdt", order=rdt_order)
-    
-    assert "NaN BPMs detected." in caplog.text
-    for bpm in nan_bpms:
-        assert bpm in caplog.text
-    
 
 # Helper -----------------------------------------------------------------------
 

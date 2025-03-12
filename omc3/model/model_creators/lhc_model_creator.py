@@ -35,6 +35,7 @@ from omc3.model.constants import (
     MACROS_DIR,
     MADX_ENERGY_VAR,
     MODIFIER_TAG,
+    OMC3_MADX_MACROS_DIR,
     OPTICS_SUBDIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
@@ -128,10 +129,9 @@ class LhcModelCreator(ModelCreator):
         create_dirs(macros_path)
 
         LOGGER.debug("Copying macros to model directory")
-        lib_path = Path(__file__).parent.parent / "madx_macros"
-        shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
-        shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
-        shutil.copy(lib_path / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
+        shutil.copy(OMC3_MADX_MACROS_DIR / GENERAL_MACROS, macros_path / GENERAL_MACROS)
+        shutil.copy(OMC3_MADX_MACROS_DIR / LHC_MACROS, macros_path / LHC_MACROS)
+        shutil.copy(OMC3_MADX_MACROS_DIR / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
 
 
         if accel.energy is not None:
@@ -144,10 +144,9 @@ class LhcModelCreator(ModelCreator):
 
     def check_accelerator_instance(self) -> None:
         accel = self.accel
-
         accel.verify_object()  # should have been done anyway, but cannot hurt (jdilly)
 
-        # Creator specific checks
+        # Creator specific checks (same as in SPS, maybe merge? jdilly)
         if accel.model_dir is None:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete: model directory (outputdir option) was not given."

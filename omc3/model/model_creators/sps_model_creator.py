@@ -15,7 +15,9 @@ from omc3.model.accelerators.accelerator import (
 from omc3.model.accelerators.sps import Sps
 from omc3.model.constants import (
     AFS_ACCELERATOR_MODEL_REPOSITORY,
+    JOB_MODEL_MADX_NOMINAL,
     MODIFIER_TAG,
+    STRENGTHS_SUBDIR,
     TWISS_AC_DAT,
     TWISS_DAT,
     TWISS_ELEMENTS_DAT,
@@ -42,21 +44,42 @@ class SpsModelCreator(ModelCreator, ABC):
         accel.verify_object()  # should have been done anyway, but cannot hurt (jdilly)
 
         # Creator specific checks
-        if accel.model_dir is None:
-            raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete: "
-                "Model directory (outputdir option) was not given."
-            )
-        
         if accel.acc_model_path is None:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete: "
                 "SPS model creation only works with acc-models, but `acc-model-path` was not set. "
             )
-
-        if accel.str_file is None:
+        
+        # vvv ---  same as in LHC, maybe merge? (jdilly, 2025)
+        if accel.model_dir is None:
             raise AcceleratorDefinitionError(
-                "The accelerator definition is incomplete: No strength-file. "
+                "The accelerator definition is incomplete: "
+                "Model directory (outputdir option) was not given."
+            )
+
+        if accel.modifiers is None or not len(accel.modifiers):
+            raise AcceleratorDefinitionError(
+                "The accelerator definition is incomplete: No modifiers could be found. "
+                "Hint: If the accelerator class was instantiated from a model dir, "
+                f"make sure {JOB_MODEL_MADX_NOMINAL} exists and contains the '{MODIFIER_TAG}' tag."
+            )
+
+        # hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)
+        # hint: modifiers were at this point probably already checked (and adapted) in `prepare_run()`.
+        inexistent_modifiers = [
+            m for m in accel.modifiers if not (accel.model_dir / m).exists()]
+        if len(inexistent_modifiers):
+            raise AcceleratorDefinitionError(
+                "The following modifier files do not exist: "
+                f"{', '.join([str(accel.model_dir / modifier) for modifier in inexistent_modifiers])}"
+            )
+        
+        # ^^^ --- same as in LHC
+        
+        # Final check to have at least one strength-file (but only warn user)
+        if not any(Path(m).suffix == ".str" for m in accel.modifiers):
+            LOGGER.warning(
+                "None of the modifiers given ends in '.str', which is kind of expected for the SPS model creation."
             )
     
     def prepare_options(self, opt) -> bool:
@@ -88,22 +111,19 @@ class SpsModelCreator(ModelCreator, ABC):
             )
             return
 
-        str_file = accel.str_file
-        if str_file is None or not Path(str_file).is_file():
-            str_file = check_folder_choices(
-                acc_model_path / "strengths",
+        if opt.list_choices:  
+            # all modifiers are actually checked against existing in the 
+            # prepare_run() function. So here we can simply list the strengths files.
+            check_folder_choices(
+                acc_model_path / STRENGTHS_SUBDIR,
                 msg="No/Unknown strength file (flag --str_file) selected",
-                selection=str_file,
+                selection=None,
                 list_choices=opt.list_choices,
                 predicate=get_check_suffix_func(".str")
             )
 
-        if opt.list_choices:
-            raise AcceleratorDefinitionError("List Choices Requested, but all choices already set correctly.")  
-        
         # Set the found paths ---
         accel.acc_model_path = acc_model_path
-        accel.str_file = str_file
     
     def get_base_madx_script(self):
         accel: Sps = self.accel
@@ -111,19 +131,18 @@ class SpsModelCreator(ModelCreator, ABC):
 
         # The very basics ---
         madx_script = (
+            "! Load Base Sequence and Strengths/Modifiers ---\n"
             "option, -echo;  ! suppress output from base sequence loading to keep the log small\n\n"
-            "! Load Base Sequence and Strength ---\n"
             f"call, file = '{accel.acc_model_path / 'sps.seq'!s}';\n"
-            f"call, file = '{accel.str_file!s}'; {accel.STRENGTH_FILE_TAG}\n"
         )
 
-        if accel.modifiers is not None:
+        if accel.modifiers is not None:  # includes the strengths file
             for modifier in accel.modifiers:
                 madx_script += f"call, file = '{accel.acc_model_path / modifier!s}'; {MODIFIER_TAG}\n"
 
-
         madx_script += (
-            f"call, file ='{accel.acc_model_path / 'toolkit' / 'macro.madx'!s}';\n\n"
+            f"call, file ='{accel.acc_model_path / 'toolkit' / 'macro.madx'!s}';\n"
+            "option, echo;\n\n"
             "! Create Beam ---\n"
             "beam;\n\n"
             "twiss;\n\n"  # not sure if needed, but is in the scenarios scripts
@@ -167,8 +186,20 @@ class SpsModelCreator(ModelCreator, ABC):
                 "    }\n\n"
             )
 
+        if self._start_bpm is not None:
+            # I thought cycling to markers has less side-effects, but it seems it doesn't matter. 
+            # If this is anyway useful, we can add it. (jdilly, 2025)
+            # marker_name = f"OMC_MARKER_{self._start_bpm}"  
+            # madx_script += (
+            #     f"    {marker_name}: marker;\n"
+            #     f"    install, element={marker_name}, at=-{self._start_bpm}->L, from={self._start_bpm};\n"
+            #     f"    cycle, start = {marker_name};\n"
+            # )
+            madx_script += (
+                f"    cycle, start = {self._start_bpm};\n"
+            )
+
         madx_script += (
-            f"    cycle, start = {self._start_bpm};\n"
              "endedit;\n"
              "use, sequence=sps;\n\n"
         )
@@ -222,5 +253,5 @@ class SpsCorrectionModelCreator(CorrectionModelCreator, SpsModelCreator):
         self.check_accelerator_instance()
 
 class SpsSegmentCreator(SegmentCreator, SpsModelCreator):
-    _squence_name = "sps"
-
+    _sequence_name = "sps"
+    _start_bpm = None  # prohibits first cycling (which inserts an additional element leading to negative drifts)

@@ -91,8 +91,9 @@ from omc3.model.accelerators.accelerator import (
     AcceleratorDefinitionError,
     AccExcitationMode,
 )
+from omc3.model.constants import OPTICS_SUBDIR
 from omc3.utils import logging_tools
-from omc3.utils.iotools import load_multiple_jsons
+from omc3.utils.iotools import load_multiple_jsons, find_file
 from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
@@ -382,6 +383,18 @@ class Lhc(Accelerator):
         
         return corrector_files
 
+    def find_modifier(self, modifier: Path | str):
+        """ Try to find a modifier file, which might be given only by its name. 
+        This is looking for full-path, model-dir and in the acc-models-path's optics-dir.,
+        """
+        dirs = []
+        if self.model_dir is not None:
+            dirs.append(self.model_dir)
+
+        if self.acc_model_path is not None:
+            dirs.append(Path(self.acc_model_path) / OPTICS_SUBDIR)
+
+        return find_file(modifier, dirs=dirs)
 
 # General functions ##########################################################
 

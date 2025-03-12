@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from pathlib import Path
+import shutil
 from typing import TYPE_CHECKING
 
 import tfs
@@ -18,7 +19,7 @@ from omc3.model.constants import (
     GENERAL_MACROS,
     JOB_MODEL_MADX_NOMINAL,
     MACROS_DIR,
-    OPTICS_SUBDIR,
+    OMC3_MADX_MACROS_DIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
     TWISS_BEST_KNOWLEDGE_DAT,
@@ -52,7 +53,7 @@ class ModelCreator(ABC):
     Abstract class for the implementation of a model creator. 
     All mandatory methods and convenience functions are defined here.
     """
-    jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__ 
+    jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
 
     def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
         """
@@ -150,13 +151,8 @@ class ModelCreator(ABC):
             accel (Accelerator): Accelerator Instance used for the model creation.
         """
         LOGGER.info("Preparing MAD-X run for model creation.")
-        
-        # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
-        if self.accel.modifiers is not None:
-            self.accel.modifiers = [self._find_modifier(m) for m in self.accel.modifiers]
-        
-        # prepare the acc-models-symlink and replace paths to use the symlink
-        self.prepare_symlink()
+        self.prepare_modifiers()  # adjust modifier paths, allowing giving filenames in default directories (e.g. optics)
+        self.prepare_symlink()  # prepare the acc-models-symlink and replace paths to use the symlink
 
     def post_run(self) -> None:
         """
@@ -264,32 +260,13 @@ class ModelCreator(ABC):
                 iotools.replace_in_path(m.absolute(), target.absolute(), link.absolute()) 
                 for m in accel.modifiers
             ]
-    
-    def _find_modifier(self, modifier: Path | str) -> Path:
-        modifier = Path(modifier)
         
-        # first case: if modifier exists as is, take it
-        if modifier.is_file():
-            return modifier
-
-        # second case: try if it is already in the output dir
-        model_dir_path: Path = self.accel.model_dir / modifier
-        if model_dir_path.is_dir():
-            return model_dir_path.absolute()
-
-        # and last case, try to find it in the acc-models rep
-        accel = self.accel
-        if accel.acc_model_path is not None:
-            optics_path: Path = accel.acc_model_path / OPTICS_SUBDIR / modifier
-            if optics_path.exists():
-                return optics_path.absolute()
-
-        # if you are here, all attempts failed
-        msg = f"Couldn't find modifier {modifier}.\nAlso tried in {accel.model_dir}"
-        if accel.acc_model_path is not None:
-            msg += f" and in {accel.acc_model_path}"
-        raise FileNotFoundError(msg)
-
+    def prepare_modifiers(self):
+        """ Loop over the modifiers and make them full paths if found. """
+        accel: Accelerator = self.accel
+        if accel.modifiers is not None:
+            accel.modifiers = [accel.find_modifier(m) for m in accel.modifiers]
+    
     @staticmethod
     def _get_select_command(pattern: str | None = None, indent: int = 0):
         """ Returns a basic select command with the given pattern, the default columns and correct indentation. """
@@ -341,12 +318,18 @@ class SegmentCreator(ModelCreator, ABC):
         self._clean_models()
         self._create_measurement_file()
         self._create_corrections_file()
-        self._check_macros_path()
+        self._create_general_macros()
+
+        if self._sequence_name is None:
+            raise ValueError("SegmentCreator must be initialized with a sequence name.")
     
-    def _check_macros_path(self):
-        macros_path = self.accel.model_dir / MACROS_DIR / GENERAL_MACROS
-        if not macros_path.is_file():
-            raise AcceleratorDefinitionError(f"General macros file does not exist at {macros_path!s}.")
+    def _create_general_macros(self):
+        accel: Accelerator = self.accel
+        macros_path = accel.model_dir / MACROS_DIR
+        macros_path.mkdir(parents=True, exist_ok=True)
+
+        general_macros_path = macros_path / GENERAL_MACROS
+        shutil.copy(OMC3_MADX_MACROS_DIR / GENERAL_MACROS, general_macros_path)
     
     def _clean_models(self):
         """ Remove models from previous runs. """
@@ -391,44 +374,43 @@ class SegmentCreator(ModelCreator, ABC):
         madx_script = self.get_base_madx_script()
 
         madx_script += "\n".join([
-            "",
+             "",
             f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
-            "",
-            f"call, file = '{accel.model_dir / MACROS_DIR / GENERAL_MACROS}';"
-            ""
-            "! Cycle the sequence to avoid negative length.",
+             "",
+            f"call, file = '{accel.model_dir / MACROS_DIR / GENERAL_MACROS}';",
+             "",
+             "! Cycle the sequence to avoid negative length.",
             f"seqedit, sequence={self._sequence_name};",
-            "flatten;",
-            f"cycle, start={self.segment.start};",
-            "endedit;",
-            "",
-            f"use, period = {self._sequence_name};",
-            "option, echo;",
-            "",
-            "twiss;",
-            "exec, save_initial_and_final_values(",
+             "    flatten;",
+            f"    cycle, start={self.segment.start};",
+             "endedit;",
+             "",
+            f"use, sequence = {self._sequence_name};",
+             "",
+             "twiss;",
+             "exec, save_initial_and_final_values(",
             f"    {self._sequence_name},",
             f"    {self.segment.start},",
             f"    {self.segment.end}, ",
             f"    \"{accel.model_dir / self.measurement_madx!s}\",",
-            "    biniSbSParams,",
-            "    bendSbSParams",
-            ");",
-            "",
-            "exec, extract_segment_sequence(",
+             "    biniSbSParams,",
+             "    bendSbSParams",
+             ");",
+             "",
+             "exec, extract_segment_sequence(",
             f"    {self._sequence_name},",
-            "    forward_SbSSEQ,",
-            "    backward_SbSSEQ,",
+             "    forward_SbSSEQ,",
+             "    backward_SbSSEQ,",
             f"    {self.segment.start},",
             f"    {self.segment.end},",
-            ");",
-            "",
-            "beam, particle = proton, sequence=forward_SbSSEQ;",
-            "beam, particle = proton, sequence=backward_SbSSEQ;",
+             ");",
+             "",
+             "beam, particle = proton, sequence=forward_SbSSEQ;",
+             "beam, particle = proton, sequence=backward_SbSSEQ;",
             "",
             f"exec, twiss_segment(forward_SbSSEQ, \"{self.twiss_forward!s}\", biniSbSParams);",
             f"exec, twiss_segment(backward_SbSSEQ, \"{self.twiss_backward!s}\", bendSbSParams);",
-            "",
+             "",
         ])
 
         if self.corrections is not None:

@@ -205,6 +205,10 @@ def acc_models_psb_2021(tmp_path_factory):
     return clone_acc_models(tmp_path_factory, "psb", 2021)
 
 @pytest.fixture(scope="session")
+def acc_models_sps_2025(tmp_path_factory):
+    return clone_acc_models(tmp_path_factory, "sps", 2025)
+
+@pytest.fixture(scope="session")
 def acc_models_ps_2021(tmp_path_factory):
     return clone_acc_models(tmp_path_factory, "ps", 2021)
 

@@ -13,12 +13,10 @@ from generic_parser import EntryPoint
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
     Accelerator,
-    AcceleratorDefinitionError,
-    find_called_files_with_tag,
 )
-from omc3.model.constants import JOB_MODEL_MADX_NOMINAL
+from omc3.model.constants import STRENGTHS_SUBDIR
 from omc3.utils import logging_tools
-from omc3.utils.iotools import load_multiple_jsons
+from omc3.utils.iotools import load_multiple_jsons, find_file
 from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
@@ -33,17 +31,15 @@ class Sps(Accelerator):
     NAME: str = "sps"
     LOCAL_REPO_NAME: str = "acc-models-sps"
     RE_DICT: dict[str, str] = {
-        AccElementTypes.BPMS: r"BP.*",
-        AccElementTypes.MAGNETS: r"M.*",
-        AccElementTypes.ARC_BPMS: r"BP.*",
+        AccElementTypes.BPMS: r"^BP.*",
+        AccElementTypes.MAGNETS: r".*",  # has a variety of names...
+        AccElementTypes.ARC_BPMS: r"^BP.*",
     }
-    STRENGTH_FILE_TAG: str = "!@StrengthFile"
 
     @staticmethod
     def get_parameters():
         params = Accelerator.get_parameters()
         params.add_parameter(name="year", type=str, help="Optics tag.")
-        params.add_parameter(name="str_file", type=str, help="Strength File")
         return params
 
     def __init__(self, *args, **kwargs):
@@ -59,16 +55,19 @@ class Sps(Accelerator):
     
     def init_from_options(self, opt: DotDict) -> None:
         super().init_from_options(opt)
-
         self.year: str | None = opt.year
-        self.str_file: str | None = opt.str_file
+        if opt.drv_tunes is not None:
+            self.drv_tunes = opt.drv_tunes  # allow giving them even if ACD is deactivated (see madx job-file).
     
-    def init_from_model_dir(self, model_dir: Path) -> None:
-        super().init_from_model_dir(model_dir)
-        
-        job_file = model_dir / JOB_MODEL_MADX_NOMINAL
-        str_file = find_called_files_with_tag(job_file, self.STRENGTH_FILE_TAG)
-        if str_file is None:
-            raise AcceleratorDefinitionError(f"Could not find strength file in {job_file}")
+    def find_modifier(self, modifier: Path | str):
+        """ Try to find a modifier file, which might be given only by its name. 
+        This is looking for full-path, model-dir and in the acc-models-path's strength-dir.,
+        """
+        dirs = []
+        if self.model_dir is not None:
+            dirs.append(self.model_dir)
 
-        self.str_file = str_file[0]
+        if self.acc_model_path is not None:
+            dirs.append(Path(self.acc_model_path) / STRENGTHS_SUBDIR)
+
+        return find_file(modifier, dirs=dirs)
