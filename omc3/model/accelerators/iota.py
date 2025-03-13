@@ -72,9 +72,9 @@ CURRENT_DIR = os.path.dirname(__file__)
 
 class Iota(Accelerator):
     NAME = "iota"
-    RE_DICT = {AccElementTypes.BPMS: r"IBPM*",
-               AccElementTypes.MAGNETS: r"Q*",
-               AccElementTypes.ARC_BPMS: r"IBPM*"}
+    RE_DICT = {AccElementTypes.BPMS: r"^IBPM.*",
+               AccElementTypes.MAGNETS: r"^Q.*",
+               AccElementTypes.ARC_BPMS: r"^IBPM.*"}
 
     @staticmethod
     def get_parameters():

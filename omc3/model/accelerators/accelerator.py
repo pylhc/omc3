@@ -62,9 +62,9 @@ class Accelerator:
     LOCAL_REPO_NAME: str | None = None
     # RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)
     RE_DICT: dict[str, str] = {
-        AccElementTypes.BPMS: r"B.*",
+        AccElementTypes.BPMS: r"^B.*",
         AccElementTypes.MAGNETS: r".*",
-        AccElementTypes.ARC_BPMS: r"B.*",
+        AccElementTypes.ARC_BPMS: r"^B.*",
     }
 
     @staticmethod

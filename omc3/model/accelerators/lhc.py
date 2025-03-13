@@ -111,8 +111,8 @@ class Lhc(Accelerator):
     NAME: str = "lhc"
     LOCAL_REPO_NAME: str = "acc-models-lhc"
     RE_DICT: dict[str, str] = {
-        AccElementTypes.BPMS: r"BPM",
-        AccElementTypes.MAGNETS: r"M",
+        AccElementTypes.BPMS: r"BPM.*",
+        AccElementTypes.MAGNETS: r"^M.*",
         AccElementTypes.ARC_BPMS: r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]",
     }  # bpms > 14 L or R of IP
 
