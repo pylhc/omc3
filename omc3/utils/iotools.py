@@ -317,5 +317,5 @@ def find_file(file_name: Path | str, dirs: Iterable[Path | str]) -> Path:
     msg = f"Couldn't find modifier {file_name}."
     if dirs:
         msg += " Tried in :\n" 
-        msg += "\n".join(dirs)
+        msg += "\n".join([str(d) for d in dirs])
     raise FileNotFoundError(msg)

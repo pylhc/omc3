@@ -61,6 +61,11 @@ Model
     :noindex:
 
 
+.. automodule:: omc3.model.model_creators.manager
+    :members:
+    :noindex:
+
+
 .. automodule:: omc3.model.model_creators.lhc_model_creator
     :members:
     :noindex:
