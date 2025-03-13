@@ -320,9 +320,6 @@ class SegmentCreator(ModelCreator, ABC):
         self._create_corrections_file()
         self._create_general_macros()
 
-        if self._sequence_name is None:
-            raise ValueError("SegmentCreator must be initialized with a sequence name.")
-    
     def _create_general_macros(self):
         accel: Accelerator = self.accel
         macros_path = accel.model_dir / MACROS_DIR
@@ -372,6 +369,14 @@ class SegmentCreator(ModelCreator, ABC):
     def get_madx_script(self):
         accel: Accelerator = self.accel
         madx_script = self.get_base_madx_script()
+        
+        if self._sequence_name is None:
+            raise ValueError(
+                "To get the default Segment-by-Segment MAD-X script, "
+                f"the derived class '{self.__class__.__name__}'"
+                " must set the '_sequence_name' attribute.\n"
+                "This error should only be encountered during development. "
+                "If you encounter it later, please open an issue!")
 
         madx_script += "\n".join([
              "",
