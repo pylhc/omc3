@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-03-13 - v0.23.0 - _jdilly_
+
+- Added:
+  - SPS model creation (Nominal, Segment and Correction).
+
 #### 2025-03-06 - v0.22.1 - _jdilly_
 
 - Fixed:

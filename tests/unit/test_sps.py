@@ -62,7 +62,7 @@ SPS_DIR = INPUTS / "sps_data"
 SPS_MODEL_DIR = SPS_DIR / "model_Q20_noacd"
 Q20_STRENGTHS_FILE = "lhc_q20.str"
 
-class TestModelCrationSPS:
+class TestModelCreationSPS:
     @pytest.mark.basic
     @pytest.mark.parametrize("use_acdipole", [True, False], ids=["acdipole", "no_acdipole"])
     def test_nominal_driven(self, tmp_path: Path, acc_models_sps_2025: Path, use_acdipole: bool):
@@ -82,7 +82,7 @@ class TestModelCrationSPS:
         )
 
         if not use_acdipole:
-            accel.drv_tunes = None  # cannot read that form model-dir when TWISS-AC is not created
+            accel.drv_tunes = None  # cannot read that from model-dir when TWISS-AC is not created
         check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
         # quick check for BPMs

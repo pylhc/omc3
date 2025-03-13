@@ -126,7 +126,7 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFram
 
     The response matrices can be either created by response_madx or TwissResponse.
 
-    TODO: Add supprt to give fetcher? But for know we assume the acc-model path is still in the model_dir.
+    TODO: Add support to give fetcher? But for know we assume the acc-model path is still in the model_dir.
     """
     LOG.info("Creating response.")
     if opt.outfile_path is not None:
