@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.constants &mdash; omc3 0.22.1 documentation</title>
+  <title>omc3.model.constants &mdash; omc3 0.23.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=f2fe71c6"></script>
+      <script src="../../../_static/documentation_options.js?v=2753bf86"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -121,11 +121,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps">SPS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#model-creator-manager">Model Creator Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -220,25 +223,29 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 
-<span class="n">MACROS_DIR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;macros&quot;</span>
+<span class="n">PLANE_TO_HV</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+
+<span class="c1"># Job Creation Files ---</span>
 <span class="n">OBS_POINTS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;observation_points.def&quot;</span>
 <span class="n">MODIFIERS_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;modifiers.madx&#39;</span>
+<span class="n">ERROR_DEFFS_TXT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;error_deffs.txt&quot;</span>
+<span class="n">JOB_MODEL_MADX_MASK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;job.create_model_</span><span class="si">{}</span><span class="s2">.madx&quot;</span>
+<span class="n">JOB_MODEL_MADX_NOMINAL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JOB_MODEL_MADX_MASK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;nominal&quot;</span><span class="p">)</span>
+<span class="n">JOB_MODEL_MADX_BEST_KNOWLEDGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JOB_MODEL_MADX_MASK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;best_knowledge&quot;</span><span class="p">)</span>
+
+<span class="c1"># Variables and Content ---</span>
+<span class="n">MADX_ENERGY_VAR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;omc3_beam_energy&quot;</span>
 <span class="n">MODIFIER_TAG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;!@modifier&quot;</span>
+
+<span class="c1"># Twiss Output Files ---</span>
 <span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;twiss_best_knowledge.dat&quot;</span>
 <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;twiss_elements_best_knowledge.dat&quot;</span>
 <span class="n">TWISS_ADT_DAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;twiss_adt.dat&quot;</span>
 <span class="n">TWISS_AC_DAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;twiss_ac.dat&quot;</span>
 <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;twiss_elements.dat&quot;</span>
 <span class="n">TWISS_DAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;twiss.dat&quot;</span>
-<span class="n">ERROR_DEFFS_TXT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;error_deffs.txt&quot;</span>
-<span class="n">JOB_MODEL_MADX_MASK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;job.create_model_</span><span class="si">{}</span><span class="s2">.madx&quot;</span>
-<span class="n">JOB_MODEL_MADX_NOMINAL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JOB_MODEL_MADX_MASK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;nominal&quot;</span><span class="p">)</span>
-<span class="n">JOB_MODEL_MADX_BEST_KNOWLEDGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JOB_MODEL_MADX_MASK</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;best_knowledge&quot;</span><span class="p">)</span>
 
-<span class="n">MADX_ENERGY_VAR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;omc3_beam_energy&quot;</span>
-
-
-<span class="c1"># fetcher command names</span>
+<span class="c1"># Fetcher command names</span>
 <div class="viewcode-block" id="Fetcher">
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.constants.Fetcher">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Fetcher</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
@@ -248,20 +255,25 @@
     <span class="n">LSA</span> <span class="o">=</span> <span class="s2">&quot;lsa&quot;</span></div>
 
 
+<span class="c1"># Macros ---</span>
+<span class="n">MACROS_DIR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;macros&quot;</span>
 <span class="n">GENERAL_MACROS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;general.macros.madx&quot;</span>
 <span class="n">LHC_MACROS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc.macros.madx&quot;</span>
 <span class="n">LHC_MACROS_RUN3</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc.macros.run3.madx&quot;</span>
+<span class="n">OMC3_MADX_MACROS_DIR</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;madx_macros&quot;</span>
 
+<span class="c1"># b2 Errors ---</span>
+<span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/afs/cern.ch/eng/sl/lintrack/error_tables/&quot;</span><span class="p">)</span>
 <span class="n">B2_SETTINGS_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;b2_settings.madx&quot;</span>
 <span class="n">B2_ERRORS_TFS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;b2_errors.tfs&quot;</span>
-<span class="n">PLANE_TO_HV</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 
+<span class="c1"># Acc Models ---</span>
 <span class="n">AFS_ACCELERATOR_MODEL_REPOSITORY</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/afs/cern.ch/eng/acc-models&quot;</span><span class="p">)</span>
 <span class="n">ACC_MODELS_PREFIX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">AFS_ACCELERATOR_MODEL_REPOSITORY</span><span class="o">.</span><span class="n">name</span>
 <span class="n">OPTICS_SUBDIR</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;operation/optics&quot;</span><span class="p">)</span>
+<span class="n">STRENGTHS_SUBDIR</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;strengths&quot;</span><span class="p">)</span>
 <span class="n">LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;toolkit/remove-triplet-symmetry-knob.madx&quot;</span><span class="p">)</span>
 
-<span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/afs/cern.ch/eng/sl/lintrack/error_tables/&quot;</span><span class="p">)</span>
 </pre></div>
 
            </div>

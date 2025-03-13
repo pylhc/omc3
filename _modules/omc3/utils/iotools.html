@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.iotools &mdash; omc3 0.22.1 documentation</title>
+  <title>omc3.utils.iotools &mdash; omc3 0.23.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=f2fe71c6"></script>
+      <script src="../../../_static/documentation_options.js?v=2753bf86"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -121,11 +121,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps">SPS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#model-creator-manager">Model Creator Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -217,12 +220,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictAsString</span><span class="p">,</span> <span class="n">get_instance_faker_meta</span><span class="p">,</span> <span class="n">get_multi_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_options_to_config</span>
@@ -230,6 +233,9 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Iterable</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -534,6 +540,7 @@
     <span class="k">return</span> <span class="n">check_suffix</span></div>
 
 
+
 <div class="viewcode-block" id="get_check_by_regex_func">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_check_by_regex_func">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_check_by_regex_func</span><span class="p">(</span><span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span><span class="nb">bool</span><span class="p">]:</span>
@@ -541,6 +548,53 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">check</span> </div>
+
+
+
+<div class="viewcode-block" id="load_multiple_jsons">
+<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.load_multiple_jsons">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_multiple_jsons</span><span class="p">(</span><span class="o">*</span><span class="n">files</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Load multiple json files into a single dict. </span>
+<span class="sd">    In case of duplicate keys, later files overwrite the earlier ones. &quot;&quot;&quot;</span>
+    <span class="n">full_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">json_file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
+            <span class="n">full_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_data</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">full_dict</span></div>
+
+
+
+<div class="viewcode-block" id="find_file">
+<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.find_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dirs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Tries to find out if the given file exists, either on its own, or in the given directories.</span>
+<span class="sd">    Returns then the full path of the found file. If not found, raises a ``FileNotFoundError``. </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        file_name (Union[Path, str]): Name of the modifier file</span>
+<span class="sd">        dirs (Iterable[Union[Path, str]]): List of directories to search in </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Full path to the found file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    
+    <span class="c1"># first case: if modifier exists as is, take it</span>
+    <span class="k">if</span> <span class="n">file_name</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">file_name</span>
+
+    <span class="c1"># check the given directories</span>
+    <span class="k">for</span> <span class="n">dir_path</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+        <span class="n">file_in_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">file_name</span>
+        <span class="k">if</span> <span class="n">file_in_dir</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">file_in_dir</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+
+    <span class="c1"># if you are here, all attempts failed</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Couldn&#39;t find modifier </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="k">if</span> <span class="n">dirs</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; Tried in :</span><span class="se">\n</span><span class="s2">&quot;</span> 
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">])</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.manager &mdash; omc3 0.23.0 documentation</title>
+  <title>omc3.utils.knob_list_manipulations &mdash; omc3 0.23.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=449bdd91" />
@@ -200,7 +200,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">omc3.model.manager</li>
+      <li class="breadcrumb-item active">omc3.utils.knob_list_manipulations</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -211,101 +211,64 @@
   
            <div itemprop="articleBody">
              
-  <h1>Source code for omc3.model.manager</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Manager</span>
-<span class="sd">-------</span>
-
-<span class="sd">This module provides high-level functions to manage most functionality of ``model``.</span>
-<span class="sd">It contains entrypoint wrappers to get accelerator classes or their instances.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+  <h1>Source code for omc3.utils.knob_list_manipulations</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Knob Manipulation Utilities &quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">EntryPoint</span><span class="p">,</span>
-    <span class="n">EntryPointParameters</span><span class="p">,</span>
-    <span class="n">entrypoint</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">esrf</span><span class="p">,</span>
-    <span class="n">generic</span><span class="p">,</span>
-    <span class="n">iota</span><span class="p">,</span>
-    <span class="n">lhc</span><span class="p">,</span>
-    <span class="n">petra</span><span class="p">,</span>
-    <span class="n">ps</span><span class="p">,</span>
-    <span class="n">psbooster</span><span class="p">,</span>
-    <span class="n">skekb</span><span class="p">,</span>
-    <span class="n">sps</span><span class="p">,</span>
-<span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
-<span class="n">ACCELS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">lhc</span><span class="o">.</span><span class="n">Lhc</span><span class="p">,</span>
-    <span class="n">ps</span><span class="o">.</span><span class="n">Ps</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">ps</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span>
-    <span class="n">esrf</span><span class="o">.</span><span class="n">Esrf</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">esrf</span><span class="o">.</span><span class="n">Esrf</span><span class="p">,</span>
-    <span class="n">psbooster</span><span class="o">.</span><span class="n">Psbooster</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">psbooster</span><span class="o">.</span><span class="n">Psbooster</span><span class="p">,</span>
-    <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="p">,</span>
-    <span class="s2">&quot;JPARC&quot;</span><span class="p">:</span> <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="p">,</span>
-    <span class="n">petra</span><span class="o">.</span><span class="n">Petra</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">petra</span><span class="o">.</span><span class="n">Petra</span><span class="p">,</span>
-    <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span><span class="p">,</span>
-    <span class="n">sps</span><span class="o">.</span><span class="n">Sps</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">sps</span><span class="o">.</span><span class="n">Sps</span><span class="p">,</span>
-    <span class="n">generic</span><span class="o">.</span><span class="n">Generic</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">generic</span><span class="o">.</span><span class="n">Generic</span><span class="p">,</span>
-<span class="p">}</span>
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accel&quot;</span><span class="p">,</span> 
-        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ACCELS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the accelerator to use.Can be the class already.&quot;</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">params</span>
+<div class="viewcode-block" id="get_vars_by_classes">
+<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.knob_list_manipulations.get_vars_by_classes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_vars_by_classes</span><span class="p">(</span><span class="n">classes_or_knobs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">all_knobs_by_class</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the variables that should be used based on the class names.</span>
 
-
-<div class="viewcode-block" id="get_accelerator">
-<a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator">[docs]</a>
-<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_accelerator</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns (opt.accel, help_requested):</span>
-<span class="sd">        `opt.accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        classes_or_knobs (Iterable[str] | None): The classes or variable names to use.</span>
+<span class="sd">                                                 Variables are names that are not found as keys in the `all_knobs_by_class` dictionary.</span>
+<span class="sd">                                                 Variables or Classes with a &quot;-&quot; prefix will be removed from the list.</span>
+<span class="sd">        all_knobs_by_class (dict[str, list[str]]): The dictionary of all classes and their variables.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="c1"># if it&#39;s the class already, we just return it</span>
-        <span class="k">return</span> <span class="n">opt</span><span class="o">.</span><span class="n">accel</span>
+    <span class="k">if</span> <span class="n">classes_or_knobs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">([</span><span class="n">knob</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="o">.</span><span class="n">values</span><span class="p">()])))</span>
 
-    <span class="k">return</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">](</span><span class="n">other_opt</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes_or_knobs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># if not checked, lead to each char being treates as a knob. </span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classes must be an iterable, not a string: </span><span class="si">{</span><span class="n">classes_or_knobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  
+
+    <span class="n">add_classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
+    
+    <span class="n">remove_classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">remove_classes</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following classes will be removed from the correctors:</span><span class="se">\n</span><span class="si">{</span><span class="n">remove_classes</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">add_knobs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">knob</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">knob</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">knob</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">add_knobs</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The following names are not found as corrector/variable classes and &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;are assumed to be the variable names directly instead:</span><span class="se">\n</span><span class="si">{</span><span class="n">add_knobs</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">remove_knobs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">knob</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">knob</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">knob</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">remove_knobs</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following names will not be used as correctors, as requested:</span><span class="se">\n</span><span class="si">{</span><span class="n">remove_knobs</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">knobs_to_add</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span><span class="n">all_knobs_by_class</span><span class="p">[</span><span class="n">corr_cls</span><span class="p">]</span> <span class="k">for</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">add_classes</span><span class="p">))</span> <span class="o">|</span> <span class="n">add_knobs</span>
+    <span class="n">knobs_to_remove</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span><span class="n">all_knobs_by_class</span><span class="p">[</span><span class="n">corr_cls</span><span class="p">]</span> <span class="k">for</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">remove_classes</span><span class="p">))</span> <span class="o">|</span> <span class="n">remove_knobs</span>
+    <span class="n">knobs_to_use</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">knobs_to_add</span> <span class="o">-</span> <span class="n">knobs_to_remove</span><span class="p">)</span>
+    
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All knobs to use:</span><span class="se">\n</span><span class="si">{</span><span class="n">knobs_to_use</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">knobs_to_use</span></div>
 
 
 
-<div class="viewcode-block" id="get_accelerator_class">
-<a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator_class">[docs]</a>
-<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_accelerator_class</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Accelerator</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">    Returns only the accelerator-class (non-instanciated).</span>
-<span class="sd">    Only opt.accel is needed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">]</span></div>
-
-
-
-<div class="viewcode-block" id="get_parsed_opt">
-<a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_parsed_opt">[docs]</a>
-<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_parsed_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all accelerator related options as a `dict`.&quot;&quot;&quot;</span>
-    <span class="n">accel</span> <span class="o">=</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">]</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">accel_opt</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">other_opt</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">opt</span><span class="p">,</span> <span class="o">**</span><span class="n">accel_opt</span><span class="p">}</span></div>
+<span class="k">def</span><span class="w"> </span><span class="nf">_flatten_list</span><span class="p">(</span><span class="n">my_list</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">my_list</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
 
 </pre></div>
 

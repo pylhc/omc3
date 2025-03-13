@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.petra &mdash; omc3 0.23.0 documentation</title>
+  <title>omc3.model.model_creators.manager &mdash; omc3 0.23.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=449bdd91" />
@@ -200,7 +200,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">omc3.model.accelerators.petra</li>
+      <li class="breadcrumb-item active">omc3.model.model_creators.manager</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -211,40 +211,99 @@
   
            <div itemprop="articleBody">
              
-  <h1>Source code for omc3.model.accelerators.petra</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">PETRA</span>
-<span class="sd">-----</span>
+  <h1>Source code for omc3.model.model_creators.manager</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Model Creator Manager</span>
+<span class="sd">---------------------</span>
 
-<span class="sd">Accelerator-Class for the ``PETRA`` machine.</span>
-<span class="sd">Model creation not implemented yet.</span>
+<span class="sd">A manager that helps you find the optimal model creator of your favorite accelerator.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AcceleratorDefinitionError</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_HV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="n">EXCITER_BPM</span> <span class="o">=</span> <span class="s2">&quot;BPM_SOR_13&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.lhc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lhc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.ps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.psbooster</span><span class="w"> </span><span class="kn">import</span> <span class="n">Psbooster</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.sps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.lhc_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LhcBestKnowledgeCreator</span><span class="p">,</span>
+    <span class="n">LhcCorrectionModelCreator</span><span class="p">,</span>
+    <span class="n">LhcModelCreator</span><span class="p">,</span>
+    <span class="n">LhcSegmentCreator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.ps_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsModelCreator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.psbooster_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">PsboosterModelCreator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.sps_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SpsCorrectionModelCreator</span><span class="p">,</span>
+    <span class="n">SpsModelCreator</span><span class="p">,</span>
+    <span class="n">SpsSegmentCreator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.abstract_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCreator</span>
 
 
-<div class="viewcode-block" id="Petra">
-<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.petra.Petra">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Petra</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
-    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;petra&quot;</span>
-
-    <span class="c1"># Public Methods ##########################################################</span>
-
-<div class="viewcode-block" id="Petra.verify_object">
-<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.petra.Petra.verify_object">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># TODO: Maybe more checks?</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># is the class is used to create full response?</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;PETRA doesn&#39;t have a model creation yet, calling it this &quot;</span>
-                                             <span class="s2">&quot;way is most probably wrong.&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="CreatorType">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.manager.CreatorType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CreatorType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">NOMINAL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nominal&quot;</span>
+    <span class="n">BEST_KNOWLEDGE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;best_knowledge&quot;</span>
+    <span class="n">SEGMENT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;segment&quot;</span>
+    <span class="n">CORRECTION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;correction&quot;</span></div>
 
 
-<div class="viewcode-block" id="Petra.get_exciter_bpm">
-<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.petra.Petra.get_exciter_bpm">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">commonbpms</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">commonbpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">EXCITER_BPM</span><span class="p">),</span> <span class="n">EXCITER_BPM</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;KIFB</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">N&quot;</span></div>
-</div>
+
+<span class="n">CREATORS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">CreatorType</span><span class="p">,</span> <span class="nb">type</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">Lhc</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="p">:</span> <span class="n">LhcModelCreator</span><span class="p">,</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">BEST_KNOWLEDGE</span><span class="p">:</span> <span class="n">LhcBestKnowledgeCreator</span><span class="p">,</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">CORRECTION</span><span class="p">:</span> <span class="n">LhcCorrectionModelCreator</span><span class="p">,</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">SEGMENT</span><span class="p">:</span> <span class="n">LhcSegmentCreator</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">Sps</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="p">:</span> <span class="n">SpsModelCreator</span><span class="p">,</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">CORRECTION</span><span class="p">:</span> <span class="n">SpsCorrectionModelCreator</span><span class="p">,</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">SEGMENT</span><span class="p">:</span> <span class="n">SpsSegmentCreator</span>
+    <span class="p">},</span>
+    <span class="n">Psbooster</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="p">:</span> <span class="n">PsboosterModelCreator</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">Ps</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="p">:</span> <span class="n">PsModelCreator</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="get_model_creator_class">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.manager.get_model_creator_class">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_model_creator_class</span><span class="p">(</span>
+    <span class="n">accel</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Accelerator</span><span class="p">]</span> <span class="o">|</span> <span class="n">Accelerator</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> 
+    <span class="n">creator_type</span><span class="p">:</span> <span class="n">CreatorType</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">ModelCreator</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the model creator for the given accelerator and creator type.</span>
+<span class="sd">    This function will raise a ValueError if the accelerator or creator type is unknown.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        accel: The accelerator to use, can be class, instance or name.</span>
+<span class="sd">        creator_type: The type of model creator to use.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The model creator class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">accel</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">accel</span><span class="o">.</span><span class="n">NAME</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">CREATORS</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown accelerator &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; for a model creation.&quot;</span><span class="p">)</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CREATORS</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">creator_type</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown model creator type &#39;</span><span class="si">{</span><span class="n">creator_type</span><span class="si">}</span><span class="s2">&#39; for accelerator &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span></div>
 
 </pre></div>
 
