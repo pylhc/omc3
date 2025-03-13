@@ -11,7 +11,6 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 import tfs
 
@@ -36,6 +35,7 @@ from omc3.model.constants import (
     MACROS_DIR,
     MADX_ENERGY_VAR,
     MODIFIER_TAG,
+    OMC3_MADX_MACROS_DIR,
     OPTICS_SUBDIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
@@ -129,10 +129,9 @@ class LhcModelCreator(ModelCreator):
         create_dirs(macros_path)
 
         LOGGER.debug("Copying macros to model directory")
-        lib_path = Path(__file__).parent.parent / "madx_macros"
-        shutil.copy(lib_path / GENERAL_MACROS, macros_path / GENERAL_MACROS)
-        shutil.copy(lib_path / LHC_MACROS, macros_path / LHC_MACROS)
-        shutil.copy(lib_path / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
+        shutil.copy(OMC3_MADX_MACROS_DIR / GENERAL_MACROS, macros_path / GENERAL_MACROS)
+        shutil.copy(OMC3_MADX_MACROS_DIR / LHC_MACROS, macros_path / LHC_MACROS)
+        shutil.copy(OMC3_MADX_MACROS_DIR / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
 
 
         if accel.energy is not None:
@@ -145,10 +144,9 @@ class LhcModelCreator(ModelCreator):
 
     def check_accelerator_instance(self) -> None:
         accel = self.accel
-
         accel.verify_object()  # should have been done anyway, but cannot hurt (jdilly)
 
-        # Creator specific checks
+        # Creator specific checks (same as in SPS, maybe merge? jdilly)
         if accel.model_dir is None:
             raise AcceleratorDefinitionError(
                 "The accelerator definition is incomplete: model directory (outputdir option) was not given."
@@ -535,12 +533,12 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         madx_script += f"{ORBIT_DPP} = {accel.dpp};\n"
 
         for corr_file in self.corr_files:  # Load the corrections, can also update ORBIT_DPP
-            madx_script += f"call, file = '{str(corr_file)}';\n"
+            madx_script += f"call, file = '{corr_file!s}';\n"
         
         if self.update_dpp: # If we are doing orbit correction, we need to ensure that a correct and a match is done
             madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
 
-        madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{str(self.twiss_out)}", {ORBIT_DPP});\n'
+        madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{self.twiss_out!s}", {ORBIT_DPP});\n'
         return madx_script
     
     def prepare_run(self) -> None:
@@ -550,7 +548,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         LOGGER.debug("Preparing model creation structure")
         macros_path = self.accel.model_dir / MACROS_DIR
         if not macros_path.exists():
-            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path:s}.")
+            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path!s}.")
     
     @property
     def files_to_check(self) -> list[str]:

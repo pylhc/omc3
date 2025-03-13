@@ -7,7 +7,6 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 import re
 import os
 from pathlib import Path
@@ -31,7 +30,7 @@ from omc3.model.constants import (
     TWISS_ELEMENTS_DAT,
 )
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr
+from omc3.utils.iotools import PathOrStr, find_file
 from generic_parser.entry_datatypes import get_multi_class
 
 
@@ -39,7 +38,7 @@ LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
 
 
-class AccExcitationMode:
+class AccExcitationMode:  # TODO: use enum! (jdilly, 2025)
     # it is very important that FREE = 0
     FREE, ACD, ADT = range(3)
 
@@ -63,11 +62,10 @@ class Accelerator:
     LOCAL_REPO_NAME: str | None = None
     # RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)
     RE_DICT: dict[str, str] = {
-        AccElementTypes.BPMS: r".*",
+        AccElementTypes.BPMS: r"^B.*",
         AccElementTypes.MAGNETS: r".*",
-        AccElementTypes.ARC_BPMS: r".*",
+        AccElementTypes.ARC_BPMS: r"^B.*",
     }
-    BPM_INITIAL: str = "B"
 
     @staticmethod
     def get_parameters():
@@ -184,10 +182,8 @@ class Accelerator:
         try:
             self.model = tfs.read(model_dir / TWISS_DAT, index=NAME)
         except IOError:
-            bpm_index = [
-                idx for idx in self.elements.index.to_numpy() if idx.startswith(self.BPM_INITIAL)
-            ]
-            self.model = self.elements.loc[bpm_index, :]
+            bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
+            self.model = self.elements.loc[bpm_mask, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
         self.energy = float(self.model.headers["ENERGY"])  # always 450GeV because we do not set it anywhere properly...
 
@@ -231,46 +227,19 @@ class Accelerator:
         if errordefspath.is_file():
             self.error_defs_file = errordefspath
 
-    # Class methods ###########################################
+    def find_modifier(self, modifier: Path | str):
+        """ Try to find a modifier file, which might be given only by its name. 
+        By default this is looking for full-path, model-dir and in the acc-models-path,
+        but should probably be overwritten by the accelerator sub-classes.
+        """
+        dirs = []
+        if self.model_dir is not None:
+            dirs.append(self.model_dir)
 
-    @classmethod
-    def get_element_types_mask(cls, list_of_elements: list[str], types) -> numpy.ndarray:
-        """
-        Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
-        specified types.
-        Needs to handle: `bpm`, `magnet`, `arc_bpm` (see :class:`AccElementTypes`)
+        if self.acc_model_path is not None:
+            dirs.append(self.acc_model_path)
 
-        Args:
-            list_of_elements: list of elements.
-            types: the kinds of elements to look for.
-
-        Returns:
-            A boolean array of elements of specified kinds.
-        """
-        unknown_elements = [ty for ty in types if ty not in cls.RE_DICT]
-        if len(unknown_elements):
-            raise TypeError(f"Unknown element(s): '{unknown_elements}'")
-        series = pd.Series(list_of_elements)
-        mask = series.str.match(cls.RE_DICT[types[0]], case=False)
-        for ty in types[1:]:
-            mask = mask | series.str.match(cls.RE_DICT[ty], case=False)
-        return mask.to_numpy()
-
-    @classmethod
-    def get_variables(cls, frm=None, to=None, classes=None):
-        """
-        Gets the variables with elements in the given range and the given classes. ``None`` means
-        everything.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
-
-    @classmethod
-    def get_correctors_variables(cls, frm=None, to=None, classes=None):
-        """
-        Returns the set of corrector variables between ``frm`` and ``to``, with classes in
-        classes. ``None`` means select all.
-        """
-        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+        return find_file(modifier, dirs=dirs)
 
     @property
     def beam_direction(self) -> int:
@@ -322,6 +291,39 @@ class Accelerator:
             raise AcceleratorDefinitionError("Driven model cannot be set for accelerator with free excitation mode.")
         self._model_driven = value
 
+    # Class methods ###########################################
+
+    @classmethod
+    def get_element_types_mask(cls, list_of_elements: list[str], types) -> numpy.ndarray:
+        """
+        Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
+        specified types.
+        Needs to handle: `bpm`, `magnet`, `arc_bpm` (see :class:`AccElementTypes`)
+
+        Args:
+            list_of_elements: list of elements.
+            types: the kinds of elements to look for.
+
+        Returns:
+            A boolean array of elements of specified kinds.
+        """
+        unknown_elements = [ty for ty in types if ty not in cls.RE_DICT]
+        if len(unknown_elements):
+            raise TypeError(f"Unknown element(s): '{unknown_elements}'")
+        series = pd.Series(list_of_elements)
+        mask = series.str.match(cls.RE_DICT[types[0]], case=False)
+        for ty in types[1:]:
+            mask = mask | series.str.match(cls.RE_DICT[ty], case=False)
+        return mask.to_numpy()
+
+    @classmethod
+    def get_variables(cls, frm=None, to=None, classes=None):
+        """
+        Gets the variables with elements in the given range and the given classes. ``None`` means
+        everything.
+        """
+        raise NotImplementedError("A function should have been overwritten, check stack trace.")
+
     @classmethod
     def get_dir(cls) -> Path:
         """Default directory for accelerator. Should be overwritten if more specific."""
@@ -339,7 +341,6 @@ class Accelerator:
         raise NotImplementedError(
             f"File {file_path.name} not available for accelerator {cls.NAME}."
         )
-
 
     ##########################################################################
 
@@ -359,20 +360,8 @@ class AcceleratorDefinitionError(Exception):
 def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
     """Parse modifiers from job.create_model.madx or use modifiers.madx file."""
     job_file = model_dir / JOB_MODEL_MADX_NOMINAL
-    if job_file.exists():
-        job_madx = job_file.read_text()
-
-        # find modifier tag in lines and return called file in these lines
-        # the modifier tag is used by the model creator to mark which line defines modifiers
-        # see e.g. `get_base_madx_script()` in `lhc.py`
-        # example for a match to the regex: `call, file = 'modifiers.madx'; MODIFIER_TAG`
-        modifiers = re.findall(
-            fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{MODIFIER_TAG}",
-            job_madx,
-            flags=re.IGNORECASE,
-        )
-        modifiers = [Path(m) for m in modifiers]
-        return modifiers or None
+    if job_file.is_file():
+        return find_called_files_with_tag(job_file, MODIFIER_TAG)
 
     # Legacy
     modifiers_file = model_dir / MODIFIERS_MADX
@@ -380,3 +369,28 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
         return [modifiers_file]
 
     return None
+
+
+def find_called_files_with_tag(madx_file: Path, tag: str) -> list[Path] | None:
+    """ Parse lines that call a file and are tagged with the given tag and return 
+    a list of paths to these files. 
+    
+    This is mainly used to find the modifier tag in lines and return called file in these lines.
+
+    The modifier tag is used by the model creator to mark which line defines modifiers
+    see e.g. `get_base_madx_script()` in `lhc.py`
+
+    An example for a match to the regex: `call, file = 'modifiers.madx'; !@modifiers`.
+    """
+    if not madx_file.is_file():
+        return None
+
+    job_madx = madx_file.read_text()
+
+    called_files = re.findall(
+        fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{tag}",
+        job_madx,
+        flags=re.IGNORECASE,
+    )
+    called_files = [Path(m) for m in called_files]
+    return called_files or None

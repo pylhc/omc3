@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from pathlib import Path
+import shutil
 from typing import TYPE_CHECKING
 
 import tfs
@@ -15,8 +16,10 @@ import tfs
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode, AcceleratorDefinitionError
 from omc3.model.constants import (
+    GENERAL_MACROS,
     JOB_MODEL_MADX_NOMINAL,
-    OPTICS_SUBDIR,
+    MACROS_DIR,
+    OMC3_MADX_MACROS_DIR,
     TWISS_AC_DAT,
     TWISS_ADT_DAT,
     TWISS_BEST_KNOWLEDGE_DAT,
@@ -50,7 +53,7 @@ class ModelCreator(ABC):
     Abstract class for the implementation of a model creator. 
     All mandatory methods and convenience functions are defined here.
     """
-    jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__ 
+    jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
 
     def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
         """
@@ -148,13 +151,8 @@ class ModelCreator(ABC):
             accel (Accelerator): Accelerator Instance used for the model creation.
         """
         LOGGER.info("Preparing MAD-X run for model creation.")
-        
-        # adjust modifier paths, to allow giving only filenames in default directories (e.g. optics)
-        if self.accel.modifiers is not None:
-            self.accel.modifiers = [self._find_modifier(m) for m in self.accel.modifiers]
-        
-        # prepare the acc-models-symlink and replace paths to use the symlink
-        self.prepare_symlink()
+        self.prepare_modifiers()  # adjust modifier paths, allowing giving filenames in default directories (e.g. optics)
+        self.prepare_symlink()  # prepare the acc-models-symlink and replace paths to use the symlink
 
     def post_run(self) -> None:
         """
@@ -262,31 +260,25 @@ class ModelCreator(ABC):
                 iotools.replace_in_path(m.absolute(), target.absolute(), link.absolute()) 
                 for m in accel.modifiers
             ]
-    
-    def _find_modifier(self, modifier: Path | str) -> Path:
-        modifier = Path(modifier)
         
-        # first case: if modifier exists as is, take it
-        if modifier.is_file():
-            return modifier
-
-        # second case: try if it is already in the output dir
-        model_dir_path: Path = self.accel.model_dir / modifier
-        if model_dir_path.is_dir():
-            return model_dir_path.absolute()
-
-        # and last case, try to find it in the acc-models rep
-        accel = self.accel
-        if accel.acc_model_path is not None:
-            optics_path: Path = accel.acc_model_path / OPTICS_SUBDIR / modifier
-            if optics_path.exists():
-                return optics_path.absolute()
-
-        # if you are here, all attempts failed
-        msg = f"Couldn't find modifier {modifier}.\nAlso tried in {accel.model_dir}"
-        if accel.acc_model_path is not None:
-            msg += f" and in {accel.acc_model_path}"
-        raise FileNotFoundError(msg)
+    def prepare_modifiers(self):
+        """ Loop over the modifiers and make them full paths if found. """
+        accel: Accelerator = self.accel
+        if accel.modifiers is not None:
+            accel.modifiers = [accel.find_modifier(m) for m in accel.modifiers]
+    
+    @staticmethod
+    def _get_select_command(pattern: str | None = None, indent: int = 0):
+        """ Returns a basic select command with the given pattern, the default columns and correct indentation. """
+        space = " " * indent
+        pattern_str = f" pattern=\"{pattern}\"," if pattern is not None else ""
+        return (
+            f"{space}select, flag=twiss, clear;\n"
+            f"{space}select, flag=twiss,{pattern_str} column="
+            "name, s, keyword, l, betx, bety, mux, muy, angle, "
+            "k1l, k2l, k3l, x, y, r11, r12, r21, r22, "
+            "alfx, alfy, dx, dpx, dy, dpy, px, py, phix, phiy;\n"
+        )
 
 
 class SegmentCreator(ModelCreator, ABC):
@@ -301,6 +293,7 @@ class SegmentCreator(ModelCreator, ABC):
     which in turn can be used for further processing by the implemented Propagables.
     """
     jobfile = None  # set in init
+    _sequence_name: str = None  # to be set by any accelerator using the default `get_madx_script`
 
     def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], 
                  corrections: MADXInputType = None, *args, **kwargs):
@@ -325,6 +318,15 @@ class SegmentCreator(ModelCreator, ABC):
         self._clean_models()
         self._create_measurement_file()
         self._create_corrections_file()
+        self._create_general_macros()
+
+    def _create_general_macros(self):
+        accel: Accelerator = self.accel
+        macros_path = accel.model_dir / MACROS_DIR
+        macros_path.mkdir(parents=True, exist_ok=True)
+
+        general_macros_path = macros_path / GENERAL_MACROS
+        shutil.copy(OMC3_MADX_MACROS_DIR / GENERAL_MACROS, general_macros_path)
     
     def _clean_models(self):
         """ Remove models from previous runs. """
@@ -363,9 +365,80 @@ class SegmentCreator(ModelCreator, ABC):
             return
 
         raise NotImplementedError("Could not determine type of corrections. Aborting.")
+    
+    def get_madx_script(self):
+        accel: Accelerator = self.accel
+        madx_script = self.get_base_madx_script()
+        
+        if self._sequence_name is None:
+            raise ValueError(
+                "To get the default Segment-by-Segment MAD-X script, "
+                f"the derived class '{self.__class__.__name__}'"
+                " must set the '_sequence_name' attribute.\n"
+                "This error should only be encountered during development. "
+                "If you encounter it later, please open an issue!")
+
+        madx_script += "\n".join([
+             "",
+            f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
+             "",
+            f"call, file = '{accel.model_dir / MACROS_DIR / GENERAL_MACROS}';",
+             "",
+             "! Cycle the sequence to avoid negative length.",
+            f"seqedit, sequence={self._sequence_name};",
+             "    flatten;",
+            f"    cycle, start={self.segment.start};",
+             "endedit;",
+             "",
+            f"use, sequence = {self._sequence_name};",
+             "",
+             "twiss;",
+             "exec, save_initial_and_final_values(",
+            f"    {self._sequence_name},",
+            f"    {self.segment.start},",
+            f"    {self.segment.end}, ",
+            f"    \"{accel.model_dir / self.measurement_madx!s}\",",
+             "    biniSbSParams,",
+             "    bendSbSParams",
+             ");",
+             "",
+             "exec, extract_segment_sequence(",
+            f"    {self._sequence_name},",
+             "    forward_SbSSEQ,",
+             "    backward_SbSSEQ,",
+            f"    {self.segment.start},",
+            f"    {self.segment.end},",
+             ");",
+             "",
+             "beam, particle = proton, sequence=forward_SbSSEQ;",
+             "beam, particle = proton, sequence=backward_SbSSEQ;",
+            "",
+            f"exec, twiss_segment(forward_SbSSEQ, \"{self.twiss_forward!s}\", biniSbSParams);",
+            f"exec, twiss_segment(backward_SbSSEQ, \"{self.twiss_backward!s}\", bendSbSParams);",
+             "",
+        ])
+
+        if self.corrections is not None:
+            madx_script += "\n".join([
+                f"call, file=\"{self.corrections_madx!s}\";",
+                f"exec, twiss_segment(forward_SbSSEQ, "
+                f"\"{self.twiss_forward_corrected}\", biniSbSParams);",
+                f"exec, twiss_segment(backward_SbSSEQ, "
+                f"\"{self.twiss_backward_corrected}\", bendSbSParams);",
+                "",
+            ])
+
+        return madx_script
+    
+    @property
+    def files_to_check(self) -> list[str]:
+        check_files = [self.twiss_forward, self.twiss_backward]
+        if self.corrections is not None:
+            check_files += [self.twiss_backward_corrected, self.twiss_backward_corrected]
+        return check_files
 
 
-class CorrectionModelCreator(ModelCreator, ABC):
+class CorrectionModelCreator(ModelCreator):
     jobfile = None  # set in __init__ 
     
     def __init__(self, accel: Accelerator, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False):
@@ -386,6 +459,32 @@ class CorrectionModelCreator(ModelCreator, ABC):
         self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.corr_files = corr_files
         self.update_dpp = update_dpp
+    
+    def get_madx_script(self) -> str:
+        """ Get the madx script for the correction model creator, which updates the model after correcion. 
+        
+        This is a basic implementation which does not update the dpp, but should work for generic accelerators.
+        """  
+        if self.update_dpp:
+            raise NotImplementedError(
+                f"Updating the dpp is not implemented for correction model creator of {self.accel.NAME}."
+            )
+
+        madx_script = self.get_base_madx_script()  # do not get_madx_script as we don't need the uncorrected output. 
+
+        for corr_file in self.corr_files:  # Load the corrections
+            madx_script += f"call, file = '{corr_file!s}';\n"
+
+        madx_script += (
+            f"{self._get_select_command()}\n"
+            f"twiss, file = {self.twiss_out!s};\n"
+        )
+        return madx_script
+    
+    
+    @property
+    def files_to_check(self) -> list[str]:
+        return [self.twiss_out, self.jobfile, self.logfile]
 
 
 # Helper functions -------------------------------------------------------------

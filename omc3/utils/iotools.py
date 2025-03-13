@@ -6,12 +6,12 @@ Helper functions for input/output issues.
 """
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Any
-from collections.abc import Callable, Iterator
+from typing import Any, TYPE_CHECKING
 
 from generic_parser.entry_datatypes import DictAsString, get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
@@ -19,6 +19,9 @@ from tfs import TfsDataFrame
 
 from omc3.definitions import formats
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterator, Iterable
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -269,8 +272,50 @@ def get_check_suffix_func(suffix: str) -> Callable[[Path],bool]:
         return path.suffix == suffix
     return check_suffix
 
+
 def get_check_by_regex_func(pattern: str) -> Callable[[Path],bool]:
     """ Returns a function that checks the name of a given path against the pattern. """
     def check(path: Path) -> bool:
         return re.match(pattern, path.name) is not None
     return check 
+
+
+def load_multiple_jsons(*files) -> dict:
+    """ Load multiple json files into a single dict. 
+    In case of duplicate keys, later files overwrite the earlier ones. """
+    full_dict = {}
+    for json_file in files:
+        with open(json_file, "r") as json_data:
+            full_dict.update(json.load(json_data))
+    return full_dict
+
+
+def find_file(file_name: Path | str, dirs: Iterable[Path | str]) -> Path:
+    """ Tries to find out if the given file exists, either on its own, or in the given directories.
+    Returns then the full path of the found file. If not found, raises a ``FileNotFoundError``. 
+    
+    Args:
+        file_name (Union[Path, str]): Name of the modifier file
+        dirs (Iterable[Union[Path, str]]): List of directories to search in 
+    
+    Returns:
+        Full path to the found file.
+    """
+    file_name = Path(file_name)
+    
+    # first case: if modifier exists as is, take it
+    if file_name.is_file():
+        return file_name
+
+    # check the given directories
+    for dir_path in dirs:
+        file_in_dir = Path(dir_path) / file_name
+        if file_in_dir.is_file():
+            return file_in_dir.absolute()
+
+    # if you are here, all attempts failed
+    msg = f"Couldn't find modifier {file_name}."
+    if dirs:
+        msg += " Tried in :\n" 
+        msg += "\n".join([str(d) for d in dirs])
+    raise FileNotFoundError(msg)

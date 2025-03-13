@@ -6,9 +6,9 @@ from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
 
 class Generic(Accelerator):
     NAME = "generic"
-    RE_DICT = {AccElementTypes.BPMS: r"B",
+    RE_DICT = {AccElementTypes.BPMS: r"^B.*",
                AccElementTypes.MAGNETS: r".*",
-               AccElementTypes.ARC_BPMS: r"B",
+               AccElementTypes.ARC_BPMS: r"^B.*",
                }
 
     def __init__(self, *args, **kwargs):

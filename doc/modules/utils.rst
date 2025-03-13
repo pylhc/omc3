@@ -11,9 +11,15 @@ Utils
     :noindex:
 
 
+.. automodule:: omc3.utils.knob_list_manipulations
+    :members:
+    :noindex:
+
+
 .. automodule:: omc3.utils.logging_tools
     :members:
     :noindex:
+
 
 .. automodule:: omc3.utils.math_classes
     :members:
