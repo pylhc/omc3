@@ -1,4 +1,7 @@
-import shutil
+""" 
+Test Segment-by-Segment
+-----------------------
+"""
 from pathlib import Path
 
 from generic_parser import DotDict
@@ -14,8 +17,7 @@ from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.optics_measurements.constants import NAME
 from omc3.sbs_propagation import segment_by_segment
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.definitions import PropagableColumns
-from omc3.segment_by_segment.propagables import Phase, get_all_propagables
+from omc3.segment_by_segment.propagables import Phase, get_all_propagables, PropagableColumns
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs
 from omc3.utils import logging_tools
 from tests.conftest import INPUTS

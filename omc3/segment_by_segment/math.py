@@ -1,6 +1,6 @@
 """
-Segment by Segment: Maths functions
------------------------------------
+Maths Functions
+---------------
 
 This module provides mathematical helper functions, e.g. to propagate errors.
 """
@@ -11,9 +11,11 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
-    from omc3.segment_by_segment.definitions import PropagableBoundaryConditions
+    from omc3.segment_by_segment.propagables import PropagableBoundaryConditions
     from numpy.typing import ArrayLike
 
+
+# Error Propagation ------------------------------------------------------------
 
 def propagate_error_phase(dphi: ArrayLike, init: PropagableBoundaryConditions) -> ArrayLike:
     """Propagates the phase-error.
@@ -192,8 +194,20 @@ def propagate_error_dispersion(beta: ArrayLike, dphi: ArrayLike, init: Propagabl
         (np.cos(2 * np.pi * dphi) + alpha0 * np.sin(2 * np.pi * dphi))
     )
 
+
+# Other Math -------------------------------------------------------------------
     
 def phase_diff(phase_a: ArrayLike, phase_b: ArrayLike) -> ArrayLike:
     """ Returns the phase difference between phase_a and phase_b, mapped to [-0.5, 0.5]. """
     phase_diff = (phase_a - phase_b) % 1
     return phase_diff - np.where(phase_diff > 0.5, 1, 0)  # this way keeps input type as is (!`where` returns np.array)
+
+
+def quadratic_add(*values):
+    """Calculate the root-sum-squared of the given values.
+    The individual "values" can be ``pd.Series`` and then their 
+    elements are summed by indexs."""
+    result = 0.
+    for value in values:
+        result += value ** 2
+    return np.sqrt(result)

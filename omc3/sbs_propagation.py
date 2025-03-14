@@ -55,7 +55,6 @@ from generic_parser import DotDict, EntryPointParameters, entrypoint
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager as model_manager
-from omc3.model.model_creators.manager import get_model_creator_class, CreatorType
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.constants import (
     ACC_MODELS_PREFIX,
@@ -64,6 +63,7 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_DAT,
 )
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
 from omc3.segment_by_segment.segments import (
