@@ -20,6 +20,7 @@ from omc3.optics_measurements.constants import (
     NAME,
     PHASE,
     PHASE_ADV,
+    S_MODEL,
     TUNE,
     S,
 )
@@ -114,6 +115,7 @@ class Phase(Propagable):
             df = pd.DataFrame(index=names)
             df[NAME] = names
             df[S] = self.segment_models.forward.loc[names, S]
+            df[S_MODEL] = self._elements.loc[names, S]
 
             phase, err_phase = Phase.get_at(names, self._meas, plane)
             df.loc[:, c.column] = math.phase_diff(phase, phase.iloc[0])

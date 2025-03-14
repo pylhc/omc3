@@ -9,8 +9,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from tfs import TfsDataFrame
 from tfs.collection import Tfs, TfsCollection
 
+from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import (
     AMP_BETA_NAME,
     BETA_NAME,
@@ -80,10 +82,10 @@ class SegmentModels(TfsCollection):
         directory: The path where to find the models.
         segment: A segment instance corresponding to the model to load.
     """
-    forward = Tfs(TWISS_FORWARD, two_planes=False)
-    backward = Tfs(TWISS_BACKWARD, two_planes=False)
-    forward_corrected = Tfs(TWISS_FORWARD_CORRECTED, two_planes=False)
-    backward_corrected = Tfs(TWISS_BACKWARD_CORRECTED, two_planes=False)
+    forward: TfsDataFrame = Tfs(TWISS_FORWARD, two_planes=False)   # whenever used, these are TfsDataFrames
+    backward: TfsDataFrame = Tfs(TWISS_BACKWARD, two_planes=False)
+    forward_corrected: TfsDataFrame = Tfs(TWISS_FORWARD_CORRECTED, two_planes=False)
+    backward_corrected: TfsDataFrame = Tfs(TWISS_BACKWARD_CORRECTED, two_planes=False)
 
     def __init__(self, directory: Path, segment: Segment):
         super(SegmentModels, self).__init__(directory)
