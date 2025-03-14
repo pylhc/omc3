@@ -206,8 +206,7 @@ def create_segment(
         f"This has been input as {segment_in!s}."
     )
 
-    propagables = [propg(segment, measurement) for propg in ALL_PROPAGABLES]
-    propagables = [measbl for measbl in propagables if measbl]
+    propagables = [propg(segment, measurement, accel.elements) for propg in ALL_PROPAGABLES]
 
     # Create the segment via madx
     creator_class = get_model_creator_class(accel, CreatorType.SEGMENT)

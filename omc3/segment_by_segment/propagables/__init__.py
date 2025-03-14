@@ -17,4 +17,4 @@ from omc3.segment_by_segment.propagables.phase import Phase
 from omc3.segment_by_segment.propagables.beta import BetaPhase
 from omc3.segment_by_segment.propagables.alpha import AlphaPhase
 
-ALL_PROPAGABLES: tuple[Propagable, ...] = (Phase, BetaPhase, AlphaPhase)
+ALL_PROPAGABLES: tuple[type[Propagable], ...] = (Phase, BetaPhase, AlphaPhase)

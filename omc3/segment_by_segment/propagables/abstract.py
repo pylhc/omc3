@@ -24,6 +24,7 @@ from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from tfs import TfsDataFrame
     IndexType = Sequence[str] | str | slice | pd.Index
     ValueErrorType = tuple[pd.Series, pd.Series] | tuple[float, float]
 
@@ -32,9 +33,10 @@ LOG = logging_tools.get_logger(__name__)
 class Propagable(ABC):
     _init_pattern: str  # see init_conditions_dict
 
-    def __init__(self, segment: Segment, meas: OpticsMeasurement):
+    def __init__(self, segment: Segment, meas: OpticsMeasurement, elements: TfsDataFrame):
         self._segment: Segment = segment
         self._meas: OpticsMeasurement = meas
+        self._elements: TfsDataFrame = elements
         self._segment_models: SegmentModels = None
 
     @property

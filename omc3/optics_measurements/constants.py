@@ -42,6 +42,7 @@ MASKED: str = "MASKED"
 # Names
 S: str = "S"
 S2: str = f"{S}2"
+S_MODEL: str = f"{S}{MDL}"
 NAME: str = "NAME"
 NAME2: str = f"{NAME}2"
 TUNE: str = "Q"
