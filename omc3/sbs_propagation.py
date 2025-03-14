@@ -55,7 +55,6 @@ from generic_parser import DotDict, EntryPointParameters, entrypoint
 from omc3 import model_creator
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager as model_manager
-from omc3.model.model_creators.manager import get_model_creator_class, CreatorType
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.constants import (
     ACC_MODELS_PREFIX,
@@ -64,6 +63,7 @@ from omc3.model.constants import (
     TWISS_DAT,
     TWISS_ELEMENTS_DAT,
 )
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
 from omc3.segment_by_segment.segments import (
@@ -73,7 +73,7 @@ from omc3.segment_by_segment.segments import (
     SegmentModels,
 )
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, PathOrStrOrDict
+from omc3.utils.iotools import PathOrStr, PathOrStrOrDict, save_config
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -85,7 +85,6 @@ if TYPE_CHECKING:
         MADXInputType,
         ModelCreator,
     )
-
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -139,6 +138,7 @@ def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, Segmen
 
     accel: Accelerator = model_manager.get_accelerator(accel_opt)
     accel.model_dir = _check_output_directory(opt.output_dir, accel)
+    save_config(accel.model_dir, opt, __file__, accel_opt)
     _maybe_create_nominal_model(accel, fetcher_opts)
 
     measurement = OpticsMeasurement(opt.measurement_dir)
@@ -433,6 +433,8 @@ def _copy_files_from_model_dir(model_dir: Path, output_dir: Path) -> None:
 def _bpm_is_in_meas(bpm_name: str, meas: OpticsMeasurement) -> bool:
     """ Check if the bpm_name is in the measurement in both planes.
     Possible improvement: Check if the error is too high?
+
+    TODO: This does not work with single-plane BPM machines, such as SPS. What to do?
     """
     return bpm_name in meas.beta_phase_x.index and bpm_name in meas.beta_phase_y.index
 

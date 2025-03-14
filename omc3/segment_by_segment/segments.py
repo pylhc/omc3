@@ -1,3 +1,9 @@
+""" 
+Segments
+--------
+
+Classes to hold the information of the segments in the sbs definition.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass

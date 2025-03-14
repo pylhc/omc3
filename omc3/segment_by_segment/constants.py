@@ -1,6 +1,6 @@
 """
-Segment by Segment: Constants
------------------------------
+Constants
+---------
 
 This module provides constants to be used with segment by segment
 """
