@@ -65,7 +65,7 @@ from omc3.model.constants import (
 )
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
+from omc3.segment_by_segment.propagables import Propagable, ALL_PROPAGABLES 
 from omc3.segment_by_segment.segments import (
     SbsDefinitionError,
     Segment,
@@ -206,7 +206,7 @@ def create_segment(
         f"This has been input as {segment_in!s}."
     )
 
-    propagables = [propg(segment, measurement) for propg in get_all_propagables()]
+    propagables = [propg(segment, measurement) for propg in ALL_PROPAGABLES]
     propagables = [measbl for measbl in propagables if measbl]
 
     # Create the segment via madx

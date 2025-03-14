@@ -206,7 +206,7 @@ def phase_diff(phase_a: ArrayLike, phase_b: ArrayLike) -> ArrayLike:
 def quadratic_add(*values):
     """Calculate the root-sum-squared of the given values.
     The individual "values" can be ``pd.Series`` and then their 
-    elements are summed by indexs."""
+    elements are summed by indices."""
     result = 0.
     for value in values:
         result += value ** 2

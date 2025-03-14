@@ -44,7 +44,7 @@ from omc3.optics_measurements.constants import (
 )
 from omc3.response_creator import ResponseCreatorType, create_response_entrypoint as create_response
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.propagables import get_all_propagables
+from omc3.segment_by_segment.propagables import ALL_PROPAGABLES
 from omc3.segment_by_segment.segments import Segment
 from tests.accuracy.test_sbs import (
     assert_file_exists_and_nonempty,
@@ -161,7 +161,7 @@ class TestModelCreationSPS:
         )
         measurement = OpticsMeasurement(SPS_DIR / "fake_measurement_Q20")
 
-        propagables = [propg(segment, measurement) for propg in get_all_propagables()]
+        propagables = [propg(segment, measurement) for propg in ALL_PROPAGABLES]
         measureables = [measbl for measbl in propagables if measbl]     
         
         accel_inst: Sps = manager.get_accelerator(accel_opt)
