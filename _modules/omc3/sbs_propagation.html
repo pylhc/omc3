@@ -157,10 +157,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/segment_by_segment.html#segments">Segments</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -269,7 +270,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_creator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.optics</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpticsMeasurement</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">manager</span> <span class="k">as</span> <span class="n">model_manager</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_model_creator_class</span><span class="p">,</span> <span class="n">CreatorType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcceleratorDefinitionError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ACC_MODELS_PREFIX</span><span class="p">,</span>
@@ -278,6 +278,7 @@
     <span class="n">TWISS_DAT</span><span class="p">,</span>
     <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreatorType</span><span class="p">,</span> <span class="n">get_model_creator_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">logfile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.propagables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Propagable</span><span class="p">,</span> <span class="n">get_all_propagables</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.segments</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -287,7 +288,7 @@
     <span class="n">SegmentModels</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDict</span><span class="p">,</span> <span class="n">save_config</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
@@ -299,7 +300,6 @@
         <span class="n">MADXInputType</span><span class="p">,</span>
         <span class="n">ModelCreator</span><span class="p">,</span>
     <span class="p">)</span>
-
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -355,6 +355,7 @@
 
     <span class="n">accel</span><span class="p">:</span> <span class="n">Accelerator</span> <span class="o">=</span> <span class="n">model_manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
     <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">_check_output_directory</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">accel</span><span class="p">)</span>
+    <span class="n">save_config</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span>
     <span class="n">_maybe_create_nominal_model</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="n">fetcher_opts</span><span class="p">)</span>
 
     <span class="n">measurement</span> <span class="o">=</span> <span class="n">OpticsMeasurement</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">measurement_dir</span><span class="p">)</span>
@@ -659,6 +660,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_bpm_is_in_meas</span><span class="p">(</span><span class="n">bpm_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Check if the bpm_name is in the measurement in both planes.</span>
 <span class="sd">    Possible improvement: Check if the error is too high?</span>
+
+<span class="sd">    TODO: This does not work with single-plane BPM machines, such as SPS. What to do?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">meas</span><span class="o">.</span><span class="n">beta_phase_x</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">meas</span><span class="o">.</span><span class="n">beta_phase_y</span><span class="o">.</span><span class="n">index</span>
 

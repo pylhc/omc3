@@ -160,10 +160,11 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Segment-by-Segment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#segment-by-segment-constants">Segment by Segment: Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#segments">Segments</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
@@ -215,10 +216,11 @@
     <h4 id="local-table-of-contents-title">On This Page</h4>
     <ul>
 <li><a class="reference internal" href="#">Segment-by-Segment</a><ul>
-<li><a class="reference internal" href="#segment-by-segment-constants">Segment by Segment: Constants</a></li>
-<li><a class="reference internal" href="#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
-<li><a class="reference internal" href="#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
-<li><a class="reference internal" href="#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+<li><a class="reference internal" href="#definitions">Definitions</a></li>
+<li><a class="reference internal" href="#maths-functions">Maths Functions</a></li>
+<li><a class="reference internal" href="#propagables">Propagables</a></li>
+<li><a class="reference internal" href="#segments">Segments</a></li>
 </ul>
 </li>
 </ul>
@@ -230,12 +232,12 @@
              
   <section id="segment-by-segment">
 <h1>Segment-by-Segment<a class="headerlink" href="#segment-by-segment" title="Link to this heading"></a></h1>
-<section id="segment-by-segment-constants">
-<h2>Segment by Segment: Constants<a class="headerlink" href="#segment-by-segment-constants" title="Link to this heading"></a></h2>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h2>
 <p>This module provides constants to be used with segment by segment</p>
 </section>
-<section id="segment-by-segment-definitions">
-<h2>Segment by Segment: Definitions<a class="headerlink" href="#segment-by-segment-definitions" title="Link to this heading"></a></h2>
+<section id="definitions">
+<h2>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h2>
 <p>This module provides definitions to be used with segment by segment</p>
 </section>
 <dl class="py class">
@@ -251,24 +253,8 @@
 <p>Additionally has a method to convert it to a tuple and iterate over it.</p>
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.definitions.</span></span><span class="sig-name descname"><span class="pre">PropagableBoundaryConditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispersion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/definitions.html#PropagableBoundaryConditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Store boundary conditions with error for propagating.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.definitions.</span></span><span class="sig-name descname"><span class="pre">PropagableColumns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'{}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/definitions.html#PropagableColumns"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Class to define columns for propagables.
-One could also implicitly define the error-columns,
-either via __getattr__ or as a wrapper, but I decided to
-explicitely name these columns, so that the IDEs can see them
-and can help in renaming and autocompletion (jdilly 2023).</p>
-</dd></dl>
-
-<section id="segment-by-segment-maths-functions">
-<h2>Segment by Segment: Maths functions<a class="headerlink" href="#segment-by-segment-maths-functions" title="Link to this heading"></a></h2>
+<section id="maths-functions">
+<h2>Maths Functions<a class="headerlink" href="#maths-functions" title="Link to this heading"></a></h2>
 <p>This module provides mathematical helper functions, e.g. to propagate errors.</p>
 </section>
 <dl class="py function">
@@ -410,321 +396,33 @@ init (PropagableBoundaryConditions): Initial conditions at the start of the segm
 </div></blockquote>
 </dd></dl>
 
-<section id="segment-by-segment-propagables">
-<h2>Segment by Segment: Propagables<a class="headerlink" href="#segment-by-segment-propagables" title="Link to this heading"></a></h2>
-<p>In this module, the propagables, i.e. the parameters that can be propagated
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">quadratic_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#quadratic_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the root-sum-squared of the given values.
+The individual “values” can be <code class="docutils literal notranslate"><span class="pre">pd.Series</span></code> and then their
+elements are summed by indexs.</p>
+</dd></dl>
+
+<section id="propagables">
+<h2>Propagables<a class="headerlink" href="#propagables" title="Link to this heading"></a></h2>
+<p>In the <code class="docutils literal notranslate"><span class="pre">propagables</span></code> module, the parameters that can be propagated
 through the segment, are defined.
 Each propagable has a corresponding class, which contains the functions that
 describe the forward and backward propagation for the respective parameter.</p>
+<p>This module exposes the main classes for propagables, to avoid making the
+imports so long and complicated.</p>
 </section>
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.propagables.</span></span><span class="sig-name descname"><span class="pre">AlphaPhase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">add_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment_diffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentDiffs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.add_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>This function calculates the differences between the propagated
-forward and backward models and the measured values.
-It then adds the results to the segment_diffs class
-(which writes them out, if its <code class="docutils literal notranslate"><span class="pre">allow_write</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">correction_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.correction_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between backward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">correction_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.correction_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between forward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">expected_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.expected_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">expected_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.expected_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected forward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IndexType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValueErrorType</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.get_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Get corresponding measurement values at the elements <code class="docutils literal notranslate"><span class="pre">names</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>names</strong> -- element name(s)</p></li>
-<li><p><strong>measurement</strong> -- Measurement Collection</p></li>
-<li><p><strong>plane</strong> -- plane to use</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Series or float containing the required values at <code class="docutils literal notranslate"><span class="pre">names</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">init_conditions_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.init_conditions_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Return a dictionary containing the initial values for this propagable at start and end
-of the segment.</p>
-<p>For the naming, see <cite>save_initial_and_final_values</cite> macro in
-<cite>omc3/model/madx_macros/general.macros.madx</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">measured_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.measured_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">measured_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#AlphaPhase.measured_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to forward propagated model.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.propagables.</span></span><span class="sig-name descname"><span class="pre">BetaPhase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">add_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment_diffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentDiffs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.add_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>This function calculates the differences between the propagated
-forward and backward models and the measured values.
-It then adds the results to the segment_diffs class
-(which writes them out, if its <code class="docutils literal notranslate"><span class="pre">allow_write</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">correction_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.correction_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between backward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">correction_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.correction_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between forward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">expected_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.expected_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">expected_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.expected_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected forward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IndexType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValueErrorType</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.get_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Get corresponding measurement values at the elements <code class="docutils literal notranslate"><span class="pre">names</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>names</strong> -- element name(s)</p></li>
-<li><p><strong>measurement</strong> -- Measurement Collection</p></li>
-<li><p><strong>plane</strong> -- plane to use</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Series or float containing the required values at <code class="docutils literal notranslate"><span class="pre">names</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">measured_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.measured_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">measured_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#BetaPhase.measured_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to forward propagated model.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.propagables.</span></span><span class="sig-name descname"><span class="pre">Phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">add_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment_diffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentDiffs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.add_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Calculate the differences between the propagated models and the measured values.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">correction_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.correction_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between backward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">correction_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.correction_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between forward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">expected_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.expected_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">expected_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.expected_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected forward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IndexType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValueErrorType</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.get_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Get corresponding measurement values at the elements <code class="docutils literal notranslate"><span class="pre">names</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>names</strong> -- element name(s)</p></li>
-<li><p><strong>measurement</strong> -- Measurement Collection</p></li>
-<li><p><strong>plane</strong> -- plane to use</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Series or float containing the required values at <code class="docutils literal notranslate"><span class="pre">names</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">init_conditions_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.init_conditions_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Return a dictionary containing the initial values for this propagable at start and end
-of the segment.</p>
-<p>For the naming, see <cite>save_initial_and_final_values</cite> macro in
-<cite>omc3/model/madx_macros/general.macros.madx</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">measured_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.measured_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">measured_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Phase.measured_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to forward propagated model.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.propagables.</span></span><span class="sig-name descname"><span class="pre">Propagable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment_diffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentDiffs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.add_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>This function calculates the differences between the propagated
-forward and backward models and the measured values.
-It then adds the results to the segment_diffs class
-(which writes them out, if its <code class="docutils literal notranslate"><span class="pre">allow_write</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">correction_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.correction_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between backward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">correction_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.correction_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deviations between forward propagated models with and without correction.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.expected_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.expected_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to corrected forward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IndexType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ValueErrorType</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.get_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Get corresponding measurement values at the elements <code class="docutils literal notranslate"><span class="pre">names</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>names</strong> -- element name(s)</p></li>
-<li><p><strong>measurement</strong> -- Measurement Collection</p></li>
-<li><p><strong>plane</strong> -- plane to use</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Series or float containing the required values at <code class="docutils literal notranslate"><span class="pre">names</span></code>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">init_conditions_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.init_conditions_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Return a dictionary containing the initial values for this propagable at start and end
-of the segment.</p>
-<p>For the naming, see <cite>save_initial_and_final_values</cite> macro in
-<cite>omc3/model/madx_macros/general.macros.madx</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measured_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.measured_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to backward propagated model.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measured_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#Propagable.measured_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolation of measured deviations to forward propagated model.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">segment_models</span></span></dt>
-<dd><p>TfsCollection of the segment models.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.propagables.</span></span><span class="sig-name descname"><span class="pre">get_all_propagables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#get_all_propagables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.propagables.</span></span><span class="sig-name descname"><span class="pre">get_all_propagables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#get_all_propagables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return all defined Propagables.</p>
 </dd></dl>
 
+<section id="segments">
+<h2>Segments<a class="headerlink" href="#segments" title="Link to this heading"></a></h2>
+<p>Classes to hold the information of the segments in the sbs definition.</p>
+</section>
 <dl class="py exception">
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">SbsDefinitionError</span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#SbsDefinitionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>

@@ -157,10 +157,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -213,8 +214,8 @@
              
   <h1>Source code for omc3.segment_by_segment.math</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Segment by Segment: Maths functions</span>
-<span class="sd">-----------------------------------</span>
+<span class="sd">Maths Functions</span>
+<span class="sd">---------------</span>
 
 <span class="sd">This module provides mathematical helper functions, e.g. to propagate errors.</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -225,9 +226,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropagableBoundaryConditions</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.propagables</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropagableBoundaryConditions</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
 
+
+<span class="c1"># Error Propagation ------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="propagate_error_phase">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_phase">[docs]</a>
@@ -430,6 +433,8 @@
     <span class="p">)</span></div>
 
 
+
+<span class="c1"># Other Math -------------------------------------------------------------------</span>
     
 <div class="viewcode-block" id="phase_diff">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.phase_diff">[docs]</a>
@@ -437,6 +442,19 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the phase difference between phase_a and phase_b, mapped to [-0.5, 0.5]. &quot;&quot;&quot;</span>
     <span class="n">phase_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase_a</span> <span class="o">-</span> <span class="n">phase_b</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">phase_diff</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">phase_diff</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># this way keeps input type as is (!`where` returns np.array)</span></div>
+
+
+
+<div class="viewcode-block" id="quadratic_add">
+<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.quadratic_add">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">quadratic_add</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the root-sum-squared of the given values.</span>
+<span class="sd">    The individual &quot;values&quot; can be ``pd.Series`` and then their </span>
+<span class="sd">    elements are summed by indexs.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="n">value</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 </pre></div>
 

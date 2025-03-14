@@ -157,10 +157,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -212,7 +213,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.segment_by_segment.segments</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Segments</span>
+<span class="sd">--------</span>
+
+<span class="sd">Classes to hold the information of the segments in the sbs definition.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>

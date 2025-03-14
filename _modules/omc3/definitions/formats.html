@@ -157,10 +157,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -231,7 +232,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_config_filename</span><span class="p">(</span><span class="n">script</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Default Filename for config-files. Call from script with ``__file__``.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">script</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">script</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">script</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">script</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span>
         <span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">TIME</span><span class="p">)</span>
     <span class="p">)</span></div>
 

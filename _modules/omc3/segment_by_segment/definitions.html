@@ -157,10 +157,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-constants">Segment by Segment: Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-definitions">Segment by Segment: Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-maths-functions">Segment by Segment: Maths functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segment-by-segment-propagables">Segment by Segment: Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
@@ -213,8 +214,8 @@
              
   <h1>Source code for omc3.segment_by_segment.definitions</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Segment by Segment: Definitions </span>
-<span class="sd">-------------------------------</span>
+<span class="sd">Definitions </span>
+<span class="sd">-----------</span>
 
 <span class="sd">This module provides definitions to be used with segment by segment</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -224,86 +225,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">uncertainties.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.math_classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MathMixin</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERR</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKWARD</span><span class="p">,</span> <span class="n">CORRECTION</span><span class="p">,</span> <span class="n">EXPECTED</span><span class="p">,</span> <span class="n">FORWARD</span>
-
-
-<div class="viewcode-block" id="PropagableColumns">
-<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.definitions.PropagableColumns">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">PropagableColumns</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Class to define columns for propagables. </span>
-<span class="sd">    One could also implicitly define the error-columns,</span>
-<span class="sd">    either via __getattr__ or as a wrapper, but I decided to</span>
-<span class="sd">    explicitely name these columns, so that the IDEs can see them </span>
-<span class="sd">    and can help in renaming and autocompletion (jdilly 2023).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_column</span> <span class="o">=</span> <span class="n">column</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plane</span> <span class="o">=</span> <span class="n">plane</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">planed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PropagableColumns</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">PropagableColumns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_column</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_column</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">_plane</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="c1"># Propagation ---</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">FORWARD</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BACKWARD</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="c1"># Correction ---</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CORRECTION</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="si">}</span><span class="s2">&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error_forward_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">forward_correction</span><span class="si">}</span><span class="s2">&quot;</span>
-        
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">backward_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CORRECTION</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error_backward_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_correction</span><span class="si">}</span><span class="s2">&quot;</span>
-
-    <span class="c1"># Expectation --- </span>
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward_expected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXPECTED</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="si">}</span><span class="s2">&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error_forward_expected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">forward_expected</span><span class="si">}</span><span class="s2">&quot;</span>
-        
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">backward_expected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXPECTED</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">error_backward_expected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_expected</span><span class="si">}</span><span class="s2">&quot;</span></div>
-
 
 
 <div class="viewcode-block" id="Measurement">
@@ -327,22 +248,6 @@
     
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">())</span></div>
-
-
-
-
-<div class="viewcode-block" id="PropagableBoundaryConditions">
-<a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.definitions.PropagableBoundaryConditions">[docs]</a>
-<span class="nd">@dataclass</span> 
-<span class="k">class</span><span class="w"> </span><span class="nc">PropagableBoundaryConditions</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store boundary conditions with error for propagating.&quot;&quot;&quot;</span>
-    <span class="n">alpha</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">beta</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">dispersion</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">f1001_amplitude</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">f1001_phase</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">f1010_amplitude</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">f1010_phase</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 
