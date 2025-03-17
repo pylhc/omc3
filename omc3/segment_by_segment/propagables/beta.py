@@ -16,6 +16,7 @@ from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import BETA, PHASE_ADV
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.propagables.abstract import Propagable
+from omc3.segment_by_segment.propagables.phase import Phase
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices
 from omc3.segment_by_segment.segments import SegmentDiffs
 from omc3.utils import logging_tools
@@ -68,7 +69,7 @@ class BetaPhase(Propagable):
 
         # get the propagated values
         model_beta = seg_model.loc[names, f"{BETA}{plane}"]
-        model_phase = seg_model.loc[names, f"{PHASE_ADV}{plane}"]
+        model_phase = Phase.get_segment_phase(seg_model.loc[names, :], plane, forward) 
 
         # calculate beta beating
         beta_beating = (beta - model_beta) / model_beta
@@ -95,7 +96,7 @@ class BetaPhase(Propagable):
         beta_beating = (corrected_beta - model_beta) / model_beta
 
         # propagate the error
-        model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
+        model_phase = Phase.get_segment_phase(seg_model, plane, forward)
         propagated_err = math.propagate_error_beta(corrected_beta, model_phase, init_condition)
         return beta_beating, propagated_err
 
@@ -108,6 +109,6 @@ class BetaPhase(Propagable):
         model_beta = seg_model.loc[:, f"{BETA}{plane}"]
 
         # propagate the error
-        model_phase = seg_model.loc[:, f"{PHASE_ADV}{plane}"]
+        model_phase = Phase.get_segment_phase(seg_model, plane, forward)
         propagated_err = math.propagate_error_beta(model_beta, model_phase, init_condition)
         return model_beta, propagated_err

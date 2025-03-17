@@ -130,7 +130,37 @@ class Propagable(ABC):
         ...
 
     def get_difference_dataframes(self) -> dict[str, pd.DataFrame]:
-        """Compute the difference dataframes between the propagated models and the measured values."""
+        """Compute the difference dataframes between the propagated models and the measured values.
+        
+        As the naming conventions of the columns are not intuitive, when not working with 
+        segment-by-segment, here the detailed explanations:
+
+        NAME-Column: The element/observaiton point (BPM) names
+        S-Column: The segment model longitudinal value, starting with 0 from the start of the segment.
+        S_MODEL-Column: The longitudinal value of the twiss model, starting with 0 from the start of the accelerator.
+
+        Parameter-Column (+ Error):
+            The measured value of the parameter, i.e. the same value as in the optics analysis output
+
+        Forward/Backward-Columns (+ Error):
+            The DIFFERENCE of the forward/backward propagated value of the parameter to the measured values. 
+            In case of Beta, the beating is calculated.
+            The error is a combination of the measured error at the element and the propagated error.
+        
+        Correction-Columns (+ Error):
+            The DIFFERENCE of the forward/backward propagated value through the corrected model 
+            to the forward/backward propagated value through the nominal model. 
+            This compares the two segment models with each other and shows how well the corrected model
+            now matches the measured values.
+            We want the difference between them to be as close as possible to the Forward/Backward-Column.
+            The error is the propagated error from the forward model.
+
+        Expected-Columns (+ Error):
+            The DIFFERENCE of the forward/backward propagated value through the corrected model to the measured values. 
+            This represents the expected difference between measurement and model after correction, 
+            hence we want this value to be as close to zero as possible.
+            The error is a combination of the measured error at the element and the propagated error.
+        """
         dfs = {}
         for plane in PLANES:
             names = self.get_segment_observation_points(plane)

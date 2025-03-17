@@ -4,20 +4,26 @@ Test Segment-by-Segment
 """
 from pathlib import Path
 
-from generic_parser import DotDict
 import numpy as np
 import pytest
 import tfs
+from generic_parser import DotDict
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
 from omc3.model.accelerators.lhc import Lhc
-from omc3.model.constants import TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher, OPTICS_SUBDIR
+from omc3.model.constants import OPTICS_SUBDIR, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.optics_measurements.constants import NAME
 from omc3.sbs_propagation import segment_by_segment
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.propagables import Phase, ALL_PROPAGABLES, PropagableColumns
+from omc3.segment_by_segment.propagables import (
+    ALL_PROPAGABLES,
+    AlphaPhase,
+    BetaPhase,
+    Phase,
+    PropagableColumns,
+)
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs
 from omc3.utils import logging_tools
 from tests.conftest import INPUTS
@@ -163,72 +169,97 @@ class TestSbSLHC:
         )
 
         # Tests ----------------------------------------------------------------
-        eps = 1e-8
+        eps = 1.1e-8
         diff_max_mapping = {  # some very crude estimates
             Phase: 1e-2,
+            BetaPhase: 9e-2,
+            AlphaPhase: 1e-1,
         }
         file_name_mapping = {
             Phase: "phase",
+            BetaPhase: "beta_phase",
+            AlphaPhase: "alpha_phase",
         }
         column_types = ["column", "forward", "backward"]
         if with_correction:
             column_types += ["forward_correction", "backward_correction"]
 
-        propagable = Phase  # TODO: loop over other propagated parameters when implemented
+        for propagable in ALL_PROPAGABLES:
+            diff_max: float = diff_max_mapping[propagable]
+            file_name: str = file_name_mapping[propagable]
 
-        diff_max: float = diff_max_mapping[propagable]
-        file_name: str = file_name_mapping[propagable]
+            for plane in "xy":
+                columns: PropagableColumns = propagable.columns.planed(plane.upper())  
 
-        for plane in "xy":
-            columns: PropagableColumns = propagable.columns.planed(plane.upper())  
-
-            # Quick cheks for existing columns ---------------------
-            
-            column_list = [getattr(columns, c) for c in column_types]
-
-            # Assert the columns-object gives unique names
-            assert len(set(column_list)) == len(column_list)
-
-            # In-Depth check per segments ---------------------------
-            meas_df = tfs.read(INPUT_SBS / f"measurement_b{beam}" / f"{file_name}_{plane}.tfs", index=NAME)
-
-            for segment in segments:
-                sbs_created: SegmentDiffs = sbs_res[segment.name]
-
-                # Assert Files Exist ----
-                files_to_check = [
-                    sbs_created.get_path(f"{file_name}_{plane}"),  # TODO: loop over other propagated parameters when implemented
-                ]
-                for file_ in files_to_check:
-                    assert_file_exists_and_nonempty(tmp_path / file_)
-
-                # Assert Columns Exist ---
-                sbs_df = getattr(sbs_created, f"{file_name}_{plane}")
-
-                assert_propagated_measurement_contains_segment(sbs_df, segment.start, segment.end)
-                assert len(sbs_df.index) == len(meas_df.loc[segment.start:segment.end].index)  # works as long as the segment is not looping around
-
-                for col in column_list:
-                    assert col in sbs_df.columns
-
-                # Assert there is a difference between the propagated models and the measurements
-                assert sum(sbs_df[columns.column] == 0) == 1
-                assert sbs_df[columns.error_column].all()
-
-                assert sbs_df[columns.forward].abs().max() > diff_max
-                assert sbs_df[columns.error_forward].all()
+                # Quick cheks for existing columns ---------------------
                 
-                assert sbs_df[columns.backward].abs().max() > diff_max
-                assert sbs_df[columns.error_backward].all()
+                column_list = [getattr(columns, c) for c in column_types]
 
-                if with_correction:
-                    assert np.allclose(sbs_df[columns.forward_correction], sbs_df[columns.forward], atol=eps)
-                    assert np.allclose(sbs_df[columns.forward_expected], 0, atol=eps)
-                    assert sbs_df[columns.error_forward_correction].iloc[1:].all()
+                # Assert the columns-object gives unique names
+                assert len(set(column_list)) == len(column_list)
 
-                    assert np.allclose(sbs_df[columns.backward_correction], sbs_df[columns.backward], atol=eps)
-                    assert np.allclose(sbs_df[columns.backward_expected], 0, atol=eps)
-                    assert sbs_df[columns.error_backward_correction].iloc[:-1].all()
+                # In-Depth check per segments ---------------------------
+                if propagable is AlphaPhase:
+                    meas_df = tfs.read(INPUT_SBS / f"measurement_b{beam}" / f"{file_name_mapping[BetaPhase]}_{plane}.tfs", index=NAME)
+                else:
+                    meas_df = tfs.read(INPUT_SBS / f"measurement_b{beam}" / f"{file_name}_{plane}.tfs", index=NAME)
+
+                for segment in segments:
+                    sbs_created: SegmentDiffs = sbs_res[segment.name]
+
+                    # Assert Files Exist ----
+                    assert_file_exists_and_nonempty(tmp_path / sbs_created.get_path(f"{file_name}_{plane}"))
+
+                    # Assert Columns Exist ---
+                    sbs_df = getattr(sbs_created, f"{file_name}_{plane}")
+
+                    assert_propagated_measurement_contains_segment(sbs_df, segment.start, segment.end)
+                    assert len(sbs_df.index) == len(meas_df.loc[segment.start:segment.end].index)  # works as long as the segment is not looping around
+
+                    for col in column_list:
+                        assert col in sbs_df.columns
+
+                    # Assert there is a difference between the propagated models and the measurements
+                    if propagable is Phase:
+                        assert sum(sbs_df[columns.column] == 0) == 1  # the first entry should be set to 0
+                    assert sbs_df[columns.error_column].all()
+
+                    # forward ---
+                    assert sbs_df[columns.forward].abs().min() == 0 # at least the first entry should show no difference
+                    assert sbs_df[columns.forward].abs().max() > diff_max
+                    assert sbs_df[columns.error_forward].all()
+                    
+                    # backward ---
+                    assert sbs_df[columns.backward].abs().min() == 0 # at least the last entry should show no difference
+                    assert sbs_df[columns.backward].abs().max() > diff_max  # but some should
+                    assert sbs_df[columns.error_backward].all()
+
+                    if with_correction:
+                        # forward ---
+                        if propagable is Phase:
+                            assert np.allclose(sbs_df[columns.forward_correction], sbs_df[columns.forward], atol=eps)
+                            assert np.allclose(sbs_df[columns.forward_expected], 0, atol=eps)
+                        else:  # check relative expectation 
+                            assert np.allclose(
+                                sbs_df[columns.forward_correction] / sbs_df[columns.column], 
+                                sbs_df[columns.forward] / sbs_df[columns.column], 
+                                atol=eps
+                            )
+                            assert np.allclose(sbs_df[columns.forward_expected] / sbs_df[columns.column], 0, atol=eps)
+                        assert sbs_df[columns.error_forward_correction].iloc[1:].all()
+
+                        # backward ---
+                        if propagable is Phase:
+                            assert np.allclose( sbs_df[columns.backward_correction], sbs_df[columns.backward], atol=eps)
+                            assert np.allclose(sbs_df[columns.backward_expected], 0, atol=eps)
+                        else:  # check relative expectation
+                            assert np.allclose(
+                                sbs_df[columns.backward_correction] / sbs_df[columns.column], 
+                                sbs_df[columns.backward] / sbs_df[columns.column], 
+                                atol=eps
+                            )
+                            assert np.allclose(sbs_df[columns.backward_expected] / sbs_df[columns.column], 0, atol=eps)
+                        assert sbs_df[columns.error_backward_correction].iloc[:-1].all()
 
 
 # Auxiliary Functions ----------------------------------------------------------

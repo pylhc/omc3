@@ -81,7 +81,6 @@ class Phase(Propagable):
         meas_phase, meas_err = Phase.get_at(names, self._meas, plane)
         
         # get the propagated values
-        model_phase = seg_model.loc[names, self._model_column(plane)]
         tune = seg_model.headers[f"{TUNE}{PLANE_TO_NUM[plane]}"]
 
         # take care of circularity of accelerator (when the segment start is before first bpm in measurement)
@@ -90,14 +89,12 @@ class Phase(Propagable):
 
         # calculate phase with reference to segment (start/end)
         reference_element = names[0 if forward else -1]  # start of the propagation
-        segment_model_phase = model_phase - model_phase.loc[reference_element]
         segment_meas_phase = meas_phase - meas_phase.loc[reference_element]
-        if not forward:
-            segment_model_phase = -segment_model_phase  # TODO: Why?
+        segment_model_phase = self.get_segment_phase(seg_model.loc[names, :], plane, forward)
 
         phase_beating = math.phase_diff(segment_meas_phase, segment_model_phase)
         # propagate the error
-        propagated_err = math.propagate_error_phase(model_phase, init_condition)
+        propagated_err = math.propagate_error_phase(segment_model_phase, init_condition)
         total_err = math.quadratic_add(meas_err, propagated_err)
         return phase_beating, total_err
 
@@ -136,3 +133,20 @@ class Phase(Propagable):
     def _model_column(plane: str) -> str:
         """ Helper function to get the phase-column in the model, as it has a different name as in the measurement."""
         return f"{PHASE_ADV}{plane}"
+
+    @staticmethod
+    def get_segment_phase(segment_model: pd.DataFrame, plane: str, forward: bool) -> pd.Series:
+        """ Get the propagated phase values from the segment model.
+
+        Args:
+            segment_model (pd.DataFrame): The segment model.
+            plane (str): The plane.
+            forward (bool): The direction of propagation.
+
+        Returns:
+            pd.Series: The propagated phase values.
+        """
+        phase = segment_model.loc[:, Phase._model_column(plane)]
+        if not forward:
+            phase = -phase  # TODO: Explain why!?
+        return phase
