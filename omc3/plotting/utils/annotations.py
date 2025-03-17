@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 # List of common y-labels. Sorry for the ugly.
 ylabels: dict[str, str] = {
+    "alpha":              r'$\alpha_{{{0}}} \quad [m]$',
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
     "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$'u'\u2030'r'$]$',

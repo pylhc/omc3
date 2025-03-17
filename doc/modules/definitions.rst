@@ -10,3 +10,7 @@ Definitions
     :members:
     :noindex:
 
+
+.. automodule:: omc3.definitions.optics
+    :members:
+    :noindex:

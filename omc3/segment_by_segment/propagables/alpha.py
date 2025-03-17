@@ -13,7 +13,7 @@ import pandas as pd
 from tfs import TfsDataFrame
 
 from omc3.definitions.optics import OpticsMeasurement
-from omc3.optics_measurements.constants import ALPHA, PHASE_ADV
+from omc3.optics_measurements.constants import ALPHA
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.phase import Phase 
