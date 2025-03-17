@@ -12,7 +12,7 @@ import tfs
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
 from omc3.model.accelerators.lhc import Lhc
-from omc3.model.constants import TWISS_DAT, Fetcher, OPTICS_SUBDIR
+from omc3.model.constants import TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher, OPTICS_SUBDIR
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.optics_measurements.constants import NAME
 from omc3.sbs_propagation import segment_by_segment
@@ -47,6 +47,7 @@ class TestSbSLHC:
         if things fail in the madx model creation, this is a good place to start looking.
         """
         # Preparation ----------------------------------------------------------
+        twiss_elements = tfs.read(model_30cm_flat_beams.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
         beam = model_30cm_flat_beams.beam
         accel_opt = dict(
             accel="lhc",
@@ -70,8 +71,8 @@ class TestSbSLHC:
         )
         measurement = OpticsMeasurement(INPUT_SBS / f"measurement_b{beam}")
 
-        propagables = [propg(segment, measurement) for propg in ALL_PROPAGABLES]
-        measureables = [measbl for measbl in propagables if measbl]     
+        propagables = [propg(segment, measurement, twiss_elements) for propg in ALL_PROPAGABLES]
+        measureables = [measbl for measbl in propagables if measbl]   # TODO  
         
         accel_inst: Lhc = manager.get_accelerator(accel_opt)
         accel_inst.model_dir = tmp_path  # if set in accel_opt, it tries to load from model_dir, but this is the output dir for the segment-models

@@ -14,16 +14,21 @@ import pandas as pd
 
 from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import OpticsMeasurement
-from omc3.segment_by_segment import propagables  # don't import alpha/beta etc directly ! cyclic imports !
+from omc3.optics_measurements.constants import NAME, S_MODEL, S
+from omc3.segment_by_segment import (
+    propagables,  # don't import alpha/beta etc directly ! cyclic imports !
+)
 from omc3.segment_by_segment.definitions import Measurement
 from omc3.segment_by_segment.propagables.utils import (
     PropagableBoundaryConditions as BoundaryConditions,
 )
+from omc3.segment_by_segment.propagables.utils import PropagableColumns
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from tfs import TfsDataFrame
     IndexType = Sequence[str] | str | slice | pd.Index
     ValueErrorType = tuple[pd.Series, pd.Series] | tuple[float, float]
@@ -32,11 +37,21 @@ LOG = logging_tools.get_logger(__name__)
 
 class Propagable(ABC):
     _init_pattern: str  # see init_conditions_dict
+    columns: PropagableColumns 
 
-    def __init__(self, segment: Segment, meas: OpticsMeasurement, elements: TfsDataFrame):
+    def __init__(self, segment: Segment, meas: OpticsMeasurement, twiss_elements: TfsDataFrame):
+        """ 
+        Abstract class to define a propagable, i.e. a parameter that can be/has been 
+        propagated through a segment.
+
+        Args:
+            segment: The segment to propagate through.
+            meas: The OpticsMeasurement that contains the measured values.
+            twiss_elements: The twiss-elements model of the full machine.
+        """
         self._segment: Segment = segment
         self._meas: OpticsMeasurement = meas
-        self._elements: TfsDataFrame = elements
+        self._elements_model: TfsDataFrame = twiss_elements
         self._segment_models: SegmentModels = None
 
     @property
@@ -92,7 +107,7 @@ class Propagable(ABC):
             alpha=-Measurement(*propagables.AlphaPhase.get_at(self._segment.end, self._meas, plane)),
             beta=Measurement(*propagables.BetaPhase.get_at(self._segment.end, self._meas, plane))
         )
-    
+
     @classmethod
     @abstractmethod
     def get_at(cls, names: IndexType, measurement: OpticsMeasurement, plane: str
@@ -109,41 +124,54 @@ class Propagable(ABC):
         """
         ...
 
-    @cache
     @abstractmethod
-    def measured_forward(self, plane: str):
-        """Interpolation of measured deviations to forward propagated model."""
+    def get_segment_observation_points(self, plane: str):
+        """Return the measurement points for the given plane, that are in the segment. """
         ...
 
-    @cache
-    @abstractmethod
-    def measured_backward(self, plane: str):
-        """Interpolation of measured deviations to backward propagated model."""
-        ...
-    
-    @cache
-    @abstractmethod
-    def expected_forward(self, plane: str):
-        """Interpolation of measured deviations to corrected forward propagated model."""
-        ...
+    def get_difference_dataframes(self) -> dict[str, pd.DataFrame]:
+        """Compute the difference dataframes between the propagated models and the measured values."""
+        dfs = {}
+        for plane in PLANES:
+            names = self.get_segment_observation_points(plane)
+            columns = self.columns.planed(plane)
+            df = pd.DataFrame(index=names)
+            df[NAME] = names
+            df[S] = self.segment_models.forward.loc[names, S]
+            df[S_MODEL] = self._elements_model.loc[names, S]
 
-    @cache
-    @abstractmethod
-    def expected_backward(self, plane: str):
-        """Interpolation of measured deviations to corrected backward propagated model."""
-        ...
+            meas_val, meas_err = self.get_at(names, self._meas, plane)
+            df.loc[:, columns.column] = meas_val
+            df.loc[:, columns.error_column] = meas_err
 
-    @cache
-    @abstractmethod
-    def correction_forward(self, plane: str):
-        """Deviations between forward propagated models with and without correction."""
-        ...
+            meas_val, meas_err = self.measured_forward(plane)
+            df.loc[:, columns.forward] = meas_val
+            df.loc[:, columns.error_forward] = meas_err
+            
+            meas_val, meas_err = self.measured_backward(plane)
+            df.loc[:, columns.backward] = meas_val
+            df.loc[:, columns.error_backward] = meas_err
 
-    @cache
-    @abstractmethod
-    def correction_backward(self, plane: str):
-        """Deviations between backward propagated models with and without correction."""
-        ...
+            if self.segment_models.get_path("forward_corrected").exists(): 
+                meas_val, meas_err = self.correction_forward(plane)
+                df.loc[:, columns.forward_correction] = meas_val.loc[names]
+                df.loc[:, columns.error_forward_correction] = meas_err.loc[names]
+
+                meas_val, meas_err = self.expected_forward(plane)
+                df.loc[:, columns.forward_expected] = meas_val
+                df.loc[:, columns.error_forward_expected] = meas_err
+
+            if self.segment_models.get_path("backward_corrected").exists(): 
+                meas_val, meas_err = self.correction_backward(plane)
+                df.loc[:, columns.backward_correction] = meas_val.loc[names]
+                df.loc[:, columns.error_backward_correction] = meas_err.loc[names]
+
+                meas_val, meas_err = self.expected_backward(plane)
+                df.loc[:, columns.backward_expected] = meas_val
+                df.loc[:, columns.error_backward_expected] = meas_err
+
+            dfs[plane] = df
+        return dfs
     
     @abstractmethod
     def add_differences(self, segment_diffs: SegmentDiffs):
@@ -152,3 +180,85 @@ class Propagable(ABC):
         It then adds the results to the segment_diffs class 
         (which writes them out, if its ``allow_write`` is set to ``True``)."""
         ...
+
+    @cache
+    def measured_forward(self, plane: str) -> tuple[pd.Series, pd.Series]:
+        """Interpolation of measured deviations to forward propagated model."""
+        return self._compute_measured(
+            plane, 
+            self.segment_models.forward, 
+            forward=True
+        )
+
+    @cache
+    def measured_backward(self, plane: str) -> tuple[pd.Series, pd.Series]:
+        """Interpolation of measured deviations to backward propagated model."""
+        return self._compute_measured(
+            plane, 
+            self.segment_models.backward, 
+            forward=False
+        )
+    
+    @cache
+    def expected_forward(self, plane: str) -> tuple[pd.Series, pd.Series]:
+        """Interpolation of measured deviations to corrected forward propagated model."""
+        return self._compute_measured(
+            plane, 
+            self.segment_models.forward_corrected, 
+            forward=True
+        )
+
+    @cache
+    def expected_backward(self, plane: str) -> tuple[pd.Series, pd.Series]:
+        """Interpolation of measured deviations to corrected backward propagated model."""
+        return self._compute_measured(
+            plane, 
+            self.segment_models.backward_corrected, 
+            forward=False
+        )
+
+    @cache
+    def correction_forward(self, plane: str) -> tuple[pd.Series, pd.Series]:
+        """Deviations between forward propagated models with and without correction."""
+        return self._compute_correction(
+            plane,
+            self.segment_models.forward,
+            self.segment_models.forward_corrected,
+            forward=True,
+        )
+
+    @cache
+    def correction_backward(self, plane: str) -> tuple[pd.Series, pd.Series]:
+        """Deviations between backward propagated models with and without correction."""
+        return self._compute_correction(
+            plane,
+            self.segment_models.backward,
+            self.segment_models.backward_corrected,
+            forward=False,
+        )
+    
+    def _compute_measured(self, 
+            plane: str, 
+            seg_model: TfsDataFrame, 
+            forward: bool
+        ) -> tuple[pd.Series, pd.Series]:
+        """ Compute the difference between the given segment model and the measured values."""
+        raise NotImplementedError  # only nees to be implemented, if inherited class uses functions declared above (or similar)
+    
+    def _compute_correction(
+            self,
+            plane: str,
+            seg_model: pd.DataFrame,
+            seg_model_corr: pd.DataFrame,
+            forward: bool,
+        ) -> tuple[pd.Series, pd.Series]:
+        """Compute the difference between the nominal and the corrected model."""
+        raise NotImplementedError  # only nees to be implemented, if inherited class uses functions declared above (or similar)
+    
+    def _compute_elements(self, 
+            plane: str, 
+            seg_model: pd.DataFrame, 
+            forward: bool
+        ) -> tuple[pd.Series, pd.Series]:
+        """ Compute get the propagated phase values from the segment model and calculate the propagated error."""
+        raise NotImplementedError  # only nees to be implemented, if inherited class uses functions declared above (or similar)

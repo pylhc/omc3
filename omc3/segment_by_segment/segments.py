@@ -12,8 +12,8 @@ from pathlib import Path
 from tfs import TfsDataFrame
 from tfs.collection import Tfs, TfsCollection
 
-from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import (
+    ALPHA_NAME,
     AMP_BETA_NAME,
     BETA_NAME,
     DISPERSION_NAME,
@@ -108,6 +108,7 @@ class SegmentDiffs(TfsCollection):
 
     phase = Tfs(f"{PREFIX}{PHASE_NAME}{{plane}}_{{name}}{EXT}")
     beta_phase = Tfs(f"{PREFIX}{BETA_NAME}{{plane}}_{{name}}{EXT}")
+    alpha_phase = Tfs(f"{PREFIX}{ALPHA_NAME}{{plane}}_{{name}}{EXT}")
     beta_kmod = Tfs(f"{PREFIX}{KMOD_BETA_NAME}{{plane}}_{{name}}{EXT}")
     beta_amp = Tfs(f"{PREFIX}{AMP_BETA_NAME}{{plane}}_{{name}}{EXT}")
     dispersion = Tfs(f"{PREFIX}{DISPERSION_NAME}{{plane}}_{{name}}{EXT}")

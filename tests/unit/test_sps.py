@@ -150,7 +150,7 @@ class TestModelCreationSPS:
             nat_tunes=[20.13, 20.18],
             modifiers=[acc_models_sps_2025 / STRENGTHS_SUBDIR / Q20_STRENGTHS_FILE],
         )
-
+        elements = tfs.read(SPS_MODEL_DIR / TWISS_ELEMENTS_DAT, index=NAME)
         correction_path = create_error_file(tmp_path)
 
         iplabel = "SomeSegment"
@@ -161,7 +161,7 @@ class TestModelCreationSPS:
         )
         measurement = OpticsMeasurement(SPS_DIR / "fake_measurement_Q20")
 
-        propagables = [propg(segment, measurement) for propg in ALL_PROPAGABLES]
+        propagables = [propg(segment, measurement, elements) for propg in ALL_PROPAGABLES]
         measureables = [measbl for measbl in propagables if measbl]     
         
         accel_inst: Sps = manager.get_accelerator(accel_opt)

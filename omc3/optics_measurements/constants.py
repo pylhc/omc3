@@ -8,6 +8,7 @@ Specific constants to be used in optics_measurements, to help with consistency.
 EXT: str = ".tfs"
 AMP_BETA_NAME: str = "beta_amplitude_"
 BETA_NAME: str = "beta_phase_"
+ALPHA_NAME: str = "alpha_phase_"  # Segment-by-Segment only
 KMOD_BETA_NAME: str = "beta_kmod_"  # TODO Check in Michis repo
 KMOD_IP_NAME: str = "interaction_point_kmod_"  # TODO Check in Michis repo
 CHROM_BETA_NAME: str = "chrom_beta_"
