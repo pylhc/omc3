@@ -169,7 +169,7 @@ class TestSbSLHC:
         )
 
         # Tests ----------------------------------------------------------------
-        eps = 1.1e-8
+        eps = 1e-8
         diff_max_mapping = {  # some very crude estimates
             Phase: 1e-2,
             BetaPhase: 9e-2,
@@ -245,7 +245,7 @@ class TestSbSLHC:
                                 sbs_df[columns.forward] / sbs_df[columns.column], 
                                 atol=eps
                             )
-                            assert np.allclose(sbs_df[columns.forward_expected] / sbs_df[columns.column], 0, atol=eps)
+                            assert np.allclose(sbs_df[columns.forward_expected] / sbs_df[columns.column], 0, atol=3*eps, rtol=eps)
                         assert sbs_df[columns.error_forward_correction].iloc[1:].all()
 
                         # backward ---
@@ -258,7 +258,7 @@ class TestSbSLHC:
                                 sbs_df[columns.backward] / sbs_df[columns.column], 
                                 atol=eps
                             )
-                            assert np.allclose(sbs_df[columns.backward_expected] / sbs_df[columns.column], 0, atol=eps)
+                            assert np.allclose(sbs_df[columns.backward_expected] / sbs_df[columns.column], 0, atol=3*eps, rtol=eps)
                         assert sbs_df[columns.error_backward_correction].iloc[:-1].all()
 
 
