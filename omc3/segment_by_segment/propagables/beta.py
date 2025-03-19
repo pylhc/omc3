@@ -31,7 +31,7 @@ LOG = logging_tools.get_logger(__name__)
 
 class BetaPhase(Propagable):
 
-    _init_pattern = "bet{}_{}"
+    _init_pattern = "bet{}_{}"  # format(plane, ini/end)
     columns: PropagableColumns = PropagableColumns(BETA)
 
     @classmethod

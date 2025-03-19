@@ -31,7 +31,7 @@ LOG = logging_tools.get_logger(__name__)
 
 class AlphaPhase(Propagable):
 
-    _init_pattern = "alf{}_{}"
+    _init_pattern = "alf{}_{}"  # format(plane, ini/end)
     columns: PropagableColumns = PropagableColumns(ALPHA)
 
     @classmethod
@@ -68,7 +68,7 @@ class AlphaPhase(Propagable):
             seg_model: TfsDataFrame, 
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
-        """ Compute the beta-beating between the given segment model and the measured values."""
+        """ Compute the alpha-difference between the given segment model and the measured values."""
         init_condition = self._init_start(plane) if forward else self._init_end(plane)
 
         # get the measured values
@@ -81,7 +81,7 @@ class AlphaPhase(Propagable):
             model_alpha = -model_alpha  # alpha needs to be inverted for backward propagation
         model_phase = Phase.get_segment_phase(seg_model.loc[names, :], plane, forward) 
 
-        # calculate beta beating
+        # calculate difference
         alpha_diff = alpha - model_alpha
 
         # propagate the error
@@ -96,7 +96,7 @@ class AlphaPhase(Propagable):
             seg_model_corr: pd.DataFrame,
             forward: bool,
         ) -> tuple[pd.Series, pd.Series]:
-        """Compute the beta-beating between the nominal and the corrected model."""
+        """Compute the alpha differennce between the nominal and the corrected model."""
         init_condition = self._init_start(plane) if forward else self._init_end(plane)
 
         model_alpha = seg_model.loc[:, f"{ALPHA}{plane}"]
@@ -111,7 +111,7 @@ class AlphaPhase(Propagable):
         return alpha_diff, propagated_err
 
     def _compute_elements(self, plane: str, seg_model: pd.DataFrame, forward: bool):
-        """ Compute get the propagated beta values from the segment model and calculate the propagated error.  """
+        """ Compute get the propagated alpha values from the segment model and calculate the propagated error.  """
         init_condition = self._init_start(plane) if forward else self._init_end(plane)
 
         model_alpha = seg_model.loc[:, f"{ALPHA}{plane}"]

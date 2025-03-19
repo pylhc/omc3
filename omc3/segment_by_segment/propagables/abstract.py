@@ -14,14 +14,11 @@ import pandas as pd
 
 from omc3.definitions.constants import PLANES
 from omc3.definitions.optics import OpticsMeasurement
-from omc3.optics_measurements.constants import NAME, S_MODEL, S
+from omc3.optics_measurements.constants import AMPLITUDE, NAME, PHASE, S_MODEL, S
 from omc3.segment_by_segment import (
     propagables,  # don't import alpha/beta etc directly ! cyclic imports !
 )
-from omc3.segment_by_segment.definitions import Measurement
-from omc3.segment_by_segment.propagables.utils import (
-    PropagableBoundaryConditions as BoundaryConditions,
-)
+from omc3.segment_by_segment.math import SegmentBoundaryConditions, Measurement
 from omc3.segment_by_segment.propagables.utils import PropagableColumns
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
 from omc3.utils import logging_tools
@@ -91,21 +88,28 @@ class Propagable(ABC):
             init_dict[end_name] = end_cond
         return init_dict
     
-    def _init_start(self, plane: str) -> BoundaryConditions:
+    def _init_start(self, plane: str) -> SegmentBoundaryConditions:
         """Get the start condition for all propagables at the given plane."""
-        return BoundaryConditions(
-            alpha=Measurement(*propagables.AlphaPhase.get_at(self._segment.start, self._meas, plane)),
-            beta=Measurement(*propagables.BetaPhase.get_at(self._segment.start, self._meas, plane))
-        )
+        return self._get_boundary_condition_at(self._segment.start, plane)
     
-    def _init_end(self, plane: str) -> BoundaryConditions:
+    def _init_end(self, plane: str) -> SegmentBoundaryConditions:
         """Get the end condition for all propagables at the given plane.
         Note: Alpha needs to be "reversed" as the end-condition is only used in backward
               propagation and alpha is anti-symmetric in time.
         """
-        return BoundaryConditions(
-            alpha=-Measurement(*propagables.AlphaPhase.get_at(self._segment.end, self._meas, plane)),
-            beta=Measurement(*propagables.BetaPhase.get_at(self._segment.end, self._meas, plane))
+        conditions = self._get_boundary_condition_at(self._segment.end, plane)
+        conditions.alpha = -conditions.alpha
+        return conditions
+
+    def _get_boundary_condition_at(self, position, plane: str) -> SegmentBoundaryConditions:
+        return SegmentBoundaryConditions(
+            alpha=Measurement(*propagables.AlphaPhase.get_at(position, self._meas, plane)),
+            beta=Measurement(*propagables.BetaPhase.get_at(position, self._meas, plane)),
+            dispersion=Measurement(*propagables.Dispersion.get_at(position, self._meas, plane)),
+            f1001_amplitude=Measurement(*propagables.F1001.get_at(position, self._meas, AMPLITUDE)),
+            f1001_phase=Measurement(*propagables.F1001.get_at(position, self._meas, PHASE)),
+            f1010_amplitude=Measurement(*propagables.F1010.get_at(position, self._meas, AMPLITUDE)),
+            f1010_phase=Measurement(*propagables.F1010.get_at(position, self._meas, PHASE)),
         )
 
     @classmethod
@@ -129,7 +133,7 @@ class Propagable(ABC):
         """Return the measurement points for the given plane, that are in the segment. """
         ...
 
-    def get_difference_dataframes(self) -> dict[str, pd.DataFrame]:
+    def get_difference_dataframes(self, planes: Sequence[str] = PLANES) -> dict[str, pd.DataFrame]:
         """Compute the difference dataframes between the propagated models and the measured values.
         
         As the naming conventions of the columns are not intuitive, when not working with 
@@ -162,7 +166,7 @@ class Propagable(ABC):
             The error is a combination of the measured error at the element and the propagated error.
         """
         dfs = {}
-        for plane in PLANES:
+        for plane in planes:
             names = self.get_segment_observation_points(plane)
             columns = self.columns.planed(plane)
             df = pd.DataFrame(index=names)
@@ -273,7 +277,7 @@ class Propagable(ABC):
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
         """ Compute the difference between the given segment model and the measured values."""
-        raise NotImplementedError  # only nees to be implemented, if inherited class uses functions declared above (or similar)
+        raise NotImplementedError  # only needs to be implemented, if inherited class uses functions declared above (or similar)
     
     def _compute_correction(
             self,
@@ -283,7 +287,7 @@ class Propagable(ABC):
             forward: bool,
         ) -> tuple[pd.Series, pd.Series]:
         """Compute the difference between the nominal and the corrected model."""
-        raise NotImplementedError  # only nees to be implemented, if inherited class uses functions declared above (or similar)
+        raise NotImplementedError  # only needs to be implemented, if inherited class uses functions declared above (or similar)
     
     def _compute_elements(self, 
             plane: str, 
@@ -291,4 +295,4 @@ class Propagable(ABC):
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
         """ Compute get the propagated phase values from the segment model and calculate the propagated error."""
-        raise NotImplementedError  # only nees to be implemented, if inherited class uses functions declared above (or similar)
+        raise NotImplementedError  # only needs to be implemented, if inherited class uses functions declared above (or similar)

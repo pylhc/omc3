@@ -45,8 +45,8 @@ class OpticsMeasurement(TfsCollection):
     kick = Tfs(KICK_NAME)
     ip = Tfs(IP_NAME)
     ip_kmod = Tfs(KMOD_IP_NAME)
-    f1001 = Tfs(F1001_NAME, two_planes=False)
-    f1010 = Tfs(F1010_NAME, two_planes=False)
+    f1001: TfsDataFrame = Tfs(F1001_NAME, two_planes=False)
+    f1010: TfsDataFrame = Tfs(F1010_NAME, two_planes=False)
 
     def _get_filename(self, name, plane="") -> str:
         """ Default way `optics_measurements` filenames are defined,

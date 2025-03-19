@@ -21,6 +21,8 @@ from omc3.optics_measurements.constants import (
     KMOD_BETA_NAME,
     NORM_DISP_NAME,
     PHASE_NAME,
+    F1001_NAME,
+    F1010_NAME,
 )
 from omc3.segment_by_segment.constants import (
     TWISS_BACKWARD,
@@ -113,13 +115,14 @@ class SegmentDiffs(TfsCollection):
     beta_amp = Tfs(f"{PREFIX}{AMP_BETA_NAME}{{plane}}_{{name}}{EXT}")
     dispersion = Tfs(f"{PREFIX}{DISPERSION_NAME}{{plane}}_{{name}}{EXT}")
     norm_dispersion = Tfs(f"{PREFIX}{NORM_DISP_NAME}{{plane}}_{{name}}{EXT}")
-    # TODO: Add coupling!
+    f1001 = Tfs(f"{PREFIX}{F1001_NAME}_{{name}}{EXT}", two_planes=False)
+    f1010 = Tfs(f"{PREFIX}{F1010_NAME}_{{name}}{EXT}", two_planes=False)
 
     def __init__(self, directory: Path, segment_name: str, *args, **kwargs):
         super(SegmentDiffs, self).__init__(directory, *args, **kwargs)
         self.segment_name = segment_name 
 
-    def _get_filename(self, template: str, plane: str=None):
+    def _get_filename(self, template: str, plane: str | None = None):
         if plane is None:
             return template.format(name=self.segment_name)
         return template.format(plane=plane.lower(), name=self.segment_name)
