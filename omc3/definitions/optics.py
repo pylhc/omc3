@@ -90,7 +90,7 @@ class ColumnsAndLabels:
     # Other
     needs_plane: bool = True
 
-    def set_plane(self, plane: str):
+    def set_plane(self, plane: str) -> ColumnsAndLabels:
         """ Fixes the plane in a new object. """
         if not self.needs_plane:
             raise AttributeError("Cannot set the plane of a non-planed definition.")
@@ -99,6 +99,13 @@ class ColumnsAndLabels:
             needs_plane=False,
             **values_fixed_plane,
         )
+    
+    def set_label_formatted(self, name: str) -> ColumnsAndLabels:
+        """ Fixes the label in a new object (for RDTs). """
+        if self._label is None:
+            raise AttributeError("No label defined.")
+        new_label = self._label.format(name)
+        return ColumnsAndLabels(**{f.name: getattr(self, f.name) for f in fields(self) if f.name != "_label"}, _label=new_label)
 
     # Properties ----
     @property

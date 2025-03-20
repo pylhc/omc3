@@ -145,7 +145,6 @@ class SpsModelCreator(ModelCreator, ABC):
             "option, echo;\n\n"
             "! Create Beam ---\n"
             "beam;\n\n"
-            "twiss;\n\n"  # not sure if needed, but is in the scenarios scripts
             "! Prepare Tunes ---\n"
             f"qx0={accel.nat_tunes[0]:.3f};\n"
             f"qy0={accel.nat_tunes[1]:.3f};\n\n"

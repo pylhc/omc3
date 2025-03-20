@@ -6,9 +6,8 @@ This module provides mathematical helper functions, e.g. to propagate errors.
 """
 from __future__ import annotations
 
-from collections import namedtuple
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 import numpy as np
 
@@ -18,7 +17,10 @@ if TYPE_CHECKING:
 
 # Error Propagation ------------------------------------------------------------
 
-Measurement = namedtuple("Measurement", [("value", float), ("error", float)])
+class Measurement(NamedTuple):
+    value: float
+    error: float
+
 
 @dataclass 
 class SegmentBoundaryConditions:

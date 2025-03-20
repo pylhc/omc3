@@ -201,8 +201,7 @@ def append_rdt_components(seg_model: pd.DataFrame | None, rdt: str):
     seg_model[AMPLITUDE] = np.abs(rdt_df[rdt])
     seg_model[REAL] = np.real(rdt_df[rdt])
     seg_model[IMAG] = np.imag(rdt_df[rdt])
-    phase = np.angle(rdt_df[rdt]) / (2*np.pi)
-    seg_model[PHASE] = np.where(phase > 0.5, phase - 1, phase)
+    seg_model[PHASE] = (np.angle(rdt_df[rdt]) / (2*np.pi)) % 1
     return seg_model
 
 
