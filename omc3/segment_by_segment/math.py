@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, NamedTuple
 
 import numpy as np
+import pandas as pd
 
 
 if TYPE_CHECKING:
@@ -18,8 +19,16 @@ if TYPE_CHECKING:
 # Error Propagation ------------------------------------------------------------
 
 class Measurement(NamedTuple):
+    """ Very simple container for a value and its error. 
+    Implements only negation and addition with another Measurement. """
     value: float
     error: float
+
+    def __neg__(self):
+        return Measurement(-self.value, self.error)
+    
+    def __add__(self, other: Measurement):
+        return Measurement(self.value + other.value, np.sqrt(self.error**2 + other.error**2))
 
 
 @dataclass 
@@ -179,10 +188,13 @@ def propagate_error_coupling_1001_amp(dphix: ArrayLike, dphiy: ArrayLike, init: 
            init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     amp0, erramp0 = init.f1001_amplitude
-    return np.ones_like(amp0) * erramp0
+    try:
+        return pd.Series(erramp0, index=dphix.index)
+    except AttributeError:
+        return np.ones_like(amp0) * erramp0
 
 
-def propagate_error_coupling_1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_coupling_1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.
        
        TODO: Probably a better propagation? Phase was not output in BBS. (jdilly, 2025)
@@ -193,7 +205,10 @@ def propagate_error_coupling_1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init
            init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     phase0, errphase0 = init.f1001_phase    
-    return np.ones_like(phase0) * errphase0
+    try:
+        return pd.Series(errphase0, index=dphix.index)
+    except AttributeError:
+        return np.ones_like(phase0) * errphase0
 
 
 # F1010 ---
@@ -244,7 +259,7 @@ def propagate_error_coupling_1010_im(dphix: ArrayLike, dphiy: ArrayLike, init: S
     )
 
 
-def propagate_error_coupling_1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_coupling_1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.
        
        TODO: Probably a better propagation? This was how it was in BBS. (jdilly, 2025)
@@ -255,10 +270,13 @@ def propagate_error_coupling_1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: 
            init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     amp0, erramp0 = init.f1010_amplitude
-    return np.ones_like(amp0) * erramp0
+    try:
+        return pd.Series(erramp0, index=dphix.index)
+    except AttributeError:
+        return np.ones_like(amp0) * erramp0
 
 
-def propagate_error_coupling_1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_coupling_1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.
        
        TODO: Probably a better propagation? Phase was not output in BBS. (jdilly, 2025)
@@ -269,7 +287,10 @@ def propagate_error_coupling_1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init
            init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     phase0, errphase0 = init.f1010_phase    
-    return np.ones_like(phase0) * errphase0
+    try:
+        return pd.Series(errphase0, index=dphix.index)
+    except AttributeError:
+        return np.ones_like(phase0) * errphase0
 
 
 # Other Math -------------------------------------------------------------------

@@ -98,19 +98,22 @@ class Propagable(ABC):
               propagation and alpha is anti-symmetric in time.
         """
         conditions = self._get_boundary_condition_at(self._segment.end, plane)
-        conditions.alpha = -conditions.alpha
+        if conditions.alpha is not None:
+            conditions.alpha = -conditions.alpha
         return conditions
 
-    def _get_boundary_condition_at(self, position, plane: str) -> SegmentBoundaryConditions:
-        return SegmentBoundaryConditions(
-            alpha=Measurement(*propagables.AlphaPhase.get_at(position, self._meas, plane)),
-            beta=Measurement(*propagables.BetaPhase.get_at(position, self._meas, plane)),
-            dispersion=Measurement(*propagables.Dispersion.get_at(position, self._meas, plane)),
+    def _get_boundary_condition_at(self, position, plane: str | None) -> SegmentBoundaryConditions:
+        conditions = SegmentBoundaryConditions(
             f1001_amplitude=Measurement(*propagables.F1001.get_at(position, self._meas, AMPLITUDE)),
             f1001_phase=Measurement(*propagables.F1001.get_at(position, self._meas, PHASE)),
             f1010_amplitude=Measurement(*propagables.F1010.get_at(position, self._meas, AMPLITUDE)),
             f1010_phase=Measurement(*propagables.F1010.get_at(position, self._meas, PHASE)),
         )
+        if plane is not None:
+            conditions.alpha = Measurement(*propagables.AlphaPhase.get_at(position, self._meas, plane))
+            conditions.beta = Measurement(*propagables.BetaPhase.get_at(position, self._meas, plane))
+            conditions.dispersion = Measurement(*propagables.Dispersion.get_at(position, self._meas, plane))
+        return conditions
 
     @classmethod
     @abstractmethod
