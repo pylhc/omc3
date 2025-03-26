@@ -41,6 +41,16 @@ class AlphaPhase(Propagable):
         error = meas.beta_phase[plane].loc[names, c.error_column]
         return alpha, error
     
+    @classmethod
+    def in_measurement(cls, meas: OpticsMeasurement) -> bool:
+        """ Check if the alpha phase is in the measurement data. """
+        try:
+            meas.beta_phase_x
+            meas.beta_phase_y
+        except FileNotFoundError:
+            return False
+        return True
+    
     def init_conditions_dict(self):
         # alpha needs to be inverted for backward propagation, i.e. the end-init
         init_cond = super().init_conditions_dict()

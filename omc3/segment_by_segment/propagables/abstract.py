@@ -103,16 +103,26 @@ class Propagable(ABC):
         return conditions
 
     def _get_boundary_condition_at(self, position, plane: str | None) -> SegmentBoundaryConditions:
-        conditions = SegmentBoundaryConditions(
-            f1001_amplitude=Measurement(*propagables.F1001.get_at(position, self._meas, AMPLITUDE)),
-            f1001_phase=Measurement(*propagables.F1001.get_at(position, self._meas, PHASE)),
-            f1010_amplitude=Measurement(*propagables.F1010.get_at(position, self._meas, AMPLITUDE)),
-            f1010_phase=Measurement(*propagables.F1010.get_at(position, self._meas, PHASE)),
-        )
+        conditions = SegmentBoundaryConditions()
+
+        if propagables.F1001.in_measurement(self._meas):    
+            conditions.f1001_amplitude=Measurement(*propagables.F1001.get_at(position, self._meas, AMPLITUDE))
+            conditions.f1001_phase=Measurement(*propagables.F1001.get_at(position, self._meas, PHASE))
+        
+        if propagables.F1010.in_measurement(self._meas):    
+            conditions.f1010_amplitude=Measurement(*propagables.F1010.get_at(position, self._meas, AMPLITUDE))
+            conditions.f1010_phase=Measurement(*propagables.F1010.get_at(position, self._meas, PHASE))
+
         if plane is not None:
-            conditions.alpha = Measurement(*propagables.AlphaPhase.get_at(position, self._meas, plane))
-            conditions.beta = Measurement(*propagables.BetaPhase.get_at(position, self._meas, plane))
-            conditions.dispersion = Measurement(*propagables.Dispersion.get_at(position, self._meas, plane))
+            if propagables.AlphaPhase.in_measurement(self._meas):
+                conditions.alpha = Measurement(*propagables.AlphaPhase.get_at(position, self._meas, plane))
+
+            if propagables.BetaPhase.in_measurement(self._meas):
+                    conditions.beta = Measurement(*propagables.BetaPhase.get_at(position, self._meas, plane))
+
+            if propagables.Dispersion.in_measurement(self._meas):
+                conditions.dispersion = Measurement(*propagables.Dispersion.get_at(position, self._meas, plane))
+
         return conditions
 
     @classmethod
@@ -209,6 +219,17 @@ class Propagable(ABC):
 
             dfs[plane] = df
         return dfs
+
+    def is_measured(self) -> bool:
+        """ Check if the respective measurement for this propagable 
+        is available in the given OpticsMeasurement. """
+        return self.in_measurement(self._meas)
+    
+    @classmethod
+    @abstractmethod
+    def in_measurement(self, meas: OpticsMeasurement) -> bool:
+        """ Check if the respective measurement for this propagable is available. """
+        ...
     
     @abstractmethod
     def add_differences(self, segment_diffs: SegmentDiffs):

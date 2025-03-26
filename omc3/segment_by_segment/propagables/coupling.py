@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 from tfs import TfsDataFrame
-import tfs
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import AMPLITUDE, IMAG, PHASE, REAL, F1010 as COL_F1010, F1001 as COL_F1001, ALPHA as COL_ALPHA, BETA as COL_BETA
@@ -55,7 +54,26 @@ class Coupling(Propagable):
         self._segment_models = segment_models
         
     def init_conditions_dict(self):
-        return init_conditions_dict(self._segment.start, self._segment.end, self._meas)
+        elements = [self._segment.start, self._segment.end]
+        model = self._elements_model
+
+        # build data-frame to be used by rmatrix_from_coupling
+        df = pd.DataFrame({
+            f"{COL_ALPHA}X": model.loc[elements, f"{COL_ALPHA}X"],
+            f"{COL_ALPHA}Y": model.loc[elements, f"{COL_ALPHA}Y"],
+            f"{COL_BETA}X": model.loc[elements, f"{COL_BETA}X"],
+            f"{COL_BETA}Y": model.loc[elements, f"{COL_BETA}Y"],
+            f"{COL_F1001}{REAL}": F1001.get_at(elements, self._meas, REAL)[0],
+            f"{COL_F1001}{IMAG}": F1001.get_at(elements, self._meas, IMAG)[0],
+            f"{COL_F1010}{REAL}": F1010.get_at(elements, self._meas, REAL)[0],
+            f"{COL_F1010}{IMAG}": F1010.get_at(elements, self._meas, IMAG)[0],
+        })
+        rmatrix = rmatrix_from_coupling(df, complex_columns=False)
+        return {
+            f"{r_component}_{suffix}": rmatrix.loc[element, r_component.upper()] 
+                for r_component in ("r11", "r12", "r21", "r22")
+                for suffix, element in zip(("ini", "end"), elements)
+        }
 
     def _compute_measured(self, 
             plane: str, 
@@ -146,6 +164,15 @@ class F1001(Coupling):
         value = meas.f1001.loc[names, c.column]
         error = meas.f1001.loc[names, c.error_column]
         return value, error
+
+    @classmethod
+    def in_measurement(cls, meas: OpticsMeasurement) -> bool:
+        """ Check if the coupling rdt is in the measurement data. """
+        try:
+            meas.f1001
+        except FileNotFoundError:
+            return False
+        return True
     
     def get_segment_observation_points(self, _: str):
         """ Return the measurement points for the given plane, that are in the segment. """
@@ -180,6 +207,15 @@ class F1010(Coupling):
         error = meas.f1010.loc[names, c.error_column]
         return value, error
     
+    @classmethod
+    def in_measurement(cls, meas: OpticsMeasurement) -> bool:
+        """ Check if the coupling rdt is in the measurement data. """
+        try:
+            meas.f1010
+        except FileNotFoundError:
+            return False
+        return True
+    
     def get_segment_observation_points(self, _: str):
         """ Return the measurement points for the given plane, that are in the segment. """
         return common_indices(
@@ -207,30 +243,6 @@ def append_rdt_components(seg_model: pd.DataFrame | None, rdt: str):
     seg_model[IMAG] = np.imag(rdt_df[rdt])
     seg_model[PHASE] = (np.angle(rdt_df[rdt]) / (2*np.pi)) % 1
     return seg_model
-
-
-@cache  # will only be run once for both Coupling-RDTs
-def init_conditions_dict(start: str, end: str, meas: OpticsMeasurement):
-    """ Return a dictionary with the initial conditions for the RDTs in R-Matrix form. """
-    elements = [start, end]
-
-    # build data-frame to be used by rmatrix_from_coupling
-    df = pd.DataFrame({
-        f"{COL_ALPHA}X": AlphaPhase.get_at(elements, meas, "X")[0],
-        f"{COL_ALPHA}Y": AlphaPhase.get_at(elements, meas, "Y")[0],
-        f"{COL_BETA}X": BetaPhase.get_at(elements, meas, "X")[0],
-        f"{COL_BETA}Y": BetaPhase.get_at(elements, meas, "Y")[0],
-        f"{COL_F1001}{REAL}": F1001.get_at(elements, meas, REAL)[0],
-        f"{COL_F1001}{IMAG}": F1001.get_at(elements, meas, IMAG)[0],
-        f"{COL_F1010}{REAL}": F1010.get_at(elements, meas, REAL)[0],
-        f"{COL_F1010}{IMAG}": F1010.get_at(elements, meas, IMAG)[0],
-    })
-    rmatrix = rmatrix_from_coupling(df, complex_columns=False)
-    return {
-        f"{r_component}_{suffix}": rmatrix.loc[element, r_component.upper()] 
-            for r_component in ("r11", "r12", "r21", "r22")
-            for suffix, element in zip(("start", "end"), elements)
-    }
 
 
 def concat_dfs_dict_no_duplicates(dfs: dict[str, pd.DataFrame]):

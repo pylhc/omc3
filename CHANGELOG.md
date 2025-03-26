@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-03-XX - v0.24.0 - _jdilly_
+
+- Added:
+  - Additional Propagables: Dispersion, Coupling.
+
 #### 2025-03-13 - v0.23.0 - _jdilly_
 
 - Added:

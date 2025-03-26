@@ -41,6 +41,16 @@ class BetaPhase(Propagable):
         error = meas.beta_phase[plane].loc[names, c.error_column]
         return beta, error
     
+    @classmethod
+    def in_measurement(cls, meas: OpticsMeasurement) -> bool:
+        """ Check if the beta phase is in the measurement data. """
+        try:
+            meas.beta_phase_x
+            meas.beta_phase_y
+        except FileNotFoundError:
+            return False
+        return True
+    
     def get_segment_observation_points(self, plane: str):
         """ Return the measurement points for the given plane, that are in the segment. """
         return common_indices(

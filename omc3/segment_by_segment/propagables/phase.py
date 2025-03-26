@@ -49,6 +49,16 @@ class Phase(Propagable):
         error = meas.total_phase[plane].loc[names, columns.error_column]
         return phase, error
     
+    @classmethod
+    def in_measurement(cls, meas: OpticsMeasurement) -> bool:
+        """ Check if the phase is in the measurement data. """
+        try:
+            meas.total_phase_x
+            meas.total_phase_y
+        except FileNotFoundError:
+            return False
+        return True
+    
     def get_segment_observation_points(self, plane: str):
         """ Return the measurement points for the given plane, that are in the segment. """
         return common_indices(
