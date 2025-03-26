@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-03-13 - v0.XX.XX - _jdilly_
+
+- Changed:
+  - `twiss_elements` via macro now contain all elements in the sequence.
+
 #### 2025-03-13 - v0.23.0 - _jdilly_
 
 - Added:
