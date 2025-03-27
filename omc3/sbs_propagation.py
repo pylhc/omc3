@@ -65,7 +65,14 @@ from omc3.model.constants import (
 )
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.propagables import AlphaPhase, BetaPhase, Phase, Propagable, F1001, F1010, ALL_PROPAGABLES 
+from omc3.segment_by_segment.propagables import (
+    ALL_PROPAGABLES,
+    F1001,
+    F1010,
+    BetaPhase,
+    Phase,
+    Propagable,
+)
 from omc3.segment_by_segment.segments import (
     SbsDefinitionError,
     Segment,
@@ -210,8 +217,8 @@ def create_segment(
     if Phase not in measured_classes:
         raise FileNotFoundError("No measurement for Phase found in the given measurement directory.")
     
-    # if (F1001 in measured_classes or F1010 in measured_classes) and BetaPhase not in measured_classes:
-    #     raise FileNotFoundError("Beta Phase is required for F1001 and F1010 propagation.")
+    if (F1001 in measured_classes or F1010 in measured_classes) and BetaPhase not in measured_classes:
+        raise FileNotFoundError("Beta-from-Phase is required for Coupling propagations!")
     
     propagables: list[Propagable] = [propg(segment, measurement, accel.elements) for propg in measured_classes]
 

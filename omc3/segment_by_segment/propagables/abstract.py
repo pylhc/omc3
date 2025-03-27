@@ -18,7 +18,7 @@ from omc3.optics_measurements.constants import AMPLITUDE, NAME, PHASE, S_MODEL, 
 from omc3.segment_by_segment import (
     propagables,  # don't import alpha/beta etc directly ! cyclic imports !
 )
-from omc3.segment_by_segment.math import SegmentBoundaryConditions, Measurement
+from omc3.segment_by_segment.math import Measurement, SegmentBoundaryConditions
 from omc3.segment_by_segment.propagables.utils import PropagableColumns
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs, SegmentModels
 from omc3.utils import logging_tools
@@ -62,9 +62,11 @@ class Propagable(ABC):
     def segment_models(self, segment_models: SegmentModels):
         self._segment_models = segment_models
 
+    # Initial Conditions -------------------------------------------------------
+
     def init_conditions_dict(self):
-        """Return a dictionary containing the initial values for this propagable at start and end
-        of the segment.
+        """Return a dictionary containing the initial values 
+        for this propagable at start and end of the segment.
 
         For the naming, see `save_initial_and_final_values` macro in 
         `omc3/model/madx_macros/general.macros.madx`.
@@ -79,12 +81,12 @@ class Propagable(ABC):
         for plane in PLANES:
             # get start value
             start_cond, _ = self.get_at(self._segment.start, self._meas, plane)
-            start_name = self._init_pattern.format(plane, "ini")
+            start_name = self._init_pattern.format(plane.lower(), "ini")
             init_dict[start_name] = start_cond
 
             # get end value
             end_cond, _ = self.get_at(self._segment.end, self._meas, plane)
-            end_name = self._init_pattern.format(plane, "end")
+            end_name = self._init_pattern.format(plane.lower(), "end")
             init_dict[end_name] = end_cond
         return init_dict
     
@@ -104,32 +106,34 @@ class Propagable(ABC):
 
     def _get_boundary_condition_at(self, position, plane: str | None) -> SegmentBoundaryConditions:
         conditions = SegmentBoundaryConditions()
-
-        if propagables.F1001.in_measurement(self._meas):    
-            conditions.f1001_amplitude=Measurement(*propagables.F1001.get_at(position, self._meas, AMPLITUDE))
-            conditions.f1001_phase=Measurement(*propagables.F1001.get_at(position, self._meas, PHASE))
-        
-        if propagables.F1010.in_measurement(self._meas):    
-            conditions.f1010_amplitude=Measurement(*propagables.F1010.get_at(position, self._meas, AMPLITUDE))
-            conditions.f1010_phase=Measurement(*propagables.F1010.get_at(position, self._meas, PHASE))
+        conditions.f1001_amplitude=propagables.F1001._get_measurement_at(position, self._meas, AMPLITUDE)
+        conditions.f1001_phase=propagables.F1001._get_measurement_at(position, self._meas, PHASE)
+        conditions.f1010_amplitude=propagables.F1010._get_measurement_at(position, self._meas, AMPLITUDE)
+        conditions.f1010_phase=propagables.F1010._get_measurement_at(position, self._meas, PHASE)
 
         if plane is not None:
-            if propagables.AlphaPhase.in_measurement(self._meas):
-                conditions.alpha = Measurement(*propagables.AlphaPhase.get_at(position, self._meas, plane))
-
-            if propagables.BetaPhase.in_measurement(self._meas):
-                    conditions.beta = Measurement(*propagables.BetaPhase.get_at(position, self._meas, plane))
-
-            if propagables.Dispersion.in_measurement(self._meas):
-                conditions.dispersion = Measurement(*propagables.Dispersion.get_at(position, self._meas, plane))
+            conditions.alpha = propagables.AlphaPhase._get_measurement_at(position, self._meas, plane)
+            conditions.beta = propagables.BetaPhase._get_measurement_at(position, self._meas, plane)
+            conditions.dispersion = propagables.Dispersion._get_measurement_at(position, self._meas, plane)
 
         return conditions
 
     @classmethod
+    def _get_measurement_at(cls, position: str, measurement: OpticsMeasurement, plane: str) -> Measurement | None:
+        """ Wrapper for the get_at method, returning a Measurement or None if not found. 
+        Only used in the _get_boundary_condition_at method. """
+        try:
+            return Measurement(*cls.get_at(position, measurement, plane))
+        except FileNotFoundError:
+            return None
+
+    # General Getters ------------------------------------------------------------------------------ 
+
+    @classmethod
     @abstractmethod
-    def get_at(cls, names: IndexType, measurement: OpticsMeasurement, plane: str
-               ) -> ValueErrorType:
-        """Get corresponding measurement values at the elements ``names``
+    def get_at(cls, names: IndexType, measurement: OpticsMeasurement, plane: str) -> ValueErrorType:
+        """Get corresponding measurement values at the elements ``names``.
+        Allows the caller to only choose the plane without needing to know the column name.
 
         Args:
             names: element name(s)
@@ -145,9 +149,22 @@ class Propagable(ABC):
     def get_segment_observation_points(self, plane: str):
         """Return the measurement points for the given plane, that are in the segment. """
         ...
+    
+    @abstractmethod
+    def add_differences(self, segment_diffs: SegmentDiffs):
+        """This function calculates the differences between the propagated 
+        forward and backward models and the measured values.
+
+        This usually invokes the ``get_difference_dataframes`` method and
+        then adds the results to the respective segment_diffs class 
+        (which writes them out, if its ``allow_write`` is set to ``True``). """
+        ...
+
 
     def get_difference_dataframes(self, planes: Sequence[str] = PLANES) -> dict[str, pd.DataFrame]:
         """Compute the difference dataframes between the propagated models and the measured values.
+        The implementation here is general, and should work for most propagables,
+        if they have the `compute_xxx` functions correctly implemented.
         
         As the naming conventions of the columns are not intuitive, when not working with 
         segment-by-segment, here the detailed explanations:
@@ -219,25 +236,11 @@ class Propagable(ABC):
 
             dfs[plane] = df
         return dfs
+    
+    # General functions returning the differences between measured and propagated values -----------
 
-    def is_measured(self) -> bool:
-        """ Check if the respective measurement for this propagable 
-        is available in the given OpticsMeasurement. """
-        return self.in_measurement(self._meas)
-    
-    @classmethod
-    @abstractmethod
-    def in_measurement(self, meas: OpticsMeasurement) -> bool:
-        """ Check if the respective measurement for this propagable is available. """
-        ...
-    
-    @abstractmethod
-    def add_differences(self, segment_diffs: SegmentDiffs):
-        """This function calculates the differences between the propagated 
-        forward and backward models and the measured values.
-        It then adds the results to the segment_diffs class 
-        (which writes them out, if its ``allow_write`` is set to ``True``)."""
-        ...
+    # These need to be present in all propagables, but as usually a single `compute_xxx`
+    # function can handle the different cases, the calling functions are implemented here.
 
     @cache
     def measured_forward(self, plane: str) -> tuple[pd.Series, pd.Series]:
@@ -295,6 +298,8 @@ class Propagable(ABC):
             forward=False,
         )
     
+    # Computing functions (need to be implemented) -----------------------------
+
     def _compute_measured(self, 
             plane: str, 
             seg_model: TfsDataFrame, 
@@ -320,3 +325,16 @@ class Propagable(ABC):
         ) -> tuple[pd.Series, pd.Series]:
         """ Compute get the propagated phase values from the segment model and calculate the propagated error."""
         raise NotImplementedError  # only needs to be implemented, if inherited class uses functions declared above (or similar)
+
+    # Functions to check if propagable is in measurement -------------------------------------------
+
+    def is_measured(self) -> bool:
+        """ Check if the respective measurement for this propagable 
+        is available in the given OpticsMeasurement. """
+        return self.in_measurement(self._meas)
+    
+    @classmethod
+    @abstractmethod
+    def in_measurement(self, meas: OpticsMeasurement) -> bool:
+        """ Check if the respective measurement for this propagable is available. """
+        ...

@@ -36,11 +36,16 @@ LOG = logging_tools.get_logger(__name__)
 
 
 class Phase(Propagable):
+    
+    _init_pattern = "phi{}_{}"  # format(plane, ini/end)
     columns: PropagableColumns = PropagableColumns(PHASE)
 
     def init_conditions_dict(self):
-        # The phase is not necessary for the initial conditions.
+        # Phase is not needed for initial conditions
         return {}
+        # return {
+        #     self._init_pattern.format(plane, loc): 0.0 for plane in "xy" for loc in ("ini", "end")
+        # }
 
     @classmethod
     def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
