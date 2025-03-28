@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### Unreleased -
+
+- Added:
+  - Bad BPMs summary: NANS reason.
+
 #### 2025-03-13 - v0.23.0 - _jdilly_
 
 - Added:
