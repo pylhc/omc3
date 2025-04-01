@@ -1,9 +1,12 @@
 # OMC3 Changelog
 
-#### 2025-03-13 - v0.XX.XX - _jdilly_
+#### 2025-03-13 - v0.23.01 - _jdilly_, _jgray_
 
 - Changed:
   - `twiss_elements` via macro now contain all elements in the sequence.
+
+- Fixed:
+  - `check_corrections` does not error when different markers in the model and the measurement.
 
 #### 2025-03-13 - v0.23.0 - _jdilly_
 
