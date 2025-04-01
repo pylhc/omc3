@@ -433,7 +433,7 @@ def _copy_files_from_model_dir(model_dir: Path, output_dir: Path) -> None:
             continue  # no log files, no other previously created models
 
         dst_file = output_dir / file.name
-        if dst_file.exists():
+        if dst_file.exists() or dst_file.is_symlink():
             LOGGER.debug(f"Skipping {dst_file!s}, already exists.")
             continue
         

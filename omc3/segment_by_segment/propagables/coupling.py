@@ -7,24 +7,27 @@ This module contains the propagables for the coupling parameters.
 """
 from __future__ import annotations
 
-from functools import cache
 from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
+from optics_functions.coupling import coupling_via_cmatrix, rmatrix_from_coupling
 from tfs import TfsDataFrame
 
 from omc3.definitions.optics import OpticsMeasurement
-from omc3.optics_measurements.constants import AMPLITUDE, IMAG, PHASE, REAL, F1010 as COL_F1010, F1001 as COL_F1001, ALPHA as COL_ALPHA, BETA as COL_BETA
+from omc3.optics_measurements.constants import ALPHA as COL_ALPHA
+from omc3.optics_measurements.constants import AMPLITUDE, IMAG, PHASE, REAL
+from omc3.optics_measurements.constants import BETA as COL_BETA
+from omc3.optics_measurements.constants import F1001 as COL_F1001
+from omc3.optics_measurements.constants import F1010 as COL_F1010
 from omc3.segment_by_segment import math
 from omc3.segment_by_segment.propagables.abstract import Propagable
-from omc3.segment_by_segment.propagables.phase import Phase
-from omc3.segment_by_segment.propagables.beta import BetaPhase
 from omc3.segment_by_segment.propagables.alpha import AlphaPhase
+from omc3.segment_by_segment.propagables.beta import BetaPhase
+from omc3.segment_by_segment.propagables.phase import Phase
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices
 from omc3.segment_by_segment.segments import SegmentDiffs, SegmentModels
 from omc3.utils import logging_tools
-from optics_functions.coupling import coupling_via_cmatrix, rmatrix_from_coupling 
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -62,6 +65,9 @@ class Coupling(Propagable):
         elements = [self._segment.start, self._segment.end]
 
         # build data-frame to be used by rmatrix_from_coupling
+        # Note: taking the measured alpha and beta here, as the propagated 
+        #       values will also be based on the measured values, not on the model
+        #       values. 
         df = pd.DataFrame({
             f"{COL_ALPHA}X": AlphaPhase.get_at(elements, self._meas, "X")[0],
             f"{COL_ALPHA}Y": AlphaPhase.get_at(elements, self._meas, "Y")[0],
@@ -159,6 +165,12 @@ class Coupling(Propagable):
         model_phase_y = Phase.get_segment_phase(seg_model, "Y", forward) 
         propagated_err = error_propagation(model_phase_x, model_phase_y, init_condition)
         return model_value, propagated_err
+    
+    @classmethod
+    def is_rdt(cls) -> bool:
+        """ Tells the caller, if the propagable is an RDT. 
+        The columns and filenames need to be handled differently in that case. """
+        return True 
     
 
 # Coupling RDTs ----------------------------------------------------------------  
@@ -261,7 +273,7 @@ def append_rdt_components(seg_model: pd.DataFrame | None, rdt: str):
     seg_model[f"{rdt}{AMPLITUDE}"] = np.abs(rdt_series)
     seg_model[f"{rdt}{REAL}"] = np.real(rdt_series)
     seg_model[f"{rdt}{IMAG}"] = np.imag(rdt_series)
-    seg_model[f"{rdt}{PHASE}"] = np.angle(rdt_series) / (2*np.pi)
+    seg_model[f"{rdt}{PHASE}"] = (np.angle(rdt_series) / (2*np.pi)) % 1 
     return seg_model
 
 

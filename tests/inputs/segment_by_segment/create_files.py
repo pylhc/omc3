@@ -39,7 +39,8 @@ from tests.conftest import clone_acc_models, INPUTS_MODEL_DIR_FORMAT
 LOG = logging_tools.get_logger(__name__)
 
 TMP_ACC_MODELS: Path = INPUT_SBS / "acc-models-tmp"
-KEEP_ACC_MODELS: bool = True  # keep for testing
+KEEP_ACC_MODELS: bool = False  # keep for manual testing
+RECREATE_NOMINAL_MODEL: bool = False  # if False, only update sbs, not the model in input/models
 
 
 class PathMaker:
@@ -73,27 +74,30 @@ def create_model(path: Path, beam: int, errors: list[Path]):
         modifiers=modifiers
     )
 
-    # like from the GUI, dump best knowledge on top of nominal
-    accel_nominal: Lhc = create_instance_and_model(
-        outputdir=model_path, type="nominal", **accel_opt
-    )
+    if RECREATE_NOMINAL_MODEL or len(errors):
+        # Create ---
+        accel_nominal: Lhc = create_instance_and_model(
+            outputdir=model_path, type="nominal", **accel_opt
+        )
 
-    # Compress ---
-    elements = accel_nominal.elements.loc[accel_nominal.elements.index.str.match("B|M|IP"), :]
-    tfs.write(model_path / TWISS_ELEMENTS_DAT, elements, save_index=NAME)
+        # Compress ---
+        elements = accel_nominal.elements.loc[accel_nominal.elements.index.str.match("B|M|IP"), :]
+        tfs.write(model_path / TWISS_ELEMENTS_DAT, elements, save_index=NAME)
     
     return model_path
 
 
 def cleanup(nominal_model: Path, error_model: Path):
     shutil.rmtree(error_model)
-    shutil.rmtree(nominal_model / "macros")
-    (nominal_model / 'error_deffs.txt').unlink()
-    for ini in nominal_model.glob("*.ini"):
-        ini.unlink()
+
+    if RECREATE_NOMINAL_MODEL:
+        shutil.rmtree(nominal_model / "macros")
+        (nominal_model / 'error_deffs.txt').unlink()
+        for ini in nominal_model.glob("*.ini"):
+            ini.unlink()
     
-    if not KEEP_ACC_MODELS:
-        (nominal_model / 'acc-models-lhc').unlink()
+        if not KEEP_ACC_MODELS:
+            (nominal_model / 'acc-models-lhc').unlink()
 
 
 if __name__ == "__main__":

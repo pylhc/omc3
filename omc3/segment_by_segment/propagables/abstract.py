@@ -61,6 +61,12 @@ class Propagable(ABC):
     @segment_models.setter
     def segment_models(self, segment_models: SegmentModels):
         self._segment_models = segment_models
+    
+    @classmethod
+    def is_rdt(cls) -> bool:
+        """ Tells the caller, if the propagable is an RDT. 
+        The columns and filenames need to be handled differently in that case. """
+        return False
 
     # Initial Conditions -------------------------------------------------------
 
@@ -126,7 +132,7 @@ class Propagable(ABC):
             return Measurement(*cls.get_at(position, measurement, plane))
         except FileNotFoundError:
             return None
-
+    
     # General Getters ------------------------------------------------------------------------------ 
 
     @classmethod
