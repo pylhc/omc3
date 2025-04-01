@@ -9,7 +9,7 @@ from tests.unit.test_kmod_averaging import (
     get_all_tfs_filenames as _get_averaged_filenames,
 )
 from tests.unit.test_kmod_averaging import (
-    get_betastar_model,
+    get_betastar_values,
     get_measurement_dir,
     get_reference_dir,
 )
@@ -56,17 +56,17 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
     # averages --
     for ip in ips:
         # As IP2 and IP8 do not have the same betastar:
-        betas = get_betastar_model(beam=beam, ip=ip)
+        betas = get_betastar_values(beam=beam, ip=ip)
         for out_name in _get_averaged_filenames(ip, betas=betas):
             out_file = tfs.read(average_dir / out_name)
             ref_file = tfs.read(get_reference_dir(ip, n_files=n_files) / out_name)
             assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
 
         
-    # Only look at lumnisity if we have IP1 and IP5 only
+    # Look at luminosity if we have IP1 and IP5 only.
     if len(ips) > 1 and (2 not in ips):
         # lumi --
-        betas = get_betastar_model(beam=beam, ip=1)
+        betas = get_betastar_values(beam=beam, ip=1)
         eff_betas = tfs.read(average_dir / _get_lumi_filename(betas))
         eff_betas_ref = tfs.read(REFERENCE_DIR / _get_lumi_filename(betas))
         assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)

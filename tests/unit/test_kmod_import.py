@@ -14,7 +14,7 @@ from omc3.scripts.kmod_import import import_kmod_data
 from tests.conftest import assert_tfsdataframe_equal, ids_str
 from tests.unit.test_kmod_averaging import (
     KMOD_INPUT_DIR,
-    get_betastar_model,
+    get_betastar_values,
     get_model_path,
 )
 from tests.unit.test_kmod_averaging import get_reference_dir as get_averages_dir
@@ -60,7 +60,7 @@ def test_kmod_import_averaged_folder_beam(tmp_path, beam):
 @pytest.mark.parametrize('read', [True, False], ids=ids_str("read{}"))
 def test_kmod_import_files_beam(tmp_path, beam, files, read):
     model = get_model_path(beam)
-    betas = get_betastar_model(beam, ip=1)
+    betas = get_betastar_values(beam, ip=1)
 
     paths = []
     if "bpm" in files:

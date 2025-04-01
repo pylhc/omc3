@@ -26,7 +26,7 @@ REFERENCE_DIR = KMOD_INPUT_DIR / "references"
 @pytest.mark.parametrize("ip", [1, 5], ids=ids_str("ip{}"))
 @pytest.mark.parametrize("n_files", [1, 2], ids=ids_str("{}files"))
 def test_kmod_averaging(tmp_path, ip, n_files):
-    betas = get_betastar_model(beam=1, ip=ip)
+    betas = get_betastar_values(beam=1, ip=ip)
     meas_paths = [get_measurement_dir(ip, i+1) for i in range(n_files)]
     ref_output_dir = get_reference_dir(ip, n_files)
 
@@ -51,7 +51,7 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
     ip = 1
     n_files = 2
 
-    betas = get_betastar_model(beam=beam, ip=ip)
+    betas = get_betastar_values(beam=beam, ip=ip)
     ref_output_dir = get_reference_dir(ip, n_files)
 
     meas_paths = [get_measurement_dir(ip, i+1)  for i in range(n_files)]
@@ -106,7 +106,8 @@ def get_model_path(beam: int) -> Path:
     return KMOD_INPUT_DIR / f"b{beam}_twiss_22cm.dat"
 
 
-def get_betastar_model(beam: int, ip: int) -> Path:
+def get_betastar_values(beam: int, ip: int) -> list[float]:
+    """Extract the betastar values from the model."""
     model = tfs.read(get_model_path(beam), index=NAME)
     return model.loc[f"IP{ip}", [f"{BETA}X", f"{BETA}Y"]].tolist()
 
@@ -126,7 +127,7 @@ def update_reference_files():
     """ Helper function to update the reference files. """
     REFERENCE_DIR.mkdir(exist_ok=True, parents=True)
     for ip in (1, 5, 2, 8):
-        betas = get_betastar_model(beam=1, ip=ip)
+        betas = get_betastar_values(beam=1, ip=ip)
         for n_files in (1, 2):
             if ip  % 2 == 0 and n_files == 2:
                 continue # Skip the 2nd file for IP 2 and 8
