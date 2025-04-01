@@ -60,14 +60,14 @@ def test_kmod_import_averaged_folder_beam(tmp_path, beam):
 @pytest.mark.parametrize('read', [True, False], ids=ids_str("read{}"))
 def test_kmod_import_files_beam(tmp_path, beam, files, read):
     model = get_model_path(beam)
-    beta = get_betastar_model(beam, ip=1)[0]
+    betas = get_betastar_model(beam, ip=1)
 
     paths = []
     if "bpm" in files:
-        paths += [_get_bpm_input_path(beam, ip, beta) for ip in (1, 5)]
+        paths += [_get_bpm_input_path(beam, ip, betas) for ip in (1, 5)]
     
     if "betastar" in files:
-        paths += [_get_betastar_input_path(beam, ip, beta) for ip in (1, 5)]
+        paths += [_get_betastar_input_path(beam, ip, betas) for ip in (1, 5)]
     
     if read:
         paths = [tfs.read(path) for path in paths]
@@ -107,12 +107,12 @@ def _assert_correct_files_are_present(outputdir: Path, which: str = "bpm-betasta
             assert (outputdir / f"{BETA_STAR_FILENAME}{plane}{EXT}").is_file()
 
 
-def _get_bpm_input_path(beam: int, ip: int, beta: float) -> Path:
-    return get_averages_dir(ip=ip, n_files=2) / f"{AVERAGED_BPM_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=beam)}{EXT}"
+def _get_bpm_input_path(beam: int, ip: int, betas: list[float]) -> Path:
+    return get_averages_dir(ip=ip, n_files=2) / f"{AVERAGED_BPM_FILENAME.format(betastar_x=betas[0], betastar_y=betas[1], ip=ip, beam=beam)}{EXT}"
 
 
-def _get_betastar_input_path(beam: int, ip: int, beta: float) -> Path:
-    return get_averages_dir(ip=ip, n_files=2) / f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=beam)}{EXT}"
+def _get_betastar_input_path(beam: int, ip: int, betas: list[float]) -> Path:
+    return get_averages_dir(ip=ip, n_files=2) / f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=betas[0], betastar_y=betas[1], ip=ip, beam=beam)}{EXT}"
 
 
 def _get_bpm_reference_path(beam: int, plane: str) -> Path:
