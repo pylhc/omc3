@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from omc3 import model
+from omc3.model_creator import create_instance_and_model
 from omc3.response_creator import create_response_entrypoint
 from tests.accuracy.test_global_correction import (
     CorrectionParameters,
@@ -23,6 +24,21 @@ from tests.accuracy.test_global_correction import (
 DELTA_K = 2e-5
 MODEL_DIR = Path(__file__).parent
 
+
+def create_model():
+    for beam in (1, 2):
+        model_dir = MODEL_DIR / f"2018_inj_b{beam}_11m"
+        create_instance_and_model(
+            accel="lhc",
+            outputdir=model_dir,
+            ats=True,
+            beam=beam,
+            nat_tunes=[0.28, 0.31],
+            driven_excitation=None,
+            year="2018",
+            energy=450,
+            modifiers=["opticsfile.1"],
+        )
 
 def create_normal_and_skew_responses():
     for beam in (1, 2):
@@ -69,5 +85,6 @@ def cleanup(model_dir: Path):
 
 
 if __name__ == "__main__":
+    # create_model()
     # create_normal_and_skew_responses()
     create_mqt_response()

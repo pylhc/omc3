@@ -235,32 +235,58 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pandas as pd
-
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+from tfs import TfsDataFrame
+
 from omc3.correction import filters
 from omc3.correction import handler as global_correction
-from omc3.correction.constants import MODEL_MATCHED_FILENAME, COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX
+from omc3.correction.constants import (
+    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX,
+    MODEL_MATCHED_FILENAME,
+)
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.response_twiss import PLANES
 from omc3.definitions.optics import (
-    OpticsMeasurement, ColumnsAndLabels,
-    FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING, TUNE_COLUMN, TOTAL_PHASE_NAME, MU_COLUMN
+    FILE_COLUMN_MAPPING,
+    MU_COLUMN,
+    RDT_COLUMN_MAPPING,
+    TOTAL_PHASE_NAME,
+    TUNE_COLUMN,
+    ColumnsAndLabels,
+    OpticsMeasurement,
 )
-from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
+from omc3.global_correction import (
+    CORRECTION_DEFAULTS,
+    OPTICS_PARAMS_CHOICES,
+    _get_default_values,
+)
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, PHASE_ADV, TUNE
+from omc3.optics_measurements.constants import (
+    BETA,
+    EXT,
+    F1001,
+    F1001_NAME,
+    F1010,
+    F1010_NAME,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+)
 from omc3.optics_measurements.toolbox import ang_diff
-from omc3.plotting.plot_checked_corrections import plot_checked_corrections, get_plotting_style_parameters
+from omc3.plotting.plot_checked_corrections import (
+    get_plotting_style_parameters,
+    plot_checked_corrections,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, glob_regex, save_config
-from omc3.utils.stats import rms, circular_rms
-from tfs import TfsDataFrame
+from omc3.utils.stats import circular_rms, rms
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from generic_parser import DotDict
 
 
@@ -491,6 +517,7 @@ def _create_model_and_write_diff_to_measurements(
             [f'{PHASE_ADV}{plane}' for plane in PLANES]
     )
 
+    # Should accel_inst.elements be used instead or accel_inst.model - means no need for intersection? (jgray 2025)
     diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
     LOG.debug("Differences to nominal model calculated.")
 
@@ -585,46 +612,47 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         f"Expected: {colmap_meas.delta_column} - diff ->  {colmap_meas.expected_column}\n"
         f"Error: {colmap_meas.error_delta_column} -> {colmap_meas.error_expected_column}"
     )
-    df = measurement[attribute]
+    attr_df: TfsDataFrame = measurement[attribute]
 
-    diff = diff_models.loc[df.index, colmap_model.delta_column]
+    common_bpms = attr_df.index.intersection(diff_models.index)
+    diff = diff_models.loc[common_bpms, colmap_model.delta_column]
 
-    df[colmap_meas.diff_correction_column] = diff
+    attr_df[colmap_meas.diff_correction_column] = diff
     if colmap_meas.column[:-1] == PHASE:
-        df[colmap_meas.expected_column] = pd.to_numeric(ang_diff(df[colmap_meas.delta_column], diff))  # assumes period 1
-        df.headers[colmap_meas.delta_rms_header] =  circular_rms(df[colmap_meas.delta_column], period=1)
-        df.headers[colmap_meas.expected_rms_header] = circular_rms(df[colmap_meas.expected_column], period=1)
+        attr_df[colmap_meas.expected_column] = pd.to_numeric(ang_diff(attr_df[colmap_meas.delta_column], diff))  # assumes period 1
+        attr_df.headers[colmap_meas.delta_rms_header] =  circular_rms(attr_df[colmap_meas.delta_column], period=1)
+        attr_df.headers[colmap_meas.expected_rms_header] = circular_rms(attr_df[colmap_meas.expected_column], period=1)
         if rms_mask is not None:
-            df.headers[colmap_meas.delta_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.delta_column], period=1)
-            df.headers[colmap_meas.expected_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.expected_column], period=1)
+            attr_df.headers[colmap_meas.delta_masked_rms_header] = circular_rms(attr_df.loc[rms_mask, colmap_meas.delta_column], period=1)
+            attr_df.headers[colmap_meas.expected_masked_rms_header] = circular_rms(attr_df.loc[rms_mask, colmap_meas.expected_column], period=1)
 
     else:
-        df[colmap_meas.expected_column] = pd.to_numeric(df[colmap_meas.delta_column] - diff)
-        df.headers[colmap_meas.delta_rms_header] = rms(df[colmap_meas.delta_column])
-        df.headers[colmap_meas.expected_rms_header] = rms(df[colmap_meas.expected_column])
+        attr_df[colmap_meas.expected_column] = pd.to_numeric(attr_df[colmap_meas.delta_column] - diff)
+        attr_df.headers[colmap_meas.delta_rms_header] = rms(attr_df[colmap_meas.delta_column])
+        attr_df.headers[colmap_meas.expected_rms_header] = rms(attr_df[colmap_meas.expected_column])
         if rms_mask is not None:
-            df.headers[colmap_meas.delta_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.delta_column])
-            df.headers[colmap_meas.expected_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.expected_column])
+            attr_df.headers[colmap_meas.delta_masked_rms_header] = rms(attr_df.loc[rms_mask, colmap_meas.delta_column])
+            attr_df.headers[colmap_meas.expected_masked_rms_header] = rms(attr_df.loc[rms_mask, colmap_meas.expected_column])
 
     LOG.info(
         f"\nRMS {attribute} ({colmap_meas.column}):\n"
-        f"    measured {df.headers[colmap_meas.delta_rms_header]:.2e}\n"
-        f"    expected {df.headers[colmap_meas.expected_rms_header]:.2e}"
+        f"    measured {attr_df.headers[colmap_meas.delta_rms_header]:.2e}\n"
+        f"    expected {attr_df.headers[colmap_meas.expected_rms_header]:.2e}"
     )
 
     if rms_mask is not None:
         LOG.info(
             f"\nRMS {attribute} ({colmap_meas.column}) after filtering:\n"
-            f"    measured {df.headers[colmap_meas.delta_masked_rms_header]:.2e}\n"
-            f"    expected {df.headers[colmap_meas.expected_masked_rms_header]:.2e}"
+            f"    measured {attr_df.headers[colmap_meas.delta_masked_rms_header]:.2e}\n"
+            f"    expected {attr_df.headers[colmap_meas.expected_masked_rms_header]:.2e}"
         )
 
     try:
-        df[colmap_meas.error_expected_column] = df[colmap_meas.error_delta_column]
+        attr_df[colmap_meas.error_expected_column] = attr_df[colmap_meas.error_delta_column]
     except KeyError:
         LOG.warning(f"The error-delta column {colmap_meas.error_delta_column} was "
                     f"not found in {attribute}. Probably an old file. Assuming zero errors.")
-        df[colmap_meas.error_expected_column] = 0.0
+        attr_df[colmap_meas.error_expected_column] = 0.0
 
     for tune_map in (TUNE_COLUMN.set_plane(n) for n in (1, 2)):
         LOG.debug(
@@ -634,10 +662,10 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
         )
 
         diff_tune = diff_models.headers[tune_map.delta_column]
-        df.headers[tune_map.diff_correction_column] = diff_tune
-        df.headers[tune_map.expected_column] = df.headers[tune_map.column] - diff_tune
+        attr_df.headers[tune_map.diff_correction_column] = diff_tune
+        attr_df.headers[tune_map.expected_column] = attr_df.headers[tune_map.column] - diff_tune
 
-    output_measurement[attribute] = df  # writes file if allow_write is set.
+    output_measurement[attribute] = attr_df  # writes file if allow_write is set.
 
 
 # Helper -----------------------------------------------------------------------
