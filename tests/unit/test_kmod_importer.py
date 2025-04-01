@@ -31,7 +31,9 @@ from tests.unit.test_kmod_lumi_imbalance import (
 @pytest.mark.parametrize('ips', ["1", "15", "28"], ids=ids_str("ip{}"))
 def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
     ips = [int(ip) for ip in ips]
-    n_files = 2 if ips[0] == 1 else 1
+
+    # We have only 1 for IP2 and IP8, but 2 files for IP1 and IP5
+    n_files = 1 if (2 in ips) else 2
 
     # Run the import ---
     import_kmod_results(
@@ -61,7 +63,8 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
             assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
 
         
-    if len(ips) > 1 and ips[0] == 1:
+    # Only look at lumnisity if we have IP1 and IP5 only
+    if len(ips) > 1 and (2 not in ips):
         # lumi --
         betas = get_betastar_model(beam=beam, ip=1)
         eff_betas = tfs.read(average_dir / _get_lumi_filename(betas))
