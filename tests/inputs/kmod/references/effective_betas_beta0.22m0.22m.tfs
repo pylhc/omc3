@@ -1,5 +1,5 @@
-@ LUMIIMBALANCE        %le   0.9998570043832672
-@ ERRLUMIIMBALANCE     %le    0.026940272475189
+@ LUMIIMBALANCE        %le       0.999857004383
+@ ERRLUMIIMBALANCE     %le      0.0269402724752
 * NAME                              BETSTAR           ERRBETSTAR
 $ %s                                    %le                  %le
   "IP1"                      0.226162919812     0.00415582295069

@@ -9,7 +9,7 @@ from tests.unit.test_kmod_averaging import (
     get_all_tfs_filenames as _get_averaged_filenames,
 )
 from tests.unit.test_kmod_averaging import (
-    get_betastar_model,
+    get_betastar_values,
     get_measurement_dir,
     get_reference_dir,
 )
@@ -28,14 +28,16 @@ from tests.unit.test_kmod_lumi_imbalance import (
 
 @pytest.mark.basic
 @pytest.mark.parametrize('beam', [1, 2], ids=ids_str("b{}"))
-@pytest.mark.parametrize('ips', ["1", "15"], ids=ids_str("ip{}"))
+@pytest.mark.parametrize('ips', ["1", "15", "28"], ids=ids_str("ip{}"))
 def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
     ips = [int(ip) for ip in ips]
-    beta=get_betastar_model(beam=beam, ip=ips[0])[0]
+
+    # We have only 1 for IP2 and IP8, but 2 files for IP1 and IP5
+    n_files = 1 if (2 in ips) else 2
 
     # Run the import ---
     import_kmod_results(
-        meas_paths=[get_measurement_dir(ip=ip, i_meas=i) for ip in ips for i in range(1, 3)],
+        meas_paths=[get_measurement_dir(ip=ip, i_meas=i) for ip in ips for i in range(1, n_files+1)],
         beam=beam,
         model=get_model_path(beam), 
         output_dir=tmp_path,
@@ -45,7 +47,7 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
     # Check the basics, if anything looks weird ---
     assert len(list(tmp_path.glob(f"*{EXT}"))) == 4  # beta_kmod x/y, betastar x/y 
     average_dir = tmp_path / AVERAGE_DIR
-    
+
     assert average_dir.is_dir()
     assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP  
     assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + (len(ips) == 2) # AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: 1 (only when both)
@@ -53,16 +55,20 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
     # Check the content ---
     # averages --
     for ip in ips:
-        for out_name in _get_averaged_filenames(ip, beta=beta):
+        # As IP2 and IP8 do not have the same betastar:
+        betas = get_betastar_values(beam=beam, ip=ip)
+        for out_name in _get_averaged_filenames(ip, betas=betas):
             out_file = tfs.read(average_dir / out_name)
-            ref_file = tfs.read(get_reference_dir(ip, n_files=2) / out_name)
+            ref_file = tfs.read(get_reference_dir(ip, n_files=n_files) / out_name)
             assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
 
         
-    if len(ips) > 1:
+    # Look at luminosity if we have IP1 and IP5 only.
+    if len(ips) > 1 and (2 not in ips):
         # lumi --
-        eff_betas = tfs.read(average_dir / _get_lumi_filename(beta))
-        eff_betas_ref = tfs.read(REFERENCE_DIR / _get_lumi_filename(beta))
+        betas = get_betastar_values(beam=beam, ip=1)
+        eff_betas = tfs.read(average_dir / _get_lumi_filename(betas))
+        eff_betas_ref = tfs.read(REFERENCE_DIR / _get_lumi_filename(betas))
         assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)
 
         # import (reference created with IP1 and IP5) --

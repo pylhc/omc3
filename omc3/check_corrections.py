@@ -228,6 +228,7 @@ well as a plot for all corrections (only EXPected) will be saved into the output
     Limits on the y axis (Tupel)
 
 """
+
 from __future__ import annotations
 
 import copy
@@ -235,32 +236,58 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pandas as pd
-
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+from tfs import TfsDataFrame
+
 from omc3.correction import filters
 from omc3.correction import handler as global_correction
-from omc3.correction.constants import MODEL_MATCHED_FILENAME, COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX
+from omc3.correction.constants import (
+    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX,
+    MODEL_MATCHED_FILENAME,
+)
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.response_twiss import PLANES
 from omc3.definitions.optics import (
-    OpticsMeasurement, ColumnsAndLabels,
-    FILE_COLUMN_MAPPING, RDT_COLUMN_MAPPING, TUNE_COLUMN, TOTAL_PHASE_NAME, MU_COLUMN
+    FILE_COLUMN_MAPPING,
+    MU_COLUMN,
+    RDT_COLUMN_MAPPING,
+    TOTAL_PHASE_NAME,
+    TUNE_COLUMN,
+    ColumnsAndLabels,
+    OpticsMeasurement,
 )
-from omc3.global_correction import _get_default_values, CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
+from omc3.global_correction import (
+    CORRECTION_DEFAULTS,
+    OPTICS_PARAMS_CHOICES,
+    _get_default_values,
+)
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import Accelerator
-from omc3.optics_measurements.constants import EXT, F1010_NAME, F1001_NAME, BETA, F1001, F1010, PHASE, PHASE_ADV, TUNE
+from omc3.optics_measurements.constants import (
+    BETA,
+    EXT,
+    F1001,
+    F1001_NAME,
+    F1010,
+    F1010_NAME,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+)
 from omc3.optics_measurements.toolbox import ang_diff
-from omc3.plotting.plot_checked_corrections import plot_checked_corrections, get_plotting_style_parameters
+from omc3.plotting.plot_checked_corrections import (
+    get_plotting_style_parameters,
+    plot_checked_corrections,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, glob_regex, save_config
-from omc3.utils.stats import rms, circular_rms
-from tfs import TfsDataFrame
+from omc3.utils.stats import circular_rms, rms
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from generic_parser import DotDict
 
 
@@ -270,60 +297,72 @@ LOG = logging_tools.get_logger(__name__)
 def get_params():
     params = EntryPointParameters()
     # IO ---
-    params.add_parameter(name="meas_dir",
-                         required=True,
-                         type=PathOrStr,
-                         help="Path to the directory containing the measurement files.",)
-    params.add_parameter(name="output_dir",
-                         required=True,
-                         type=PathOrStr,
-                         help="Path to the directory where to write the output files. "
-                              "If the ``corrections`` input consists of multiple folders, their name will "
-                               "be used to sort the output data into subfolders.",)
-    params.add_parameter(name="corrections",
-                         required=True,
-                         nargs="+",
-                         type=PathOrStr,
-                         help="Paths to the correction files/directories to use. "
-                              "If files are given, these will all be applied as corrections at the same time. "
-                              "If folders are given, these are assumed to individually containing "
-                              "the correction files. See then also ``file_pattern``.",)
-    params.add_parameter(name="file_pattern",
-                         help="Filepattern to use to find correction files in folders (as regex).",
-                         type=str,
-                         default=r"^changeparameters*?\.madx$",
-                         )
+    params.add_parameter(
+        name="meas_dir",
+        required=True,
+        type=PathOrStr,
+        help="Path to the directory containing the measurement files.",
+    )
+    params.add_parameter(
+        name="output_dir",
+        required=True,
+        type=PathOrStr,
+        help="Path to the directory where to write the output files. "
+        "If the ``corrections`` input consists of multiple folders, their name will "
+        "be used to sort the output data into subfolders.",
+    )
+    params.add_parameter(
+        name="corrections",
+        required=True,
+        nargs="+",
+        type=PathOrStr,
+        help="Paths to the correction files/directories to use. "
+        "If files are given, these will all be applied as corrections at the same time. "
+        "If folders are given, these are assumed to individually containing "
+        "the correction files. See then also ``file_pattern``.",
+    )
+    params.add_parameter(
+        name="file_pattern",
+        help="Filepattern to use to find correction files in folders (as regex).",
+        type=str,
+        default=r"^changeparameters*?\.madx$",
+    )
     # Parameters (similar/same as in global correction) ---
-    params.add_parameter(name="optics_params",
-                         type=str,
-                         nargs="+",
-                         choices=OPTICS_PARAMS_CHOICES,
-                         help=f"List of parameters for which the cuts should be applied (e.g. {BETA}X {BETA}Y)", )
-    params.add_parameter(name="modelcut",
-                         nargs="+",
-                         type=float,
-                         help="Reject BPMs whose deviation to the model is higher "
-                              "than the corresponding input. Input in order of optics_params.",)
-    params.add_parameter(name="errorcut",
-                         nargs="+",
-                         type=float,
-                         help="Reject BPMs whose error bar is higher than the corresponding "
-                              "input. Input in order of optics_params.",)
-    params.add_parameter(name="beta_filename",
-                         default=CORRECTION_DEFAULTS["beta_filename"],
-                         help="Prefix of the beta file to use. E.g.: ``beta_phase_``", )
+    params.add_parameter(
+        name="optics_params",
+        type=str,
+        nargs="+",
+        choices=OPTICS_PARAMS_CHOICES,
+        help=f"List of parameters for which the cuts should be applied (e.g. {BETA}X {BETA}Y)",
+    )
+    params.add_parameter(
+        name="modelcut",
+        nargs="+",
+        type=float,
+        help="Reject BPMs whose deviation to the model is higher "
+        "than the corresponding input. Input in order of optics_params.",
+    )
+    params.add_parameter(
+        name="errorcut",
+        nargs="+",
+        type=float,
+        help="Reject BPMs whose error bar is higher than the corresponding "
+        "input. Input in order of optics_params.",
+    )
+    params.add_parameter(
+        name="beta_filename",
+        default=CORRECTION_DEFAULTS["beta_filename"],
+        help="Prefix of the beta file to use. E.g.: ``beta_phase_``",
+    )
     # Plotting -----------------------------------------------------------------
-    params.add_parameter(name="plot",
-                         action="store_true",
-                         help="Activate plotting."
-                         )
+    params.add_parameter(name="plot", action="store_true", help="Activate plotting.")
     params.update(get_plotting_style_parameters())
     return params
 
 
 @entrypoint(get_params())
-def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
-    """ Entrypoint function to test the given corrections.
+def correction_test_entrypoint(opt: DotDict, accel_opt: Any) -> None:
+    """Entrypoint function to test the given corrections.
 
     .. todo:: Instead of writing everything out, it could return
              dictionaries of the TFSDataFrames and Figures.
@@ -338,12 +377,15 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
     measurement = OpticsMeasurement(opt.meas_dir)
 
     # get model and filter data
-    accel_inst = manager.get_accelerator(accel_opt)
+    accel_inst: Accelerator = manager.get_accelerator(accel_opt)
     accel_inst.model = _maybe_add_coupling_to_model(accel_inst.model, measurement)
+    accel_inst.elements = _maybe_add_coupling_to_model(accel_inst.elements, measurement)
 
     meas_masks = _get_measurement_filter(
         accel_inst.model,
-        opt.get_subdict(["meas_dir", "optics_params", "modelcut", "errorcut", "beta_filename"])
+        opt.get_subdict(
+            ["meas_dir", "optics_params", "modelcut", "errorcut", "beta_filename"]
+        ),
     )
 
     # sort corrections input (e.g. by folders)
@@ -366,8 +408,9 @@ def correction_test_entrypoint(opt: DotDict, accel_opt) -> None:
 
 # Input Parameters -------------------------------------------------------------
 
+
 def _check_opt_add_dicts(opt: DotDict) -> DotDict:
-    """ Check on options and put in missing values. """
+    """Check on options and put in missing values."""
     opt = copy.deepcopy(opt)  # not sure if I trust this (jdilly)
     def_dict = _get_default_values()
 
@@ -375,7 +418,9 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:
     if opt.optics_params:
         for key in ("modelcut", "errorcut"):
             if opt[key] is not None and len(opt[key]) != len(opt.optics_params):
-                raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
+                raise AttributeError(
+                    f"Length of {key} is not the same as of the optical parameters!"
+                )
             if opt[key] is not None:
                 opt[key] = dict(zip(opt.optics_params, opt[key]))
             else:
@@ -388,16 +433,22 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:
     all_files = all(c.is_file() for c in opt.corrections)
     all_dirs = all(c.is_dir() for c in opt.corrections)
     if not (all_files or all_dirs):
-        raise AttributeError("Corrections need to be either all paths to files or all paths to directories!")
+        raise AttributeError(
+            "Corrections need to be either all paths to files or all paths to directories!"
+        )
 
     if all_dirs and not opt.file_pattern:
-        raise AttributeError("Parameter 'file_pattern' is missing, when giving directories as input.")
+        raise AttributeError(
+            "Parameter 'file_pattern' is missing, when giving directories as input."
+        )
 
     return opt
 
 
-def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> dict[str, Sequence[Path]]:
-    """ Sort the given correction files:
+def _get_corrections(
+    corrections: Sequence[Path], file_pattern: str = None
+) -> dict[str, Sequence[Path]]:
+    """Sort the given correction files:
     If given by individual files, they all go into one bucket,
     if given by folders (i.e. scenarios) they are sorted by its name.
     It is also checked, that they are valid!"""
@@ -405,7 +456,7 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> d
     if corrections[0].is_file():  # checked above, that all are files or all are dirs
         corr_dict = {"": corrections}
     else:
-        corr_dict = {c.name:  _glob_regex_paths(c, file_pattern) for c in corrections}
+        corr_dict = {c.name: _glob_regex_paths(c, file_pattern) for c in corrections}
 
     # check correction files
     for name, corr_files in corr_dict.items():
@@ -414,21 +465,26 @@ def _get_corrections(corrections: Sequence[Path], file_pattern: str = None) -> d
 
         do_not_exist = [f for f in corr_files if not f.exists()]
         if len(do_not_exist):
-            raise IOError(f"Some correction files do not exist for scenario {name}:"
-                          f" {str(do_not_exist)}")
+            raise IOError(
+                f"Some correction files do not exist for scenario {name}:"
+                f" {str(do_not_exist)}"
+            )
 
     return corr_dict
 
 
 def _glob_regex_paths(path: Path, pattern: str) -> list[Path]:
-    """ Filter the files in path by pattern and return a list of paths. """
+    """Filter the files in path by pattern and return a list of paths."""
     return [path / f for f in glob_regex(path, pattern)]
 
 
 # Main and Output --------------------------------------------------------------
 
-def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> dict[str, pd.Index]:
-    """ Get the filtered measurement based on the cuts as done in the correction calculation.
+
+def _get_measurement_filter(
+    nominal_model: TfsDataFrame, opt: DotDict
+) -> dict[str, pd.Index]:
+    """Get the filtered measurement based on the cuts as done in the correction calculation.
     As we need this only for RMS calculations later on, we only care about the
     BPM-names. So the returned dict contains the index to be used for this
     calculation per optics measurement file."""
@@ -453,7 +509,8 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> dict[s
 
     # use the indices as filters
     filter_dict = {
-        global_correction.get_filename_from_parameter(k, opt.beta_filename): v.index for k, v in meas_dict.items()
+        global_correction.get_filename_from_parameter(k, opt.beta_filename): v.index
+        for k, v in meas_dict.items()
     }
 
     LOG.debug(f"Filters selected for keys: {list(filter_dict.keys())}")
@@ -461,14 +518,19 @@ def _get_measurement_filter(nominal_model: TfsDataFrame, opt: DotDict) -> dict[s
 
 
 def _create_model_and_write_diff_to_measurements(
-        output_dir: Path, measurement: OpticsMeasurement, correction_name: str, correction_files: Sequence[Path],
-        accel_inst: Accelerator, rms_masks: dict) -> OpticsMeasurement:
-    """ Create a new model with the corrections (well, the "matchings") applied and calculate
+    output_dir: Path,
+    measurement: OpticsMeasurement,
+    correction_name: str,
+    correction_files: Sequence[Path],
+    accel_inst: Accelerator,
+    rms_masks: dict,
+) -> OpticsMeasurement:
+    """Create a new model with the corrections (well, the "matchings") applied and calculate
     the difference to the nominal model, i.e. the expected improvement of the measurements
     (for detail see main docstring in this file).
-    This will be written out then into individual tfs-files in the output folder(s). 
-    
-    TODO After merge with new model creation: should crossing angles be deactivated and nominal model redone? 
+    This will be written out then into individual tfs-files in the output folder(s).
+
+    TODO After merge with new model creation: should crossing angles be deactivated and nominal model redone?
          Can be done by calling the create_corrected_model function with and without correction files
          and different paths.
     (jdilly 2023)
@@ -479,26 +541,31 @@ def _create_model_and_write_diff_to_measurements(
 
     # Created matched model
     corr_model_path = output_dir / MODEL_MATCHED_FILENAME
-    corr_model_elements = global_correction.create_corrected_model(corr_model_path, correction_files, accel_inst)  # writes out twiss file!
+    corr_model_elements = global_correction.create_corrected_model(
+        corr_model_path, correction_files, accel_inst
+    )  # writes out twiss file!
     corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, measurement)
     LOG.debug(f"Matched model created in {str(corr_model_path.absolute())}.")
 
-    # Get diff to nominal model 
+    # Get diff to nominal model
     diff_columns = (
-            list(OPTICS_PARAMS_CHOICES[:-4]) +
-            [col for col in corr_model_elements.columns if col.startswith("F1")] +
-            list(PLANES) +
-            [f'{PHASE_ADV}{plane}' for plane in PLANES]
+        list(OPTICS_PARAMS_CHOICES[:-4])
+        + [col for col in corr_model_elements.columns if col.startswith("F1")]
+        + list(PLANES)
+        + [f"{PHASE_ADV}{plane}" for plane in PLANES]
     )
-
-    diff_models = diff_twiss_parameters(corr_model_elements, accel_inst.model, parameters=diff_columns)
+    diff_models = diff_twiss_parameters(
+        corr_model_elements, accel_inst.elements, parameters=diff_columns
+    )
     LOG.debug("Differences to nominal model calculated.")
 
-     # Create new "measurement" with additional columns
+    # Create new "measurement" with additional columns
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
 
     for attribute, filename in measurement.filenames(exist=True).items():
-        rms_mask = rms_masks.get(filename, None)  # keys in rms_masks still with extension
+        rms_mask = rms_masks.get(
+            filename, None
+        )  # keys in rms_masks still with extension
         filename = filename.replace(EXT, "")
 
         try:
@@ -510,10 +577,18 @@ def _create_model_and_write_diff_to_measurements(
             # Coupling RDTS:
             # get F1### column map without the I, R, A, P part based on the rdt-filename:
             LOG.debug(f"Checking coupling correction for {attribute}")
-            colmap_model_generic = ColumnsAndLabels(COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX[filename])
-            for idx, colmap_meas in enumerate(RDT_COLUMN_MAPPING.values()):  # AMP, PHASE, REAL or IMAG as column-map
-                colmap_model = colmap_model_generic.set_plane(colmap_meas.column[0])  # F1### with I, R, A, P
-                output_measurement.allow_write = (idx == 3)  # write out only after the last column is set
+            colmap_model_generic = ColumnsAndLabels(
+                COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX[filename]
+            )
+            for idx, colmap_meas in enumerate(
+                RDT_COLUMN_MAPPING.values()
+            ):  # AMP, PHASE, REAL or IMAG as column-map
+                colmap_model = colmap_model_generic.set_plane(
+                    colmap_meas.column[0]
+                )  # F1### with I, R, A, P
+                output_measurement.allow_write = (
+                    idx == 3
+                )  # write out only after the last column is set
                 _create_check_columns(
                     measurement=measurement,
                     output_measurement=output_measurement,
@@ -545,9 +620,15 @@ def _create_model_and_write_diff_to_measurements(
     return output_measurement
 
 
-def _create_check_columns(measurement: OpticsMeasurement, output_measurement: OpticsMeasurement, diff_models: TfsDataFrame,
-                          colmap_meas: ColumnsAndLabels, colmap_model: ColumnsAndLabels, attribute: str,
-                          rms_mask: dict = None) -> None:
+def _create_check_columns(
+    measurement: OpticsMeasurement,
+    output_measurement: OpticsMeasurement,
+    diff_models: TfsDataFrame,
+    colmap_meas: ColumnsAndLabels,
+    colmap_model: ColumnsAndLabels,
+    attribute: str,
+    rms_mask: dict = None,
+) -> None:
     """Creates the columns in the measurements, that allow for checking the corrections.
     These are:
         diff_correction_column: Difference between the corrected and uncorrected model,
@@ -580,71 +661,101 @@ def _create_check_columns(measurement: OpticsMeasurement, output_measurement: Op
 
     """
     LOG.debug(
-        f"Creating columns for {attribute} ({colmap_meas.column}):\n"
-        f"Model Diff: {colmap_model.delta_column} -> {colmap_meas.diff_correction_column}\n"
-        f"Expected: {colmap_meas.delta_column} - diff ->  {colmap_meas.expected_column}\n"
+        f"Creating columns for {attribute} ({colmap_meas.column}): "
+        f"Model Diff: {colmap_model.delta_column} -> {colmap_meas.diff_correction_column}, "
+        f"Expected: {colmap_meas.delta_column} - diff -> {colmap_meas.expected_column}, "
         f"Error: {colmap_meas.error_delta_column} -> {colmap_meas.error_expected_column}"
     )
-    df = measurement[attribute]
+    df_meas: TfsDataFrame = measurement[attribute]
 
-    diff = diff_models.loc[df.index, colmap_model.delta_column]
+    common_elems = df_meas.index.intersection(diff_models.index)
+    diff = diff_models.loc[common_elems, colmap_model.delta_column]
 
-    df[colmap_meas.diff_correction_column] = diff
+    df_meas[colmap_meas.diff_correction_column] = diff
     if colmap_meas.column[:-1] == PHASE:
-        df[colmap_meas.expected_column] = pd.to_numeric(ang_diff(df[colmap_meas.delta_column], diff))  # assumes period 1
-        df.headers[colmap_meas.delta_rms_header] =  circular_rms(df[colmap_meas.delta_column], period=1)
-        df.headers[colmap_meas.expected_rms_header] = circular_rms(df[colmap_meas.expected_column], period=1)
+        df_meas[colmap_meas.expected_column] = pd.to_numeric(
+            ang_diff(df_meas[colmap_meas.delta_column], diff)
+        )  # assumes period 1
+        df_meas.headers[colmap_meas.delta_rms_header] = circular_rms(
+            df_meas[colmap_meas.delta_column], period=1
+        )
+        df_meas.headers[colmap_meas.expected_rms_header] = circular_rms(
+            df_meas[colmap_meas.expected_column], period=1
+        )
         if rms_mask is not None:
-            df.headers[colmap_meas.delta_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.delta_column], period=1)
-            df.headers[colmap_meas.expected_masked_rms_header] = circular_rms(df.loc[rms_mask, colmap_meas.expected_column], period=1)
+            df_meas.headers[colmap_meas.delta_masked_rms_header] = circular_rms(
+                df_meas.loc[rms_mask, colmap_meas.delta_column], period=1
+            )
+            df_meas.headers[colmap_meas.expected_masked_rms_header] = circular_rms(
+                df_meas.loc[rms_mask, colmap_meas.expected_column], period=1
+            )
 
     else:
-        df[colmap_meas.expected_column] = pd.to_numeric(df[colmap_meas.delta_column] - diff)
-        df.headers[colmap_meas.delta_rms_header] = rms(df[colmap_meas.delta_column])
-        df.headers[colmap_meas.expected_rms_header] = rms(df[colmap_meas.expected_column])
+        df_meas[colmap_meas.expected_column] = pd.to_numeric(
+            df_meas[colmap_meas.delta_column] - diff
+        )
+        df_meas.headers[colmap_meas.delta_rms_header] = rms(
+            df_meas[colmap_meas.delta_column]
+        )
+        df_meas.headers[colmap_meas.expected_rms_header] = rms(
+            df_meas[colmap_meas.expected_column]
+        )
         if rms_mask is not None:
-            df.headers[colmap_meas.delta_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.delta_column])
-            df.headers[colmap_meas.expected_masked_rms_header] = rms(df.loc[rms_mask, colmap_meas.expected_column])
+            df_meas.headers[colmap_meas.delta_masked_rms_header] = rms(
+                df_meas.loc[rms_mask, colmap_meas.delta_column]
+            )
+            df_meas.headers[colmap_meas.expected_masked_rms_header] = rms(
+                df_meas.loc[rms_mask, colmap_meas.expected_column]
+            )
 
     LOG.info(
         f"\nRMS {attribute} ({colmap_meas.column}):\n"
-        f"    measured {df.headers[colmap_meas.delta_rms_header]:.2e}\n"
-        f"    expected {df.headers[colmap_meas.expected_rms_header]:.2e}"
+        f"    measured {df_meas.headers[colmap_meas.delta_rms_header]:.2e}\n"
+        f"    expected {df_meas.headers[colmap_meas.expected_rms_header]:.2e}"
     )
 
     if rms_mask is not None:
         LOG.info(
             f"\nRMS {attribute} ({colmap_meas.column}) after filtering:\n"
-            f"    measured {df.headers[colmap_meas.delta_masked_rms_header]:.2e}\n"
-            f"    expected {df.headers[colmap_meas.expected_masked_rms_header]:.2e}"
+            f"    measured {df_meas.headers[colmap_meas.delta_masked_rms_header]:.2e}\n"
+            f"    expected {df_meas.headers[colmap_meas.expected_masked_rms_header]:.2e}"
         )
 
     try:
-        df[colmap_meas.error_expected_column] = df[colmap_meas.error_delta_column]
+        df_meas[colmap_meas.error_expected_column] = df_meas[
+            colmap_meas.error_delta_column
+        ]
     except KeyError:
-        LOG.warning(f"The error-delta column {colmap_meas.error_delta_column} was "
-                    f"not found in {attribute}. Probably an old file. Assuming zero errors.")
-        df[colmap_meas.error_expected_column] = 0.0
+        LOG.warning(
+            f"The error-delta column {colmap_meas.error_delta_column} was "
+            f"not found in {attribute}. Probably an old file. Assuming zero errors."
+        )
+        df_meas[colmap_meas.error_expected_column] = 0.0
 
+    # Process tune columns for both planes.
     for tune_map in (TUNE_COLUMN.set_plane(n) for n in (1, 2)):
         LOG.debug(
-            f"Creating columns for tune {tune_map.column}:\n"
-            f"Model Diff: {tune_map.delta_column} -> {tune_map.diff_correction_column}\n"
-            f"Expected: {tune_map.column} - diff ->  {tune_map.expected_column}"
+            f"Creating columns for tune {tune_map.column}: "
+            f"Model Diff: {tune_map.delta_column} -> {tune_map.diff_correction_column}, "
+            f"Expected: {tune_map.column} - diff -> {tune_map.expected_column}"
         )
 
         diff_tune = diff_models.headers[tune_map.delta_column]
-        df.headers[tune_map.diff_correction_column] = diff_tune
-        df.headers[tune_map.expected_column] = df.headers[tune_map.column] - diff_tune
+        df_meas.headers[tune_map.diff_correction_column] = diff_tune
+        df_meas.headers[tune_map.expected_column] = (
+            df_meas.headers[tune_map.column] - diff_tune
+        )
 
-    output_measurement[attribute] = df  # writes file if allow_write is set.
+    output_measurement[attribute] = df_meas  # writes file if allow_write is set.
 
 
 # Helper -----------------------------------------------------------------------
 
 
-def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, measurement: OpticsMeasurement) -> tfs.TfsDataFrame:
-    """ Add coupling to the model, if terms corresponding to coupling RDTs are
+def _maybe_add_coupling_to_model(
+    model: tfs.TfsDataFrame, measurement: OpticsMeasurement
+) -> tfs.TfsDataFrame:
+    """Add coupling to the model, if terms corresponding to coupling RDTs are
     found in the provided measurements.
 
     Args:
@@ -654,22 +765,27 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, measurement: OpticsMea
     Returns:
         A TfsDataFrame with the added columns.
     """
-    if any((measurement.directory / measurement.filenames[rdt.lower()]).exists() for rdt in (F1001, F1010)):
+    if any(
+        (measurement.directory / measurement.filenames[rdt.lower()]).exists()
+        for rdt in (F1001, F1010)
+    ):
         return add_coupling_to_model(model)
     return model
 
 
-
 # Plotting ---------------------------------------------------------------------
 
+
 def _do_plots(corrections: dict[str, Any], opt: DotDict):
-    """ Plot the differences of the matched models to the measurement. """
-    opt_plot = {k: v for k, v in opt.items() if k in get_plotting_style_parameters().keys()}
+    """Plot the differences of the matched models to the measurement."""
+    opt_plot = {
+        k: v for k, v in opt.items() if k in get_plotting_style_parameters().keys()
+    }
     opt_plot["input_dir"] = opt.output_dir
     opt_plot["output_dir"] = opt.output_dir
     opt_plot["corrections"] = list(corrections.keys())
     plot_checked_corrections(**opt_plot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     correction_test_entrypoint()
