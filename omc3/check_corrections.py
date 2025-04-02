@@ -361,7 +361,7 @@ def get_params():
 
 
 @entrypoint(get_params())
-def correction_test_entrypoint(opt: DotDict, accel_opt: DotDict) -> None:
+def correction_test_entrypoint(opt: DotDict, accel_opt: Any) -> None:
     """Entrypoint function to test the given corrections.
 
     .. todo:: Instead of writing everything out, it could return
