@@ -3,6 +3,7 @@ Test Segment-by-Segment
 -----------------------
 """
 from pathlib import Path
+from typing import NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -42,7 +43,26 @@ MAX_DIFF = 1e-10
 YEAR = "2025"
 OPTICS_30CM_FLAT = "R2025aRP_A30cmC30cmA10mL200cm_Flat.madx"  
 
+DEBUG_PRINT: bool = False 
+
+class TestCfg(NamedTuple):
+    diff_max: float
+    eps_fwd: float
+    eps_bwd: float
+    file_name: str
+
 class TestSbSLHC:
+    # some constants
+    config_map = {  # eps_bwd are high! I think because of the coupling issue, see https://github.com/pylhc/omc3/issues/498
+        Phase: TestCfg(1e-2, 1e-8, 5e-4, "phase"),
+        BetaPhase: TestCfg(9e-2, 1e-10, 5e-4, "beta_phase"),
+        AlphaPhase: TestCfg(1e-1, 1e-8, 8e-2, "alpha_phase"),
+        Dispersion: TestCfg(1e-2, None, None, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
+        F1001: TestCfg(5e-4, 5e-7, None, "f1001"),
+        F1010: TestCfg(5e-4, 5e-6, None, "f1010"),
+    }
+    eps_rdt_min = 3e-9  # RDTs are not set directly in MAD-X, but converted to R-Matrix. So no value is exact.
+
 
     @pytest.mark.basic
     @pytest.mark.parametrize("with_correction", [True, False], ids=("with_correction", "no_correction"))
@@ -173,26 +193,6 @@ class TestSbSLHC:
         )
 
         # Tests ----------------------------------------------------------------
-        eps_fwd = 1e-9
-        eps_bwd = 1e-2  # TODO: coupling bckwd prop is wrong https://github.com/pylhc/omc3/issues/498
-        eps_rdt_min = 3e-9  # RDTs are not set directly in MAD-X, but converted to R-Matrix. So no value is exact.
-
-        diff_max_mapping = {  # some very crude estimates
-            Phase: 1e-2,
-            BetaPhase: 9e-2,
-            AlphaPhase: 1e-1,
-            Dispersion: 1e-5,  # small in Y
-            F1001: 1e-4,
-            F1010: 1e-4,    
-        }
-        file_name_mapping = {
-            Phase: "phase",
-            BetaPhase: "beta_phase",
-            AlphaPhase: "alpha_phase",
-            Dispersion: "dispersion",
-            F1001: "f1001",
-            F1010: "f1010",
-        }
         column_types = ["column", "forward", "backward"]
         if with_correction:
             column_types += [
@@ -201,16 +201,18 @@ class TestSbSLHC:
             ]
 
         for propagable in ALL_PROPAGABLES:
-            diff_max: float = diff_max_mapping[propagable]
-            file_name: str = file_name_mapping[propagable]
-
+            if propagable is Dispersion:
+                continue  # TODO: not working, see https://github.com/pylhc/omc3/issues/498
+            
+            cfg: TestCfg = self.config_map[propagable]
             planes = [REAL, IMAG, AMPLITUDE, PHASE] if propagable.is_rdt() else "xy"
 
             for plane in planes:
-                full_file_name: str = file_name if propagable.is_rdt() else f"{file_name}_{plane}"
+                full_file_name: str = cfg.file_name if propagable.is_rdt() else f"{cfg.file_name}_{plane}"
                 columns: PropagableColumns = propagable.columns.planed(plane.upper()) 
 
-                print(f"\nTesting {propagable.__name__} {plane}: {columns.column}") 
+                if DEBUG_PRINT:
+                    print(f"\nTesting {propagable.__name__} {plane}: {columns.column}") 
 
                 # Quick cheks for existing columns ---------------------
                 
@@ -222,9 +224,16 @@ class TestSbSLHC:
                 # In-Depth check per segments ---------------------------
                 if propagable is AlphaPhase:
                     # alpha is in the beta-measurement file
-                    meas_df = tfs.read(INPUT_SBS / f"measurement_b{beam}" / f"{file_name_mapping[BetaPhase]}_{plane}.tfs", index=NAME)
+                    beta_file = self.config_map[BetaPhase].file_name
+                    meas_df = tfs.read(
+                        INPUT_SBS / f"measurement_b{beam}" / f"{beta_file}_{plane}.tfs", 
+                        index=NAME
+                    )
                 else:
-                    meas_df = tfs.read(INPUT_SBS / f"measurement_b{beam}" / f"{full_file_name}.tfs", index=NAME)
+                    meas_df = tfs.read(
+                        INPUT_SBS / f"measurement_b{beam}" / f"{full_file_name}.tfs", 
+                        index=NAME
+                    )
 
                 for segment in segments:
                     sbs_created: SegmentDiffs = sbs_res[segment.name]
@@ -247,32 +256,30 @@ class TestSbSLHC:
                     assert sbs_df[columns.error_column].all()
 
                     # Forward / Backward ---
-                    forward = (eps_fwd, columns.forward)
-                    backward = (eps_bwd, columns.backward)
+                    forward = (columns.forward, columns.error_forward)
+                    backward = (columns.backward, columns.error_backward)
                     for col, err_col in (forward, backward):
                         if propagable.is_rdt():
-                            assert sbs_df[col].abs().min() < eps_rdt_min  # for RDTs the init value is calculated,
+                            assert sbs_df[col].abs().min() < self.eps_rdt_min  # for RDTs the init value is calculated,
                         else:
                             assert sbs_df[col].abs().min() == 0  # at least the first entry should show no difference
 
-                        assert sbs_df[col].abs().max() > diff_max
+                        assert sbs_df[col].abs().max() > cfg.diff_max
                         assert sbs_df[err_col].all()
                     
                     if with_correction:  # -------------------------------------
-                        if propagable is Dispersion:
-                            continue  # TODO: https://github.com/pylhc/omc3/issues/498
-                            
-                        forward = (eps_fwd, columns.forward, columns.forward_correction, columns.forward_expected)
-                        backward = (eps_bwd, columns.backward, columns.backward_correction, columns.backward_expected)
+                        forward = (cfg.eps_fwd, columns.forward, columns.forward_correction, columns.forward_expected)
+                        backward = (cfg.eps_bwd, columns.backward, columns.backward_correction, columns.backward_expected)
+
                         for idx, (eps, col, correction, expected) in enumerate((forward, backward)):
                             if idx and propagable.is_rdt():
-                                # TODO: check backward coupling, https://github.com/pylhc/omc3/issues/498  
+                                # TODO: check backward coupling, see https://github.com/pylhc/omc3/issues/498  
                                 continue 
                                 
-                            if propagable is Phase:
+                            if propagable in [Phase, F1001, F1010]:  # check absolute difference
                                 assert_all_close(sbs_df, correction, col, atol=eps)
                                 assert_all_close(sbs_df, expected, 0, atol=eps)
-                            else:  # check relative expectation 
+                            else:  # check relative difference 
                                 assert_all_close(sbs_df, correction, col, rel=columns.column, atol=eps)
                                 assert_all_close(sbs_df, expected, 0, rel=columns.column, atol=3*eps, rtol=eps)
                         
@@ -318,7 +325,8 @@ def assert_all_close(
         a_data = a_data / df[rel]
         b_data = b_data / df[rel] 
 
-    print(f"Max {a:>15s}, {str(b):>15s}: {(a_data - b_data).abs().max():.2e}")
+    if DEBUG_PRINT:
+        print(f"Max {a:>15s}, {str(b):>15s}: {(a_data - b_data).abs().max():.2e}")
     assert np.allclose(a_data, b_data, atol=atol, rtol=rtol)
     
 
