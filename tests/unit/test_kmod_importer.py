@@ -77,11 +77,3 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
                 ref_file = tfs.read(ref_path)
                 out_file = tfs.read(tmp_path / ref_path.name)
                 assert_tfsdataframe_equal(ref_file, out_file, check_like=True)
-
-
-# /accpy/bin/python 
-# -m omc3.kmod_importer 
-# --meas_paths /user/slops/data/LHC_DATA/OP_DATA/Betabeat/2024-03-22/kmod/60cm/ip1_1 /user/slops/data/LHC_DATA/OP_DATA/Betabeat/2024-03-22/kmod/60cm/ip1_2 /user/slops/data/LHC_DATA/OP_DATA/Betabeat/2024-03-22/kmod/60cm/ip1_3 /user/slops/data/LHC_DATA/OP_DATA/Betabeat/2024-03-22/kmod/60cm/ip2 /user/slops/data/LHC_DATA/OP_DATA/Betabeat/2024-03-22/kmod/60cm/ip5_1 /user/slops/data/LHC_DATA/OP_DATA/Betabeat/2024-03-22/kmod/60cm/ip5_2 /user/slops/data/LHC_DATA/OP_DATA/Betabeat/2024-03-22/kmod/60cm/ip8 
-# --output_dir /afs/cern.ch/user/j/jmgray/private/Freq_fake_data/2025-03-31/LHCB1/Results/17-37-22_ANALYSIS 
-# --model /afs/cern.ch/user/j/jmgray/private/Freq_fake_data/2025-03-31/LHCB1/Models/B1_60cm_on_mom_kmod_test/twiss_elements.dat 
-# --beam 1
