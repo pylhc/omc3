@@ -18,7 +18,7 @@ from omc3.definitions.optics import (
     TUNE_COLUMN,
     ColumnsAndLabels,
 )
-from omc3.model.constants import TWISS_DAT, TWISS_ELEMENTS_DAT
+from omc3.model.constants import TWISS_DAT
 from omc3.optics_measurements.constants import (
     EXT,
     MDL,
