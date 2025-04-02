@@ -1,4 +1,6 @@
+import shutil
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import matplotlib
 import pytest
@@ -80,6 +82,9 @@ class TestFullRun:
         twiss_files = list(output_dir.glob(f"twiss*{EXT}"))
 
         assert (len(tfs_files) - len(twiss_files)) == n_meas_files
+
+        # remove kmod files from the list
+        tfs_files = [tfs_file for tfs_file in tfs_files if "kmod" not in tfs_file.name]
 
         if use_filter:
             # test if this test will check for the filtered optics parameters: (a meta-test)
@@ -416,7 +421,7 @@ class MockPlotWidget:
     title: str = ""
 
 
-def _create_fake_measurement(tmp_path, model_path, twiss_path):
+def _create_fake_measurement(tmp_path: Path, model_path: Path, twiss_path: Path):
     model_df = tfs.read(model_path / TWISS_DAT, index=NAME)
     model_df = add_coupling_to_model(model_df)
 
@@ -430,3 +435,10 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path):
         randomize=[],
         outputdir=tmp_path,
     )
+
+    # Add beta kmod files to the outputdir
+    kmod_x_path = twiss_path.parent.parent / "beta_kmod_x.tfs"
+    kmod_y_path = twiss_path.parent.parent / "beta_kmod_y.tfs"
+
+    shutil.copy(kmod_x_path, tmp_path / kmod_x_path.name)
+    shutil.copy(kmod_y_path, tmp_path / kmod_y_path.name)

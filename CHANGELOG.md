@@ -5,6 +5,17 @@
 - Added:
   - Additional Propagables: Dispersion (but not really working), Coupling (only forward working).
 
+#### 2025-04-01 - v0.23.01 - _jdilly_, _jgray_
+
+- Changed:
+  - `twiss_elements` via macro now contain all elements in the sequence.
+
+- Fixed:
+  - `check_corrections` does not error when different markers in the model and the measurement.
+
+- Added:
+  - Bad BPMs summary: NANS reason.
+
 #### 2025-03-13 - v0.23.0 - _jdilly_
 
 - Added:
