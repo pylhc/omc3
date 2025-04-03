@@ -3,7 +3,7 @@
 #### 2025-04-03 - v0.24.0 - _jdilly_
 
 - Added:
-  - Additional Propagables: Dispersion (but not really working), Coupling (only forward working).
+  - Additional Propagables: Dispersion (but not really working [#498](https://github.com/pylhc/omc3/issues/498)), Coupling (only forward working [#498](https://github.com/pylhc/omc3/issues/498])).
 
 #### 2025-04-01 - v0.23.01 - _jdilly_, _jgray_
 

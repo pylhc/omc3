@@ -102,7 +102,7 @@ class TestSbSLHC:
         measurement = OpticsMeasurement(INPUT_SBS / f"measurement_b{beam}")
 
         propagables = [propg(segment, measurement, twiss_elements) for propg in ALL_PROPAGABLES]
-        measureables = [measbl for measbl in propagables if measbl]   # TODO  
+        assert all(propagable.in_measurement(measurement) for propagable in propagables)  # check if all input files are present for this test!
         
         accel_inst: Lhc = manager.get_accelerator(accel_opt)
         accel_inst.model_dir = tmp_path  # if set in accel_opt, it tries to load from model_dir, but this is the output dir for the segment-models
@@ -110,7 +110,7 @@ class TestSbSLHC:
         
         segment_creator = LhcSegmentCreator(
             segment=segment, 
-            measurables=measureables,
+            measurables=propagables,
             logfile=tmp_path / logfile.format(segment.name),
             accel=accel_inst,
             corrections=correction_path,

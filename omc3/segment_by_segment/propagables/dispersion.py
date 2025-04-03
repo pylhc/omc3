@@ -14,7 +14,7 @@ from tfs import TfsDataFrame
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import DISPERSION
-from omc3.segment_by_segment import math
+from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.phase import Phase 
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices
@@ -85,8 +85,8 @@ class Dispersion(Propagable):
         disp_diff = disp - model_disp
 
         # propagate the error
-        propagated_err = math.propagate_error_dispersion(model_disp, model_phase, init_condition)
-        total_err = math.quadratic_add(err_disp, propagated_err)
+        propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
+        total_err = sbs_math.quadratic_add(err_disp, propagated_err)
         return disp_diff, total_err
     
     def _compute_correction(
@@ -105,7 +105,7 @@ class Dispersion(Propagable):
         
         # propagate the error
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
-        propagated_err = math.propagate_error_dispersion(corrected_disp, model_phase, init_condition)
+        propagated_err = sbs_math.propagate_error_dispersion(corrected_disp, model_phase, init_condition)
         return disp_diff, propagated_err
 
     def _compute_elements(self, plane: str, seg_model: pd.DataFrame, forward: bool):
@@ -116,5 +116,5 @@ class Dispersion(Propagable):
 
         # propagate the error
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
-        propagated_err = math.propagate_error_dispersion(model_disp, model_phase, init_condition)
+        propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
         return model_disp, propagated_err

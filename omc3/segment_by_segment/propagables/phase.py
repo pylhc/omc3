@@ -21,7 +21,7 @@ from omc3.optics_measurements.constants import (
     TUNE,
     S,
 )
-from omc3.segment_by_segment import math
+from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices
 from omc3.segment_by_segment.segments import SegmentDiffs
@@ -78,7 +78,7 @@ class Phase(Propagable):
             # subtract reference phase
             columns = self.columns.planed(plane)
             phase = df.loc[:, columns.column]
-            df.loc[:, columns.column] = math.phase_diff(phase, phase.iloc[0])
+            df.loc[:, columns.column] = sbs_math.phase_diff(phase, phase.iloc[0])
             
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.phase[plane] = df
@@ -107,10 +107,10 @@ class Phase(Propagable):
         segment_meas_phase = meas_phase - meas_phase.loc[reference_element]
         segment_model_phase = self.get_segment_phase(seg_model.loc[names, :], plane, forward)
 
-        phase_beating = math.phase_diff(segment_meas_phase, segment_model_phase)
+        phase_beating = sbs_math.phase_diff(segment_meas_phase, segment_model_phase)
         # propagate the error
-        propagated_err = math.propagate_error_phase(segment_model_phase, init_condition)
-        total_err = math.quadratic_add(meas_err, propagated_err)
+        propagated_err = sbs_math.propagate_error_phase(segment_model_phase, init_condition)
+        total_err = sbs_math.quadratic_add(meas_err, propagated_err)
         return phase_beating, total_err
 
     def _compute_correction(
@@ -126,10 +126,10 @@ class Phase(Propagable):
         
         init_condition = self._init_start(plane)
         if forward: 
-            phase_beating = math.phase_diff(corrected_phase, model_phase)
+            phase_beating = sbs_math.phase_diff(corrected_phase, model_phase)
         else:
-            phase_beating = math.phase_diff(model_phase, corrected_phase)
-        propagated_err = math.propagate_error_phase(corrected_phase, init_condition)
+            phase_beating = sbs_math.phase_diff(model_phase, corrected_phase)
+        propagated_err = sbs_math.propagate_error_phase(corrected_phase, init_condition)
         return phase_beating, propagated_err
     
     def _compute_elements(self, 
@@ -141,7 +141,7 @@ class Phase(Propagable):
         model_phase = seg_model.loc[:, self._model_column(plane)]
 
         init_condition = self._init_start(plane) if forward else self._init_end(plane)
-        propagated_err = math.propagate_error_phase(model_phase, init_condition)
+        propagated_err = sbs_math.propagate_error_phase(model_phase, init_condition)
         return model_phase, propagated_err
 
     @staticmethod
@@ -163,5 +163,5 @@ class Phase(Propagable):
         """
         phase = segment_model.loc[:, Phase._model_column(plane)]
         if not forward:
-            phase = -phase  # TODO: Explain why!?
+            phase = -phase  # TODO: Find out and explain why!?
         return phase

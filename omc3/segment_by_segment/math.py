@@ -45,14 +45,14 @@ class SegmentBoundaryConditions:
 
 def propagate_error_phase(dphi: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the phase-error.
-       See Eq. (2) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
-       This implementation has a minus-sign instead of the first plus-sign as in the reference,
-       this seems to be the correct implementation, 
-       as found e.g. in https://github.com/pylhc/MESS/tree/master/FODO_Test_Lattice/Phase_Error_Propagation
+    See Eq. (2) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
+    This implementation has a minus-sign instead of the first plus-sign as in the reference,
+    this seems to be the correct implementation, 
+    as found e.g. in https://github.com/pylhc/MESS/tree/master/FODO_Test_Lattice/Phase_Error_Propagation
 
-        Args:
-            dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
-            init (PropagableBoundaryConditions): Initial conditions at the start of the segment for alpha and beta and their uncertainties.
+    Args:
+        dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
+        init (PropagableBoundaryConditions): Initial conditions at the start of the segment for alpha and beta and their uncertainties.
     """
     alpha0, erralpha0 = init.alpha
     beta0, errbeta0 = init.beta
@@ -68,12 +68,12 @@ def propagate_error_phase(dphi: ArrayLike, init: SegmentBoundaryConditions) -> A
 
 def propagate_error_beta(beta: ArrayLike, dphi: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the beta-error from beta0 to beta with dphi phase-advance.
-       See Eq. (3) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
+    See Eq. (3) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
 
-        Args:
-            beta (ArrayLike): Beta function at the observation point(s).
-            dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
-            init (PropagableBoundaryConditions): Initial conditions at the start of the segment for alpha and beta and their uncertainties.
+    Args:
+        beta (ArrayLike): Beta function at the observation point(s).
+        dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
+        init (PropagableBoundaryConditions): Initial conditions at the start of the segment for alpha and beta and their uncertainties.
     """
     alpha0, erralpha0 = init.alpha
     beta0, errbeta0 = init.beta
@@ -89,12 +89,12 @@ def propagate_error_beta(beta: ArrayLike, dphi: ArrayLike, init: SegmentBoundary
 
 def propagate_error_alpha(alpha: ArrayLike, dphi: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the alpha-error from alpha0 to alpha with dphi phaseadvance.
-       See Eq. (4) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
+    See Eq. (4) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
 
-       Args:
-           alpha (ArrayLike): Alpha function at the observation point(s).
-           dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
-           init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
+    Args:
+        alpha (ArrayLike): Alpha function at the observation point(s).
+        dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
+        init (PropagableBoundaryConditions): Initial conditions for alpha and beta and their uncertainties.
     """
     alpha0, erralpha0 = init.alpha
     beta0, errbeta0 = init.beta
@@ -132,7 +132,7 @@ def propagate_error_dispersion(beta: ArrayLike, dphi: ArrayLike, init: SegmentBo
 
 # F1001 ---
 
-def propagate_error_coupling_1001_re(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_f1001_real(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the real part of f1001 through dphix and dphiy phase-advance,
        based on the initial amplitude and phase error of f1001.
        See Eq. (5) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
@@ -155,18 +155,18 @@ def propagate_error_coupling_1001_re(dphix: ArrayLike, dphiy: ArrayLike, init: S
     )
 
 
-def propagate_error_coupling_1001_im(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_f1001_imag(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the imagary part of f1001 through dphix and dphiy phase-advance,
-       based on the initial amplitude and phase error of f1001.
-       See Eq. (6) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
+    based on the initial amplitude and phase error of f1001.
+    See Eq. (6) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
 
-       Args:
-           dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
-           dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
-           init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
+    Args:
+        dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
+        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
+        init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     amp0, erramp0 = init.f1001_amplitude
-    phase0, errphase0 = init.f1001_phase    
+    phase0, errphase0 = init.f1001_phase
     errphase0 = 2 * np.pi * errphase0
 
     phase = 2 * np.pi * (phase0 - dphix + dphiy)
@@ -177,52 +177,52 @@ def propagate_error_coupling_1001_im(dphix: ArrayLike, dphiy: ArrayLike, init: S
     )
 
 
-def propagate_error_coupling_1001_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_f1001_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.
        
-       TODO: Probably a better propagation? This was how it was in BBS. (jdilly, 2025)
+    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
-       Args:
-           dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
-           dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
-           init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
+    Args:
+        dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
+        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
+        init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     amp0, erramp0 = init.f1001_amplitude
     try:
-        return pd.Series(erramp0, index=dphix.index)
+        return pd.Series(erramp0, index=dphix.index)  # return Series if input is Series
     except AttributeError:
         return np.ones_like(amp0) * erramp0
 
 
-def propagate_error_coupling_1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
+def propagate_error_f1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.
        
-       TODO: Probably a better propagation? Phase was not output in BBS. (jdilly, 2025)
+    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
-       Args:
-           dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
-           dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
-           init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
+    Args:
+        dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
+        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
+        init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     phase0, errphase0 = init.f1001_phase    
     try:
-        return pd.Series(errphase0, index=dphix.index)
+        return pd.Series(errphase0, index=dphix.index)  # return Series if input is Series
     except AttributeError:
         return np.ones_like(phase0) * errphase0
 
 
 # F1010 ---
 
-def propagate_error_coupling_1010_re(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_f1010_real(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the real part of f1010 through dphix and dphiy phase-advance,
-       based on the initial amplitude and phase error of f1010.
-       See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
-       yet the phases dphix and dphiy are subtracted from the initial rdt phase.
+    based on the initial amplitude and phase error of f1010.
+    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
+    yet the phases dphix and dphiy are subtracted from the initial rdt phase.
 
-       Args:
-           dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
-           dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
-           init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
+    Args:
+        dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
+        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
+        init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
     """
     amp0, erramp0 = init.f1010_amplitude
     phase0, errphase0 = init.f1010_phase
@@ -236,16 +236,16 @@ def propagate_error_coupling_1010_re(dphix: ArrayLike, dphiy: ArrayLike, init: S
     )
 
 
-def propagate_error_coupling_1010_im(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
+def propagate_error_f1010_imag(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the imaginary part of f1010 through dphix and dphiy phase-advance,
-       based on the initial amplitude and phase error of f1010.
-       See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
-       yet the phases dphix and dphiy are subtracted from the initial rdt phase.
+    based on the initial amplitude and phase error of f1010.
+    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
+    yet the phases dphix and dphiy are subtracted from the initial rdt phase.
 
-       Args:
-           dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
-           dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
-           init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
+    Args:
+        dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
+        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
+        init (PropagableBoundaryConditions): Initial conditions for f1010 amplitude and phase and their uncertainties.
     """
     amp0, erramp0 = init.f1010_amplitude
     phase0, errphase0 = init.f1010_phase
@@ -259,15 +259,15 @@ def propagate_error_coupling_1010_im(dphix: ArrayLike, dphiy: ArrayLike, init: S
     )
 
 
-def propagate_error_coupling_1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
+def propagate_error_f1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.
        
-       TODO: Probably a better propagation? This was how it was in BBS. (jdilly, 2025)
+    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
-       Args:
-           dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
-           dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
-           init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
+    Args:
+        dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
+        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
+        init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     amp0, erramp0 = init.f1010_amplitude
     try:
@@ -276,15 +276,15 @@ def propagate_error_coupling_1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: 
         return np.ones_like(amp0) * erramp0
 
 
-def propagate_error_coupling_1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
+def propagate_error_f1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.
        
-       TODO: Probably a better propagation? Phase was not output in BBS. (jdilly, 2025)
+    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
-       Args:
-           dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
-           dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
-           init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
+    Args:
+        dphix (ArrayLike): Phase advances in x from initial position to observation point(s).
+        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
+        init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
     phase0, errphase0 = init.f1010_phase    
     try:

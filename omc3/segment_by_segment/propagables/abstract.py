@@ -175,7 +175,7 @@ class Propagable(ABC):
         As the naming conventions of the columns are not intuitive, when not working with 
         segment-by-segment, here the detailed explanations:
 
-        NAME-Column: The element/observaiton point (BPM) names
+        NAME-Column: The element/observation point (BPM) names
         S-Column: The segment model longitudinal value, starting with 0 from the start of the segment.
         S_MODEL-Column: The longitudinal value of the twiss model, starting with 0 from the start of the accelerator.
 

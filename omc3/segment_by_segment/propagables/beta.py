@@ -14,7 +14,7 @@ from tfs import TfsDataFrame
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import BETA
-from omc3.segment_by_segment import math
+from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.phase import Phase
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices
@@ -86,8 +86,8 @@ class BetaPhase(Propagable):
 
         # propagate the error
         err_beta = err_beta / model_beta
-        propagated_err = math.propagate_error_beta(model_beta, model_phase, init_condition)
-        total_err = math.quadratic_add(err_beta, propagated_err)
+        propagated_err = sbs_math.propagate_error_beta(model_beta, model_phase, init_condition)
+        total_err = sbs_math.quadratic_add(err_beta, propagated_err)
         return beta_beating, total_err
     
     def _compute_correction(
@@ -107,7 +107,7 @@ class BetaPhase(Propagable):
 
         # propagate the error
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
-        propagated_err = math.propagate_error_beta(corrected_beta, model_phase, init_condition)
+        propagated_err = sbs_math.propagate_error_beta(corrected_beta, model_phase, init_condition)
         return beta_beating, propagated_err
 
     def _compute_elements(self, plane: str, seg_model: pd.DataFrame, forward: bool):
@@ -120,5 +120,5 @@ class BetaPhase(Propagable):
 
         # propagate the error
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
-        propagated_err = math.propagate_error_beta(model_beta, model_phase, init_condition)
+        propagated_err = sbs_math.propagate_error_beta(model_beta, model_phase, init_condition)
         return model_beta, propagated_err

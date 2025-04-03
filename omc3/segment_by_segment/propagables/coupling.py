@@ -20,7 +20,7 @@ from omc3.optics_measurements.constants import AMPLITUDE, IMAG, PHASE, REAL
 from omc3.optics_measurements.constants import BETA as COL_BETA
 from omc3.optics_measurements.constants import F1001 as COL_F1001
 from omc3.optics_measurements.constants import F1010 as COL_F1010
-from omc3.segment_by_segment import math
+from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.alpha import AlphaPhase
 from omc3.segment_by_segment.propagables.beta import BetaPhase
@@ -109,7 +109,7 @@ class Coupling(Propagable):
 
         # calculate difference
         if plane == PHASE:
-            value_diff = math.phase_diff(meas_value, model_value)
+            value_diff = sbs_math.phase_diff(meas_value, model_value)
         else:
             value_diff = meas_value - model_value
 
@@ -118,7 +118,7 @@ class Coupling(Propagable):
         model_phase_x = Phase.get_segment_phase(seg_model.loc[names, :], "X", forward) 
         model_phase_y = Phase.get_segment_phase(seg_model.loc[names, :], "Y", forward) 
         propagated_err = error_propagation(model_phase_x, model_phase_y, init_condition)
-        total_err = math.quadratic_add(meas_error, propagated_err)
+        total_err = sbs_math.quadratic_add(meas_error, propagated_err)
         return value_diff, total_err
     
     def _compute_correction(
@@ -136,7 +136,7 @@ class Coupling(Propagable):
         corrected_rdt = seg_model_corr.loc[:, model_column]
 
         if plane == PHASE:
-            model_diff = math.phase_diff(corrected_rdt, model_rdt)
+            model_diff = sbs_math.phase_diff(corrected_rdt, model_rdt)
         else:
             model_diff = corrected_rdt - model_rdt
         
@@ -176,17 +176,17 @@ class Coupling(Propagable):
 # Coupling RDTs ----------------------------------------------------------------  
 
 class F1001(Coupling):
-    """ Propagable for the F1001 parameter. 
+    """ Propagable for the f1001 parameter. 
     
     Hint: We use the "plane" parameter to determine the components, 
     i.e. real, imaginary, amplitude or phase.
     """
     MODEL_COLUMN_PREFIX = COL_F1001
     error_propagation_funcs: dict[str, Callable] = {
-        REAL: math.propagate_error_coupling_1001_re,
-        IMAG: math.propagate_error_coupling_1001_im,
-        AMPLITUDE: math.propagate_error_coupling_1001_amp,
-        PHASE: math.propagate_error_coupling_1001_phase
+        REAL: sbs_math.propagate_error_f1001_real,
+        IMAG: sbs_math.propagate_error_f1001_imag,
+        AMPLITUDE: sbs_math.propagate_error_f1001_amp,
+        PHASE: sbs_math.propagate_error_f1001_phase
     }
     
     @classmethod
@@ -219,17 +219,17 @@ class F1001(Coupling):
 
 
 class F1010(Coupling):
-    """ Propagable for the F1010 parameter. 
+    """ Propagable for the f1010 parameter. 
     
     Hint: We use the "plane" parameter to determine the components, 
     i.e. real, imaginary, amplitude or phase.
     """
     MODEL_COLUMN_PREFIX = COL_F1010
     error_propagation_funcs: dict[str, Callable] = {
-        REAL: math.propagate_error_coupling_1010_re,
-        IMAG: math.propagate_error_coupling_1010_im,
-        AMPLITUDE: math.propagate_error_coupling_1010_amp,
-        PHASE: math.propagate_error_coupling_1010_phase
+        REAL: sbs_math.propagate_error_f1010_real,
+        IMAG: sbs_math.propagate_error_f1010_imag,
+        AMPLITUDE: sbs_math.propagate_error_f1010_amp,
+        PHASE: sbs_math.propagate_error_f1010_phase
     }
 
     @classmethod
@@ -263,7 +263,7 @@ class F1010(Coupling):
 
 # Helper functions -------------------------------------------------------------
 
-def append_rdt_components(seg_model: pd.DataFrame | None, rdt: str):
+def append_rdt_components(seg_model: pd.DataFrame | None, rdt: str) -> pd.DataFrame | None:
     """ Append the RDT components to the segment model."""
     if seg_model is None:
         return None
