@@ -43,8 +43,6 @@ MAX_DIFF = 1e-10
 YEAR = "2025"
 OPTICS_30CM_FLAT = "R2025aRP_A30cmC30cmA10mL200cm_Flat.madx"  
 
-DEBUG_PRINT: bool = False 
-
 class TestCfg(NamedTuple):
     diff_max: float
     eps_fwd: float
@@ -211,8 +209,7 @@ class TestSbSLHC:
                 full_file_name: str = cfg.file_name if propagable.is_rdt() else f"{cfg.file_name}_{plane}"
                 columns: PropagableColumns = propagable.columns.planed(plane.upper()) 
 
-                if DEBUG_PRINT:
-                    print(f"\nTesting {propagable.__name__} {plane}: {columns.column}") 
+                # print(f"\nTesting {propagable.__name__} {plane}: {columns.column}")  # for debugging 
 
                 # Quick cheks for existing columns ---------------------
                 
@@ -325,9 +322,7 @@ def assert_all_close(
         a_data = a_data / df[rel]
         b_data = b_data / df[rel] 
 
-    if DEBUG_PRINT:
-        print(f"Max {a:>15s}, {str(b):>15s}: {(a_data - b_data).abs().max():.2e}")
-    assert np.allclose(a_data, b_data, atol=atol, rtol=rtol)
+    assert np.testing.assert_allclose(a_data, b_data, atol=atol, rtol=rtol)
     
 
 def assert_file_exists_and_nonempty(path: Path):
