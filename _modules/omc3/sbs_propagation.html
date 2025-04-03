@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.sbs_propagation &mdash; omc3 0.23.1 documentation</title>
+  <title>omc3.sbs_propagation &mdash; omc3 0.24.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=449bdd91" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=178c8cd6" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=832b3b9f"></script>
+      <script src="../../_static/documentation_options.js?v=a9084e48"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -102,6 +102,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/definitions.html#optics">Optics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/harpy.html">Harpy</a><ul>
@@ -184,6 +185,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/utils.html#time-tools">Time Tools</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography.html">Bibliography</a></li>
 </ul>
 
         </div>
@@ -280,7 +285,14 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreatorType</span><span class="p">,</span> <span class="n">get_model_creator_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">logfile</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.propagables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Propagable</span><span class="p">,</span> <span class="n">get_all_propagables</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.propagables</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ALL_PROPAGABLES</span><span class="p">,</span>
+    <span class="n">F1001</span><span class="p">,</span>
+    <span class="n">F1010</span><span class="p">,</span>
+    <span class="n">BetaPhase</span><span class="p">,</span>
+    <span class="n">Phase</span><span class="p">,</span>
+    <span class="n">Propagable</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.segments</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SbsDefinitionError</span><span class="p">,</span>
     <span class="n">Segment</span><span class="p">,</span>
@@ -426,8 +438,14 @@
         <span class="sa">f</span><span class="s2">&quot;This has been input as </span><span class="si">{</span><span class="n">segment_in</span><span class="si">!s}</span><span class="s2">.&quot;</span>
     <span class="p">)</span>
 
-    <span class="n">propagables</span> <span class="o">=</span> <span class="p">[</span><span class="n">propg</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">measurement</span><span class="p">)</span> <span class="k">for</span> <span class="n">propg</span> <span class="ow">in</span> <span class="n">get_all_propagables</span><span class="p">()]</span>
-    <span class="n">propagables</span> <span class="o">=</span> <span class="p">[</span><span class="n">measbl</span> <span class="k">for</span> <span class="n">measbl</span> <span class="ow">in</span> <span class="n">propagables</span> <span class="k">if</span> <span class="n">measbl</span><span class="p">]</span>
+    <span class="n">measured_classes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Propagable</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">propg</span> <span class="k">for</span> <span class="n">propg</span> <span class="ow">in</span> <span class="n">ALL_PROPAGABLES</span> <span class="k">if</span> <span class="n">propg</span><span class="o">.</span><span class="n">in_measurement</span><span class="p">(</span><span class="n">measurement</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">Phase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;No measurement for Phase found in the given measurement directory.&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">F1001</span> <span class="ow">in</span> <span class="n">measured_classes</span> <span class="ow">or</span> <span class="n">F1010</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">)</span> <span class="ow">and</span> <span class="n">BetaPhase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Beta-from-Phase is required for Coupling propagations!&quot;</span><span class="p">)</span>
+    
+    <span class="n">propagables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Propagable</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">propg</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">measurement</span><span class="p">,</span> <span class="n">accel</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="k">for</span> <span class="n">propg</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">]</span>
 
     <span class="c1"># Create the segment via madx</span>
     <span class="n">creator_class</span> <span class="o">=</span> <span class="n">get_model_creator_class</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">SEGMENT</span><span class="p">)</span>
@@ -647,7 +665,7 @@
             <span class="k">continue</span>  <span class="c1"># no log files, no other previously created models</span>
 
         <span class="n">dst_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="n">dst_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">dst_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="n">dst_file</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">():</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">dst_file</span><span class="si">!s}</span><span class="s2">, already exists.&quot;</span><span class="p">)</span>
             <span class="k">continue</span>
         

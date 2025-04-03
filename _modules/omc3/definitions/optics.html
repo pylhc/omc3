@@ -1,0 +1,516 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.definitions.optics &mdash; omc3 0.24.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a9084e48"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#optics">Optics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps">SPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#model-creator-manager">Model Creator Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.definitions.optics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.definitions.optics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Optics</span>
+<span class="sd">------</span>
+
+<span class="sd">Definitions for the optics measurements.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">fields</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXPECTED</span><span class="p">,</span> <span class="n">DIFF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ALPHA</span><span class="p">,</span> <span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">AMP_BETA_NAME</span><span class="p">,</span> <span class="n">ORBIT_NAME</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
+    <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">MDL</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">S_MODEL</span><span class="p">,</span> <span class="n">KMOD_BETA_NAME</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">DRIVEN_TOTAL_PHASE_NAME</span><span class="p">,</span> <span class="n">DRIVEN_PHASE_NAME</span><span class="p">,</span> <span class="n">IP_NAME</span><span class="p">,</span>
+    <span class="n">KMOD_IP_NAME</span><span class="p">,</span> <span class="n">KICK_NAME</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">ORBIT</span><span class="p">,</span> <span class="n">F1001_NAME</span><span class="p">,</span> <span class="n">F1010_NAME</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">RMS</span><span class="p">,</span> <span class="n">MASKED</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils.annotations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ylabels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tfs.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsCollection</span><span class="p">,</span> <span class="n">Tfs</span>
+
+
+<span class="c1"># Files ------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OpticsMeasurement">
+<a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OpticsMeasurement</span><span class="p">(</span><span class="n">TfsCollection</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to hold and load the measurements from `omc3.optics_measurements`.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        directory: The path to the measurement directory, usually the</span>
+<span class="sd">                   `optics_measurements` output directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">INDEX</span> <span class="o">=</span> <span class="n">NAME</span>
+
+    <span class="n">beta_phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">BETA_NAME</span><span class="p">)</span>
+    <span class="n">beta_amplitude</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">AMP_BETA_NAME</span><span class="p">)</span>
+    <span class="n">beta_kmod</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">KMOD_BETA_NAME</span><span class="p">)</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">PHASE_NAME</span><span class="p">)</span>
+    <span class="n">total_phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">TOTAL_PHASE_NAME</span><span class="p">)</span>
+    <span class="n">phase_driven</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">DRIVEN_PHASE_NAME</span><span class="p">)</span>
+    <span class="n">total_phase_driven</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">DRIVEN_TOTAL_PHASE_NAME</span><span class="p">)</span>
+    <span class="n">dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">DISPERSION_NAME</span><span class="p">)</span>
+    <span class="n">norm_dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">NORM_DISP_NAME</span><span class="p">)</span>
+    <span class="n">orbit</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">ORBIT_NAME</span><span class="p">)</span>
+    <span class="n">kick</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">KICK_NAME</span><span class="p">)</span>
+    <span class="n">ip</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">IP_NAME</span><span class="p">)</span>
+    <span class="n">ip_kmod</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">KMOD_IP_NAME</span><span class="p">)</span>
+    <span class="n">f1001</span><span class="p">:</span> <span class="n">TfsDataFrame</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">F1001_NAME</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">f1010</span><span class="p">:</span> <span class="n">TfsDataFrame</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">F1010_NAME</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Default way `optics_measurements` filenames are defined,</span>
+<span class="sd">        where `name` is the first argument in `Tfs` above.</span>
+<span class="sd">        `plane` is added if `two_planes` is `True` or not given.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="OpticsMeasurement.read_tfs">
+<a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement.read_tfs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_tfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Override for NAME convenience. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">INDEX</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OpticsMeasurement.write_tfs">
+<a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement.write_tfs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_tfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_frame</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Override for NAME convenience. &quot;&quot;&quot;</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data_frame</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">INDEX</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># Columns ----------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ColumnsAndLabels">
+<a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ColumnsAndLabels</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Class to store information about derived columns from the main column.</span>
+<span class="sd">    For convenience, also labels (e.g. for plotting) related to that column</span>
+<span class="sd">    are stored in this dataclass.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Columns</span>
+    <span class="n">_column</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Main data column (Measurement)</span>
+    <span class="n">_error_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Error on the data</span>
+    <span class="n">_model_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Model value of the data</span>
+    <span class="n">_delta_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Difference between Measurement and Model</span>
+    <span class="n">_error_delta_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Difference between Measurement and Model</span>
+    <span class="n">_expected_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Expected (delta) value after a correction</span>
+    <span class="n">_error_expected_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Expected error value after a correction</span>
+    <span class="n">_diff_correction_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Expected difference coming from correction (models)</span>
+    <span class="c1"># Labels</span>
+    <span class="n">_label</span><span class="p">:</span> <span class="nb">str</span>  <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Name for plot axis</span>
+    <span class="n">_delta_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Name for delta column on a plot axis</span>
+    <span class="n">_text_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Name in text</span>
+    <span class="c1"># Headers:</span>
+    <span class="n">_delta_rms_header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_expected_rms_header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Other</span>
+    <span class="n">needs_plane</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="ColumnsAndLabels.set_plane">
+<a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.set_plane">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_plane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ColumnsAndLabels</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Fixes the plane in a new object. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">needs_plane</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Cannot set the plane of a non-planed definition.&quot;</span><span class="p">)</span>
+        <span class="n">values_fixed_plane</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;_&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">ColumnsAndLabels</span><span class="p">(</span>
+            <span class="n">needs_plane</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">values_fixed_plane</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="ColumnsAndLabels.set_label_formatted">
+<a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.set_label_formatted">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_label_formatted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ColumnsAndLabels</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Fixes the label in a new object (for RDTs). &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No label defined.&quot;</span><span class="p">)</span>
+        <span class="n">new_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;_label&quot;</span><span class="p">},</span> <span class="n">_label</span><span class="o">=</span><span class="n">new_label</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Properties ----</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">needs_plane</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">ph</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column</span> <span class="k">for</span> <span class="n">ph</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_column</span><span class="si">}</span><span class="se">{{</span><span class="s2">0</span><span class="se">}}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">error_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_column</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># With Model ---</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_column</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delta_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_column</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">error_delta_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_delta_column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_delta_column</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_column</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Corrections ---</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expected_column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expected_column</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXPECTED</span><span class="si">}{</span><span class="n">DELTA</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">error_expected_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_expected_column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_expected_column</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_column</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diff_correction_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diff_correction_column</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diff_correction_column</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DIFF</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Headers ---</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delta_rms_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_rms_header</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_rms_header</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_column</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_rms_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expected_rms_header</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expected_rms_header</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_column</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delta_masked_rms_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_rms_header</span><span class="si">}{</span><span class="n">MASKED</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected_masked_rms_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_rms_header</span><span class="si">}{</span><span class="n">MASKED</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Labels ---</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_label</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">text_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_label</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_label</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delta_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_label</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_label</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">fr</span><span class="s2">&quot;$\Delta </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">fr</span><span class="s2">&quot;$\Delta$ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<span class="c1"># Defined Columns --------------------------------------------------------------</span>
+<span class="n">TUNE_COLUMN</span> <span class="o">=</span>            <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">TUNE</span><span class="p">,</span> <span class="n">_expected_column</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXPECTED</span><span class="si">}{</span><span class="n">TUNE</span><span class="si">}</span><span class="se">{{</span><span class="s2">0</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;tune&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;tune&#39;</span><span class="p">)</span>
+<span class="n">BETA_COLUMN</span> <span class="o">=</span>            <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;beta&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="n">_delta_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;betabeat&#39;</span><span class="p">])</span>
+<span class="n">ALPHA_COLUMN</span> <span class="o">=</span>           <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">ALPHA</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;alpha&#39;</span><span class="p">)</span>
+<span class="n">ORBIT_COLUMN</span> <span class="o">=</span>           <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">ORBIT</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;co&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;orbit&#39;</span><span class="p">)</span>
+<span class="n">DISPERSION_COLUMN</span> <span class="o">=</span>      <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">DISPERSION</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;dispersion&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;dispersion&#39;</span><span class="p">)</span>
+<span class="n">NORM_DISPERSION_COLUMN</span> <span class="o">=</span> <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;norm_dispersion&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;normalized dispersion&#39;</span><span class="p">)</span>
+<span class="n">PHASE_COLUMN</span> <span class="o">=</span>           <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">PHASE</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+<span class="n">TOTAL_PHASE_COLUMN</span> <span class="o">=</span>     <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">PHASE</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;total phase&#39;</span><span class="p">)</span>
+<span class="n">MU_COLUMN</span> <span class="o">=</span>              <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;phasetot&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;total phase&#39;</span><span class="p">)</span>
+<span class="n">PHASE_ADVANCE_COLUMN</span> <span class="o">=</span>   <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="se">{{</span><span class="s1">0</span><span class="se">}}</span><span class="si">{</span><span class="n">MDL</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Phase Advance [$2 \pi$]&#39;</span><span class="p">,</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;phase advance&#39;</span><span class="p">)</span>
+<span class="n">S_COLUMN</span> <span class="o">=</span>               <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="s1">&#39;Location [m]&#39;</span><span class="p">,</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;longitudinal location&#39;</span><span class="p">,</span> <span class="n">needs_plane</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">S_MODEL_COLUMN</span> <span class="o">=</span>         <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">S_MODEL</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="s1">&#39;Location [m]&#39;</span><span class="p">,</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;longitudinal location&#39;</span><span class="p">,</span> <span class="n">needs_plane</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">RDT_AMPLITUDE_COLUMN</span> <span class="o">=</span> <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;absolute&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;amplitude&#39;</span><span class="p">,</span> <span class="n">needs_plane</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># label needs rdt</span>
+<span class="n">RDT_PHASE_COLUMN</span> <span class="o">=</span>     <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">PHASE</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="n">needs_plane</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># label needs rdt</span>
+<span class="n">RDT_REAL_COLUMN</span> <span class="o">=</span>      <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">REAL</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;real&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;real&#39;</span><span class="p">,</span> <span class="n">needs_plane</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># label needs rdt</span>
+<span class="n">RDT_IMAG_COLUMN</span> <span class="o">=</span>      <span class="n">ColumnsAndLabels</span><span class="p">(</span><span class="n">IMAG</span><span class="p">,</span> <span class="n">_label</span><span class="o">=</span><span class="n">ylabels</span><span class="p">[</span><span class="s1">&#39;imag&#39;</span><span class="p">],</span> <span class="n">_text_label</span><span class="o">=</span><span class="s1">&#39;imaginary&#39;</span><span class="p">,</span> <span class="n">needs_plane</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># label needs rdt</span>
+
+
+<span class="c1"># And Column Mappings ----------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot; Map for the x-axis of plots. &quot;&quot;&quot;</span>
+<span class="n">POSITION_COLUMN_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="n">S_COLUMN</span><span class="p">,</span>
+    <span class="s1">&#39;phase-advance&#39;</span><span class="p">:</span> <span class="n">PHASE_ADVANCE_COLUMN</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="sd">&quot;&quot;&quot; Map the file name to it&#39;s main columns and the respective label for a plot. &quot;&quot;&quot;</span>
+<span class="n">FILE_COLUMN_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Based on Filename</span>
+    <span class="n">BETA_NAME</span><span class="p">:</span>        <span class="n">BETA_COLUMN</span><span class="p">,</span>
+    <span class="n">AMP_BETA_NAME</span><span class="p">:</span>    <span class="n">BETA_COLUMN</span><span class="p">,</span>
+    <span class="n">KMOD_BETA_NAME</span><span class="p">:</span>   <span class="n">BETA_COLUMN</span><span class="p">,</span>
+    <span class="n">ORBIT_NAME</span><span class="p">:</span>       <span class="n">ORBIT_COLUMN</span><span class="p">,</span>
+    <span class="n">DISPERSION_NAME</span><span class="p">:</span>  <span class="n">DISPERSION_COLUMN</span><span class="p">,</span>
+    <span class="n">NORM_DISP_NAME</span><span class="p">:</span>   <span class="n">NORM_DISPERSION_COLUMN</span><span class="p">,</span>
+    <span class="n">PHASE_NAME</span><span class="p">:</span>       <span class="n">PHASE_COLUMN</span><span class="p">,</span>
+    <span class="n">TOTAL_PHASE_NAME</span><span class="p">:</span> <span class="n">TOTAL_PHASE_COLUMN</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="sd">&quot;&quot;&quot; Find the Column Dataclass by column name for RDTs. &quot;&quot;&quot;</span>
+<span class="n">RDT_COLUMN_MAPPING</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">column</span><span class="p">:</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="n">RDT_AMPLITUDE_COLUMN</span><span class="p">,</span> <span class="n">RDT_PHASE_COLUMN</span><span class="p">,</span> <span class="n">RDT_IMAG_COLUMN</span><span class="p">,</span> <span class="n">RDT_REAL_COLUMN</span><span class="p">]}</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

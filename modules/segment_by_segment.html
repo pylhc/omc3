@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Segment-by-Segment &mdash; omc3 0.23.1 documentation</title>
+  <title>Segment-by-Segment &mdash; omc3 0.24.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=449bdd91" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=832b3b9f"></script>
+      <script src="../_static/documentation_options.js?v=a9084e48"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#optics">Optics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="harpy.html">Harpy</a><ul>
@@ -188,6 +189,10 @@
 </ul>
 </li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Bibliography</a></li>
+</ul>
 
         </div>
       </div>
@@ -246,17 +251,35 @@
 <dd><p>Store all boundary conditions for a Mad-X twiss.</p>
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.definitions.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/definitions.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Alias for a uncertainties variable.</p>
-<p>Additionally has a method to convert it to a tuple and iterate over it.</p>
-</dd></dl>
-
 <section id="maths-functions">
 <h2>Maths Functions<a class="headerlink" href="#maths-functions" title="Link to this heading"></a></h2>
 <p>This module provides mathematical helper functions, e.g. to propagate errors.</p>
 </section>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Very simple container for a value and its error.
+Implements only negation and addition with another Measurement.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">SegmentBoundaryConditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispersion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#SegmentBoundaryConditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Store boundary conditions with error as used by the error propagation functions.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">phase_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#phase_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -265,9 +288,9 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Propagates the alpha-error from alpha0 to alpha with dphi phaseadvance.
-See Eq. (4) in  <span id="id1">[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span> .</p>
+See Eq. (4) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id1"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -281,31 +304,15 @@ See Eq. (4) in  <span id="id1">[LangnerDevelopmentsSegmentbySegmentTechnique2015
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Propagates the beta-error from beta0 to beta with dphi phase-advance.
-See Eq. (3) in  <span id="id2">[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span> .</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>beta (ArrayLike): Beta function at the observation point(s).
-dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
-init (PropagableBoundaryConditions): Initial conditions at the start of the segment for alpha and beta and their uncertainties.</p>
-</dd>
-</dl>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_coupling_1001_im</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_coupling_1001_im"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Propagates the error on the imagary part of f1001 through dphix and dphiy phase-advance,
-based on the initial amplitude and phase error of f1001.
-See Eq. (6) in  <span id="id3">[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span> .</p>
+See Eq. (3) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id2"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
-<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
-<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
+<li><p><strong>beta</strong> (<em>ArrayLike</em>) -- Beta function at the observation point(s).</p></li>
+<li><p><strong>dphi</strong> (<em>ArrayLike</em>) -- Phase advances from the initial position to the observation point(s), in units of 2pi radians.</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions at the start of the segment for alpha and beta and their uncertainties.</p></li>
 </ul>
 </dd>
 </dl>
@@ -313,60 +320,7 @@ See Eq. (6) in  <span id="id3">[LangnerDevelopmentsSegmentbySegmentTechnique2015
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_coupling_1001_re</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_coupling_1001_re"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Propagates the error on the real part of f1001 through dphix and dphiy phase-advance,
-based on the initial amplitude and phase error of f1001.
-See Eq. (5) in  <span id="id4">[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span> .</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
-<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
-<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_coupling_1010_im</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_coupling_1010_im"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Propagates the error on the imaginary part of f1010 through dphix and dphiy phase-advance,
-based on the initial amplitude and phase error of f1010.
-See Eq. (7) in  <span id="id5">[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span> ,
-yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
-<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
-<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1010 amplitude and phase and their uncertainties.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_coupling_1010_re</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_coupling_1010_re"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Propagates the error on the real part of f1010 through dphix and dphiy phase-advance,
-based on the initial amplitude and phase error of f1010.
-See Eq. (7) in  <span id="id6">[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span> ,
-yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
-<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
-<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1010 amplitude and phase and their uncertainties.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Propagates the dispersion error with dphi phase-advance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -381,19 +335,154 @@ yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PropagableBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.</p>
+<p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_imag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_imag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the imagary part of f1001 through dphix and dphiy phase-advance,
+based on the initial amplitude and phase error of f1001.
+See Eq. (6) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id3"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.</p>
+<p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_real</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_real"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the real part of f1001 through dphix and dphiy phase-advance,
+based on the initial amplitude and phase error of f1001.
+See Eq. (5) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id4"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.</p>
+<p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_imag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_imag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the imaginary part of f1010 through dphix and dphiy phase-advance,
+based on the initial amplitude and phase error of f1010.
+See Eq. (7) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id5"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> ,
+yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1010 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.</p>
+<p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1001 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_real</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_real"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Propagates the error on the real part of f1010 through dphix and dphiy phase-advance,
+based on the initial amplitude and phase error of f1010.
+See Eq. (7) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id6"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> ,
+yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphix</strong> (<em>ArrayLike</em>) -- Phase advances in x from initial position to observation point(s).</p></li>
+<li><p><strong>dphiy</strong> (<em>ArrayLike</em>) -- Phase advances in y from initial position to observation point(s).</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions for f1010 amplitude and phase and their uncertainties.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Propagates the phase-error.
-See Eq. (2) in  <span id="id7">[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span> .
+See Eq. (2) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id7"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .
 This implementation has a minus-sign instead of the first plus-sign as in the reference,
 this seems to be the correct implementation,
 as found e.g. in <a class="reference external" href="https://github.com/pylhc/MESS/tree/master/FODO_Test_Lattice/Phase_Error_Propagation">https://github.com/pylhc/MESS/tree/master/FODO_Test_Lattice/Phase_Error_Propagation</a></p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>dphi (ArrayLike): Phase advances from the initial position to the observation point(s), in units of 2pi radians.
-init (PropagableBoundaryConditions): Initial conditions at the start of the segment for alpha and beta and their uncertainties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dphi</strong> (<em>ArrayLike</em>) -- Phase advances from the initial position to the observation point(s), in units of 2pi radians.</p></li>
+<li><p><strong>init</strong> (<em>PropagableBoundaryConditions</em>) -- Initial conditions at the start of the segment for alpha and beta and their uncertainties.</p></li>
+</ul>
 </dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py function">
@@ -401,7 +490,7 @@ init (PropagableBoundaryConditions): Initial conditions at the start of the segm
 <span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">quadratic_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#quadratic_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Calculate the root-sum-squared of the given values.
 The individual “values” can be <code class="docutils literal notranslate"><span class="pre">pd.Series</span></code> and then their
-elements are summed by indexs.</p>
+elements are summed by indices.</p>
 </dd></dl>
 
 <section id="propagables">
@@ -413,12 +502,6 @@ describe the forward and backward propagation for the respective parameter.</p>
 <p>This module exposes the main classes for propagables, to avoid making the
 imports so long and complicated.</p>
 </section>
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.propagables.</span></span><span class="sig-name descname"><span class="pre">get_all_propagables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/propagables.html#get_all_propagables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Return all defined Propagables.</p>
-</dd></dl>
-
 <section id="segments">
 <h2>Segments<a class="headerlink" href="#segments" title="Link to this heading"></a></h2>
 <p>Classes to hold the information of the segments in the sbs definition.</p>
