@@ -24,6 +24,13 @@ Package Reference
 
    modules/*
 
+.. toctree::
+   :caption: Bibliography 
+   :maxdepth: 1
+
+   bibliography
+
+
 Citing
 ======
 
