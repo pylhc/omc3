@@ -210,35 +210,35 @@ class Propagable(ABC):
             df[S] = self.segment_models.forward.loc[names, S]
             df[S_MODEL] = self._elements_model.loc[names, S]
 
-            meas_val, meas_err = self.get_at(names, self._meas, plane)
-            df.loc[:, columns.column] = meas_val
-            df.loc[:, columns.error_column] = meas_err
+            value, error = self.get_at(names, self._meas, plane)
+            df.loc[:, columns.column] = value
+            df.loc[:, columns.error_column] = error
 
-            meas_val, meas_err = self.measured_forward(plane)
-            df.loc[:, columns.forward] = meas_val
-            df.loc[:, columns.error_forward] = meas_err
+            value, error = self.measured_forward(plane)
+            df.loc[:, columns.forward] = value
+            df.loc[:, columns.error_forward] = error
             
-            meas_val, meas_err = self.measured_backward(plane)
-            df.loc[:, columns.backward] = meas_val
-            df.loc[:, columns.error_backward] = meas_err
+            value, error = self.measured_backward(plane)
+            df.loc[:, columns.backward] = value
+            df.loc[:, columns.error_backward] = error
 
             if self.segment_models.get_path("forward_corrected").exists(): 
-                meas_val, meas_err = self.correction_forward(plane)
-                df.loc[:, columns.forward_correction] = meas_val.loc[names]
-                df.loc[:, columns.error_forward_correction] = meas_err.loc[names]
+                value, error = self.correction_forward(plane)
+                df.loc[:, columns.forward_correction] = value.loc[names]
+                df.loc[:, columns.error_forward_correction] = error.loc[names]
 
-                meas_val, meas_err = self.expected_forward(plane)
-                df.loc[:, columns.forward_expected] = meas_val
-                df.loc[:, columns.error_forward_expected] = meas_err
+                value, error = self.expected_forward(plane)
+                df.loc[:, columns.forward_expected] = value
+                df.loc[:, columns.error_forward_expected] = error
 
             if self.segment_models.get_path("backward_corrected").exists(): 
-                meas_val, meas_err = self.correction_backward(plane)
-                df.loc[:, columns.backward_correction] = meas_val.loc[names]
-                df.loc[:, columns.error_backward_correction] = meas_err.loc[names]
+                value, error = self.correction_backward(plane)
+                df.loc[:, columns.backward_correction] = value.loc[names]
+                df.loc[:, columns.error_backward_correction] = error.loc[names]
 
-                meas_val, meas_err = self.expected_backward(plane)
-                df.loc[:, columns.backward_expected] = meas_val
-                df.loc[:, columns.error_backward_expected] = meas_err
+                value, error = self.expected_backward(plane)
+                df.loc[:, columns.backward_expected] = value
+                df.loc[:, columns.error_backward_expected] = error
 
             dfs[plane] = df
         return dfs
