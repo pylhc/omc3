@@ -1,5 +1,5 @@
-@ Q1                   %le  0.28000000000000114
-@ Q2                   %le   0.3100000000000023
+@ Q1                   %le                 0.28
+@ Q2                   %le                 0.31
 * NAME                                    S          BETSTARXMDL             BETSTARX          ERRBETSTARX            BETWAISTX         ERRBETWAISTX               WAISTX            ERRWAISTX            PHASEADVX         ERRPHASEADVX    WAISTX_S_LOCATION ERRWAISTX_S_LOCATION     DELTABETSTARXMDL        DELTABETSTARX     ERRDELTABETSTARX
 $ %s                                    %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le                  %le
   "IP5"                         10189.77565         0.2194418099       0.232070493911      0.0164821459471       0.218859033856    0.000579127180056     -0.0682333448796      0.0377882988745       0.496872169098    3.66848057719e-05        14945.0285533      0.0377882534045       0.012628684011       0.057549124375      0.0751094149042

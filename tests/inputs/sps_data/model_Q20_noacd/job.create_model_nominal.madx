@@ -1,0 +1,35 @@
+! Load Base Sequence and Strengths/Modifiers ---
+option, -echo;  ! suppress output from base sequence loading to keep the log small
+
+call, file = '/mnt/volume/jdilly/projects/omc3/tests/inputs/sps_data/model_Q20_noacd/acc-models-sps/sps.seq';
+call, file = '/mnt/volume/jdilly/projects/omc3/tests/inputs/sps_data/model_Q20_noacd/acc-models-sps/strengths/lhc_q20.str'; !@modifier
+call, file ='/mnt/volume/jdilly/projects/omc3/tests/inputs/sps_data/model_Q20_noacd/acc-models-sps/toolkit/macro.madx';
+option, echo;
+
+! Create Beam ---
+beam;
+
+twiss;
+
+! Prepare Tunes ---
+qx0=20.130;
+qy0=20.180;
+
+! Cycle Sequence ---
+seqedit, sequence=sps;
+    flatten;
+    cycle, start = BPH.13008;
+endedit;
+use, sequence=sps;
+
+! Match Tunes ---
+exec, sps_match_tunes(qx0,qy0);
+
+! Create twiss data files ---
+select, flag=twiss, clear;
+select, flag=twiss, pattern="^BP.*", column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l, k3l, x, y, r11, r12, r21, r22, alfx, alfy, dx, dpx, dy, dpy, px, py, phix, phiy;
+twiss, file = twiss.dat;
+
+select, flag=twiss, clear;
+select, flag=twiss, column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l, k3l, x, y, r11, r12, r21, r22, alfx, alfy, dx, dpx, dy, dpy, px, py, phix, phiy;
+twiss, file = twiss_elements.dat;

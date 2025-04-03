@@ -64,27 +64,61 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
 
 """
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Tuple, Sequence, List, Dict
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
+
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import (BETA_NAME, AMP_BETA_NAME, PHASE_NAME,
-                                                TOTAL_PHASE_NAME,
-                                                DISPERSION_NAME, NORM_DISP_NAME,
-                                                DISPERSION, NORM_DISPERSION, F1001, F1010,
-                                                EXT, DELTA, ERR,
-                                                PHASE_ADV, BETA, PHASE,
-                                                TUNE, NAME, NAME2, S, MDL, REAL, IMAG,
-                                                F1001_NAME, F1010_NAME, AMPLITUDE)
-from omc3.optics_measurements.toolbox import df_rel_diff, df_ratio, df_diff, df_ang_diff, ang_interval_check, ang_diff
+from omc3.optics_measurements.constants import (
+    ALPHA,
+    AMP_BETA_NAME,
+    AMPLITUDE,
+    BETA,
+    BETA_NAME,
+    DELTA,
+    DISPERSION,
+    DISPERSION_NAME,
+    ERR,
+    EXT,
+    F1001,
+    F1001_NAME,
+    F1010,
+    F1010_NAME,
+    IMAG,
+    MDL,
+    MODEL_DIRECTORY,
+    NAME,
+    NAME2,
+    NORM_DISP_NAME,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    PHASE_NAME,
+    REAL,
+    TOTAL_PHASE_NAME,
+    TUNE,
+    S,
+)
+from omc3.optics_measurements.toolbox import (
+    ang_diff,
+    ang_interval_check,
+    df_ang_diff,
+    df_diff,
+    df_ratio,
+    df_rel_diff,
+)
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStrOrDataFrame, PathOrStr
+from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -100,11 +134,11 @@ OUTPUTNAMES_MAP = {
     F1001: tuple([F1001_NAME]),
     f'{NORM_DISPERSION}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
 }
-FAKED_HEADER = "FAKED_FROM"
-VALUES = 'values'
-ERRORS = 'errors'
-EPSILON = 1e-14  # smallest allowed relative error, empirical value
-                 # could be smaller but then normal(mean, err) == mean sometimes
+FAKED_HEADER: str = "FAKED_FROM"
+VALUES: str = 'values'
+ERRORS: str = 'errors'
+EPSILON: float = 1e-14  # smallest allowed relative error, empirical value
+                        # could be smaller but then normal(mean, err) == mean sometimes
 
 
 def get_params():
@@ -123,7 +157,7 @@ def get_params():
     )
     params.add_parameter(
         name="parameters",
-        help="Optics parameters to use",
+        help="Optics parameters to use.",
         choices=list(OUTPUTNAMES_MAP.keys()),
         default=list(OUTPUTNAMES_MAP.keys()),
         type=str,
@@ -162,7 +196,7 @@ def get_params():
 
 
 @entrypoint(get_params(), strict=True)
-def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
+def generate(opt) -> dict[str, tfs.TfsDataFrame]:
     """
     Takes a twiss file and writes the parameters in optics_parameters to Output_dir in the format
     global_correction_entrypoint uses (same format you would get from hole_in_one).
@@ -178,6 +212,9 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
     headers = {f"{TUNE}1": df_twiss[f"{TUNE}1"], f"{TUNE}2": df_twiss[f"{TUNE}2"]}
     if isinstance(opt.twiss, PathOrStr):
         headers[FAKED_HEADER] = str(opt.twiss)
+        
+    if isinstance(opt.model, PathOrStr):
+        headers[MODEL_DIRECTORY] = Path(opt.model).parent
 
     # create defaults
     results = {}
@@ -214,32 +251,42 @@ def generate(opt) -> Dict[str, tfs.TfsDataFrame]:
 # Main Creator Functions -------------------------------------------------------
 
 def create_beta(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                relative_error: float, randomize: Sequence[str], headers: Dict):
+                relative_error: float, randomize: Sequence[str], headers: dict):
     """ Create both beta_amp and beta_phase measurements. """
     LOG.info(f"Creating fake beta for {parameter}.")
     plane = parameter[-1]
+
+    # create beta
     df = create_measurement(df_twiss, parameter, relative_error, randomize)
     df[parameter] = np.abs(df[parameter])
+    df = append_model_param(df, df_model, parameter, beat=True)
 
-    df = append_model(df, df_model, parameter, plane, beat=True)
+    # create alpha
+    df_alpha = create_measurement(df_twiss, f'{ALPHA}{plane}', relative_error, randomize)
+    df_alpha = append_model_param(df_alpha, df_model, f'{ALPHA}{plane}')
+    df = tfs.concat([df, df_alpha], axis=1, join='inner')
+
+    df = append_model_s_and_phaseadv(df, df_model, planes=plane)
+
     df.headers = headers.copy()
     return {f'{BETA_NAME}{plane.lower()}': df,
             f'{AMP_BETA_NAME}{plane.lower()}': df}
 
 
 def create_dispersion(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                      relative_error: float, randomize: Sequence[str], headers: Dict):
+                      relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates dispersion measurement. """
     LOG.info(f"Creating fake dispersion for {parameter}.")
     plane = parameter[-1]
     df = create_measurement(df_twiss, parameter, relative_error, randomize)
-    df = append_model(df, df_model, parameter, plane)
+    df = append_model_param(df, df_model, parameter)
+    df = append_model_s_and_phaseadv(df, df_model, planes=plane)
     df.headers = headers.copy()
     return {f'{DISPERSION_NAME}{plane.lower()}': df}
 
 
 def create_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                 relative_error: float, randomize: Sequence[str], headers: Dict):
+                 relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates both phase advance and total phase measurements. """
     LOG.info(f"Creating fake phases for {parameter}.")
     results = {}
@@ -252,7 +299,7 @@ def create_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
 
 
 def create_phase_advance(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                         relative_error: float, randomize: Sequence[str], headers: Dict):
+                         relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates phase advance measurements. """
     LOG.debug(f"Creating fake phase advance for {parameter}.")
     plane = parameter[-1]
@@ -290,7 +337,7 @@ def create_phase_advance(df_twiss: pd.DataFrame, df_model: pd.DataFrame, paramet
 
 
 def create_total_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                       relative_error: float, randomize: Sequence[str], headers: Dict):
+                       relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates total phase measurements. """
     LOG.debug(f"Creating fake total phase for {parameter}.")
     plane = parameter[-1]
@@ -328,7 +375,7 @@ def create_total_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter
 
 
 def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                    relative_error: float, randomize: Sequence[str], headers: Dict):
+                    relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates coupling measurements for either the difference or sum RDT. """
     LOG.info(f"Creating fake coupling for {parameter}.")
     def model_column(part):
@@ -340,8 +387,9 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
         [create_measurement(df_twiss, model_col, relative_error, randomize) for model_col in column_map.keys()],
         axis=1
     )
-    for idx, model_col in enumerate(column_map.keys()):
-        df = append_model(df, df_model, model_col, planes="XY" if not idx else '')
+    for model_col in column_map.keys():
+        df = append_model_param(df, df_model, model_col)
+    df = append_model_s_and_phaseadv(df, df_model, planes="XY")
 
     # Go to RDT naming scheme
     for model_col, meas_col in column_map.items():
@@ -362,7 +410,7 @@ CREATOR_MAP = {
 # Not mapped ---
 
 def create_normalized_dispersion(df_disp: pd.DataFrame, df_beta: pd.DataFrame,
-                                 df_model: pd.DataFrame, parameter: str, headers: Dict):
+                                 df_model: pd.DataFrame, parameter: str, headers: dict):
     """ Creates normalized dispersion from pre-created dispersion and beta dataframes. """
     LOG.info(f"Creating fake normalized dispersion for {parameter}.")
     plane = parameter[-1]  # 'X'
@@ -382,7 +430,8 @@ def create_normalized_dispersion(df_disp: pd.DataFrame, df_beta: pd.DataFrame,
 
     # Model
     df_model[f'{parameter}'] = df_disp[f"{DISPERSION}{plane}{MDL}"] / np.sqrt(df_beta[f"{BETA}{plane}{MDL}"])
-    df = append_model(df, df_model, parameter, plane)
+    df = append_model_param(df, df_model, parameter)
+    df = append_model_s_and_phaseadv(df, df_model, plane)
 
     df.headers = headers.copy()
     output_name = f'{NORM_DISP_NAME}{plane.lower()}'
@@ -411,15 +460,9 @@ def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: f
     return df
 
 
-def append_model(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                 planes: str = '', beat: bool = False) -> pd.DataFrame:
-    """ Add the values to the measurement. """
+def append_model_param(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str, beat: bool = False) -> pd.DataFrame:
+    """ Add the parameter model values to the measurement. """
     LOG.debug(f"Appending model to fake measurement for {parameter}.")
-    df[S] = df_model[S]
-
-    for plane in planes:
-        df[f'{PHASE_ADV}{plane}{MDL}'] = df_model[f'{PHASE_ADV}{plane}']
-
     df[f"{parameter}{MDL}"] = df_model[f'{parameter}']
     if beat:
         df[f"{DELTA}{parameter}"] = df_rel_diff(df, parameter, f"{parameter}{MDL}")
@@ -430,10 +473,20 @@ def append_model(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
     return df
 
 
+def append_model_s_and_phaseadv(df: pd.DataFrame, df_model: pd.DataFrame, planes: str = '') -> pd.DataFrame:
+    """ Add the model S and phase advance to the measurement. """
+    LOG.debug("Appending model S and MU to fake measurement.")
+    df[S] = df_model[S]
+
+    for plane in planes:
+        df[f'{PHASE_ADV}{plane}{MDL}'] = df_model[f'{PHASE_ADV}{plane}']
+    return df
+
+
 # Other Functions --------------------------------------------------------------
 
-def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
-              add_coupling: bool = False) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
+def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame | None = None,
+              add_coupling: bool = False) -> tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """ Gets the input data as TfsDataFrames. """
     # Helper ---
     def try_reading(df_or_path):
@@ -462,7 +515,7 @@ def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame = None,
     return twiss, model
 
 
-def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float]) -> List[str]:
+def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float] | None) -> list[str]:
     """ Special care for normalized dispersion"""
     parameters = list(parameters)
     if errors is None:

@@ -9,19 +9,27 @@ Then: Set one variable at a time to 1
 
 Compare results with case all==0.
 """
+from __future__ import annotations
+
 import multiprocessing
 from contextlib import suppress
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import TYPE_CHECKING
 
 import numpy as np
 import tfs
 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.response_io import write_varmap
-from omc3.model.accelerators.accelerator import Accelerator
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from omc3.model.accelerators.accelerator import Accelerator
+    from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -33,10 +41,10 @@ EXT = "h5"  # Extension Standard
 
 def evaluate_for_variables(
     accel_inst: Accelerator,
-    variable_categories,
+    variable_categories: Sequence[str],
     order: int = 4,
     num_proc: int = multiprocessing.cpu_count(),
-    temp_dir: Path = None
+    temp_dir: Path | None = None
 ) -> dict:
     """ Generate a dictionary containing response matrices for
         beta, phase, dispersion, tune and coupling and saves it to a file.
@@ -75,7 +83,7 @@ def evaluate_for_variables(
 def _generate_madx_jobs(
     accel_inst: Accelerator,
     variables: Sequence[str],
-    k_values: List[float],
+    k_values: list[float],
     num_proc: int,
     temp_dir: Path,
 ) -> None:
@@ -118,7 +126,7 @@ def _generate_madx_jobs(
         _get_jobfile(temp_dir, proc_index).write_text(job_content)
 
 
-def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:
+def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None: # type: ignore
     """ Call madx in parallel """
     LOG.debug(f"Starting {num_proc:d} MAD-X jobs...")
     madx_jobs = [_get_jobfile(temp_dir, index) for index in range(num_proc)]
@@ -128,7 +136,7 @@ def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int)
     LOG.debug("MAD-X jobs done.")
 
 
-def _clean_up(variables: List[str], temp_dir: Path, num_proc: int) -> None:
+def _clean_up(variables: list[str], temp_dir: Path, num_proc: int) -> None:
     """ Merge Logfiles and clean temporary outputfiles """
     LOG.debug("Cleaning output and printing log...")
     for var in (variables + ["0"]):
@@ -157,8 +165,8 @@ def _clean_up(variables: List[str], temp_dir: Path, num_proc: int) -> None:
 
 def _load_madx_results(
     variables: Sequence[str],
-    k_values: List[float],
-    process_pool: multiprocessing.Pool,
+    k_values: list[float],
+    process_pool: multiprocessing.Pool, # type: ignore
     temp_dir: str,
 ) -> dict:
     """ Load the madx results in parallel and return var-tfs dictionary """
@@ -216,7 +224,7 @@ def _launch_single_job(inputfile_path: Path):
         return None
 
 
-def _load_and_remove_twiss(path_and_var: Tuple[Path, str]) -> Tuple[str, tfs.TfsDataFrame]:
+def _load_and_remove_twiss(path_and_var: tuple[Path, str]) -> tuple[str, tfs.TfsDataFrame]:
     """ Function for pool to retrieve results """
     path, var = path_and_var
     twissfile = _get_tablefile(path, var)
@@ -224,12 +232,14 @@ def _load_and_remove_twiss(path_and_var: Tuple[Path, str]) -> Tuple[str, tfs.Tfs
     return var, tfs_data
 
 
-def _create_basic_job(accel_inst: Accelerator, k_values: List[str], variables: Sequence[str]) -> str:
+def _create_basic_job(accel_inst: Accelerator, k_values: list[str], variables: Sequence[str]) -> str:
     """ Create the madx-job basics needed
         TEMPFILE needs to be replaced in the returned string.
     """
-    # basic sequence creation
-    job_content: str = accel_inst.get_base_madx_script()
+    # get nominal setup from creator
+    creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
+    creator: ModelCreator = creator_class(accel_inst)
+    job_content = creator.get_base_madx_script()
 
     # create a survey and save it to a temporary file
     job_content += (

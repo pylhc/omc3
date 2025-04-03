@@ -170,12 +170,20 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+
 from omc3.correction import handler
-from omc3.optics_measurements.constants import (BETA, DISPERSION, F1001, F1010,
-                                                NORM_DISPERSION, PHASE, TUNE)
 from omc3.model import manager
+from omc3.optics_measurements.constants import (
+    BETA,
+    DISPERSION,
+    F1001,
+    F1010,
+    NORM_DISPERSION,
+    PHASE,
+    TUNE,
+)
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, OptionalStr, save_config
+from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
     from generic_parser import DotDict

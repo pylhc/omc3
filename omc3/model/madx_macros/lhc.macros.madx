@@ -604,6 +604,7 @@ coupling_knob(beam_number): macro = {
     }
 }
 
+
 /*
 * Coupling knobs convention for 2016 ATS optics
 */

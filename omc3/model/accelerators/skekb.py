@@ -79,8 +79,13 @@ class SKekB(Accelerator):
     @classmethod
     def get_parameters(cls):
         params = super(SKekB, SKekB).get_parameters()
-        params.add_parameter(name="ring", type=str, choices=cls.RINGS, required=True,
-                             help="HER or LER ring.")
+        params.add_parameter(
+            name="ring", 
+            type=str, 
+            choices=cls.RINGS, 
+            required=True,
+            help="HER or LER ring."
+        )
         return params
 
     def __init__(self, *args, **kwargs):

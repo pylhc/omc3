@@ -1,5 +1,47 @@
 # OMC3 Changelog
 
+#### 2025-04-03 - v0.24.0 - _jdilly_
+
+- Added:
+  - Additional Propagables: Dispersion (but not really working [#498](https://github.com/pylhc/omc3/issues/498)), Coupling (only forward working [#498](https://github.com/pylhc/omc3/issues/498])).
+
+#### 2025-04-01 - v0.23.01 - _jdilly_, _jgray_
+
+- Changed:
+  - `twiss_elements` via macro now contain all elements in the sequence.
+
+- Fixed:
+  - `check_corrections` does not error when different markers in the model and the measurement.
+
+- Added:
+  - Bad BPMs summary: NANS reason.
+
+#### 2025-03-13 - v0.23.0 - _jdilly_
+
+- Added:
+  - SPS model creation (Nominal, Segment and Correction).
+
+#### 2025-03-06 - v0.22.1 - _jdilly_
+
+- Fixed:
+  - Error in list b2 error choices for lhc best knowledge models.
+
+#### 2025-03-05 - v0.22.0 - _jdilly_
+
+- Added:
+  - Segment-by-Segment with phase-propagation.
+  - Listing of entry-points on calling `python -m omc3`, `python -m omc3.scripts` and `python -m omc3.plotting`.
+  - Measurement from model faker now also adds alpha (ALF) columns to the beta-output files.
+
+- Updated:
+  - MAD-X binaries to version 5.09.00.
+
+#### 2025-03-03 - v0.21.1 - _fscarlier_
+
+- Fixed:
+  - Correct function call in `omc3.kmod_importer` when running as script.
+  - Fixed k-mod import for single-IP imports.
+
 #### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
 
 - Fixed:

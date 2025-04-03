@@ -103,6 +103,7 @@ class HarpyReasons(str, Enum):
     NO_TUNE = "main resonance has not been found"
     TUNE_CLEAN = "too far from average"
     SVD_PEAK = "svd"
+    NANS = "found nan"
 
 
 # Files ---

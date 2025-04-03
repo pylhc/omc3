@@ -15,3 +15,8 @@ Correction
     :members:
     :noindex:
 
+
+.. automodule:: omc3.sbs_propagation
+    :members:
+    :noindex:
+

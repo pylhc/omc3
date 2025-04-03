@@ -8,6 +8,7 @@ Specific constants to be used in optics_measurements, to help with consistency.
 EXT: str = ".tfs"
 AMP_BETA_NAME: str = "beta_amplitude_"
 BETA_NAME: str = "beta_phase_"
+ALPHA_NAME: str = "alpha_phase_"  # Segment-by-Segment only
 KMOD_BETA_NAME: str = "beta_kmod_"  # TODO Check in Michis repo
 KMOD_IP_NAME: str = "interaction_point_kmod_"  # TODO Check in Michis repo
 CHROM_BETA_NAME: str = "chrom_beta_"
@@ -42,6 +43,7 @@ MASKED: str = "MASKED"
 # Names
 S: str = "S"
 S2: str = f"{S}2"
+S_MODEL: str = f"{S}{MDL}"
 NAME: str = "NAME"
 NAME2: str = f"{NAME}2"
 TUNE: str = "Q"
@@ -115,3 +117,4 @@ EFFECTIVE_BETAS_FILENAME: str = "effective_betas_beta{betastar_x:.2f}m{betastar_
 
 BETA_KMOD_FILENAME: str = "beta_kmod_"
 BETA_STAR_FILENAME: str = "betastar_"
+MODEL_DIRECTORY: str = "Model_directory"   # wish this was 'ModelDirectory' but too afraid to change it (jdilly 2023)

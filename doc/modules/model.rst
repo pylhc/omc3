@@ -46,12 +46,22 @@ Model
     :noindex:
 
 
+.. automodule:: omc3.model.accelerators.sps
+    :members:
+    :noindex:
+
+
 .. automodule:: omc3.model.accelerators.iota
     :members:
     :noindex:
 
 
 .. automodule:: omc3.model.accelerators.petra
+    :members:
+    :noindex:
+
+
+.. automodule:: omc3.model.model_creators.manager
     :members:
     :noindex:
 
@@ -71,7 +81,7 @@ Model
     :noindex:
 
 
-.. automodule:: omc3.model.model_creators.segment_creator
+.. automodule:: omc3.model.model_creators.sps_model_creator
     :members:
     :noindex:
 

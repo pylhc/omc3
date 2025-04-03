@@ -444,6 +444,10 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
 def _measure_optics(lins, optics_opt):
     if len(lins) == 0:
         lins = optics_opt.files
+    
+    if optics_opt.accelerator.model is None:
+        raise AttributeError("No accelerator model was provided. Cannot perform optics analysis.")
+
     inputs = InputFiles(lins, optics_opt)
     iotools.create_dirs(optics_opt.outputdir)
     calibrations = measure_optics.copy_calibration_files(optics_opt.outputdir,

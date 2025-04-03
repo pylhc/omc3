@@ -36,6 +36,7 @@ from omc3.optics_measurements.constants import (
     CHROM_BETA_NAME,
     EXT,
     NAME,
+    MODEL_DIRECTORY,
 )
 from omc3.utils import iotools, logging_tools
 
@@ -58,10 +59,14 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
 
     Returns:
     """
-    LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
     outputdir = Path(measure_input.outputdir)
     iotools.create_dirs(outputdir)
     logging_tools.add_module_handler(logging_tools.file_handler(outputdir / LOG_FILE))
+    
+    LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
+    
+    if measure_input.accelerator.model is None:
+        raise AttributeError("No accelerator model was provided. Cannot perform optics analysis.")
     
     # Tune ---
     tune_dict = tune.calculate(measure_input, input_files)
@@ -153,7 +158,7 @@ def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict):
         "Command": f"{sys.executable} {' '.join(sys.argv)}",
         "CWD": Path.cwd().absolute(),
         "Date": datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S"),
-        "Model_directory": meas_input.accelerator.model_dir,
+        MODEL_DIRECTORY: meas_input.accelerator.model_dir,
         "Compensation": meas_input.compensation,
         "Q1": tune_dict["X"]["QF"],
         "Q2": tune_dict["Y"]["QF"],

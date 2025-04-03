@@ -1,5 +1,5 @@
-@ Q1                   %le  0.28000000000000114
-@ Q2                   %le   0.3100000000000023
+@ Q1                   %le                 0.28
+@ Q2                   %le                 0.31
 * NAME                                    S              BETXMDL                 BETX              ERRBETX         DELTABETXMDL            DELTABETX         ERRDELTABETX
 $ %s                                    %le                  %le                  %le                  %le                  %le                  %le                  %le
   "BPMSW.1L5.B1"                10168.21165           2119.16672         2138.3119252         12.920980287           19.1452052      0.0090343081643     0.00609719856633

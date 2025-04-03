@@ -54,7 +54,6 @@ dependencies = [
   "sdds >= 0.4",
   "optics-functions >= 0.1",
   "turn_by_turn >= 0.6",
-  "uncertainties >= 3.1",
   "scikit-learn >= 1.0",
   "h5py >= 2.9",
   "tables >= 3.10.1",
@@ -71,6 +70,7 @@ cern = [
 optional = [
   "pymupdf >= 1.22",  # logbook for conversion from pdf to png
   "qtpy >= 2.3.1",  # putting plots in windows
+  "PySide2",  # A binding to Qt is needed, Qt6 does not seem to work atm
 ]
 test = [
   "jpype1 >= 1.3",
@@ -106,5 +106,6 @@ markers = [
     "cern_network: tests that require access to afs or the technical network",
 ]
 # Helpful for pytest-debugging (leave commented out on commit):
-#log_cli = true
-#log_cli_level = "DEBUG"
+# log_cli = true
+# log_cli_level = "DEBUG"
+# log_format = "%(levelname)7s | %(message)s | %(name)s"

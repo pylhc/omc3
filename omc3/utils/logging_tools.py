@@ -14,10 +14,19 @@ import time
 import warnings
 from contextlib import contextmanager
 from io import StringIO
-from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL  # make them available directly
+from logging import (  # make them available directly
+    CRITICAL,
+    DEBUG,
+    ERROR,
+    INFO,
+    NOTSET,
+    WARNING,
+)
 
 import numpy as np
 import pandas as pd
+
+from omc3.utils.debugging import is_debug
 
 DIVIDER = "|"
 NEWLINE = "\n" + " " * 10  # levelname + divider + 2
@@ -253,7 +262,7 @@ def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, col
 
     if name == "__main__":
         if level_console is None:
-            level_console = DEBUG if sys.flags.debug else INFO
+            level_console = DEBUG if is_debug() else INFO
 
         # set up root logger
         root_logger = logging.getLogger("")

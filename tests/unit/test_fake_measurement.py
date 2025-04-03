@@ -167,14 +167,14 @@ def _test_error_columns(name, df, randomized, error_val):
             if name.startswith(TOTAL_PHASE_NAME):
                 idx = df.index[1:]
 
-            if name[:-1] in (PHASE_NAME, TOTAL_PHASE_NAME):
+            if param[:-1] in (PHASE, PHASE_ADV):
                 # phase errors are equal to the relative error
                 assert not any(df.loc[idx, col] - error_val)
-            elif name[:-1] in (BETA_NAME, AMP_BETA_NAME) and DELTA in col:
+            elif param[:-1] in (BETA, ) and DELTA in col:
                 # errdeltabet (beating) errors are also equal to the relative error,
                 # but with less precision
                 assert all(np.abs(df.loc[idx, col] - error_val) < EPS)
-            elif name[:-1] in (NORM_DISP_NAME):
+            elif param[:-1] in (NORM_DISPERSION, DISPERSION):
                 # not sure how to test this, but should already be tested with disp and beta
                 assert all(df.loc[idx, col])
             else:
