@@ -322,7 +322,7 @@ def assert_all_close(
         a_data = a_data / df[rel]
         b_data = b_data / df[rel] 
 
-    assert np.testing.assert_allclose(a_data, b_data, atol=atol, rtol=rtol)
+    np.testing.assert_allclose(a_data, b_data, atol=atol, rtol=rtol)
     
 
 def assert_file_exists_and_nonempty(path: Path):
