@@ -273,3 +273,23 @@ em.sig-param span.default_value {
     padding-bottom: 5px;
   }
 }
+
+/* Custom styles for bibliography */
+.citation {
+    display: block!important;
+}
+
+.citation .label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.citation p {
+    margin: 0;
+    padding-left: 1em;
+}
+
+.citation cite {
+    display: block;
+}

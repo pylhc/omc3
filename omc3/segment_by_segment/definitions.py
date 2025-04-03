@@ -8,30 +8,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, fields
 
-from uncertainties.core import Variable 
-from omc3.utils.math_classes import MathMixin
-
-
-class Measurement(MathMixin, Variable):
-    """ Alias for a uncertainties variable.
-    
-    Additionally has a method to convert it to a tuple and iterate over it.
-    """
-    
-    def __init__(self, *args, **kwargs):
-        try: 
-            variable_tuple = args[0].nominal_value, args[0].std_dev
-        except (IndexError, AttributeError):
-            super().__init__(*args, **kwargs)
-        else:
-            super().__init__(*variable_tuple)
-    
-    def as_tuple(self) -> tuple[float, float]:
-        return (self.nominal_value, self.std_dev)
-    
-    def __iter__(self):
-        return iter(self.as_tuple())
-
 
 @dataclass 
 class MadXBoundaryConditions:

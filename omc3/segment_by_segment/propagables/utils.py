@@ -14,7 +14,6 @@ import pandas as pd
 
 from omc3.optics_measurements.constants import ERR
 from omc3.segment_by_segment.constants import BACKWARD, CORRECTION, EXPECTED, FORWARD
-from omc3.segment_by_segment.definitions import Measurement
 
 
 # Functions --------------------------------------------------------------------
@@ -28,18 +27,6 @@ def common_indices(*indices: pd.Index) -> pd.Index:
 
 
 # Classes ----------------------------------------------------------------------
-
-@dataclass 
-class PropagableBoundaryConditions:
-    """Store boundary conditions with error for propagating."""
-    alpha: Measurement = None
-    beta: Measurement = None
-    dispersion: Measurement = None
-    f1001_amplitude: Measurement = None
-    f1001_phase: Measurement = None
-    f1010_amplitude: Measurement = None
-    f1010_phase: Measurement = None
-
 
 class PropagableColumns:
     """ Class to define columns for propagables. 

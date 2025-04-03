@@ -65,7 +65,14 @@ from omc3.model.constants import (
 )
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.propagables import Propagable, get_all_propagables
+from omc3.segment_by_segment.propagables import (
+    ALL_PROPAGABLES,
+    F1001,
+    F1010,
+    BetaPhase,
+    Phase,
+    Propagable,
+)
 from omc3.segment_by_segment.segments import (
     SbsDefinitionError,
     Segment,
@@ -206,8 +213,14 @@ def create_segment(
         f"This has been input as {segment_in!s}."
     )
 
-    propagables = [propg(segment, measurement) for propg in get_all_propagables()]
-    propagables = [measbl for measbl in propagables if measbl]
+    measured_classes: list[type[Propagable]] = [propg for propg in ALL_PROPAGABLES if propg.in_measurement(measurement)]
+    if Phase not in measured_classes:
+        raise FileNotFoundError("No measurement for Phase found in the given measurement directory.")
+    
+    if (F1001 in measured_classes or F1010 in measured_classes) and BetaPhase not in measured_classes:
+        raise FileNotFoundError("Beta-from-Phase is required for Coupling propagations!")
+    
+    propagables: list[Propagable] = [propg(segment, measurement, accel.elements) for propg in measured_classes]
 
     # Create the segment via madx
     creator_class = get_model_creator_class(accel, CreatorType.SEGMENT)
@@ -420,7 +433,7 @@ def _copy_files_from_model_dir(model_dir: Path, output_dir: Path) -> None:
             continue  # no log files, no other previously created models
 
         dst_file = output_dir / file.name
-        if dst_file.exists():
+        if dst_file.exists() or dst_file.is_symlink():
             LOGGER.debug(f"Skipping {dst_file!s}, already exists.")
             continue
         

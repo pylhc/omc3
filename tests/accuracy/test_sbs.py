@@ -3,21 +3,32 @@ Test Segment-by-Segment
 -----------------------
 """
 from pathlib import Path
+from typing import NamedTuple
 
-from generic_parser import DotDict
 import numpy as np
+import pandas as pd
 import pytest
 import tfs
+from generic_parser import DotDict
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
 from omc3.model.accelerators.lhc import Lhc
-from omc3.model.constants import TWISS_DAT, Fetcher, OPTICS_SUBDIR
+from omc3.model.constants import OPTICS_SUBDIR, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
-from omc3.optics_measurements.constants import NAME
+from omc3.optics_measurements.constants import AMPLITUDE, IMAG, NAME, PHASE, REAL
 from omc3.sbs_propagation import segment_by_segment
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.propagables import Phase, get_all_propagables, PropagableColumns
+from omc3.segment_by_segment.propagables import (
+    ALL_PROPAGABLES,
+    AlphaPhase,
+    BetaPhase,
+    Dispersion,
+    F1001,
+    F1010,
+    Phase,
+    PropagableColumns,
+)
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs
 from omc3.utils import logging_tools
 from tests.conftest import INPUTS
@@ -32,7 +43,24 @@ MAX_DIFF = 1e-10
 YEAR = "2025"
 OPTICS_30CM_FLAT = "R2025aRP_A30cmC30cmA10mL200cm_Flat.madx"  
 
+class TestCfg(NamedTuple):
+    diff_max: float
+    eps_fwd: float
+    eps_bwd: float
+    file_name: str
+
 class TestSbSLHC:
+    # some constants
+    config_map = {  # eps_bwd are high! I think because of the coupling issue, see https://github.com/pylhc/omc3/issues/498
+        Phase: TestCfg(1e-2, 1e-8, 5e-4, "phase"),
+        BetaPhase: TestCfg(9e-2, 1e-10, 5e-4, "beta_phase"),
+        AlphaPhase: TestCfg(1e-1, 1e-8, 8e-2, "alpha_phase"),
+        Dispersion: TestCfg(1e-2, None, None, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
+        F1001: TestCfg(5e-4, 5e-7, None, "f1001"),
+        F1010: TestCfg(5e-4, 5e-6, None, "f1010"),
+    }
+    eps_rdt_min = 3e-9  # RDTs are not set directly in MAD-X, but converted to R-Matrix. So no value is exact.
+
 
     @pytest.mark.basic
     @pytest.mark.parametrize("with_correction", [True, False], ids=("with_correction", "no_correction"))
@@ -47,6 +75,7 @@ class TestSbSLHC:
         if things fail in the madx model creation, this is a good place to start looking.
         """
         # Preparation ----------------------------------------------------------
+        twiss_elements = tfs.read(model_30cm_flat_beams.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
         beam = model_30cm_flat_beams.beam
         accel_opt = dict(
             accel="lhc",
@@ -70,8 +99,8 @@ class TestSbSLHC:
         )
         measurement = OpticsMeasurement(INPUT_SBS / f"measurement_b{beam}")
 
-        propagables = [propg(segment, measurement) for propg in get_all_propagables()]
-        measureables = [measbl for measbl in propagables if measbl]     
+        propagables = [propg(segment, measurement, twiss_elements) for propg in ALL_PROPAGABLES]
+        assert all(propagable.in_measurement(measurement) for propagable in propagables)  # check if all input files are present for this test!
         
         accel_inst: Lhc = manager.get_accelerator(accel_opt)
         accel_inst.model_dir = tmp_path  # if set in accel_opt, it tries to load from model_dir, but this is the output dir for the segment-models
@@ -79,7 +108,7 @@ class TestSbSLHC:
         
         segment_creator = LhcSegmentCreator(
             segment=segment, 
-            measurables=measureables,
+            measurables=propagables,
             logfile=tmp_path / logfile.format(segment.name),
             accel=accel_inst,
             corrections=correction_path,
@@ -162,72 +191,97 @@ class TestSbSLHC:
         )
 
         # Tests ----------------------------------------------------------------
-        eps = 1e-8
-        diff_max_mapping = {  # some very crude estimates
-            Phase: 1e-2,
-        }
-        file_name_mapping = {
-            Phase: "phase",
-        }
         column_types = ["column", "forward", "backward"]
         if with_correction:
-            column_types += ["forward_correction", "backward_correction"]
+            column_types += [
+                "forward_correction", "backward_correction", 
+                "forward_expected", "backward_expected"
+            ]
 
-        propagable = Phase  # TODO: loop over other propagated parameters when implemented
-
-        diff_max: float = diff_max_mapping[propagable]
-        file_name: str = file_name_mapping[propagable]
-
-        for plane in "xy":
-            columns: PropagableColumns = propagable.columns.planed(plane.upper())  
-
-            # Quick cheks for existing columns ---------------------
+        for propagable in ALL_PROPAGABLES:
+            if propagable is Dispersion:
+                continue  # TODO: not working, see https://github.com/pylhc/omc3/issues/498
             
-            column_list = [getattr(columns, c) for c in column_types]
+            cfg: TestCfg = self.config_map[propagable]
+            planes = [REAL, IMAG, AMPLITUDE, PHASE] if propagable.is_rdt() else "xy"
 
-            # Assert the columns-object gives unique names
-            assert len(set(column_list)) == len(column_list)
+            for plane in planes:
+                full_file_name: str = cfg.file_name if propagable.is_rdt() else f"{cfg.file_name}_{plane}"
+                columns: PropagableColumns = propagable.columns.planed(plane.upper()) 
 
-            # In-Depth check per segments ---------------------------
-            meas_df = tfs.read(INPUT_SBS / f"measurement_b{beam}" / f"{file_name}_{plane}.tfs", index=NAME)
+                # print(f"\nTesting {propagable.__name__} {plane}: {columns.column}")  # for debugging 
 
-            for segment in segments:
-                sbs_created: SegmentDiffs = sbs_res[segment.name]
-
-                # Assert Files Exist ----
-                files_to_check = [
-                    sbs_created.get_path(f"{file_name}_{plane}"),  # TODO: loop over other propagated parameters when implemented
-                ]
-                for file_ in files_to_check:
-                    assert_file_exists_and_nonempty(tmp_path / file_)
-
-                # Assert Columns Exist ---
-                sbs_df = getattr(sbs_created, f"{file_name}_{plane}")
-
-                assert_propagated_measurement_contains_segment(sbs_df, segment.start, segment.end)
-                assert len(sbs_df.index) == len(meas_df.loc[segment.start:segment.end].index)  # works as long as the segment is not looping around
-
-                for col in column_list:
-                    assert col in sbs_df.columns
-
-                # Assert there is a difference between the propagated models and the measurements
-                assert sum(sbs_df[columns.column] == 0) == 1
-                assert sbs_df[columns.error_column].all()
-
-                assert sbs_df[columns.forward].abs().max() > diff_max
-                assert sbs_df[columns.error_forward].all()
+                # Quick cheks for existing columns ---------------------
                 
-                assert sbs_df[columns.backward].abs().max() > diff_max
-                assert sbs_df[columns.error_backward].all()
+                column_list = [getattr(columns, c) for c in column_types]
 
-                if with_correction:
-                    assert np.allclose(sbs_df[columns.forward_correction], sbs_df[columns.forward], atol=eps)
-                    assert np.allclose(sbs_df[columns.forward_expected], 0, atol=eps)
-                    assert sbs_df[columns.error_forward_correction].iloc[1:].all()
+                # Assert the columns-object gives unique names
+                assert len(set(column_list)) == len(column_list)
 
-                    assert np.allclose(sbs_df[columns.backward_correction], sbs_df[columns.backward], atol=eps)
-                    assert np.allclose(sbs_df[columns.backward_expected], 0, atol=eps)
-                    assert sbs_df[columns.error_backward_correction].iloc[:-1].all()
+                # In-Depth check per segments ---------------------------
+                if propagable is AlphaPhase:
+                    # alpha is in the beta-measurement file
+                    beta_file = self.config_map[BetaPhase].file_name
+                    meas_df = tfs.read(
+                        INPUT_SBS / f"measurement_b{beam}" / f"{beta_file}_{plane}.tfs", 
+                        index=NAME
+                    )
+                else:
+                    meas_df = tfs.read(
+                        INPUT_SBS / f"measurement_b{beam}" / f"{full_file_name}.tfs", 
+                        index=NAME
+                    )
+
+                for segment in segments:
+                    sbs_created: SegmentDiffs = sbs_res[segment.name]
+
+                    # Assert Files Exist ----
+                    assert_file_exists_and_nonempty(tmp_path / sbs_created.get_path(full_file_name))
+
+                    # Assert Columns Exist ---
+                    sbs_df: tfs.TfsDataFrame = getattr(sbs_created, full_file_name)
+
+                    assert_propagated_measurement_contains_segment(sbs_df, segment.start, segment.end)
+                    assert len(sbs_df.index) == len(meas_df.loc[segment.start:segment.end].index)  # works as long as the segment is not looping around
+
+                    for col in column_list:
+                        assert col in sbs_df.columns
+
+                    # Assert there is a difference between the propagated models and the measurements
+                    if propagable is Phase:
+                        assert sum(sbs_df[columns.column] == 0) == 1  # the first entry should be set to 0
+                    assert sbs_df[columns.error_column].all()
+
+                    # Forward / Backward ---
+                    forward = (columns.forward, columns.error_forward)
+                    backward = (columns.backward, columns.error_backward)
+                    for col, err_col in (forward, backward):
+                        if propagable.is_rdt():
+                            assert sbs_df[col].abs().min() < self.eps_rdt_min  # for RDTs the init value is calculated,
+                        else:
+                            assert sbs_df[col].abs().min() == 0  # at least the first entry should show no difference
+
+                        assert sbs_df[col].abs().max() > cfg.diff_max
+                        assert sbs_df[err_col].all()
+                    
+                    if with_correction:  # -------------------------------------
+                        forward = (cfg.eps_fwd, columns.forward, columns.forward_correction, columns.forward_expected)
+                        backward = (cfg.eps_bwd, columns.backward, columns.backward_correction, columns.backward_expected)
+
+                        for idx, (eps, col, correction, expected) in enumerate((forward, backward)):
+                            if idx and propagable.is_rdt():
+                                # TODO: check backward coupling, see https://github.com/pylhc/omc3/issues/498  
+                                continue 
+                                
+                            if propagable in [Phase, F1001, F1010]:  # check absolute difference
+                                assert_all_close(sbs_df, correction, col, atol=eps)
+                                assert_all_close(sbs_df, expected, 0, atol=eps)
+                            else:  # check relative difference 
+                                assert_all_close(sbs_df, correction, col, rel=columns.column, atol=eps)
+                                assert_all_close(sbs_df, expected, 0, rel=columns.column, atol=3*eps, rtol=eps)
+                        
+                        assert sbs_df[columns.error_forward_correction].iloc[1:].all()
+                        assert sbs_df[columns.error_backward_correction].iloc[:-1].all()
 
 
 # Auxiliary Functions ----------------------------------------------------------
@@ -236,11 +290,40 @@ def create_error_file(path: Path):
     out_path = path / "my_errors.madx"
     out_path.write_text(
         "ktqx2.r1 = ktqx2.r1 + 1e-5;\n"
-        # "kqsx3.r1 = kqsx3.r1 - 1e-5;\n" # introduces coupling, only useful when coupling propagation implemented
+        "kqsx3.r1 = kqsx3.r1 - 1e-5;\n" # introduces coupling ! (open bump)
         "ktqx1.r5 = ktqx1.r5 - 2.2e-5;\n"
+        "kqsx3.l5 = kqsx3.l5 + 1e-5;\n" # introduces coupling ! (close bump)
     )
     return out_path
 
+def assert_all_close(
+    df: pd.DataFrame, 
+    a: str, 
+    b: str | float, 
+    rtol: float = 1e-5,  # default in numpy
+    atol: float = 1e-8,  # default in numpy 
+    rel: str | None = None, 
+    idx_slice: slice | None = None
+    ):
+    """ Assert the the values of the a and b columns in df are close. 
+    If "rel" is given, divide both columns by this column.
+    If b is a float, it will be used as the value to compare with.
+    """
+    if idx_slice is not None:
+        df = df.loc[idx_slice]
+
+    a_data = df[a]
+    if isinstance(b, str):
+        b_data = df[b]
+    else:
+        b_data = b 
+
+    if rel is not None:
+        a_data = a_data / df[rel]
+        b_data = b_data / df[rel] 
+
+    np.testing.assert_allclose(a_data, b_data, atol=atol, rtol=rtol)
+    
 
 def assert_file_exists_and_nonempty(path: Path):
     assert path.exists()

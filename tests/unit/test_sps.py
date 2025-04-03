@@ -44,7 +44,7 @@ from omc3.optics_measurements.constants import (
 )
 from omc3.response_creator import ResponseCreatorType, create_response_entrypoint as create_response
 from omc3.segment_by_segment.constants import logfile
-from omc3.segment_by_segment.propagables import get_all_propagables
+from omc3.segment_by_segment.propagables import ALL_PROPAGABLES
 from omc3.segment_by_segment.segments import Segment
 from tests.accuracy.test_sbs import (
     assert_file_exists_and_nonempty,
@@ -150,7 +150,7 @@ class TestModelCreationSPS:
             nat_tunes=[20.13, 20.18],
             modifiers=[acc_models_sps_2025 / STRENGTHS_SUBDIR / Q20_STRENGTHS_FILE],
         )
-
+        elements = tfs.read(SPS_MODEL_DIR / TWISS_ELEMENTS_DAT, index=NAME)
         correction_path = create_error_file(tmp_path)
 
         iplabel = "SomeSegment"
@@ -161,7 +161,7 @@ class TestModelCreationSPS:
         )
         measurement = OpticsMeasurement(SPS_DIR / "fake_measurement_Q20")
 
-        propagables = [propg(segment, measurement) for propg in get_all_propagables()]
+        propagables = [propg(segment, measurement, elements) for propg in ALL_PROPAGABLES]
         measureables = [measbl for measbl in propagables if measbl]     
         
         accel_inst: Sps = manager.get_accelerator(accel_opt)

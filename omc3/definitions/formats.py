@@ -1,6 +1,6 @@
 """
 Formats
--------------
+-------
 
 Recurring formats are defined here.
 """

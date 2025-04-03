@@ -1,11 +1,19 @@
+""" 
+Optics
+------
+
+Definitions for the optics measurements.
+"""
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
 
 import tfs
 from omc3.correction.constants import EXPECTED, DIFF
 from omc3.optics_measurements.constants import (
-    BETA_NAME, AMP_BETA_NAME, ORBIT_NAME, DISPERSION_NAME, NORM_DISP_NAME,
+    ALPHA, BETA_NAME, AMP_BETA_NAME, ORBIT_NAME, DISPERSION_NAME, NORM_DISP_NAME,
     PHASE_NAME, TOTAL_PHASE_NAME, AMPLITUDE, REAL, IMAG, DISPERSION, NORM_DISPERSION,
-    PHASE_ADV, MDL, S, KMOD_BETA_NAME,
+    PHASE_ADV, MDL, S, S_MODEL, KMOD_BETA_NAME,
     EXT, NAME, DELTA, ERR, DRIVEN_TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, IP_NAME,
     KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME, TUNE, RMS, MASKED)
 from omc3.plotting.utils.annotations import ylabels
@@ -37,8 +45,8 @@ class OpticsMeasurement(TfsCollection):
     kick = Tfs(KICK_NAME)
     ip = Tfs(IP_NAME)
     ip_kmod = Tfs(KMOD_IP_NAME)
-    f1001 = Tfs(F1001_NAME, two_planes=False)
-    f1010 = Tfs(F1010_NAME, two_planes=False)
+    f1001: TfsDataFrame = Tfs(F1001_NAME, two_planes=False)
+    f1010: TfsDataFrame = Tfs(F1010_NAME, two_planes=False)
 
     def _get_filename(self, name, plane="") -> str:
         """ Default way `optics_measurements` filenames are defined,
@@ -82,7 +90,7 @@ class ColumnsAndLabels:
     # Other
     needs_plane: bool = True
 
-    def set_plane(self, plane: str):
+    def set_plane(self, plane: str) -> ColumnsAndLabels:
         """ Fixes the plane in a new object. """
         if not self.needs_plane:
             raise AttributeError("Cannot set the plane of a non-planed definition.")
@@ -91,6 +99,13 @@ class ColumnsAndLabels:
             needs_plane=False,
             **values_fixed_plane,
         )
+    
+    def set_label_formatted(self, name: str) -> ColumnsAndLabels:
+        """ Fixes the label in a new object (for RDTs). """
+        if self._label is None:
+            raise AttributeError("No label defined.")
+        new_label = self._label.format(name)
+        return ColumnsAndLabels(**{f.name: getattr(self, f.name) for f in fields(self) if f.name != "_label"}, _label=new_label)
 
     # Properties ----
     @property
@@ -190,6 +205,7 @@ class ColumnsAndLabels:
 # Defined Columns --------------------------------------------------------------
 TUNE_COLUMN =            ColumnsAndLabels(TUNE, _expected_column=f"{EXPECTED}{TUNE}{{0}}",  _label=ylabels['tune'], _text_label='tune')
 BETA_COLUMN =            ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_label='beta', _delta_label=ylabels['betabeat'])
+ALPHA_COLUMN =           ColumnsAndLabels(ALPHA, _label=ylabels['alpha'], _text_label='alpha')
 ORBIT_COLUMN =           ColumnsAndLabels(ORBIT, _label=ylabels['co'], _text_label='orbit')
 DISPERSION_COLUMN =      ColumnsAndLabels(DISPERSION, _label=ylabels['dispersion'], _text_label='dispersion')
 NORM_DISPERSION_COLUMN = ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion')
@@ -198,6 +214,7 @@ TOTAL_PHASE_COLUMN =     ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_
 MU_COLUMN =              ColumnsAndLabels(PHASE_ADV, _label=ylabels['phasetot'], _text_label='total phase')
 PHASE_ADVANCE_COLUMN =   ColumnsAndLabels(f'{PHASE_ADV}{{0}}{MDL}', _label=r'Phase Advance [$2 \pi$]', _text_label='phase advance')
 S_COLUMN =               ColumnsAndLabels(S, _label='Location [m]', _text_label='longitudinal location', needs_plane=False)
+S_MODEL_COLUMN =         ColumnsAndLabels(S_MODEL, _label='Location [m]', _text_label='longitudinal location', needs_plane=False)
 
 RDT_AMPLITUDE_COLUMN = ColumnsAndLabels(AMPLITUDE, _label=ylabels['absolute'], _text_label='amplitude', needs_plane=False)  # label needs rdt
 RDT_PHASE_COLUMN =     ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase', needs_plane=False)  # label needs rdt

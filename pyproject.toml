@@ -54,7 +54,6 @@ dependencies = [
   "sdds >= 0.4",
   "optics-functions >= 0.1",
   "turn_by_turn >= 0.6",
-  "uncertainties >= 3.1",
   "scikit-learn >= 1.0",
   "h5py >= 2.9",
   "tables >= 3.10.1",
