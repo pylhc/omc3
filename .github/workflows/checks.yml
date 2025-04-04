@@ -5,7 +5,7 @@ defaults:
     shell: bash
 
 # Runs on any push event in a PR
-on: [ push, pull_request ]
+on: [ pull_request ]
 
 jobs:
   linter:
