@@ -1,0 +1,21 @@
+name: Ruff linting
+
+defaults:
+  run:
+    shell: bash
+
+# Runs on any push event in a PR
+on:
+  pull_request:
+  push:
+
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # This runs ruff check by default
+      - uses: astral-sh/ruff-action@v3
