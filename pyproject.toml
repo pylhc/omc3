@@ -126,7 +126,6 @@ exclude = [
 # Assume Python 3.10+
 target-version = "py310"
 
-# Same as black
 line-length = 100
 indent-width = 4
 
@@ -134,7 +133,6 @@ indent-width = 4
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 ignore = [
-  "E501",  # line-too-long
   "FBT001",  # boolean-type-hint-positional-argument
   "FBT002",  # boolean-default-value-positional-argument
   "PT019",  # pytest-fixture-param-without-value (but suggested solution fails)
