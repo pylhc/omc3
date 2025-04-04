@@ -30,7 +30,7 @@ def _get_resonance_lines(order):
     # Get all the rdts up to a given order
     fterms = get_all_to_order(order)
     # Some rdts can't be seen depending on the plane, filter them
-    for (j,k,l,m) in fterms:
+    for (j,k,l,m) in fterms:  # noqa: E741 (these variable names are ok)
         if j != 0:
             resonances['X'].append((1-j+k, m-l, 0))
         if l != 0:

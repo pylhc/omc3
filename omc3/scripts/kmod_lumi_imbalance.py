@@ -68,7 +68,6 @@ from omc3.optics_measurements.constants import (
     EXT,
     IMBALANCE,
     LUMINOSITY,
-    MDL,
     NAME,
 )
 from omc3.utils import logging_tools
