@@ -15,7 +15,7 @@ import warnings
 from contextlib import contextmanager
 from io import StringIO
 from logging import (  # make them available directly
-    CRITICAL,
+    CRITICAL,  # noqa: F401
     DEBUG,
     ERROR,
     INFO,

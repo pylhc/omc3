@@ -38,7 +38,6 @@ from omc3.segment_by_segment.constants import (
     measurement_madx,
 )
 from omc3.segment_by_segment.propagables import Propagable
-from omc3.segment_by_segment.propagables.coupling import Coupling
 from omc3.segment_by_segment.segments import Segment
 from omc3.utils import iotools, logging_tools
 
