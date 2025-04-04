@@ -5,10 +5,7 @@ defaults:
     shell: bash
 
 # Runs on any push event in a PR
-on:
-  pull_request:
-  push:
-
+on: [ push, pull_request ]
 
 jobs:
   linter:
@@ -19,3 +16,5 @@ jobs:
 
       # This runs ruff check by default
       - uses: astral-sh/ruff-action@v3
+        with:
+          version: "latest"
