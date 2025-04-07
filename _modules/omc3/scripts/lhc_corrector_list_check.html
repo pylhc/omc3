@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.mock &mdash; omc3 0.24.1 documentation</title>
+  <title>omc3.scripts.lhc_corrector_list_check &mdash; omc3 0.24.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -207,7 +207,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">omc3.utils.mock</li>
+      <li class="breadcrumb-item active">omc3.scripts.lhc_corrector_list_check</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -218,60 +218,142 @@
   
            <div itemprop="articleBody">
              
-  <h1>Source code for omc3.utils.mock</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Mock</span>
-<span class="sd">----</span>
+  <h1>Source code for omc3.scripts.lhc_corrector_list_check</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">Corrector Lists Check</span>
+<span class="sd">---------------------</span>
 
-<span class="sd">Provides mock functionality for packages necessitating the ``CERN GPN`` and only installable from the</span>
-<span class="sd">``acc-py`` package index, such as ``pytimber``, ``pjlsa`` etc.</span>
+<span class="sd">Quick check of the corrector lists against the LHC sequence.</span>
+<span class="sd">It checks if all the correctors in the LHC sequence are used in the variables.</span>
 
-<span class="sd">.. code-block:: python</span>
-
-<span class="sd">    from omc3.utils.mock import cern_network_import</span>
-<span class="sd">    pytimber = cern_network_import(&quot;pytimber&quot;)</span>
-<span class="sd">    db = pytimber.LoggingDB(source=&quot;nxcals&quot;)  # will raise if pytimber not installed</span>
+<span class="sd">These checks are performed against the correction knobs used for global corrections.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.lhc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lhc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">AFS_ACCELERATOR_MODEL_REPOSITORY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">argparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+<span class="n">ACC_MODELS_LHC</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">AFS_ACCELERATOR_MODEL_REPOSITORY</span> <span class="o">/</span> <span class="s2">&quot;lhc&quot;</span> 
+<span class="n">LHC_SEQ_FILE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc.seq&quot;</span>
 
 
-<div class="viewcode-block" id="CERNNetworkMockPackage">
-<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.CERNNetworkMockPackage">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">CERNNetworkMockPackage</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Mock class to raise an error if the desired package functionality is called when the package is not</span>
-<span class="sd">    actually installed. Designed for packages installable only from inside the CERN network,</span>
-<span class="sd">    that are declared as ``cern`` extra. See module documentation.</span>
+<div class="viewcode-block" id="parse_lhc_sequence">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.parse_lhc_sequence">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_lhc_sequence</span><span class="p">(</span><span class="n">year</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Find all the correctors in the LHC sequence.</span>
+<span class="sd">    They follow the pattern &#39;kq[^fsx][.a-z0-9]+&#39; </span>
+
+<span class="sd">    They can be grouped into correctors for beam 1 and beam 2 </span>
+<span class="sd">    depending on their ending &#39;b1&#39; or &#39;b2&#39;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        year (str): Year of the optics (or hllhc1.x version).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[int, set[str]]: Sets of corrector names grouped by beam.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="n">ACC_MODELS_LHC</span> <span class="o">/</span> <span class="n">year</span> <span class="o">/</span> <span class="n">LHC_SEQ_FILE</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+    <span class="n">all_correctors</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\s\-\+=](kq[^fsx][.a-z0-9]+)&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+    <span class="n">correctors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="nb">set</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_correctors</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;b1&quot;</span><span class="p">)</span> <span class="p">]),</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="nb">set</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_correctors</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;b2&quot;</span><span class="p">)</span> <span class="p">]),</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">correctors</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; package does not seem to be installed but is needed for this function. &quot;</span>
-            <span class="s2">&quot;Install it with the &#39;cern&#39; extra dependency, which requires to be on the CERN network and to &quot;</span>
-            <span class="s2">&quot;install from the acc-py package index. Refer to the documentation for more information.&quot;</span>
+
+<div class="viewcode-block" id="get_lhc_correctors">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.get_lhc_correctors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_lhc_correctors</span><span class="p">(</span><span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get the correctors that are used in the variables. </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        variables (list[str]): List of variable names.</span>
+<span class="sd">        beam (int): Beam to use.</span>
+<span class="sd">        year (str): Year of the optics (or hllhc1.x version).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lhc</span> <span class="o">=</span> <span class="n">Lhc</span><span class="p">(</span><span class="n">beam</span><span class="o">=</span><span class="n">beam</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">)</span>
+    <span class="n">used_correctors</span> <span class="o">=</span> <span class="n">lhc</span><span class="o">.</span><span class="n">get_variables</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">used_correctors</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="check_variables">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.check_variables">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_variables</span><span class="p">(</span><span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">year</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Main function to check the corrector lists.</span>
+<span class="sd">    Runs both beams and prints out the remaining correctors.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        variables (list[str]): List of variable names.</span>
+<span class="sd">        year (str): Year of the optics (or hllhc1.x version).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lhc_correctors</span> <span class="o">=</span> <span class="n">parse_lhc_sequence</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="n">used_correctors</span> <span class="o">=</span> <span class="n">get_lhc_correctors</span><span class="p">(</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+            <span class="n">beam</span><span class="o">=</span><span class="n">beam</span><span class="p">,</span>
+            <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">unused_correctors</span> <span class="o">=</span> <span class="n">lhc_correctors</span><span class="p">[</span><span class="n">beam</span><span class="p">]</span> <span class="o">-</span> <span class="n">used_correctors</span>
+        <span class="n">unknown_correctors</span> <span class="o">=</span> <span class="n">used_correctors</span> <span class="o">-</span> <span class="n">lhc_correctors</span><span class="p">[</span><span class="n">beam</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variables: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unused correctors: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unused_correctors</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown correctors: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unknown_correctors</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Main function with argument parsing. &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--year&quot;</span><span class="p">,</span> 
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> 
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Year of the optics (or hllhc1.x version).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--variables&quot;</span><span class="p">,</span> 
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> 
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> 
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Variables to check.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">check_variables</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="example">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.example">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">example</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Example usage, comparing INJ and TOP correctors for 2024 and 2025.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">mqms</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MQM_INJ_2024&quot;</span><span class="p">,</span> <span class="s2">&quot;MQM_TOP_2024&quot;</span><span class="p">]:</span>
+        <span class="n">check_variables</span><span class="p">(</span>
+            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">mqms</span><span class="p">,</span> <span class="s2">&quot;MQT&quot;</span><span class="p">,</span> <span class="s2">&quot;MQTL&quot;</span><span class="p">,</span> <span class="s2">&quot;MQY&quot;</span><span class="p">],</span>
+            <span class="n">year</span><span class="o">=</span><span class="s2">&quot;2024&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------------------</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">mqms</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MQM_INJ&quot;</span><span class="p">,</span> <span class="s2">&quot;MQM_TOP&quot;</span><span class="p">]:</span>
+        <span class="n">check_variables</span><span class="p">(</span>
+            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">mqms</span><span class="p">,</span> <span class="s2">&quot;MQT&quot;</span><span class="p">,</span> <span class="s2">&quot;MQTL&quot;</span><span class="p">,</span> <span class="s2">&quot;MQY&quot;</span><span class="p">],</span>
+            <span class="n">year</span><span class="o">=</span><span class="s2">&quot;2025&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="cern_network_import">
-<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.cern_network_import">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">cern_network_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convenience function to try and import packages only available (and installable) on the CERN network.</span>
-<span class="sd">    If installed, the module is returned, otherwise a mock class is returned, which will raise an</span>
-<span class="sd">    insightful ``ImportError`` on attempted use.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        package (str): name of the package to try and import.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">CERNNetworkMockPackage</span><span class="p">(</span><span class="n">package</span><span class="p">)</span></div>
-
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+    <span class="c1"># example()</span>
 </pre></div>
 
            </div>

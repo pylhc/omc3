@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.24.0 documentation</title>
+  <title>Scripts &mdash; omc3 0.24.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a9084e48"></script>
+      <script src="../_static/documentation_options.js?v=0d70ca51"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -84,6 +84,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
 </ul>
@@ -229,6 +230,7 @@
 <li><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li><a class="reference internal" href="#linfile-cleaning">Linfile Cleaning</a></li>
 <li><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li><a class="reference internal" href="#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
 </ul>
@@ -1118,6 +1120,74 @@ which in turn contain which in turn have entries containing the bad-bpms files.<
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="corrector-lists-check">
+<h2>Corrector Lists Check<a class="headerlink" href="#corrector-lists-check" title="Link to this heading"></a></h2>
+<p>Quick check of the corrector lists against the LHC sequence.
+It checks if all the correctors in the LHC sequence are used in the variables.</p>
+<p>These checks are performed against the correction knobs used for global corrections.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.lhc_corrector_list_check.</span></span><span class="sig-name descname"><span class="pre">check_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/lhc_corrector_list_check.html#check_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Main function to check the corrector lists.
+Runs both beams and prints out the remaining correctors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>variables</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) -- List of variable names.</p></li>
+<li><p><strong>year</strong> (<em>str</em>) -- Year of the optics (or hllhc1.x version).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.lhc_corrector_list_check.</span></span><span class="sig-name descname"><span class="pre">example</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/lhc_corrector_list_check.html#example"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Example usage, comparing INJ and TOP correctors for 2024 and 2025.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.lhc_corrector_list_check.</span></span><span class="sig-name descname"><span class="pre">get_lhc_correctors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/lhc_corrector_list_check.html#get_lhc_correctors"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get the correctors that are used in the variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>variables</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) -- List of variable names.</p></li>
+<li><p><strong>beam</strong> (<em>int</em>) -- Beam to use.</p></li>
+<li><p><strong>year</strong> (<em>str</em>) -- Year of the optics (or hllhc1.x version).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.lhc_corrector_list_check.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/lhc_corrector_list_check.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Main function with argument parsing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.lhc_corrector_list_check.</span></span><span class="sig-name descname"><span class="pre">parse_lhc_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/lhc_corrector_list_check.html#parse_lhc_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Find all the correctors in the LHC sequence.
+They follow the pattern ‘kq[^fsx][.a-z0-9]+’</p>
+<p>They can be grouped into correctors for beam 1 and beam 2
+depending on their ending ‘b1’ or ‘b2’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>year</strong> (<em>str</em>) -- Year of the optics (or hllhc1.x version).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sets of corrector names grouped by beam.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[int, set[str]]</p>
 </dd>
 </dl>
 </dd></dl>
