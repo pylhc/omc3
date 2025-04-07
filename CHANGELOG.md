@@ -1,5 +1,12 @@
 # OMC3 Changelog
 
+#### 2025-04-04 - v0.24.1 - _jdilly_
+
+- Added:
+  - Corrector lists for 2025.
+  - Added `kqt13.l7b1` to the main `MQT` correctors list.
+  - `lhc_corrector_list_check`: Checks LHC-sequence against the corrector lists.
+
 #### 2025-04-03 - v0.24.0 - _jdilly_
 
 - Added:
