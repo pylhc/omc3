@@ -102,7 +102,7 @@ pytimber = cern_network_import("pytimber")
 
 LOGGER = get_logger(__name__)
 
-AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/current")
+AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/2025")  # 'current' is still 2022!
 ACC_MODELS_LHC = Path("acc-models-lhc")
 KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
 KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
@@ -166,10 +166,17 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
     ],
     "disp": [
         "LHCBEAM:IP1-SDISP-CORR-SEP",
-        "LHCBEAM:IP1-SDISP-CORR-XING",
         "LHCBEAM:IP5-SDISP-CORR-SEP",
-        "LHCBEAM:IP5-SDISP-CORR-XING",
-        # hint: these knobs do not exist for IP2 and IP8
+        "LHCBEAM:IP1-SDISP-CORR-XING-H",
+        "LHCBEAM:IP1-SDISP-CORR-XING-V",
+        "LHCBEAM:IP5-SDISP-CORR-XING-H",
+        "LHCBEAM:IP5-SDISP-CORR-XING-V",
+        # "LHCBEAM:IP2-SDISP-CORR-XING-H",
+        "LHCBEAM:IP2-SDISP-CORR-XING-V",
+        "LHCBEAM:IP8-SDISP-CORR-XING-H",
+        "LHCBEAM:IP8-SDISP-CORR-XING-V",
+        "LHCBEAM1:IP-SDISP-QPBUMP",
+        "LHCBEAM2:IP-SDISP-QPBUMP",
     ],
     "mo": [
         "LHCBEAM1:LANDAU_DAMPING",
@@ -196,6 +203,10 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
         "LHCBEAM2:IP8_SEPSCAN_X_MM",
         "LHCBEAM2:IP8_SEPSCAN_Y_MM",
     ],
+    # "dpp": [  % maybe extract at injection?
+    #     "LHCBEAM1:DP_TRIM_PERMIL",
+    #     "LHCBEAM2:DP_TRIM_PERMIL"
+    # ],
 }
 
 USAGE_EXAMPLES = """Usage Examples:
