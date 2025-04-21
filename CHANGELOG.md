@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2025-04-21 - v0.24.1 - _jdilly_
+#### 2025-04-21 - v0.24.2 - _jdilly_
 
 - Fixed:
   - `knob_extractor` added new knobs for 2025.
