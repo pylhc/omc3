@@ -7,9 +7,6 @@ and functions that are common to multiple propagables.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-import numpy as np
 import pandas as pd
 
 from omc3.optics_measurements.constants import ERR

@@ -68,7 +68,7 @@ import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 
-from omc3.optics_measurements.constants import BEAM, BETASTAR, ERR, MDL, WAIST
+from omc3.optics_measurements.constants import BEAM, BETASTAR, ERR, WAIST
 from omc3.plotting.utils import style as pstyle
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame, save_config
