@@ -3,5 +3,5 @@
 $ %s                                     %s                   %s
   "Optics"             "R2022a_A30cmC30cmA10mL200cm"          "opticName"
   "Beam Process"       "SQUEEZE-6.8TeV-60cm-30cm_V1_FMD1@337_[END]"        "beamProcess"
-  "Optics ID"                      "6923.0"            "opticId"
+  "Optics ID"                        "6923"            "opticId"
   "HyperCycle"            "6.8TeV_2022_MD1"         "hyperCycle"
