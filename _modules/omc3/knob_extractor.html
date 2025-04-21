@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.knob_extractor &mdash; omc3 0.24.1 documentation</title>
+  <title>omc3.knob_extractor &mdash; omc3 0.24.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0d70ca51"></script>
+      <script src="../../_static/documentation_options.js?v=3a88403b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -323,7 +323,7 @@
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/afs/cern.ch/eng/acc-models/lhc/current&quot;</span><span class="p">)</span>
+<span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/afs/cern.ch/eng/acc-models/lhc/current&quot;</span><span class="p">)</span>  <span class="c1"># make sure &#39;current&#39; linked correctly!</span>
 <span class="n">ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;acc-models-lhc&quot;</span><span class="p">)</span>
 <span class="n">KNOBS_FILE_ACC_MODELS</span> <span class="o">=</span> <span class="n">ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">&quot;operation&quot;</span> <span class="o">/</span> <span class="s2">&quot;knobs.txt&quot;</span>
 <span class="n">KNOBS_FILE_AFS</span> <span class="o">=</span> <span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">&quot;operation&quot;</span> <span class="o">/</span> <span class="s2">&quot;knobs.txt&quot;</span>
@@ -393,10 +393,17 @@
     <span class="p">],</span>
     <span class="s2">&quot;disp&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-SEP&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-XING&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-SEP&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-XING&quot;</span><span class="p">,</span>
-        <span class="c1"># hint: these knobs do not exist for IP2 and IP8</span>
+        <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-XING-H&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-XING-H&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
+        <span class="c1"># &quot;LHCBEAM:IP2-SDISP-CORR-XING-H&quot;,  # does not exist in knobs.txt</span>
+        <span class="s2">&quot;LHCBEAM:IP2-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP8-SDISP-CORR-XING-H&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM:IP8-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM1:IP-SDISP-QPBUMP&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LHCBEAM2:IP-SDISP-QPBUMP&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="s2">&quot;mo&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM1:LANDAU_DAMPING&quot;</span><span class="p">,</span>
@@ -423,6 +430,10 @@
         <span class="s2">&quot;LHCBEAM2:IP8_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP8_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
     <span class="p">],</span>
+    <span class="c1"># &quot;dpp&quot;: [  % maybe extract at injection?</span>
+    <span class="c1">#     &quot;LHCBEAM1:DP_TRIM_PERMIL&quot;,</span>
+    <span class="c1">#     &quot;LHCBEAM2:DP_TRIM_PERMIL&quot;</span>
+    <span class="c1"># ],</span>
 <span class="p">}</span>
 
 <span class="n">USAGE_EXAMPLES</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Usage Examples:</span>
