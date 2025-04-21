@@ -102,7 +102,7 @@ pytimber = cern_network_import("pytimber")
 
 LOGGER = get_logger(__name__)
 
-AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/2025")  # 'current' is still 2022!
+AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/current")  # make sure 'current' linked correctly!
 ACC_MODELS_LHC = Path("acc-models-lhc")
 KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
 KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
