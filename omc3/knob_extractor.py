@@ -171,7 +171,7 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
         "LHCBEAM:IP1-SDISP-CORR-XING-V",
         "LHCBEAM:IP5-SDISP-CORR-XING-H",
         "LHCBEAM:IP5-SDISP-CORR-XING-V",
-        # "LHCBEAM:IP2-SDISP-CORR-XING-H",
+        # "LHCBEAM:IP2-SDISP-CORR-XING-H",  # does not exist in knobs.txt
         "LHCBEAM:IP2-SDISP-CORR-XING-V",
         "LHCBEAM:IP8-SDISP-CORR-XING-H",
         "LHCBEAM:IP8-SDISP-CORR-XING-V",
