@@ -18,6 +18,7 @@ from generic_parser.entrypoint_parser import (
 from omc3.model.accelerators import (
     esrf,
     generic,
+    fccee,
     iota,
     lhc,
     petra,
@@ -41,6 +42,7 @@ ACCELS = {
     iota.Iota.NAME: iota.Iota,
     sps.Sps.NAME: sps.Sps,
     generic.Generic.NAME: generic.Generic,
+    fccee.Fccee.NAME: fccee.Fccee,
 }
 
 

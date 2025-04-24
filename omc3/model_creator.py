@@ -85,7 +85,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
 
             Choose the accelerator to use.Can be the class already.
 
-            choices: ``['lhc', 'ps', 'esrf', 'psbooster', 'skekb', 'JPARC', 'petra', 'iota']``
+            choices: ``['lhc', 'ps', 'esrf', 'psbooster', 'skekb', 'JPARC', 'Fccee', 'petra', 'iota']``
 
 
     Creator Keyword Args:
