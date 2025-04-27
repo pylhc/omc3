@@ -127,16 +127,13 @@ def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
             opt.betastar = [opt.betastar[0], opt.betastar[0]]
 
         ips = list(dfs.keys())
-        tfs.write(
-            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(
+        file_name = EFFECTIVE_BETAS_FILENAME.format(
                 ip_a=ips[0][-1],  # assumes last char is IP id
                 ip_b=ips[1][-1],  # assumes last char is IP id
                 betastar_x=opt.betastar[0], 
                 betastar_y=opt.betastar[1]
-            )}{EXT}", 
-            df, 
-            save_index=NAME
         )
+        tfs.write(output_path / f"{file_name}{EXT}", df, save_index=NAME)
     
     return df
 
