@@ -21,7 +21,7 @@ def test_kmod_lumi_imbalance(tmp_path):
     path_beta_ip1 = _get_input_path(1, betas)
     path_beta_ip5 = _get_input_path(5, betas)
     calculate_lumi_imbalance(ip1=path_beta_ip1, ip5=path_beta_ip5, betastar=betas, output_dir=tmp_path)
-    _assert_correct_files_are_present(tmp_path, betas)
+    _assert_correct_files_are_present(tmp_path, betas, 1, 5)
 
     eff_betas = tfs.read(tmp_path / _get_effbetas_filename(betas, 1, 5))
     eff_betas_ref = tfs.read(REFERENCE_DIR / _get_effbetas_filename(betas, 1, 5))

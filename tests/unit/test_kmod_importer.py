@@ -67,8 +67,9 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
     if len(ips) > 1 and (2 not in ips):
         # lumi --
         betas = get_betastar_values(beam=beam, ip=1)
-        eff_betas = tfs.read(average_dir / _get_lumi_filename(betas))
-        eff_betas_ref = tfs.read(REFERENCE_DIR / _get_lumi_filename(betas))
+        lumi_filename = _get_lumi_filename(betas, ip_a=ips[0], ip_b=ips[1])
+        eff_betas = tfs.read(average_dir / lumi_filename)
+        eff_betas_ref = tfs.read(REFERENCE_DIR / lumi_filename)
         assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)
 
         # import (reference created with IP1 and IP5) --
