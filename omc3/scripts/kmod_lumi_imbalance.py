@@ -195,7 +195,7 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
     Returns:
         tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.
     """
-    LOG.info(f"Calculating luminosity imbalance for ips {kwargs.keys()}")
+    LOG.debug(f"Calculating luminosity imbalance for ips {kwargs.keys()}")
 
     df_effective_betas = tfs.TfsDataFrame()
     for ip, df in kwargs.items():
@@ -210,7 +210,7 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
     df_effective_betas.headers[f'{LUMINOSITY}{IMBALANCE}'] = lumi_imb
     df_effective_betas.headers[f'{ERR}{LUMINOSITY}{IMBALANCE}'] = lumi_imb_err
 
-    LOG.info(f"Imbalance: {lumi_imb} +/- {lumi_imb_err}")
+    LOG.debug(f"Imbalance: {lumi_imb} +/- {lumi_imb_err}")
     return df_effective_betas
 
 
