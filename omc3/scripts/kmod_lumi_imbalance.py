@@ -113,7 +113,7 @@ def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
         output_path.mkdir(parents=True, exist_ok=True)
         opt_cp = copy.copy(opt)
         for ip in IPS:
-            if not isinstance(opt_cp[ip], (Path, str)):
+            if opt_cp[ip] is not None and not isinstance(opt_cp[ip], (Path, str)):
                 opt_cp[ip] = "(was provided as DataFrame)"
         save_config(output_path, opt_cp, __file__)
 
@@ -126,8 +126,14 @@ def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
         if len(opt.betastar) == 1:
             opt.betastar = [opt.betastar[0], opt.betastar[0]]
 
+        ips = list(dfs.keys())
         tfs.write(
-            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=opt.betastar[0], betastar_y=opt.betastar[1])}{EXT}", 
+            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(
+                ip_a=ips[0][-1],  # assumes last char is IP id
+                ip_b=ips[1][-1],  # assumes last char is IP id
+                betastar_x=opt.betastar[0], 
+                betastar_y=opt.betastar[1]
+            )}{EXT}", 
             df, 
             save_index=NAME
         )
@@ -187,11 +193,13 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
     Args:
         ipA (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_A.
         ipB (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_B.
-        (Actually, any name that ends with an integer is fine.)
+        (Actually, any name is fine.)
     
     Returns:
         tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.
     """
+    LOG.info(f"Calculating luminosity imbalance for ips {kwargs.keys()}")
+
     df_effective_betas = tfs.TfsDataFrame()
     for ip, df in kwargs.items():
         df_effective_betas.loc[ip.upper(), [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df)
@@ -201,9 +209,11 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
         *tuple(df_effective_betas.loc[ip_a, :]), 
         *tuple(df_effective_betas.loc[ip_b, :])
     )
-    
+
     df_effective_betas.headers[f'{LUMINOSITY}{IMBALANCE}'] = lumi_imb
     df_effective_betas.headers[f'{ERR}{LUMINOSITY}{IMBALANCE}'] = lumi_imb_err
+
+    LOG.info(f"Imbalance: {lumi_imb} +/- {lumi_imb_err}")
     return df_effective_betas
 
 

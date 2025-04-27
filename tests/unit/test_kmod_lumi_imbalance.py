@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import pytest
 import tfs
@@ -22,24 +23,24 @@ def test_kmod_lumi_imbalance(tmp_path):
     calculate_lumi_imbalance(ip1=path_beta_ip1, ip5=path_beta_ip5, betastar=betas, output_dir=tmp_path)
     _assert_correct_files_are_present(tmp_path, betas)
 
-    eff_betas = tfs.read(tmp_path / _get_effbetas_filename(betas))
-    eff_betas_ref = tfs.read(REFERENCE_DIR / _get_effbetas_filename(betas))
+    eff_betas = tfs.read(tmp_path / _get_effbetas_filename(betas, 1, 5))
+    eff_betas_ref = tfs.read(REFERENCE_DIR / _get_effbetas_filename(betas, 1, 5))
     assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)
 
 
 # Helper ---
 
-def _assert_correct_files_are_present(outputdir: Path, betas: list[float]) -> None:
+def _assert_correct_files_are_present(outputdir: Path, betas: list[float], ip_a: Any, ip_b: Any) -> None:
     """Simply checks the expected converted files are present in the outputdir"""
-    assert (outputdir / _get_effbetas_filename(betas)).is_file()
+    assert (outputdir / _get_effbetas_filename(betas, ip_a, ip_b)).is_file()
 
 
 def _get_input_path(ip: int, betas: list[float]) -> Path:
     return get_reference_dir(ip=ip, n_files=2) / f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=betas[0], betastar_y=betas[1], ip=ip)}{EXT}"
 
 
-def _get_effbetas_filename(betas: list[float]) -> str:
-    return f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=betas[0], betastar_y=betas[1])}{EXT}"
+def _get_effbetas_filename(betas: list[float], ip_a: Any, ip_b: Any) -> str:
+    return f"{EFFECTIVE_BETAS_FILENAME.format(ip_a=ip_a, ip_b=ip_b, betastar_x=betas[0], betastar_y=betas[1])}{EXT}"
 
 
 # ---------------- FOR UPDATING THE REFERENCES ------------------------------- #
