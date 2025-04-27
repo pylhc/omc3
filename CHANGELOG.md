@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-04-28 - v0.24.3 - _jdilly_
+
+- Fixed:
+  - `kmod_lumi_imbalance` added IPs to output names and some logging.
+
 #### 2025-04-21 - v0.24.2 - _jdilly_
 
 - Fixed:
