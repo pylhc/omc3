@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.scripts.kmod_lumi_imbalance &mdash; omc3 0.24.2 documentation</title>
+  <title>omc3.scripts.kmod_lumi_imbalance &mdash; omc3 0.24.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=3a88403b"></script>
+      <script src="../../../_static/documentation_options.js?v=9ef0c422"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -336,7 +336,7 @@
         <span class="n">output_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">opt_cp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">IPS</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">],</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">],</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
                 <span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;(was provided as DataFrame)&quot;</span>
         <span class="n">save_config</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">opt_cp</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
 
@@ -349,11 +349,14 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span> <span class="o">=</span> <span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
 
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="n">output_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EFFECTIVE_BETAS_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">betastar_x</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">betastar_y</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> 
-            <span class="n">df</span><span class="p">,</span> 
-            <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span>
+        <span class="n">ips</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dfs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">EFFECTIVE_BETAS_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">ip_a</span><span class="o">=</span><span class="n">ips</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># assumes last char is IP id</span>
+                <span class="n">ip_b</span><span class="o">=</span><span class="n">ips</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># assumes last char is IP id</span>
+                <span class="n">betastar_x</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                <span class="n">betastar_y</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">df</span></div>
 
@@ -413,11 +416,13 @@
 <span class="sd">    Args:</span>
 <span class="sd">        ipA (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_A.</span>
 <span class="sd">        ipB (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_B.</span>
-<span class="sd">        (Actually, any name that ends with an integer is fine.)</span>
+<span class="sd">        (Actually, any name is fine.)</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculating luminosity imbalance for ips </span><span class="si">{</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="n">df_effective_betas</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ip</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
@@ -427,9 +432,11 @@
         <span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_a</span><span class="p">,</span> <span class="p">:]),</span> 
         <span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_b</span><span class="p">,</span> <span class="p">:])</span>
     <span class="p">)</span>
-    
+
     <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">LUMINOSITY</span><span class="si">}{</span><span class="n">IMBALANCE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lumi_imb</span>
     <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">LUMINOSITY</span><span class="si">}{</span><span class="n">IMBALANCE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lumi_imb_err</span>
+
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Imbalance: </span><span class="si">{</span><span class="n">lumi_imb</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">lumi_imb_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df_effective_betas</span></div>
 
 
