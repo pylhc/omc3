@@ -75,6 +75,11 @@ class SKekB(Accelerator):
     """KEK's SuperKEKB accelerator."""
     NAME = "skekb"
     RINGS = ("ler", "her")
+    RE_DICT: dict[str, str] = {
+        AccElementTypes.BPMS: r"^M*",
+        AccElementTypes.MAGNETS: r".*",  # has a variety of names...
+        AccElementTypes.ARC_BPMS: r"^M*",
+    } # naming convention for KEK elements
 
     @classmethod
     def get_parameters(cls):

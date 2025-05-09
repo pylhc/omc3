@@ -185,7 +185,10 @@ class Accelerator:
             bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
             self.model = self.elements.loc[bpm_mask, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
-        self.energy = float(self.model.headers["ENERGY"])  # always 450GeV because we do not set it anywhere properly...
+        try:
+            self.energy = float(self.model.headers["ENERGY"])  # always 450GeV because we do not set it anywhere properly...
+        except KeyError: #KEK model does not have energy in the header
+            pass
 
         # Excitations #####################################
         driven_filenames = dict(acd=model_dir / TWISS_AC_DAT, adt=model_dir / TWISS_ADT_DAT)
