@@ -39,7 +39,11 @@ def run_per_bunch(tbt_data, harpy_input):
     """
     model = None if harpy_input.model is None else tfs.read(harpy_input.model, index=COL_NAME).loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
-    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
+
+    # Handle the case where we've got directly an object and its attributed name
+    files = harpy_input.tbt_name if harpy_input.tbt_datatype == 'tbt_data' else harpy_input.files
+    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, files)
+
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
         bpm_data = _scale_to_meters(bpm_data, harpy_input.unit)

@@ -117,6 +117,12 @@ def hole_in_one_entrypoint(opt, rest):
 
         Flags: **--tbt_datatype**
         Default: ``LHC``
+      
+      - **tbt_name** *(list)*: Names of the turn by turn measurements. Required when `tbt_datatype`
+        is `tbt_data`.
+
+        Flags: **--tbt_name**
+        Default: None
 
       *--Cleaning--*
 
@@ -396,9 +402,10 @@ def _run_harpy(harpy_options):
 
 def _replicate_harpy_options_per_file(options):
     list_of_options = []
-    for input_file in options.files:
+    for i, input_file in enumerate(options.files):
         new_options = deepcopy(options)
         new_options.files = input_file
+        new_options.tbt_name = options.tbt_name[i]
         list_of_options.append(new_options)
     return list_of_options
 
@@ -408,13 +415,22 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
     # hint: options.files is now a single file because of _replicate_harpy_options_per_file
     # it is also only used here to define the output name, as the tbt-data is already loaded.
 
-    dir_name = dirname(options.files)
-    file_name = basename(options.files)
+    # When given directly a TbtData object, there won't be a filename! Use the argument `tbt_name`
+    # instead
+    if options.tbt_datatype == 'tbt_data':
+      dir_name = ''
+      file_name = options.tbt_name
+    else:
+      dir_name = dirname(options.files)
+      file_name = basename(options.files)
     suffix = options.suffix or ""
 
     # Single bunch ---
     if tbt_data.nbunches == 1:
         if suffix:
+          if options.tbt_datatype == 'tbt_data':
+            options.tbt_name = f"{file_name}{suffix}"
+          else:
             options.files = join(dir_name, f"{file_name}{suffix}")
         yield tbt_data, options
         return
@@ -475,6 +491,10 @@ def _harpy_entrypoint(params):
         options.window = "rectangle"
     if not 2 <= options.resonances <= 8:
         raise AttributeError("The magnet order for resonance lines calculation should be between 2 and 8 (inclusive).")
+    if options.tbt_datatype == "tbt_data" and options.tbt_name is None:
+        raise AttributeError("tbt_name must be specified when using TbtData objects.")
+    if options.tbt_datatype == "tbt_data" and len(options.tbt_name) != len(options.files):
+        raise AttributeError("Mismatch in length between tbt_name and files")
 
     return options, rest
 
@@ -499,6 +519,7 @@ def harpy_params():
     params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],
                          choices=list(tbt.io.TBT_MODULES.keys()),
                          help="Choose the datatype from which to import. ")
+    params.add_parameter(name="tbt_name", nargs='+', help="Names of the turn by turn data objects.")
 
     # Cleaning parameters
     params.add_parameter(name="clean", action="store_true",
