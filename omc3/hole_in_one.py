@@ -393,7 +393,13 @@ def _run_harpy(harpy_options):
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
         all_options = _replicate_harpy_options_per_file(harpy_options)
-        tbt_datas = [(tbt.read_tbt(option.files, datatype=option.tbt_datatype), option) for option in all_options]
+
+        # Read the TbT data
+        if harpy_options.tbt_datatype == "tbt_data":
+          tbt_datas = [(option.files, option) for option in all_options]
+        else:
+          tbt_datas = [(tbt.read_tbt(option.files, datatype=option.tbt_datatype), option) for option in all_options]
+
         for tbt_data, option in tbt_datas:
             lins.extend([handler.run_per_bunch(bunch_data, bunch_options)
                          for bunch_data, bunch_options in _add_suffix_and_iter_bunches(tbt_data, option)])

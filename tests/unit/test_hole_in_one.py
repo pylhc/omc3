@@ -48,6 +48,7 @@ from omc3.optics_measurements.constants import (
     TOTAL_PHASE_NAME,
 )
 from tests.conftest import INPUTS, ids_str
+from turn_by_turn import TbtData
 
 MODEL_DIR = INPUTS / "models" / "2022_inj_b1_acd"
 SDDS_DIR = INPUTS / "lhcb1_tbt_inj_on_off_mom"
@@ -60,6 +61,75 @@ SDDS_FILES = {
     "-50Hz": ["Beam1@BunchTurn@2024_03_08@18_24_02_100_250turns.sdds", "Beam1@BunchTurn@2024_03_08@18_25_23_729_250turns.sdds", "Beam1@BunchTurn@2024_03_08@18_26_41_811_250turns.sdds"],
 }
 
+@pytest.mark.basic
+def test_harpy_tbtdata_ok(tmp_path):
+    """ Tests the harpy entrypoint by checking that the argument `tbt_name` is required
+    when using `tbt_datatype == 'tbt_data'`."""
+
+    from tests.unit.test_harpy import create_tbt_data
+    from tests.accuracy.test_harpy import _get_model_dataframe
+
+    # Mock some TbT data
+    model = _get_model_dataframe()
+    tbt_data = create_tbt_data(model=model, bunch_ids=[0])
+
+    hole_in_one_entrypoint(
+        harpy=True,
+        files=[tbt_data],
+        tbt_name=['tbt_object'],
+        tbt_datatype="tbt_data",
+        unit='m',
+        autotunes="transverse",
+        clean=False,
+        outputdir=tmp_path,
+    )
+
+@pytest.mark.basic
+def test_harpy_tbtdata_wrong_length_name(tmp_path):
+    """ Tests the harpy entrypoint by checking that the argument `tbt_name` is required
+    when using `tbt_datatype == 'tbt_data'`."""
+
+    from tests.unit.test_harpy import create_tbt_data
+    from tests.accuracy.test_harpy import _get_model_dataframe
+
+    # Mock some TbT data
+    model = _get_model_dataframe()
+    tbt_data = create_tbt_data(model=model, bunch_ids=[0])
+
+    with pytest.raises(AttributeError):
+        hole_in_one_entrypoint(
+            harpy=True,
+            files=[tbt_data],
+            tbt_name=['tbt_object', 'wrong'],
+            tbt_datatype="tbt_data",
+            unit='m',
+            autotunes="transverse",
+            clean=False,
+            outputdir=tmp_path,
+        )
+
+@pytest.mark.basic
+def test_harpy_tbtdata_no_name(tmp_path):
+    """ Tests the harpy entrypoint by checking that the argument `tbt_name` is required
+    when using `tbt_datatype == 'tbt_data'`."""
+
+    from tests.unit.test_harpy import create_tbt_data
+    from tests.accuracy.test_harpy import _get_model_dataframe
+
+    # Mock some TbT data
+    model = _get_model_dataframe()
+    tbt_data = create_tbt_data(model=model, bunch_ids=[0])
+
+    with pytest.raises(AttributeError):
+        hole_in_one_entrypoint(
+            harpy=True,
+            files=[tbt_data],
+            tbt_datatype="tbt_data",
+            unit='m',
+            autotunes="transverse",
+            clean=False,
+            outputdir=tmp_path,
+        )
 
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
