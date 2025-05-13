@@ -405,7 +405,9 @@ def _replicate_harpy_options_per_file(options):
     for i, input_file in enumerate(options.files):
         new_options = deepcopy(options)
         new_options.files = input_file
-        new_options.tbt_name = options.tbt_name[i]
+
+        if options.tbt_name:
+          new_options.tbt_name = options.tbt_name[i]
         list_of_options.append(new_options)
     return list_of_options
 
