@@ -525,7 +525,7 @@ def harpy_params():
                          choices=('lin', 'spectra', 'full_spectra', 'bpm_summary'),
                          help="Choose the type of output.")
     params.add_parameter(name="tbt_datatype", default=HARPY_DEFAULTS["tbt_datatype"],
-                         choices=list(tbt.io.TBT_MODULES.keys() + ["tbt_data"]),
+                         choices=list(tbt.io.TBT_MODULES.keys()) + ["tbt_data"],
                          help="Choose the datatype from which to import. ")
     params.add_parameter(name="tbt_name", nargs='+', help="Names of the turn by turn data objects.")
 
