@@ -425,7 +425,7 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
 
     # When given directly a TbtData object, there won't be a filename! Use the argument `tbt_name`
     # instead
-    if options.tbt_datatype == 'tbt_data':
+    if 'tbt_datatype' in options and options.tbt_datatype == 'tbt_data':
       dir_name = ''
       file_name = options.tbt_name
     else:
@@ -436,7 +436,7 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
     # Single bunch ---
     if tbt_data.nbunches == 1:
         if suffix:
-          if options.tbt_datatype == 'tbt_data':
+          if 'tbt_datatype' in options and options.tbt_datatype == 'tbt_data':
             options.tbt_name = f"{file_name}{suffix}"
           else:
             options.files = join(dir_name, f"{file_name}{suffix}")
