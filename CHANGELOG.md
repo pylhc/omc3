@@ -1,4 +1,9 @@
-# OMC3 Changelog
+# OMC3 
+
+#### 2025-05-16 - v0.24.4 - _wvangoet_
+
+- Fixed:
+  - `skekb` added BPM naming convention for superKEK and removed error when energy is missing from accelerator model.
 
 #### 2025-04-28 - v0.24.3 - _jdilly_
 
