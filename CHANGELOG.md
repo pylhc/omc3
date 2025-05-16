@@ -1,4 +1,4 @@
-# OMC3 
+# OMC3 Changelog
 
 #### 2025-05-16 - v0.24.4 - _wvangoet_
 
