@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-04-28 - v0.24.4 - _wvangoet_
+
+- Fixed:
+  - Correct element regex and fixes for SuperKEKB.
+
 #### 2025-04-28 - v0.24.3 - _jdilly_
 
 - Fixed:
