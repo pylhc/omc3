@@ -65,7 +65,8 @@ Model Creation Keyword Args:
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import (Accelerator,
-                                                 AcceleratorDefinitionError)
+                                                 AcceleratorDefinitionError,
+                                                 AccElementTypes)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -75,6 +76,11 @@ class SKekB(Accelerator):
     """KEK's SuperKEKB accelerator."""
     NAME = "skekb"
     RINGS = ("ler", "her")
+    RE_DICT: dict[str, str] = {
+        AccElementTypes.BPMS: r"^M*",
+        AccElementTypes.MAGNETS: r".*",  
+        AccElementTypes.ARC_BPMS: r"^M*",
+    }
 
     @classmethod
     def get_parameters(cls):
