@@ -286,7 +286,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPoint</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">Accelerator</span><span class="p">,</span>
-                                                 <span class="n">AcceleratorDefinitionError</span><span class="p">)</span>
+                                                 <span class="n">AcceleratorDefinitionError</span><span class="p">,</span>
+                                                 <span class="n">AccElementTypes</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -298,6 +299,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;KEK&#39;s SuperKEKB accelerator.&quot;&quot;&quot;</span>
     <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;skekb&quot;</span>
     <span class="n">RINGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ler&quot;</span><span class="p">,</span> <span class="s2">&quot;her&quot;</span><span class="p">)</span>
+    <span class="n">RE_DICT</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;^M*&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>  
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;^M*&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
