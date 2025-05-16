@@ -10,7 +10,7 @@
 This is the python-tool package of the Optics Measurements and Corrections team (OMC) at CERN.
 
 Most of the codes are generic and not limited to CERN accelerators, and the package can easily be used for your favorite circular accelerator.
-To see how to adapt this for your machine, see our [documentation](https://pylhc.github.io/omc3/), `Model` section. 
+To see how to adapt this for your machine, see our [documentation](https://pylhc.github.io/omc3/), `Model` section.
 To contribute, see [our guidelines](https://pylhc.github.io/packages/development/contributing/) on the OMC website.
 
 ## Documentation
@@ -20,7 +20,7 @@ To contribute, see [our guidelines](https://pylhc.github.io/packages/development
 
 ## Installing
 
-Installation is easily done via `pip`:
+The package is deployed on `PyPI` and can easily be installed via `pip`:
 
 ```bash
 python -m pip install omc3
@@ -37,7 +37,7 @@ python -m pip install --editable "omc3[all]"
 
 Codes can then be run with either `python -m omc3.SCRIPT --FLAG ARGUMENT` or calling the `.py` file directly.
 
-#### Main Scripts
+<details> <summary><b>Main Scripts</b></summary>
 
 Main scripts to be executed lie in the [`/omc3`](omc3) directory. These include:
 
@@ -51,7 +51,9 @@ Main scripts to be executed lie in the [`/omc3`](omc3) directory. These include:
 - `amplitude_detuning_analysis.py` to perform amp. det. analysis on optics data with tune correction.
 - `madx_wrapper.py` to start a `MAD-X` run with a file or string as input.
 
-#### Plotting Scripts
+</details>
+
+<details> <summary><b>Plotting Scripts</b></summary>
 
 Plotting scripts for analysis outputs can be found in [`/omc3/plotting`](omc3/plotting):
 
@@ -62,7 +64,9 @@ Plotting scripts for analysis outputs can be found in [`/omc3/plotting`](omc3/pl
 - `plot_tfs.py` all-purpose tfs-file plotter.
 - `plot_kmod_results.py` to plot the beta and waist of the K-modulation results.
 
-#### Other Scripts
+</details>
+
+<details> <summary><b>Other Scripts</b></summary>
 
 Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 
@@ -79,6 +83,8 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 
 Example use for these scripts can be found in the [`tests`](tests) files.
 Documentation including relevant flags and parameters can be found at <https://pylhc.github.io/omc3/>.
+
+</details>
 
 ## License
 
