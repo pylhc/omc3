@@ -105,6 +105,9 @@ markers = [
     "extended: test run on PRs",
     "cern_network: tests that require access to afs or the technical network",
 ]
+addopts = [
+    "--import-mode=importlib",
+]
 # Helpful for pytest-debugging (leave commented out on commit):
 # log_cli = true
 # log_cli_level = "DEBUG"
