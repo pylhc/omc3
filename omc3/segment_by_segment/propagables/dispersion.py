@@ -129,9 +129,9 @@ class DispersionMomentum(Propagable):
     @classmethod
     def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
         c = cls.columns.planed(plane)
-        dispersion = meas.dispersion[plane].loc[names, c.column]
+        ddispersion = meas.dispersion[plane].loc[names, c.column]
         # error = meas.dispersion[plane].loc[names, c.error_column]
-        return dispersion, 0
+        return ddispersion, 0
 
     @classmethod
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
@@ -144,11 +144,8 @@ class DispersionMomentum(Propagable):
         return True
 
     def add_differences(self, segment_diffs: SegmentDiffs):
-        """ Calculate the differences between the propagated models and the measured values."""
-        dfs = self.get_difference_dataframes()
-        for plane, df in dfs.items():
-            # save to diffs/write to file (if allow_write is set)
-            segment_diffs.dispersion[plane] = df
+        """ No need for differences, for now """
+        return None
 
     def get_segment_observation_points(self, plane: str):
         """ Return the measurement points for the given plane, that are in the segment. """
