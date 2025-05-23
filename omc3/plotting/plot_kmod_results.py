@@ -59,6 +59,7 @@ Create Plots for the K-Modulation data.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -96,9 +97,18 @@ def _get_params() -> EntryPointParameters:
         name="data",
         required=True,
         type=PathOrStrOrDataFrame,
+        nargs="+",
         help="Path to the K-Mod DataFrame (i.e. `results.tfs`), "
              "e.g. from `omc3.kmod_averages`, or the DataFrame itself.",
     )
+    params.add_parameter(
+        name="labels",
+        required=False,
+        type=str,
+        nargs="+",
+        help="Label for the K-Mod DataFrame (e.g. 'Corrected).",
+    )
+
     params.add_parameter(
         name="ip",
         type=int,
@@ -152,9 +162,10 @@ def plot_kmod_results(opt: DotDict) -> dict[str, plt.Figure]:
     LOG.info("Plotting K-Mod results.")
     
     # Loading ---
-    df_kmod = opt.data
-    if isinstance(df_kmod, (Path, str)):
-        df_kmod = tfs.read(df_kmod, index=BEAM)
+    dfs_kmod = [tfs.read(df, index=BEAM) if isinstance(df, (Path, str)) else df for df in opt.data]
+    labels = opt.labels
+    if labels is None:
+        labels = [""] if len(opt.data) == 1 else [str(i) for i in range(1, len(opt.data)+1)]
 
     # Plotting ---
     pstyle.set_style(opt.plot_styles, opt.manual_style)
@@ -164,8 +175,8 @@ def plot_kmod_results(opt: DotDict) -> dict[str, plt.Figure]:
         if parameter == PARAM_BETABEAT and reference is None:
             continue
         
-        figs[parameter]  = plot_parameter(df_kmod, parameter, reference=reference, ip=opt.ip)
-    
+        figs[parameter]  = plot_parameter(dfs_kmod, labels, parameter, reference=reference, ip=opt.ip)
+        
     # Output ---
     if opt.output_dir is not None:
         output_dir = Path(opt.output_dir)
@@ -187,7 +198,8 @@ def plot_kmod_results(opt: DotDict) -> dict[str, plt.Figure]:
 
 
 def plot_parameter(
-    df_kmod: tfs.TfsDataFrame,
+    dfs_kmod: Sequence[tfs.TfsDataFrame],
+    labels: Sequence[str],
     parameter: str,
     reference: list[float],
     ip: str | None = None,
@@ -228,32 +240,33 @@ def plot_parameter(
             ax.plot(*reference, color="black", label="Model", ls='none')
 
     # Plot data ---
-    for beam in (1, 2):
-        if beam not in df_kmod.index:
-            LOG.info(f"Beam {beam} not found in DataFrame. Skipping.")
-            continue
+    for idx, (data_label, df_kmod) in enumerate(zip(labels, dfs_kmod)):
+        for beam in (1, 2):
+            if beam not in df_kmod.index:
+                LOG.info(f"Beam {beam} not found in DataFrame. Skipping.")
+                continue
 
-        if parameter == PARAM_BETA:
-            x, xerr = _get_beta_and_err(df_kmod, beam, 'X')
-            y, yerr = _get_beta_and_err(df_kmod, beam, 'Y')
+            if parameter == PARAM_BETA:
+                x, xerr = _get_beta_and_err(df_kmod, beam, 'X')
+                y, yerr = _get_beta_and_err(df_kmod, beam, 'Y')
 
-        if parameter == PARAM_BETABEAT:
-            if reference is None:
-                msg = "To plot betabeating, please give a betastar for reference!"
-                raise ValueError(msg)
+            if parameter == PARAM_BETABEAT:
+                if reference is None:
+                    msg = "To plot betabeating, please give a betastar for reference!"
+                    raise ValueError(msg)
 
-            x, xerr = _get_beat_and_err(df_kmod, beam, 'X', reference[0])
-            y, yerr = _get_beat_and_err(df_kmod, beam, 'Y', reference[1])
+                x, xerr = _get_beat_and_err(df_kmod, beam, 'X', reference[0])
+                y, yerr = _get_beat_and_err(df_kmod, beam, 'Y', reference[1])
 
-        if parameter == PARAM_WAIST:
-            x, xerr = _get_waist_and_err(df_kmod, beam, 'X')
-            y, yerr = _get_waist_and_err(df_kmod, beam, 'Y')
+            if parameter == PARAM_WAIST:
+                x, xerr = _get_waist_and_err(df_kmod, beam, 'X')
+                y, yerr = _get_waist_and_err(df_kmod, beam, 'Y')
 
-        ax.errorbar(
-                    x, y, xerr=xerr, yerr=yerr,
-                    color=f'C{beam-1}',
-                    label=f'B{beam} IP{ip}' if ip is not None else f'B{beam}'
-        )
+            ax.errorbar(
+                        x, y, xerr=xerr, yerr=yerr,
+                        color=f'C{beam-1+2*idx}',
+                        label=f'B{beam} IP{ip} {data_label}' if ip is not None else f'B{beam} {data_label}'
+            )
 
     # Decorate axes ---
     label = AXIS_LABELS[parameter]
