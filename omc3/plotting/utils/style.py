@@ -6,8 +6,7 @@ Helper functions to style plots.
 """
 from typing import Dict, Any, Sequence, Union
 
-import matplotlib
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, rcParams
 from pathlib import Path
 
 from omc3.utils.iotools import PathOrStr
@@ -44,6 +43,6 @@ def set_style(styles: Union[Path, str, Sequence[Union[Path, str]]] = 'standard',
     if manual:
         for key, value in manual.items():
             if value == REMOVE_ENTRY:
-                manual[key] = matplotlib.rcParams[key]
+                manual[key] = rcParams[key]
         styles.append(manual)
     plt.style.use(styles)

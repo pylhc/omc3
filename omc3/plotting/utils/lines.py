@@ -4,10 +4,9 @@ Plotting Utilities: Lines
 
 Line-plotting related functionality.
 """
-import matplotlib
 import matplotlib.transforms as mtrans
 import numpy as np
-from matplotlib import transforms
+from matplotlib import rcParams
 from matplotlib.markers import MarkerStyle
 from matplotlib.patches import PathPatch
 
@@ -84,7 +83,7 @@ def plot_vertical_lines_fast(ax, x, y=(0, 1), **kwargs):
 
 
 def plot_vertical_line(ax, axvline_args: dict, text: str = None, text_loc: str = None,
-                       label_size: float = matplotlib.rcParams['font.size']):
+                       label_size: float = rcParams['font.size']):
     """
     Plot a vertical line into the plot, where mline is a dictionary with arguments for ``axvline``.
     Advanced capabilities include: Automatic alpha value (if not overwritten), automatic
@@ -108,6 +107,6 @@ def plot_vertical_line(ax, axvline_args: dict, text: str = None, text_loc: str =
             raise ValueError(f"Unknown value '{text_loc}' for label location.")
 
         ax.text(x=axvline_args['x'], s=text,
-                transform=transforms.blended_transform_factory(ax.transData, ax.transAxes),
+                transform=mtrans.blended_transform_factory(ax.transData, ax.transAxes),
                 color=line.get_color(),
                 fontdict={'size': label_size}, **VERTICAL_LINES_TEXT_LOCATIONS[text_loc])
