@@ -106,14 +106,14 @@ def write_varmap(path: Path, varmap: dict[str, dict[str, pd.Series]]):
 # Helper -----------------------------------------------------------------------
 
 
-def _check_keys(store: pd.HDFStore, keys: Sequence[str], id: str):
+def _check_keys(store: pd.HDFStore, keys: Sequence[str], file_id: str):
     if keys is None:
         return
 
     groups = _main_store_groups(store)
     not_found = [k for k in keys if k not in groups]
     if len(not_found):
-        raise ValueError(f"The following keys could not be found in {id} file:" f" {', '.join(not_found)}")
+        raise ValueError(f"The following keys could not be found in {file_id} file:" f" {', '.join(not_found)}")
 
 
 def _main_store_groups(store: pd.HDFStore) -> set[str]:
