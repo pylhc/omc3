@@ -7,8 +7,8 @@ Helper functions to handle colors in plots.
 import colorsys
 from itertools import cycle
 
-import matplotlib as mpl
 from matplotlib import colors as mc
+from matplotlib.container import ErrorbarContainer
 
 
 def get_mpl_color(idx=None):
@@ -76,5 +76,5 @@ def change_ebar_alpha_for_line(ebar, alpha):
 def change_ebar_alpha_for_axes(ax, alpha):
     """Wrapper for change_ebar_alpha_for_line to change all in one axes."""
     for ebar in ax.containers:
-        if isinstance(ebar, mpl.container.ErrorbarContainer):
+        if isinstance(ebar, ErrorbarContainer):
             change_ebar_alpha_for_line(ebar, alpha)
