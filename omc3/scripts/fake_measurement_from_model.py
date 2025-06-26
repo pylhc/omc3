@@ -227,7 +227,8 @@ def generate(opt) -> dict[str, tfs.TfsDataFrame]:
         new_dfs = create(df_twiss, df_model, parameter,
                          relative_error=error,
                          randomize=randomize,
-                         headers=headers)
+                         headers=headers,
+                         seed=opt.seed)
         results.update(new_dfs)
 
     # maybe create normalized dispersion
