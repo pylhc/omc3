@@ -97,6 +97,34 @@ repository = "https://github.com/pylhc/omc3"
 documentation = "https://pylhc.github.io/omc3/"
 changelog = "https://github.com/pylhc/omc3/blob/master/CHANGELOG.md"
 
+# ----- Some uv Specifics ----- #
+
+# Our CIs use uv and we need to let it know where to find the AccPy stuff
+# See doc on indices at https://docs.astral.sh/uv/concepts/indexes/
+
+[tool.uv]
+allow-insecure-host = ["acc-py-repo.cern.ch"]  # AccPy uses http and we need to allow that
+
+[tool.uv.pip]
+compile-bytecode = true
+
+# Specify these packages are to be found at the AccPy index
+[tool.uv.sources]
+pytimber = { index = "accpy" }
+pylogbook = { index = "accpy" }
+
+# And we define the specifics for the AccPy index
+[[tool.uv.index]]
+name = "accpy"
+url = "http://acc-py-repo.cern.ch/repository/vr-py-releases/simple"
+default = true  # default = lowest priority -> try if packages not found in other indexes
+
+# Since we make AccPy default index, we need to also provide the PyPI index or
+# it would be ignored (https://docs.astral.sh/uv/concepts/indexes/#defining-an-index)
+[[tool.uv.index]]
+bname = "pypi"
+url = "https://pypi.org/simple"
+
 # ----- Testing ----- #
 
 [tool.pytest.ini_options]
