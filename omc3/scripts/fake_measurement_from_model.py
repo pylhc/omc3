@@ -212,7 +212,7 @@ def generate(opt) -> dict[str, tfs.TfsDataFrame]:
     headers = {f"{TUNE}1": df_twiss[f"{TUNE}1"], f"{TUNE}2": df_twiss[f"{TUNE}2"]}
     if isinstance(opt.twiss, PathOrStr):
         headers[FAKED_HEADER] = str(opt.twiss)
-        
+
     if isinstance(opt.model, PathOrStr):
         headers[MODEL_DIRECTORY] = Path(opt.model).parent
 
@@ -318,7 +318,8 @@ def create_phase_advance(df_twiss: pd.DataFrame, df_model: pd.DataFrame, paramet
         errors = _get_random_errors(errors, np.ones_like(values)) % 0.5
 
     if VALUES in randomize:
-        values = np.random.normal(values, errors)
+        rng = np.random.default_rng()  # numpy random generator, the correct way
+        values = rng.normal(values, errors)
         values = ang_interval_check(values)
 
     df_adv[parameter] = values
@@ -352,7 +353,8 @@ def create_total_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter
     errors[0] = 0.
 
     if VALUES in randomize:
-        rand_val = np.random.normal(values, errors) % 1
+        rng = np.random.default_rng()  # numpy random generator, the correct way
+        rand_val = rng.normal(values, errors) % 1
         values += ang_diff(rand_val, values)
 
     df_tot[parameter] = values % 1
@@ -452,7 +454,8 @@ def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: f
             errors = _get_random_errors(errors, values)
 
         if VALUES in randomize:
-            values = np.random.normal(values, errors)
+            rng = np.random.default_rng()  # numpy random generator, the correct way
+            values = rng.normal(values, errors)
 
     df = tfs.TfsDataFrame({parameter: values,
                            f"{ERR}{parameter}": errors},
@@ -508,7 +511,7 @@ def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame | None = None,
         model = try_reading(model)
         if add_coupling:
             model = add_coupling_to_model(model)
-    
+
     # intersect index ---
     index = twiss.index.intersection(model.index)
     twiss, model = twiss.loc[index, :], model.loc[index, :]
@@ -544,11 +547,13 @@ def _get_random_errors(errors: np.array, values: np.array) -> np.array:
     if any(errors == 0):
         raise ValueError("Errors were requested but given relative error was zero.")
 
+    rng = np.random.default_rng()  # numpy random generator, the correct way
     random_errors = np.zeros_like(errors)
     too_small = np.ones_like(errors, dtype=bool)
     n_too_small = 1
+
     while n_too_small:
-        random_errors[too_small] = np.random.normal(errors[too_small], errors[too_small])
+        random_errors[too_small] = rng.normal(errors[too_small], errors[too_small])
         too_small = random_errors < EPSILON * np.abs(values)
         n_too_small = sum(too_small)
         LOG.debug(f"{n_too_small} error values are smaller than given eps.")
