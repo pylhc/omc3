@@ -38,9 +38,9 @@ def require_param(name: str, parameters: dict, options: dict):
         raise AttributeError(f"Missing flag `{name}`.\nUsage:\n{_get_help_str(name, parameters)}")
 
 
-def _maybe_get(space: str, category: str, map: dict)  -> str:
-    if category in map:
-        return f"{space}{category}: {map[category]}\n"
+def _maybe_get(space: str, category: str, mapping: dict)  -> str:
+    if category in mapping:
+        return f"{space}{category}: {mapping[category]}\n"
     return ""
 
 

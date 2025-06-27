@@ -108,7 +108,6 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict
 
-import matplotlib
 from matplotlib import pyplot as plt, rcParams
 from matplotlib.axes import Axes
 
@@ -125,9 +124,9 @@ from omc3.plotting.utils.windows import (
 )
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
 from omc3.plotting.utils import (
-    annotations as pannot, 
+    annotations as pannot,
     lines as plines,
-    style as pstyle, 
+    style as pstyle,
     colors as pcolors,
 )
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
@@ -511,7 +510,7 @@ def _share_xaxis(fig_collection):
         axs = fig_container.axes.values()
 
         # Axes.get_shared_x_axes() does not work here as it returns a GrouperView
-        # instead of the Grouper (i.e. _shared_axes['x'], matplotlib < 3.8), 
+        # instead of the Grouper (i.e. _shared_axes['x'], matplotlib < 3.8),
         # so we access _shared_axes directly
         fig_container.axes[fig_container.axes_ids[-1]]._shared_axes["x"].join(*axs)
 
@@ -549,7 +548,7 @@ def _create_plots(fig_collection, opt):
                 window.add_tab(tab)
             window.show()
             return
-        
+
         if len(fig_collection) > rcParams['figure.max_open_warning']:
             log_no_qtpy_many_windows()
 
@@ -557,7 +556,7 @@ def _create_plots(fig_collection, opt):
             create_pyplot_window_from_fig(fig_container.fig, title=fig_container.id)
         plt.show()
 
-            
+
 
 def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
     for idx, (label, values) in enumerate(data.items()):
@@ -594,7 +593,7 @@ def _set_axes_layout(ax, x_lim, y_lim,  xlabel, ylabel):
 def get_full_output_path(folder, filename):
     if folder is None or filename is None:
         return None
-    return Path(folder) / f"{filename}.{matplotlib.rcParams['savefig.format']}"
+    return Path(folder) / f"{filename}.{rcParams['savefig.format']}"
 
 
 # Helper -----------------------------------------------------------------------

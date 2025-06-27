@@ -4,8 +4,9 @@ Plot Spectrum - Stem Plotter
 
 Stem plotting functionality for spectrum plotter.
 """
-import matplotlib
+
 from generic_parser import DotDict
+from matplotlib import rcParams
 from matplotlib import pyplot as plt, lines as mlines
 
 from omc3.plotting.spectrum.utils import (plot_lines, FigureContainer, get_cycled_color,
@@ -74,8 +75,8 @@ def _format_axes(fig_cont: FigureContainer, limits: DotDict):
 
 def _create_legend(ax, labels, lines, ncol):
     lines_params = dict(
-        marker=matplotlib.rcParams[u'lines.marker'],
-        markersize=matplotlib.rcParams[u'font.size'] * 0.5,
+        marker=rcParams[u'lines.marker'],
+        markersize=rcParams[u'font.size'] * 0.5,
         linestyle='None',
     )
     legend_params = dict(
@@ -97,6 +98,6 @@ def _create_legend(ax, labels, lines, ncol):
 
     # move above line-labels
     nlines = sum([line is not None for line in lines.values()]) + 0.05
-    label_size = get_fontsize_as_float(matplotlib.rcParams['axes.labelsize'])
+    label_size = get_fontsize_as_float(rcParams['axes.labelsize'])
     y_shift = get_approx_size_in_axes_coordinates(leg.axes, label_size=label_size) * nlines
     leg.axes.legend(handles=handles, bbox_to_anchor=(1. + x_shift, 1. + y_shift), **legend_params)
