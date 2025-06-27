@@ -118,3 +118,37 @@ class Dispersion(Propagable):
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
         propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
         return model_disp, propagated_err
+
+
+class DispersionMomentum(Propagable):
+
+    _init_pattern = "dp{}_{}"  # format(plane, ini/end)
+    columns: PropagableColumns = PropagableColumns("DP")
+
+    @classmethod
+    def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
+        c = cls.columns.planed(plane)
+        ddispersion = meas.dispersion[plane].loc[names, c.column]
+        # error = meas.dispersion[plane].loc[names, c.error_column]
+        return ddispersion, 0
+
+    @classmethod
+    def in_measurement(cls, meas: OpticsMeasurement) -> bool:
+        """ Check if the dispersion is in the measurement data. """
+        try:
+            meas.dispersion_x
+            meas.dispersion_y
+        except FileNotFoundError:
+            return False
+        return True
+
+    def add_differences(self, segment_diffs: SegmentDiffs):
+        """ No need for differences, for now """
+        return None
+
+    def get_segment_observation_points(self, plane: str):
+        """ Return the measurement points for the given plane, that are in the segment. """
+        return common_indices(
+            self.segment_models.forward.index,
+            self._meas.dispersion[plane].index
+        )
