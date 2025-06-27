@@ -119,7 +119,6 @@ from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from typing import Callable
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -203,14 +202,11 @@ def generate(opt) -> dict[str, tfs.TfsDataFrame]:
     global_correction_entrypoint uses (same format you would get from hole_in_one).
     """
     LOG.info("Generating fake measurements.")
-
     # prepare data
+    np.random.seed(opt.seed)
     randomize = opt.randomize if opt.randomize is not None else []
-    df_twiss, df_model = _get_data(
-        opt.twiss,
-        opt.model,
-        add_coupling=(F1001 in opt.parameters) or (F1010 in opt.parameters),
-    )
+    df_twiss, df_model = _get_data(opt.twiss, opt.model,
+                                   add_coupling=(F1001 in opt.parameters) or (F1010 in opt.parameters))
 
     # headers
     headers = {f"{TUNE}1": df_twiss[f"{TUNE}1"], f"{TUNE}2": df_twiss[f"{TUNE}2"]}
@@ -223,12 +219,11 @@ def generate(opt) -> dict[str, tfs.TfsDataFrame]:
     # create defaults
     results = {}
     for parameter, error in _get_loop_parameters(opt.parameters, opt.relative_errors):
-        create: Callable = CREATOR_MAP[parameter[:-1]]
+        create = CREATOR_MAP[parameter[:-1]]
         new_dfs = create(df_twiss, df_model, parameter,
                          relative_error=error,
                          randomize=randomize,
-                         headers=headers,
-                         seed=opt.seed)
+                         headers=headers)
         results.update(new_dfs)
 
     # maybe create normalized dispersion
@@ -256,19 +251,18 @@ def generate(opt) -> dict[str, tfs.TfsDataFrame]:
 # Main Creator Functions -------------------------------------------------------
 
 def create_beta(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                relative_error: float, randomize: Sequence[str], headers: dict,
-                seed: int | None = None):
+                relative_error: float, randomize: Sequence[str], headers: dict):
     """ Create both beta_amp and beta_phase measurements. """
     LOG.info(f"Creating fake beta for {parameter}.")
     plane = parameter[-1]
 
     # create beta
-    df = create_measurement(df_twiss, parameter, relative_error, randomize, seed)
+    df = create_measurement(df_twiss, parameter, relative_error, randomize)
     df[parameter] = np.abs(df[parameter])
     df = append_model_param(df, df_model, parameter, beat=True)
 
     # create alpha
-    df_alpha = create_measurement(df_twiss, f'{ALPHA}{plane}', relative_error, randomize, seed)
+    df_alpha = create_measurement(df_twiss, f'{ALPHA}{plane}', relative_error, randomize)
     df_alpha = append_model_param(df_alpha, df_model, f'{ALPHA}{plane}')
     df = tfs.concat([df, df_alpha], axis=1, join='inner')
 
@@ -280,12 +274,11 @@ def create_beta(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
 
 
 def create_dispersion(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                      relative_error: float, randomize: Sequence[str], headers: dict,
-                      seed: int | None = None):
+                      relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates dispersion measurement. """
     LOG.info(f"Creating fake dispersion for {parameter}.")
     plane = parameter[-1]
-    df = create_measurement(df_twiss, parameter, relative_error, randomize, seed)
+    df = create_measurement(df_twiss, parameter, relative_error, randomize)
     df = append_model_param(df, df_model, parameter)
     df = append_model_s_and_phaseadv(df, df_model, planes=plane)
     df.headers = headers.copy()
@@ -293,22 +286,20 @@ def create_dispersion(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter:
 
 
 def create_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                 relative_error: float, randomize: Sequence[str], headers: dict,
-                 seed: int | None = None):
+                 relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates both phase advance and total phase measurements. """
     LOG.info(f"Creating fake phases for {parameter}.")
     results = {}
-    dict_adv = create_phase_advance(df_twiss, df_model, parameter, relative_error, randomize, headers, seed)
+    dict_adv = create_phase_advance(df_twiss, df_model, parameter, relative_error, randomize, headers)
     results.update(dict_adv)
 
-    dict_tot = create_total_phase(df_twiss, df_model, parameter, relative_error, randomize, headers, seed)
+    dict_tot = create_total_phase(df_twiss, df_model, parameter, relative_error, randomize, headers)
     results.update(dict_tot)
     return results
 
 
 def create_phase_advance(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                         relative_error: float, randomize: Sequence[str], headers: dict,
-                         seed: int | None = None):
+                         relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates phase advance measurements. """
     LOG.debug(f"Creating fake phase advance for {parameter}.")
     plane = parameter[-1]
@@ -324,11 +315,10 @@ def create_phase_advance(df_twiss: pd.DataFrame, df_model: pd.DataFrame, paramet
     values = get_phase_advances(df_twiss)
     errors = relative_error * np.ones_like(values)
     if ERRORS in randomize:
-        errors = _get_random_errors(errors, np.ones_like(values), seed) % 0.5
+        errors = _get_random_errors(errors, np.ones_like(values)) % 0.5
 
     if VALUES in randomize:
-        rng = np.random.default_rng(seed)  # numpy random generator, the correct way
-        values = rng.normal(values, errors)
+        values = np.random.normal(values, errors)
         values = ang_interval_check(values)
 
     df_adv[parameter] = values
@@ -347,8 +337,7 @@ def create_phase_advance(df_twiss: pd.DataFrame, df_model: pd.DataFrame, paramet
 
 
 def create_total_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                       relative_error: float, randomize: Sequence[str], headers: dict,
-                       seed: int | None = None):
+                       relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates total phase measurements. """
     LOG.debug(f"Creating fake total phase for {parameter}.")
     plane = parameter[-1]
@@ -359,12 +348,11 @@ def create_total_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter
     values = df_twiss[f"{PHASE_ADV}{plane}"] - df_twiss.loc[element0, f"{PHASE_ADV}{plane}"]
     errors = relative_error * np.ones_like(values)
     if ERRORS in randomize:
-        errors = _get_random_errors(errors, np.ones_like(values), seed) % 0.5
+        errors = _get_random_errors(errors, np.ones_like(values)) % 0.5
     errors[0] = 0.
 
     if VALUES in randomize:
-        rng = np.random.default_rng(seed)  # numpy random generator, the correct way
-        rand_val = rng.normal(values, errors) % 1
+        rand_val = np.random.normal(values, errors) % 1
         values += ang_diff(rand_val, values)
 
     df_tot[parameter] = values % 1
@@ -387,8 +375,7 @@ def create_total_phase(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter
 
 
 def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
-                    relative_error: float, randomize: Sequence[str], headers: dict,
-                    seed: int | None = None):
+                    relative_error: float, randomize: Sequence[str], headers: dict):
     """ Creates coupling measurements for either the difference or sum RDT. """
     LOG.info(f"Creating fake coupling for {parameter}.")
     def model_column(part):
@@ -397,7 +384,7 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
 
     # Naming with R, I, A, P as long as model is involved
     df = tfs.concat(
-        [create_measurement(df_twiss, model_col, relative_error, randomize, seed) for model_col in column_map.keys()],
+        [create_measurement(df_twiss, model_col, relative_error, randomize) for model_col in column_map.keys()],
         axis=1
     )
     for model_col in column_map.keys():
@@ -452,7 +439,7 @@ def create_normalized_dispersion(df_disp: pd.DataFrame, df_beta: pd.DataFrame,
 
 
 def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: float,
-                       randomize: Sequence[str], seed: int | None = None) -> tfs.TfsDataFrame:
+                       randomize: Sequence[str]) -> tfs.TfsDataFrame:
     """ Create a new measurement Dataframe from df_twiss from parameter. """
     LOG.debug(f"Creating fake measurement for {parameter}.")
     values = df_twiss.loc[:, parameter]
@@ -462,11 +449,10 @@ def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: f
                     f"Fake measurement will be zero as well.")
     else:
         if ERRORS in randomize:
-            errors = _get_random_errors(errors, values, seed)
+            errors = _get_random_errors(errors, values)
 
         if VALUES in randomize:
-            rng = np.random.default_rng(seed)  # numpy random generator, the correct way
-            values = rng.normal(values, errors)
+            values = np.random.normal(values, errors)
 
     df = tfs.TfsDataFrame({parameter: values,
                            f"{ERR}{parameter}": errors},
@@ -552,19 +538,17 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float] | No
     return zip(parameters, errors)
 
 
-def _get_random_errors(errors: np.array, values: np.array, seed: int | None = None) -> np.array:
+def _get_random_errors(errors: np.array, values: np.array) -> np.array:
     """ Creates normal distributed error-values that will not be lower than EPSILON. """
     LOG.debug("Calculating normal distributed random errors.")
     if any(errors == 0):
         raise ValueError("Errors were requested but given relative error was zero.")
 
-    rng = np.random.default_rng(seed)  # numpy random generator, the correct way
     random_errors = np.zeros_like(errors)
     too_small = np.ones_like(errors, dtype=bool)
     n_too_small = 1
-
     while n_too_small:
-        random_errors[too_small] = rng.normal(errors[too_small], errors[too_small])
+        random_errors[too_small] = np.random.normal(errors[too_small], errors[too_small])
         too_small = random_errors < EPSILON * np.abs(values)
         n_too_small = sum(too_small)
         LOG.debug(f"{n_too_small} error values are smaller than given eps.")

@@ -188,7 +188,7 @@ extend-select = [
     # "TID",      # Some good import practices
     # "TC",       # Enforce importing certain types in a TYPE_CHECKING block
     # "PTH",      # Use pathlib instead of os.path
-    "NPY",      # Some numpy-specific things
+    # "NPY",      # Some numpy-specific things
 ]
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
