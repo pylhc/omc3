@@ -216,7 +216,8 @@ class ModelCreator(ABC):
             file_path = Path(dir_) / out_file
             if not file_path.exists():
                 raise FileNotFoundError(
-                    f"Model Creation Failed. The file '{file_path.absolute()}' was not created."
+                    f"Model Creation Failed, could not find file {out_file} in {dir_}.\n"
+                    f"The file '{file_path.absolute()}' was not created."
                 )
     
     def prepare_symlink(self):
@@ -447,7 +448,7 @@ class CorrectionModelCreator(ModelCreator):
         Args:
             accel (Accelerator): Accelerator Class Instance.
             twiss_out (Path | str): Path to the twiss(-elements) file to write.
-            change_params (Sequence[Path]): Sequence of correction/matching files.
+            corr_files (Sequence[Path]): Sequence of correction/matching files.
             update_dpp (bool): Whether to update the dpp in the machine.
         """
         LOGGER.debug("Initializing Correction Model Creator Base Attributes")
