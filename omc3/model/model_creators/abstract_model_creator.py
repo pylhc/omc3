@@ -216,8 +216,8 @@ class ModelCreator(ABC):
             file_path = Path(dir_) / out_file
             if not file_path.exists():
                 raise FileNotFoundError(
-                    f"Model Creation Failed, could not find file {out_file} in {dir_}.\n"
-                    f"The file '{file_path.absolute()}' was not created."
+                    f"Model Creation Failed: The file '{out_file}' was not found in the directory '{dir_}', "
+                    f"implying the expected file '{file_path.absolute()}' was not created by MAD-X."
                 )
     
     def prepare_symlink(self):
