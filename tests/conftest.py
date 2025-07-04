@@ -181,7 +181,7 @@ def tmp_model(factory, year: str, beam: int, tunes: str, beta: str, suffix: str 
         model_dir=tmp_model_path,
         year=year,
         accel="lhc",
-        energy=0.45 if beta == '11m' else 6.5,
+        energy=450 if beta == '11m' else 6500,
         driven_excitation=None if beta == '11m' else 'acd'
     )
 
