@@ -115,7 +115,7 @@ def get_rdts_from_optics_analysis(
             accel="lhc",
             beam=beam,
             year="2024",
-            energy=6.8,
+            energy=6800,
             model_dir=model_dir,
             only_coupling=only_coupling,
             compensation="none",

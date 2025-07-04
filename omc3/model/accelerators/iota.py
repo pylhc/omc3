@@ -28,7 +28,7 @@ Model Creation Keyword Args:
 
     - **energy** *(float)*:
 
-        Energy in **Tev**.
+        Energy in **GeV**.
 
 
     - **model_dir** *(str)*:

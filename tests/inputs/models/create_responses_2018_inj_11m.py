@@ -63,7 +63,7 @@ def _create_response(beam: int, correction_params: CorrectionParameters, creator
             model_dir=model_dir,
             year="2018",
             accel="lhc",
-            energy=0.45,
+            energy=450,
             creator=creator,
             delta_k=DELTA_K,
             variable_categories=correction_params.variables,
