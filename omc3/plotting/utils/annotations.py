@@ -10,10 +10,10 @@ import itertools
 import re
 from typing import TYPE_CHECKING
 
-import matplotlib
+import matplotlib as mpl
 import pandas as pd
 import tfs
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, rcParams
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -122,7 +122,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
 
             if not lines_only:
                 ypos = ylim[not inside] + (ylim[1] - ylim[0]) * 0.01
-                c = 'grey' if inside else matplotlib.rcParams["text.color"]
+                c = 'grey' if inside else rcParams["text.color"]
                 ax.text(xpos, ypos, ip, color=c, ha='center', va='bottom')
 
     ax.set_xlim(xlim)
@@ -251,8 +251,8 @@ def small_title(ax: Axes = None) -> None:
     # could not get set_title() to work properly, so one parameter at a time
     ax.title.set_position([1.0, 1.02])
     ax.title.set_transform(ax.transAxes)
-    ax.title.set_fontsize(matplotlib.rcParams['font.size'])
-    ax.title.set_fontweight(matplotlib.rcParams['font.weight'])
+    ax.title.set_fontsize(rcParams['font.size'])
+    ax.title.set_fontweight(rcParams['font.weight'])
     ax.title.set_verticalalignment('bottom')
     ax.title.set_horizontalalignment('right')
 
@@ -271,8 +271,8 @@ def figure_title(text: str, ax: Axes = None, pad: float = 0, **kwargs) -> None:
         ax = plt.gca()
 
     # could not get set_title() to work properly, so one parameter at a time
-    fdict = dict(fontsize=matplotlib.rcParams['font.size'],
-                 fontweight=matplotlib.rcParams['font.weight'],
+    fdict = dict(fontsize=rcParams['font.size'],
+                 fontweight=rcParams['font.weight'],
                  va="top", ha="center")
     fdict.update(kwargs)
     ax.set_title(text, transform=ax.figure.transFigure, fontdict=fdict)
@@ -337,7 +337,7 @@ def make_top_legend(
     return leg
 
 
-class OOMFormatter(matplotlib.ticker.ScalarFormatter):
+class OOMFormatter(mpl.ticker.ScalarFormatter):
     """
     Order of Magnitude Formatter.
 
@@ -349,7 +349,7 @@ class OOMFormatter(matplotlib.ticker.ScalarFormatter):
     def __init__(self, order=0, fformat="%1.1f", offset=True, mathText=True):
         self.oom = order
         self.fformat = fformat
-        matplotlib.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=mathText)
+        mpl.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=mathText)
 
     def _set_orderOfMagnitude(self, nothing):
         self.orderOfMagnitude = self.oom
@@ -357,7 +357,7 @@ class OOMFormatter(matplotlib.ticker.ScalarFormatter):
     def _set_format(self, vmin, vmax):
         self.format = self.fformat
         if self._useMathText:
-            self.format = '$%s$' % matplotlib.ticker._mathdefault(self.format)
+            self.format = '$%s$' % mpl.ticker._mathdefault(self.format)
 
 
 def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, math_text=True):
@@ -400,4 +400,4 @@ def get_fontsize_as_float(font_size: str | float) -> float:
             None: 1.0}[font_size]
     except KeyError:
         return font_size
-    return scale * matplotlib.rcParams['font.size']
+    return scale * rcParams['font.size']

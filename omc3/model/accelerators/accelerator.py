@@ -11,7 +11,7 @@ import re
 import os
 from pathlib import Path
 
-import numpy
+import numpy as np
 import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters
@@ -231,7 +231,7 @@ class Accelerator:
             self.error_defs_file = errordefspath
 
     def find_modifier(self, modifier: Path | str):
-        """ Try to find a modifier file, which might be given only by its name. 
+        """ Try to find a modifier file, which might be given only by its name.
         By default this is looking for full-path, model-dir and in the acc-models-path,
         but should probably be overwritten by the accelerator sub-classes.
         """
@@ -297,7 +297,7 @@ class Accelerator:
     # Class methods ###########################################
 
     @classmethod
-    def get_element_types_mask(cls, list_of_elements: list[str], types) -> numpy.ndarray:
+    def get_element_types_mask(cls, list_of_elements: list[str], types) -> np.ndarray:
         """
         Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the
         specified types.
@@ -375,9 +375,9 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
 
 
 def find_called_files_with_tag(madx_file: Path, tag: str) -> list[Path] | None:
-    """ Parse lines that call a file and are tagged with the given tag and return 
-    a list of paths to these files. 
-    
+    """ Parse lines that call a file and are tagged with the given tag and return
+    a list of paths to these files.
+
     This is mainly used to find the modifier tag in lines and return called file in these lines.
 
     The modifier tag is used by the model creator to mark which line defines modifiers

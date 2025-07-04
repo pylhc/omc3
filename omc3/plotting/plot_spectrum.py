@@ -189,7 +189,7 @@ import os
 from collections import OrderedDict
 from typing import Tuple
 
-import matplotlib
+import matplotlib as mpl
 from cycler import cycler
 
 from generic_parser.entry_datatypes import DictAsString
@@ -216,7 +216,7 @@ def get_reshuffled_tab20c():
     Reshuffle tab20c so that the colors change between next lines.
     Needs to be up here as it is used in ``DEFAULTS`` which is loaded early.
     """
-    tab20c = matplotlib.colormaps['tab20c'].colors
+    tab20c = mpl.colormaps['tab20c'].colors
     out = [None] * 20
     step, chunk = 4, 5
     for idx in range(step):
@@ -329,7 +329,7 @@ def get_params():
                          default={},
                          help='Additional style rcParameters which update the set of predefined ones.'
                          )
- 
+
     return params
 
 

@@ -13,7 +13,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.model import manager as model_manager
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.constants import Fetcher
-from omc3.model.model_creators.abstract_model_creator import ModelCreator 
+from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
@@ -42,8 +42,8 @@ def _get_params():
               "If not provided it will be written to sys.stdout.")
     )
     params.add_parameter(
-        name="show_help", 
-        action="store_true", 
+        name="show_help",
+        action="store_true",
         help="Instructs the subsequent modules to print a help message"
     )
     params.update(get_fetcher_params())
@@ -135,20 +135,20 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
             accel_class = model_manager.get_accelerator_class(accel_opt)
             print(f"---- Accelerator {accel_class.__name__}  | Usage ----\n")
             print_help(accel_class.get_parameters())
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 (ugly that we catch all exceptions here...)
             LOGGER.debug(f"An error occurred: {e}")
             pass
 
         print("---- Model Creator | Usage ----\n")
         print_help(model_manager._get_params())
         print_help(_get_params())
-        return 
+        return
 
     # proceed to the creator
     accel_inst: Accelerator = model_manager.get_accelerator(accel_opt)
     require_param("type", _get_params(), opt)
     LOGGER.debug(f"Accelerator Instance {accel_inst.NAME}, model type {opt.type}")
-    
+
     # model_dir is used as the output directory
     require_param("outputdir", _get_params(), opt)
     outputdir = Path(opt.outputdir)
@@ -168,13 +168,13 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
         if not opt.list_choices:
             raise
         return
-    
+
     # Save config only now, to not being written out for each time the choices are listed
     save_config(outputdir, opt=opt, unknown_opt=accel_opt, script=__file__)
 
     # Run the actual model creation
     creator.full_run()
-    
+
     return accel_inst
 
 

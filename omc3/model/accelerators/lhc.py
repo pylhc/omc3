@@ -211,10 +211,10 @@ class Lhc(Accelerator):
             *self._get_corrector_files("triplet_correctors.json"),
         )
 
-        vars = get_vars_by_classes(classes, all_vars_by_class)  
+        variables = get_vars_by_classes(classes, all_vars_by_class)
 
         # Sort variables by S (nice for comparing different files)
-        return self.sort_variables_by_location(vars, frm, to)
+        return self.sort_variables_by_location(variables, frm, to)
 
     def sort_variables_by_location(self, variables: Iterable[str], frm: float | None = None, to: str | None = None) -> list[str]:
         """ Sorts the variables by location and filters them between `frm` and `to`.
@@ -318,7 +318,7 @@ class Lhc(Accelerator):
             ) from e
 
     def important_phase_advances(self) -> list[list[str]]:
-        if "hl" in self.year.lower(): 
+        if "hl" in self.year.lower():
             # skip if HiLumi, TODO: insert phase advances when they are finalised
             return []
 
@@ -333,21 +333,21 @@ class Lhc(Accelerator):
             return [i in index for i in self.model.loc["BPMSW.33L2.B1":].index]
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
-    
+
     def get_accel_file(self, filename: str | Path) -> Path:
         return LHC_DIR / self.year / filename
-    
-    
+
+
     # Private Methods ##############################################################
     def _get_corrector_elems(self) -> Path:
         """ Return the corrector elements file, either from the instance's specific directory,
         if it exists, or the default directory. """
         return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
-    
+
     def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
-        """ Get the corrector files from the default directory AND 
-        the instance's specific directory if it exists AND the model directroy if it exists, 
-        in that order. 
+        """ Get the corrector files from the default directory AND
+        the instance's specific directory if it exists AND the model directroy if it exists,
+        in that order.
         See also discussion in https://github.com/pylhc/omc3/pull/458#discussion_r1764829247 .
         """
         # add file from the default directory (i.e. "model/accelerators/lhc/correctors")
@@ -356,7 +356,7 @@ class Lhc(Accelerator):
             msg = (f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
                   "Something went wrong with the variables getting logic.")
             raise FileNotFoundError(msg)
-        
+
         LOGGER.debug(
             f"Default corrector file {file_name} found in {default_file.parent}."
         )
@@ -380,11 +380,11 @@ class Lhc(Accelerator):
                     "Contents will take precedence over omc3-given defaults."
                 )
                 corrector_files.append(model_dir_file)
-        
+
         return corrector_files
 
     def find_modifier(self, modifier: Path | str):
-        """ Try to find a modifier file, which might be given only by its name. 
+        """ Try to find a modifier file, which might be given only by its name.
         This is looking for full-path, model-dir and in the acc-models-path's optics-dir.,
         """
         dirs = []

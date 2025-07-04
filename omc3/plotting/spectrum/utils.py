@@ -10,12 +10,11 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Iterable, Sized, Union
 
-import matplotlib
 import numpy as np
 import pandas as pd
 import tfs
 from generic_parser import DotDict
-from matplotlib import transforms, axes, pyplot as plt
+from matplotlib import transforms, axes, rcParams, pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
@@ -107,7 +106,7 @@ class FigureCollector:
 
 
 def plot_lines(fig_cont: FigureContainer, lines: DotDict) -> None:
-    label_size = get_fontsize_as_float(matplotlib.rcParams['axes.labelsize']) * 0.7
+    label_size = get_fontsize_as_float(rcParams['axes.labelsize']) * 0.7
     bottom_qlabel = 1.01
 
     for idx_plane, plane in enumerate(PLANES):
@@ -418,7 +417,7 @@ def _make_output_dir(out_dir, filename):
 
 def get_cycled_color(idx: int):
     """ Get the color at (wrapped) idx in the color cycle. The CN-Method only works until 'C9'."""
-    cycle = matplotlib.rcParams[u"axes.prop_cycle"].by_key()['color']
+    cycle = rcParams[u"axes.prop_cycle"].by_key()['color']
     return cycle[idx % len(cycle)]
 
 
