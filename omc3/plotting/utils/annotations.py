@@ -359,7 +359,7 @@ class OOMFormatter(mpl.ticker.ScalarFormatter):
     def _set_format(self, vmin, vmax):
         self.format = self.fformat
         if self._useMathText:
-            self.format = '$%s$' % mpl.ticker._mathdefault(self.format)
+            self.format = f'${mpl.ticker._mathdefault(self.format)}$'
 
 
 def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, math_text=True):
