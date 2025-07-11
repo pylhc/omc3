@@ -1,15 +1,15 @@
+import itertools
 import os
 import random
 import string
 import tempfile
-import itertools
 
 import numpy as np
 import pandas as pd
 import pytest
 import tfs
-
 import turn_by_turn as tbt
+
 from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import hole_in_one_entrypoint
 
@@ -115,7 +115,6 @@ def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, sing_val, p
                            model=_model_file,
                            to_write=["lin"],
                            unit="m")
-    lin = dict(X=tfs.read(f"{_test_file}.linx"), Y=tfs.read(f"{_test_file}.liny"))
 
 @pytest.mark.extended
 def test_freekick_harpy(_test_file, _model_file):
