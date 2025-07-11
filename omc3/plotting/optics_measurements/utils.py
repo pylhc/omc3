@@ -41,7 +41,7 @@ class FigureContainer:
             axs = [axs]
 
         self.axes_ids = axes_ids  # to keep order
-        self.axes = {ax_id: ax for ax_id, ax in zip(axes_ids, axs)}
+        self.axes = dict(zip(axes_ids, axs))
         self.xlabels = {ax_id: None for ax_id in axes_ids}
         self.ylabels = {ax_id: None for ax_id in axes_ids}
         self.data = {ax_id: {} for ax_id in axes_ids}

@@ -21,7 +21,7 @@ def get_vars_by_classes(classes_or_knobs: Iterable[str] | None, all_knobs_by_cla
         all_knobs_by_class (dict[str, list[str]]): The dictionary of all classes and their variables.
     """
     if classes_or_knobs is None:
-        return list(set(_flatten_list([knob for knob in all_knobs_by_class.values()])))
+        return list(set(_flatten_list(list(all_knobs_by_class.values()))))
 
     if isinstance(classes_or_knobs, str):
         # if not checked, lead to each char being treates as a knob.
