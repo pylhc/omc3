@@ -236,9 +236,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pandas as pd
-import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-from tfs import TfsDataFrame
 
 from omc3.correction import filters
 from omc3.correction import handler as global_correction
@@ -264,7 +262,6 @@ from omc3.global_correction import (
     _get_default_values,
 )
 from omc3.model import manager
-from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (
     BETA,
     EXT,
@@ -289,6 +286,9 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from generic_parser import DotDict
+    from tfs import TfsDataFrame
+
+    from omc3.model.accelerators.accelerator import Accelerator
 
 
 LOG = logging_tools.get_logger(__name__)
@@ -753,8 +753,8 @@ def _create_check_columns(
 
 
 def _maybe_add_coupling_to_model(
-    model: tfs.TfsDataFrame, measurement: OpticsMeasurement
-) -> tfs.TfsDataFrame:
+    model: TfsDataFrame, measurement: OpticsMeasurement
+) -> TfsDataFrame:
     """Add coupling to the model, if terms corresponding to coupling RDTs are
     found in the provided measurements.
 

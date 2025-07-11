@@ -18,7 +18,6 @@ from scipy.linalg import circulant
 
 from omc3 import __version__ as VERSION
 from omc3.definitions.constants import PI2
-from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (
     ALPHA,
     BETA,
@@ -37,9 +36,10 @@ from omc3.optics_measurements.phase import CompensationMode
 from omc3.optics_measurements.toolbox import df_diff, df_ratio, df_rel_diff
 from omc3.utils import logging_tools, stats
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from generic_parser import DotDict
 
+    from omc3.model.accelerators.accelerator import Accelerator
     from omc3.optics_measurements.phase import PhaseDict
     from omc3.optics_measurements.tune import TuneDict
 
@@ -79,20 +79,20 @@ def calculate(
         `BetaDict` object containing specific `TfsDataFrame` with results.
     """
     meas_and_model_tunes = (
-        (tunes[plane]["Q"], tunes[plane]["QM"] % 1) 
-        if meas_input.compensation == CompensationMode.NONE else 
+        (tunes[plane]["Q"], tunes[plane]["QM"] % 1)
+        if meas_input.compensation == CompensationMode.NONE else
         (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
     )
 
     if meas_input.three_bpm_method:
         beta_df = three_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
-        error_method = Methods.THREE_BPM 
+        error_method = Methods.THREE_BPM
     else:
         beta_df, error_method = n_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
 
     LOGGER.info(f"Errors from {error_method}")
     rmsbb = stats.weighted_rms(
-        beta_df.loc[:, f"{DELTA}{BETA}{plane}"].to_numpy(), 
+        beta_df.loc[:, f"{DELTA}{BETA}{plane}"].to_numpy(),
         errors=beta_df.loc[:, f"{ERR}{DELTA}{BETA}{plane}"].to_numpy()) * 100
     LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
     header = _get_header(header_dict, error_method, meas_input.range_of_bpms, rmsbb)
@@ -105,8 +105,8 @@ def write(beta_df: pd.DataFrame, header: dict[str, Any], outputdir: str|Path, pl
 
 
 def n_bpm_method(
-    meas_input: DotDict, 
-    phase: pd.DataFrame, 
+    meas_input: DotDict,
+    phase: pd.DataFrame,
     plane: str,
     meas_and_mdl_tunes: tuple[float, float]
     ) -> tuple[tfs.TfsDataFrame, str]:
@@ -203,7 +203,7 @@ def n_bpm_method(
                     meas_input.range_of_bpms,
                 )
             )
-            
+
         mask = diag != 0
         mat_diag = np.diag(diag[mask])
         mat_v_beta = np.dot(mat_t_beta[:, mask], np.dot(mat_diag, np.transpose(mat_t_beta[:, mask])))
@@ -258,15 +258,15 @@ def get_elements_with_errors(meas_input: DotDict, plane: str) -> tuple[pd.DataFr
 
 
 def calculate_beta_alpha_from_single_combination(
-    c, 
-    sin_squared_elements, 
-    outer_elmts, 
+    c,
+    sin_squared_elements,
+    outer_elmts,
     cot_model,
-    cot_meas, 
-    outer_meas_phase_adv, 
+    cot_meas,
+    outer_meas_phase_adv,
     probed_bpm_name,
-    betmdl1, 
-    alfmdl1, 
+    betmdl1,
+    alfmdl1,
     range_of_bpms
     ):
     """

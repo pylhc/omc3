@@ -6,15 +6,19 @@ This module provides the template for all model creators.
 """
 from __future__ import annotations
 
+import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
-import shutil
 from typing import TYPE_CHECKING
 
 import tfs
 
 from omc3.madx_wrapper import run_string
-from omc3.model.accelerators.accelerator import Accelerator, AccExcitationMode, AcceleratorDefinitionError
+from omc3.model.accelerators.accelerator import (
+    Accelerator,
+    AcceleratorDefinitionError,
+    AccExcitationMode,
+)
 from omc3.model.constants import (
     GENERAL_MACROS,
     JOB_MODEL_MADX_NOMINAL,
@@ -37,12 +41,13 @@ from omc3.segment_by_segment.constants import (
     jobfile,
     measurement_madx,
 )
-from omc3.segment_by_segment.propagables import Propagable
-from omc3.segment_by_segment.segments import Segment
 from omc3.utils import iotools, logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
+
+    from omc3.segment_by_segment.propagables import Propagable
+    from omc3.segment_by_segment.segments import Segment
     MADXInputType = Path | str | dict[str, str] | None
 
 LOGGER = logging_tools.get_logger(__file__)
@@ -50,7 +55,7 @@ LOGGER = logging_tools.get_logger(__file__)
 
 class ModelCreator(ABC):
     """
-    Abstract class for the implementation of a model creator. 
+    Abstract class for the implementation of a model creator.
     All mandatory methods and convenience functions are defined here.
     """
     jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
@@ -67,15 +72,15 @@ class ModelCreator(ABC):
         self.acc_models_path: Path = acc_models_path
         self.logfile: Path = logfile
         self.output_dir: Path = accel.model_dir
-    
+
     @abstractmethod
     def prepare_options(self, opt):
         """
-        Checks the options specific to the accelerator and 
+        Checks the options specific to the accelerator and
         applies them to the instance, if they are valid.
         If there are options missing or wrongly set, raise an AcceleratorDefinitionError.
 
-        This function should different from the normal parsing of options, 
+        This function should different from the normal parsing of options,
         as it is used to print possible choices for the user.
         In particular it is used for the "fetcher" and sets up the paths to be
         used later by the model creator.
@@ -90,8 +95,8 @@ class ModelCreator(ABC):
         """ Does the full run: preparation, running madx, post_run. """
         # Prepare model-dir output directory
         self.prepare_run()
-        
-        # get madx-script with relative output-paths 
+
+        # get madx-script with relative output-paths
         # (model_dir is base-path in get_madx_script)
         self.accel.model_dir = Path()
         madx_script = self.get_madx_script()
@@ -117,7 +122,7 @@ class ModelCreator(ABC):
             The string of the ``MAD-X`` script used to used to create the model (directory).
         """
         pass
-    
+
     @abstractmethod
     def get_base_madx_script(self) -> str:
         """
@@ -128,10 +133,10 @@ class ModelCreator(ABC):
             The string of the ``MAD-X`` script used to used to set-up the machine.
         """
         pass
-    
+
     def get_update_deltap_script(self, deltap: float | str) -> str:
         """ Get the madx snippet that updates the dpp in the machine.
-        
+
         Args:
             deltap (float | str): The dpp to update the machine to.
          """
@@ -142,7 +147,7 @@ class ModelCreator(ABC):
         Prepares the model creation ``MAD-X`` run. It should check that the appropriate directories
         are created, and that macros and other files are in place.
         Should also check that all necessary data for model creation is available in the accelerator
-        instance. 
+        instance.
 
         Here implemented are some usual defaults, so that an implementation of the model-creator
         might run these easily with `super()` if desired.
@@ -165,7 +170,7 @@ class ModelCreator(ABC):
         """
         LOGGER.info("Checking output from MAD-X run for model creation.")
         self._check_files_exist(self.accel.model_dir, self.files_to_check)
-        
+
         # Load the twiss files
         attribute_map = {
             TWISS_DAT: "model",
@@ -176,16 +181,16 @@ class ModelCreator(ABC):
             TWISS_ADT_DAT: "model_driven",
         }
         for filename in self.files_to_check:
-            try: 
+            try:
                 setattr(self.accel, attribute_map[filename], tfs.read(self.accel.model_dir / filename, index=NAME))
             except KeyError:
                 pass  # just a file to check, not a file with attribute
 
-    
+
     @property
     def files_to_check(self) -> list[str]:
         """
-        Returns the list of files to check after model creation, 
+        Returns the list of files to check after model creation,
         should only be used in `post_run`.
         Override in subclass if you need to check a different set of files.
         """
@@ -196,7 +201,7 @@ class ModelCreator(ABC):
             AccExcitationMode.ADT: [TWISS_ADT_DAT],
         }
         check_files = check_files + excitation_map[self.accel.excitation]
-        return check_files 
+        return check_files
 
     @staticmethod
     def _check_files_exist(dir_: Path | str, files: Sequence[str]) -> None:
@@ -219,7 +224,7 @@ class ModelCreator(ABC):
                     f"Model Creation Failed: The file '{out_file}' was not found in the directory '{dir_}', "
                     f"implying the expected file '{file_path.absolute()}' was not created by MAD-X."
                 )
-    
+
     def prepare_symlink(self):
         """Prepare the acc-models-symlink.
         Create symlink if it does not yet exist or points the wrong way.
@@ -252,22 +257,22 @@ class ModelCreator(ABC):
             # no symlink so we create one
             link.parent.mkdir(parents=True, exist_ok=True)
             link.absolute().symlink_to(target)
-        
+
         # use the link from now on as model path and for modifiers;
         # this converts all modifiers to absolute paths ... maybe not desired? (jdilly, 2024)
         accel.acc_model_path = link.absolute()
         if accel.modifiers is not None:
             accel.modifiers = [
-                iotools.replace_in_path(m.absolute(), target.absolute(), link.absolute()) 
+                iotools.replace_in_path(m.absolute(), target.absolute(), link.absolute())
                 for m in accel.modifiers
             ]
-        
+
     def prepare_modifiers(self):
         """ Loop over the modifiers and make them full paths if found. """
         accel: Accelerator = self.accel
         if accel.modifiers is not None:
             accel.modifiers = [accel.find_modifier(m) for m in accel.modifiers]
-    
+
     @staticmethod
     def _get_select_command(pattern: str | None = None, indent: int = 0):
         """ Returns a basic select command with the given pattern, the default columns and correct indentation. """
@@ -283,11 +288,11 @@ class ModelCreator(ABC):
 
 
 class SegmentCreator(ModelCreator, ABC):
-    """ Model creator for Segments, to be used in the Segment-by-Segment algorithm. 
+    """ Model creator for Segments, to be used in the Segment-by-Segment algorithm.
     These segments propagate the measured values from the beginning of the segment to the end.
 
-    This only handles the MAD-X part of things. 
-    The input is determined by the passed measurables (Propagable objects), 
+    This only handles the MAD-X part of things.
+    The input is determined by the passed measurables (Propagable objects),
     which provide the values via `init_conditions_dict()` method.
 
     The output is stored in the `twiss_forward` and `twiss_backward` files,
@@ -296,7 +301,7 @@ class SegmentCreator(ModelCreator, ABC):
     jobfile = None  # set in init
     _sequence_name: str = None  # to be set by any accelerator using the default `get_madx_script`
 
-    def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable], 
+    def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable],
                  corrections: MADXInputType = None, *args, **kwargs):
         """ Creates Segment of a model. """
         LOGGER.debug("Initializing Segment Creator")
@@ -328,7 +333,7 @@ class SegmentCreator(ModelCreator, ABC):
 
         general_macros_path = macros_path / GENERAL_MACROS
         shutil.copy(OMC3_MADX_MACROS_DIR / GENERAL_MACROS, general_macros_path)
-    
+
     def _clean_models(self):
         """ Remove models from previous runs. """
         for twiss_file in (self.twiss_forward, self.twiss_forward_corrected, self.twiss_backward, self.twiss_backward_corrected):
@@ -361,16 +366,16 @@ class SegmentCreator(ModelCreator, ABC):
 
             if corrections.resolve() == output_file.resolve():
                 return  # already exists -> do nothing
-            
+
             output_file.write_text(corrections.read_text())  # copy
             return
 
         raise NotImplementedError("Could not determine type of corrections. Aborting.")
-    
+
     def get_madx_script(self):
         accel: Accelerator = self.accel
         madx_script = self.get_base_madx_script()
-        
+
         if self._sequence_name is None:
             raise ValueError(
                 "To get the default Segment-by-Segment MAD-X script, "
@@ -430,7 +435,7 @@ class SegmentCreator(ModelCreator, ABC):
             ])
 
         return madx_script
-    
+
     @property
     def files_to_check(self) -> list[str]:
         check_files = [self.twiss_forward, self.twiss_backward]
@@ -440,8 +445,8 @@ class SegmentCreator(ModelCreator, ABC):
 
 
 class CorrectionModelCreator(ModelCreator):
-    jobfile = None  # set in __init__ 
-    
+    jobfile = None  # set in __init__
+
     def __init__(self, accel: Accelerator, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False):
         """Model creator for the corrected/matched model of the LHC.
 
@@ -460,18 +465,18 @@ class CorrectionModelCreator(ModelCreator):
         self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.corr_files = corr_files
         self.update_dpp = update_dpp
-    
+
     def get_madx_script(self) -> str:
-        """ Get the madx script for the correction model creator, which updates the model after correcion. 
-        
+        """ Get the madx script for the correction model creator, which updates the model after correcion.
+
         This is a basic implementation which does not update the dpp, but should work for generic accelerators.
-        """  
+        """
         if self.update_dpp:
             raise NotImplementedError(
                 f"Updating the dpp is not implemented for correction model creator of {self.accel.NAME}."
             )
 
-        madx_script = self.get_base_madx_script()  # do not get_madx_script as we don't need the uncorrected output. 
+        madx_script = self.get_base_madx_script()  # do not get_madx_script as we don't need the uncorrected output.
 
         for corr_file in self.corr_files:  # Load the corrections
             madx_script += f"call, file = '{corr_file!s}';\n"
@@ -481,8 +486,8 @@ class CorrectionModelCreator(ModelCreator):
             f"twiss, file = {self.twiss_out!s};\n"
         )
         return madx_script
-    
-    
+
+
     @property
     def files_to_check(self) -> list[str]:
         return [self.twiss_out, self.jobfile, self.logfile]
@@ -502,19 +507,19 @@ def check_folder_choices(
     A helper function that scans a selected folder for children, which will then be displayed as possible choices.
     This funciton allows the model-creator to get only the file/folder names, check
     in the desired folder if the choice is present and return the full path to the selected folder.
-    
+
     Args:
         parent (Path): The folder to scan.
         msg (str): The message to display, on failure.
         selection (str): The current selection.
-        list_choices (bool): Whether to just list the choices. 
+        list_choices (bool): Whether to just list the choices.
                              In that case `None` is returned, instead of an error
         predicate (callable): A function that takes a path and returns True.
                               if the path results in a valid choice.
         stem_only (bool): If True, only the stem of the path is checked.
-    
+
     Returns:
-       Path: Full path of the selected choice in `parent`. 
+       Path: Full path of the selected choice in `parent`.
 
     Examples:
         Let's say we expect a choice for a sequence file in the folder `model_root`.

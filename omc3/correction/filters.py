@@ -19,9 +19,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import tfs
-from generic_parser import DotDict
 
 from omc3.correction.constants import ERROR, VALUE, WEIGHT
 from omc3.definitions.constants import PLANES
@@ -42,6 +40,9 @@ from omc3.utils import logging_tools, stats
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+
+    import pandas as pd
+    from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
 

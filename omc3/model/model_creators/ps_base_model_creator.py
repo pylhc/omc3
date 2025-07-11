@@ -1,4 +1,4 @@
-""" 
+"""
 PS Base Model Creator
 ---------------------
 
@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from abc import ABC
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
-from omc3.model.accelerators.psbase import PsBase
 from omc3.model.constants import AFS_ACCELERATOR_MODEL_REPOSITORY, Fetcher
 from omc3.model.model_creators.abstract_model_creator import (
     ModelCreator,
@@ -18,6 +18,9 @@ from omc3.model.model_creators.abstract_model_creator import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import get_check_suffix_func
+
+if TYPE_CHECKING:
+    from omc3.model.accelerators.psbase import PsBase
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -28,7 +31,7 @@ class PsBaseModelCreator(ModelCreator, ABC):
     def prepare_options(self, opt) -> bool:
         """ Use the fetcher to list choices if requested. """
         accel: PsBase = self.accel
-        
+
         if opt.fetch == Fetcher.PATH:
             if opt.path is None:
                 raise AcceleratorDefinitionError(
@@ -81,7 +84,7 @@ class PsBaseModelCreator(ModelCreator, ABC):
         # if no `.beam` file is found, try any madx job file, maybe we get lucky there
         if not len(possible_beam_files):
             possible_beam_files = list(cycle_point_path.glob("*.*job"))
-        
+
             if not len(possible_beam_files):
                 raise AcceleratorDefinitionError(f"No beam file found in {cycle_point_path}")
 
@@ -95,9 +98,8 @@ class PsBaseModelCreator(ModelCreator, ABC):
             with open(beam_file) as beamf:
                 print(beamf.read())
             raise AcceleratorDefinitionError()  # not really an error, just indicates to stop
-        
+
         # Set the found paths ---
         accel.acc_model_path = acc_model_path
         accel.str_file = str_file
         accel.beam_file = beam_file
-

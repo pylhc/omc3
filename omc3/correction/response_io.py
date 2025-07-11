@@ -10,12 +10,15 @@ from __future__ import annotations
 import logging
 import warnings
 from collections import defaultdict
-from collections.abc import Sequence
 from contextlib import contextmanager
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
 from tables import NaturalNameWarning
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
 
 LOG = logging.getLogger(__name__)
 

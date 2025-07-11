@@ -7,13 +7,14 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 from __future__ import annotations
 
-import re
 import os
+import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 import tfs
+from generic_parser.entry_datatypes import get_multi_class
 from generic_parser.entrypoint_parser import EntryPointParameters
 
 from omc3.harpy.constants import COL_NAME as NAME
@@ -31,8 +32,9 @@ from omc3.model.constants import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, find_file
-from generic_parser.entry_datatypes import get_multi_class
 
+if TYPE_CHECKING:
+    import numpy as np
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
