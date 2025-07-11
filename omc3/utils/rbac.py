@@ -76,7 +76,7 @@ class RBAC:
         self.user = user
         return self._get_token(response)
 
-    def authenticate_location(self, user: Optional[str] = None) -> str:
+    def authenticate_location(self, user: str | None = None) -> str:
         """
         Authenticate explicitly via username and password.
 

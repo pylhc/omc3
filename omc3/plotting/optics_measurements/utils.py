@@ -28,7 +28,7 @@ class DataSet:
     """Container to store the data to plot."""
     x: ArrayLike
     y: ArrayLike
-    err: Optional[ArrayLike] = None
+    err: ArrayLike | None = None
 
 
 class FigureContainer:
@@ -79,7 +79,7 @@ class FigureCollector:
         figure_cont.data[axes_id][label] = data
 
 
-def safe_format(label: str, insert: str) -> Optional[str]:
+def safe_format(label: str, insert: str) -> str | None:
     """
     Formats label. Usually just ``.format()`` works fine, even if there is no {}-placeholder in
     the label, but it might cause errors if latex is used in the label or ``None``. Hence the
