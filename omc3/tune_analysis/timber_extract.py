@@ -94,14 +94,14 @@ def extract_between_times(
             # We use timestamps to avoid any confusion with local time
             extract_dict = db.get(keys, t_start.timestamp(), t_end.timestamp())
         except jpype.java.lang.IllegalStateException as java_state_error:
-            raise IOError(
+            raise OSError(
                 "Could not get data from Timber, user probably has no access to NXCALS"
             ) from java_state_error
         except jpype.JException as java_exception:  # Might be a case for retries
             if "RetryableException" in str(java_exception) and (tries + 1) < MAX_RETRIES:
                 LOG.warning(f"Could not get data from Timber! Trial no {tries + 1} / {MAX_RETRIES}")
                 continue  # will go to the next iteratoin of the loop, so retry
-            raise IOError("Could not get data from timber!") from java_exception
+            raise OSError("Could not get data from timber!") from java_exception
         else:
             break
 
@@ -109,7 +109,7 @@ def extract_between_times(
             or all(not len(v) for v in extract_dict.values())  # values are empty
             or all(len(v) == 2 and not len(v[0]) for v in extract_dict.values())  # arrays are empty (size 2 for time/data)
     ):
-        raise IOError(f"Variables {keys} found but no data extracted in time {t_start.utc_string} - {t_end.utc_string} (UTC).\n"
+        raise OSError(f"Variables {keys} found but no data extracted in time {t_start.utc_string} - {t_end.utc_string} (UTC).\n"
                       f"Possible reasons:\n"
                       f"  - Too small time window.\n"
                       f"  - Old pytimber version.\n"

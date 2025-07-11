@@ -183,7 +183,7 @@ class Accelerator:
         LOG.debug(f"  model path = {model_dir / TWISS_DAT}")
         try:
             self.model = tfs.read(model_dir / TWISS_DAT, index=NAME)
-        except IOError:
+        except OSError:
             bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
             self.model = self.elements.loc[bpm_mask, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]

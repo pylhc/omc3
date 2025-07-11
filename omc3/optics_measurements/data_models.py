@@ -52,7 +52,7 @@ class InputFiles(dict):
                 self[plane].append(self._repair_backwards_compatible_frame(df_to_load, plane))
 
         if len(self['X']) + len(self['Y']) == 0:
-            raise IOError("No valid input files")
+            raise OSError("No valid input files")
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
         LOGGER.info(f"DPPS: {dpp_values}")
         amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)

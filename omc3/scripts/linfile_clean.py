@@ -168,14 +168,14 @@ def restore_files(files: Sequence[Path | str]):
         file = Path(file)
         try:
             _restore_file(file)
-        except IOError as e:
+        except OSError as e:
             failed.append(str(e))
 
     if len(failed):
         all_errors = '\n'.join(failed)
         if len(failed) == len(files):
-            raise IOError(f"Restoration of ALL files has failed\n{all_errors}")
-        raise IOError(f"Restoration of some files has failed, "
+            raise OSError(f"Restoration of ALL files has failed\n{all_errors}")
+        raise OSError(f"Restoration of some files has failed, "
                       f"but the others were restored:\n{all_errors}")
 
     LOG.info("Restoration successfully completed.")
@@ -185,7 +185,7 @@ def _restore_file(file):
     counter = 1
     backup_file = _get_backup_filepath(file, counter)
     if not backup_file.exists():
-        raise IOError(f"No backups found for file {file.name}")
+        raise OSError(f"No backups found for file {file.name}")
 
     # get last existing backup file
     while backup_file.exists():

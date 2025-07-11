@@ -134,7 +134,7 @@ class TempFile:
             with open(self.path) as f:
                 content = f.read()
             self.log_func(f"{self.path:s}:\n" + content)
-        except IOError:
+        except OSError:
             self.log_func(f"{self.path:s}: -file does not exist-")
         else:
             os.remove(self.path)

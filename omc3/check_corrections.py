@@ -461,11 +461,11 @@ def _get_corrections(
     # check correction files
     for name, corr_files in corr_dict.items():
         if not len(corr_files):
-            raise IOError(f"No corrections found for scenario {name}.")
+            raise OSError(f"No corrections found for scenario {name}.")
 
         do_not_exist = [f for f in corr_files if not f.exists()]
         if len(do_not_exist):
-            raise IOError(
+            raise OSError(
                 f"Some correction files do not exist for scenario {name}:"
                 f" {str(do_not_exist)}"
             )

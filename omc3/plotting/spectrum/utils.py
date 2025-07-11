@@ -368,7 +368,7 @@ def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Itera
             empty_planes += 1
 
     if empty_planes == len(planes):
-        raise IOError(f"(id:{filename}) No BPMs found in any plane!")
+        raise OSError(f"(id:{filename}) No BPMs found in any plane!")
     return found_bpms
 
 

@@ -187,13 +187,13 @@ def _raise_madx_error(log=None, file=None):
     if log is not None:
         try:
             content = Path(log).read_text()
-        except IOError:
+        except OSError:
             pass
         else:
             if "warning: Twiss failed:  MAD-X continues" in content:
                 message += " At least one twiss failed."
 
-            try: 
+            try:
                 last_line = content.splitlines()[-1]
             except IndexError:
                 pass

@@ -243,7 +243,7 @@ def n_bpm_method(
 
 def get_elements_with_errors(meas_input: DotDict, plane: str) -> tuple[pd.DataFrame, str]:
     if meas_input.accelerator.error_defs_file is None:
-        raise IOError("Error definition file could not be found")
+        raise OSError("Error definition file could not be found")
 
     elements = meas_input.accelerator.elements.loc[:, [S, "K1L", "K2L", f"{PHASE_ADV}{plane}", f"{BETA}{plane}"]]
     LOGGER.debug("Accelerator Error Definition")

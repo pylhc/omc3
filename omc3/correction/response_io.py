@@ -35,7 +35,7 @@ def read_fullresponse(path: Path, optics_parameters: Sequence[str] = None) -> di
     default for not found entries are empty DataFrames.
     """
     if not path.exists():
-        raise IOError(f"Fullresponse file {str(path)} does not exist.")
+        raise OSError(f"Fullresponse file {str(path)} does not exist.")
     LOG.info(f"Loading response matrices from file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug
@@ -75,7 +75,7 @@ def read_varmap(path: Path, k_values: Sequence[str] = None) -> dict[str, dict[st
     default for not found entries are empty Series.
     """
     if not path.exists():
-        raise IOError(f"Varmap file {str(path)} does not exist.")
+        raise OSError(f"Varmap file {str(path)} does not exist.")
     LOG.info(f"Loading varmap from file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug

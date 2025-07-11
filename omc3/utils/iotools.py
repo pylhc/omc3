@@ -59,8 +59,8 @@ def copy_item(src_item: Path, dst_item: Path):
         elif src_item.is_dir():
             copy_content_of_dir(src_item, dst_item)
         else:
-            raise IOError
-    except IOError:
+            raise OSError
+    except OSError:
         LOG.error(f"Could not copy item because of IOError. Item: '{src_item}'")
 
 
