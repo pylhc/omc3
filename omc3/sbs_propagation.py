@@ -1,9 +1,9 @@
-""" 
-Segment-by-Segment Propagation 
+"""
+Segment-by-Segment Propagation
 ------------------------------
 
 Runs the Segment-by-Segment propagation,
-i.e. it uses the measured values at the beginning (or the end) of the segments as inputs 
+i.e. it uses the measured values at the beginning (or the end) of the segments as inputs
 to propagate via MAD-X through the given segments.
 It then compares the propagated values with the measured values in that segment.
 
@@ -49,7 +49,6 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pandas as pd
 from generic_parser import DotDict, EntryPointParameters, entrypoint
 
 from omc3 import model_creator
@@ -85,7 +84,7 @@ from omc3.utils.iotools import PathOrStr, PathOrStrOrDict, save_config
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
 
-    from pandas import DataFrame
+    import pandas as pd
 
     from omc3.model.accelerators.accelerator import Accelerator
     from omc3.model.model_creators.abstract_model_creator import (
@@ -127,7 +126,7 @@ def get_params():
         )
     )
     params.update(model_creator.get_fetcher_params())
-    return params     
+    return params
 
 
 @entrypoint(get_params(), strict=False)
@@ -135,9 +134,9 @@ def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, Segmen
     """
     Run the segment-by-segment propagation.
 
-    Note: The corrections are the same for each segment, which means we only need to create 
+    Note: The corrections are the same for each segment, which means we only need to create
           them once, and for the remaining segments, we could just give the path to the output
-          file (as the segment creator checks if the file exists). 
+          file (as the segment creator checks if the file exists).
           But as we do not really know the output file here, and creation of the file is quick,
           we just let the segment creator overwrite the file.
     """
@@ -160,10 +159,10 @@ def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, Segmen
 
 
 def _maybe_create_nominal_model(accel: Accelerator, fetcher_opts: DotDict):
-    """ Creates a nominal model in the accel.model_dir. 
+    """ Creates a nominal model in the accel.model_dir.
     This is only needed, if the twiss-elements file is missing. """
     if accel.elements is not None: # No need to create a nominal model
-        return 
+        return
 
     creator_class = get_model_creator_class(accel, CreatorType.NOMINAL)
     creator: ModelCreator = creator_class(
@@ -193,12 +192,12 @@ def create_segment(
     Then madx is run to create the specified segments and the output files
     are made accessible by a SegmentModels TfsCollection by all propagables, which
     are then returned.
-    
+
     Args:
         accel (Accelerator): Accelerator instance. Needs to be loaded from model directory
         segment_in (Segment): Rough Segment specification. Might be refined later.
         measurement (OpticsMeasurement): TfsCollection of the optics measurement files.
-        corrections (MADXInputType): Corrections to use. Can be a dict of knob-value pairs, 
+        corrections (MADXInputType): Corrections to use. Can be a dict of knob-value pairs,
                                      a MAD-X string or a path to a file.
         fetcher_opts (DotDict): Options for the fetcher, if needed.
 
@@ -206,9 +205,9 @@ def create_segment(
         List of propagables with access to the created segment models.
     """
     segment = extend_segment(segment_in, accel.elements, measurement)
-    
+
     LOGGER.info(
-        f"Evaluating segment {segment!s}.\n" + 
+        f"Evaluating segment {segment!s}.\n" +
         "" if segment == segment_in else
         f"This has been input as {segment_in!s}."
     )
@@ -216,16 +215,16 @@ def create_segment(
     measured_classes: list[type[Propagable]] = [propg for propg in ALL_PROPAGABLES if propg.in_measurement(measurement)]
     if Phase not in measured_classes:
         raise FileNotFoundError("No measurement for Phase found in the given measurement directory.")
-    
+
     if (F1001 in measured_classes or F1010 in measured_classes) and BetaPhase not in measured_classes:
         raise FileNotFoundError("Beta-from-Phase is required for Coupling propagations!")
-    
+
     propagables: list[Propagable] = [propg(segment, measurement, accel.elements) for propg in measured_classes]
 
     # Create the segment via madx
     creator_class = get_model_creator_class(accel, CreatorType.SEGMENT)
     segment_creator = creator_class(
-        accel, segment, propagables, 
+        accel, segment, propagables,
         corrections=corrections,
         logfile=accel.model_dir / logfile.format(segment.name),
     )
@@ -247,7 +246,7 @@ def create_segment(
     return propagables
 
 
-def extend_segment(segment: Segment, model: DataFrame, measurement: OpticsMeasurement) -> Segment:
+def extend_segment(segment: Segment, model: pd.DataFrame, measurement: OpticsMeasurement) -> Segment:
     """Returns a new segment with elements that are contained in the measurement.
 
     This function takes a segment with start and end that might not
@@ -256,7 +255,7 @@ def extend_segment(segment: Segment, model: DataFrame, measurement: OpticsMeasur
 
     Args:
         segment (Segment): The segment to be processed (see Segment class).
-        model (DataFrame): The model where to take all the element names from. Both the
+        model (pd.DataFrame): The model where to take all the element names from. Both the
             start and end of the segment have to be present in this model
             NAME attribute.
 
@@ -287,11 +286,11 @@ def get_differences(propagables: list[Propagable], segment_name: str = "", outpu
         output_dir (Path, optional): Output directory. Defaults to None.
 
     Returns:
-        SegmentDiffs: TfsCollection of the differences per propagable.    
+        SegmentDiffs: TfsCollection of the differences per propagable.
     """
     segment_diffs = SegmentDiffs(
-        directory=output_dir, 
-        segment_name=segment_name, 
+        directory=output_dir,
+        segment_name=segment_name,
         allow_write=output_dir is not None
     )
     for propagable in propagables:
@@ -299,7 +298,7 @@ def get_differences(propagables: list[Propagable], segment_name: str = "", outpu
             propagable.add_differences(segment_diffs)
         except NotImplementedError:
             pass
-    return segment_diffs 
+    return segment_diffs
 
 
 def _check_segments_and_elements(segments: list[str], elements: list[str]) -> tuple[list[Segment], list[Segment]]:
@@ -317,16 +316,16 @@ def _check_segments_and_elements(segments: list[str], elements: list[str]) -> tu
 
 
 def _parse_segments(segment_definitions: Sequence[Segment | str]) -> list[Segment]:
-    """Convert all segment definitions to Segments.     
+    """Convert all segment definitions to Segments.
 
     Args:
-        segment_definitions (Sequence[str | Segment]): List of segment definitions or Segments. 
+        segment_definitions (Sequence[str | Segment]): List of segment definitions or Segments.
 
     Raises:
         SbsDefinitionError: When there are duplicated names or when the definition is not recognized.
 
     Returns:
-        List[Segment]: List of parsed segments. 
+        List[Segment]: List of parsed segments.
     """
     if segment_definitions is None:
         return []
@@ -357,7 +356,7 @@ def _parse_elements(elements: Sequence[Segment | str] | None) -> list[Segment]:
         SbsDefinitionError: When there are duplicated names.
 
     Returns:
-        List[Segment]: List of the parsed segments. 
+        List[Segment]: List of the parsed segments.
     """
     if elements is None:
         return []
@@ -371,9 +370,9 @@ def _select_closest(name: str, all_names: pd.Index, eval_cond: Callable[[str], b
     """Select the closest element to the given name, going forward or backward, until the condition is met.
 
     Args:
-        name (str): Name to start  
-        all_names (pd.Index): Pandas Index of all element names (e.g. from model) 
-        eval_cond (Callable[[str], bool]): Function taking a single argument (the name) and returning a boolean, 
+        name (str): Name to start
+        all_names (pd.Index): Pandas Index of all element names (e.g. from model)
+        eval_cond (Callable[[str], bool]): Function taking a single argument (the name) and returning a boolean,
                                            whether this name can be used or not (e.g. is in the measurement).
         back (bool, optional): Search direction, False for forwards and True for backwards. Defaults to False.
 
@@ -421,7 +420,7 @@ def _copy_files_from_model_dir(model_dir: Path, output_dir: Path) -> None:
     """
     LOGGER.debug("Copying model files...")
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     for twiss in (TWISS_DAT, TWISS_ELEMENTS_DAT):
         shutil.copy(model_dir / twiss, output_dir / twiss)
 
@@ -436,7 +435,7 @@ def _copy_files_from_model_dir(model_dir: Path, output_dir: Path) -> None:
         if dst_file.exists() or dst_file.is_symlink():
             LOGGER.debug(f"Skipping {dst_file!s}, already exists.")
             continue
-        
+
         if file.is_dir():
             shutil.copytree(file, dst_file, symlinks=True)  # copies symlinks as symlinks
         else:

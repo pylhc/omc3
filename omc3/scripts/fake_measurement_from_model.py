@@ -70,7 +70,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
@@ -119,6 +118,8 @@ from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+    import pandas as pd
 
 LOG = logging_tools.get_logger(__name__)
 
