@@ -272,9 +272,7 @@ def figure_title(text: str, ax: Axes = None, pad: float = 0, **kwargs) -> None:
         ax = plt.gca()
 
     # could not get set_title() to work properly, so one parameter at a time
-    fdict = dict(fontsize=rcParams['font.size'],
-                 fontweight=rcParams['font.weight'],
-                 va="top", ha="center")
+    fdict = {"fontsize": rcParams['font.size'], "fontweight": rcParams['font.weight'], "va": "top", "ha": "center"}
     fdict.update(kwargs)
     ax.set_title(text, transform=ax.figure.transFigure, fontdict=fdict)
 

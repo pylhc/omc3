@@ -107,41 +107,41 @@ LOG = logging_tools.get_logger(__name__)
 
 def get_params():
     return EntryPointParameters(
-        files=dict(
-            required=True,
-            type=PathOrStr,
-            nargs='+',
-            help="List of paths to the lin-files, including suffix.",
-        ),
+        files={
+            'required': True,
+            'type': PathOrStr,
+            'nargs': '+',
+            'help': "List of paths to the lin-files, including suffix.",
+        },
         # restore backup
-        restore=dict(
-            action="store_true",
-            help=("Restore the latest backup of the files. "
+        restore={
+            'action': "store_true",
+            'help': ("Restore the latest backup of the files. "
                   "If this parameter is given, no cleaning is performed."),
-        ),
+        },
         # for actual cleaning
-        columns=dict(
-            nargs='+',
-            type=str,
-            help="Columns to clean on.",
-        ),
-        limit=dict(
-            type=float,
-            nargs='+',
-            help="Two values: Do not clean data-points in between these values. "
+        columns={
+            'nargs': '+',
+            'type': str,
+            'help': "Columns to clean on.",
+        },
+        limit={
+            'type': float,
+            'nargs': '+',
+            'help': "Two values: Do not clean data-points in between these values. "
                  "Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.",
-        ),
-        keep=dict(
-            nargs='+',
-            type=str,
-            help="Do not clean BPMs with given names.",
-        ),
-        backup=dict(
-            action="store_true",
-            help=("Create a backup of the files before overwriting. "
+        },
+        keep={
+            'nargs': '+',
+            'type': str,
+            'help': "Do not clean BPMs with given names.",
+        },
+        backup={
+            'action': "store_true",
+            'help': ("Create a backup of the files before overwriting. "
                   "The backups are numbered, with the highest number being "
                   "the latest backup.")
-        ),
+        },
     )
 
 

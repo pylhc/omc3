@@ -225,8 +225,7 @@ def _get_n_upper_diagonals(n, shape):
 
 def _determine_line(rdt: RDTTuple, plane: str) -> dict[str, LineTuple]:
     j, k, l, m = rdt  # noqa: E741
-    lines = dict(X=(1 - j + k, m - l, 0),
-                 Y=(k - j, 1 - l + m, 0))
+    lines = {"X": (1 - j + k, m - l, 0), "Y": (k - j, 1 - l + m, 0)}
     return lines[plane]
 
 

@@ -45,7 +45,7 @@ class AccExcitationMode:  # TODO: use enum! (jdilly, 2025)
     FREE, ACD, ADT = range(3)
 
 
-DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
+DRIVEN_EXCITATIONS = {"acd": AccExcitationMode.ACD, "adt": AccExcitationMode.ADT}
 
 
 class AccElementTypes:
@@ -193,7 +193,7 @@ class Accelerator:
             pass
 
         # Excitations #####################################
-        driven_filenames = dict(acd=model_dir / TWISS_AC_DAT, adt=model_dir / TWISS_ADT_DAT)
+        driven_filenames = {"acd": model_dir / TWISS_AC_DAT, "adt": model_dir / TWISS_ADT_DAT}
         if driven_filenames["acd"].is_file() and driven_filenames["adt"].is_file():
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
         for key in driven_filenames.keys():

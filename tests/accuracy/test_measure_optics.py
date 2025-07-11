@@ -38,13 +38,13 @@ INPUTS = Path(__file__).parent.parent / 'inputs'
 
 DPPS = [0, 0, 0, -4e-4, -4e-4, 4e-4, 4e-4, 5e-5, -3e-5, -2e-5]  # defines the slicing
 
-MEASURE_OPTICS_SETTINGS = dict(
-    compensation=CompensationMode.all(),
-    coupling_method=[2],
-    range_of_bpms=[11],
-    three_bpm_method=[False],
-    second_order_disp=[False],
-)
+MEASURE_OPTICS_SETTINGS = {
+    "compensation": CompensationMode.all(),
+    "coupling_method": [2],
+    "range_of_bpms": [11],
+    "three_bpm_method": [False],
+    "second_order_disp": [False],
+}
 VALUES_GRID = list(itertools.product(*MEASURE_OPTICS_SETTINGS.values()))  # easy to add more tests in grid above
 PARAMS = ", ".join(MEASURE_OPTICS_SETTINGS)
 
@@ -117,9 +117,15 @@ def input_data(request, tmp_path_factory):
         np.random.seed(12345678)
         output_path = tmp_path_factory.mktemp(f"input_{motion}_b{beam}")
 
-        opt_dict = dict(accel="lhc", year="2018", ats=True, beam=beam, files=[""],
-                        model_dir=INPUTS / "models" / f"2018_col_b{beam}_25cm",
-                        outputdir=output_path)
+        opt_dict = {
+            "accel": "lhc",
+            "year": "2018",
+            "ats": True,
+            "beam": beam,
+            "files": [""],
+            "model_dir": INPUTS / "models" / f"2018_col_b{beam}_25cm",
+            "outputdir": output_path
+        }
         optics_opt, rest = _optics_entrypoint(opt_dict)
         optics_opt.accelerator = manager.get_accelerator(rest)
         lins = optics_measurement_test_files(opt_dict["model_dir"], DPPS, motion,

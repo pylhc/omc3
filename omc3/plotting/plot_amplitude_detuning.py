@@ -150,85 +150,85 @@ X, Y = PLANES
 
 def get_params():
     return EntryPointParameters(
-        kicks=dict(
-            nargs="+",
-            help="Kick files as data frames or tfs files.",
-            required=True,
-        ),
-        labels=dict(
-            help="Labels for the data. Needs to be same length as kicks.",
-            nargs='+',
-            required=True,
-            type=str,
-        ),
-        plane=dict(
-            help="Plane of the kicks.",
-            required=True,
-            choices=list(PLANES) + [''.join(PLANES), '3D'],
-            type=str,
-        ),
-        detuning_order=dict(
-            help="Order of the detuning as int. Basically just the order of the applied fit.",
-            type=int,
-            default=1,
-        ),
-        correct_acd=dict(
-            help="Correct for AC-Dipole kicks.",
-            action="store_true",
-        ),
-        output=dict(
-            help=("Save the amplitude detuning plot here. "
+        kicks={
+            "nargs": "+",
+            "help": "Kick files as data frames or tfs files.",
+            "required": True,
+        },
+        labels={
+            "help": "Labels for the data. Needs to be same length as kicks.",
+            "nargs": '+',
+            "required": True,
+            "type": str,
+        },
+        plane={
+            "help": "Plane of the kicks.",
+            "required": True,
+            "choices": list(PLANES) + [''.join(PLANES), '3D'],
+            "type": str,
+        },
+        detuning_order={
+            "help": "Order of the detuning as int. Basically just the order of the applied fit.",
+            "type": int,
+            "default": 1,
+        },
+        correct_acd={
+            "help": "Correct for AC-Dipole kicks.",
+            "action": "store_true",
+        },
+        output={
+            "help": ("Save the amplitude detuning plot here. "
                   "Give filename with extension. An id for the 4 different "
                   "plots will be added before the suffix."),
-            type=PathOrStr,
-        ),
-        show=dict(
-            help="Show the amplitude detuning plot.",
-            action="store_true",
-        ),
-        y_lim=dict(
-            help="Tune limits in units of tune scale (y-axis).",
-            type=float,
-            nargs=2,
-        ),
-        x_lim=dict(
-            help="Action limits in um (x-axis).",
-            type=float,
-            nargs=2,
-        ),
-        action_unit=dict(
-            help="Unit the action is given in.",
-            default="m",
-            choices=list(UNIT_IN_METERS.keys()),
-            type=str,
-        ),
-        action_plot_unit=dict(
-            help="Unit the action should be plotted in.",
-            default="um",
-            choices=list(UNIT_IN_METERS.keys()),
-            type=str,
-        ),
-        manual_style=dict(
-            type=DictAsString,
-            default={},
-            help='Additional style rcParameters which update the set of predefined ones.'
-        ),
-        plot_styles=dict(
-            help="Plotting styles.",
-            type=UnionPathStr,
-            nargs="+",
-            default=['standard', 'amplitude_detuning'],
-        ),
-        tune_scale=dict(
-            help="Plotting exponent of the tune.",
-            default=-3,
-            type=int,
-        ),
-        bbq_corrected=dict(
-            help="Plot the data with BBQ correction (``True``) or without (``False``)."
+            "type": PathOrStr,
+        },
+        show={
+            "help": "Show the amplitude detuning plot.",
+            "action": "store_true",
+        },
+        y_lim={
+            "help": "Tune limits in units of tune scale (y-axis).",
+            "type": float,
+            "nargs": 2,
+        },
+        x_lim={
+            "help": "Action limits in um (x-axis).",
+            "type": float,
+            "nargs": 2,
+        },
+        action_unit={
+            "help": "Unit the action is given in.",
+            "default": "m",
+            "choices": list(UNIT_IN_METERS.keys()),
+            "type": str,
+        },
+        action_plot_unit={
+            "help": "Unit the action should be plotted in.",
+            "default": "um",
+            "choices": list(UNIT_IN_METERS.keys()),
+            "type": str,
+        },
+        manual_style={
+            "type": DictAsString,
+            "default": {},
+            "help": 'Additional style rcParameters which update the set of predefined ones.'
+        },
+        plot_styles={
+            "help": "Plotting styles.",
+            "type": UnionPathStr,
+            "nargs": "+",
+            "default": ['standard', 'amplitude_detuning'],
+        },
+        tune_scale={
+            "help": "Plotting exponent of the tune.",
+            "default": -3,
+            "type": int,
+        },
+        bbq_corrected={
+            "help": "Plot the data with BBQ correction (``True``) or without (``False``)."
                  " ``None`` plots both in separate plots. Default: ``None``.",
-            type=bool,
-        )
+            "type": bool,
+        }
     )
 
 

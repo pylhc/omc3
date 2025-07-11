@@ -94,33 +94,33 @@ LOGGER = logging_tools.get_logger(__name__)
 
 def get_params():
     params = EntryPointParameters(
-        measurement_dir=dict(
-            help="Path to the measurement files.",
-            required=True,
-            type=PathOrStr,
-        ),
-        elements=dict(
-            help="Element name list to run in element mode.",
-            nargs="+",
-            type=str,
-        ),
-        segments=dict(
-            help=("Segments to run in segment mode with format: "
+        measurement_dir={
+            "help": "Path to the measurement files.",
+            "required": True,
+            "type": PathOrStr,
+        },
+        elements={
+            "help": "Element name list to run in element mode.",
+            "nargs": "+",
+            "type": str,
+        },
+        segments={
+            "help": ("Segments to run in segment mode with format: "
                   "``segment_name,start,end``, where start and end "
                   "must be existing BPM names."),
-            nargs="+",
-            type=str,
-        ),
-        corrections=dict(
-            help=("Corrections to use. Can be a dict of knob-value pairs, "
+            "nargs": "+",
+            "type": str,
+        },
+        corrections={
+            "help": ("Corrections to use. Can be a dict of knob-value pairs, "
                  "a MAD-X string or a path to a file. "
                  "Note: all segements will have these corrections."),
-            type=PathOrStrOrDict,
-        ),
-        output_dir=dict(
-            help="Output directory. If not given, the model-directory is used.",
-            type=PathOrStr,
-        )
+            "type": PathOrStrOrDict,
+        },
+        output_dir={
+            "help": "Output directory. If not given, the model-directory is used.",
+            "type": PathOrStr,
+        }
     )
     params.update(model_creator.get_fetcher_params())
     return params

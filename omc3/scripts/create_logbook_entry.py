@@ -82,38 +82,38 @@ LOGGER = get_logger(__name__)
 
 def get_params():
     return EntryPointParameters(
-        logbook=dict(
-            type=str,
-            help="Name of the logbook to create the entry in.",
-            default=OMC_LOGBOOK,
-        ),
-        text=dict(
-            type=str,
-            help="Text to be written into the new logbook entry.",
-            default="",
-        ),
-        files=dict(
-            type=PathOrStr,
-            nargs="+",
-            help="Files to attach to the new logbook entry.",
-        ),
-        filenames=dict(
-            type=OptionalStr,
-            nargs="+",
-            help=(
+        logbook={
+            "type": str,
+            "help": "Name of the logbook to create the entry in.",
+            "default": OMC_LOGBOOK,
+        },
+        text={
+            "type": str,
+            "help": "Text to be written into the new logbook entry.",
+            "default": "",
+        },
+        files={
+            "type": PathOrStr,
+            "nargs": "+",
+            "help": "Files to attach to the new logbook entry.",
+        },
+        filenames={
+            "type": OptionalStr,
+            "nargs": "+",
+            "help": (
                 "Filenames to be used with the given files. "
                 "If omitted, the original filenames will be used."
             ),
-        ),
-        tags=dict(
-            type=str,
-            nargs="+",
-            help="Tags to be added to the event.",
-        ),
-        pdf2png=dict(
-            action="store_true",
-            help="Convert pdf files to png and also upload these."
-        )
+        },
+        tags={
+            "type": str,
+            "nargs": "+",
+            "help": "Tags to be added to the event.",
+        },
+        pdf2png={
+            "action": "store_true",
+            "help": "Convert pdf files to png and also upload these."
+        }
     )
 
 

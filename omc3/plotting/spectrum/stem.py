@@ -84,16 +84,16 @@ def _format_axes(fig_cont: FigureContainer, limits: DotDict):
 
 
 def _create_legend(ax, labels, lines, ncol):
-    lines_params = dict(
-        marker=rcParams['lines.marker'],
-        markersize=rcParams['font.size'] * 0.5,
-        linestyle='None',
-    )
-    legend_params = dict(
-        loc='lower right',
-        ncol=ncol,
-        fancybox=False, shadow=False, frameon=False,
-    )
+    lines_params = {
+        "marker": rcParams['lines.marker'],
+        "markersize": rcParams['font.size'] * 0.5,
+        "linestyle": 'None',
+    }
+    legend_params = {
+        "loc": 'lower right',
+        "ncol": ncol,
+        "fancybox": False, "shadow": False, "frameon": False,
+    }
     handles = [mlines.Line2D([], [], color=get_cycled_color(idx), label=bpm, **lines_params)
                for idx, bpm in enumerate(labels)]
     leg = ax.legend(handles=handles, **legend_params)
