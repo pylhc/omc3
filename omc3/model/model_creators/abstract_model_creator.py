@@ -6,6 +6,7 @@ This module provides the template for all model creators.
 """
 from __future__ import annotations
 
+import contextlib
 import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -181,10 +182,9 @@ class ModelCreator(ABC):
             TWISS_ADT_DAT: "model_driven",
         }
         for filename in self.files_to_check:
-            try:
+            with contextlib.suppress(KeyError):
+                # KeyError if just a file to check, not a file with attribute
                 setattr(self.accel, attribute_map[filename], tfs.read(self.accel.model_dir / filename, index=NAME))
-            except KeyError:
-                pass  # just a file to check, not a file with attribute
 
 
     @property

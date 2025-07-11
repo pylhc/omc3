@@ -6,6 +6,7 @@ Tools to handle BBQ data.
 """
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -134,11 +135,9 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: pd.Seri
     if is_datetime_index:
         # in case data_series has datetime or similar as index
         # interpolation works in some pandas/numpy combinations, in some not
-        try:
+        with contextlib.suppress(TypeError):
             # if clean_mask is a Series, bring into the right order and make array ...
             clean_mask = clean_mask[data.index].to_numpy()
-        except TypeError:
-            pass
 
         # ... as we change the index of data now
         data.index = pd.Index([i.timestamp() for i in data.index])

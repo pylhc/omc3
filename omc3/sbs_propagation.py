@@ -44,6 +44,7 @@ It then compares the propagated values with the measured values in that segment.
 """
 from __future__ import annotations
 
+import contextlib
 import functools
 import shutil
 from pathlib import Path
@@ -291,10 +292,8 @@ def get_differences(propagables: list[Propagable], segment_name: str = "", outpu
         allow_write=output_dir is not None
     )
     for propagable in propagables:
-        try:
+        with contextlib.suppress(NotImplementedError):
             propagable.add_differences(segment_diffs)
-        except NotImplementedError:
-            pass
     return segment_diffs
 
 

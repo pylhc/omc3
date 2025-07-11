@@ -7,6 +7,7 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 from __future__ import annotations
 
+import contextlib
 import os
 import re
 from pathlib import Path
@@ -187,10 +188,11 @@ class Accelerator:
             bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
             self.model = self.elements.loc[bpm_mask, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
-        try:
-            self.energy = float(self.model.headers["ENERGY"])  # always 450GeV because we do not set it anywhere properly...
-        except KeyError: #KEK model does not have energy in the header
-            pass
+
+        with contextlib.suppress(KeyError):
+            # always 450GeV because we do not set it anywhere properly...
+            # KeyError: KEK model does not have energy in the header for instance
+            self.energy = float(self.model.headers["ENERGY"])
 
         # Excitations #####################################
         driven_filenames = {"acd": model_dir / TWISS_AC_DAT, "adt": model_dir / TWISS_ADT_DAT}

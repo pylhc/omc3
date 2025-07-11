@@ -7,7 +7,7 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -372,14 +372,10 @@ def complex_secondary_lines(phase_adv: ArrayLike[float], err_padv: ArrayLike[flo
 
 
 def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1):
-    try:
+    with suppress(AttributeError):
         amplitudes = amplitudes.to_numpy()
-    except AttributeError:
-        pass
 
-    try:
+    with suppress(AttributeError):
         phases = phases.to_numpy()
-    except AttributeError:
-        pass
 
     return amplitudes * np.exp(2j * np.pi * phases / period)
