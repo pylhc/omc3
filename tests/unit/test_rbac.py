@@ -183,7 +183,7 @@ def mock_post_fun(address, **kwargs):
 
     r = Response()
     r.status_code = 0 if success else 500
-    r._content = f"{VALID_RESPONSE}/{data['AccountName']}/{data['Application']}/{data['Lifetime']}".encode("utf-8") if success else None
+    r._content = f"{VALID_RESPONSE}/{data['AccountName']}/{data['Application']}/{data['Lifetime']}".encode() if success else None
     r.reason = reason
     return r
 
