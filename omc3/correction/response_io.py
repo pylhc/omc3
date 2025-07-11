@@ -38,8 +38,7 @@ def read_fullresponse(path: Path, optics_parameters: Sequence[str] = None) -> di
     LOG.info(f"Loading response matrices from file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="r") as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="r") as store:
             _check_keys(store, optics_parameters, "fullresponse")
 
             fullresponse = defaultdict(pd.DataFrame)
@@ -59,8 +58,7 @@ def write_fullresponse(path: Path, fullresponse: dict[str, pd.DataFrame]):
         LOG.warning(f"Fullresponse file {str(path)} already exist and will be overwritten.")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
             for param, response_df in fullresponse.items():
                 store.put(value=response_df, key=param, format="table")
 
@@ -78,8 +76,7 @@ def read_varmap(path: Path, k_values: Sequence[str] = None) -> dict[str, dict[st
     LOG.info(f"Loading varmap from file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="r") as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="r") as store:
             _check_keys(store, k_values, "varmap")
 
             varmap = defaultdict(lambda: defaultdict(pd.Series))
@@ -98,8 +95,7 @@ def write_varmap(path: Path, varmap: dict[str, dict[str, pd.Series]]):
     LOG.info(f"Saving varmap into file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
             for param, sub in varmap.items():
                 for subparam, varmap_series in sub.items():
                     store.put(value=varmap_series, key=f"{param}/{subparam}", format="table")

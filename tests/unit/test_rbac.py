@@ -67,8 +67,7 @@ class TestRBACClass:
         user = valid_users["bertha"]
         kerberos = MockKerberos(user)
         monkeypatch.setenv(RBAC_USERNAME, "adam")
-        with mock_module_import("kerberos", kerberos):
-            with pytest.raises(HTTPError) as e:
+        with mock_module_import("kerberos", kerberos), pytest.raises(HTTPError) as e:
                 rbac.authenticate_kerberos()
         assert REASONS["krb"] in str(e)
 
