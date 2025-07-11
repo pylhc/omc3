@@ -6,13 +6,23 @@ Stem plotting functionality for spectrum plotter.
 """
 
 from generic_parser import DotDict
+from matplotlib import lines as mlines
+from matplotlib import pyplot as plt
 from matplotlib import rcParams
-from matplotlib import pyplot as plt, lines as mlines
 
-from omc3.plotting.spectrum.utils import (plot_lines, FigureContainer, get_cycled_color,
-                                          get_approx_size_in_axes_coordinates,
-                                          PLANES, STEM_LINES_ALPHA, LABEL_Y_SPECTRUM,
-                                          LABEL_X, AMPS, FREQS, output_plot)
+from omc3.plotting.spectrum.utils import (
+    AMPS,
+    FREQS,
+    LABEL_X,
+    LABEL_Y_SPECTRUM,
+    PLANES,
+    STEM_LINES_ALPHA,
+    FigureContainer,
+    get_approx_size_in_axes_coordinates,
+    get_cycled_color,
+    output_plot,
+    plot_lines,
+)
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
 
@@ -75,8 +85,8 @@ def _format_axes(fig_cont: FigureContainer, limits: DotDict):
 
 def _create_legend(ax, labels, lines, ncol):
     lines_params = dict(
-        marker=rcParams[u'lines.marker'],
-        markersize=rcParams[u'font.size'] * 0.5,
+        marker=rcParams['lines.marker'],
+        markersize=rcParams['font.size'] * 0.5,
         linestyle='None',
     )
     legend_params = dict(

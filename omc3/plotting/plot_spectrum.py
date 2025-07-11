@@ -242,7 +242,7 @@ DEFAULTS = DotDict(
     filetype='pdf',
     waterfall_line_width=2,
     manual_style={
-        u'axes.prop_cycle': get_reshuffled_tab20c(),
+        'axes.prop_cycle': get_reshuffled_tab20c(),
     }
 )
 

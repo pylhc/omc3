@@ -418,7 +418,7 @@ def _make_output_dir(out_dir, filename):
 
 def get_cycled_color(idx: int):
     """ Get the color at (wrapped) idx in the color cycle. The CN-Method only works until 'C9'."""
-    cycle = rcParams[u"axes.prop_cycle"].by_key()['color']
+    cycle = rcParams["axes.prop_cycle"].by_key()['color']
     return cycle[idx % len(cycle)]
 
 
