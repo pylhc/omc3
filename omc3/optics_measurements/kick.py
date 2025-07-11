@@ -158,17 +158,21 @@ def _get_model_arc_betas(measure_input, plane):
 
 def _get_column_mapping(plane):
     plane_number = PLANE_TO_NUM[plane]
-    load_columns = dict([
-        (TIME,                      "TIME"),
-        (DPP,                       DPP),
-        (DPPAMP,                    DPPAMP),
-        (f"{TUNE}{plane}",          f"{TUNE}{plane_number}"),
-        (f"{ERR}{TUNE}{plane}",     f"{TUNE}{plane_number}{RMS}"),
-        (f"{NAT_TUNE}{plane}",      f"{NAT_TUNE}{plane_number}"),
-        (f"{ERR}{NAT_TUNE}{plane}", f"{NAT_TUNE}{plane_number}{RMS}"),
-    ])
-    calc_columns = [f"{SQRT_ACTION}{plane}", f"{ERR}{SQRT_ACTION}{plane}",
-                    f"{ACTION}{plane}", f"{ERR}{ACTION}{plane}"]
+    load_columns = {
+        TIME: "TIME",
+        DPP: DPP,
+        DPPAMP: DPPAMP,
+        f"{TUNE}{plane}": f"{TUNE}{plane_number}",
+        f"{ERR}{TUNE}{plane}": f"{TUNE}{plane_number}{RMS}",
+        f"{NAT_TUNE}{plane}": f"{NAT_TUNE}{plane_number}",
+        f"{ERR}{NAT_TUNE}{plane}": f"{NAT_TUNE}{plane_number}{RMS}",
+    }
+    calc_columns = [
+        f"{SQRT_ACTION}{plane}",
+        f"{ERR}{SQRT_ACTION}{plane}",
+        f"{ACTION}{plane}",
+        f"{ERR}{ACTION}{plane}",
+    ]
 
     column_types = {TIME: str}
     column_types.update(dict.fromkeys(list(load_columns.keys())[1:] + calc_columns, float))
