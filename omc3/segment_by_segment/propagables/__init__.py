@@ -15,8 +15,8 @@ from omc3.segment_by_segment.propagables.utils import PropagableColumns  #noqa  
 from omc3.segment_by_segment.propagables.phase import Phase
 from omc3.segment_by_segment.propagables.beta import BetaPhase
 from omc3.segment_by_segment.propagables.alpha import AlphaPhase
-from omc3.segment_by_segment.propagables.dispersion import Dispersion  #noqa  -> expose
+from omc3.segment_by_segment.propagables.dispersion import Dispersion, DispersionMomentum  #noqa  -> expose
 from omc3.segment_by_segment.propagables.coupling import F1001, F1010  #noqa  -> expose
 
 
-ALL_PROPAGABLES: tuple[type[Propagable], ...] = (Phase, BetaPhase, AlphaPhase, Dispersion, F1001, F1010)
+ALL_PROPAGABLES: tuple[type[Propagable], ...] = (Phase, BetaPhase, AlphaPhase, Dispersion, DispersionMomentum, F1001, F1010)
