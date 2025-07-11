@@ -131,7 +131,7 @@ class TempFile(object):
 
     def __exit__(self, value, traceback):
         try:
-            with open(self.path, "r") as f:
+            with open(self.path) as f:
                 content = f.read()
             self.log_func(f"{self.path:s}:\n" + content)
         except IOError:
