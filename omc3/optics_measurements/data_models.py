@@ -217,7 +217,7 @@ class InputFiles(dict):
             list of columns.
         """
         str_list = list(frame.columns[frame.columns.str.startswith(column + '__')].to_numpy())
-        new_list = list(map(lambda s: s[len(f"{column}__"):], str_list))
+        new_list = [s[len(f"{column}__"):] for s in str_list]
         new_list.sort(key=int)
         return [f"{column}__{x}" for x in new_list]
 
