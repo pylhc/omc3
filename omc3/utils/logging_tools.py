@@ -45,7 +45,7 @@ MADX = DEBUG + 3
 # Classes and Contexts #########################################################
 
 
-class MaxFilter(object):
+class MaxFilter:
     """To get messages only up to a certain level."""
     def __init__(self, level):
         self.__level = level
@@ -54,7 +54,7 @@ class MaxFilter(object):
         return log_record.levelno <= self.__level
 
 
-class DebugMode(object):
+class DebugMode:
     """
     Context Manager for the debug mode.
     Hint: Does not work with ``@contextmanager`` from contextlib (even though nicer code),
@@ -112,7 +112,7 @@ class DebugMode(object):
             self.mod_logger.removeHandler(self.console_h)
 
 
-class TempFile(object):
+class TempFile:
     """
     Context Manager. Lets another function write into a temporary file and logs its contents.
     It won't open the file, so only the files path is returned.

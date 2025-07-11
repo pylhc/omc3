@@ -42,7 +42,7 @@ LIN = FILE_LIN_EXT.format(plane='')
 # Collector Classes ------------------------------------------------------------
 
 
-class FigureContainer(object):
+class FigureContainer:
     """ Container for attaching additional information to one figure. """
     def __init__(self, path: str) -> None:
         self.fig, self.axes = plt.subplots(nrows=len(PLANES), ncols=1)

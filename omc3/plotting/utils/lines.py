@@ -19,7 +19,7 @@ VERTICAL_LINES_TEXT_LOCATIONS = {
 VERTICAL_LINES_ALPHA = 0.5
 
 
-class MarkerList(object):
+class MarkerList:
     """Create a list of predefined markers."""
     # markers = ["s", "o", ">", "D", "v", "*", "h", "^", "p", "X", "<", "P"]  # matplotlib 2.++
     markers = ["s", "o", ">", "D", "v", "*", "h", "^", "p", "<"]
