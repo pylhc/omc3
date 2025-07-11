@@ -1,7 +1,7 @@
 from pathlib import Path
 from shutil import copy
 
-import matplotlib
+import matplotlib as mpl
 import pytest
 import tfs
 from matplotlib.figure import Figure
@@ -12,7 +12,7 @@ from omc3.plotting.spectrum.utils import PLANES, get_unique_filenames
 INPUT_DIR = Path(__file__).parent.parent / "inputs"
 INPUT_DIR_SPECTRUM_FILES = INPUT_DIR / "lhc_harpy_output"
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
-matplotlib.use("Agg")
+mpl.use("Agg")
 
 
 @pytest.mark.basic

@@ -1,9 +1,9 @@
 from pathlib import Path
 
+import matplotlib as mpl
 import pytest
 
 from omc3.plotting.plot_tfs import plot
-import matplotlib
 
 INPUT = Path(__file__).parent.parent / "inputs" / "optics_measurement" / "example_output"
 DEBUG = False  # switch to local output instead of temp
@@ -137,7 +137,7 @@ def test_errors_same_options_same(tmp_path):
 # Helper ---
 
 def n_plots_in(path):
-    ext = matplotlib.rcParams['savefig.format']
+    ext = mpl.rcParams['savefig.format']
     return len(list(path.glob(f"*.{ext}")))
 
 # Main plot (can be also used as example) ---

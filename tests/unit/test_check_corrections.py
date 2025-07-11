@@ -2,7 +2,7 @@ import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import matplotlib
+import matplotlib as mpl
 import pytest
 import tfs
 from generic_parser import DotDict
@@ -126,7 +126,7 @@ class TestFullRun:
                 self._check_rms_header(df, planed_map, is_masked=is_masked)
 
         # Check plotting output
-        pdf_files = list(output_dir.glob(f"*.{matplotlib.rcParams['savefig.format']}"))
+        pdf_files = list(output_dir.glob(f"*.{mpl.rcParams['savefig.format']}"))
         assert len(pdf_files) == (n_meas_files + 6) * 2  # rdts split into 4; plotting combined and individual
         for pdf_file in pdf_files:
             assert pdf_file.stat().st_size
@@ -241,7 +241,7 @@ class TestMeasurementFilter:
 
 
 class TestPlotting:
-    
+
     @pytest.mark.basic
     def test_normal_params(self, monkeypatch):
         figure_dict = {
@@ -282,7 +282,7 @@ class TestPlotting:
                     assert plottab.title == "param1"
                 else:
                     assert plottab.title == "param 2"
-    
+
     @pytest.mark.basic
     def test_single_plane_files(self, monkeypatch):
         single_name = SINGLE_PLANE_FILES[0]  # so far only one anyway
@@ -359,7 +359,7 @@ class TestPlotting:
             assert len(tab.tabs) == 2  # either 1 rdt 2 columns or 2 rdts 1 column
             if idx_tab:
                 assert tab.title == f"correction{idx_tab}"
-                
+
                 for idx, plottab in enumerate(tab.tabs):
                     title_parts = plottab.title.split(" ")
                     rdt = "f1001" if idx_tab == 1 else "f1010"

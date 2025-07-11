@@ -1,4 +1,4 @@
-import matplotlib
+import matplotlib as mpl
 import pytest
 
 from omc3.model.constants import TWISS_ELEMENTS_DAT
@@ -6,7 +6,7 @@ from omc3.plotting.plot_optics_measurements import plot
 from tests.conftest import INPUTS, MODELS
 
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
-matplotlib.use("Agg")
+mpl.use("Agg")
 
 
 EXAMPLE_PATH = INPUTS / "optics_measurement" / "example_output"

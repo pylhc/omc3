@@ -1,12 +1,12 @@
 from pathlib import Path
 
-import matplotlib
+import matplotlib as mpl
 import pytest
 
 from omc3.plotting.plot_amplitude_detuning import main as pltampdet
 
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
-matplotlib.use("Agg")
+mpl.use("Agg")
 
 
 @pytest.mark.basic
