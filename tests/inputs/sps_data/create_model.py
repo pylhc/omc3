@@ -52,13 +52,13 @@ class PathMaker:
 def create_model(name: str, errors: list[Path]):
     model_path = SPS_DIR / name
     modifiers = [Q20_STRENGTHS_FILE] + errors
-    accel_opt = dict(
-        accel="sps",
-        nat_tunes=[20.13, 20.18],
-        fetch=Fetcher.PATH,
-        path=TMP_ACC_MODELS,
-        modifiers=modifiers
-    )
+    accel_opt = {
+        "accel": "sps",
+        "nat_tunes": [20.13, 20.18],
+        "fetch": Fetcher.PATH,
+        "path": TMP_ACC_MODELS,
+        "modifiers": modifiers
+    }
 
     accel_nominal: Lhc = create_instance_and_model(
         outputdir=model_path, type="nominal", **accel_opt

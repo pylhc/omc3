@@ -64,18 +64,18 @@ def create_model(path: Path, beam: int, errors: list[Path]):
         year=YEAR, beam=beam, tunes="inj", beta="30cm", suffix="_flat"
     )
     modifiers = [OPTICS_30CM_FLAT] + errors
-    accel_opt = dict(
-        accel="lhc",
-        year=YEAR,
-        ats=True,
-        beam=beam,
-        nat_tunes=[0.31, 0.32],
-        dpp=0.0,
-        energy=6800.0,
-        fetch=Fetcher.PATH,
-        path=TMP_ACC_MODELS,
-        modifiers=modifiers
-    )
+    accel_opt = {
+        "accel": "lhc",
+        "year": YEAR,
+        "ats": True,
+        "beam": beam,
+        "nat_tunes": [0.31, 0.32],
+        "dpp": 0.0,
+        "energy": 6800.0,
+        "fetch": Fetcher.PATH,
+        "path": TMP_ACC_MODELS,
+        "modifiers": modifiers
+    }
 
     if RECREATE_NOMINAL_MODEL or len(errors):
         # Create ---

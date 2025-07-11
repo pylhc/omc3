@@ -54,11 +54,11 @@ class TestFullRun:
         output_dir = tmp_path / "Corrections"
         filter_kwargs = {}
         if use_filter:
-            filter_kwargs = dict(
-                optics_params=correction_params.optics_params[:2],  # PHASE[XY] or F1001[IR]
-                modelcut=[0.01, 0.01],
-                errorcut=[0.01, 0.01],
-            )
+            filter_kwargs = {
+                'optics_params': correction_params.optics_params[:2],  # PHASE[XY] or F1001[IR]
+                'modelcut': [0.01, 0.01],
+                'errorcut': [0.01, 0.01],
+            }
         optics_params = filter_kwargs.get("optics_params", [])
 
         # TEST RUN -----------------------------------------------------------------

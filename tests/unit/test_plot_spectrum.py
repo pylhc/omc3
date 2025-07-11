@@ -44,7 +44,7 @@ def test_basic_functionality(tmp_path, file_path, bpms):
         files=[file_path],
         output_dir=str(tmp_path),
         bpms=bpms + ["unknown_bpm"],
-        lines_manual=[dict(x=0.3, label="myline")],
+        lines_manual=[{"x": 0.3, "label": "myline"}],
         lines_nattunes=None,
         show_plots=False,
         manual_style={},  # just to call the update line

@@ -81,15 +81,15 @@ class TestSbSLHC:
         # Preparation ----------------------------------------------------------
         twiss_elements = tfs.read(model_30cm_flat_beams.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
         beam = model_30cm_flat_beams.beam
-        accel_opt = dict(
-            accel="lhc",
-            year=YEAR,
-            beam=beam,
-            nat_tunes=[0.31, 0.32],
-            dpp=0.0,
-            energy=6500,
-            modifiers=[acc_models_lhc_2025 / OPTICS_SUBDIR / OPTICS_30CM_FLAT],
-        )
+        accel_opt = {
+            "accel": "lhc",
+            "year": YEAR,
+            "beam": beam,
+            "nat_tunes": [0.31, 0.32],
+            "dpp": 0.0,
+            "energy": 6500,
+            "modifiers": [acc_models_lhc_2025 / OPTICS_SUBDIR / OPTICS_30CM_FLAT],
+        }
 
         correction_path = None
         if with_correction:
@@ -160,17 +160,17 @@ class TestSbSLHC:
         sbs_dir: Path = tmp_path / "my_sbs"
 
         beam = model_30cm_flat_beams.beam
-        accel_opt = dict(
-            accel="lhc",
-            year=YEAR,
-            beam=beam,
-            nat_tunes=[0.31, 0.32],
-            dpp=0.0,
-            energy=6800,
-            fetch=Fetcher.PATH,
-            path=acc_models_lhc_2025,
-            modifiers=[OPTICS_30CM_FLAT],
-        )
+        accel_opt = {
+            "accel": "lhc",
+            "year": YEAR,
+            "beam": beam,
+            "nat_tunes": [0.31, 0.32],
+            "dpp": 0.0,
+            "energy": 6800,
+            "fetch": Fetcher.PATH,
+            "path": acc_models_lhc_2025,
+            "modifiers": [OPTICS_30CM_FLAT],
+        }
 
         correction_path = None
         if with_correction:

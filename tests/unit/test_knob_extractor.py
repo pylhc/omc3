@@ -390,20 +390,20 @@ class TestParser:
 
     @pytest.mark.basic
     def test_cli_parsing(self, main_entrypoint):
-        my_opts = dict(
-            knobs=["knob1", "knob2", "knob3"],
-            time="2022-06-23T12:53:01",
-            timedelta="_27y",
-            output="help.txt",
-            knob_definitions="knob_def.txt",
-        )
-        my_types = dict(
-            knobs=list,
-            time=str,
-            timedelta=str,
-            output=Path,
-            knob_definitions=Path,
-        )
+        my_opts = {
+            "knobs": ["knob1", "knob2", "knob3"],
+            "time": "2022-06-23T12:53:01",
+            "timedelta": "_27y",
+            "output": "help.txt",
+            "knob_definitions": "knob_def.txt",
+        }
+        my_types = {
+            "knobs": list,
+            "time": str,
+            "timedelta": str,
+            "output": Path,
+            "knob_definitions": Path,
+        }
 
         # run main
         with cli_args(*dict2args(my_opts)):

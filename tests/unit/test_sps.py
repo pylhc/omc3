@@ -71,16 +71,16 @@ class TestModelCreationSPS:
     @pytest.mark.parametrize("use_acdipole", [True, False], ids=["acdipole", "no_acdipole"])
     def test_nominal_driven(self, tmp_path: Path, acc_models_sps_2025: Path, use_acdipole: bool):
         """ Tests the creation of a nominal model with ACDipole for the SPS. """
-        accel_opt = dict(
-            accel="sps",
-            year="2025",
-            nat_tunes=[20.13, 20.18],
-            drv_tunes=[0.26, 0.282],
-            driven_excitation="acd" if use_acdipole else None,
-            fetch=Fetcher.PATH,
-            path=acc_models_sps_2025,
-            modifiers=[Q20_STRENGTHS_FILE],
-        )
+        accel_opt = {
+            "accel": "sps",
+            "year": "2025",
+            "nat_tunes": [20.13, 20.18],
+            "drv_tunes": [0.26, 0.282],
+            "driven_excitation": "acd" if use_acdipole else None,
+            "fetch": Fetcher.PATH,
+            "path": acc_models_sps_2025,
+            "modifiers": [Q20_STRENGTHS_FILE],
+        }
         accel = create_instance_and_model(
             outputdir=tmp_path, type=CreatorType.NOMINAL, logfile=tmp_path / "madx_log.txt", **accel_opt
         )
@@ -122,14 +122,14 @@ class TestModelCreationSPS:
     @pytest.mark.basic
     def test_nominal_free(self, tmp_path, acc_models_sps_2025):
         """ Tests the creation of a nominal model without ACDipole for the SPS. """
-        accel_opt = dict(
-            accel="sps",
-            year="2025",
-            nat_tunes=[20.13, 20.18],
-            fetch=Fetcher.PATH,
-            path=acc_models_sps_2025,
-            modifiers=[Q20_STRENGTHS_FILE],
-        )
+        accel_opt = {
+            "accel": "sps",
+            "year": "2025",
+            "nat_tunes": [20.13, 20.18],
+            "fetch": Fetcher.PATH,
+            "path": acc_models_sps_2025,
+            "modifiers": [Q20_STRENGTHS_FILE],
+        }
         accel = create_instance_and_model(
             outputdir=tmp_path, type=CreatorType.NOMINAL, logfile=tmp_path / "madx_log.txt", **accel_opt
         )
@@ -149,11 +149,11 @@ class TestModelCreationSPS:
         Everything else about Segment-by-Segment should be the same as for LHC.
         """
         # Preparation ----------------------------------------------------------
-        accel_opt = dict(
-            accel="sps",
-            nat_tunes=[20.13, 20.18],
-            modifiers=[acc_models_sps_2025 / STRENGTHS_SUBDIR / Q20_STRENGTHS_FILE],
-        )
+        accel_opt = {
+            "accel": "sps",
+            "nat_tunes": [20.13, 20.18],
+            "modifiers": [acc_models_sps_2025 / STRENGTHS_SUBDIR / Q20_STRENGTHS_FILE],
+        }
         elements = tfs.read(SPS_MODEL_DIR / TWISS_ELEMENTS_DAT, index=NAME)
         correction_path = create_error_file(tmp_path)
 
