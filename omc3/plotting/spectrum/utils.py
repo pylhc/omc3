@@ -50,7 +50,7 @@ class FigureContainer:
         self.tunes = {p: [] for p in PLANES}
         self.nattunes = {p: [] for p in PLANES}
         self.path = path
-        self.minmax = {p: (1, 0) for p in PLANES}
+        self.minmax = dict.fromkeys(PLANES, (1, 0))
 
     def add_data(self, label: str, new_data: dict) -> None:
         self.data[label] = new_data

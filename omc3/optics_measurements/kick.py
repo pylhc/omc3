@@ -171,5 +171,5 @@ def _get_column_mapping(plane):
                     f"{ACTION}{plane}", f"{ERR}{ACTION}{plane}"]
 
     column_types = {TIME: str}
-    column_types.update({k: float for k in list(load_columns.keys())[1:] + calc_columns})
+    column_types.update(dict.fromkeys(list(load_columns.keys())[1:] + calc_columns, float))
     return load_columns, calc_columns, column_types

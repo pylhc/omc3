@@ -497,7 +497,7 @@ def _get_measurement_filter(
 
     # add weights and use_errorbars as these are required in filters
     opt.use_errorbars = False
-    opt.weights = {param: 1.0 for param in opt.optics_params}
+    opt.weights = dict.fromkeys(opt.optics_params, 1.0)
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
 
     # use the indices as filters
