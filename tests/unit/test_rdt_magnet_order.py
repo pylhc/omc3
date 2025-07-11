@@ -9,14 +9,14 @@ from omc3.model.constants import TWISS_DAT
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 
-HARPY_SETTINGS = dict(
-    clean=True,
-    to_write=['lin',],
-    max_peak=[0.02],
-    turn_bits=12,
-)
+HARPY_SETTINGS = {
+    "clean": True,
+    "to_write": ['lin',],
+    "max_peak": [0.02],
+    "turn_bits": 12,
+}
 
-# ==== HARPY 
+# ==== HARPY
 @pytest.mark.basic
 def test_default_harpy_resonance(tmp_path):
     '''
@@ -38,8 +38,7 @@ def test_default_harpy_resonance(tmp_path):
                            unit="mm")
 
     files = os.path.join(tmp_path, 'lhc_200_turns.sdds')
-    lin = dict(X=tfs.read(f"{files}.linx"),
-               Y=tfs.read(f"{files}.liny"))
+    lin = {"X": tfs.read(f"{files}.linx"), "Y": tfs.read(f"{files}.liny")}
 
     # Some resonance lines for each order, as multiples of (Qx, Qy)
     # The same line on each plane is given by different RDT, but they're from the same magnet order
@@ -107,11 +106,10 @@ def test_harpy_high_order_resonance(tmp_path):
                            to_write=to_write,
                            unit="mm",
                            resonances=6)
-    
+
 
     files = os.path.join(tmp_path, 'lhc_200_turns.sdds')
-    lin = dict(X=tfs.read(f"{files}.linx"),
-               Y=tfs.read(f"{files}.liny"))
+    lin = {"X": tfs.read(f"{files}.linx"), "Y": tfs.read(f"{files}.liny")}
 
     r_lines = {5: [(-3, 1), (-1, -3), (3, -1), (0, -4), (0, 4)],
                6: [(-5, 0), (-4, -1), (-1, -4), (0, -5), (0, 5)],

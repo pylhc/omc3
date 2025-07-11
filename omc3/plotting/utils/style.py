@@ -4,15 +4,20 @@ Plotting Utilities: Style
 
 Helper functions to style plots.
 """
-from typing import Dict, Any, Sequence, Union
+from __future__ import annotations
 
-from matplotlib import pyplot as plt, rcParams
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 from omc3.utils.iotools import PathOrStr
 
-REMOVE_ENTRY = "REMOVE ENTRY"  # id to remove entries in manual style
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
+REMOVE_ENTRY = "REMOVE ENTRY"  # id to remove entries in manual style
 STYLES_DIR = Path(__file__).parent.parent / 'styles'
 
 
@@ -23,8 +28,8 @@ def omc3_styles():
     return {p.with_suffix('').name: p for p in STYLES_DIR.glob('*.mplstyle')}
 
 
-def set_style(styles: Union[Path, str, Sequence[Union[Path, str]]] = 'standard',
-              manual: Dict[str, Any] = None):
+def set_style(styles: Path | str | Sequence[Path | str] = 'standard',
+              manual: dict[str, Any] = None):
     """
     Sets the style for all following plots.
 

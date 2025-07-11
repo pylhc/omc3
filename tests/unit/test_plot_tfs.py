@@ -1,9 +1,9 @@
 from pathlib import Path
 
+import matplotlib as mpl
 import pytest
 
 from omc3.plotting.plot_tfs import plot
-import matplotlib
 
 INPUT = Path(__file__).parent.parent / "inputs" / "optics_measurement" / "example_output"
 DEBUG = False  # switch to local output instead of temp
@@ -137,24 +137,24 @@ def test_errors_same_options_same(tmp_path):
 # Helper ---
 
 def n_plots_in(path):
-    ext = matplotlib.rcParams['savefig.format']
+    ext = mpl.rcParams['savefig.format']
     return len(list(path.glob(f"*.{ext}")))
 
 # Main plot (can be also used as example) ---
 
 
 def simple_plot_tfs(**kwargs):
-    default_args = dict(
-        files=[INPUT / "orbit_{0}.tfs"],
-        x_columns=["S"],
-        y_columns=["{0}"],
-        error_columns=["ERR{0}"],
-        planes=["X", "Y"],
-        show=False,
-        # same_axes='planes',
-        # same_figure='planes',
-        single_legend=True,
-        change_marker=True,
-    )
+    default_args = {
+        "files": [INPUT / "orbit_{0}.tfs"],
+        "x_columns": ["S"],
+        "y_columns": ["{0}"],
+        "error_columns": ["ERR{0}"],
+        "planes": ["X", "Y"],
+        "show": False,
+        # "same_axes": "planes",
+        # "same_figure": "planes",
+        "single_legend": True,
+        "change_marker": True,
+    }
     default_args.update(kwargs)
     return plot(**default_args)

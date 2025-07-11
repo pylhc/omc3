@@ -5,6 +5,8 @@ Logging Tools
 Functions for easier use of logging, like automatic logger setup
 (see: :meth:`~utils.logging_tools.get_logger`).
 """
+from __future__ import annotations
+
 import datetime
 import inspect
 import logging
@@ -30,7 +32,7 @@ from omc3.utils.debugging import is_debug
 
 DIVIDER = "|"
 NEWLINE = "\n" + " " * 10  # levelname + divider + 2
-BASIC_FORMAT = '%(levelname)7s {div:s} %(message)s {div:s} %(name)s'.format(div=DIVIDER)
+BASIC_FORMAT = f'%(levelname)7s {DIVIDER:s} %(message)s {DIVIDER:s} %(name)s'
 COLOR_LEVEL = '\33[0m\33[38;2;150;150;255m'
 COLOR_MESSAGE = '\33[0m'
 COLOR_MESSAGE_LOW = '\33[0m\33[38;2;140;140;140m'
@@ -45,7 +47,7 @@ MADX = DEBUG + 3
 # Classes and Contexts #########################################################
 
 
-class MaxFilter(object):
+class MaxFilter:
     """To get messages only up to a certain level."""
     def __init__(self, level):
         self.__level = level
@@ -54,7 +56,7 @@ class MaxFilter(object):
         return log_record.levelno <= self.__level
 
 
-class DebugMode(object):
+class DebugMode:
     """
     Context Manager for the debug mode.
     Hint: Does not work with ``@contextmanager`` from contextlib (even though nicer code),
@@ -79,12 +81,12 @@ class DebugMode(object):
             self.logger.debug("Running in Debug-Mode.")
 
             # create logfile name:
-            now = "{:s}_".format(datetime.datetime.now().isoformat())
+            now = f"{datetime.datetime.now().isoformat():s}_"
             if log_file is None:
                 log_file = os.path.abspath(caller_file).replace(".pyc", "").replace(".py",
                                                                                     "") + ".log"
             self.log_file = os.path.join(os.path.dirname(log_file), now + os.path.basename(log_file))
-            self.logger.debug("Writing log to file '{:s}'.".format(self.log_file))
+            self.logger.debug(f"Writing log to file '{self.log_file:s}'.")
 
             # add handlers
             self.file_h = file_handler(self.log_file, level=DEBUG)
@@ -103,9 +105,8 @@ class DebugMode(object):
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
-            log_id = "" if self.log_file is None else "'{:s}'".format(
-                os.path.basename(self.log_file))
-            self.logger.debug("Exiting Debug-Mode {:s} after {:f}s.".format(log_id, time_used))
+            log_id = "" if self.log_file is None else f"'{os.path.basename(self.log_file):s}'"
+            self.logger.debug(f"Exiting Debug-Mode {log_id:s} after {time_used:f}s.")
 
             # revert everything
             self.logger.setLevel(self.current_level)
@@ -113,7 +114,7 @@ class DebugMode(object):
             self.mod_logger.removeHandler(self.console_h)
 
 
-class TempFile(object):
+class TempFile:
     """
     Context Manager. Lets another function write into a temporary file and logs its contents.
     It won't open the file, so only the files path is returned.
@@ -132,11 +133,11 @@ class TempFile(object):
 
     def __exit__(self, value, traceback):
         try:
-            with open(self.path, "r") as f:
+            with open(self.path) as f:
                 content = f.read()
-            self.log_func("{:s}:\n".format(self.path) + content)
-        except IOError:
-            self.log_func("{:s}: -file does not exist-".format(self.path))
+            self.log_func(f"{self.path:s}:\n" + content)
+        except OSError:
+            self.log_func(f"{self.path:s}: -file does not exist-")
         else:
             os.remove(self.path)
 
@@ -155,7 +156,7 @@ def log_pandas_settings_with_copy(log_func):
                 warnings.warn(w)
             else:
                 message = w.message.args[0].split("\n")
-                log_func("{:s} (l. {:d})".format(message[1], caller_line))
+                log_func(f"{message[1]:s} (l. {caller_line:d})")
     finally:
         pd.options.mode.chained_assignment = old_mode
 
@@ -376,8 +377,7 @@ def _get_current_module(current_file=None):
                     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
                     ).split(os.path.sep)
 
-    current_module = '.'.join(path_parts[len(repo_parts):-1])
-    return current_module
+    return '.'.join(path_parts[len(repo_parts):-1])
 
 
 def _get_caller_logger_name():
@@ -415,9 +415,7 @@ def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
 
     format_string = format_string.replace(name, COLOR_NAME + name)
     format_string = format_string.replace(DIVIDER, COLOR_DIVIDER + DIVIDER)
-    format_string = format_string + COLOR_RESET
-
-    return format_string
+    return format_string + COLOR_RESET
 
 
 def _isatty():

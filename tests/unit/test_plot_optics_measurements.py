@@ -1,4 +1,4 @@
-import matplotlib
+import matplotlib as mpl
 import pytest
 
 from omc3.model.constants import TWISS_ELEMENTS_DAT
@@ -6,7 +6,7 @@ from omc3.plotting.plot_optics_measurements import plot
 from tests.conftest import INPUTS, MODELS
 
 # Forcing non-interactive Agg backend so rendering is done similarly across platforms during tests
-matplotlib.use("Agg")
+mpl.use("Agg")
 
 
 EXAMPLE_PATH = INPUTS / "optics_measurement" / "example_output"
@@ -207,7 +207,7 @@ def test_rdt_1001_skip_for_xaxis_option(tmp_path):
 
 def _default_test(*args, **kwargs):
     out_dir = kwargs.pop("output_dir")
-    default_args = dict(show=False, x_axis="phase-advance", ncol_legend=2,)
+    default_args = {"show": False, "x_axis": "phase-advance", "ncol_legend": 2}
     default_args.update(kwargs)
     figs = plot(folders=[EXAMPLE_PATH,], output=out_dir, optics_parameters=list(args), **default_args)
     assert len(list(out_dir.glob("*.pdf"))) == len(args)
@@ -217,7 +217,7 @@ def _default_test(*args, **kwargs):
 
 def _default_test_rdt(*args, **kwargs):
     out_dir = kwargs.pop("output_dir")
-    default_args = dict(show=False, x_axis="location", ncol_legend=2,)
+    default_args = {"show": False, "x_axis": "location", "ncol_legend": 2}
     default_args.update(kwargs)
     figs = plot(
         folders=[str(EXAMPLE_PATH),], output=str(out_dir), optics_parameters=list(args), **default_args

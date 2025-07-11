@@ -60,8 +60,8 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
 from generic_parser.entrypoint_parser import DotDict, EntryPointParameters, entrypoint
 
 from omc3.correction import response_madx, response_twiss
@@ -71,6 +71,10 @@ from omc3.model import manager
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.misc import StrEnum
+
+if TYPE_CHECKING:
+    import pandas as pd
+
 
 LOG = logging_tools.get_logger(__name__)
 

@@ -17,13 +17,14 @@ less accurate when calculated from OMC3.
 9. Other OMC3 analysis - this is only required if you want to analyse everything rather than just run the test. 
 """
 import time
-import tfs
 
+import tfs
 from optics_functions.rdt import calculate_rdts
-from tests.utils.compression import compress_model
+
 from tests.inputs.lhc_rdts.helper_lhc_rdts import (
     convert_tfs_to_madx,
     create_model_dir,
+    get_model_dir,
     get_twiss_elements,
     run_twiss_rdts,
     save_analytical_model,
@@ -31,16 +32,16 @@ from tests.inputs.lhc_rdts.helper_lhc_rdts import (
     save_x_model,
     to_ng_rdts,
     write_tbt_file,
-    get_model_dir,
 )
+from tests.utils.compression import compress_model
+from tests.utils.lhc_rdts.constants import DATA_DIR, MODEL_NG_PREFIX
 from tests.utils.lhc_rdts.functions import (
     filter_out_BPM_near_IPs,
-    get_rdt_names,
-    run_harpy,
-    get_rdts_from_optics_analysis,
     get_file_suffix,
+    get_rdt_names,
+    get_rdts_from_optics_analysis,
+    run_harpy,
 )
-from tests.utils.lhc_rdts.constants import DATA_DIR, MODEL_NG_PREFIX
 
 run_madng = True
 run_analytical_model = True

@@ -6,8 +6,8 @@ from pandas.testing import assert_frame_equal
 from omc3.correction import response_madx, response_twiss
 from omc3.correction.constants import VALUE
 from omc3.correction.handler import (
-    create_corrected_model,
     _update_response,
+    create_corrected_model,
     get_measurement_data,
 )
 from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
@@ -136,7 +136,7 @@ def test_update_response(tmp_path, model_inj_beams):
     accel_inst = manager.get_accelerator(model_inj_beams)
     delta = tfs.TfsDataFrame(
         3.34e-05,
-        index=[knob], 
+        index=[knob],
         columns=[DELTA]
         )
     optics_params = ['PHASEX', 'PHASEY']
@@ -145,8 +145,8 @@ def test_update_response(tmp_path, model_inj_beams):
     ref_resp_dict = response_madx.create_fullresponse(accel_inst, [knob])
 
     corr_model_path = tmp_path / f"twiss_cor{EXT}"
-    ref_model = create_corrected_model(corr_model_path, [], accel_inst, False)
-    
+    ref_model = create_corrected_model(corr_model_path, [], accel_inst, update_dpp=False)
+
     # As orbit_dpp is not in the response, it should not be updated. First for response_madx
     new_resp_dict = _update_response(
         accel_inst=accel_inst,
@@ -159,7 +159,7 @@ def test_update_response(tmp_path, model_inj_beams):
     )
 
     # Check everything is the same, as model has not changed.
-    for key in ref_resp_dict.keys():
+    for key in ref_resp_dict:
         assert_frame_equal(ref_resp_dict[key], new_resp_dict[key])
 
     corr_file = tmp_path / "corr.madx"
@@ -169,16 +169,16 @@ def test_update_response(tmp_path, model_inj_beams):
     # Now for response_madx with the model changed
     new_resp_dict = _update_response(
         accel_inst=accel_inst,
-        corrected_elements=ref_model, # This is not used in response_madx  
+        corrected_elements=ref_model, # This is not used in response_madx
         optics_params=optics_params,
         corr_files=[corr_file],
         variable_categories=[knob],
         update_dpp=False,
         update_response="madx"
     )
-    for key in new_resp_dict.keys():
+    for key in new_resp_dict:
         # If the original response is 0, there is no reason why the new one should not be.
-        if not ref_resp_dict[key][knob].sum() == 0:
+        if ref_resp_dict[key][knob].sum() != 0:
             # The values are not the same, as the model has changed.
             assert not ref_resp_dict[key].equals(new_resp_dict[key])
 
@@ -199,28 +199,27 @@ def test_update_response(tmp_path, model_inj_beams):
         update_dpp=False,
         update_response="twiss"
     )
-    
+
     # Check everything is the same, as model is the reference model.
-    for key in ref_resp_dict.keys():
+    for key in ref_resp_dict:
         assert_frame_equal(ref_resp_dict[key], new_resp_dict[key])
 
-    corr_model = create_corrected_model(corr_model_path, [corr_file], accel_inst, False)
+    corr_model = create_corrected_model(corr_model_path, [corr_file], accel_inst, update_dpp=False)
     assert not ref_model.equals(corr_model) # For debugging - if this is the problem, or response_twiss
 
     new_resp_dict = _update_response(
         accel_inst=accel_inst,
         corrected_elements=corr_model,
         optics_params=optics_params,
-        corr_files=[], 
+        corr_files=[],
         variable_categories=[knob],
         update_dpp=False,
         update_response=True
     )
-    for key in new_resp_dict.keys(): # The new dict will only have the keys for the selected optics_params
+    for key in new_resp_dict: # The new dict will only have the keys for the selected optics_params
         # The values are not the same, as the model has changed.
         assert not ref_resp_dict[key].equals(new_resp_dict[key])
 
         # Check the general structure of the response
         assert knob in new_resp_dict[key].columns
         assert new_resp_dict[key].index.equals(ref_resp_dict[key].index)
-    

@@ -16,7 +16,7 @@ def test_converter_one_file(_sdds_file, _test_file):
     converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent)
     origin = tbt.read_tbt(_sdds_file)
     new = tbt.read_tbt(f"{_test_file}.sdds")
-    _compare_tbt(origin, new, False)
+    _compare_tbt(origin, new, no_binary=False)
 
 
 @pytest.mark.basic
@@ -54,7 +54,7 @@ def test_converter_one_file_with_noise(_sdds_file, _test_file):
     converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, noise_levels=[noiselevel])
     origin = tbt.read_tbt(_sdds_file)
     new = tbt.read_tbt(f"{_test_file}_n{noiselevel}.sdds")
-    _compare_tbt(origin, new, True, noiselevel * 10)
+    _compare_tbt(origin, new, no_binary=True, max_deviation=noiselevel * 10)
 
 
 @pytest.mark.basic
@@ -64,7 +64,7 @@ def test_converter_more_files(_sdds_file, _test_file):
     origin = tbt.read_tbt(_sdds_file)
     for i in range(rep):
         new = tbt.read_tbt(f"{_test_file}_r{i}.sdds")
-        _compare_tbt(origin, new, False)
+        _compare_tbt(origin, new, no_binary=False)
 
 
 @pytest.mark.basic
@@ -78,7 +78,7 @@ def test_converter_more_files_with_noise(_sdds_file, _test_file):
     origin = tbt.read_tbt(_sdds_file)
     for i in range(rep):
         new = tbt.read_tbt(f"{_test_file}_n{noiselevel}_r{i}.sdds")
-        _compare_tbt(origin, new, True, noiselevel * 10)
+        _compare_tbt(origin, new, no_binary=True, max_deviation=noiselevel * 10)
 
 
 @pytest.mark.basic
@@ -90,10 +90,10 @@ def test_change_output_format(_sdds_file, _test_file):
     origin = tbt.read_tbt(_sdds_file, datatype="lhc")
     converter_entrypoint(files=[_sdds_file], outputdir=_test_file.parent, output_datatype="ascii")
 
-    # test output ---    
+    # test output ---
     _test_file.read_text()  # making sure this is ascii
     new = tbt.read_tbt(_test_file, datatype="ascii")
-    _compare_tbt(origin, new, True)
+    _compare_tbt(origin, new, no_binary=True)
 
 
 # Test Helper ------------------------------------------------------------------

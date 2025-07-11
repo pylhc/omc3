@@ -1,4 +1,4 @@
-""" 
+"""
 Plot K-Modulation Results
 -------------------------
 
@@ -10,7 +10,7 @@ Create Plots for the K-Modulation data.
 
 - **data** *(PathOrStrOrDataFrame)*:
 
-    Path to the K-Mod BetaStar (i.e. `results.tfs`) DataFrame, 
+    Path to the K-Mod BetaStar (i.e. `results.tfs`) DataFrame,
     e.g. from `omc3.kmod_averages`, or the DataFrame itself.
 
 
@@ -55,7 +55,6 @@ Create Plots for the K-Modulation data.
     Show the plots.
 
     action: ``store_true``
-
 """
 from __future__ import annotations
 
@@ -150,10 +149,10 @@ def plot_kmod_results(opt: DotDict) -> dict[str, plt.Figure]:
     Function to plot the beta-beating and waist from K-Modulation data.
     """
     LOG.info("Plotting K-Mod results.")
-    
+
     # Loading ---
     df_kmod = opt.data
-    if isinstance(df_kmod, (Path, str)):
+    if isinstance(df_kmod, Path | str):
         df_kmod = tfs.read(df_kmod, index=BEAM)
 
     # Plotting ---
@@ -163,15 +162,15 @@ def plot_kmod_results(opt: DotDict) -> dict[str, plt.Figure]:
     for parameter, reference in ((PARAM_BETA, opt.betastar), (PARAM_BETABEAT, opt.betastar), (PARAM_WAIST, opt.waist)):
         if parameter == PARAM_BETABEAT and reference is None:
             continue
-        
+
         figs[parameter]  = plot_parameter(df_kmod, parameter, reference=reference, ip=opt.ip)
-    
+
     # Output ---
     if opt.output_dir is not None:
         output_dir = Path(opt.output_dir)
         output_dir.mkdir(exist_ok=True)
 
-        if isinstance(opt.data, (Path, str)):  # don't save if called with DataFrames
+        if isinstance(opt.data, Path | str):  # don't save if called with DataFrames
             save_config(output_dir, opt, __file__)
 
         ip_str = f"ip{opt.ip}_" if opt.ip is not None else ""
@@ -218,7 +217,7 @@ def plot_parameter(
 
     LOG.debug(f"Plotting parameter {parameter}.")
     fig, ax = _get_square_axes()
-    
+
     # Plot reference ---
     if reference is not None:
         if len(reference) == 1:
@@ -263,7 +262,7 @@ def plot_parameter(
 
     ax.axhline(0, color='gray', linestyle='--', linewidth=0.5, marker='none')
     ax.axvline(0, color='gray', linestyle='--', linewidth=0.5, marker='none')
-    
+
     ax.legend()
     return fig
 
@@ -287,7 +286,7 @@ def _get_waist_and_err(results: tfs.TfsDataFrame, beam: int, plane: str) -> tupl
 
 
 def _get_beta_and_err(results: tfs.TfsDataFrame, beam: int, plane: str) -> tuple[float, float]:
-    beta = results.loc[beam, f'{BETASTAR}{plane}'] 
+    beta = results.loc[beam, f'{BETASTAR}{plane}']
     err = results.loc[beam, f'{ERR}{BETASTAR}{plane}']
     return beta, err
 

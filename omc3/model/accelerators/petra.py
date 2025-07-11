@@ -5,6 +5,8 @@ PETRA
 Accelerator-Class for the ``PETRA`` machine.
 Model creation not implemented yet.
 """
+from __future__ import annotations
+
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.constants import PLANE_TO_HV
 

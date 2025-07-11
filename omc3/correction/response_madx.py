@@ -26,10 +26,10 @@ import tfs
 from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.model.model_creators.manager import CreatorType, get_model_creator_class 
 import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.constants import INCR, ORBIT_DPP
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
+from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.optics_measurements.constants import (
     BETA,
     DISPERSION,
@@ -47,6 +47,7 @@ LOG = logging_tools.get_logger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 
@@ -87,9 +88,7 @@ def create_fullresponse(
         _clean_up(temp_dir, num_proc)
 
         var_to_twiss = _load_madx_results(variables, process_pool, incr_dict, temp_dir)
-        fullresponse = _create_fullresponse_from_dict(var_to_twiss)
-
-    return fullresponse
+        return _create_fullresponse_from_dict(var_to_twiss)
 
 
 def _generate_madx_jobs(
@@ -114,7 +113,7 @@ def _generate_madx_jobs(
         # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
         madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n" # Set deltap to 0
-        
+
         # get update deltap setup from model creator
         madx_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
         deltap_twiss = f", deltap={ORBIT_DPP}"
@@ -135,7 +134,7 @@ def _generate_madx_jobs(
 
         if proc_idx == num_proc - 1:
             current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
-            
+
             if compute_deltap: # If ORBIT_DPP is in variables, we run this in the last iteration
                 # Due to the match and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[ORBIT_DPP] = delta_k
@@ -148,7 +147,7 @@ def _generate_madx_jobs(
 
 def _get_madx_job(accel_inst: Accelerator) -> str:
     # use relative paths as we use model_dir as cwd
-    model_dir_backup = accel_inst.model_dir  
+    model_dir_backup = accel_inst.model_dir
     accel_inst.model_dir = Path()
 
     # get nominal setup from creator
@@ -166,9 +165,9 @@ def _get_madx_job(accel_inst: Accelerator) -> str:
 
 def _get_nominal_model_creator(accel_inst: Accelerator) -> ModelCreator:
     """ Get the nominal model creator, to which we can add the change of parameters.
-    
+
     This is always done on the nominal model, not the best knowledge model, to ensure
-    that the response matrix is in the most linear regime and therefore most accurate 
+    that the response matrix is in the most linear regime and therefore most accurate
     (for most scenarios).
     """
     creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
@@ -194,12 +193,12 @@ def _clean_up(temp_dir: Path, num_proc: int) -> None:
         log_path.unlink()
         if index:  # keep 0th for reference
             job_path.unlink()
-    
+
     # write compressed full log file
     full_log_name = "response_madx_full.log"
     zipfile.ZipFile(
-        temp_dir / f"{full_log_name}.zip", 
-        mode="w", 
+        temp_dir / f"{full_log_name}.zip",
+        mode="w",
         compression=zipfile.ZIP_DEFLATED
     ).writestr(full_log_name, full_log)
 
@@ -232,7 +231,7 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
 
     bpms = var_to_twiss["0"].index
     resp = np.empty((len(keys), bpms.size, len(columns)))
-    
+
     for i, key in enumerate(keys):
         resp[i] = var_to_twiss[key].loc[:, columns].to_numpy()
 
@@ -253,7 +252,7 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
     NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])
     NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index][:, np.newaxis])
-    
+
     # Remove difference of nominal model with itself (bunch of zeros) and divide by increment
     resp = np.delete(resp, model_index, axis=2)
     NDX_arr = np.delete(NDX_arr, model_index, axis=1)
@@ -264,7 +263,7 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
     NDY_arr = np.divide(NDY_arr, resp[columns.index(f"{INCR}")])
     resp = np.divide(resp,resp[columns.index(f"{INCR}")])
     Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T
- 
+
     with suppress_warnings(ComplexWarning):  # raised as everything is complex-type now
         return {
             f"{PHASE_ADV}X": pd.DataFrame(data=resp[columns.index(f"{PHASE_ADV}X")], index=bpms, columns=keys).astype(np.float64),

@@ -7,9 +7,10 @@ It provides functions to computes and the coupling resonance driving terms, whic
 optics outputs.
 """
 from __future__ import annotations
-from collections.abc import Sequence, Callable
+
 from functools import partial, reduce
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -21,31 +22,34 @@ from omc3.harpy.constants import COL_MU
 from omc3.optics_measurements.beta_from_phase import _tilt_slice_matrix
 from omc3.optics_measurements.constants import (
     AMPLITUDE,
+    DELTA,
+    ERR,
+    EXT,
     F1001,
+    F1001_NAME,
     F1010,
+    F1010_NAME,
     IMAG,
-    REAL,
+    MDL,
+    MEASUREMENT,
     NAME,
     PHASE,
     PHASE_ADV,
+    REAL,
     SECONDARY_AMPLITUDE_X,
     SECONDARY_AMPLITUDE_Y,
     SECONDARY_FREQUENCY_X,
     SECONDARY_FREQUENCY_Y,
     S,
-    ERR,
-    EXT,
-    MDL,
-    MEASUREMENT,
-    DELTA, F1010_NAME, F1001_NAME
 )
-from omc3.optics_measurements.phase import CompensationMode, UNCOMPENSATED, COMPENSATED
+from omc3.optics_measurements.phase import COMPENSATED, UNCOMPENSATED, CompensationMode
 from omc3.utils import logging_tools, stats
 
-from typing import TYPE_CHECKING 
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
-if TYPE_CHECKING: 
-    from generic_parser import DotDict 
+    from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
     from omc3.optics_measurements.phase import PhaseDict
 
@@ -236,8 +240,7 @@ def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
     """
     if mode == 0:
         return _find_candidate(phases)
-    else:
-        return _take_next(phases, mode)
+    return _take_next(phases, mode)
 
 
 def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):

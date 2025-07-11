@@ -4,24 +4,31 @@ Plot Spectrum - Utilities
 
 Common functions and sorting functions for the spectrum plotter.
 """
+from __future__ import annotations
+
 import os
 from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
-from typing import Iterable, Sized, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import tfs
-from generic_parser import DotDict
-from matplotlib import transforms, axes, rcParams, pyplot as plt
+from matplotlib import axes, rcParams, transforms
+from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
+from omc3.harpy.constants import COL_NAME, FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sized
+
+    import pandas as pd
+    from generic_parser import DotDict
 
 LOG = logging_tools.getLogger(__name__)
 
@@ -41,7 +48,7 @@ LIN = FILE_LIN_EXT.format(plane='')
 # Collector Classes ------------------------------------------------------------
 
 
-class FigureContainer(object):
+class FigureContainer:
     """ Container for attaching additional information to one figure. """
     def __init__(self, path: str) -> None:
         self.fig, self.axes = plt.subplots(nrows=len(PLANES), ncols=1)
@@ -49,7 +56,7 @@ class FigureContainer(object):
         self.tunes = {p: [] for p in PLANES}
         self.nattunes = {p: [] for p in PLANES}
         self.path = path
-        self.minmax = {p: (1, 0) for p in PLANES}
+        self.minmax = dict.fromkeys(PLANES, (1, 0))
 
     def add_data(self, label: str, new_data: dict) -> None:
         self.data[label] = new_data
@@ -307,7 +314,7 @@ def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
     return data_series
 
 
-def get_unique_filenames(files: Union[Iterable, Sized]):
+def get_unique_filenames(files: Iterable | Sized):
     """ Way too complicated method to assure unique dictionary names,
         by going backwards through the file-path until the names differ.
     """
@@ -367,7 +374,7 @@ def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Itera
             empty_planes += 1
 
     if empty_planes == len(planes):
-        raise IOError(f"(id:{filename}) No BPMs found in any plane!")
+        raise OSError(f"(id:{filename}) No BPMs found in any plane!")
     return found_bpms
 
 
@@ -417,7 +424,7 @@ def _make_output_dir(out_dir, filename):
 
 def get_cycled_color(idx: int):
     """ Get the color at (wrapped) idx in the color cycle. The CN-Method only works until 'C9'."""
-    cycle = rcParams[u"axes.prop_cycle"].by_key()['color']
+    cycle = rcParams["axes.prop_cycle"].by_key()['color']
     return cycle[idx % len(cycle)]
 
 

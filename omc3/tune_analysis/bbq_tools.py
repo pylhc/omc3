@@ -4,17 +4,21 @@ BBQ Tools
 
 Tools to handle BBQ data.
 """
-from typing import Tuple, Union
+from __future__ import annotations
+
+import contextlib
+from dataclasses import dataclass
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-from numpy.typing import ArrayLike, NDArray
 
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
-from dataclasses import dataclass
 
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike, NDArray
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -49,10 +53,10 @@ class MinMaxFilterOpt:
     fine_cut: float = None
 
 
-FilterOpts = Union[OutlierFilterOpt, Tuple[MinMaxFilterOpt, MinMaxFilterOpt]]
+FilterOpts = OutlierFilterOpt | tuple[MinMaxFilterOpt, MinMaxFilterOpt]
 
 
-def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> Tuple[pd.Series, pd.Series, ArrayLike]:
+def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> tuple[pd.Series, pd.Series, ArrayLike]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered
     beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)
@@ -95,7 +99,7 @@ def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> T
     return data_mav, err_mav, ~cut_mask
 
 
-def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFilterOpt) -> Tuple[pd.Series, pd.Series, NDArray[bool]]:
+def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFilterOpt) -> tuple[pd.Series, pd.Series, NDArray[bool]]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries, by means of
     :func:`outlier filter <omc3.utils.outliers.get_filter_mask>`.
@@ -121,7 +125,7 @@ def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFil
 # Private methods ############################################################
 
 
-def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[pd.Series, ArrayLike], length: int) -> Tuple[pd.Series, pd.Series]:
+def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: pd.Series | ArrayLike, length: int) -> tuple[pd.Series, pd.Series]:
     """
     Returns the moving average of data series with a window of length and interpolated ``NaNs``.
     """
@@ -131,11 +135,9 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[p
     if is_datetime_index:
         # in case data_series has datetime or similar as index
         # interpolation works in some pandas/numpy combinations, in some not
-        try:
+        with contextlib.suppress(TypeError):
             # if clean_mask is a Series, bring into the right order and make array ...
             clean_mask = clean_mask[data.index].to_numpy()
-        except TypeError:
-            pass
 
         # ... as we change the index of data now
         data.index = pd.Index([i.timestamp() for i in data.index])

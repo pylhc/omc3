@@ -4,6 +4,8 @@ Clean
 
 This module contains the cleaning functionality of ``harpy``.
 """
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 
@@ -60,11 +62,11 @@ def _cut_cleaning(harpy_input, bpm_data, model):
 
     bpm_data = bpm_data.loc[bpm_data.index.difference(all_bad_bpms, sort=False)]
     bad_bpms_with_reasons = _get_bad_bpms_summary(
-        harpy_input, 
-        known=known_bad_bpms, 
-        flat=bpm_flatness, 
-        spike=bpm_spikes, 
-        zero=exact_zeros, 
+        harpy_input,
+        known=known_bad_bpms,
+        flat=bpm_flatness,
+        spike=bpm_spikes,
+        zero=exact_zeros,
         nan=bpm_nans,
     )
     _report_clean_stats(original_bpms.size, bpm_data.index.size, bad_bpms_with_reasons)
@@ -158,7 +160,7 @@ def _get_bad_bpms_summary(harpy_input, **kwargs):
     }
 
     # Quick check that catches coding errors/typos:
-    unknown_kwargs = [kwarg for kwarg in kwargs if kwarg not in human_readable.keys()]
+    unknown_kwargs = [kwarg for kwarg in kwargs if kwarg not in human_readable]
     if len(unknown_kwargs):
         raise NameError(f"Unknown reason(s) for Bad-BPMs: {unknown_kwargs}")
 
@@ -169,16 +171,16 @@ def _get_bad_bpms_summary(harpy_input, **kwargs):
 
 def _report_clean_stats(n_total_bpms, n_good_bpms, bad_bpms_with_reasons):
     LOGGER.debug("Filtering done:")
-    
+
     # As it not written out yet, provide more info in case of raising errors:
     bad_bpms_message = "Bad BPMs found:\n"
     bad_bpms_message += "\n".join(bad_bpms_with_reasons)
-    
+
     # If all BPMs have been bad ---
     if n_good_bpms == 0:
         LOGGER.info(bad_bpms_message)
         raise ValueError("Total Number of BPMs after filtering is zero.")
-    
+
     # The good, the bad and the ugly BPMs ---
     n_bad_bpms = n_total_bpms - n_good_bpms
     LOGGER.debug(f"(Statistics for file reading) Total BPMs: {n_total_bpms}, "
@@ -189,7 +191,7 @@ def _report_clean_stats(n_total_bpms, n_good_bpms, bad_bpms_with_reasons):
         raise ValueError("More than half of BPMs are bad. "
                          "This could be because a bunch not present in the machine has been "
                          "selected or because of a problem with the phasing of the BPMs.")
-    
+
     LOGGER.debug(bad_bpms_message)
 
 

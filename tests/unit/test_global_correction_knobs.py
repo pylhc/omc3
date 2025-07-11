@@ -1,4 +1,4 @@
-""" 
+"""
 Tests for the definition files of the global correction knobs.
 """
 import json
@@ -14,14 +14,14 @@ MODELS_DIR = INPUTS / "models"
 class TestLHCKnobs:
     @staticmethod
     def load_knobs_file(name: str, beam: int = None):
-        correctors_dir = Lhc.DEFAULT_CORRECTORS_DIR 
+        correctors_dir = Lhc.DEFAULT_CORRECTORS_DIR
         if beam is not None:
             correctors_dir = correctors_dir / f"correctors_b{beam}"
 
-        with open(correctors_dir / f"{name}_correctors.json", "r") as f:
-            knobs = json.load(f)
-        return knobs
-    
+        with open(correctors_dir / f"{name}_correctors.json") as f:
+            return json.load(f)
+
+
     def test_all_json_files_are_readable(self):
         """ Check if all json files are readable. """
         for file in ["beta", "coupling"]:
@@ -51,7 +51,7 @@ class TestLHCKnobs:
         vars_mqy = accel_lhcb1.get_variables(classes=["MQY"])
         assert len(vars_mqy) < len(vars_all)
         assert all(mqy in vars_all for mqy in vars_mqy)
-        
+
         vars_q = accel_lhcb1.get_variables(classes=["Q"])
         vars_mqy_q = accel_lhcb1.get_variables(classes=["MQY", "Q"])
         assert all(mqy in vars_mqy_q for mqy in vars_mqy)
@@ -69,11 +69,11 @@ class TestLHCKnobs:
         assert kq4_name not in vars_mqy_extra_and_minus
         assert "test1" in vars_mqy_extra_and_minus
         assert "test2" not in vars_mqy_extra_and_minus
-    
+
     def test_default_and_specific_variables(self, tmp_path, accel_lhcb1: Lhc, accel_lhcb2: Lhc):
         """ Tests if both json files are loaded correctly. This specific test only works
         with 2022-lhc models, as only here the MQM_TOP_2024 and MQM_INJ_2024 classes are implemented."""
-        
+
         my_class = "MY_CLASS"
         my_dict = {my_class: ["A", "B", "C"]}
         user_json = tmp_path / "beta_correctors.json"
@@ -100,18 +100,17 @@ class TestLHCKnobs:
 
 @pytest.fixture
 def accel_lhcb1():
-    lhc = Lhc(
+    return Lhc(
         year="2024",
         beam=1,
         model_dir=MODELS_DIR / "2022_inj_b1_acd"
     )
-    return lhc
+
 
 @pytest.fixture
 def accel_lhcb2():
-    lhc = Lhc(
+    return Lhc(
         year="2024",
         beam=2,
         model_dir=MODELS_DIR / "2022_inj_b1_acd"
     )
-    return lhc

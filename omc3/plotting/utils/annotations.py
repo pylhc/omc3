@@ -13,10 +13,12 @@ from typing import TYPE_CHECKING
 import matplotlib as mpl
 import pandas as pd
 import tfs
-from matplotlib import pyplot as plt, rcParams
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 if TYPE_CHECKING:
     from pathlib import Path
+
     from matplotlib.axes import Axes
 
 # List of common y-labels. Sorry for the ugly.
@@ -24,7 +26,7 @@ ylabels: dict[str, str] = {
     "alpha":              r'$\alpha_{{{0}}} \quad [m]$',
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
-    "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$'u'\u2030'r'$]$',
+    "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$' '\u2030'r'$]$',
     "dbeta":              r"$\beta'_{{{0}}} \quad [m]$",
     "dbetabeat":          r'$1 \; / \; \beta_{{{0}}} \cdot \partial\beta_{{{0}}} \; / \; \partial\delta_{{{0}}}$',
     "norm_dispersion":    r'D$_{{{0}}} \; / \; \sqrt{{\beta_{{{0}}}}} \quad \left[\sqrt{{\rm m}}\right]$',
@@ -105,7 +107,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
     inside = 'inside' in mode
     lines_only = 'inside' not in mode and 'outside' not in mode and 'lines' in mode
 
-    if isinstance(ip_dict, (pd.DataFrame, pd.Series)):
+    if isinstance(ip_dict, pd.DataFrame | pd.Series):
         if isinstance(ip_dict, pd.DataFrame):
             ip_dict = ip_dict.iloc[:, 0]
         d = {}
@@ -113,7 +115,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
             d[ip] = ip_dict.loc[ip]
         ip_dict = d
 
-    for ip in ip_dict.keys():
+    for ip in ip_dict:
         if xlim[0] <= ip_dict[ip] <= xlim[1]:
             xpos = ip_dict[ip]
 
@@ -233,8 +235,7 @@ def get_annotation(ax: Axes = None, by_reference: bool = True):
         if c.get_label() == 'plot_style_annotation':
             if by_reference:
                 return c
-            else:
-                return c.get_text()
+            return c.get_text()
     return None
 
 
@@ -271,9 +272,7 @@ def figure_title(text: str, ax: Axes = None, pad: float = 0, **kwargs) -> None:
         ax = plt.gca()
 
     # could not get set_title() to work properly, so one parameter at a time
-    fdict = dict(fontsize=rcParams['font.size'],
-                 fontweight=rcParams['font.weight'],
-                 va="top", ha="center")
+    fdict = {"fontsize": rcParams['font.size'], "fontweight": rcParams['font.weight'], "va": "top", "ha": "center"}
     fdict.update(kwargs)
     ax.set_title(text, transform=ax.figure.transFigure, fontdict=fdict)
 
@@ -310,7 +309,7 @@ def make_top_legend(
 ):
     """Create a legend on top of the plot."""
     if ncol < 1:
-        return
+        return None
 
     if transposed:
         handles, labels = transpose_legend_order(ncol, handles, labels, ax)
@@ -357,7 +356,7 @@ class OOMFormatter(mpl.ticker.ScalarFormatter):
     def _set_format(self, vmin, vmax):
         self.format = self.fformat
         if self._useMathText:
-            self.format = '$%s$' % mpl.ticker._mathdefault(self.format)
+            self.format = f'${mpl.ticker._mathdefault(self.format)}$'
 
 
 def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, math_text=True):

@@ -106,7 +106,7 @@ def test_ang():
     sum_angles = toolbox.ang_sum(a, b)
     for res in (diff, sum_angles):
         assert len(res) == len(a)
-        assert all(-0.5 <= res)
+        assert all(res >= -0.5)
         assert all(res <= 0.5)
 
 
