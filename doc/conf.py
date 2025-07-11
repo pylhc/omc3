@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # omc3 documentation build configuration file, created by
 # sphinx-quickstart on Tue Feb  6 12:10:18 2018.
 #
