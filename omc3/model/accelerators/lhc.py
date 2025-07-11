@@ -246,7 +246,7 @@ class Lhc(Accelerator):
 
         # Check if no filtering but only sorting was required
         if (frm is None) and (to is None) and (len(sorted_vars) != len(variables)):
-            unknown_vars = list(sorted(var for var in variables if var not in sorted_vars))
+            unknown_vars = sorted(var for var in variables if var not in sorted_vars)
             LOGGER.debug(f"The following variables do not have a location: {str(unknown_vars)}")
             sorted_vars = sorted_vars + unknown_vars
         return sorted_vars
