@@ -56,11 +56,6 @@ def suppress_warnings(warning_classes):
         yield
     for w in warn_list:
         if not issubclass(w.category, warning_classes):
-            print("{file:s}:{line:d}: {clas:s}: {message:s}".format(
-                file=w.filename,
-                line=w.lineno,
-                clas=w._category_name,
-                message=w.message.message,
-            ),
+            print(f"{w.filename:s}:{w.lineno:d}: {w._category_name:s}: {w.message.message:s}",
                 file=sys.stderr
             )

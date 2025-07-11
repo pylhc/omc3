@@ -432,7 +432,7 @@ class TwissResponse:
                 "Y": {"K1L": -1},
             }
             q_map = {"X": tw.Q1, "Y": tw.Q2}
-            disp_resp = dict.fromkeys(["{p:s}_{t:s}".format(p=p, t=t) for p in sign_map for t in sign_map[p]])
+            disp_resp = dict.fromkeys([f"{p:s}_{t:s}" for p in sign_map for t in sign_map[p]])
 
             for plane in sign_map:
                 q = q_map[plane]
@@ -444,7 +444,7 @@ class TwissResponse:
                 coeff_corr = 1 / (4 * np.sin(2 * np.pi * q))
                 for el_in, el_type in zip(els_per_type, el_types):
                     coeff_sign = sign_map[plane][el_type]
-                    out_str = "{p:s}_{t:s}".format(p=plane, t=el_type)
+                    out_str = f"{plane:s}_{el_type:s}"
 
                     if len(el_in):
                         pi2tau = 2 * np.pi * tau(adv[plane].loc[el_in, el_out], q)

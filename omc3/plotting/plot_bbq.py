@@ -234,7 +234,7 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
                                     bbq_df[get_bbq_col(plane)],
                                     color=pcolors.change_color_brightness(color, .4),
                                     marker="o", markerfacecolor="None",
-                                    label="$Q_{:s}$".format(plane.lower(),)
+                                    label=f"$Q_{plane.lower():s}$"
                                     )[0]
         filtered_data = bbq_df.loc[mask, get_bbq_col(plane)].dropna()
         handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.to_numpy(),
@@ -261,7 +261,7 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
             axs[idx].axvline(x=interval[1], color="red")
 
         if two_plots:
-            axs[idx].set_ylabel("$Q_{:s}$".format(PLANES[idx]))
+            axs[idx].set_ylabel(f"$Q_{PLANES[idx]:s}$")
         else:
             axs[idx].set_ylabel('Tune')
 

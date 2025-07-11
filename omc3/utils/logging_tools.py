@@ -30,7 +30,7 @@ from omc3.utils.debugging import is_debug
 
 DIVIDER = "|"
 NEWLINE = "\n" + " " * 10  # levelname + divider + 2
-BASIC_FORMAT = '%(levelname)7s {div:s} %(message)s {div:s} %(name)s'.format(div=DIVIDER)
+BASIC_FORMAT = f'%(levelname)7s {DIVIDER:s} %(message)s {DIVIDER:s} %(name)s'
 COLOR_LEVEL = '\33[0m\33[38;2;150;150;255m'
 COLOR_MESSAGE = '\33[0m'
 COLOR_MESSAGE_LOW = '\33[0m\33[38;2;140;140;140m'
@@ -79,12 +79,12 @@ class DebugMode(object):
             self.logger.debug("Running in Debug-Mode.")
 
             # create logfile name:
-            now = "{:s}_".format(datetime.datetime.now().isoformat())
+            now = f"{datetime.datetime.now().isoformat():s}_"
             if log_file is None:
                 log_file = os.path.abspath(caller_file).replace(".pyc", "").replace(".py",
                                                                                     "") + ".log"
             self.log_file = os.path.join(os.path.dirname(log_file), now + os.path.basename(log_file))
-            self.logger.debug("Writing log to file '{:s}'.".format(self.log_file))
+            self.logger.debug(f"Writing log to file '{self.log_file:s}'.")
 
             # add handlers
             self.file_h = file_handler(self.log_file, level=DEBUG)
@@ -103,9 +103,8 @@ class DebugMode(object):
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
-            log_id = "" if self.log_file is None else "'{:s}'".format(
-                os.path.basename(self.log_file))
-            self.logger.debug("Exiting Debug-Mode {:s} after {:f}s.".format(log_id, time_used))
+            log_id = "" if self.log_file is None else f"'{os.path.basename(self.log_file):s}'"
+            self.logger.debug(f"Exiting Debug-Mode {log_id:s} after {time_used:f}s.")
 
             # revert everything
             self.logger.setLevel(self.current_level)
@@ -134,9 +133,9 @@ class TempFile(object):
         try:
             with open(self.path, "r") as f:
                 content = f.read()
-            self.log_func("{:s}:\n".format(self.path) + content)
+            self.log_func(f"{self.path:s}:\n" + content)
         except IOError:
-            self.log_func("{:s}: -file does not exist-".format(self.path))
+            self.log_func(f"{self.path:s}: -file does not exist-")
         else:
             os.remove(self.path)
 
@@ -155,7 +154,7 @@ def log_pandas_settings_with_copy(log_func):
                 warnings.warn(w)
             else:
                 message = w.message.args[0].split("\n")
-                log_func("{:s} (l. {:d})".format(message[1], caller_line))
+                log_func(f"{message[1]:s} (l. {caller_line:d})")
     finally:
         pd.options.mode.chained_assignment = old_mode
 

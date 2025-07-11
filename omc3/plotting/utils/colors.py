@@ -49,7 +49,7 @@ def change_color_brightness(color, amount=0.5):
     """
     if not (0<=amount<=2):
         raise ValueError("The brightness change has to be between 0 and 2."
-                         " Instead it was {}".format(amount))
+                         f" Instead it was {amount}")
     try:
         c = mpl.colors.cnames[color]
     except KeyError:
