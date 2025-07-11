@@ -63,7 +63,7 @@ class TestRBACClass:
         kerberos.validate()
 
     @pytest.mark.basic
-    def test_authenticate_explicit_fail(self, monkeypatch, mock_post):
+    def test_authenticate_explicit_fail_with_monkeypatch(self, monkeypatch, mock_post):
         rbac = RBAC(application=APPLICATION)
         user = valid_users["bertha"]
         kerberos = MockKerberos(user)
