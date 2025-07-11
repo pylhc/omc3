@@ -99,8 +99,7 @@ class AccDatetime(datetime):
         else:
             dt = datetime.__new__(cls, *args, **kwargs)
 
-        if dt.tzinfo is None:
-            if 'tzinfo' not in kwargs and len(args) < 8:  # allows forcing tz to `None`
+        if dt.tzinfo is None and "tzinfo" not in kwargs and len(args) < 8:  # allows forcing tz to `None`
                 dt = dt.replace(tzinfo=tz.tzutc())
 
         return datetime.__new__(cls, dt.year, dt.month, dt.day,

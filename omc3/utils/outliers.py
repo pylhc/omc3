@@ -77,8 +77,7 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
     """
     LOGGER.debug("Creating Outlier-Filter mask.")
 
-    if x_data is not None:
-        if not len(data) == len(x_data):
+    if x_data is not None and len(data) != len(x_data):
             raise ValueError("Datasets are not equally long.")
 
     if mask is not None:

@@ -213,8 +213,7 @@ def _check_nonlinear_optics_files(outputdir: Path, type_: str, order: int):
         for orientation in ("normal", "skew"):
             full_manget_name = f"{orientation}_{magnet}"
 
-            if type_ == "crdt":
-                if full_manget_name in ("skew_octupole", "normal_quadrupole"):
+            if type_ == "crdt" and full_manget_name in ("skew_octupole", "normal_quadrupole"):
                     continue
 
             magnet_dir = nonlin_dir / full_manget_name

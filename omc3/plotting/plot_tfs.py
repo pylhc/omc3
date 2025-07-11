@@ -633,10 +633,8 @@ def _check_opt(opt):
     elif len(opt.column_labels) != len(opt.y_columns):
         raise AttributeError("The number of column-labels and number of y columns differ!")
 
-    if opt.same_figure is not None:
-        if opt.same_axes is not None and opt.same_figure in opt.same_axes:
-            raise AttributeError("Found the same option in 'same_axes' "
-                                 "and 'same_figure'. This is not allowed.")
+    if opt.same_figure is not None and opt.same_axes is not None and opt.same_figure in opt.same_axes:
+            raise AttributeError("Found the same option in 'same_axes' and 'same_figure'. This is not allowed.")
 
     return opt
 
