@@ -1,7 +1,6 @@
 import mimetypes
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Union
 
 import pytest
 from requests import HTTPError

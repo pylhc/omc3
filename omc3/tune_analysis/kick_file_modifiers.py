@@ -6,7 +6,6 @@ Functions to add data to or extract data from **kick_ac** files.
 """
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 import pandas as pd

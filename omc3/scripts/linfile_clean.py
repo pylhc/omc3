@@ -90,7 +90,6 @@ import shutil
 from collections.abc import Sequence
 from numbers import Number
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 import tfs

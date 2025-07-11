@@ -6,7 +6,7 @@ Helper functions to style plots.
 """
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 from matplotlib import pyplot as plt
 from matplotlib import rcParams

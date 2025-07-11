@@ -118,7 +118,7 @@ the measurements.
 from collections.abc import Sequence
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import numpy as np
 import tfs

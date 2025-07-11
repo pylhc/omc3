@@ -6,7 +6,6 @@ Tools to handle BBQ data.
 """
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Union
 
 import numpy as np
 import pandas as pd

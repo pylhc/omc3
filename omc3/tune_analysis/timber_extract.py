@@ -16,7 +16,7 @@ import datetime
 import re
 from collections.abc import Sequence
 from contextlib import suppress
-from typing import NewType, Union
+from typing import NewType
 
 import numpy as np
 import tfs

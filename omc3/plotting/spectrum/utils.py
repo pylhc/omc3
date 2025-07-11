@@ -9,7 +9,6 @@ from collections import OrderedDict
 from collections.abc import Iterable, Sized
 from contextlib import suppress
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 import pandas as pd

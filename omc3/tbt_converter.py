@@ -9,7 +9,6 @@ import copy
 from collections.abc import Sequence
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Union
 
 import turn_by_turn as tbt
 from generic_parser.entrypoint_parser import (
