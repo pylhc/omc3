@@ -127,12 +127,12 @@ OUTPUTNAMES_MAP = {
     # Names to be output on input of certain parameters.
     f'{BETA}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME)),
     f'{BETA}Y': tuple(f"{name}y" for name in (BETA_NAME, AMP_BETA_NAME)),
-    f'{DISPERSION}X': tuple([f"{DISPERSION_NAME}x"]),
-    f'{DISPERSION}Y': tuple([f"{DISPERSION_NAME}y"]),
+    f'{DISPERSION}X': (f"{DISPERSION_NAME}x",),
+    f'{DISPERSION}Y': (f"{DISPERSION_NAME}y",),
     f'{PHASE}X': tuple(f"{name}x" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
     f'{PHASE}Y': tuple(f"{name}y" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
-    F1010: tuple([F1010_NAME]),
-    F1001: tuple([F1001_NAME]),
+    F1010: (F1010_NAME,),
+    F1001: (F1001_NAME,),
     f'{NORM_DISPERSION}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
 }
 FAKED_HEADER: str = "FAKED_FROM"
