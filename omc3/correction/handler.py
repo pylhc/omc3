@@ -266,7 +266,7 @@ def _load_fullresponse(full_response_path: Path, variables: Sequence[str]) -> di
     # There is a check in read_fullresponse but there all variables need to be present.
     # Here only some. So I leave it like that (jdilly 2021-06-03)
     loaded_variables = [var for resp in full_response_data.values() for var in resp]
-    if not any([var in loaded_variables for var in variables]):
+    if not any(var in loaded_variables for var in variables):
         raise ValueError(
             "None of the given variables found in response matrix. Are you using the right categories?"
         )
@@ -294,7 +294,7 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     Returns:
         A TfsDataFrame with the added columns.
     """
-    if any([key for key in keys if key.startswith("F1")]):
+    if any(key for key in keys if key.startswith("F1")):
         return add_coupling_to_model(model)
     return model
 

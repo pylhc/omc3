@@ -867,7 +867,7 @@ def create_response(
         tr = TwissResponse(accel_inst, vars_categories, varmap_path)
         response: dict = tr.get_response_for(optics_params)
 
-    if not any([resp.size for resp in response.values()]):
+    if not any(resp.size for resp in response.values()):
         raise ValueError("Responses are all empty. "
                          f"Are variables {tr.get_variable_names()} correct for '{optics_params}'?")
     return response
