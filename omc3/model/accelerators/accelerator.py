@@ -203,7 +203,7 @@ class Accelerator:
                 self.excitation = DRIVEN_EXCITATIONS[key]
                 self.model_driven = tfs.read(driven_filenames[key], index=NAME)
 
-        if not self.excitation == AccExcitationMode.FREE:
+        if self.excitation != AccExcitationMode.FREE:
             self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
 
         # Best Knowledge #####################################
