@@ -9,17 +9,48 @@ from __future__ import annotations
 from dataclasses import dataclass, fields
 
 import tfs
-from omc3.correction.constants import EXPECTED, DIFF
-from omc3.optics_measurements.constants import (
-    ALPHA, BETA_NAME, AMP_BETA_NAME, ORBIT_NAME, DISPERSION_NAME, NORM_DISP_NAME,
-    PHASE_NAME, TOTAL_PHASE_NAME, AMPLITUDE, REAL, IMAG, DISPERSION, NORM_DISPERSION,
-    PHASE_ADV, MDL, S, S_MODEL, KMOD_BETA_NAME,
-    EXT, NAME, DELTA, ERR, DRIVEN_TOTAL_PHASE_NAME, DRIVEN_PHASE_NAME, IP_NAME,
-    KMOD_IP_NAME, KICK_NAME, BETA, PHASE, ORBIT, F1001_NAME, F1010_NAME, TUNE, RMS, MASKED)
-from omc3.plotting.utils.annotations import ylabels
 from tfs import TfsDataFrame
-from tfs.collection import TfsCollection, Tfs
+from tfs.collection import Tfs, TfsCollection
 
+from omc3.correction.constants import DIFF, EXPECTED
+from omc3.optics_measurements.constants import (
+    ALPHA,
+    AMP_BETA_NAME,
+    AMPLITUDE,
+    BETA,
+    BETA_NAME,
+    DELTA,
+    DISPERSION,
+    DISPERSION_NAME,
+    DRIVEN_PHASE_NAME,
+    DRIVEN_TOTAL_PHASE_NAME,
+    ERR,
+    EXT,
+    F1001_NAME,
+    F1010_NAME,
+    IMAG,
+    IP_NAME,
+    KICK_NAME,
+    KMOD_BETA_NAME,
+    KMOD_IP_NAME,
+    MASKED,
+    MDL,
+    NAME,
+    NORM_DISP_NAME,
+    NORM_DISPERSION,
+    ORBIT,
+    ORBIT_NAME,
+    PHASE,
+    PHASE_ADV,
+    PHASE_NAME,
+    REAL,
+    RMS,
+    S_MODEL,
+    TOTAL_PHASE_NAME,
+    TUNE,
+    S,
+)
+from omc3.plotting.utils.annotations import ylabels
 
 # Files ------------------------------------------------------------------------
 

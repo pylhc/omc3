@@ -1,9 +1,9 @@
 """ Knob Manipulation Utilities """
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from omc3.utils import logging_tools
-
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

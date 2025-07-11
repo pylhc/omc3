@@ -64,9 +64,11 @@ Model Creation Keyword Args:
 """
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import (Accelerator,
-                                                 AcceleratorDefinitionError,
-                                                 AccElementTypes)
+from omc3.model.accelerators.accelerator import (
+    AccElementTypes,
+    Accelerator,
+    AcceleratorDefinitionError,
+)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)

@@ -44,16 +44,14 @@ from pathlib import Path
 
 import pandas as pd
 import tfs
-from generic_parser import entrypoint, EntryPointParameters
+from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entrypoint_parser import save_options_to_config
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_NAME, FILE_LIN_EXT
+from omc3.harpy.constants import COL_NAME, COL_NATAMP, COL_NATTUNE, FILE_LIN_EXT
 from omc3.harpy.handler import _compute_headers
-from omc3.plotting.spectrum.utils import (load_spectrum_data, get_bpms,
-                                          LIN, AMPS, FREQS
-                                          )
+from omc3.plotting.spectrum.utils import AMPS, FREQS, LIN, get_bpms, load_spectrum_data
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)

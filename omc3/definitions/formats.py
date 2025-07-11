@@ -4,8 +4,8 @@ Formats
 
 Recurring formats are defined here.
 """
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
 
 TIME = "%Y_%m_%d@%H_%M_%S_%f"  # CERN default
 CONFIG_FILENAME = "{script:s}_{time:s}.ini"

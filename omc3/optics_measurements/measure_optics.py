@@ -35,13 +35,14 @@ from omc3.optics_measurements.constants import (
     CALIBRATION_FILE,
     CHROM_BETA_NAME,
     EXT,
-    NAME,
     MODEL_DIRECTORY,
+    NAME,
 )
 from omc3.utils import iotools, logging_tools
 
 if TYPE_CHECKING: 
     from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
 
 

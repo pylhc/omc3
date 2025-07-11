@@ -7,10 +7,10 @@ Specific constants to be used in correction, to help with consistency.
 # Trying to decouple input from output columns, but maybe not?
 # Same as in optics-measurements:
 from omc3.optics_measurements.constants import (
-    F1001_NAME,
-    F1010_NAME,
     F1001,
+    F1001_NAME,
     F1010,
+    F1010_NAME,
 )
 
 # Column Names -----------------------------------------------------------------

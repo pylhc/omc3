@@ -2,6 +2,7 @@ from generic_parser import DotDict
 
 from omc3.model.accelerators.accelerator import Accelerator
 
+
 class PsBase(Accelerator):
     """ Base class for Ps and PsBooster"""
     NAME = None

@@ -6,6 +6,7 @@ Miscellaneous tools for the `omc3` package.
 """
 from enum import Enum
 
+
 class StrEnum(str, Enum):
     """ Enum for strings.
     

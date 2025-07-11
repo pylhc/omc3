@@ -37,8 +37,8 @@ This data can then be easily used for the same purposes, e.g. global correction.
 """
 from __future__ import annotations
 
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import tfs
@@ -74,6 +74,7 @@ from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame, save_config
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)

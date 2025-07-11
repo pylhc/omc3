@@ -60,9 +60,9 @@ from generic_parser import EntryPoint
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
 )
-from omc3.utils.parsertools import require_param
-from omc3.model.constants import PLANE_TO_HV
 from omc3.model.accelerators.psbase import PsBase
+from omc3.model.constants import PLANE_TO_HV
+from omc3.utils.parsertools import require_param
 
 LOGGER = logging.getLogger(__name__)
 CURRENT_DIR = Path(__file__).parent

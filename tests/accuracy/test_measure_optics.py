@@ -3,16 +3,22 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 import tfs
+
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
-from omc3.optics_measurements.constants import SPECIAL_PHASE_NAME, PHASE, ALPHA, BETA, DISPERSION, NORM_DISPERSION
+from omc3.optics_measurements.constants import (
+    ALPHA,
+    BETA,
+    DISPERSION,
+    NORM_DISPERSION,
+    PHASE,
+    SPECIAL_PHASE_NAME,
+)
 from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.phase import CompensationMode
-from omc3.utils import logging_tools
-from omc3.utils import stats
+from omc3.utils import logging_tools, stats
 from omc3.utils.contexts import timeit
 from tests.accuracy.twiss_to_lin import optics_measurement_test_files
 

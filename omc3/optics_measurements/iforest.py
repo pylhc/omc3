@@ -12,10 +12,11 @@ some clustering, which might then trigger wrong tune-filtering in here.
 This should be tested and possibly mitigated. (jdilly, 2024)
 """
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import IsolationForest
 import tfs
+from sklearn.ensemble import IsolationForest
 
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.utils import logging_tools

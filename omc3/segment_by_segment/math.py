@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, NamedTuple
 import numpy as np
 import pandas as pd
 
-
 if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
