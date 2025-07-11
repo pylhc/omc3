@@ -6,17 +6,17 @@ This module contains fitting functionality for ``tune_analysis``.
 It provides tools for fitting functions, mainly via odr.
 
 """
-from typing import Sequence, Dict, List, Tuple
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
 from numpy.polynomial import Polynomial
 from numpy.typing import ArrayLike
-from scipy.odr import RealData, Model, ODR
+from scipy.odr import ODR, Model, RealData
 from scipy.optimize import curve_fit
 
-from omc3.utils import logging_tools
 from omc3.tune_analysis.constants import FakeOdrOutput
+from omc3.utils import logging_tools
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -209,6 +209,3 @@ def _check_exact_zero_errors(xerr: ArrayLike, yerr: ArrayLike) -> tuple[np.ndarr
     xerr = check_exact_zero_per_plane(xerr, "horizontal")
     yerr = check_exact_zero_per_plane(yerr, "vertical")
     return xerr, yerr
-
-
-

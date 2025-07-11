@@ -106,31 +106,40 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 """
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict
-
-from matplotlib import pyplot as plt, rcParams
-from matplotlib.axes import Axes
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
+from matplotlib.axes import Axes
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
-from omc3.plotting.optics_measurements.utils import FigureCollector, DataSet, IDMap, safe_format
-from omc3.plotting.utils.windows import (
-    PlotWidget, SimpleTabWindow, is_qtpy_installed, log_no_qtpy_many_windows, create_pyplot_window_from_fig
-)
+from omc3.plotting.optics_measurements.utils import DataSet, FigureCollector, IDMap, safe_format
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
 from omc3.plotting.utils import (
     annotations as pannot,
-    lines as plines,
-    style as pstyle,
+)
+from omc3.plotting.utils import (
     colors as pcolors,
 )
+from omc3.plotting.utils import (
+    lines as plines,
+)
+from omc3.plotting.utils import (
+    style as pstyle,
+)
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
-from omc3.utils.iotools import PathOrStr, save_config, OptionalStr, OptionalFloat
+from omc3.plotting.utils.windows import (
+    PlotWidget,
+    SimpleTabWindow,
+    create_pyplot_window_from_fig,
+    is_qtpy_installed,
+    log_no_qtpy_many_windows,
+)
+from omc3.utils.iotools import OptionalFloat, OptionalStr, PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)

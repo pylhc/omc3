@@ -187,21 +187,31 @@ one figure is used.
 """
 import os
 from collections import OrderedDict
-from typing import Tuple
 
 import matplotlib as mpl
 from cycler import cycler
-
 from generic_parser.entry_datatypes import DictAsString
-from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
-                                              save_options_to_config, DotDict)
+from generic_parser.entrypoint_parser import (
+    DotDict,
+    EntryPointParameters,
+    entrypoint,
+    save_options_to_config,
+)
+
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
-from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
-                                          FigureCollector, get_unique_filenames,
-                                          filter_amps, get_bpms, get_stem_id,
-                                          get_waterfall_id, get_data_for_bpm,
-                                          load_spectrum_data)
+from omc3.plotting.spectrum.utils import (
+    LIN,
+    NCOL_LEGEND,
+    FigureCollector,
+    filter_amps,
+    get_bpms,
+    get_data_for_bpm,
+    get_stem_id,
+    get_unique_filenames,
+    get_waterfall_id,
+    load_spectrum_data,
+)
 from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.plotting.utils import style as pstyle
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS

@@ -115,15 +115,14 @@ import warnings
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
-from typing import Dict, Sequence
+from typing import Sequence
 
 import numpy as np
 from generic_parser import DotDict, EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
-from matplotlib import MatplotlibDeprecationWarning
+from matplotlib import MatplotlibDeprecationWarning, rcParams
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
-from matplotlib import rcParams
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -775,4 +774,3 @@ def _scale_data(data: AmpDetData, odr_fit: odr.Output,
 
 if __name__ == '__main__':
     main()
-

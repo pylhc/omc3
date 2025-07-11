@@ -4,10 +4,11 @@ Plotting Utilities: Style
 
 Helper functions to style plots.
 """
-from typing import Dict, Any, Sequence, Union
-
-from matplotlib import pyplot as plt, rcParams
 from pathlib import Path
+from typing import Any, Sequence, Union
+
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 from omc3.utils.iotools import PathOrStr
 

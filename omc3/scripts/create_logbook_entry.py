@@ -48,16 +48,17 @@ from commandline.
 """
 import mimetypes
 from pathlib import Path
-from typing import Iterable, Union, List
+from typing import Iterable, Union
 
 import urllib3
-from requests.exceptions import HTTPError, ConnectionError, ConnectTimeout  # noqa: A004
+from generic_parser import EntryPointParameters, entrypoint
+from requests.exceptions import ConnectionError, ConnectTimeout, HTTPError  # noqa: A004
 
-from generic_parser import entrypoint, EntryPointParameters
-from omc3.utils.iotools import PathOrStr, OptionalStr
+from omc3.utils.iotools import OptionalStr, PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
 from omc3.utils.rbac import RBAC
+
 pylogbook = cern_network_import("pylogbook")  # raises ImportError if used
 
 # for typing:

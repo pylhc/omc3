@@ -15,7 +15,7 @@ https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 import datetime
 import re
 from contextlib import suppress
-from typing import Dict, List, NewType, Sequence, Tuple, Union
+from typing import NewType, Sequence, Union
 
 import numpy as np
 import tfs

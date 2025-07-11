@@ -117,7 +117,7 @@ the measurements.
 """
 from datetime import timedelta
 from pathlib import Path
-from typing import List, Sequence, Tuple, Dict, Any, Union
+from typing import Any, Sequence, Union
 
 import numpy as np
 import tfs
@@ -128,18 +128,21 @@ from tfs.frame import TfsDataFrame
 
 from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
-from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, MinMaxFilterOpt, FilterOpts
+from omc3.tune_analysis.bbq_tools import FilterOpts, MinMaxFilterOpt, OutlierFilterOpt
 from omc3.tune_analysis.constants import (
+    CORRECTED,
+    INPUT_KICK,
+    INPUT_PREVIOUS,
     get_bbq_col,
     get_bbq_out_name,
     get_kick_out_name,
     get_timber_bbq_key,
-    INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
+    AmpDetData,
     read_timed_dataframe,
     read_two_kick_files_from_folder,
-    write_timed_dataframe, AmpDetData,
+    write_timed_dataframe,
 )
 from omc3.utils.iotools import PathOrStr, UnionPathStrInt, save_config
 from omc3.utils.logging_tools import get_logger, list2str
