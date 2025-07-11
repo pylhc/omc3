@@ -73,7 +73,7 @@ class LhcModelCreator(ModelCreator):
 
     def __init__(self, accel: Lhc, *args, **kwargs):
         LOGGER.debug("Initializing LHC Model Creator")
-        super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
+        super().__init__(accel, *args, **kwargs)
 
     def prepare_options(self, opt):
         """ Use the fetcher to list choices if requested. """

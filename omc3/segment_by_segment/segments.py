@@ -93,7 +93,7 @@ class SegmentModels(TfsCollection):
     backward_corrected: TfsDataFrame = Tfs(TWISS_BACKWARD_CORRECTED, two_planes=False)
 
     def __init__(self, directory: Path, segment: Segment):
-        super(SegmentModels, self).__init__(directory)
+        super().__init__(directory)
         self.segment = segment
 
     def _get_filename(self, template: str):
@@ -122,7 +122,7 @@ class SegmentDiffs(TfsCollection):
     f1010 = Tfs(f"{PREFIX}{F1010_NAME}_{{name}}{EXT}", two_planes=False)
 
     def __init__(self, directory: Path, segment_name: str, *args, **kwargs):
-        super(SegmentDiffs, self).__init__(directory, *args, **kwargs)
+        super().__init__(directory, *args, **kwargs)
         self.segment_name = segment_name
 
     def _get_filename(self, template: str, plane: str | None = None):

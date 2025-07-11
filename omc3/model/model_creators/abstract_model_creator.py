@@ -305,7 +305,7 @@ class SegmentCreator(ModelCreator, ABC):
                  corrections: MADXInputType = None, *args, **kwargs):
         """ Creates Segment of a model. """
         LOGGER.debug("Initializing Segment Creator")
-        super(SegmentCreator, self).__init__(accel, *args, **kwargs)
+        super().__init__(accel, *args, **kwargs)
         self.segment = segment
         self.measurables = measurables
         self.corrections = corrections
@@ -320,7 +320,7 @@ class SegmentCreator(ModelCreator, ABC):
         self.twiss_backward_corrected = TWISS_BACKWARD_CORRECTED.format(segment.name)
 
     def prepare_run(self) -> None:
-        super(SegmentCreator, self).prepare_run()
+        super().prepare_run()
         self._clean_models()
         self._create_measurement_file()
         self._create_corrections_file()
@@ -457,7 +457,7 @@ class CorrectionModelCreator(ModelCreator):
             update_dpp (bool): Whether to update the dpp in the machine.
         """
         LOGGER.debug("Initializing Correction Model Creator Base Attributes")
-        super(CorrectionModelCreator, self).__init__(accel)
+        super().__init__(accel)
         self.twiss_out = Path(twiss_out)
 
         # use absolute paths to force files into twiss_out directory instead of model-dir
