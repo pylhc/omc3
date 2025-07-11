@@ -175,7 +175,7 @@ class MockPylogbook:
         assert isinstance(name, str)
         assert isinstance(mime_type, str)
         assert "/" in mime_type
-        assert isinstance(contents, (str, bytes))
+        assert isinstance(contents, str | bytes)
         self.attachments.append(name)
 
 

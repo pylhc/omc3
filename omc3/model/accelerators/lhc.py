@@ -93,7 +93,7 @@ from omc3.model.accelerators.accelerator import (
 )
 from omc3.model.constants import OPTICS_SUBDIR
 from omc3.utils import logging_tools
-from omc3.utils.iotools import load_multiple_jsons, find_file
+from omc3.utils.iotools import find_file, load_multiple_jsons
 from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
@@ -334,7 +334,7 @@ class Lhc(Accelerator):
         elif self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
 
-    def get_accel_file(self, filename: str | Path) -> Path:
+    def get_accel_file(self, filename: Path | str) -> Path:
         return LHC_DIR / self.year / filename
 
 
@@ -344,7 +344,7 @@ class Lhc(Accelerator):
         if it exists, or the default directory. """
         return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
 
-    def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
+    def _get_corrector_files(self, file_name: Path | str) -> list[Path]:
         """ Get the corrector files from the default directory AND
         the instance's specific directory if it exists AND the model directroy if it exists,
         in that order.

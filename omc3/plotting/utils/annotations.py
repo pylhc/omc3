@@ -13,10 +13,12 @@ from typing import TYPE_CHECKING
 import matplotlib as mpl
 import pandas as pd
 import tfs
-from matplotlib import pyplot as plt, rcParams
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 if TYPE_CHECKING:
     from pathlib import Path
+
     from matplotlib.axes import Axes
 
 # List of common y-labels. Sorry for the ugly.
@@ -105,7 +107,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
     inside = 'inside' in mode
     lines_only = 'inside' not in mode and 'outside' not in mode and 'lines' in mode
 
-    if isinstance(ip_dict, (pd.DataFrame, pd.Series)):
+    if isinstance(ip_dict, pd.DataFrame | pd.Series):
         if isinstance(ip_dict, pd.DataFrame):
             ip_dict = ip_dict.iloc[:, 0]
         d = {}

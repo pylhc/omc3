@@ -43,7 +43,7 @@ class InputFiles(dict):
     """
     def __init__(self, files_to_analyse: Sequence[str|Path|tfs.TfsDataFrame], optics_opt: DotDict):
         super(InputFiles, self).__init__(zip(PLANES, ([], [])))
-        read_files = isinstance(files_to_analyse[0], (str, Path))
+        read_files = isinstance(files_to_analyse[0], Path | str)
         for file_in in files_to_analyse:
             for plane in PLANES:
                 df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME", drop=False)

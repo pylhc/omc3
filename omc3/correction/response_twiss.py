@@ -175,10 +175,10 @@ class TwissResponse:
     #            INIT
     ################################
 
-    def __init__(self, 
-        accel_inst: Accelerator, 
-        variable_categories: Sequence[str], 
-        varmap_or_path: dict | str | Path, 
+    def __init__(self,
+        accel_inst: Accelerator,
+        variable_categories: Sequence[str],
+        varmap_or_path: dict | Path | str,
         at_elements: str = "bpms"):
         LOG.debug("Initializing TwissResponse.")
         with timeit(lambda t: LOG.debug(f"  Time initializing TwissResponse: {t} s")):
@@ -228,7 +228,7 @@ class TwissResponse:
         model.loc[DUMMY_ID, [f"{S}", f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]] = 0.0
         return model
 
-    def _get_variable_mapping(self, varmap_or_path: dict | str | Path):
+    def _get_variable_mapping(self, varmap_or_path: dict | Path | str):
         """Get variable mapping as dictionary
 
         Dev hint: Define _variables first!

@@ -174,12 +174,19 @@ from pathlib import Path
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
+
 from omc3.definitions.constants import PLANES
-from omc3.definitions.optics import POSITION_COLUMN_MAPPING, FILE_COLUMN_MAPPING, ColumnsAndLabels, RDT_COLUMN_MAPPING
-from omc3.optics_measurements.constants import EXT, AMPLITUDE, NORM_DISP_NAME, REAL, IMAG
+from omc3.definitions.optics import (
+    FILE_COLUMN_MAPPING,
+    POSITION_COLUMN_MAPPING,
+    RDT_COLUMN_MAPPING,
+    ColumnsAndLabels,
+)
+from omc3.optics_measurements.constants import AMPLITUDE, EXT, IMAG, NORM_DISP_NAME, REAL
 from omc3.optics_measurements.rdt import _rdt_to_order_and_type
-from omc3.plotting.optics_measurements.constants import (DEFAULTS, IP_POS_DEFAULT)
-from omc3.plotting.plot_tfs import plot as plot_tfs, OptionalFloat
+from omc3.plotting.optics_measurements.constants import DEFAULTS, IP_POS_DEFAULT
+from omc3.plotting.plot_tfs import OptionalFloat
+from omc3.plotting.plot_tfs import plot as plot_tfs
 from omc3.plotting.spectrum.utils import get_unique_filenames
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.utils.iotools import PathOrStr, save_config
@@ -517,7 +524,7 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
 
 def _plot_norm_dispersion(optics_parameter, files, file_labels, x_column, x_label, ip_positions, opt):
     """Plotting function for normalized dispersion.
-    Normalized dispersion is special, as we only evaluate the horizontal plane (X) in the optics measurements. 
+    Normalized dispersion is special, as we only evaluate the horizontal plane (X) in the optics measurements.
     We therefore plot the delta in the second (lower) plot."""
     y_column, error_column, column_label, y_label = _get_columns_and_label(optics_parameter, delta=False)
     delta_y_column, delta_error_column, delta_column_label, delta_y_label = _get_columns_and_label(optics_parameter, delta=True)
@@ -566,7 +573,7 @@ def _get_columns_and_label(parameter, delta):
 
 
 def _get_ip_positions(ip_positions, xaxis, ip_pattern):
-    if isinstance(ip_positions, (str, Path)):
+    if isinstance(ip_positions, Path | str):
         try:
             positions = IP_POS_DEFAULT[ip_positions]
         except KeyError:

@@ -11,7 +11,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from generic_parser.entry_datatypes import DictAsString, get_instance_faker_meta, get_multi_class
 from generic_parser.entrypoint_parser import save_options_to_config
@@ -21,7 +21,7 @@ from omc3.definitions import formats
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator, Iterable
+    from collections.abc import Callable, Iterable, Iterator
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -38,7 +38,7 @@ def copy_content_of_dir(src_dir: Path, dst_dir: Path):
         copy_item(src_dir / item, dst_dir / item)
 
 
-def create_dirs(path_to_dir: str | Path):
+def create_dirs(path_to_dir: Path | str):
     """Creates all dirs to ``path_to_dir`` if not exists.
     TODO: Change all calls to use only Path.
     """
@@ -101,12 +101,12 @@ class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path,
             return TfsDataFrame(value)
         except TypeError:
             pass
-        
+
         return value
 
 
 class PathOrStrOrDict(metaclass=get_instance_faker_meta(dict, Path, str)):
-    """A class that tries to parse/behaves like a dict when possible, 
+    """A class that tries to parse/behaves like a dict when possible,
     otherwise either like a Path or like a string."""
     def __new__(cls, value):
         value = strip_quotes(value)
@@ -120,7 +120,7 @@ class PathOrStrOrDict(metaclass=get_instance_faker_meta(dict, Path, str)):
         except TypeError:
             pass
 
-        return value 
+        return value
 
 
 class UnionPathStr(metaclass=get_instance_faker_meta(Path, str)):
@@ -196,11 +196,11 @@ def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
 
 
 def replace_in_path(path: Path, old: Path | str, new: Path | str) -> Path:
-    """ Replace a part of a path with a new path. 
+    """ Replace a part of a path with a new path.
     Useful for example to replace the original path with a path to a symlink or vice versa.
 
     Args:
-        path (Path): Path object to replace the subpath in 
+        path (Path): Path object to replace the subpath in
         old (Union[Path, str]): Subpath to be replaced
         new (Union[Path, str]): Subpath to replace with
 
@@ -277,11 +277,11 @@ def get_check_by_regex_func(pattern: str) -> Callable[[Path],bool]:
     """ Returns a function that checks the name of a given path against the pattern. """
     def check(path: Path) -> bool:
         return re.match(pattern, path.name) is not None
-    return check 
+    return check
 
 
 def load_multiple_jsons(*files) -> dict:
-    """ Load multiple json files into a single dict. 
+    """ Load multiple json files into a single dict.
     In case of duplicate keys, later files overwrite the earlier ones. """
     full_dict = {}
     for json_file in files:
@@ -292,17 +292,17 @@ def load_multiple_jsons(*files) -> dict:
 
 def find_file(file_name: Path | str, dirs: Iterable[Path | str]) -> Path:
     """ Tries to find out if the given file exists, either on its own, or in the given directories.
-    Returns then the full path of the found file. If not found, raises a ``FileNotFoundError``. 
-    
+    Returns then the full path of the found file. If not found, raises a ``FileNotFoundError``.
+
     Args:
         file_name (Union[Path, str]): Name of the modifier file
-        dirs (Iterable[Union[Path, str]]): List of directories to search in 
-    
+        dirs (Iterable[Union[Path, str]]): List of directories to search in
+
     Returns:
         Full path to the found file.
     """
     file_name = Path(file_name)
-    
+
     # first case: if modifier exists as is, take it
     if file_name.is_file():
         return file_name
@@ -316,6 +316,6 @@ def find_file(file_name: Path | str, dirs: Iterable[Path | str]) -> Path:
     # if you are here, all attempts failed
     msg = f"Couldn't find modifier {file_name}."
     if dirs:
-        msg += " Tried in :\n" 
+        msg += " Tried in :\n"
         msg += "\n".join([str(d) for d in dirs])
     raise FileNotFoundError(msg)

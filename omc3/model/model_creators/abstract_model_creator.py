@@ -359,7 +359,7 @@ class SegmentCreator(ModelCreator, ABC):
             output_file.write_text(content)
             return
 
-        if isinstance(self.corrections, str | Path):
+        if isinstance(self.corrections, Path | str):
             corrections = Path(self.corrections)
             if not corrections.exists():
                 raise FileNotFoundError(f"File {corrections!s} does not exist.")
