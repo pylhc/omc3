@@ -51,7 +51,7 @@ from pathlib import Path
 from typing import Iterable, Union, List
 
 import urllib3
-from requests.exceptions import HTTPError, ConnectionError, ConnectTimeout
+from requests.exceptions import HTTPError, ConnectionError, ConnectTimeout  # noqa: A004
 
 from generic_parser import entrypoint, EntryPointParameters
 from omc3.utils.iotools import PathOrStr, OptionalStr
@@ -271,4 +271,3 @@ def _convert_pdf_to_png(filepath: Path):
 
 if __name__ == '__main__':
     main()
-

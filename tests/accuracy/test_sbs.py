@@ -1,4 +1,4 @@
-""" 
+"""
 Test Segment-by-Segment
 -----------------------
 """
@@ -41,9 +41,11 @@ INPUT_MODELS: Path = INPUTS / "models"
 MAX_DIFF = 1e-10
 
 YEAR = "2025"
-OPTICS_30CM_FLAT = "R2025aRP_A30cmC30cmA10mL200cm_Flat.madx"  
+OPTICS_30CM_FLAT = "R2025aRP_A30cmC30cmA10mL200cm_Flat.madx"
 
 class TestCfg(NamedTuple):
+    __test__ = False  # avoid PytestCollectionWarning
+
     diff_max: float
     eps_fwd: float
     eps_bwd: float
@@ -64,14 +66,14 @@ class TestSbSLHC:
 
     @pytest.mark.basic
     @pytest.mark.parametrize("with_correction", [True, False], ids=("with_correction", "no_correction"))
-    def test_lhc_segment_creation(self, 
-        tmp_path: Path, 
-        model_30cm_flat_beams: DotDict, 
-        acc_models_lhc_2025: Path, 
+    def test_lhc_segment_creation(self,
+        tmp_path: Path,
+        model_30cm_flat_beams: DotDict,
+        acc_models_lhc_2025: Path,
         with_correction: bool
-        ): 
-        """ Tests only the creation of the Segment Models via LhcSegmentCreator. 
-        A lot of this is actually done in the sbs_propagation as well, but 
+        ):
+        """ Tests only the creation of the Segment Models via LhcSegmentCreator.
+        A lot of this is actually done in the sbs_propagation as well, but
         if things fail in the madx model creation, this is a good place to start looking.
         """
         # Preparation ----------------------------------------------------------
@@ -101,13 +103,13 @@ class TestSbSLHC:
 
         propagables = [propg(segment, measurement, twiss_elements) for propg in ALL_PROPAGABLES]
         assert all(propagable.in_measurement(measurement) for propagable in propagables)  # check if all input files are present for this test!
-        
+
         accel_inst: Lhc = manager.get_accelerator(accel_opt)
         accel_inst.model_dir = tmp_path  # if set in accel_opt, it tries to load from model_dir, but this is the output dir for the segment-models
         accel_inst.acc_model_path = acc_models_lhc_2025
-        
+
         segment_creator = LhcSegmentCreator(
-            segment=segment, 
+            segment=segment,
             measurables=propagables,
             logfile=tmp_path / logfile.format(segment.name),
             accel=accel_inst,
@@ -117,36 +119,36 @@ class TestSbSLHC:
         # Actual Run -----------------------------------------------------------
         segment_creator.full_run()
 
-        # Test the output ------------------------------------------------------ 
+        # Test the output ------------------------------------------------------
         assert len(list(tmp_path.glob(f"*{Path(TWISS_DAT).suffix}"))) == 2 + 2 * with_correction  # 2 segment, 2 segment corrected
-        
+
         assert_file_exists_and_nonempty(tmp_path / segment_creator.measurement_madx)
-        
+
         # created in madx (should also have been checked in the post_run() method)
         assert_twiss_contains_segment(tmp_path / segment_creator.twiss_forward, segment.start, segment.end)
         assert_twiss_contains_segment(tmp_path / segment_creator.twiss_backward, segment.end, segment.start)
 
         if with_correction:
             assert_file_exists_and_nonempty(tmp_path / segment_creator.corrections_madx)
-            
+
             # created in madx (should also have been checked in the post_run() method)
             assert_twiss_contains_segment(tmp_path / segment_creator.twiss_forward_corrected, segment.start, segment.end)
             assert_twiss_contains_segment(tmp_path / segment_creator.twiss_backward_corrected, segment.end, segment.start)
-        
-    
+
+
     @pytest.mark.basic
     @pytest.mark.parametrize("load_model", [True, False], ids=("load_model", "create_model"))
     @pytest.mark.parametrize("with_correction", [True, False], ids=("with_correction", "no_correction"))
-    def test_lhc_propagation_sbs(self, 
-        tmp_path: Path, 
-        model_30cm_flat_beams: DotDict, 
-        acc_models_lhc_2025: Path, 
+    def test_lhc_propagation_sbs(self,
+        tmp_path: Path,
+        model_30cm_flat_beams: DotDict,
+        acc_models_lhc_2025: Path,
         with_correction: bool,
-        load_model: bool, 
+        load_model: bool,
         ):
         """Tests the propagation of the measurement via the sbs_propagation function.
         In this test we check that the calculated differences between the propagated models
-        and measurements, which are written out in the sbs_*.tfs files, are indeed present and 
+        and measurements, which are written out in the sbs_*.tfs files, are indeed present and
         correct.
         """
         # Preparation ---
@@ -180,12 +182,12 @@ class TestSbSLHC:
             Segment("IP1", f"BPM.12L1.B{beam:d}", f"BPM.12R1.B{beam:d}"),
             Segment("IP5", f"BPM.12L5.B{beam:d}", f"BPM.12R5.B{beam:d}"),
         ]
-        
+
         # Run segment creation ---
         sbs_res = segment_by_segment(
             measurement_dir=INPUT_SBS / f"measurement_b{beam}",
             segments=[s.to_input_string() for s in segments],
-            output_dir=sbs_dir, 
+            output_dir=sbs_dir,
             corrections=correction_path,
             **accel_opt,
         )
@@ -194,25 +196,25 @@ class TestSbSLHC:
         column_types = ["column", "forward", "backward"]
         if with_correction:
             column_types += [
-                "forward_correction", "backward_correction", 
+                "forward_correction", "backward_correction",
                 "forward_expected", "backward_expected"
             ]
 
         for propagable in ALL_PROPAGABLES:
             if propagable is Dispersion:
                 continue  # TODO: not working, see https://github.com/pylhc/omc3/issues/498
-            
+
             cfg: TestCfg = self.config_map[propagable]
             planes = [REAL, IMAG, AMPLITUDE, PHASE] if propagable.is_rdt() else "xy"
 
             for plane in planes:
                 full_file_name: str = cfg.file_name if propagable.is_rdt() else f"{cfg.file_name}_{plane}"
-                columns: PropagableColumns = propagable.columns.planed(plane.upper()) 
+                columns: PropagableColumns = propagable.columns.planed(plane.upper())
 
-                # print(f"\nTesting {propagable.__name__} {plane}: {columns.column}")  # for debugging 
+                # print(f"\nTesting {propagable.__name__} {plane}: {columns.column}")  # for debugging
 
                 # Quick cheks for existing columns ---------------------
-                
+
                 column_list = [getattr(columns, c) for c in column_types]
 
                 # Assert the columns-object gives unique names
@@ -223,12 +225,12 @@ class TestSbSLHC:
                     # alpha is in the beta-measurement file
                     beta_file = self.config_map[BetaPhase].file_name
                     meas_df = tfs.read(
-                        INPUT_SBS / f"measurement_b{beam}" / f"{beta_file}_{plane}.tfs", 
+                        INPUT_SBS / f"measurement_b{beam}" / f"{beta_file}_{plane}.tfs",
                         index=NAME
                     )
                 else:
                     meas_df = tfs.read(
-                        INPUT_SBS / f"measurement_b{beam}" / f"{full_file_name}.tfs", 
+                        INPUT_SBS / f"measurement_b{beam}" / f"{full_file_name}.tfs",
                         index=NAME
                     )
 
@@ -263,23 +265,23 @@ class TestSbSLHC:
 
                         assert sbs_df[col].abs().max() > cfg.diff_max
                         assert sbs_df[err_col].all()
-                    
+
                     if with_correction:  # -------------------------------------
                         forward = (cfg.eps_fwd, columns.forward, columns.forward_correction, columns.forward_expected)
                         backward = (cfg.eps_bwd, columns.backward, columns.backward_correction, columns.backward_expected)
 
                         for idx, (eps, col, correction, expected) in enumerate((forward, backward)):
                             if idx and propagable.is_rdt():
-                                # TODO: check backward coupling, see https://github.com/pylhc/omc3/issues/498  
-                                continue 
-                                
+                                # TODO: check backward coupling, see https://github.com/pylhc/omc3/issues/498
+                                continue
+
                             if propagable in [Phase, F1001, F1010]:  # check absolute difference
                                 assert_all_close(sbs_df, correction, col, atol=eps)
                                 assert_all_close(sbs_df, expected, 0, atol=eps)
-                            else:  # check relative difference 
+                            else:  # check relative difference
                                 assert_all_close(sbs_df, correction, col, rel=columns.column, atol=eps)
                                 assert_all_close(sbs_df, expected, 0, rel=columns.column, atol=3*eps, rtol=eps)
-                        
+
                         assert sbs_df[columns.error_forward_correction].iloc[1:].all()
                         assert sbs_df[columns.error_backward_correction].iloc[:-1].all()
 
@@ -297,15 +299,15 @@ def create_error_file(path: Path):
     return out_path
 
 def assert_all_close(
-    df: pd.DataFrame, 
-    a: str, 
-    b: str | float, 
+    df: pd.DataFrame,
+    a: str,
+    b: str | float,
     rtol: float = 1e-5,  # default in numpy
-    atol: float = 1e-8,  # default in numpy 
-    rel: str | None = None, 
+    atol: float = 1e-8,  # default in numpy
+    rel: str | None = None,
     idx_slice: slice | None = None
     ):
-    """ Assert the the values of the a and b columns in df are close. 
+    """ Assert the the values of the a and b columns in df are close.
     If "rel" is given, divide both columns by this column.
     If b is a float, it will be used as the value to compare with.
     """
@@ -316,14 +318,14 @@ def assert_all_close(
     if isinstance(b, str):
         b_data = df[b]
     else:
-        b_data = b 
+        b_data = b
 
     if rel is not None:
         a_data = a_data / df[rel]
-        b_data = b_data / df[rel] 
+        b_data = b_data / df[rel]
 
     np.testing.assert_allclose(a_data, b_data, atol=atol, rtol=rtol)
-    
+
 
 def assert_file_exists_and_nonempty(path: Path):
     assert path.exists()
@@ -339,4 +341,4 @@ def assert_twiss_contains_segment(df: Path, start: str, end: str):
 
 def assert_propagated_measurement_contains_segment(df: Path, start: str, end: str):
     assert df.index[0] == start
-    assert df.index[-1] == end 
+    assert df.index[-1] == end

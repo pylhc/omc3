@@ -212,7 +212,7 @@ def generate(opt) -> dict[str, tfs.TfsDataFrame]:
     headers = {f"{TUNE}1": df_twiss[f"{TUNE}1"], f"{TUNE}2": df_twiss[f"{TUNE}2"]}
     if isinstance(opt.twiss, PathOrStr):
         headers[FAKED_HEADER] = str(opt.twiss)
-        
+
     if isinstance(opt.model, PathOrStr):
         headers[MODEL_DIRECTORY] = Path(opt.model).parent
 
@@ -508,7 +508,7 @@ def _get_data(twiss: tfs.TfsDataFrame, model: tfs.TfsDataFrame | None = None,
         model = try_reading(model)
         if add_coupling:
             model = add_coupling_to_model(model)
-    
+
     # intersect index ---
     index = twiss.index.intersection(model.index)
     twiss, model = twiss.loc[index, :], model.loc[index, :]
