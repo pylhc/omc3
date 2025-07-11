@@ -108,7 +108,7 @@ class TestFullRun:
             # Check tune in header
             for ntune in (1, 2):
                 tune_map = TUNE_COLUMN.set_plane(ntune)
-                assert len([k for k in df.headers.keys() if tune_map.column in k]) == 3
+                assert len([key for key in df.headers if tune_map.column in key]) == 3
                 assert tune_map.column in df.headers
                 assert tune_map.diff_correction_column in df.headers
                 assert tune_map.expected_column in df.headers
@@ -181,7 +181,7 @@ class TestMeasurementFilter:
                 column_map = column_map.set_plane(filestem[-1].upper())
             except KeyError:
                 # RDT Columns
-                letter_map = {col[0]: col for col in RDT_COLUMN_MAPPING.keys()}
+                letter_map = {col[0]: col for col in RDT_COLUMN_MAPPING}
                 column_map: ColumnsAndLabels = RDT_COLUMN_MAPPING[letter_map[param[-1]]]
 
             filter_opt = DotDict(

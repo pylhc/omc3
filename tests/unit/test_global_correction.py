@@ -159,7 +159,7 @@ def test_update_response(tmp_path, model_inj_beams):
     )
 
     # Check everything is the same, as model has not changed.
-    for key in ref_resp_dict.keys():
+    for key in ref_resp_dict:
         assert_frame_equal(ref_resp_dict[key], new_resp_dict[key])
 
     corr_file = tmp_path / "corr.madx"
@@ -176,9 +176,9 @@ def test_update_response(tmp_path, model_inj_beams):
         update_dpp=False,
         update_response="madx"
     )
-    for key in new_resp_dict.keys():
+    for key in new_resp_dict:
         # If the original response is 0, there is no reason why the new one should not be.
-        if not ref_resp_dict[key][knob].sum() == 0:
+        if ref_resp_dict[key][knob].sum() != 0:
             # The values are not the same, as the model has changed.
             assert not ref_resp_dict[key].equals(new_resp_dict[key])
 
@@ -201,7 +201,7 @@ def test_update_response(tmp_path, model_inj_beams):
     )
 
     # Check everything is the same, as model is the reference model.
-    for key in ref_resp_dict.keys():
+    for key in ref_resp_dict:
         assert_frame_equal(ref_resp_dict[key], new_resp_dict[key])
 
     corr_model = create_corrected_model(corr_model_path, [corr_file], accel_inst, update_dpp=False)
@@ -216,7 +216,7 @@ def test_update_response(tmp_path, model_inj_beams):
         update_dpp=False,
         update_response=True
     )
-    for key in new_resp_dict.keys(): # The new dict will only have the keys for the selected optics_params
+    for key in new_resp_dict: # The new dict will only have the keys for the selected optics_params
         # The values are not the same, as the model has changed.
         assert not ref_resp_dict[key].equals(new_resp_dict[key])
 

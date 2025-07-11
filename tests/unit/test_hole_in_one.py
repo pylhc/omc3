@@ -227,7 +227,7 @@ def _check_caplog_for_rdt_warnings(caplog, to_be_found: bool = False, phase_comp
     required = {"RDT": 2, "CRDT": 2, "Tune": 2, "Phase": 2 * (1 + phase_compensation)}  # per plane; phase: also per compensation
 
     for record in caplog.records:
-        for key in found.keys():
+        for key in found:
             if f"included in the {key} calculation" in record.msg:
                 assert to_be_found, "Warnings still present, but should not have been!"
                 assert "Off-momentum files for analysis found!" in record.msg
@@ -240,7 +240,7 @@ def _check_caplog_for_rdt_warnings(caplog, to_be_found: bool = False, phase_comp
 
 
 def _get_sdds_files(which: str) -> list[Path]:
-    if which in SDDS_FILES.keys():
+    if which in SDDS_FILES:
         return [SDDS_DIR / sdds_file for sdds_file in SDDS_FILES[which]]
 
     if "all":

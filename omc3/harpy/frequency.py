@@ -151,7 +151,7 @@ def find_resonances(tunes, nturns, plane, spectra, order_resonances):
     resonances_freqs = _compute_resonances_with_freqs(plane, tunes, resonance_lines)
     if tunes[2] > 0.0:
         resonances_freqs.update(_compute_resonances_with_freqs("Z", tunes, resonance_lines))
-    for resonance in resonances_freqs.keys():
+    for resonance in resonances_freqs:
         tolerance = _get_resonance_tolerance(resonance, nturns)
         max_coefs, max_freqs = _search_highest_coefs(resonances_freqs[resonance], tolerance,
                                                      spectra["FREQS"], spectra["COEFFS"])
@@ -342,7 +342,7 @@ def windowing(length, window='hamming'):
         "triangle": 1 - np.abs((ints2pi / np.pi) - 1),
         "rectangle": np.ones(length)
     }
-    if window not in windows.keys():
+    if window not in windows:
         raise NotImplementedError(f"Unknown windowing function {window}")
     return windows[window] / np.sum(windows[window])
 

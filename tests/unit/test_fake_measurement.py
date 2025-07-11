@@ -240,7 +240,7 @@ def test_parameter(beam, parameter):
     )
 
     assert len(results)
-    assert all(name in results.keys() for name in OUTPUTNAMES_MAP[parameter])
+    assert all(name in results for name in OUTPUTNAMES_MAP[parameter])
 
     name_tester_map = {
         TOTAL_PHASE_NAME: _test_total_phase,

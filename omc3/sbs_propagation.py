@@ -137,7 +137,7 @@ def segment_by_segment(opt: DotDict, accel_opt: dict | list) -> dict[str, Segmen
           But as we do not really know the output file here, and creation of the file is quick,
           we just let the segment creator overwrite the file.
     """
-    fetcher_opts = DotDict({key: opt[key] for key in model_creator.get_fetcher_params().keys()})
+    fetcher_opts = DotDict({key: opt[key] for key in model_creator.get_fetcher_params()})
 
     accel: Accelerator = model_manager.get_accelerator(accel_opt)
     accel.model_dir = _check_output_directory(opt.output_dir, accel)
@@ -337,7 +337,7 @@ def _parse_segments(segment_definitions: Sequence[Segment | str]) -> list[Segmen
             except ValueError:
                 raise SbsDefinitionError(f"Unable to parse segment string {segment_def}.")
 
-        if segment.name in segments.keys():
+        if segment.name in segments:
             raise SbsDefinitionError(f"Duplicated segment name '{segment.name}'.")
         segments[segment.name] = segment
     return list(segments.values())

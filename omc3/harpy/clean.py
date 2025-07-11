@@ -160,7 +160,7 @@ def _get_bad_bpms_summary(harpy_input, **kwargs):
     }
 
     # Quick check that catches coding errors/typos:
-    unknown_kwargs = [kwarg for kwarg in kwargs if kwarg not in human_readable.keys()]
+    unknown_kwargs = [kwarg for kwarg in kwargs if kwarg not in human_readable]
     if len(unknown_kwargs):
         raise NameError(f"Unknown reason(s) for Bad-BPMs: {unknown_kwargs}")
 

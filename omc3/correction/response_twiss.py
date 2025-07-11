@@ -253,7 +253,7 @@ class TwissResponse:
             raise ValueError(f"Variables '{', '.join(check_var)}' cannot be found in sequence!")
 
         # drop mapping for unused variables
-        [mapping[order].pop(var) for order in mapping for var in mapping[order].keys() if var not in variables]
+        [mapping[order].pop(var) for order in mapping for var in mapping[order] if var not in variables]
         return mapping
 
     def _get_input_elements(self):
@@ -264,7 +264,7 @@ class TwissResponse:
         v2e = self._var_to_el
         tw = self._twiss
 
-        el_in = dict.fromkeys(k for k in v2e.keys() if k[-1] == 'L')
+        el_in = dict.fromkeys(key for key in v2e if key[-1] == "L")
         for order in el_in:
             el_order = []
             for var in v2e[order]:
@@ -754,7 +754,7 @@ class TwissResponse:
 
         def disp_caller(func, plane):
             disp = func()
-            return response_add(*[disp[k] for k in disp.keys() if k.startswith(plane)])
+            return response_add(*[disp[key] for key in disp if key.startswith(plane)])
 
         def tune_caller(func, _unused):
             tune = func()

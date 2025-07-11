@@ -361,7 +361,7 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
     )
 
     # Verify response creation
-    assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict.keys())
+    assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict)
 
     # Create fake measurement
     dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{beam}.dat"

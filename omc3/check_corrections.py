@@ -771,7 +771,7 @@ def _maybe_add_coupling_to_model(
 def _do_plots(corrections: dict[str, Any], opt: DotDict):
     """Plot the differences of the matched models to the measurement."""
     opt_plot = {
-        k: v for k, v in opt.items() if k in get_plotting_style_parameters().keys()
+        key: val for key, val in opt.items() if key in get_plotting_style_parameters()
     }
     opt_plot["input_dir"] = opt.output_dir
     opt_plot["output_dir"] = opt.output_dir

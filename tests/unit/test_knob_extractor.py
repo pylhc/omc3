@@ -96,7 +96,7 @@ class TestFullRun:
     @pytest.mark.basic
     @pytest.mark.parametrize("commandline", [True, False], ids=["as function", "cli"])
     def test_state(self, tmp_path, monkeypatch, caplog, commandline):
-        returns = {v: np.random.random() for v in STATE_VARIABLES.keys()}
+        returns = {v: np.random.random() for v in STATE_VARIABLES}
 
         # Mock Pytimber ---
         class MyLDB:
@@ -410,8 +410,8 @@ class TestParser:
             opt = main_entrypoint.parse()
 
         # check all is correct
-        assert all(k in opt.keys() for k in my_opts.keys())
-        for k in my_opts.keys():
+        assert all(k in opt for k in my_opts)
+        for k in my_opts:
             assert str(my_opts[k]) == str(opt[k])
             assert isinstance(opt[k], my_types[k])
 
@@ -448,7 +448,7 @@ class TestInsideCERNNetwork:
         parsed_saved, _ = parse_output_file(path_saved)
 
         assert len(parsed_saved) == len(parsed_output)
-        for key in parsed_output.keys():
+        for key in parsed_output:
             assert parsed_output[key] == parsed_saved[key]
 
     @pytest.mark.cern_network

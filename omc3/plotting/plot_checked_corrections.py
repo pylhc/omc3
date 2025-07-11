@@ -283,7 +283,7 @@ def plot_checked_corrections(opt: DotDict):
         try:
             y_colmap = FILE_COLUMN_MAPPING[filename[:-1]].set_plane(filename[-1].upper())
         except KeyError:
-            if filename not in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX.keys():
+            if filename not in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX:
                 LOG.debug(f"Checked file {filename} will not be plotted.")
                 continue
             # Coupling RDTS:
@@ -347,7 +347,7 @@ def _create_correction_plots_per_filename(
     """ Plot measurements and all different correction scenarios into a single plot. """
     full_filename = f"{filename}{EXT}"
     file_label = filename
-    if filename in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX.keys():
+    if filename in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX:
         file_label = f"{file_label}_{y_colmap.text_label}"
 
     # Plot corrections via plot_tfs (as they all have the same column names) ---

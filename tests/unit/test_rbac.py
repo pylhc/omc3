@@ -170,13 +170,13 @@ def mock_post_fun(address, **kwargs):
             assert len(data) == 3
 
         if mode == "kerberos":
-            assert "Krb5Ticket" in data.keys()
+            assert "Krb5Ticket" in data
             if user_data.kerberos != data["Krb5Ticket"]:
                 success = False
                 reason = REASONS["krb"]
 
         if mode == "explicit":
-            assert "Password" in data.keys()
+            assert "Password" in data
             if user_data.password != data["Password"]:
                 success = False
                 reason = REASONS["pw"]

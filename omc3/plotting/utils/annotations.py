@@ -115,7 +115,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
             d[ip] = ip_dict.loc[ip]
         ip_dict = d
 
-    for ip in ip_dict.keys():
+    for ip in ip_dict:
         if xlim[0] <= ip_dict[ip] <= xlim[1]:
             xpos = ip_dict[ip]
 

@@ -182,7 +182,7 @@ def import_kmod_results(opt: DotDict) -> None:
 
     results_list = [
         df
-        for ip in averaged_results.keys()
+        for ip in averaged_results
         for df in (
             averaged_results[ip][0],  # beta-star results
             averaged_results[ip][opt.beam],  # bpm results of the specific beam

@@ -196,7 +196,7 @@ class Accelerator:
         driven_filenames = {"acd": model_dir / TWISS_AC_DAT, "adt": model_dir / TWISS_ADT_DAT}
         if driven_filenames["acd"].is_file() and driven_filenames["adt"].is_file():
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
-        for key in driven_filenames.keys():
+        for key in driven_filenames:
             if driven_filenames[key].is_file():
                 self.excitation = DRIVEN_EXCITATIONS[key]
                 self.model_driven = tfs.read(driven_filenames[key], index=NAME)

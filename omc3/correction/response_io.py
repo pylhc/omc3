@@ -83,7 +83,7 @@ def read_varmap(path: Path, k_values: Sequence[str] = None) -> dict[str, dict[st
             _check_keys(store, k_values, "varmap")
 
             varmap = defaultdict(lambda: defaultdict(pd.Series))
-            for key in store.keys():
+            for key in store:
                 _, param, subparam = key.split("/")
                 if k_values is not None and param not in k_values:
                     continue
@@ -120,7 +120,7 @@ def _check_keys(store: pd.HDFStore, keys: Sequence[str], file_id: str):
 
 def _main_store_groups(store: pd.HDFStore) -> set[str]:
     """Returns sequence of unique main store groups."""
-    return {k.split("/")[1] for k in store.keys()}
+    return {key.split("/")[1] for key in store}
 
 
 @contextmanager

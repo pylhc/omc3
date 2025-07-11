@@ -385,10 +385,10 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
 
     # Naming with R, I, A, P as long as model is involved
     df = tfs.concat(
-        [create_measurement(df_twiss, model_col, relative_error, randomize) for model_col in column_map.keys()],
+        [create_measurement(df_twiss, model_col, relative_error, randomize) for model_col in column_map],
         axis=1
     )
-    for model_col in column_map.keys():
+    for model_col in column_map:
         df = append_model_param(df, df_model, model_col)
     df = append_model_s_and_phaseadv(df, df_model, planes="XY")
 
