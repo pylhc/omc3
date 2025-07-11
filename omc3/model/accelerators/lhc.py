@@ -230,13 +230,13 @@ class Lhc(Accelerator):
         elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
-                elems_matrix = elems_matrix[(elems_matrix.S >= frm) | (elems_matrix.S <= to)]
+                elems_matrix = elems_matrix[(frm <= elems_matrix.S) | (to >= elems_matrix.S)]
             else:
-                elems_matrix = elems_matrix[(elems_matrix.S >= frm) & (elems_matrix.S <= to)]
+                elems_matrix = elems_matrix[(frm <= elems_matrix.S) & (to >= elems_matrix.S)]
         elif frm is not None:
-            elems_matrix = elems_matrix[elems_matrix.S >= frm]
+            elems_matrix = elems_matrix[frm <= elems_matrix.S]
         elif to is not None:
-            elems_matrix = elems_matrix[elems_matrix.S <= to]
+            elems_matrix = elems_matrix[to >= elems_matrix.S]
 
         # create single list (some entries might contain multiple variable names, comma separated, e.g. "kqx.l2,ktqx2.l2")
         vars_by_position = _remove_dups_keep_order(
