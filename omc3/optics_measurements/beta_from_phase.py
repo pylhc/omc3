@@ -177,7 +177,7 @@ def n_bpm_method(
         ))
         with np.errstate(divide='ignore'):
             cot_meas = 1.0 / np.tan(outer_meas_phase_adv.to_numpy())
-            cot_model = 1.0 / np.tan((outer_mdl_ph - outer_mdl_ph[m]))
+            cot_model = 1.0 / np.tan(outer_mdl_ph - outer_mdl_ph[m])
         patter = (np.abs(cot_meas) <= COT_THRESHOLD) & (np.abs(cot_model) <= COT_THRESHOLD)
         diag = np.concatenate((np.square(outer_meas_err.to_numpy()), outer_elmts.loc[:]["dK1"],
                                outer_elmts.loc[:]["dX"], outer_elmts.loc[:]["KdS"],
