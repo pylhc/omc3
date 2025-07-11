@@ -95,7 +95,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     """
     df = pd.DataFrame(index=bpm_matrix.index)
     frequencies, coefficients = windowed_padded_rfft(harpy_input, bpm_matrix, tunes, usv)
-    df, not_tune_bpms = _get_main_resonances(tunes, dict(FREQS=frequencies, COEFFS=coefficients),
+    df, not_tune_bpms = _get_main_resonances(tunes, {"FREQS": frequencies, "COEFFS": coefficients},
                                                 plane, harpy_input.tolerance, df)
     cleaned_by_tune_bpms = clean_by_tune(df.loc[:, f"{COL_TUNE}{plane}"], harpy_input.tune_clean_limit)
     df = df.loc[df.index.difference(cleaned_by_tune_bpms)]
@@ -105,7 +105,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
 
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
     bpm_matrix = bpm_matrix.loc[df.index]
-    spectra = dict(FREQS=frequencies.loc[df.index], COEFFS=coefficients.loc[df.index])
+    spectra = {"FREQS": frequencies.loc[df.index], "COEFFS": coefficients.loc[df.index]}
 
     if _get_natural_tunes(harpy_input, tunes) is not None:
         df_nattunes = _calculate_natural_tunes(

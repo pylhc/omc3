@@ -59,8 +59,8 @@ def run_per_bunch(tbt_data, harpy_input):
 
     tune_estimates = harpy_input.tunes if harpy_input.autotunes is None else frequency.estimate_tunes(
         harpy_input, usvs if harpy_input.clean else
-        dict(X=clean.svd_decomposition(bpm_datas["X"], harpy_input.sing_val),
-             Y=clean.svd_decomposition(bpm_datas["Y"], harpy_input.sing_val)))
+        {"X": clean.svd_decomposition(bpm_datas["X"], harpy_input.sing_val),
+         "Y": clean.svd_decomposition(bpm_datas["Y"], harpy_input.sing_val)})
 
     spectra = {}
     for plane in PLANES:
@@ -226,12 +226,12 @@ def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -
     df.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = df.loc[:, 'NOISE']
     if f"{COL_NATTUNE}{plane}" in df.columns:
         df.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = df.loc[:, 'NOISE']
-    
+
     # Create dedicated dataframe with error columns to assign later (cleaner
     # and faster than assigning individual columns)
     df_amp = pd.DataFrame(
         data={f"{COL_ERR}{col}": noise_scaled * np.sqrt(1 + np.square(df.loc[:, col])) for col in cols},
-        index=df.index, 
+        index=df.index,
         dtype=pd.Float64Dtype()
     )
     df.loc[:, df_amp.columns] = df_amp

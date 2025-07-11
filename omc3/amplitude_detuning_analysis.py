@@ -155,11 +155,11 @@ DTIME: int = 120  # extra seconds to add to kick times window when extracting fr
 
 LOG = get_logger(__name__)
 
-FILTER_OPTS = dict(
-    cut=("window_length", "tunes", "tune_cut"),  # "fine_window", "fine_cut"
-    minmax=("window_length", "tunes_minmax", ),  # "fine_window", "fine_cut"
-    outliers=("window_length", "outlier_limit"),
-)
+FILTER_OPTS = {
+    "cut": ("window_length", "tunes", "tune_cut"),  # "fine_window", "fine_cut"
+    "minmax": ("window_length", "tunes_minmax", ),  # "fine_window", "fine_cut"
+    "outliers": ("window_length", "outlier_limit"),
+}
 
 
 # Get Parameters ---------------------------------------------------------------
@@ -167,87 +167,87 @@ FILTER_OPTS = dict(
 
 def _get_params():
     return EntryPointParameters(
-        beam=dict(
-            help="Which beam to use.",
-            required=True,
-            type=int,
-        ),
-        kick=dict(
-            help="Location of the kick files (parent folder).",
-            type=PathOrStr,
-            required=True,
-        ),
-        plane=dict(
-            help="Plane of the kicks. 'X' or 'Y' or 'XY'.",
-            required=True,
-            choices=list(PLANES) + ["".join(PLANES)],
-            type=str,
-        ),
-        label=dict(
-            help="Label to identify this run.",
-            type=str,
-        ),
-        bbq_in=dict(
-            help="Fill number of desired data to extract from timber or path to presaved bbq-tfs-file. "
+        beam={
+            "help": "Which beam to use.",
+            "required": True,
+            "type": int,
+        },
+        kick={
+            "help": "Location of the kick files (parent folder).",
+            "type": PathOrStr,
+            "required": True,
+        },
+        plane={
+            "help": "Plane of the kicks. 'X' or 'Y' or 'XY'.",
+            "required": True,
+            "choices": list(PLANES) + ["".join(PLANES)],
+            "type": str,
+        },
+        label={
+            "help": "Label to identify this run.",
+            "type": str,
+        },
+        bbq_in={
+            "help": "Fill number of desired data to extract from timber or path to presaved bbq-tfs-file. "
             f"Use the string '{INPUT_KICK}' to use the timestamps in the kickfile for timber extraction. "
             f"Use the string '{INPUT_PREVIOUS}' to look for the modified ampdet kick-file from a previous run. "
             "Not giving this parameter skips bbq compensation.",
-            type=UnionPathStrInt
-        ),
-        detuning_order=dict(
-            help="Order of the detuning as int. Basically just the order of the applied fit.",
-            type=int,
-            default=1,
-        ),
-        output=dict(
-            help="Output directory for the modified kickfile and bbq data.",
-            type=PathOrStr,
-        ),
-        window_length=dict(
-            help="Length of the moving average window. (# data points)",
-            type=int,
-            default=20,
-        ),
-        bbq_filtering_method=dict(
-            help="Filtering method for the bbq to use. 'cut' cuts around a given tune, 'minmax' lets you "
+            "type": UnionPathStrInt
+        },
+        detuning_order={
+            "help": "Order of the detuning as int. Basically just the order of the applied fit.",
+            "type": int,
+            "default": 1,
+        },
+        output={
+            "help": "Output directory for the modified kickfile and bbq data.",
+            "type": PathOrStr,
+        },
+        window_length={
+            "help": "Length of the moving average window. (# data points)",
+            "type": int,
+            "default": 20,
+        },
+        bbq_filtering_method={
+            "help": "Filtering method for the bbq to use. 'cut' cuts around a given tune, 'minmax' lets you "
             "specify the limits and 'outliers' uses the outlier filtering from utils.",
-            type=str,
-            choices=list(FILTER_OPTS.keys()),
-            default="outliers",
-        ),
+            "type": str,
+            "choices": list(FILTER_OPTS.keys()),
+            "default": "outliers",
+        },
         # Filtering method outliers
-        outlier_limit=dict(
-            help="Limit, i.e. cut, on outliers (Method 'outliers')",
-            type=float,
-            default=2e-4,
-        ),
+        outlier_limit={
+            "help": "Limit, i.e. cut, on outliers (Method 'outliers')",
+            "type": float,
+            "default": 2e-4,
+        },
         # Filtering method tune-cut
-        tunes=dict(
-            help="Tunes for BBQ cleaning (Method 'cut').",
-            type=float,
-            nargs=2,
-        ),
-        tune_cut=dict(
-            help="Cuts for the tune. For BBQ cleaning (Method 'cut').",
-            type=float,
-        ),
+        tunes={
+            "help": "Tunes for BBQ cleaning (Method 'cut').",
+            "type": float,
+            "nargs": 2,
+        },
+        tune_cut={
+            "help": "Cuts for the tune. For BBQ cleaning (Method 'cut').",
+            "type": float,
+        },
         # Filtering method tune-minmax
-        tunes_minmax=dict(
-            help="Tunes minima and maxima in the order x_min, x_max, y_min, y_max. "
+        tunes_minmax={
+            "help": "Tunes minima and maxima in the order x_min, x_max, y_min, y_max. "
             "For BBQ cleaning (Method 'minmax').",
-            type=float,
-            nargs=4,
-        ),
+            "type": float,
+            "nargs": 4,
+        },
         # Fine Cleaning
-        fine_window=dict(
-            help="Length of the moving average window, i.e the number of data points "
+        fine_window={
+            "help": "Length of the moving average window, i.e the number of data points "
             "(fine cleaning for 'minmax' or 'cut').",
-            type=int,
-        ),
-        fine_cut=dict(
-            help="Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
-            type=float,
-        ),
+            "type": int,
+        },
+        fine_cut={
+            "help": "Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
+            "type": float,
+        },
     )
 
 

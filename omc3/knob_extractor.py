@@ -61,6 +61,7 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 
 
 """
+
 from __future__ import annotations
 
 ####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ##################################
@@ -228,28 +229,28 @@ python -m omc3.knob_extractor --knobs disp sep xing chroma ip_offset mo --time n
 
 def get_params():
     return EntryPointParameters(
-        knobs=dict(
-            type=str,
-            nargs='*',
-            help=(
+        knobs={
+            "type": str,
+            "nargs": '*',
+            "help": (
                 "A list of knob names or categories to extract. "
                 f"Available categories are: {', '.join(KNOB_CATEGORIES.keys())}."
             ),
-            default=list(KNOB_CATEGORIES.keys()),
-        ),
-        time=dict(
-            type=str,
-            help=(
+            "default": list(KNOB_CATEGORIES.keys()),
+        },
+        time={
+            "type": str,
+            "help": (
                 "At what time to extract the knobs. "
                 "Accepts ISO-format (YYYY-MM-DDThh:mm:ss), timestamp or 'now'. "
                 "The default timezone for the ISO-format is local time, "
                 "but you can force e.g. UTC by adding +00:00."
             ),
-            default="now",
-        ),
-        timedelta=dict(
-            type=str,
-            help=(
+            "default": "now",
+        },
+        timedelta={
+            "type": str,
+            "help": (
                 "Add this timedelta to the given time. "
                 "The format of timedelta is '((\\d+)(\\w))+' "
                 "with the second token being one of "
@@ -259,39 +260,39 @@ def get_params():
                 "This allows for easily getting the setting "
                 "e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default)."
             ),
-        ),
-        state=dict(
-            action='store_true',
-            help=(
+        },
+        state={
+            "action": 'store_true',
+            "help": (
                 "Prints the state of the StateTracker. "
                 "Does not extract anything else."
             ),
-        ),
-        output=dict(
-            type=PathOrStr,
-            help=(
+        },
+        output={
+            "type": PathOrStr,
+            "help": (
                 "Specify user-defined output path. "
                 "This should probably be `model_dir/knobs.madx`"
             ),
-        ),
-        knob_definitions=dict(
-            type=PathOrStrOrDataFrame,
-            help=(
+        },
+        knob_definitions={
+            "type": PathOrStrOrDataFrame,
+            "help": (
                 "User defined path to the knob-definitions, "
                 "or (via python) a dataframe containing the knob definitions "
                 "with the columns 'madx', 'lsa' and 'scaling'."
             ),
-        ),
+        },
     )
 
 
 @entrypoint(
     get_params(), strict=True,
-    argument_parser_args=dict(
-        epilog=USAGE_EXAMPLES,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        prog="Knob Extraction Tool."
-    )
+    argument_parser_args={
+        "epilog": USAGE_EXAMPLES,
+        "formatter_class": argparse.RawDescriptionHelpFormatter,
+        "prog": "Knob Extraction Tool."
+    }
 )
 def main(opt) -> tfs.TfsDataFrame:
     """ Main knob extracting function. """
@@ -614,14 +615,12 @@ def _add_time_delta(time: datetime, delta_str: str) -> datetime:
     """ Parse delta-string and add time-delta to time. """
     sign = -1 if delta_str[0] in MINUS_CHARS else 1
     all_deltas = re.findall(r"(\d+)(\w)", delta_str)  # tuples (value, timeunit-char)
-
     # mapping char to the time-unit as accepted by relativedelta,
     # following ISO-8601 for time durations
-    char2unit = dict(
-        s='seconds', m='minutes', h='hours',
-        d='days', w='weeks', M='months', Y="years",
-    )
-
+    char2unit = {
+        "s": 'seconds', "m": 'minutes', "h": 'hours',
+        "d": 'days', "w": 'weeks', "M": 'months', "Y": "years",
+    }
     # add all deltas, which are tuples of (value, timeunit-char)
     time_parts = {char2unit[delta[1]]: sign * int(delta[0]) for delta in all_deltas}
     return time + relativedelta(**time_parts)
