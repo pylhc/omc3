@@ -173,7 +173,7 @@ extend-select = [
     "F",        # Pyflakes rules
     # "W",        # PyCodeStyle warnings
     "E",        # PyCodeStyle errors
-    # "I",        # Sort imports properly
+    "I",        # Sort imports properly
     "A",        # Detect shadowed builtins
     # "N",        # enforce naming conventions, e.g. ClassName vs function_name
     "UP",       # Warn if certain things can change due to newer Python versions
