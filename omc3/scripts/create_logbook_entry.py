@@ -182,7 +182,7 @@ def _get_rbac_token() -> str:
 
 def _get_attachments(files: Iterable[Union[str, Path]],
                      filenames: Iterable[str] = None,
-                     pdf2png: bool = False) -> List[AttachmentBuilderType]:
+                     pdf2png: bool = False) -> list[AttachmentBuilderType]:
     """ Read the file-attachments and assign their names. """
     if files is None:
         return []

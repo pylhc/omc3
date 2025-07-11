@@ -81,7 +81,7 @@ def add_bbq_data(kick_df: pd.DataFrame, bbq_df: pd.DataFrame, column: str, bbq_c
 
 
 def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_opt: FilterOpts,
-                       ) -> Tuple[TfsDataFrame, TfsDataFrame]:
+                       ) -> tuple[TfsDataFrame, TfsDataFrame]:
     """Adds the moving average of the bbq data to kickac_df and bbq_df."""
     LOG.debug("Calculating moving average.")
 

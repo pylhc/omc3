@@ -259,7 +259,7 @@ def main(opt):
 
 # 2D Plots ----------------------------
 
-def _plot_2d(tune_plane: str, opt: DotDict) -> Dict[str, Figure]:
+def _plot_2d(tune_plane: str, opt: DotDict) -> dict[str, Figure]:
     """ 2D Plots per kick-plane and with/without BBQ correction. """
     figs = {}
     limits = opt.get_subdict(['x_lim', 'y_lim'])
@@ -369,7 +369,7 @@ def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=
 
 
 def _plot_detuning(ax: Axes, data: AmpDetData, label: str, color=None,
-                   limits: Dict[str, float] = None, odr_fit: odr.Output=None, odr_label: str =""):
+                   limits: dict[str, float] = None, odr_fit: odr.Output=None, odr_label: str =""):
     """Plot the detuning and the ODR into axes."""
     x_lim = _get_default(limits, 'x_lim', [0, max(data.action+data.action_err)])
     offset = 0
@@ -386,7 +386,7 @@ def _plot_detuning(ax: Axes, data: AmpDetData, label: str, color=None,
                 label=label, color=color)
 
 
-def _format_axes(ax: Axes, limits: Dict[str, Sequence[float]], labels: Sequence[str]):
+def _format_axes(ax: Axes, limits: dict[str, Sequence[float]], labels: Sequence[str]):
     # labels
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
@@ -500,7 +500,7 @@ def _plot_3d(tune_plane: str, opt: DotDict):
     return figs
 
 
-def _plot_detuning_3d(ax: Axes, data: Dict[str, AmpDetData], label: str, color=None, limits=None, odr_fits=None):
+def _plot_detuning_3d(ax: Axes, data: dict[str, AmpDetData], label: str, color=None, limits=None, odr_fits=None):
     """ Plot the detuning and the ODR into axes."""
     offset = 0
     jx, jx_err = data[X].action, data[X].action_err
@@ -546,7 +546,7 @@ def fit_fun_odr_1d(x, y, q0, qdx, qdy):
     return q0 + qdx * x + qdy * y
 
 
-def plot_odr_3d(ax: Axes, odr_fits: Dict[str, odr.Output], xymax: Sequence[float], color=None):
+def plot_odr_3d(ax: Axes, odr_fits: dict[str, odr.Output], xymax: Sequence[float], color=None):
     """Plot the odr fit in 3D."""
 
     color = 'k' if color is None else color
@@ -623,8 +623,8 @@ def plot_cube(ax: Axes, x: ArrayLike, y: ArrayLike, f_low: callable, f_upp: call
 
 
 def _format_axes_3d(
-        ax: Axes, limits: Dict[str, float], ax_labels: Sequence[str],
-        acd: bool, odr_labels: Sequence[Dict[str, str]] = None):
+        ax: Axes, limits: dict[str, float], ax_labels: Sequence[str],
+        acd: bool, odr_labels: Sequence[dict[str, str]] = None):
     # labels
     ax.set_xlabel(ax_labels[0], labelpad=15)
     ax.set_ylabel(ax_labels[1], labelpad=15)

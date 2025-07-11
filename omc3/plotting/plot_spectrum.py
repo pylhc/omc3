@@ -432,7 +432,7 @@ def _save_options_to_config(opt):
 # Load Data --------------------------------------------------------------------
 
 
-def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
+def _sort_input_data(opt: DotDict) -> tuple[FigureCollector, FigureCollector]:
     """Load and sort input data by file and bpm and assign correct figure-containers."""
     LOG.debug("Sorting input data.")
 

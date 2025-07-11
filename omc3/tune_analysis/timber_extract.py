@@ -39,7 +39,7 @@ AcceptableTimeStamp = NewType("AcceptableTimeStamp", Union[CERNDatetime, int, fl
 
 
 def lhc_fill_to_tfs(
-    fill_number: int, keys: Sequence[str] = None, names: Dict[str, str] = None
+    fill_number: int, keys: Sequence[str] = None, names: dict[str, str] = None
 ) -> tfs.TfsDataFrame:
     """
     Extracts data for keys of fill from ``Timber``.
@@ -61,7 +61,7 @@ def extract_between_times(
     t_start: AcceptableTimeStamp,
     t_end: AcceptableTimeStamp,
     keys: Sequence[str] = None,
-    names: Dict[str, str] = None,
+    names: dict[str, str] = None,
 ) -> tfs.TfsDataFrame:
     """
     Extracts data for keys between ``t_start`` and ``t_end`` from ``Timber``.
@@ -130,7 +130,7 @@ def extract_between_times(
     return out_df
 
 
-def get_tune_and_coupling_variables(db) -> List[str]:
+def get_tune_and_coupling_variables(db) -> list[str]:
     """
     Returns the tune and coupling variable names.
 
@@ -151,7 +151,7 @@ def get_tune_and_coupling_variables(db) -> List[str]:
 
 def get_fill_times(
     db, fill_number: int
-) -> Tuple[Union[datetime.datetime, float], Union[datetime.datetime, float]]:
+) -> tuple[Union[datetime.datetime, float], Union[datetime.datetime, float]]:
     """
     Returns start and end time of fill with fill number.
 

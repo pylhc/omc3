@@ -49,10 +49,10 @@ class MinMaxFilterOpt:
     fine_cut: float = None
 
 
-FilterOpts = Union[OutlierFilterOpt, Tuple[MinMaxFilterOpt, MinMaxFilterOpt]]
+FilterOpts = Union[OutlierFilterOpt, tuple[MinMaxFilterOpt, MinMaxFilterOpt]]
 
 
-def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> Tuple[pd.Series, pd.Series, ArrayLike]:
+def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> tuple[pd.Series, pd.Series, ArrayLike]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered
     beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)
@@ -95,7 +95,7 @@ def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> T
     return data_mav, err_mav, ~cut_mask
 
 
-def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFilterOpt) -> Tuple[pd.Series, pd.Series, NDArray[bool]]:
+def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFilterOpt) -> tuple[pd.Series, pd.Series, NDArray[bool]]:
     """
     Get a moving average of the ``data_series`` over ``length`` entries, by means of
     :func:`outlier filter <omc3.utils.outliers.get_filter_mask>`.
@@ -121,7 +121,7 @@ def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFil
 # Private methods ############################################################
 
 
-def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[pd.Series, ArrayLike], length: int) -> Tuple[pd.Series, pd.Series]:
+def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[pd.Series, ArrayLike], length: int) -> tuple[pd.Series, pd.Series]:
     """
     Returns the moving average of data series with a window of length and interpolated ``NaNs``.
     """

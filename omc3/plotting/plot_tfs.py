@@ -558,7 +558,7 @@ def _create_plots(fig_collection, opt):
 
 
 
-def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
+def _plot_data(ax: Axes, data: dict[str, DataSet], change_marker: bool, ebar_alpha: float):
     for idx, (label, values) in enumerate(data.items()):
         ebar = ax.errorbar(values.x, values.y, yerr=values.err,
                            ls=rcParams[u"lines.linestyle"],

@@ -251,7 +251,7 @@ def _get_params():
 
 
 @entrypoint(_get_params(), strict=True)
-def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFrame]:
+def analyse_with_bbq_corrections(opt: DotDict) -> tuple[TfsDataFrame, TfsDataFrame]:
     """
     Create amplitude detuning analysis with BBQ correction from timber data.
 
@@ -282,7 +282,7 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
 def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
                         beam: int = None,
                         filter_opt: FilterOpts = None,
-                        ) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
+                        ) -> tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
     """Load the input data."""
     bbq_df = None
     if bbq_in is not None and bbq_in == INPUT_PREVIOUS:
@@ -393,7 +393,7 @@ def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, c
 
 
 def get_approx_bbq_interval(
-        bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window: int) -> Tuple[CERNDatetime, CERNDatetime]:
+        bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window: int) -> tuple[CERNDatetime, CERNDatetime]:
     """Get approximate start and end times for averaging, based on window length and kick interval."""
     bbq_tmp = bbq_df.dropna()
 
@@ -419,7 +419,7 @@ def get_approx_bbq_interval(
 # Private Functions ------------------------------------------------------------
 
 
-def _check_analyse_opt(opt: DotDict) -> Tuple[DotDict, FilterOpts]:
+def _check_analyse_opt(opt: DotDict) -> tuple[DotDict, FilterOpts]:
     """Perform manual checks on opt-sturcture."""
     LOG.debug("Checking Options.")
 
@@ -514,13 +514,13 @@ def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFram
     return data
 
 
-def _get_timber_keys_and_bbq_columns(beam: int) -> Tuple[List[str], List[str]]:
+def _get_timber_keys_and_bbq_columns(beam: int) -> tuple[list[str], list[str]]:
     keys = [get_timber_bbq_key(plane, beam) for plane in PLANES]
     cols = [get_bbq_col(plane) for plane in PLANES]
     return keys, cols
 
 
-def _should_do_corrected(kick_df, bbq_in) -> List:
+def _should_do_corrected(kick_df, bbq_in) -> list:
     if bbq_in is None:
         return []
     if bbq_in == INPUT_PREVIOUS and not any(CORRECTED in col for col in kick_df.columns):
@@ -533,7 +533,7 @@ def _save_options(opt: DotDict) -> None:
         save_config(Path(opt.output), opt, __file__)
 
 
-def _get_ampdet_data_as_array(data: Dict[Any, AmpDetData], column: str) -> ArrayLike:
+def _get_ampdet_data_as_array(data: dict[Any, AmpDetData], column: str) -> ArrayLike:
     """ Returns a matrix with number of rows as entries in data,
     each containing the values from the given column of the AmpDetData.
     e.g. [[Jx0, Jx1, Jx2, ....]

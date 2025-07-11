@@ -24,7 +24,7 @@ def omc3_styles():
 
 
 def set_style(styles: Union[Path, str, Sequence[Union[Path, str]]] = 'standard',
-              manual: Dict[str, Any] = None):
+              manual: dict[str, Any] = None):
     """
     Sets the style for all following plots.
 

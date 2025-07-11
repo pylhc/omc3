@@ -478,7 +478,7 @@ def knob_def(**kwargs):
     return pd.Series(dict(**kwargs))
 
 
-def parse_output_file(file_path) -> Tuple[Dict[str, float], str]:
+def parse_output_file(file_path) -> tuple[dict[str, float], str]:
     txt = Path(file_path).read_text()
     d = {}
     pattern = re.compile(r"\s*(\S+)\s*:=\s*([^;\s*]+)\s*;")
@@ -492,7 +492,7 @@ def parse_output_file(file_path) -> Tuple[Dict[str, float], str]:
     return d, txt
 
 
-def dict2args(args_dict: Dict[str, Any]) -> List[str]:
+def dict2args(args_dict: dict[str, Any]) -> list[str]:
     """ Convert a dictionary to an args-list.
     Keys are flags, values are their arguments. """
     args = []
@@ -516,7 +516,7 @@ def state_tfs() -> Path:
 
 
 @pytest.fixture()
-def saved_knobfile_and_time() -> Tuple[Path, str]:
+def saved_knobfile_and_time() -> tuple[Path, str]:
     return INPUTS / "knobs_2022-06-25.txt", "2022-06-25T00:20:00+00:00"
 
 

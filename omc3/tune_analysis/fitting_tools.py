@@ -107,7 +107,7 @@ def first_order_detuning_2d_jacobian(beta: Sequence, x: ArrayLike) -> ArrayLike:
                      [beta[4], beta[3]]])] * len(x[0]))
 
 
-def map_odr_fit_to_planes(odr_fit) -> Dict[str, Dict[str, FakeOdrOutput]]:
+def map_odr_fit_to_planes(odr_fit) -> dict[str, dict[str, FakeOdrOutput]]:
     """ Maps the calculated odr fit to fake odr fits with `beta` and `sd_beta`
     attributes. These would be the results of first-order amplitude detuning
     odr-fits when done independently by tune and kick plane.
@@ -174,7 +174,7 @@ def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike
     return map_odr_fit_to_planes(odr_fit)
 
 
-def _filter_nans(*args: ArrayLike) -> List[ArrayLike]:
+def _filter_nans(*args: ArrayLike) -> list[ArrayLike]:
     """Remove all data points containing a NaN.
     Assumes input arrays are all of shape 2xN.
     TODO:
@@ -186,7 +186,7 @@ def _filter_nans(*args: ArrayLike) -> List[ArrayLike]:
     return list(a)
 
 
-def _check_exact_zero_errors(xerr: ArrayLike, yerr: ArrayLike) -> Tuple[np.ndarray, np.ndarray]:
+def _check_exact_zero_errors(xerr: ArrayLike, yerr: ArrayLike) -> tuple[np.ndarray, np.ndarray]:
     """Check if errors are exact zero and replace with minimum error, if so.
     Done because ODR crashes on exact zero error-bars.
 
