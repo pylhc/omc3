@@ -420,10 +420,7 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
 
     column_planes = safe_format(column, planes)
     column = safe_format(column, plane)
-    if column_label is None:
-        column_label = column
-    else:
-        column_label = safe_format(column_label, plane.lower())
+    column_label = column if column_label is None else safe_format(column_label, plane.lower())
 
     axes_id = {'files': '_'.join(filename_parts),
                'columns': f'{column}',

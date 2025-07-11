@@ -595,10 +595,7 @@ def _create_model_and_write_diff_to_measurements(
             LOG.debug(f"Checking correction for {attribute}")
             plane = filename[-1].upper()
             cols = colmap.set_plane(plane)
-            if filename[:-1] == TOTAL_PHASE_NAME:
-                model_cols = MU_COLUMN.set_plane(plane)
-            else:
-                model_cols = cols
+            model_cols = MU_COLUMN.set_plane(plane) if filename[:-1] == TOTAL_PHASE_NAME else cols
 
             _create_check_columns(
                 measurement=measurement,

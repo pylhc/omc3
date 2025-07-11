@@ -360,12 +360,9 @@ def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=
     f_low = partial(fit_fun, np.array(odr_fit.beta)-np.array(odr_fit.sd_beta))
     f_upp = partial(fit_fun, np.array(odr_fit.beta)+np.array(odr_fit.sd_beta))
 
-    if order == 1:
-        x = np.array([0, xmax])
-    else:
-        x = np.linspace(0, xmax, NFIT)
-
+    x = np.array([0, xmax]) if order == 1 else np.linspace(0, xmax, NFIT)
     line = ax.plot(x, f(x), marker="", linestyle='--', color=color, label=label)
+
     if color is None:
         color = line[0].get_color()
     ax.fill_between(x, f_low(x), f_upp(x), facecolor=mcolors.to_rgba(color, .3), zorder=-10)

@@ -317,10 +317,7 @@ def assert_all_close(
         df = df.loc[idx_slice]
 
     a_data = df[a]
-    if isinstance(b, str):
-        b_data = df[b]
-    else:
-        b_data = b
+    b_data = df[b] if isinstance(b, str) else b
 
     if rel is not None:
         a_data = a_data / df[rel]

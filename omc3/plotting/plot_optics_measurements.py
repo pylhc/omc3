@@ -358,10 +358,7 @@ def plot(opt):
 
         is_rdt = optics_parameter.lower().startswith("f")
         files, file_labels = zip(*get_unique_filenames(opt.folders))
-        if opt.labels:
-            file_labels = opt.labels
-        else:
-            file_labels = ["_".join(flabels) for flabels in file_labels]
+        file_labels = opt.labels or ["_".join(flabels) for flabels in file_labels]
 
         if is_rdt:
             fig_dict.update(_plot_rdt(
@@ -489,10 +486,8 @@ def _plot_param(optics_parameter, files, file_labels, x_column, x_label, ip_posi
         column_labels = [f'{column_label} {{0}}']
 
     if opt.suppress_column_legend:
-        if same_fig == 'planes':
-            column_labels = ['']
-        else:
-            column_labels = ['{0}']   #  show planes in labels as all are in same axes
+        #  second option: show planes in labels as all are in same axes
+        column_labels = [''] if same_fig == 'planes' else ['{0}']
 
     prefix = ''
     if opt.delta:
