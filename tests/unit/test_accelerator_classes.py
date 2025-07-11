@@ -1,11 +1,10 @@
-import pytest
 from pathlib import Path
 
+import pytest
 from tfs import TfsDataFrame
+
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.accelerators.lhc import Lhc
-from omc3.model.accelerators.ps import Ps
-from omc3.model.accelerators.psbooster import Psbooster
 from omc3.model.accelerators.skekb import SKekB
 
 INPUTS = Path(__file__).parent.parent / 'inputs'
