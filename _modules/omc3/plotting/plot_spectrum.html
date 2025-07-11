@@ -410,7 +410,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cycler</span><span class="w"> </span><span class="kn">import</span> <span class="n">cycler</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictAsString</span>
@@ -439,7 +439,7 @@
 <span class="sd">    Reshuffle tab20c so that the colors change between next lines.</span>
 <span class="sd">    Needs to be up here as it is used in ``DEFAULTS`` which is loaded early.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">tab20c</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colormaps</span><span class="p">[</span><span class="s1">&#39;tab20c&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">colors</span>
+    <span class="n">tab20c</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colormaps</span><span class="p">[</span><span class="s1">&#39;tab20c&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">colors</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">20</span>
     <span class="n">step</span><span class="p">,</span> <span class="n">chunk</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span>
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
@@ -553,7 +553,7 @@
                          <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
                          <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional style rcParameters which update the set of predefined ones.&#39;</span>
                          <span class="p">)</span>
- 
+
     <span class="k">return</span> <span class="n">params</span>
 
 

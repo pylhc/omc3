@@ -225,8 +225,9 @@
 
 <span class="sd">Stem plotting functionality for spectrum plotter.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span><span class="p">,</span> <span class="n">lines</span> <span class="k">as</span> <span class="n">mlines</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.spectrum.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">plot_lines</span><span class="p">,</span> <span class="n">FigureContainer</span><span class="p">,</span> <span class="n">get_cycled_color</span><span class="p">,</span>
@@ -298,8 +299,8 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_create_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">ncol</span><span class="p">):</span>
     <span class="n">lines_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">marker</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;lines.marker&#39;</span><span class="p">],</span>
-        <span class="n">markersize</span><span class="o">=</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;lines.marker&#39;</span><span class="p">],</span>
+        <span class="n">markersize</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="sa">u</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">legend_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -321,7 +322,7 @@
 
     <span class="c1"># move above line-labels</span>
     <span class="n">nlines</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">line</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="mf">0.05</span>
-    <span class="n">label_size</span> <span class="o">=</span> <span class="n">get_fontsize_as_float</span><span class="p">(</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">])</span>
+    <span class="n">label_size</span> <span class="o">=</span> <span class="n">get_fontsize_as_float</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">])</span>
     <span class="n">y_shift</span> <span class="o">=</span> <span class="n">get_approx_size_in_axes_coordinates</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="n">label_size</span><span class="o">=</span><span class="n">label_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">nlines</span>
     <span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">x_shift</span><span class="p">,</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">y_shift</span><span class="p">),</span> <span class="o">**</span><span class="n">legend_params</span><span class="p">)</span>
 </pre></div>

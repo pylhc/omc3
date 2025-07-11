@@ -232,7 +232,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span>
@@ -459,7 +459,7 @@
 <div class="viewcode-block" id="Accelerator.find_modifier">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.find_modifier">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_modifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modifier</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Try to find a modifier file, which might be given only by its name. </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Try to find a modifier file, which might be given only by its name.</span>
 <span class="sd">        By default this is looking for full-path, model-dir and in the acc-models-path,</span>
 <span class="sd">        but should probably be overwritten by the accelerator sub-classes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -534,7 +534,7 @@
 <div class="viewcode-block" id="Accelerator.get_element_types_mask">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_element_types_mask">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_element_types_mask</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">list_of_elements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">types</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_element_types_mask</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">list_of_elements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">types</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a boolean mask for elements in ``list_of_elements`` that belong to any of the</span>
 <span class="sd">        specified types.</span>
@@ -628,9 +628,9 @@
 <div class="viewcode-block" id="find_called_files_with_tag">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.find_called_files_with_tag">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_called_files_with_tag</span><span class="p">(</span><span class="n">madx_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse lines that call a file and are tagged with the given tag and return </span>
-<span class="sd">    a list of paths to these files. </span>
-<span class="sd">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse lines that call a file and are tagged with the given tag and return</span>
+<span class="sd">    a list of paths to these files.</span>
+
 <span class="sd">    This is mainly used to find the modifier tag in lines and return called file in these lines.</span>
 
 <span class="sd">    The modifier tag is used by the model creator to mark which line defines modifiers</span>

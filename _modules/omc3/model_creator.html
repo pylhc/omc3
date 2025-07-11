@@ -234,7 +234,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">manager</span> <span class="k">as</span> <span class="n">model_manager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">AcceleratorDefinitionError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fetcher</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.abstract_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCreator</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.abstract_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCreator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreatorType</span><span class="p">,</span> <span class="n">get_model_creator_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
@@ -263,8 +263,8 @@
               <span class="s2">&quot;If not provided it will be written to sys.stdout.&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;show_help&quot;</span><span class="p">,</span> 
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> 
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;show_help&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Instructs the subsequent modules to print a help message&quot;</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">get_fetcher_params</span><span class="p">())</span>
@@ -358,20 +358,20 @@
             <span class="n">accel_class</span> <span class="o">=</span> <span class="n">model_manager</span><span class="o">.</span><span class="n">get_accelerator_class</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---- Accelerator </span><span class="si">{</span><span class="n">accel_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">  | Usage ----</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">print_help</span><span class="p">(</span><span class="n">accel_class</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">())</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 (ugly that we catch all exceptions here...)</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">pass</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---- Model Creator | Usage ----</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">print_help</span><span class="p">(</span><span class="n">model_manager</span><span class="o">.</span><span class="n">_get_params</span><span class="p">())</span>
         <span class="n">print_help</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
-        <span class="k">return</span> 
+        <span class="k">return</span>
 
     <span class="c1"># proceed to the creator</span>
     <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span> <span class="o">=</span> <span class="n">model_manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
     <span class="n">require_param</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">_get_params</span><span class="p">(),</span> <span class="n">opt</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accelerator Instance </span><span class="si">{</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">, model type </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># model_dir is used as the output directory</span>
     <span class="n">require_param</span><span class="p">(</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">_get_params</span><span class="p">(),</span> <span class="n">opt</span><span class="p">)</span>
     <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
@@ -391,13 +391,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">return</span>
-    
+
     <span class="c1"># Save config only now, to not being written out for each time the choices are listed</span>
     <span class="n">save_config</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> <span class="n">unknown_opt</span><span class="o">=</span><span class="n">accel_opt</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="vm">__file__</span><span class="p">)</span>
 
     <span class="c1"># Run the actual model creation</span>
     <span class="n">creator</span><span class="o">.</span><span class="n">full_run</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">accel_inst</span></div>
 
 
