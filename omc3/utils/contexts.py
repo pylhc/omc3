@@ -32,8 +32,7 @@ def silence():
     """
     Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.
     """
-    devnull = open(os.devnull, "w")
-    with log_out(stdout=devnull, stderr=devnull):
+    with open(os.devnull, "w") as devnull, log_out(stdout=devnull, stderr=devnull):
         try:
             yield
         finally:
