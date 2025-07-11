@@ -84,7 +84,6 @@ from typing import TYPE_CHECKING
 
 import tfs
 from generic_parser import EntryPoint
-from sphinx import ret
 
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
