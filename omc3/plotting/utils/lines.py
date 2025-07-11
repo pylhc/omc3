@@ -106,7 +106,7 @@ def plot_vertical_line(
     if "linestyle" not in axvline_args and "ls" not in axvline_args:
         axvline_args["linestyle"] = "--"
 
-    label = axvline_args.get("label", None)
+    label = axvline_args.get("label")
     if label is None:
         axvline_args["label"] = "__nolegend__"
 

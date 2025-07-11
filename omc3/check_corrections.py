@@ -555,9 +555,7 @@ def _create_model_and_write_diff_to_measurements(
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
 
     for attribute, filename in measurement.filenames(exist=True).items():
-        rms_mask = rms_masks.get(
-            filename, None
-        )  # keys in rms_masks still with extension
+        rms_mask = rms_masks.get(filename)  # keys in rms_masks still with extension
         filename = filename.replace(EXT, "")
 
         try:
