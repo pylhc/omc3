@@ -185,15 +185,16 @@ def _rdt_to_str(rdt: RDTTuple):
 def _rdt_to_order_and_type(rdt: RDTTuple):
     j, k, l, m = rdt  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
-    orders = dict(((1, "dipole"),
-                   (2, "quadrupole"),
-                   (3, "sextupole"),
-                   (4, "octupole"),
-                   (5, "decapole"),
-                   (6, "dodecapole"),
-                   (7, "tetradecapole"),
-                   (8, "hexadecapole"),
-                 ))
+    orders = {
+        1: "dipole",
+        2: "quadrupole",
+        3: "sextupole",
+        4: "octupole",
+        5: "decapole",
+        6: "dodecapole",
+        7: "tetradecapole",
+        8: "hexadecapole",
+    }
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
