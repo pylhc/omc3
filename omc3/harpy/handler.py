@@ -107,17 +107,10 @@ def _scale_to_meters(bpm_data, unit):
 def _closed_orbit_analysis(bpm_data, model, bpm_res):
     lin_frame = pd.DataFrame(
         index=bpm_data.index.to_numpy(),
-        data=dict(
-            [
-                (COL_NAME, bpm_data.index.to_numpy()),
-                (
-                    "S",
-                    np.arange(bpm_data.index.size)
-                    if model is None
-                    else model.loc[bpm_data.index],
-                ),
-            ]
-        ),
+        data={
+            COL_NAME: bpm_data.index.to_numpy(),
+            "S": np.arange(bpm_data.index.size) if model is None else model.loc[bpm_data.index],
+        },
     )
     lin_frame['BPM_RES'] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
     with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
