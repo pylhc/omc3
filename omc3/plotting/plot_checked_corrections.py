@@ -482,7 +482,7 @@ def show_plots(figure_dict: dict[str, Figure]):
     }
 
     figure_names = tuple(figure_dict.keys())
-    correction_names = sorted(set([k.split(SPLIT_ID)[0] for k in figure_names if SPLIT_ID in k]))
+    correction_names = sorted({k.split(SPLIT_ID)[0] for k in figure_names if SPLIT_ID in k})
     for correction_name in [None] + list(correction_names):
         if not correction_name:
             parameter_names = iter(sorted(k for k in figure_names if SPLIT_ID not in k))

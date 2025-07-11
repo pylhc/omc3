@@ -34,8 +34,8 @@ def parse_lhc_sequence(year: str) -> dict[int, set[str]]:
     text = (ACC_MODELS_LHC / year / LHC_SEQ_FILE).read_text()
     all_correctors: set[str] = set(re.findall(r"[\s\-\+=](kq[^fsx][.a-z0-9]+)", text))
     return {
-        1: set([c for c in all_correctors if c.endswith("b1") ]),
-        2: set([c for c in all_correctors if c.endswith("b2") ]),
+        1: {corrector for corrector in all_correctors if corrector.endswith("b1")},
+        2: {corrector for corrector in all_correctors if corrector.endswith("b2")},
     }
 
 

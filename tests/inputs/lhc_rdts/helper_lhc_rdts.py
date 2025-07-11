@@ -44,7 +44,7 @@ DATA_DIR.mkdir(exist_ok=True)
 MADX_FILENAME = "job.create_model_nominal.madx"
 
 def to_ng_rdts(rdts: list[str] | tuple[str]) -> list[str]:
-    return list(set([rdt.split("_")[0] for rdt in rdts]))
+    return list({rdt.split("_")[0] for rdt in rdts})
 
 
 def create_model_dir(beam: int) -> None:
