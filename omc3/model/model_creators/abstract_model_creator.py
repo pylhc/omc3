@@ -200,8 +200,8 @@ class ModelCreator(ABC):
             AccExcitationMode.ACD: [TWISS_AC_DAT],
             AccExcitationMode.ADT: [TWISS_ADT_DAT],
         }
-        check_files = check_files + excitation_map[self.accel.excitation]
-        return check_files
+        return check_files + excitation_map[self.accel.excitation]
+
 
     @staticmethod
     def _check_files_exist(dir_: Path | str, files: Sequence[str]) -> None:

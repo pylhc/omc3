@@ -362,8 +362,7 @@ def _parse_elements(elements: Sequence[Segment | str] | None) -> list[Segment]:
         return []
     if len(set(elements)) != len(elements):
         raise SbsDefinitionError("Duplicated names in element list.")
-    elem_segments = [name if isinstance(name, Segment) else Segment.init_from_element_name(name) for name in elements]
-    return elem_segments
+    return [name if isinstance(name, Segment) else Segment.init_from_element_name(name) for name in elements]
 
 
 def _select_closest(name: str, all_names: pd.Index, eval_cond: Callable[[str], bool], back: bool = False) -> str:

@@ -227,8 +227,7 @@ def get_average_betastar_results(meas_paths: Sequence[Path]) -> tfs.TfsDataFrame
 
         mean_df[BEAM] = beam
         final_results[beam] = mean_df
-    final_df = tfs.concat(final_results.values()).set_index(BEAM)
-    return final_df
+    return tfs.concat(final_results.values()).set_index(BEAM)
 
 
 def get_average_bpm_results(meas_paths: Sequence[Path]) -> dict[int, tfs.TfsDataFrame]:

@@ -401,8 +401,7 @@ def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
         (df_counted[COUNT] / df_counted[FILE_COUNT]) * 100, 2
     )
 
-    df_counted = tfs.TfsDataFrame(df_counted.sort_values(PERCENTAGE, ascending=False), headers=df.headers)
-    return df_counted
+    return tfs.TfsDataFrame(df_counted.sort_values(PERCENTAGE, ascending=False), headers=df.headers)
 
 
 def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):

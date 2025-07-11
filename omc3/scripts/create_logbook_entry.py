@@ -260,12 +260,11 @@ def _convert_pdf_to_png(filepath: Path):
         return None
 
     pixmap = doc[0].get_pixmap(dpi=PNG_DPI)  # only first page
-    attachment = AttachmentBuilder.from_bytes(
+    return AttachmentBuilder.from_bytes(
         contents=pixmap.tobytes("png"),
         mime_type="image/png",
         name=filepath.with_suffix(".png").name
     )
-    return attachment
 
 
 # Script Mode ------------------------------------------------------------------

@@ -6,10 +6,10 @@ Provides tools to handle times more easily, in particular to switch easily betwe
 and UTC time.
 """
 from datetime import datetime, timedelta
+
 import dateutil.tz as tz
 
 from omc3.definitions.formats import TIME
-
 
 # Datetime Conversions #########################################################
 
@@ -37,17 +37,13 @@ def get_readable_time_format():
 def local_to_utc(dt_local, timezone):
     """Convert local datetime object to utc datetime object."""
     check_tz(dt_local, timezone)
-
-    dt_utc = dt_local.astimezone(tz.tzutc())
-    return dt_utc
+    return dt_local.astimezone(tz.tzutc())
 
 
 def utc_to_local(dt_utc, timezone):
     """Convert UTC datetime object to local datetime object."""
     check_tz(dt_utc, tz.tzutc())
-
-    dt_local = dt_utc.astimezone(timezone)
-    return dt_local
+    return dt_utc.astimezone(timezone)
 
 
 def local_string_to_utc(local_string, timezone):
@@ -60,15 +56,13 @@ def local_string_to_utc(local_string, timezone):
 def utc_string_to_utc(utc_string):
     """Convert a time string in utc to a UTC datetime object."""
     dt = datetime.strptime(utc_string, get_readable_time_format())
-    dt = dt.replace(tzinfo=tz.tzutc())
-    return dt
+    return dt.replace(tzinfo=tz.tzutc())
 
 
 def cern_utc_string_to_utc(utc_string):
     """Convert a time string in cern-utc to a utc datetime object."""
     dt = datetime.strptime(utc_string, get_cern_time_format())
-    dt = dt.replace(tzinfo=tz.tzutc())
-    return dt
+    return dt.replace(tzinfo=tz.tzutc())
 
 
 def check_tz(localized_dt, timezone):

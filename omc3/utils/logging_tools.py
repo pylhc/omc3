@@ -375,8 +375,7 @@ def _get_current_module(current_file=None):
                     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
                     ).split(os.path.sep)
 
-    current_module = '.'.join(path_parts[len(repo_parts):-1])
-    return current_module
+    return '.'.join(path_parts[len(repo_parts):-1])
 
 
 def _get_caller_logger_name():
@@ -414,9 +413,7 @@ def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
 
     format_string = format_string.replace(name, COLOR_NAME + name)
     format_string = format_string.replace(DIVIDER, COLOR_DIVIDER + DIVIDER)
-    format_string = format_string + COLOR_RESET
-
-    return format_string
+    return format_string + COLOR_RESET
 
 
 def _isatty():

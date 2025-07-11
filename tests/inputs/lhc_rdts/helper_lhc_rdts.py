@@ -190,8 +190,7 @@ def convert_tfs_to_madx(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     tfs_df = tfs_df.set_index("NAME")
 
     # Remove the rows with "$start" and "$end" in the NAME column
-    tfs_df = tfs_df.filter(regex=r"^(?!\$start|\$end).*$", axis="index")
-    return tfs_df
+    return tfs_df.filter(regex=r"^(?!\$start|\$end).*$", axis="index")
 
 
 strength_cols = ["k1l", "k2l", "k3l", "k4l", "k5l", "k1sl", "k2sl", "k3sl", "k4sl", "k5sl"]
@@ -309,8 +308,8 @@ def get_twiss_elements(beam: int) -> tfs.TfsDataFrame:
 twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}}
         """)
         add_strengths_to_twiss(mad, "twiss_elements")
-        df = mad.twiss_elements.to_df()
-    return df
+        return mad.twiss_elements.to_df()
+
 
 def write_tbt_file(beam: int) -> pd.DataFrame:
     tbt_path = DATA_DIR / get_tbt_name(beam,)

@@ -13,19 +13,26 @@ from numbers import Number
 
 import numpy as np
 import pandas as pd
-
-from omc3.utils import logging_tools, outliers
-from omc3.definitions.constants import PLANES, PI2
-from omc3.harpy.constants import (COL_TUNE, COL_AMP, COL_MU,
-                                  COL_NATTUNE, COL_NATAMP, COL_NATMU,
-                                  COL_FREQ, COL_PHASE)
 from optics_functions.rdt import get_all_to_order
+
+from omc3.definitions.constants import PI2, PLANES
+from omc3.harpy.constants import (
+    COL_AMP,
+    COL_FREQ,
+    COL_MU,
+    COL_NATAMP,
+    COL_NATMU,
+    COL_NATTUNE,
+    COL_PHASE,
+    COL_TUNE,
+)
+from omc3.utils import logging_tools, outliers
 
 LOGGER = logging_tools.getLogger(__name__)
 
 def _get_resonance_lines(order):
-    resonances = {'X': [], 
-                  'Y': [], 
+    resonances = {'X': [],
+                  'Y': [],
                   'Z': [(1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1)]}
     # Get all the rdts up to a given order
     fterms = get_all_to_order(order)
@@ -207,8 +214,7 @@ def clean_by_tune(tunes: pd.Series, tune_clean_limit: Number) -> pd.Series:
             average is lower than this limit.
     """
     bad_bpms_mask = outliers.get_filter_mask(tunes, limit=tune_clean_limit)  # returns ``True`` for good BPMs
-    bad_bpms_names = tunes[~bad_bpms_mask].index
-    return bad_bpms_names
+    return tunes[~bad_bpms_mask].index
 
 
 def _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms):
@@ -358,7 +364,7 @@ def get_freq_mask(harpy_input, tunes, auto_tol):
         mask = _get_partial_freq_mask(harpy_input, mask, list(nattunes), harpy_input.tolerance)
     tol = harpy_input.tolerance if harpy_input.autotunes is None else auto_tol
     freqs = (list(tunes))
-    
+
     resonance_lines = _get_resonance_lines(harpy_input.resonances)
     for plane in PLANES:
         freqs.extend(_compute_resonance_freqs(plane, tunes, resonance_lines))

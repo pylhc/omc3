@@ -74,8 +74,10 @@ def calculate_chromatic_coupling(couplings, dpps, input_files, measure_input):
         joined[f"D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].to_numpy()) + np.square(joined.loc[:, f"D{col}IM"].to_numpy()))
         joined[f"{ERR}D{col}"] = np.sqrt(np.square(joined.loc[:, f"D{col}RE"].to_numpy() * df_ratio(joined, f"{ERR}D{col}RE", f"D{col}")) +
                                          np.square(joined.loc[:, f"D{col}IM"].to_numpy() * df_ratio(joined, f"{ERR}D{col}IM", f"D{col}")))
-    output_df = pd.merge(measure_input.accelerator.model.loc[:, ["S"]], joined.loc[:,
-                         [f"{pref}{col}{part}" for pref in ("", ERR) for col in ("F1001", "F1010") for part in ("", "RE", "IM")]],
-                         how="inner", left_index=True,
-                         right_index=True)
-    return output_df
+    return pd.merge(
+            measure_input.accelerator.model.loc[:, ["S"]],
+            joined.loc[:,[f"{pref}{col}{part}" for pref in ("", ERR) for col in ("F1001", "F1010") for part in ("", "RE", "IM")]],
+            how="inner",
+            left_index=True,
+            right_index=True,
+        )

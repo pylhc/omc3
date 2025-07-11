@@ -455,10 +455,7 @@ def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: f
         if VALUES in randomize:
             values = np.random.normal(values, errors)
 
-    df = tfs.TfsDataFrame({parameter: values,
-                           f"{ERR}{parameter}": errors},
-                          index=df_twiss.index)
-    return df
+    return tfs.TfsDataFrame({parameter: values, f"{ERR}{parameter}": errors}, index=df_twiss.index)
 
 
 def append_model_param(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str, beat: bool = False) -> pd.DataFrame:

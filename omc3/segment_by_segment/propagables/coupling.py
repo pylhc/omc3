@@ -282,5 +282,4 @@ def append_rdt_components(seg_model: pd.DataFrame | None, rdt: str) -> pd.DataFr
 def concat_dfs_dict_no_duplicates(dfs: dict[str, pd.DataFrame]):
     """ Concatenate the dataframes in the dictionary without duplicate columns. """
     df = pd.concat(dfs.values(), axis=1)
-    df = df.loc[:, ~df.columns.duplicated()]
-    return df
+    return df.loc[:, ~df.columns.duplicated()]

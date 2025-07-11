@@ -6,8 +6,10 @@ This module contains kick functionality of ``optics_measurements``.
 It provides functions to compute kick actions.
 """
 from __future__ import annotations
+
 from contextlib import suppress
 from os.path import join
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -15,18 +17,31 @@ import tfs
 
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.model.accelerators.accelerator import AccElementTypes
-from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
-                                                DPPAMP, ERR, EXT, KICK_NAME,
-                                                NAT_TUNE, PEAK2PEAK,
-                                                RES,
-                                                RESCALE_FACTOR, RMS,
-                                                SQRT_ACTION, TIME, TUNE, S, CLOSED_ORBIT)
-from omc3.utils.stats import weighted_mean, weighted_error
+from omc3.optics_measurements.constants import (
+    ACTION,
+    AMPLITUDE,
+    BETA,
+    CLOSED_ORBIT,
+    DPP,
+    DPPAMP,
+    ERR,
+    EXT,
+    KICK_NAME,
+    NAT_TUNE,
+    PEAK2PEAK,
+    RES,
+    RESCALE_FACTOR,
+    RMS,
+    SQRT_ACTION,
+    TIME,
+    TUNE,
+    S,
+)
+from omc3.utils.stats import weighted_error, weighted_mean
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
 
 
@@ -80,8 +95,7 @@ def _get_kick(measure_input, files, plane):
 
         # calculate data from measurement
         kick_frame.loc[i, calc_columns] = _get_action(measure_input, df, plane)
-    kick_frame = kick_frame.astype(column_types)
-    return kick_frame
+    return kick_frame.astype(column_types)
 
 
 def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:

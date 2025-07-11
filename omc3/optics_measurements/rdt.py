@@ -220,9 +220,8 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
 
     # Merge final dataframe
     model: pd.DataFrame = meas_input.accelerator.model
-    for_rdts = pd.merge(filtered.loc[:, [NAME2, MEASUREMENT, f"{ERR}{MEASUREMENT}"]], model.loc[:, [S]],
+    return pd.merge(filtered.loc[:, [NAME2, MEASUREMENT, f"{ERR}{MEASUREMENT}"]], model.loc[:, [S]],
                         how="inner", left_index=True, right_index=True)
-    return for_rdts
 
 
 def _get_n_upper_diagonals(n, shape):

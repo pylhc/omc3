@@ -68,9 +68,10 @@ from __future__ import annotations
 # Fixes:
 # 'Error: Could not find or load main class (...) aircompressor-0.26.jar'
 #
-# This ia a hack, please remove at the earliest convenience. For updates see: 
+# This ia a hack, please remove at the earliest convenience. For updates see:
 # https://cern.service-now.com/service-portal?id=ticket&table=incident&n=INC3768823
 import os
+
 if "PATH" in os.environ and "/mcr/bin" in os.environ["PATH"]:
     parts = os.environ["PATH"].split(":")
     parts.remove("/mcr/bin")
@@ -87,16 +88,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
-from dateutil.relativedelta import relativedelta
-
 import tfs
+from dateutil.relativedelta import relativedelta
 from generic_parser import EntryPointParameters, entrypoint
+
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
 
 if TYPE_CHECKING:
-   from collections.abc import Sequence 
+   from collections.abc import Sequence
 
 pytimber = cern_network_import("pytimber")
 
@@ -211,10 +212,10 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
 
 USAGE_EXAMPLES = """Usage Examples:
 
-python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00     
+python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00
     extracts the chromaticity and dispersion knobs at 14h on May 4th 2022
 
-python -m omc3.knob_extractor --knobs disp chroma --time now _2h 
+python -m omc3.knob_extractor --knobs disp chroma --time now _2h
     extracts the chromaticity and dispersion knobs as of 2 hours ago
 
 python -m omc3.knob_extractor --state
@@ -294,7 +295,7 @@ def get_params():
 )
 def main(opt) -> tfs.TfsDataFrame:
     """ Main knob extracting function. """
-    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR, 
+    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR,
                              sparkprops={"spark.ui.showConsoleProgress": "false"}
     )
     time = _parse_time(opt.time, opt.timedelta)
@@ -623,9 +624,7 @@ def _add_time_delta(time: datetime, delta_str: str) -> datetime:
 
     # add all deltas, which are tuples of (value, timeunit-char)
     time_parts = {char2unit[delta[1]]: sign * int(delta[0]) for delta in all_deltas}
-    time = time + relativedelta(**time_parts)
-
-    return time
+    return time + relativedelta(**time_parts)
 
 
 # Other tools ------------------------------------------------------------------

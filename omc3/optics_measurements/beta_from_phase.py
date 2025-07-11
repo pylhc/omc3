@@ -539,8 +539,7 @@ def three_bpm_method(
     beta_df[f"{ALPHA}{plane}"] = alfi
     beta_df[f"{ERR}{ALPHA}{plane}"] = alf_mdl_term * beterr / betmdl + 0.5 * np.sqrt(
         sin_quad_model_shift1[0] + sin_quad_model_shift1[3] + sin_quad_model_shift2[1])
-    beta_df = _calc_and_add_delta_columns(beta_df, plane)
-    return beta_df
+    return _calc_and_add_delta_columns(beta_df, plane)
 
 
 def _calc_and_add_delta_columns(beta_df: pd.DataFrame, plane: str) -> pd.DataFrame:

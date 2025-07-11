@@ -19,8 +19,8 @@ class TestLHCKnobs:
             correctors_dir = correctors_dir / f"correctors_b{beam}"
 
         with open(correctors_dir / f"{name}_correctors.json") as f:
-            knobs = json.load(f)
-        return knobs
+            return json.load(f)
+
 
     def test_all_json_files_are_readable(self):
         """ Check if all json files are readable. """
@@ -100,18 +100,17 @@ class TestLHCKnobs:
 
 @pytest.fixture
 def accel_lhcb1():
-    lhc = Lhc(
+    return Lhc(
         year="2024",
         beam=1,
         model_dir=MODELS_DIR / "2022_inj_b1_acd"
     )
-    return lhc
+
 
 @pytest.fixture
 def accel_lhcb2():
-    lhc = Lhc(
+    return Lhc(
         year="2024",
         beam=2,
         model_dir=MODELS_DIR / "2022_inj_b1_acd"
     )
-    return lhc

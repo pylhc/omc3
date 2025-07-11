@@ -36,8 +36,7 @@ def rgb_plotly_to_mpl(rgb_string):
 
     rgb_string = rgb_string.replace("rgba", "").replace("rgb", "")
     rgb = eval(rgb_string)
-    rgb_norm = [c/255. for c in rgb]
-    return rgb_norm
+    return [c/255. for c in rgb]
 
 
 def change_color_brightness(color, amount=0.5):
