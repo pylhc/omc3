@@ -303,6 +303,8 @@ class TwissResponse:
             # all, obviously
             return [idx for idx in tw_idx if idx != DUMMY_ID]
 
+        return None
+
     ################################
     #       Response Matrix
     ################################
