@@ -306,7 +306,7 @@ def _check_segments_and_elements(segments: list[str], elements: list[str]) -> tu
     segments = _parse_segments(segments)
     elements = _parse_elements(elements)
 
-    if not set(s.name for s in segments).isdisjoint(e.name for e in elements):
+    if not {s.name for s in segments}.isdisjoint(e.name for e in elements):
         raise SbsDefinitionError("Duplicated names in segments and elements.")
 
     return segments, elements

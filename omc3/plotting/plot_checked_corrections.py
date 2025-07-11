@@ -536,7 +536,7 @@ def _get_corrected_measurement_names(correction_dirs: Iterable[Path]) -> set[str
     """ Check all the corrections dirs for common tfs files."""
     tfs_files = None
     for idx, correction in enumerate(correction_dirs):
-        new_files = set(f.stem for f in correction.glob(f"*{EXT}"))
+        new_files = {f.stem for f in correction.glob(f"*{EXT}")}
         if not idx:
             tfs_files = new_files
             continue
