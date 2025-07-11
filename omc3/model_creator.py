@@ -145,7 +145,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
         print("---- Model Creator | Usage ----\n")
         print_help(model_manager._get_params())
         print_help(_get_params())
-        return
+        return None
 
     # proceed to the creator
     accel_inst: Accelerator = model_manager.get_accelerator(accel_opt)
@@ -170,7 +170,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
     except AcceleratorDefinitionError:
         if not opt.list_choices:
             raise
-        return
+        return None
 
     # Save config only now, to not being written out for each time the choices are listed
     save_config(outputdir, opt=opt, unknown_opt=accel_opt, script=__file__)

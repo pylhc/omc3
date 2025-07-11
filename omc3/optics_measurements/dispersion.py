@@ -100,7 +100,7 @@ def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles
 def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, header, plane):
     dpps = input_files.dpps(plane)
     if _is_single_dpp_bin(dpps):
-        return
+        return None
 
     order = 2 if meas_input.second_order_dispersion else 1
     model = meas_input.accelerator.model
@@ -149,7 +149,7 @@ def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputF
 
     dpps = input_files.dpps(plane)
     if _is_single_dpp_bin(dpps):
-        return
+        return None
 
     order = 2 if meas_input.second_order_dispersion else 1
 

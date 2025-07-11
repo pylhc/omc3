@@ -311,7 +311,7 @@ def make_top_legend(
 ):
     """Create a legend on top of the plot."""
     if ncol < 1:
-        return
+        return None
 
     if transposed:
         handles, labels = transpose_legend_order(ncol, handles, labels, ax)
