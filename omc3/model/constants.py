@@ -5,6 +5,8 @@ Constants
 This module provides high-level functions to manage most functionality of ``model``.
 Specific constants to be used in ``model``, to help with consistency.
 """
+from __future__ import annotations
+
 from pathlib import Path
 
 from omc3.utils.misc import StrEnum

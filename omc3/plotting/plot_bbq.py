@@ -67,9 +67,9 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 - **y_lim** *(float)*:
 
     Y-Axis limits.
-
-
 """
+from __future__ import annotations
+
 from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path

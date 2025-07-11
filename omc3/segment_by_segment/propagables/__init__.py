@@ -3,13 +3,15 @@ Propagables
 -----------
 
 In the ``propagables`` module, the parameters that can be propagated
-through the segment, are defined. 
+through the segment, are defined.
 Each propagable has a corresponding class, which contains the functions that
 describe the forward and backward propagation for the respective parameter.
 
-This module exposes the main classes for propagables, to avoid making the 
+This module exposes the main classes for propagables, to avoid making the
 imports so long and complicated.
 """
+from __future__ import annotations
+
 from omc3.segment_by_segment.propagables.abstract import (
     Propagable,  # probably only used for type-hinting
 )

@@ -4,6 +4,8 @@ Constants
 
 Specific constants and helpers to be used in ``tune_analysis``, to help with consistency.
 """
+from __future__ import annotations
+
 from collections.abc import Sequence
 from dataclasses import dataclass
 

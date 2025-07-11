@@ -166,9 +166,9 @@ Wrapper for `plot_tfs` to easily plot the results from optics measurements.
 - **y_lim** *(OptionalFloat)*:
 
     Limits on the y axis (Tupel)
-
-
 """
+from __future__ import annotations
+
 from pathlib import Path
 
 import tfs

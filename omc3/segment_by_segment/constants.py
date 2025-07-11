@@ -4,6 +4,8 @@ Constants
 
 This module provides constants to be used with segment by segment
 """
+from __future__ import annotations
+
 jobfile: str = "job.create_segment_{}.madx"
 logfile: str = "job.create_segment_{}.log"
 measurement_madx: str = "measurement_{}.madx"

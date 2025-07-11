@@ -5,6 +5,8 @@ Time Tools
 Provides tools to handle times more easily, in particular to switch easily between local time
 and UTC time.
 """
+from __future__ import annotations
+
 from datetime import datetime, timedelta
 
 import dateutil.tz as tz

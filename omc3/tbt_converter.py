@@ -5,6 +5,8 @@ TbT Converter
 Top-level script to convert turn-by-turn files from various formats to ``LHC`` binary SDDS files.
 Optionally, it can replicate files with added noise.
 """
+from __future__ import annotations
+
 import copy
 from collections.abc import Sequence
 from datetime import datetime, timezone

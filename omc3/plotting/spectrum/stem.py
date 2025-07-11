@@ -4,6 +4,7 @@ Plot Spectrum - Stem Plotter
 
 Stem plotting functionality for spectrum plotter.
 """
+from __future__ import annotations
 
 from generic_parser import DotDict
 from matplotlib import lines as mlines

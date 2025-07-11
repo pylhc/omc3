@@ -4,6 +4,8 @@ Constants
 
 Specific constants to be used in correction, to help with consistency.
 """
+from __future__ import annotations
+
 # Trying to decouple input from output columns, but maybe not?
 # Same as in optics-measurements:
 from omc3.optics_measurements.constants import F1001, F1001_NAME, F1010, F1010_NAME
@@ -34,5 +36,3 @@ UNCORRECTED_LABEL: str = "Measurement"
 CORRECTED_LABEL: str = "Corrected"  # default label if none given
 EXPECTED_LABEL: str = "Expected"
 CORRECTION_LABEL: str = "Correction"
-
-

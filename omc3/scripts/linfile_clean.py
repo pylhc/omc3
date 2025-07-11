@@ -86,6 +86,8 @@ also use isolation forest, BUT this probably needs some modification there
 as well, as it only cleans on TUNE, not on NATTUNE.
 And it requires an accelerator instance.
 """
+from __future__ import annotations
+
 import shutil
 from collections.abc import Sequence
 from numbers import Number

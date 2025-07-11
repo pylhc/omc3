@@ -4,6 +4,7 @@ Plotting Utilities: Lines
 
 Line-plotting related functionality.
 """
+from __future__ import annotations
 
 import matplotlib.transforms as mtrans
 import numpy as np

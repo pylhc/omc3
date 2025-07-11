@@ -4,6 +4,8 @@ Plotting Utilities: Colors
 
 Helper functions to handle colors in plots.
 """
+from __future__ import annotations
+
 import colorsys
 from itertools import cycle
 

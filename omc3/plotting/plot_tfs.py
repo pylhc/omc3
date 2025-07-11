@@ -104,6 +104,8 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 
 - **y_lim** *(float, int None)*: Limits on the y axis (Tupel)
 """
+from __future__ import annotations
+
 from collections import OrderedDict
 from pathlib import Path
 

@@ -46,6 +46,8 @@ from commandline.
     Tags to be added to the event.
 
 """
+from __future__ import annotations
+
 import mimetypes
 from collections.abc import Iterable
 from pathlib import Path

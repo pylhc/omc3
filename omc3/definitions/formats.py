@@ -4,6 +4,8 @@ Formats
 
 Recurring formats are defined here.
 """
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -18,4 +20,3 @@ def get_config_filename(script):
         script=Path(script).stem,
         time=datetime.now(timezone.utc).strftime(TIME)
     )
-

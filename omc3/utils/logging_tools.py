@@ -5,6 +5,8 @@ Logging Tools
 Functions for easier use of logging, like automatic logger setup
 (see: :meth:`~utils.logging_tools.get_logger`).
 """
+from __future__ import annotations
+
 import datetime
 import inspect
 import logging

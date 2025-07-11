@@ -149,8 +149,6 @@ Create plots for the correction tests performed with `omc3.scripts.correction_te
 - **y_lim** *(MultiClass)*:
 
     Limits on the y axis (Tupel)
-
-
 """
 from __future__ import annotations
 

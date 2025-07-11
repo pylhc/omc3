@@ -6,6 +6,8 @@ This module contains phase correction functionality of ``harpy``.
 It provides tools to correct phases of a main spectral line in a case where damped (exponentially
 decaying) oscillations are analysed.
 """
+from __future__ import annotations
+
 import numpy as np
 
 from omc3.definitions.constants import PI2

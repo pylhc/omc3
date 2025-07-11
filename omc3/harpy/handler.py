@@ -6,6 +6,8 @@ This module contains high-level functions to manage most functionality of ``harp
 Tools are provided to handle the cleaning, frequency analysis and resonance search for a
 single-bunch `TbtData`.
 """
+from __future__ import annotations
+
 from os.path import basename, join
 
 import numpy as np

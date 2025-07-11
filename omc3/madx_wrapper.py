@@ -6,6 +6,8 @@ MAD-X Wrapper
 
 Usage: ``python madx_wrapper.py --file your_madx_file.madx``
 """
+from __future__ import annotations
+
 import contextlib
 import os
 import subprocess

@@ -4,6 +4,8 @@ Plot Spectrum - Utilities
 
 Common functions and sorting functions for the spectrum plotter.
 """
+from __future__ import annotations
+
 import os
 from collections import OrderedDict
 from collections.abc import Iterable, Sized

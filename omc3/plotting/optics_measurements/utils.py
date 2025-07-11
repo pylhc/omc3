@@ -4,6 +4,8 @@ Utils
 
 This module contains utilities for the ``plotting`` module.
 """
+from __future__ import annotations
+
 from collections import OrderedDict
 from collections.abc import Iterable
 from dataclasses import dataclass

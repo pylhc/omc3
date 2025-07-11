@@ -16,6 +16,7 @@ Write out madx scripts for the tracking macros.
 
     Path to twissfile with observationspoint in the NAME column.
 """
+from __future__ import annotations
 
 from pathlib import Path
 
@@ -79,7 +80,7 @@ def tracking_macros(list_of_bpms, outdir):
     PTC_TRACK_END;
     PTC_END;
     }
-    
+
     /*
     * Performs a single particle tracking of the active sequence using MAD-X track.
     * @param start_x: Particle horizontal start position.

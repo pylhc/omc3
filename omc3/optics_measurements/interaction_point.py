@@ -22,7 +22,7 @@ from omc3.definitions.constants import PI2
 from omc3.optics_measurements.constants import ERR, EXT, IP_NAME, MEASUREMENT, MODEL, S
 from omc3.utils import logging_tools
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from generic_parser import DotDict
 
     from omc3.optics_measurements import phase
@@ -65,9 +65,9 @@ def betastar_from_phase(meas_input: DotDict, phase_d: phase.PhaseDict) -> pd.Dat
 
 
 def write(df_ips: pd.DataFrame, headers: dict[str, Any], output_dir: str|Path, plane: str):
-    """ Write the interaction point data to disk. 
+    """ Write the interaction point data to disk.
     Empty DataFrames are skipped on write.
-    
+
     Args:
         df_ips (pd.DataFrame): The interaction point data.
         headers (dict[str, Any]): The headers for the tfs file.

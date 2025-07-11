@@ -1,4 +1,4 @@
-""" 
+"""
 SPS Model Creator
 -----------------
 """
@@ -36,7 +36,7 @@ LOGGER = logging_tools.get_logger(__name__)
 
 
 class SpsModelCreator(ModelCreator, ABC):
-    acc_model_name = "sps" 
+    acc_model_name = "sps"
     _start_bpm = "BPH.13008"  # BPM to cycle to
 
     def check_accelerator_instance(self) -> None:
@@ -49,7 +49,7 @@ class SpsModelCreator(ModelCreator, ABC):
                 "The accelerator definition is incomplete: "
                 "SPS model creation only works with acc-models, but `acc-model-path` was not set. "
             )
-        
+
         # vvv ---  same as in LHC, maybe merge? (jdilly, 2025)
         if accel.model_dir is None:
             raise AcceleratorDefinitionError(
@@ -73,19 +73,19 @@ class SpsModelCreator(ModelCreator, ABC):
                 "The following modifier files do not exist: "
                 f"{', '.join([str(accel.model_dir / modifier) for modifier in inexistent_modifiers])}"
             )
-        
+
         # ^^^ --- same as in LHC
-        
+
         # Final check to have at least one strength-file (but only warn user)
         if not any(Path(m).suffix == ".str" for m in accel.modifiers):
             LOGGER.warning(
                 "None of the modifiers given ends in '.str', which is kind of expected for the SPS model creation."
             )
-    
+
     def prepare_options(self, opt) -> bool:
         """ Use the fetcher to list choices if requested. """
         accel: Sps = self.accel
-        
+
         if opt.fetch == Fetcher.PATH:
             if opt.path is None:
                 raise AcceleratorDefinitionError(
@@ -111,8 +111,8 @@ class SpsModelCreator(ModelCreator, ABC):
             )
             return
 
-        if opt.list_choices:  
-            # all modifiers are actually checked against existing in the 
+        if opt.list_choices:
+            # all modifiers are actually checked against existing in the
             # prepare_run() function. So here we can simply list the strengths files.
             check_folder_choices(
                 acc_model_path / STRENGTHS_SUBDIR,
@@ -124,7 +124,7 @@ class SpsModelCreator(ModelCreator, ABC):
 
         # Set the found paths ---
         accel.acc_model_path = acc_model_path
-    
+
     def get_base_madx_script(self):
         accel: Sps = self.accel
         use_excitation = accel.excitation != AccExcitationMode.FREE
@@ -186,9 +186,9 @@ class SpsModelCreator(ModelCreator, ABC):
             )
 
         if self._start_bpm is not None:
-            # I thought cycling to markers has less side-effects, but it seems it doesn't matter. 
+            # I thought cycling to markers has less side-effects, but it seems it doesn't matter.
             # If this is anyway useful, we can add it. (jdilly, 2025)
-            # marker_name = f"OMC_MARKER_{self._start_bpm}"  
+            # marker_name = f"OMC_MARKER_{self._start_bpm}"
             # madx_script += (
             #     f"    {marker_name}: marker;\n"
             #     f"    install, element={marker_name}, at=-{self._start_bpm}->L, from={self._start_bpm};\n"
@@ -235,15 +235,15 @@ class SpsModelCreator(ModelCreator, ABC):
                 f"    vacmap43 := 2*(cos(2*pi*qyd)-cos(2*pi*qy0))/(betyac*sin(2*pi*qy0));\n"
                 "\n"
                 f"{self._get_select_command(pattern=accel.RE_DICT[AccElementTypes.BPMS], indent=4)}"
-                f"    twiss, file = {accel.model_dir / TWISS_AC_DAT};\n" 
+                f"    twiss, file = {accel.model_dir / TWISS_AC_DAT};\n"
                 f"}}\n"
             )
         return madx_script
-    
+
 
 class SpsCorrectionModelCreator(CorrectionModelCreator, SpsModelCreator):
     """
-    Creates an updated model from multiple changeparameters inputs 
+    Creates an updated model from multiple changeparameters inputs
     (used in iterative correction).
     """
     def prepare_run(self) -> None:

@@ -52,6 +52,8 @@ Model Creation Keyword Args:
 
         action: ``store_true``
 """
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 
@@ -131,4 +133,3 @@ class Ps(PsBase):
         if not len(found_bpms):
             raise KeyError
         return (list(bpms).index(found_bpms[0]), found_bpms[0]), f"{PLANE_TO_HV[plane]}ACMAP"
-

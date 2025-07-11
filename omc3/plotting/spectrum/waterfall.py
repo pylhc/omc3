@@ -4,6 +4,8 @@ Plot Spectrum - Waterfall Plotter
 
 Waterfall plotting functionality for spectrum plotter.
 """
+from __future__ import annotations
+
 import matplotlib as mpl
 import numpy as np
 from generic_parser import DotDict

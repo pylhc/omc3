@@ -9,6 +9,8 @@ This calculation is done using a combination of SVD decomposition zero_padded `f
 analysis.
 Also searches for resonances in the calculated spectra.
 """
+from __future__ import annotations
+
 from numbers import Number
 
 import numpy as np

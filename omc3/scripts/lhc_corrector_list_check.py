@@ -7,6 +7,8 @@ It checks if all the correctors in the LHC sequence are used in the variables.
 
 These checks are performed against the correction knobs used for global corrections.
 """
+from __future__ import annotations
+
 import re
 from argparse import ArgumentParser
 from pathlib import Path

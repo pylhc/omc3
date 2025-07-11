@@ -7,6 +7,8 @@ Similar to :func:`omc3.correction.model_appenders.add_differences_to_model_to_me
 yet operates on two twiss files instead.
 
 """
+from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Sequence
 

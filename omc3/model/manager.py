@@ -33,8 +33,8 @@ ACCELS = {
 def _get_params() -> EntryPointParameters:
     params = EntryPointParameters()
     params.add_parameter(
-        name="accel", 
-        required=True, 
+        name="accel",
+        required=True,
         choices=list(ACCELS.keys()),
         help="Choose the accelerator to use.Can be the class already."
     )
@@ -56,7 +56,7 @@ def get_accelerator(opt, other_opt) -> Accelerator:
 
 @entrypoint(_get_params())
 def get_accelerator_class(opt, other_opt) -> type[Accelerator]:
-    """ 
+    """
     Returns only the accelerator-class (non-instanciated).
     Only opt.accel is needed.
     """

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from generic_parser import DotDict
 
 from omc3.model.accelerators.accelerator import Accelerator

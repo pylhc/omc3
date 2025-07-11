@@ -1,4 +1,4 @@
-""" 
+"""
 Optics
 ------
 
@@ -130,7 +130,7 @@ class ColumnsAndLabels:
             needs_plane=False,
             **values_fixed_plane,
         )
-    
+
     def set_label_formatted(self, name: str) -> ColumnsAndLabels:
         """ Fixes the label in a new object (for RDTs). """
         if self._label is None:

@@ -61,7 +61,6 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 
 
 """
-
 from __future__ import annotations
 
 ####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ##################################

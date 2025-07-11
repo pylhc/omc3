@@ -12,6 +12,8 @@ dependency and installing from the ``acc-py`` package index (by specifying ``--i
 https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 ``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).
 """
+from __future__ import annotations
+
 import datetime
 import re
 from collections.abc import Sequence

@@ -62,6 +62,8 @@ Model Creation Keyword Args:
 
         action: ``store_true``
 """
+from __future__ import annotations
+
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import (
@@ -80,7 +82,7 @@ class SKekB(Accelerator):
     RINGS = ("ler", "her")
     RE_DICT: dict[str, str] = {
         AccElementTypes.BPMS: r"^M*",
-        AccElementTypes.MAGNETS: r".*",  
+        AccElementTypes.MAGNETS: r".*",
         AccElementTypes.ARC_BPMS: r"^M*",
     }
 
@@ -88,9 +90,9 @@ class SKekB(Accelerator):
     def get_parameters(cls):
         params = super(SKekB, SKekB).get_parameters()
         params.add_parameter(
-            name="ring", 
-            type=str, 
-            choices=cls.RINGS, 
+            name="ring",
+            type=str,
+            choices=cls.RINGS,
             required=True,
             help="HER or LER ring."
         )

@@ -59,6 +59,8 @@ Model Creation Keyword Args:
 
         action: ``store_true``
 """
+from __future__ import annotations
+
 import logging
 import os
 
@@ -80,9 +82,9 @@ class Iota(Accelerator):
     def get_parameters():
         params = super(Iota, Iota).get_parameters()
         params.add_parameter(
-            name="particle", 
-            type=str, 
-            choices=('p', 'e'), 
+            name="particle",
+            type=str,
+            choices=('p', 'e'),
             required=True,
             help="Particle type."
         )

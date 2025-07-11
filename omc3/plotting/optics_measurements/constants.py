@@ -4,6 +4,8 @@ Constants
 
 Constants and definitions for the ``plotting`` module.
 """
+from __future__ import annotations
+
 # These below are here so they can be imported from the plotting
 # module of omc3 directly and not care where they originate / avoid
 # re-defining somewhere.

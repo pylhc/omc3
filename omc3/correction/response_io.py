@@ -4,7 +4,6 @@ Response Matrix IO
 
 Input and output functions for response matrices.
 """
-
 from __future__ import annotations
 
 import logging

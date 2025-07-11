@@ -5,6 +5,8 @@ Chromatic
 This module contains chromatic calculations functionality of ``optics_measurements``.
 It provides functions to compute various chromatic beam properties.
 """
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 

@@ -4,6 +4,8 @@ Outliers
 
 Helper functions for outlier detection.
 """
+from __future__ import annotations
+
 import numpy as np
 from numpy.typing import ArrayLike
 from scipy.stats import t
@@ -46,7 +48,7 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
     is kept for the next iteration. The loop stops either after 20 iterations,
     when there is no more data outside the boundaries or
     when there are less than three data points remaining.
-    
+
     Returns a filter mask for the original array (meaning ``True`` for elements that should be kept).
 
     Args:
@@ -74,7 +76,7 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
     if x_data is not None:
         if not len(data) == len(x_data):
             raise ValueError("Datasets are not equally long.")
-    
+
     if mask is not None:
         if not len(data) == len(mask):
             raise ValueError("Mask is not equally long as dataset.")

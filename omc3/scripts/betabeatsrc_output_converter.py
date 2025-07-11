@@ -9,6 +9,8 @@ Good to know: in ``BetaBeat.src`` the ``_free`` files correspond to AC dipole (o
 compensation by analytic equation while ``_free2`` corresponds to compensation via effective model. It is
 written in GetLLM (at least once) here: https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606
 """
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from pathlib import Path
 

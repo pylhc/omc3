@@ -18,19 +18,19 @@ if TYPE_CHECKING:
 # Error Propagation ------------------------------------------------------------
 
 class Measurement(NamedTuple):
-    """ Very simple container for a value and its error. 
+    """ Very simple container for a value and its error.
     Implements only negation and addition with another Measurement. """
     value: float
     error: float
 
     def __neg__(self):
         return Measurement(-self.value, self.error)
-    
+
     def __add__(self, other: Measurement):
         return Measurement(self.value + other.value, np.sqrt(self.error**2 + other.error**2))
 
 
-@dataclass 
+@dataclass
 class SegmentBoundaryConditions:
     """Store boundary conditions with error as used by the error propagation functions."""
     alpha: Measurement = None
@@ -46,7 +46,7 @@ def propagate_error_phase(dphi: ArrayLike, init: SegmentBoundaryConditions) -> A
     """Propagates the phase-error.
     See Eq. (2) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .
     This implementation has a minus-sign instead of the first plus-sign as in the reference,
-    this seems to be the correct implementation, 
+    this seems to be the correct implementation,
     as found e.g. in https://github.com/pylhc/MESS/tree/master/FODO_Test_Lattice/Phase_Error_Propagation
 
     Args:
@@ -55,7 +55,7 @@ def propagate_error_phase(dphi: ArrayLike, init: SegmentBoundaryConditions) -> A
     """
     alpha0, erralpha0 = init.alpha
     beta0, errbeta0 = init.beta
-    
+
     sin2phi = np.sin(4 * np.pi * dphi)
     cos2phi = np.cos(4 * np.pi * dphi)
 
@@ -76,7 +76,7 @@ def propagate_error_beta(beta: ArrayLike, dphi: ArrayLike, init: SegmentBoundary
     """
     alpha0, erralpha0 = init.alpha
     beta0, errbeta0 = init.beta
-    
+
     sin2phi = np.sin(4 * np.pi * dphi)
     cos2phi = np.cos(4 * np.pi * dphi)
 
@@ -124,7 +124,7 @@ def propagate_error_dispersion(beta: ArrayLike, dphi: ArrayLike, init: SegmentBo
     alpha0, _ = init.alpha
 
     return np.abs(
-        errdispersion0 * np.sqrt(beta / beta0) * 
+        errdispersion0 * np.sqrt(beta / beta0) *
         (np.cos(2 * np.pi * dphi) + alpha0 * np.sin(2 * np.pi * dphi))
     )
 
@@ -178,7 +178,7 @@ def propagate_error_f1001_imag(dphix: ArrayLike, dphiy: ArrayLike, init: Segment
 
 def propagate_error_f1001_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.
-       
+
     TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
     Args:
@@ -195,7 +195,7 @@ def propagate_error_f1001_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentB
 
 def propagate_error_f1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.
-       
+
     TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
     Args:
@@ -203,7 +203,7 @@ def propagate_error_f1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init: Segmen
         dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
         init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
-    phase0, errphase0 = init.f1001_phase    
+    phase0, errphase0 = init.f1001_phase
     try:
         return pd.Series(errphase0, index=dphix.index)  # return Series if input is Series
     except AttributeError:
@@ -215,7 +215,7 @@ def propagate_error_f1001_phase(dphix: ArrayLike, dphiy: ArrayLike, init: Segmen
 def propagate_error_f1010_real(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the real part of f1010 through dphix and dphiy phase-advance,
     based on the initial amplitude and phase error of f1010.
-    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
+    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ ,
     yet the phases dphix and dphiy are subtracted from the initial rdt phase.
 
     Args:
@@ -238,7 +238,7 @@ def propagate_error_f1010_real(dphix: ArrayLike, dphiy: ArrayLike, init: Segment
 def propagate_error_f1010_imag(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> ArrayLike:
     """Propagates the error on the imaginary part of f1010 through dphix and dphiy phase-advance,
     based on the initial amplitude and phase error of f1010.
-    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , 
+    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ ,
     yet the phases dphix and dphiy are subtracted from the initial rdt phase.
 
     Args:
@@ -260,7 +260,7 @@ def propagate_error_f1010_imag(dphix: ArrayLike, dphiy: ArrayLike, init: Segment
 
 def propagate_error_f1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.
-       
+
     TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
     Args:
@@ -277,7 +277,7 @@ def propagate_error_f1010_amp(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentB
 
 def propagate_error_f1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init: SegmentBoundaryConditions) -> pd.Series:
     """Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.
-       
+
     TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)
 
     Args:
@@ -285,7 +285,7 @@ def propagate_error_f1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init: Segmen
         dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).
         init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.
     """
-    phase0, errphase0 = init.f1010_phase    
+    phase0, errphase0 = init.f1010_phase
     try:
         return pd.Series(errphase0, index=dphix.index)
     except AttributeError:
@@ -293,7 +293,7 @@ def propagate_error_f1010_phase(dphix: ArrayLike, dphiy: ArrayLike, init: Segmen
 
 
 # Other Math -------------------------------------------------------------------
-    
+
 def phase_diff(phase_a: ArrayLike, phase_b: ArrayLike) -> ArrayLike:
     """ Returns the phase difference between phase_a and phase_b, mapped to [-0.5, 0.5]. """
     phase_diff = (phase_a - phase_b) % 1
@@ -302,7 +302,7 @@ def phase_diff(phase_a: ArrayLike, phase_b: ArrayLike) -> ArrayLike:
 
 def quadratic_add(*values):
     """Calculate the root-sum-squared of the given values.
-    The individual "values" can be ``pd.Series`` and then their 
+    The individual "values" can be ``pd.Series`` and then their
     elements are summed by indices."""
     result = 0.
     for value in values:

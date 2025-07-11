@@ -11,6 +11,8 @@ finite-sized sample.
 - TODO: LOGGER or Raising error and warnings?
 - TODO: if zeros or nans occur in errors, fallback to uniform weights only in affected cases
 """
+from __future__ import annotations
+
 import numpy as np
 from scipy.special import erf
 from scipy.stats import t
@@ -263,19 +265,19 @@ def effective_sample_size(data, weights, axis=None):
     r"""
     Computes effective sample size of weighted data along specified axis,
     the minimum value returned is 2 to avoid non-reasonable error blow-up.
-    
-    It is calculated via Kish's approximate formula 
+
+    It is calculated via Kish's approximate formula
     from the (not necessarily normalized) weights :math:`w_i` (see wikipedia):
-    
+
     .. math::
 
         n_\mathrm{eff} = \frac{\left(\sum_i w_i\right)^2}{\sum_i w_i^2}
 
     What it represents:
-    "In most instances, weighting causes a decrease in the statistical significance of results. 
-    The effective sample size is a measure of the precision of the survey 
-    (e.g., even if you have a sample of 1,000 people, an effective sample size of 100 would indicate 
-    that the weighted sample is no more robust than a well-executed un-weighted 
+    "In most instances, weighting causes a decrease in the statistical significance of results.
+    The effective sample size is a measure of the precision of the survey
+    (e.g., even if you have a sample of 1,000 people, an effective sample size of 100 would indicate
+    that the weighted sample is no more robust than a well-executed un-weighted
     simple random sample of 100 people)." -
     https://wiki.q-researchsoftware.com/wiki/Weights,_Effective_Sample_Size_and_Design_Effects
 

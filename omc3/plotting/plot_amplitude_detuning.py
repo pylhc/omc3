@@ -108,9 +108,9 @@ Provides the plotting function for amplitude detuning analysis
 - **y_lim** *(float)*:
 
     Tune limits in units of tune scale (y-axis).
-
-
 """
+from __future__ import annotations
+
 import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass

@@ -5,12 +5,14 @@ Isolation Forest
 This module contains the isolation forest functionality of ``optics_measurements``.
 It provides functions to detect and exclude BPMs with anomalies.
 
-TODO: 
-After discussion with lmalina: he thinks that we should not run Isolation Forest in 
-its current form, as the binning of the frequencies in Harpy automatically leads to 
+TODO:
+After discussion with lmalina: he thinks that we should not run Isolation Forest in
+its current form, as the binning of the frequencies in Harpy automatically leads to
 some clustering, which might then trigger wrong tune-filtering in here.
 This should be tested and possibly mitigated. (jdilly, 2024)
 """
+from __future__ import annotations
+
 from pathlib import Path
 
 import numpy as np

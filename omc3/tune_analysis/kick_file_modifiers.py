@@ -4,6 +4,8 @@ Kick File Modifiers
 
 Functions to add data to or extract data from **kick_ac** files.
 """
+from __future__ import annotations
+
 from collections.abc import Sequence
 from pathlib import Path
 

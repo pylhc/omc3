@@ -5,6 +5,8 @@ Constants
 General constants to use throughout ``omc3``, so they don't have to be redefined all the time.
 Also helps with consistency.
 """
+from __future__ import annotations
+
 import numpy as np
 
 PI: float = np.pi

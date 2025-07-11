@@ -55,7 +55,6 @@ Create Plots for the K-Modulation data.
     Show the plots.
 
     action: ``store_true``
-
 """
 from __future__ import annotations
 

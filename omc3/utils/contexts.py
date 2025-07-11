@@ -4,6 +4,8 @@ Contexts
 
 Provides contexts managers to use.
 """
+from __future__ import annotations
+
 import os
 import sys
 import time

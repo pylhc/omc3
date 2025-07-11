@@ -6,6 +6,8 @@ This module contains fitting functionality for ``tune_analysis``.
 It provides tools for fitting functions, mainly via odr.
 
 """
+from __future__ import annotations
+
 from collections.abc import Sequence
 
 import numpy as np
