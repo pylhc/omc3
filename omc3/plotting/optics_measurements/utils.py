@@ -8,7 +8,6 @@ from collections import OrderedDict
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from matplotlib.figure import Figure
 from numpy.typing import ArrayLike

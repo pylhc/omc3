@@ -9,7 +9,6 @@ https://gitlab.cern.ch/mihostet/lhc-access-screenshot/-/blob/5de481ff9903f64c531
 """
 import os
 import pathlib
-from typing import Optional
 
 import requests
 
