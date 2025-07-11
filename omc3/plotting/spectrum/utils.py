@@ -6,19 +6,21 @@ Common functions and sorting functions for the spectrum plotter.
 """
 import os
 from collections import OrderedDict
+from collections.abc import Iterable, Sized
 from contextlib import suppress
 from pathlib import Path
-from typing import Iterable, Sized, Union
+from typing import Union
 
 import numpy as np
 import pandas as pd
 import tfs
 from generic_parser import DotDict
-from matplotlib import transforms, axes, rcParams, pyplot as plt
+from matplotlib import axes, rcParams, transforms
+from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
+from omc3.harpy.constants import COL_NAME, FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools

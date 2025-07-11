@@ -5,9 +5,10 @@ Utils
 This module contains utilities for the ``plotting`` module.
 """
 from collections import OrderedDict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Optional
 
 from matplotlib.figure import Figure
 from numpy.typing import ArrayLike
@@ -56,7 +57,7 @@ class FigureCollector:
     def __init__(self) -> None:
         self.fig_dict = OrderedDict()   # dictionary of matplotlib figures, for output
         self.figs = OrderedDict()       # dictionary of FigureContainers, used internally
-    
+
     def __len__(self) -> int:
         return len(self.figs)
 

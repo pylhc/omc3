@@ -47,8 +47,9 @@ from commandline.
 
 """
 import mimetypes
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Union
 
 import urllib3
 from generic_parser import EntryPointParameters, entrypoint

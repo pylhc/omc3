@@ -4,8 +4,9 @@ Plotting Utilities: Style
 
 Helper functions to style plots.
 """
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence, Union
+from typing import Any, Union
 
 from matplotlib import pyplot as plt
 from matplotlib import rcParams

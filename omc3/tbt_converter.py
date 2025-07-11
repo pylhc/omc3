@@ -6,17 +6,18 @@ Top-level script to convert turn-by-turn files from various formats to ``LHC`` b
 Optionally, it can replicate files with added noise.
 """
 import copy
+from collections.abc import Sequence
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Sequence, Union
+from typing import Union
 
+import turn_by_turn as tbt
 from generic_parser.entrypoint_parser import (
     EntryPointParameters,
     entrypoint,
     save_options_to_config,
 )
 
-import turn_by_turn as tbt
 from omc3.definitions import formats
 from omc3.utils import iotools, logging_tools
 

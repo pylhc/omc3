@@ -5,7 +5,7 @@ Performs an automated cleaning of different columns in the lin-file
 as a standalone script to allow for manual refinement after harpy is done.
 
 The type of cleaning is determined by the number of values in the ``limit``
-parameter. When no ``limit`` is given or a single number is given, 
+parameter. When no ``limit`` is given or a single number is given,
 auto-cleaning is performed:
 
 All data is assumed to be gaussian distributed around a "true" value,
@@ -21,7 +21,7 @@ Datapoints with a standard deviation smaller than the given limit are not
 cleaned. The limit is given in whatever units the data itself is in and
 is an absolute value.
 
-If two values are given for the ``limit`` parameter, all data-points in between 
+If two values are given for the ``limit`` parameter, all data-points in between
 these limits are kept and all data-points outside of these limits are cleaned.
 
 Cleaning is done per given file independently
@@ -87,15 +87,14 @@ as well, as it only cleans on TUNE, not on NATTUNE.
 And it requires an accelerator instance.
 """
 import shutil
+from collections.abc import Sequence
 from numbers import Number
 from pathlib import Path
-from typing import Sequence, Union
+from typing import Union
 
 import pandas as pd
 import tfs
-from generic_parser.entrypoint_parser import (
-    entrypoint, EntryPointParameters
-)
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.definitions.formats import BACKUP_FILENAME
 from omc3.harpy.constants import COL_NAME
@@ -202,7 +201,7 @@ def _restore_file(file):
 
 # Clean ------------------------------------------------------------------------
 
-def clean_columns(files: Sequence[Union[Path, str]], 
+def clean_columns(files: Sequence[Union[Path, str]],
                   columns: Sequence[str],
                   limit: float = None,   # default set in _check_limits
                   keep: Sequence[str] = None,  # default set below
@@ -253,7 +252,7 @@ def _check_limits(limit: Union[Sequence[Number], Number]) -> Sequence[Number]:
 
     else:
         raise ValueError(f"Expected 1 or 2 limits, got {len(limit)}.")
-    
+
     return limit
 
 
@@ -268,7 +267,7 @@ def _filter_by_column(df: pd.DataFrame, column: str, limit: Sequence[Number], ke
         good_bpms = get_filter_mask(data=df[column], limit=limit[0]) | keep_bpms
     else:
         good_bpms = df[column].between(*limit) | keep_bpms
-    
+
     n_good, n_total = sum(good_bpms), len(good_bpms)
     LOG.info(f"Cleaned {n_total-n_good:d} of {n_total:d} elements in {column} ({n_good:d} remaining).")
     return df.loc[good_bpms, :]

@@ -8,12 +8,20 @@ yet operates on two twiss files instead.
 
 """
 from collections import defaultdict
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
-
 import tfs
-from omc3.optics_measurements.constants import DISPERSION, BETA, PHASE_ADV, TUNE, PHASE, NORM_DISPERSION, DELTA
+
+from omc3.optics_measurements.constants import (
+    BETA,
+    DELTA,
+    DISPERSION,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+)
 from omc3.optics_measurements.toolbox import ang_diff
 
 

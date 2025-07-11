@@ -14,8 +14,9 @@ https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 """
 import datetime
 import re
+from collections.abc import Sequence
 from contextlib import suppress
-from typing import NewType, Sequence, Union
+from typing import NewType, Union
 
 import numpy as np
 import tfs

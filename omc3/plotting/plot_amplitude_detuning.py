@@ -112,10 +112,10 @@ Provides the plotting function for amplitude detuning analysis
 
 """
 import warnings
+from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
-from typing import Sequence
 
 import numpy as np
 from generic_parser import DotDict, EntryPointParameters, entrypoint
