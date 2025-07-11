@@ -240,8 +240,7 @@ def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
     """
     if mode == 0:
         return _find_candidate(phases)
-    else:
-        return _take_next(phases, mode)
+    return _take_next(phases, mode)
 
 
 def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):

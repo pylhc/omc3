@@ -353,10 +353,9 @@ class LhcModelCreator(ModelCreator):
         accel: Lhc = self.accel
         if self._uses_run3_macros():
             return f"dQx.b{accel.beam}_op", f"dQy.b{accel.beam}_op"
-        elif self._uses_ats_knobs():
+        if self._uses_ats_knobs():
             return f"dQx.b{accel.beam}", f"dQy.b{accel.beam}"
-        else:
-            return f"KQTD.B{accel.beam}", f"KQTF.B{accel.beam}"
+        return f"KQTD.B{accel.beam}", f"KQTF.B{accel.beam}"
 
     # Private Methods ##########################################################
 

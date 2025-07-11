@@ -97,7 +97,7 @@ save, sequence=lhcb{beam}, file="lhcb{beam}_saved.seq", noexpr=false;
 def handle_beam4(line: str) -> str:
     if "define_nominal_beams" in line: # replace the beam definition with beam 4 (bv=1 not -1)
         return "beam, sequence=LHCB2, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;\n"
-    elif "acc-models-lhc/lhc.seq" in line: # replace the sequence with beam 4
+    if "acc-models-lhc/lhc.seq" in line: # replace the sequence with beam 4
         return line.replace("acc-models-lhc/lhc.seq", "acc-models-lhc/lhcb4.seq")
     return line
 

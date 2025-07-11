@@ -235,8 +235,7 @@ def get_annotation(ax: Axes = None, by_reference: bool = True):
         if c.get_label() == 'plot_style_annotation':
             if by_reference:
                 return c
-            else:
-                return c.get_text()
+            return c.get_text()
     return None
 
 

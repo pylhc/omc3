@@ -698,8 +698,7 @@ class TwissResponse:
 
         if mapped:
             return self._phase_mapped
-        else:
-            return self._phase
+        return self._phase
 
     def get_phase_adv(self, mapped=True):
         """ Returns Response Matrix for Phase Advance """
@@ -711,8 +710,7 @@ class TwissResponse:
 
         if mapped:
             return self._phase_adv_mapped
-        else:
-            return self._phase_adv
+        return self._phase_adv
 
     def get_tune(self, mapped=True):
         """ Returns Response Matrix for the Tunes """
@@ -724,8 +722,7 @@ class TwissResponse:
 
         if mapped:
             return self._tune_mapped
-        else:
-            return self._tune
+        return self._tune
 
     def get_coupling(self, mapped=True):
         """ Returns Response Matrix for the coupling """
@@ -737,8 +734,7 @@ class TwissResponse:
 
         if mapped:
             return self._coupling_mapped
-        else:
-            return self._coupling
+        return self._coupling
 
     def get_variable_names(self):
         return self._variables
@@ -746,8 +742,7 @@ class TwissResponse:
     def get_variable_mapping(self, order=None):
         if order is None:
             return self._var_to_el
-        else:
-            return self._var_to_el[order]
+        return self._var_to_el[order]
 
     def get_response_for(self, observables=None) -> dict:  # Dict[str, ???]
         """ Calculates and returns only desired response matrices """

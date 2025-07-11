@@ -84,6 +84,7 @@ from typing import TYPE_CHECKING
 
 import tfs
 from generic_parser import EntryPoint
+from sphinx import ret
 
 from omc3.model.accelerators.accelerator import (
     AccElementTypes,
@@ -317,7 +318,7 @@ class Lhc(Accelerator):
                 "not found in the common BPMs. Maybe cleaned?"
             ) from e
 
-    def important_phase_advances(self) -> list[list[str]]:
+    def important_phase_advances(self) -> list[list[str]] | None:
         if "hl" in self.year.lower():
             # skip if HiLumi, TODO: insert phase advances when they are finalised
             return []
@@ -326,13 +327,15 @@ class Lhc(Accelerator):
             return [["MKD.O5R6.B2", "TCTPH.4R1.B2"], ["MKD.O5R6.B2", "TCTPH.4R5.B2"]]
         if self.beam == 1:
             return [["MKD.O5L6.B1", "TCTPH.4L1.B1"], ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
+        return None
 
     def get_synch_BPMs(self, index):
         # expect passing index.to_numpy()
         if self.beam == 1:
             return [i in index for i in self.model.loc["BPMSW.33L2.B1":].index]
-        elif self.beam == 2:
+        if self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
+        return None
 
     def get_accel_file(self, filename: Path | str) -> Path:
         return LHC_DIR / self.year / filename

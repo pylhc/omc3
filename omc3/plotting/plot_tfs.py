@@ -679,8 +679,7 @@ def _get_marker(idx, change):
     """Return the marker used"""
     if change:
         return plines.MarkerList.get_marker(idx)
-    else:
-        return rcParams['lines.marker']
+    return rcParams['lines.marker']
 
 
 # Script Mode ------------------------------------------------------------------

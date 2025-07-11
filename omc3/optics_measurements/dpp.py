@@ -103,8 +103,8 @@ def calculate_dpoverp(input_files: InputFiles, meas_input: DotDict):
     amps = input_files.get_data(df_filtered, "CO")
     if amps.ndim == 1:
         return np.sum(dispersions * amps) / denom
-    else:
-        numer = np.sum(dispersions[:, None] * input_files.get_data(df_filtered, "CO"), axis=0)
+
+    numer = np.sum(dispersions[:, None] * input_files.get_data(df_filtered, "CO"), axis=0)
     return numer / denom
 
 

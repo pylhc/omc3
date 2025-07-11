@@ -108,8 +108,7 @@ class TestFullRun:
                 intro = "LhcStateTracker:State:"
                 if key.startswith(intro):
                     return {key: ([time], [returns[key[len(intro):]]])}
-                else:
-                    raise ValueError("This test failed, probably because the StateKey changed. Update Test.")
+                raise ValueError("This test failed, probably because the StateKey changed. Update Test.")
 
         class MockTimber:
             LoggingDB = MyLDB
