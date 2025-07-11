@@ -9,23 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from generic_parser.entrypoint_parser import (
-    EntryPoint,
-    EntryPointParameters,
-    entrypoint,
-)
+from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, entrypoint
 
-from omc3.model.accelerators import (
-    esrf,
-    generic,
-    iota,
-    lhc,
-    petra,
-    ps,
-    psbooster,
-    skekb,
-    sps,
-)
+from omc3.model.accelerators import esrf, generic, iota, lhc, petra, ps, psbooster, skekb, sps
 
 if TYPE_CHECKING:
     from omc3.model.accelerators.accelerator import Accelerator

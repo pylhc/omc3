@@ -87,10 +87,7 @@ if TYPE_CHECKING:
     import pandas as pd
 
     from omc3.model.accelerators.accelerator import Accelerator
-    from omc3.model.model_creators.abstract_model_creator import (
-        MADXInputType,
-        ModelCreator,
-    )
+    from omc3.model.model_creators.abstract_model_creator import MADXInputType, ModelCreator
 
 LOGGER = logging_tools.get_logger(__name__)
 

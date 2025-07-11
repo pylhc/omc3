@@ -12,12 +12,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from omc3.definitions.constants import PLANE_TO_NUM
-from omc3.optics_measurements.constants import (
-    PHASE,
-    PHASE_ADV,
-    TUNE,
-    S,
-)
+from omc3.optics_measurements.constants import PHASE, PHASE_ADV, TUNE, S
 from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices

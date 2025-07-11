@@ -12,10 +12,7 @@ from typing import TYPE_CHECKING
 
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
 from omc3.model.constants import AFS_ACCELERATOR_MODEL_REPOSITORY, Fetcher
-from omc3.model.model_creators.abstract_model_creator import (
-    ModelCreator,
-    check_folder_choices,
-)
+from omc3.model.model_creators.abstract_model_creator import ModelCreator, check_folder_choices
 from omc3.utils import logging_tools
 from omc3.utils.iotools import get_check_suffix_func
 

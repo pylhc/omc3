@@ -66,9 +66,7 @@ from omc3.optics_measurements.constants import (
     WAIST,
     S,
 )
-from omc3.optics_measurements.constants import (
-    KMOD_PHASE_ADV as PHASEADV,
-)
+from omc3.optics_measurements.constants import KMOD_PHASE_ADV as PHASEADV
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame, save_config
 

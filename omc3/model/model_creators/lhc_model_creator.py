@@ -15,10 +15,7 @@ import pandas as pd
 import tfs
 
 from omc3.correction.constants import ORBIT_DPP
-from omc3.model.accelerators.accelerator import (
-    AcceleratorDefinitionError,
-    AccExcitationMode,
-)
+from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.constants import (
     AFS_ACCELERATOR_MODEL_REPOSITORY,
     AFS_B2_ERRORS_ROOT,

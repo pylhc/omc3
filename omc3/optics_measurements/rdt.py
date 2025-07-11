@@ -42,12 +42,7 @@ from omc3.optics_measurements.data_models import (
     check_and_warn_about_offmomentum_data,
     filter_for_dpp,
 )
-from omc3.optics_measurements.phase import (
-    COMPENSATED,
-    UNCOMPENSATED,
-    CompensationMode,
-    PhaseDict,
-)
+from omc3.optics_measurements.phase import COMPENSATED, UNCOMPENSATED, CompensationMode, PhaseDict
 from omc3.optics_measurements.toolbox import df_diff
 from omc3.utils import iotools, logging_tools, stats
 

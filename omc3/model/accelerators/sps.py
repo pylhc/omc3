@@ -10,10 +10,7 @@ from typing import TYPE_CHECKING
 
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import (
-    AccElementTypes,
-    Accelerator,
-)
+from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
 from omc3.model.constants import STRENGTHS_SUBDIR
 from omc3.utils import logging_tools
 from omc3.utils.iotools import find_file, load_multiple_jsons

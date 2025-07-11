@@ -119,18 +119,10 @@ from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
 from omc3.plotting.optics_measurements.utils import DataSet, FigureCollector, IDMap, safe_format
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
-from omc3.plotting.utils import (
-    annotations as pannot,
-)
-from omc3.plotting.utils import (
-    colors as pcolors,
-)
-from omc3.plotting.utils import (
-    lines as plines,
-)
-from omc3.plotting.utils import (
-    style as pstyle,
-)
+from omc3.plotting.utils import annotations as pannot
+from omc3.plotting.utils import colors as pcolors
+from omc3.plotting.utils import lines as plines
+from omc3.plotting.utils import style as pstyle
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
 from omc3.plotting.utils.windows import (
     PlotWidget,

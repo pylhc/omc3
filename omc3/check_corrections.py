@@ -240,10 +240,7 @@ from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.correction import filters
 from omc3.correction import handler as global_correction
-from omc3.correction.constants import (
-    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX,
-    MODEL_MATCHED_FILENAME,
-)
+from omc3.correction.constants import COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX, MODEL_MATCHED_FILENAME
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.response_twiss import PLANES
@@ -256,11 +253,7 @@ from omc3.definitions.optics import (
     ColumnsAndLabels,
     OpticsMeasurement,
 )
-from omc3.global_correction import (
-    CORRECTION_DEFAULTS,
-    OPTICS_PARAMS_CHOICES,
-    _get_default_values,
-)
+from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES, _get_default_values
 from omc3.model import manager
 from omc3.optics_measurements.constants import (
     BETA,

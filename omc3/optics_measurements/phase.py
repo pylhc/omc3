@@ -31,10 +31,7 @@ from omc3.optics_measurements.constants import (
     TOTAL_PHASE_NAME,
     S,
 )
-from omc3.optics_measurements.data_models import (
-    InputFiles,
-    check_and_warn_about_offmomentum_data,
-)
+from omc3.optics_measurements.data_models import InputFiles, check_and_warn_about_offmomentum_data
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
