@@ -11,10 +11,13 @@ from __future__ import annotations
 
 import re
 from argparse import ArgumentParser
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import AFS_ACCELERATOR_MODEL_REPOSITORY
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 ACC_MODELS_LHC: Path = AFS_ACCELERATOR_MODEL_REPOSITORY / "lhc"
 LHC_SEQ_FILE: str = "lhc.seq"

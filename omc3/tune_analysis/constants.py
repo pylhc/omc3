@@ -6,13 +6,16 @@ Specific constants and helpers to be used in ``tune_analysis``, to help with con
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
 from dataclasses import dataclass
-
-import pandas as pd
+from typing import TYPE_CHECKING
 
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.optics_measurements.constants import ACTION, ERR, EXT, KICK_NAME, NAT_TUNE, RES, TIME
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    import pandas as pd
 
 # Global 'Parameters' for easy editing #########################################
 

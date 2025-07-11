@@ -8,17 +8,21 @@ It provides tools for fitting functions, mainly via odr.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 from numpy.polynomial import Polynomial
-from numpy.typing import ArrayLike
 from scipy.odr import ODR, Model, RealData
 from scipy.optimize import curve_fit
 
 from omc3.tune_analysis.constants import FakeOdrOutput
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    import pandas as pd
+    from numpy.typing import ArrayLike
 
 LOG = logging_tools.get_logger(__name__)
 

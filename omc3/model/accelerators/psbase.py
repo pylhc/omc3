@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from generic_parser import DotDict
+from typing import TYPE_CHECKING
 
 from omc3.model.accelerators.accelerator import Accelerator
 
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 class PsBase(Accelerator):
     """ Base class for Ps and PsBooster"""

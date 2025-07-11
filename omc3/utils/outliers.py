@@ -6,11 +6,15 @@ Helper functions for outlier detection.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-from numpy.typing import ArrayLike
 from scipy.stats import t
 
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 LOGGER = logging_tools.get_logger(__name__)
 

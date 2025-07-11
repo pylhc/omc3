@@ -6,13 +6,11 @@ Functions to add data to or extract data from **kick_ac** files.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 import tfs
-from scipy import odr
 from tfs import TfsDataFrame
 
 from omc3.definitions.constants import PLANES
@@ -50,6 +48,12 @@ from omc3.tune_analysis.constants import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
+
+    from scipy import odr
 
 LOG = logging_tools.get_logger(__name__)
 

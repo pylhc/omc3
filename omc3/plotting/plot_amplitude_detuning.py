@@ -112,10 +112,10 @@ Provides the plotting function for amplitude detuning analysis
 from __future__ import annotations
 
 import warnings
-from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 from generic_parser import DotDict, EntryPointParameters, entrypoint
@@ -123,11 +123,7 @@ from generic_parser.entry_datatypes import DictAsString
 from matplotlib import MatplotlibDeprecationWarning, rcParams
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from numpy.typing import ArrayLike
-from scipy import odr
 from tfs.tools import significant_digits
 
 from omc3.definitions.constants import PLANES, UNIT_IN_METERS
@@ -137,10 +133,19 @@ from omc3.plotting.utils import style as pstyle
 from omc3.tune_analysis import constants as const
 from omc3.tune_analysis import fitting_tools
 from omc3.tune_analysis import kick_file_modifiers as kick_mod
-from omc3.tune_analysis.kick_file_modifiers import AmpDetData
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings
 from omc3.utils.iotools import PathOrStr, UnionPathStr, save_config
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
+    from numpy.typing import ArrayLike
+    from scipy import odr
+
+    from omc3.tune_analysis.kick_file_modifiers import AmpDetData
 
 LOG = logging_tools.get_logger(__name__)
 

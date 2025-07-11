@@ -49,8 +49,8 @@ from commandline.
 from __future__ import annotations
 
 import mimetypes
-from collections.abc import Iterable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import urllib3
 from generic_parser import EntryPointParameters, entrypoint
@@ -60,6 +60,9 @@ from omc3.utils.iotools import OptionalStr, PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
 from omc3.utils.rbac import RBAC
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 pylogbook = cern_network_import("pylogbook")  # raises ImportError if used
 

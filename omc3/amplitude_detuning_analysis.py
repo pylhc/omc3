@@ -117,17 +117,12 @@ the measurements.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
 from datetime import timedelta
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
-import tfs
-from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-from numpy.typing import ArrayLike
-from tfs.frame import TfsDataFrame
 
 from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
@@ -149,7 +144,15 @@ from omc3.tune_analysis.kick_file_modifiers import (
 )
 from omc3.utils.iotools import PathOrStr, UnionPathStrInt, save_config
 from omc3.utils.logging_tools import get_logger, list2str
-from omc3.utils.time_tools import CERNDatetime
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from generic_parser import DotDict
+    from numpy.typing import ArrayLike
+    from tfs.frame import TfsDataFrame
+
+    from omc3.utils.time_tools import CERNDatetime
 
 # Globals ----------------------------------------------------------------------
 
@@ -288,7 +291,7 @@ def analyse_with_bbq_corrections(opt: DotDict) -> tuple[TfsDataFrame, TfsDataFra
 def get_kick_and_bbq_df(kick: Path | str, bbq_in: Path | str,
                         beam: int = None,
                         filter_opt: FilterOpts = None,
-                        ) -> tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
+                        ) -> tuple[TfsDataFrame, TfsDataFrame]:
     """Load the input data."""
     bbq_df = None
     if bbq_in is not None and bbq_in == INPUT_PREVIOUS:
@@ -325,8 +328,8 @@ def get_kick_and_bbq_df(kick: Path | str, bbq_in: Path | str,
     return kick_df, bbq_df
 
 
-def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_order: int = 1, corrected: bool = False
-                           ) -> tfs.TfsDataFrame:
+def single_action_analysis(kick_df: TfsDataFrame, kick_plane: str, detuning_order: int = 1, corrected: bool = False
+                           ) -> TfsDataFrame:
     """Performs the fit one action and tune pane at a time."""
     LOG.info(f"Performing amplitude detuning ODR for single-plane kicks in {kick_plane}.")
     for tune_plane in PLANES:
@@ -357,8 +360,7 @@ def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_
     return kick_df
 
 
-def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, corrected: bool = False
-                           ) -> tfs.TfsDataFrame:
+def double_action_analysis(kick_df: TfsDataFrame, detuning_order: int = 1, corrected: bool = False) -> TfsDataFrame:
     """Performs the full 2D/4D fitting of the data."""
     if detuning_order > 1:
         raise NotImplementedError(f"2D Analysis for detuning order {detuning_order:d} is not implemented "

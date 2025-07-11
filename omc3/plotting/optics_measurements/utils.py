@@ -7,13 +7,16 @@ This module contains utilities for the ``plotting`` module.
 from __future__ import annotations
 
 from collections import OrderedDict
-from collections.abc import Iterable
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from matplotlib.figure import Figure
-from numpy.typing import ArrayLike
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+
+    from numpy.typing import ArrayLike
 
 @dataclass
 class IDMap:

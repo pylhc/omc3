@@ -89,11 +89,9 @@ And it requires an accelerator instance.
 from __future__ import annotations
 
 import shutil
-from collections.abc import Sequence
-from numbers import Number
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
@@ -103,6 +101,12 @@ from omc3.harpy.handler import _compute_headers
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.outliers import get_filter_mask
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from numbers import Number
+
+    import pandas as pd
 
 LOG = logging_tools.get_logger(__name__)
 

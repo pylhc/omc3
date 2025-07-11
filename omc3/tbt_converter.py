@@ -8,9 +8,9 @@ Optionally, it can replicate files with added noise.
 from __future__ import annotations
 
 import copy
-from collections.abc import Sequence
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import turn_by_turn as tbt
 from generic_parser.entrypoint_parser import (
@@ -21,6 +21,9 @@ from generic_parser.entrypoint_parser import (
 
 from omc3.definitions import formats
 from omc3.utils import iotools, logging_tools
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 LOGGER = logging_tools.get_logger(__name__)
 

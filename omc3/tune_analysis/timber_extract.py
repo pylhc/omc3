@@ -14,11 +14,9 @@ https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 """
 from __future__ import annotations
 
-import datetime
 import re
-from collections.abc import Sequence
 from contextlib import suppress
-from typing import NewType
+from typing import TYPE_CHECKING, NewType
 
 import numpy as np
 import tfs
@@ -28,6 +26,10 @@ from omc3.tune_analysis import constants as const
 from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
 from omc3.utils.time_tools import CERNDatetime
+
+if TYPE_CHECKING:
+    import datetime
+    from collections.abc import Sequence
 
 TIME_COL = const.get_time_col()
 START_TIME = const.get_tstart_head()

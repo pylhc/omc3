@@ -6,17 +6,18 @@ Helper functions to style plots.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
 
 from omc3.utils.iotools import PathOrStr
 
-REMOVE_ENTRY = "REMOVE ENTRY"  # id to remove entries in manual style
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
+REMOVE_ENTRY = "REMOVE ENTRY"  # id to remove entries in manual style
 STYLES_DIR = Path(__file__).parent.parent / 'styles'
 
 

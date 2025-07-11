@@ -11,7 +11,7 @@ Also searches for resonances in the calculated spectra.
 """
 from __future__ import annotations
 
-from numbers import Number
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -29,6 +29,9 @@ from omc3.harpy.constants import (
     COL_TUNE,
 )
 from omc3.utils import logging_tools, outliers
+
+if TYPE_CHECKING:
+    from numbers import Number
 
 LOGGER = logging_tools.getLogger(__name__)
 

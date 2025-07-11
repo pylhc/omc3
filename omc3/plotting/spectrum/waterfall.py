@@ -6,9 +6,10 @@ Waterfall plotting functionality for spectrum plotter.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import matplotlib as mpl
 import numpy as np
-from generic_parser import DotDict
 from matplotlib import colors, rcParams
 from matplotlib import pyplot as plt
 
@@ -23,6 +24,9 @@ from omc3.plotting.spectrum.utils import (
 )
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOG = logging_tools.getLogger(__name__)
 

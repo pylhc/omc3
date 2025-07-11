@@ -108,13 +108,13 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
-from matplotlib.axes import Axes
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
@@ -135,6 +135,9 @@ from omc3.plotting.utils.windows import (
 )
 from omc3.utils.iotools import OptionalFloat, OptionalStr, PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
 
 LOG = get_logger(__name__)
 

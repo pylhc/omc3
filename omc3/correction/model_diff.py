@@ -10,7 +10,7 @@ yet operates on two twiss files instead.
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import tfs
@@ -25,6 +25,9 @@ from omc3.optics_measurements.constants import (
     TUNE,
 )
 from omc3.optics_measurements.toolbox import ang_diff
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def diff_twiss_parameters(model_a: tfs.TfsDataFrame,

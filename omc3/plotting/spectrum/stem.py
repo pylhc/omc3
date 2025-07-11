@@ -6,7 +6,8 @@ Stem plotting functionality for spectrum plotter.
 """
 from __future__ import annotations
 
-from generic_parser import DotDict
+from typing import TYPE_CHECKING
+
 from matplotlib import lines as mlines
 from matplotlib import pyplot as plt
 from matplotlib import rcParams
@@ -26,6 +27,9 @@ from omc3.plotting.spectrum.utils import (
 )
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOG = logging_tools.getLogger(__name__)
 

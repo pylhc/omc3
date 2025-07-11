@@ -8,13 +8,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-from numpy.typing import ArrayLike, NDArray
 
 from omc3.utils import logging_tools
 from omc3.utils.outliers import get_filter_mask
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike, NDArray
 
 LOG = logging_tools.get_logger(__name__)
 
