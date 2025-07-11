@@ -176,7 +176,7 @@ extend-select = [
     # "I",        # Sort imports properly
     "A",        # Detect shadowed builtins
     # "N",        # enforce naming conventions, e.g. ClassName vs function_name
-    # "UP",       # Warn if certain things can changed due to newer Python versions
+    "UP",       # Warn if certain things can change due to newer Python versions
     # "C4",       # Catch incorrect use of comprehensions, dict, list, etc
     "FA",       # Enforce from __future__ import annotations
     "FBT",      # detect boolean traps
