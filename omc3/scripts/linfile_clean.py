@@ -162,7 +162,7 @@ def main(opt):
 
 # Restore ----------------------------------------------------------------------
 
-def restore_files(files: Sequence[Union[Path, str]]):
+def restore_files(files: Sequence[Path | str]):
     """Restore backupped files."""
     failed = []
     for file in files:
@@ -201,7 +201,7 @@ def _restore_file(file):
 
 # Clean ------------------------------------------------------------------------
 
-def clean_columns(files: Sequence[Union[Path, str]],
+def clean_columns(files: Sequence[Path | str],
                   columns: Sequence[str],
                   limit: float = None,   # default set in _check_limits
                   keep: Sequence[str] = None,  # default set below
@@ -233,7 +233,7 @@ def clean_columns(files: Sequence[Union[Path, str]],
         tfs.write_tfs(file, df, save_index=COL_NAME)
 
 
-def _check_limits(limit: Union[Sequence[Number], Number]) -> Sequence[Number]:
+def _check_limits(limit: Sequence[Number] | Number) -> Sequence[Number]:
     """ Check that one or two limits are given and convert them into a tuple if needed."""
     if limit is None:
         limit = (0.0,)

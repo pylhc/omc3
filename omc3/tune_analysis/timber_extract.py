@@ -36,7 +36,7 @@ pytimber = cern_network_import("pytimber")
 jpype = cern_network_import("jpype")
 
 MAX_RETRIES = 10  # number of retries on retryable exception
-AcceptableTimeStamp = NewType("AcceptableTimeStamp", Union[CERNDatetime, int, float])
+AcceptableTimeStamp = NewType("AcceptableTimeStamp", CERNDatetime | int | float)
 
 
 def lhc_fill_to_tfs(
@@ -152,7 +152,7 @@ def get_tune_and_coupling_variables(db) -> list[str]:
 
 def get_fill_times(
     db, fill_number: int
-) -> tuple[Union[datetime.datetime, float], Union[datetime.datetime, float]]:
+) -> tuple[datetime.datetime | float, datetime.datetime | float]:
     """
     Returns start and end time of fill with fill number.
 

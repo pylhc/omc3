@@ -290,13 +290,13 @@ def get_timestamp_index(index: pd.Index) -> pd.Index:
     return pd.Index([i.timestamp() for i in index])
 
 
-def read_timed_dataframe(path: Union[str, Path]) -> tfs.TfsDataFrame:
+def read_timed_dataframe(path: str | Path) -> tfs.TfsDataFrame:
     df = tfs.read(path, index=get_time_col())
     df.index = pd.Index([CERNDatetime.from_cern_utc_string(i) for i in df.index], dtype=object)
     return df
 
 
-def write_timed_dataframe(path: Union[str, Path], df: tfs.TfsDataFrame):
+def write_timed_dataframe(path: str | Path, df: tfs.TfsDataFrame):
     df = df.copy()
     df.index = pd.Index([i.strftime(get_cern_time_format()) for i in df.index], dtype=str)
     tfs.write(path, df, save_index=get_time_col(), headerswidth=max(len(k) for k in df.headers.keys()))

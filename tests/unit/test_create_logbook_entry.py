@@ -182,12 +182,12 @@ class MockPylogbook:
 @dataclass
 class MockAttachmentBuilder:
     """ Basically copied from pylogbook. """
-    contents: Union[str, bytes]
+    contents: str | bytes
     short_name: str
     mime_type: str
 
     @classmethod
-    def from_file(cls, filename: Union[Path, str]):
+    def from_file(cls, filename: Path | str):
         with open(filename, "rb") as f:
             contents = f.read()
         short_name = Path(filename).name

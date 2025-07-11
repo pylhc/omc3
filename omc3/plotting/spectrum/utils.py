@@ -309,7 +309,7 @@ def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
     return data_series
 
 
-def get_unique_filenames(files: Union[Iterable, Sized]):
+def get_unique_filenames(files: Iterable | Sized):
     """ Way too complicated method to assure unique dictionary names,
         by going backwards through the file-path until the names differ.
     """

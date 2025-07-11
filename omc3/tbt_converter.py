@@ -165,7 +165,7 @@ def _drop_elements(tbt_data: tbt.TbtData, elements_to_drop: Sequence[str]) -> tb
     return copied_data
 
 
-def _file_name_without_sdds(filename: Union[str, Path]) -> str:
+def _file_name_without_sdds(filename: str | Path) -> str:
     """
     Returns the file name without suffix if the suffix is **.sdds**, else the filename.
     Previous elements in the file path are discarded.

@@ -15,17 +15,31 @@ from typing import Union
 
 import tfs
 from generic_parser.entrypoint_parser import (
+    DotDict,
     EntryPointParameters,
     entrypoint,
     save_options_to_config,
-    DotDict,
 )
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import (AMPLITUDE, AMP_BETA_NAME,BETA_NAME, DELTA, DISPERSION_NAME,
-                                                ERR, EXT, IMAG, MDL, NORM_DISP_NAME, ORBIT_NAME, PHASE,
-                                                PHASE_NAME, REAL, TOTAL_PHASE_NAME)
+from omc3.optics_measurements.constants import (
+    AMP_BETA_NAME,
+    AMPLITUDE,
+    BETA_NAME,
+    DELTA,
+    DISPERSION_NAME,
+    ERR,
+    EXT,
+    IMAG,
+    MDL,
+    NORM_DISP_NAME,
+    ORBIT_NAME,
+    PHASE,
+    PHASE_NAME,
+    REAL,
+    TOTAL_PHASE_NAME,
+)
 from omc3.optics_measurements.toolbox import df_ang_diff, df_diff, df_err_sum, df_ratio, df_rel_diff
 from omc3.utils import contexts, iotools, logging_tools
 
@@ -122,8 +136,8 @@ def convert_old_directory_to_new(opt: DotDict) -> None:
 
 
 def convert_old_beta_from_amplitude(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     suffix: str,
     plane: str,
     old_file_name: str = "ampbeta",
@@ -160,8 +174,8 @@ def convert_old_beta_from_amplitude(
 
 
 def convert_old_beta_from_phase(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     suffix: str,
     plane: str,
     old_file_name: str = "beta",
@@ -206,8 +220,8 @@ def convert_old_beta_from_phase(
 
 
 def convert_old_phase(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     suffix: str,
     plane: str,
     old_file_name: str = "phase",
@@ -248,8 +262,8 @@ def convert_old_phase(
 
 
 def convert_old_total_phase(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     suffix: str,
     plane: str,
     old_file_name: str = "phasetot",
@@ -290,8 +304,8 @@ def convert_old_total_phase(
 
 
 def convert_old_closed_orbit(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     plane: str,
     old_file_name: str = "CO",
     new_file_name: str = ORBIT_NAME,
@@ -325,8 +339,8 @@ def convert_old_closed_orbit(
 
 
 def convert_old_dispersion(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     plane: str,
     old_file_name: str = "D",
     new_file_name: str = DISPERSION_NAME,
@@ -359,8 +373,8 @@ def convert_old_dispersion(
 
 
 def convert_old_normalised_dispersion(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     plane: str,
     old_file_name: str = "ND",
     new_file_name: str = NORM_DISP_NAME,
@@ -398,8 +412,8 @@ def convert_old_normalised_dispersion(
 
 
 def convert_old_coupling(
-    inputdir: Union[Path, str],
-    outputdir: Union[Path, str],
+    inputdir: Path | str,
+    outputdir: Path | str,
     suffix: str,
     old_file_name: str = "couple",
     new_file_name: str = "f"

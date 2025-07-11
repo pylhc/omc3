@@ -283,7 +283,7 @@ def analyse_with_bbq_corrections(opt: DotDict) -> tuple[TfsDataFrame, TfsDataFra
     return kick_df, bbq_df
 
 
-def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
+def get_kick_and_bbq_df(kick: Path | str, bbq_in: Path | str,
                         beam: int = None,
                         filter_opt: FilterOpts = None,
                         ) -> tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
@@ -484,7 +484,7 @@ def _check_analyse_opt(opt: DotDict) -> tuple[DotDict, FilterOpts]:
     return opt, filter_opt
 
 
-def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFrame) -> TfsDataFrame:
+def _get_bbq_data(beam: int, input_: Path | str | int, kick_df: TfsDataFrame) -> TfsDataFrame:
     """
     Return BBQ data from input, either file or timber fill, as a ``TfsDataFrame``.
 

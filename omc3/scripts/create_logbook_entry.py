@@ -182,7 +182,7 @@ def _get_rbac_token() -> str:
     raise NameError("Could not get RBAC token.")
 
 
-def _get_attachments(files: Iterable[Union[str, Path]],
+def _get_attachments(files: Iterable[str | Path],
                      filenames: Iterable[str] = None,
                      pdf2png: bool = False) -> list[AttachmentBuilderType]:
     """ Read the file-attachments and assign their names. """
@@ -224,7 +224,7 @@ def _get_attachments(files: Iterable[Union[str, Path]],
     return attachments
 
 
-def _add_mimetypes(files: Iterable[Union[str, Path]]):
+def _add_mimetypes(files: Iterable[str | Path]):
     """ Adds all unknown suffixes as plain/text, which should suffice for our
     purposes.
     TODO: if it's a binary sdds file, it should be 'application/octet-stream'

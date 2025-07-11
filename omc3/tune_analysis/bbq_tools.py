@@ -48,7 +48,7 @@ class MinMaxFilterOpt:
     fine_cut: float = None
 
 
-FilterOpts = Union[OutlierFilterOpt, tuple[MinMaxFilterOpt, MinMaxFilterOpt]]
+FilterOpts = OutlierFilterOpt | tuple[MinMaxFilterOpt, MinMaxFilterOpt]
 
 
 def get_moving_average(data_series: pd.Series, filter_opt: MinMaxFilterOpt) -> tuple[pd.Series, pd.Series, ArrayLike]:
@@ -120,7 +120,7 @@ def clean_outliers_moving_average(data_series: pd.Series, filter_opt: OutlierFil
 # Private methods ############################################################
 
 
-def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: Union[pd.Series, ArrayLike], length: int) -> tuple[pd.Series, pd.Series]:
+def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: pd.Series | ArrayLike, length: int) -> tuple[pd.Series, pd.Series]:
     """
     Returns the moving average of data series with a window of length and interpolated ``NaNs``.
     """
