@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
 import tfs
 import turn_by_turn as tbt
 from cpymad.madx import Madx
@@ -29,6 +29,9 @@ from tests.utils.lhc_rdts.functions import (
     get_model_dir,
     get_tbt_name,
 )
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 ACC_MODELS = Path("/afs/cern.ch/eng/acc-models/lhc/2024/")
 assert ACC_MODELS.exists(), "ACC_MODELS does not exist"
@@ -61,7 +64,7 @@ def create_model_dir(beam: int) -> None:
     )
     with open(model_dir / MADX_FILENAME, "r") as f:
         lines = f.readlines()
-    
+
     # Make the sequence as beam 1 or 2
     make_madx_seq(model_dir, lines, beam)
 
@@ -106,22 +109,22 @@ def update_model_with_ng(beam: int) -> None:
         # Create twiss_elements and twiss_ac and twiss data tables in model folder
         mad.send(f"""
 hnams = {{
-    "name", "type", "title", "origin", "date", "time", "refcol", "direction", 
-    "observe", "energy", "deltap", "length", "q1", "q2", "q3", "dq1", "dq2", 
+    "name", "type", "title", "origin", "date", "time", "refcol", "direction",
+    "observe", "energy", "deltap", "length", "q1", "q2", "q3", "dq1", "dq2",
     "dq3", "alfap", "etap", "gammatr"
-}}        
+}}
 cols = {{
     'name', 'kind','s','betx','alfx','bety','alfy', 'mu1' ,'mu2', 'r11', 'r12',
     'r21', 'r22', 'x','y','dx','dpx','dy','dpy'
 }}
 str_cols = py:recv()
 cols = MAD.utility.tblcat(cols, str_cols)
-if {beam} == 1 then  -- Cycle the sequence to the correct location 
+if {beam} == 1 then  -- Cycle the sequence to the correct location
     MADX.lhcb1:cycle("MSIA.EXIT.B1")
 end
 -- Calculate the twiss parameters with coupling and observe the BPMs
 ! Coupling needs to be true to calculate Edwards-Teng parameters and R matrix
-twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}} 
+twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}}
 -- Select everything
 twiss_elements:select(nil, \ -> true)
 -- Deselect the drifts
@@ -315,7 +318,7 @@ def write_tbt_file(beam: int) -> pd.DataFrame:
     with MAD() as mad:
         initialise_model(mad, beam)
         observe_BPMs(mad, beam)
-        # Octupolar resonances are harder to observe with only 1000 turns 
+        # Octupolar resonances are harder to observe with only 1000 turns
         # so we need to increase the kick amplitude for order 3
         mad.send(f"""
 local t0 = os.clock()

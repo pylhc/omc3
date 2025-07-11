@@ -1,11 +1,14 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-from tfs import TfsDataFrame
 
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.accelerators.skekb import SKekB
+
+if TYPE_CHECKING:
+    from tfs import TfsDataFrame
 
 INPUTS = Path(__file__).parent.parent / 'inputs'
 MODEL_INJ_BEAM1 = INPUTS / "models" / "2022_inj_b1_adt"

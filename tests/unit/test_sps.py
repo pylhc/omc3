@@ -1,16 +1,17 @@
-""" 
+"""
 SPS Tests
 ---------
 
-Here are tests for the SPS Accelerator, testing that different units of the 
+Here are tests for the SPS Accelerator, testing that different units of the
 analysis works also for this machine.
 """
 from __future__ import annotations
 
 import copy
 import re
-from pathlib import Path
 import shutil
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 import tfs
@@ -23,7 +24,6 @@ from omc3.hole_in_one import (
 )
 from omc3.model import manager
 from omc3.model.accelerators.accelerator import AcceleratorDefinitionError
-from omc3.model.accelerators.sps import Sps
 from omc3.model.constants import (
     JOB_MODEL_MADX_NOMINAL,
     STRENGTHS_SUBDIR,
@@ -42,7 +42,8 @@ from omc3.optics_measurements import phase
 from omc3.optics_measurements.constants import (
     NAME,
 )
-from omc3.response_creator import ResponseCreatorType, create_response_entrypoint as create_response
+from omc3.response_creator import ResponseCreatorType
+from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import ALL_PROPAGABLES
 from omc3.segment_by_segment.segments import Segment
@@ -57,6 +58,9 @@ from tests.unit.test_hole_in_one import (
     _check_nonlinear_optics_files,
 )
 from tests.unit.test_model_creator import check_accel_from_dir_vs_options
+
+if TYPE_CHECKING:
+    from omc3.model.accelerators.sps import Sps
 
 SPS_DIR = INPUTS / "sps_data"
 SPS_MODEL_DIR = SPS_DIR / "model_Q20_noacd"
@@ -137,11 +141,11 @@ class TestModelCreationSPS:
         assert "hacmap" not in job_content
 
     @pytest.mark.extended
-    def test_segment_creation(self, 
-        tmp_path: Path, 
-        acc_models_sps_2025: Path, 
-        ): 
-        """ Tests the creation of the Segment Models via SpsSegmentCreator. 
+    def test_segment_creation(self,
+        tmp_path: Path,
+        acc_models_sps_2025: Path,
+        ):
+        """ Tests the creation of the Segment Models via SpsSegmentCreator.
         Everything else about Segment-by-Segment should be the same as for LHC.
         """
         # Preparation ----------------------------------------------------------
@@ -162,14 +166,14 @@ class TestModelCreationSPS:
         measurement = OpticsMeasurement(SPS_DIR / "fake_measurement_Q20")
 
         propagables = [propg(segment, measurement, elements) for propg in ALL_PROPAGABLES]
-        measureables = [measbl for measbl in propagables if measbl]     
-        
+        measureables = [measbl for measbl in propagables if measbl]
+
         accel_inst: Sps = manager.get_accelerator(accel_opt)
         accel_inst.model_dir = tmp_path  # if set in accel_opt, it tries to load from model_dir, but this is the output dir for the segment-models
         accel_inst.acc_model_path = acc_models_sps_2025
-        
+
         segment_creator = SpsSegmentCreator(
-            segment=segment, 
+            segment=segment,
             measurables=measureables,
             logfile=tmp_path / logfile.format(segment.name),
             accel=accel_inst,
@@ -179,17 +183,17 @@ class TestModelCreationSPS:
         # Actual Run -----------------------------------------------------------
         segment_creator.full_run()
 
-        # Test the output ------------------------------------------------------ 
+        # Test the output ------------------------------------------------------
         assert len(list(tmp_path.glob(f"*{Path(TWISS_DAT).suffix}"))) == 4  # 2 segment, 2 segment corrected
 
         assert_file_exists_and_nonempty(tmp_path / segment_creator.measurement_madx)
-        
+
         # created in madx (should also have been checked in the post_run() method)
         assert_twiss_contains_segment(tmp_path / segment_creator.twiss_forward, segment.start, segment.end)
         assert_twiss_contains_segment(tmp_path / segment_creator.twiss_backward, segment.end, segment.start)
 
         assert_file_exists_and_nonempty(tmp_path / segment_creator.corrections_madx)
-        
+
         # created in madx (should also have been checked in the post_run() method)
         assert_twiss_contains_segment(tmp_path / segment_creator.twiss_forward_corrected, segment.start, segment.end)
         assert_twiss_contains_segment(tmp_path / segment_creator.twiss_backward_corrected, segment.end, segment.start)
@@ -217,7 +221,7 @@ class TestModelCreationSPS:
         )
 
         optics_params = list(OPTICS_PARAMS_CHOICES[2:]) + ["MUX", "MUY"]   # in choices its PHASE as this is the measurement column
-        assert len(optics_params) 
+        assert len(optics_params)
         assert all(var in new_response for var in optics_params)
 
         bpms = tfs.read(tmp_model / TWISS_DAT, index=NAME).index
@@ -234,7 +238,7 @@ class TestModelCreationSPS:
                 assert all(bpm in new_response[param].index for bpm in bpms)
 
         assert_file_exists_and_nonempty(fullresponse_path)
-        
+
 
 class TestAnalysisSPS:
     @pytest.mark.extended
@@ -279,7 +283,7 @@ class TestAnalysisSPS:
 
         _check_linear_optics_files(output, off_momentum=False)
         _check_nonlinear_optics_files(output, "rdt", order=rdt_order)
-        
+
         assert "NaN BPMs detected." in caplog.text
         for bpm in nan_bpms:
             assert bpm in caplog.text

@@ -10,11 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
-from tfs import TfsDataFrame
 
 from omc3.definitions.constants import PLANE_TO_NUM
-from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import (
     PHASE,
     PHASE_ADV,
@@ -24,11 +21,16 @@ from omc3.optics_measurements.constants import (
 from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices
-from omc3.segment_by_segment.segments import SegmentDiffs
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+    import pandas as pd
+    from tfs import TfsDataFrame
+
+    from omc3.definitions.optics import OpticsMeasurement
+    from omc3.segment_by_segment.segments import SegmentDiffs
     IndexType = Sequence[str] | str | slice | pd.Index
     ValueErrorType = tuple[pd.Series, pd.Series] | tuple[float, float]
 
@@ -36,7 +38,7 @@ LOG = logging_tools.get_logger(__name__)
 
 
 class Phase(Propagable):
-    
+
     _init_pattern = "phi{}_{}"  # format(plane, ini/end)
     columns: PropagableColumns = PropagableColumns(PHASE)
 
@@ -53,7 +55,7 @@ class Phase(Propagable):
         phase = meas.total_phase[plane].loc[names, columns.column]
         error = meas.total_phase[plane].loc[names, columns.error_column]
         return phase, error
-    
+
     @classmethod
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the phase is in the measurement data. """
@@ -63,13 +65,13 @@ class Phase(Propagable):
         except FileNotFoundError:
             return False
         return True
-    
+
     def get_segment_observation_points(self, plane: str):
         """ Return the measurement points for the given plane, that are in the segment. """
         return common_indices(
-            self.segment_models.forward.index, 
+            self.segment_models.forward.index,
             self._meas.total_phase[plane].index
-        )  
+        )
 
     def add_differences(self, segment_diffs: SegmentDiffs):
         """ Calculate the differences between the propagated models and the measured values."""
@@ -79,13 +81,13 @@ class Phase(Propagable):
             columns = self.columns.planed(plane)
             phase = df.loc[:, columns.column]
             df.loc[:, columns.column] = sbs_math.phase_diff(phase, phase.iloc[0])
-            
+
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.phase[plane] = df
 
-    def _compute_measured(self, 
-            plane: str, 
-            seg_model: TfsDataFrame, 
+    def _compute_measured(self,
+            plane: str,
+            seg_model: TfsDataFrame,
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
         """ Compute the difference between the given segment model and the measured values."""
@@ -94,7 +96,7 @@ class Phase(Propagable):
         # get the measured values
         names = self.get_segment_observation_points(plane)
         meas_phase, meas_err = Phase.get_at(names, self._meas, plane)
-        
+
         # get the propagated values
         tune = seg_model.headers[f"{TUNE}{PLANE_TO_NUM[plane]}"]
 
@@ -123,18 +125,18 @@ class Phase(Propagable):
         """Compute the difference between the nominal and the corrected model."""
         model_phase = seg_model.loc[:, self._model_column(plane)]
         corrected_phase = seg_model_corr.loc[:, self._model_column(plane)]
-        
+
         init_condition = self._init_start(plane)
-        if forward: 
+        if forward:
             phase_beating = sbs_math.phase_diff(corrected_phase, model_phase)
         else:
             phase_beating = sbs_math.phase_diff(model_phase, corrected_phase)
         propagated_err = sbs_math.propagate_error_phase(corrected_phase, init_condition)
         return phase_beating, propagated_err
-    
-    def _compute_elements(self, 
-            plane: str, 
-            seg_model: pd.DataFrame, 
+
+    def _compute_elements(self,
+            plane: str,
+            seg_model: pd.DataFrame,
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
         """ Compute get the propagated phase values from the segment model and calculate the propagated error."""

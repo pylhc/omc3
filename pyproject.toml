@@ -186,7 +186,7 @@ extend-select = [
     # "RET",      # Good return practices
     # "SIM",      # Common simplification rules
     # "TID",      # Some good import practices
-    # "TC",       # Enforce importing certain types in a TYPE_CHECKING block
+    "TC",       # Enforce importing certain types in a TYPE_CHECKING block
     # "PTH",      # Use pathlib instead of os.path
     # "NPY",      # Some numpy-specific things
 ]

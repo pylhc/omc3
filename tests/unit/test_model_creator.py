@@ -2,6 +2,7 @@ import copy
 import os
 import shutil
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 import tfs
@@ -12,7 +13,6 @@ from omc3.model.accelerators.accelerator import (
     AcceleratorDefinitionError,
     AccExcitationMode,
 )
-from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import (
     ACC_MODELS_PREFIX,
     JOB_MODEL_MADX_NOMINAL,
@@ -31,6 +31,9 @@ from omc3.model.model_creators.lhc_model_creator import (
 from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import NAME
 from tests.conftest import assert_frame_equal
+
+if TYPE_CHECKING:
+    from omc3.model.accelerators.lhc import Lhc
 
 INPUTS = Path(__file__).parent.parent / "inputs"
 LHC_2025_30CM_MODIFIERS = [Path("R2025aRP_A30cmC30cmA10mL200cm_Flat.madx")]
@@ -103,7 +106,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
 
 # # ps tune matching fails for 2018 optics
-# # The magnets used for the different tune matching methods in > 2018 were installed in LS2. 
+# # The magnets used for the different tune matching methods in > 2018 were installed in LS2.
 # # TODO: check with PS expert a) if model creation <= 2018 is desired and b) how it worked
 #
 # @pytest.mark.basic
@@ -265,7 +268,7 @@ def test_lhc_creation_nominal_2016(tmp_path):
 @pytest.mark.basic
 def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
     (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
-    
+
     corrections = tmp_path / "other_corrections.madx"
     corrections_str = "! just a comment to test the corrections file is actually loaded in madx. whfifhkdskjfshkdhfswojeorijr"
     corrections.write_text(f"{corrections_str}\n")
@@ -525,9 +528,9 @@ def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
 # ---- helper --------------------------------------------------------------------------------------
 
 def check_accel_from_dir_vs_options(
-    model_dir: Path, 
-    accel_options: DotDict, 
-    accel_from_opt: Accelerator, 
+    model_dir: Path,
+    accel_options: DotDict,
+    accel_from_opt: Accelerator,
     best_knowledge=False
     ):
     # creation via model_from_dir tests that all files are in place:
@@ -555,10 +558,10 @@ def check_accel_from_dir_vs_options(
 
     if accel_from_dir.model is not None:
         assert_frame_equal(accel_from_opt.model, accel_from_dir.model)
-    
+
     if accel_from_opt.excitation != AccExcitationMode.FREE:
         assert_frame_equal(accel_from_opt.model_driven, accel_from_dir.model_driven)
-    
+
     # TODO: Energy not set in model ? (jdilly, 2021)
     # assert abs(accel_from_opt.energy - accel_from_dir.energy) < 1e-2
 
