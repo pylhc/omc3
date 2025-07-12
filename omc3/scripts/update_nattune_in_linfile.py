@@ -37,6 +37,7 @@ given frequency interval.
 
   Default: ``None``
 """
+from __future__ import annotations
 
 from collections import OrderedDict
 from contextlib import suppress
@@ -44,16 +45,14 @@ from pathlib import Path
 
 import pandas as pd
 import tfs
-from generic_parser import entrypoint, EntryPointParameters
+from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entrypoint_parser import save_options_to_config
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_NAME, FILE_LIN_EXT
+from omc3.harpy.constants import COL_NAME, COL_NATAMP, COL_NATTUNE, FILE_LIN_EXT
 from omc3.harpy.handler import _compute_headers
-from omc3.plotting.spectrum.utils import (load_spectrum_data, get_bpms,
-                                          LIN, AMPS, FREQS
-                                          )
+from omc3.plotting.spectrum.utils import AMPS, FREQS, LIN, get_bpms, load_spectrum_data
 from omc3.utils.logging_tools import get_logger, list2str
 
 LOG = get_logger(__name__)
@@ -61,48 +60,48 @@ LOG = get_logger(__name__)
 
 def get_params():
     return EntryPointParameters(
-        files=dict(
-            required=True,
-            nargs='+',
-            help=("List of paths to the spectrum files. The files need to be given"
+        files={
+            'required': True,
+            'nargs': '+',
+            'help': ("List of paths to the spectrum files. The files need to be given"
                   " without their '.lin'/'.amps[xy]','.freqs[xy]' endings. "
                   " (So usually the path of the TbT-Data file.)")
-        ),
-        interval=dict(
-            required=True,
-            nargs=2,
-            type=float,
-            help="Frequency interval in which the highest peak should be found."
-        ),
-        bpms=dict(
-            nargs='+',
-            help=('List of BPMs which need to be updated. '
+        },
+        interval={
+            'required': True,
+            'nargs': 2,
+            'type': float,
+            'help': "Frequency interval in which the highest peak should be found."
+        },
+        bpms={
+            'nargs': '+',
+            'help': ('List of BPMs which need to be updated. '
                   'If not given it will be all of them.')
-        ),
-        planes=dict(
-            nargs='+',
-            type=str,
-            help="Which planes.",
-            choices=PLANES,
-            default=list(PLANES),
-        ),
-        rename_suffix=dict(
-            type=str,
-            help=("Additional suffix for output lin-file. "
+        },
+        planes={
+            'nargs': '+',
+            'type': str,
+            'help': "Which planes.",
+            'choices': PLANES,
+            'default': list(PLANES),
+        },
+        rename_suffix={
+            'type': str,
+            'help': ("Additional suffix for output lin-file. "
                   "Will be inserted between filename and extension. "
                   "If empty, the original file is overwritten - unless they "
                   "are old files, then the omc3 filename convention will be "
                   "used."),
-            default=''
-        ),
-        not_found_action=dict(
-            type=str,
-            choices=['error', 'remove', 'ignore'],
-            help=('Defines what to do, if no line was found in given interval.'
+            'default': ''
+        },
+        not_found_action={
+            'type': str,
+            'choices': ['error', 'remove', 'ignore'],
+            'help': ('Defines what to do, if no line was found in given interval.'
                   "'error': throws a ValueError; 'remove': removes the bpm; "
                   "'ignore': keeps the old values."),
-            default='error'
-        ),
+            'default': 'error'
+        },
     )
 
 

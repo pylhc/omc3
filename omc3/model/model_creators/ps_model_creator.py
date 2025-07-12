@@ -4,6 +4,8 @@ PS Model Creator
 
 This module provides convenience functions for model creation of the ``PS``.
 """
+from __future__ import annotations
+
 import logging
 import shutil
 
@@ -31,7 +33,7 @@ class PsModelCreator(PsBaseModelCreator):
         madx_template = accel.get_file("twiss.mask").read_text()
         madx_script += madx_template % replace_dict
         return madx_script
-    
+
     def get_base_madx_script(self):
         accel: Ps = self.accel
         use_acd = accel.excitation == AccExcitationMode.ACD

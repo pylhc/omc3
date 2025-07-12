@@ -5,6 +5,8 @@ Toolbox
 This module contains helper functionality for ``optics_measurements``.
 It provides functions to perform regularly used simple calculations.
 """
+from __future__ import annotations
+
 import numpy as np
 
 

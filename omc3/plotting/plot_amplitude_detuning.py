@@ -108,27 +108,22 @@ Provides the plotting function for amplitude detuning analysis
 - **y_lim** *(float)*:
 
     Tune limits in units of tune scale (y-axis).
-
-
 """
+from __future__ import annotations
+
 import warnings
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
-from typing import Dict, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 from generic_parser import DotDict, EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
-from matplotlib import MatplotlibDeprecationWarning
+from matplotlib import MatplotlibDeprecationWarning, rcParams
 from matplotlib import colors as mcolors
 from matplotlib import pyplot as plt
-from matplotlib import rcParams
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from numpy.typing import ArrayLike
-from scipy import odr
 from tfs.tools import significant_digits
 
 from omc3.definitions.constants import PLANES, UNIT_IN_METERS
@@ -138,10 +133,19 @@ from omc3.plotting.utils import style as pstyle
 from omc3.tune_analysis import constants as const
 from omc3.tune_analysis import fitting_tools
 from omc3.tune_analysis import kick_file_modifiers as kick_mod
-from omc3.tune_analysis.kick_file_modifiers import AmpDetData
 from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings
 from omc3.utils.iotools import PathOrStr, UnionPathStr, save_config
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
+    from numpy.typing import ArrayLike
+    from scipy import odr
+
+    from omc3.tune_analysis.kick_file_modifiers import AmpDetData
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -151,85 +155,85 @@ X, Y = PLANES
 
 def get_params():
     return EntryPointParameters(
-        kicks=dict(
-            nargs="+",
-            help="Kick files as data frames or tfs files.",
-            required=True,
-        ),
-        labels=dict(
-            help="Labels for the data. Needs to be same length as kicks.",
-            nargs='+',
-            required=True,
-            type=str,
-        ),
-        plane=dict(
-            help="Plane of the kicks.",
-            required=True,
-            choices=list(PLANES) + [''.join(PLANES), '3D'],
-            type=str,
-        ),
-        detuning_order=dict(
-            help="Order of the detuning as int. Basically just the order of the applied fit.",
-            type=int,
-            default=1,
-        ),
-        correct_acd=dict(
-            help="Correct for AC-Dipole kicks.",
-            action="store_true",
-        ),
-        output=dict(
-            help=("Save the amplitude detuning plot here. "
+        kicks={
+            "nargs": "+",
+            "help": "Kick files as data frames or tfs files.",
+            "required": True,
+        },
+        labels={
+            "help": "Labels for the data. Needs to be same length as kicks.",
+            "nargs": '+',
+            "required": True,
+            "type": str,
+        },
+        plane={
+            "help": "Plane of the kicks.",
+            "required": True,
+            "choices": list(PLANES) + [''.join(PLANES), '3D'],
+            "type": str,
+        },
+        detuning_order={
+            "help": "Order of the detuning as int. Basically just the order of the applied fit.",
+            "type": int,
+            "default": 1,
+        },
+        correct_acd={
+            "help": "Correct for AC-Dipole kicks.",
+            "action": "store_true",
+        },
+        output={
+            "help": ("Save the amplitude detuning plot here. "
                   "Give filename with extension. An id for the 4 different "
                   "plots will be added before the suffix."),
-            type=PathOrStr,
-        ),
-        show=dict(
-            help="Show the amplitude detuning plot.",
-            action="store_true",
-        ),
-        y_lim=dict(
-            help="Tune limits in units of tune scale (y-axis).",
-            type=float,
-            nargs=2,
-        ),
-        x_lim=dict(
-            help="Action limits in um (x-axis).",
-            type=float,
-            nargs=2,
-        ),
-        action_unit=dict(
-            help="Unit the action is given in.",
-            default="m",
-            choices=list(UNIT_IN_METERS.keys()),
-            type=str,
-        ),
-        action_plot_unit=dict(
-            help="Unit the action should be plotted in.",
-            default="um",
-            choices=list(UNIT_IN_METERS.keys()),
-            type=str,
-        ),
-        manual_style=dict(
-            type=DictAsString,
-            default={},
-            help='Additional style rcParameters which update the set of predefined ones.'
-        ),
-        plot_styles=dict(
-            help="Plotting styles.",
-            type=UnionPathStr,
-            nargs="+",
-            default=['standard', 'amplitude_detuning'],
-        ),
-        tune_scale=dict(
-            help="Plotting exponent of the tune.",
-            default=-3,
-            type=int,
-        ),
-        bbq_corrected=dict(
-            help="Plot the data with BBQ correction (``True``) or without (``False``)."
+            "type": PathOrStr,
+        },
+        show={
+            "help": "Show the amplitude detuning plot.",
+            "action": "store_true",
+        },
+        y_lim={
+            "help": "Tune limits in units of tune scale (y-axis).",
+            "type": float,
+            "nargs": 2,
+        },
+        x_lim={
+            "help": "Action limits in um (x-axis).",
+            "type": float,
+            "nargs": 2,
+        },
+        action_unit={
+            "help": "Unit the action is given in.",
+            "default": "m",
+            "choices": list(UNIT_IN_METERS.keys()),
+            "type": str,
+        },
+        action_plot_unit={
+            "help": "Unit the action should be plotted in.",
+            "default": "um",
+            "choices": list(UNIT_IN_METERS.keys()),
+            "type": str,
+        },
+        manual_style={
+            "type": DictAsString,
+            "default": {},
+            "help": 'Additional style rcParameters which update the set of predefined ones.'
+        },
+        plot_styles={
+            "help": "Plotting styles.",
+            "type": UnionPathStr,
+            "nargs": "+",
+            "default": ['standard', 'amplitude_detuning'],
+        },
+        tune_scale={
+            "help": "Plotting exponent of the tune.",
+            "default": -3,
+            "type": int,
+        },
+        bbq_corrected={
+            "help": "Plot the data with BBQ correction (``True``) or without (``False``)."
                  " ``None`` plots both in separate plots. Default: ``None``.",
-            type=bool,
-        )
+            "type": bool,
+        }
     )
 
 
@@ -259,7 +263,7 @@ def main(opt):
 
 # 2D Plots ----------------------------
 
-def _plot_2d(tune_plane: str, opt: DotDict) -> Dict[str, Figure]:
+def _plot_2d(tune_plane: str, opt: DotDict) -> dict[str, Figure]:
     """ 2D Plots per kick-plane and with/without BBQ correction. """
     figs = {}
     limits = opt.get_subdict(['x_lim', 'y_lim'])
@@ -356,12 +360,9 @@ def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=
     f_low = partial(fit_fun, np.array(odr_fit.beta)-np.array(odr_fit.sd_beta))
     f_upp = partial(fit_fun, np.array(odr_fit.beta)+np.array(odr_fit.sd_beta))
 
-    if order == 1:
-        x = np.array([0, xmax])
-    else:
-        x = np.linspace(0, xmax, NFIT)
-
+    x = np.array([0, xmax]) if order == 1 else np.linspace(0, xmax, NFIT)
     line = ax.plot(x, f(x), marker="", linestyle='--', color=color, label=label)
+
     if color is None:
         color = line[0].get_color()
     ax.fill_between(x, f_low(x), f_upp(x), facecolor=mcolors.to_rgba(color, .3), zorder=-10)
@@ -369,7 +370,7 @@ def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=
 
 
 def _plot_detuning(ax: Axes, data: AmpDetData, label: str, color=None,
-                   limits: Dict[str, float] = None, odr_fit: odr.Output=None, odr_label: str =""):
+                   limits: dict[str, float] = None, odr_fit: odr.Output=None, odr_label: str =""):
     """Plot the detuning and the ODR into axes."""
     x_lim = _get_default(limits, 'x_lim', [0, max(data.action+data.action_err)])
     offset = 0
@@ -386,7 +387,7 @@ def _plot_detuning(ax: Axes, data: AmpDetData, label: str, color=None,
                 label=label, color=color)
 
 
-def _format_axes(ax: Axes, limits: Dict[str, Sequence[float]], labels: Sequence[str]):
+def _format_axes(ax: Axes, limits: dict[str, Sequence[float]], labels: Sequence[str]):
     # labels
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
@@ -500,7 +501,7 @@ def _plot_3d(tune_plane: str, opt: DotDict):
     return figs
 
 
-def _plot_detuning_3d(ax: Axes, data: Dict[str, AmpDetData], label: str, color=None, limits=None, odr_fits=None):
+def _plot_detuning_3d(ax: Axes, data: dict[str, AmpDetData], label: str, color=None, limits=None, odr_fits=None):
     """ Plot the detuning and the ODR into axes."""
     offset = 0
     jx, jx_err = data[X].action, data[X].action_err
@@ -546,7 +547,7 @@ def fit_fun_odr_1d(x, y, q0, qdx, qdy):
     return q0 + qdx * x + qdy * y
 
 
-def plot_odr_3d(ax: Axes, odr_fits: Dict[str, odr.Output], xymax: Sequence[float], color=None):
+def plot_odr_3d(ax: Axes, odr_fits: dict[str, odr.Output], xymax: Sequence[float], color=None):
     """Plot the odr fit in 3D."""
 
     color = 'k' if color is None else color
@@ -623,8 +624,8 @@ def plot_cube(ax: Axes, x: ArrayLike, y: ArrayLike, f_low: callable, f_upp: call
 
 
 def _format_axes_3d(
-        ax: Axes, limits: Dict[str, float], ax_labels: Sequence[str],
-        acd: bool, odr_labels: Sequence[Dict[str, str]] = None):
+        ax: Axes, limits: dict[str, float], ax_labels: Sequence[str],
+        acd: bool, odr_labels: Sequence[dict[str, str]] = None):
     # labels
     ax.set_xlabel(ax_labels[0], labelpad=15)
     ax.set_ylabel(ax_labels[1], labelpad=15)
@@ -775,4 +776,3 @@ def _scale_data(data: AmpDetData, odr_fit: odr.Output,
 
 if __name__ == '__main__':
     main()
-

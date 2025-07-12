@@ -115,35 +115,44 @@ the measurements.
 
 
 """
+from __future__ import annotations
+
 from datetime import timedelta
 from pathlib import Path
-from typing import List, Sequence, Tuple, Dict, Any, Union
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
-import tfs
-from generic_parser import DotDict
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-from numpy.typing import ArrayLike
-from tfs.frame import TfsDataFrame
 
 from omc3.definitions.constants import PLANES
 from omc3.tune_analysis import fitting_tools, kick_file_modifiers, timber_extract
-from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, MinMaxFilterOpt, FilterOpts
+from omc3.tune_analysis.bbq_tools import FilterOpts, MinMaxFilterOpt, OutlierFilterOpt
 from omc3.tune_analysis.constants import (
+    CORRECTED,
+    INPUT_KICK,
+    INPUT_PREVIOUS,
     get_bbq_col,
     get_bbq_out_name,
     get_kick_out_name,
     get_timber_bbq_key,
-    INPUT_KICK, INPUT_PREVIOUS, CORRECTED,
 )
 from omc3.tune_analysis.kick_file_modifiers import (
+    AmpDetData,
     read_timed_dataframe,
     read_two_kick_files_from_folder,
-    write_timed_dataframe, AmpDetData,
+    write_timed_dataframe,
 )
 from omc3.utils.iotools import PathOrStr, UnionPathStrInt, save_config
 from omc3.utils.logging_tools import get_logger, list2str
-from omc3.utils.time_tools import CERNDatetime
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from generic_parser import DotDict
+    from numpy.typing import ArrayLike
+    from tfs.frame import TfsDataFrame
+
+    from omc3.utils.time_tools import CERNDatetime
 
 # Globals ----------------------------------------------------------------------
 
@@ -151,11 +160,11 @@ DTIME: int = 120  # extra seconds to add to kick times window when extracting fr
 
 LOG = get_logger(__name__)
 
-FILTER_OPTS = dict(
-    cut=("window_length", "tunes", "tune_cut"),  # "fine_window", "fine_cut"
-    minmax=("window_length", "tunes_minmax", ),  # "fine_window", "fine_cut"
-    outliers=("window_length", "outlier_limit"),
-)
+FILTER_OPTS = {
+    "cut": ("window_length", "tunes", "tune_cut"),  # "fine_window", "fine_cut"
+    "minmax": ("window_length", "tunes_minmax", ),  # "fine_window", "fine_cut"
+    "outliers": ("window_length", "outlier_limit"),
+}
 
 
 # Get Parameters ---------------------------------------------------------------
@@ -163,87 +172,87 @@ FILTER_OPTS = dict(
 
 def _get_params():
     return EntryPointParameters(
-        beam=dict(
-            help="Which beam to use.",
-            required=True,
-            type=int,
-        ),
-        kick=dict(
-            help="Location of the kick files (parent folder).",
-            type=PathOrStr,
-            required=True,
-        ),
-        plane=dict(
-            help="Plane of the kicks. 'X' or 'Y' or 'XY'.",
-            required=True,
-            choices=list(PLANES) + ["".join(PLANES)],
-            type=str,
-        ),
-        label=dict(
-            help="Label to identify this run.",
-            type=str,
-        ),
-        bbq_in=dict(
-            help="Fill number of desired data to extract from timber or path to presaved bbq-tfs-file. "
+        beam={
+            "help": "Which beam to use.",
+            "required": True,
+            "type": int,
+        },
+        kick={
+            "help": "Location of the kick files (parent folder).",
+            "type": PathOrStr,
+            "required": True,
+        },
+        plane={
+            "help": "Plane of the kicks. 'X' or 'Y' or 'XY'.",
+            "required": True,
+            "choices": list(PLANES) + ["".join(PLANES)],
+            "type": str,
+        },
+        label={
+            "help": "Label to identify this run.",
+            "type": str,
+        },
+        bbq_in={
+            "help": "Fill number of desired data to extract from timber or path to presaved bbq-tfs-file. "
             f"Use the string '{INPUT_KICK}' to use the timestamps in the kickfile for timber extraction. "
             f"Use the string '{INPUT_PREVIOUS}' to look for the modified ampdet kick-file from a previous run. "
             "Not giving this parameter skips bbq compensation.",
-            type=UnionPathStrInt
-        ),
-        detuning_order=dict(
-            help="Order of the detuning as int. Basically just the order of the applied fit.",
-            type=int,
-            default=1,
-        ),
-        output=dict(
-            help="Output directory for the modified kickfile and bbq data.",
-            type=PathOrStr,
-        ),
-        window_length=dict(
-            help="Length of the moving average window. (# data points)",
-            type=int,
-            default=20,
-        ),
-        bbq_filtering_method=dict(
-            help="Filtering method for the bbq to use. 'cut' cuts around a given tune, 'minmax' lets you "
+            "type": UnionPathStrInt
+        },
+        detuning_order={
+            "help": "Order of the detuning as int. Basically just the order of the applied fit.",
+            "type": int,
+            "default": 1,
+        },
+        output={
+            "help": "Output directory for the modified kickfile and bbq data.",
+            "type": PathOrStr,
+        },
+        window_length={
+            "help": "Length of the moving average window. (# data points)",
+            "type": int,
+            "default": 20,
+        },
+        bbq_filtering_method={
+            "help": "Filtering method for the bbq to use. 'cut' cuts around a given tune, 'minmax' lets you "
             "specify the limits and 'outliers' uses the outlier filtering from utils.",
-            type=str,
-            choices=list(FILTER_OPTS.keys()),
-            default="outliers",
-        ),
+            "type": str,
+            "choices": list(FILTER_OPTS.keys()),
+            "default": "outliers",
+        },
         # Filtering method outliers
-        outlier_limit=dict(
-            help="Limit, i.e. cut, on outliers (Method 'outliers')",
-            type=float,
-            default=2e-4,
-        ),
+        outlier_limit={
+            "help": "Limit, i.e. cut, on outliers (Method 'outliers')",
+            "type": float,
+            "default": 2e-4,
+        },
         # Filtering method tune-cut
-        tunes=dict(
-            help="Tunes for BBQ cleaning (Method 'cut').",
-            type=float,
-            nargs=2,
-        ),
-        tune_cut=dict(
-            help="Cuts for the tune. For BBQ cleaning (Method 'cut').",
-            type=float,
-        ),
+        tunes={
+            "help": "Tunes for BBQ cleaning (Method 'cut').",
+            "type": float,
+            "nargs": 2,
+        },
+        tune_cut={
+            "help": "Cuts for the tune. For BBQ cleaning (Method 'cut').",
+            "type": float,
+        },
         # Filtering method tune-minmax
-        tunes_minmax=dict(
-            help="Tunes minima and maxima in the order x_min, x_max, y_min, y_max. "
+        tunes_minmax={
+            "help": "Tunes minima and maxima in the order x_min, x_max, y_min, y_max. "
             "For BBQ cleaning (Method 'minmax').",
-            type=float,
-            nargs=4,
-        ),
+            "type": float,
+            "nargs": 4,
+        },
         # Fine Cleaning
-        fine_window=dict(
-            help="Length of the moving average window, i.e the number of data points "
+        fine_window={
+            "help": "Length of the moving average window, i.e the number of data points "
             "(fine cleaning for 'minmax' or 'cut').",
-            type=int,
-        ),
-        fine_cut=dict(
-            help="Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
-            type=float,
-        ),
+            "type": int,
+        },
+        fine_cut={
+            "help": "Cut, i.e. tolerance, of the tune (fine cleaning for 'minmax' or 'cut').",
+            "type": float,
+        },
     )
 
 
@@ -251,7 +260,7 @@ def _get_params():
 
 
 @entrypoint(_get_params(), strict=True)
-def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFrame]:
+def analyse_with_bbq_corrections(opt: DotDict) -> tuple[TfsDataFrame, TfsDataFrame]:
     """
     Create amplitude detuning analysis with BBQ correction from timber data.
 
@@ -279,10 +288,10 @@ def analyse_with_bbq_corrections(opt: DotDict) -> Tuple[TfsDataFrame, TfsDataFra
     return kick_df, bbq_df
 
 
-def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
+def get_kick_and_bbq_df(kick: Path | str, bbq_in: Path | str,
                         beam: int = None,
                         filter_opt: FilterOpts = None,
-                        ) -> Tuple[tfs.TfsDataFrame, tfs.TfsDataFrame]:
+                        ) -> tuple[TfsDataFrame, TfsDataFrame]:
     """Load the input data."""
     bbq_df = None
     if bbq_in is not None and bbq_in == INPUT_PREVIOUS:
@@ -319,8 +328,8 @@ def get_kick_and_bbq_df(kick: Union[Path, str], bbq_in: Union[Path, str],
     return kick_df, bbq_df
 
 
-def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_order: int = 1, corrected: bool = False
-                           ) -> tfs.TfsDataFrame:
+def single_action_analysis(kick_df: TfsDataFrame, kick_plane: str, detuning_order: int = 1, corrected: bool = False
+                           ) -> TfsDataFrame:
     """Performs the fit one action and tune pane at a time."""
     LOG.info(f"Performing amplitude detuning ODR for single-plane kicks in {kick_plane}.")
     for tune_plane in PLANES:
@@ -351,8 +360,7 @@ def single_action_analysis(kick_df: tfs.TfsDataFrame, kick_plane: str, detuning_
     return kick_df
 
 
-def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, corrected: bool = False
-                           ) -> tfs.TfsDataFrame:
+def double_action_analysis(kick_df: TfsDataFrame, detuning_order: int = 1, corrected: bool = False) -> TfsDataFrame:
     """Performs the full 2D/4D fitting of the data."""
     if detuning_order > 1:
         raise NotImplementedError(f"2D Analysis for detuning order {detuning_order:d} is not implemented "
@@ -393,7 +401,7 @@ def double_action_analysis(kick_df: tfs.TfsDataFrame, detuning_order: int = 1, c
 
 
 def get_approx_bbq_interval(
-        bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window: int) -> Tuple[CERNDatetime, CERNDatetime]:
+        bbq_df: TfsDataFrame, time_array: Sequence[CERNDatetime], window: int) -> tuple[CERNDatetime, CERNDatetime]:
     """Get approximate start and end times for averaging, based on window length and kick interval."""
     bbq_tmp = bbq_df.dropna()
 
@@ -419,7 +427,7 @@ def get_approx_bbq_interval(
 # Private Functions ------------------------------------------------------------
 
 
-def _check_analyse_opt(opt: DotDict) -> Tuple[DotDict, FilterOpts]:
+def _check_analyse_opt(opt: DotDict) -> tuple[DotDict, FilterOpts]:
     """Perform manual checks on opt-sturcture."""
     LOG.debug("Checking Options.")
 
@@ -480,7 +488,7 @@ def _check_analyse_opt(opt: DotDict) -> Tuple[DotDict, FilterOpts]:
     return opt, filter_opt
 
 
-def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFrame) -> TfsDataFrame:
+def _get_bbq_data(beam: int, input_: Path | str | int, kick_df: TfsDataFrame) -> TfsDataFrame:
     """
     Return BBQ data from input, either file or timber fill, as a ``TfsDataFrame``.
 
@@ -514,13 +522,13 @@ def _get_bbq_data(beam: int, input_: Union[Path, str, int], kick_df: TfsDataFram
     return data
 
 
-def _get_timber_keys_and_bbq_columns(beam: int) -> Tuple[List[str], List[str]]:
+def _get_timber_keys_and_bbq_columns(beam: int) -> tuple[list[str], list[str]]:
     keys = [get_timber_bbq_key(plane, beam) for plane in PLANES]
     cols = [get_bbq_col(plane) for plane in PLANES]
     return keys, cols
 
 
-def _should_do_corrected(kick_df, bbq_in) -> List:
+def _should_do_corrected(kick_df, bbq_in) -> list:
     if bbq_in is None:
         return []
     if bbq_in == INPUT_PREVIOUS and not any(CORRECTED in col for col in kick_df.columns):
@@ -533,7 +541,7 @@ def _save_options(opt: DotDict) -> None:
         save_config(Path(opt.output), opt, __file__)
 
 
-def _get_ampdet_data_as_array(data: Dict[Any, AmpDetData], column: str) -> ArrayLike:
+def _get_ampdet_data_as_array(data: dict[Any, AmpDetData], column: str) -> ArrayLike:
     """ Returns a matrix with number of rows as entries in data,
     each containing the values from the given column of the AmpDetData.
     e.g. [[Jx0, Jx1, Jx2, ....]

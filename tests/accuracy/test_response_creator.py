@@ -49,7 +49,7 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
     # last done with MADX 5.09 2025-02-25 (jdilly)
     # if creator == "twiss":
     #     return
-    # write_fullresponse(INPUTS / "models" / f"2018_inj_b{beam}_11m" / correction_params.fullresponse, new_response)  
+    # write_fullresponse(INPUTS / "models" / f"2018_inj_b{beam}_11m" / correction_params.fullresponse, new_response)
     # return
     # --------------------------------------------------------------------------
 
@@ -84,8 +84,8 @@ def test_varmap_creation(model_inj_beams):
     varmap_old = read_varmap(accel_inst.model_dir / "varmap_MQSl.h5")
     varmap_new = evaluate_for_variables(accel_inst, ['MQSl'])
 
-    for order in varmap_new.keys():
-        for circuit in varmap_new[order].keys():
+    for order in varmap_new:
+        for circuit in varmap_new[order]:
             assert all(varmap_new[order][circuit] == varmap_old[order][circuit]), f"Varmap values not identical in {order}/{circuit}."
 
 

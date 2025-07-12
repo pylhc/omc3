@@ -35,13 +35,14 @@ from omc3.optics_measurements.constants import (
     CALIBRATION_FILE,
     CHROM_BETA_NAME,
     EXT,
-    NAME,
     MODEL_DIRECTORY,
+    NAME,
 )
 from omc3.utils import iotools, logging_tools
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
 
 
@@ -62,12 +63,12 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
     outputdir = Path(measure_input.outputdir)
     iotools.create_dirs(outputdir)
     logging_tools.add_module_handler(logging_tools.file_handler(outputdir / LOG_FILE))
-    
+
     LOGGER.info(f"Calculating optics parameters - code version {VERSION}")
-    
+
     if measure_input.accelerator.model is None:
         raise AttributeError("No accelerator model was provided. Cannot perform optics analysis.")
-    
+
     # Tune ---
     tune_dict = tune.calculate(measure_input, input_files)
     common_header = _get_header(measure_input, tune_dict)
@@ -82,7 +83,7 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
         phase.write_special(measure_input, phase_results[plane][phase.COMPENSATED], tune_dict[plane]["QF"], plane)
         if measure_input.only_coupling:
             continue
-        
+
         # Beta -
         beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_results[plane][phase.COMPENSATED], common_header, plane)
         beta_from_phase.write(beta_df, beta_header, outputdir, plane)
@@ -90,11 +91,11 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
 
         ip_df = interaction_point.betastar_from_phase(measure_input, phase_results[plane][phase.COMPENSATED])
         interaction_point.write(ip_df, common_header, outputdir, plane)
-        
+
         # Action -
         invariants[plane] = kick.calculate(measure_input, input_files, ratio, common_header, plane)
 
-        # Dispersion - 
+        # Dispersion -
         dispersion.calculate_orbit(measure_input, input_files, common_header, plane)
         dispersion.calculate_dispersion(measure_input, input_files, common_header, plane)
         if plane == "X":
@@ -108,10 +109,10 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
             LOGGER.error("Coupling failed with zero-division error. Single plane BPMs? Skipped.")
         else:
             raise
-    
+
     if measure_input.only_coupling:
         return
-    
+
     # Nonlinear Optics ---
     if 'rdt' in measure_input.nonlinear:
         iotools.create_dirs(outputdir / "rdt")
@@ -136,7 +137,7 @@ def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict
 
     Returns:
     """
-    dpps = np.array([dpp_val for dpp_val in set(input_files.dpps("X"))])
+    dpps = np.array(list(set(input_files.dpps("X"))))
     if np.max(dpps) - np.min(dpps) == 0.0:
         return
     for plane in PLANES:

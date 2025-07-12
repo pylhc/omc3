@@ -60,6 +60,8 @@ Model Creation Keyword Args:
 
         action: ``store_true``
 """
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 
@@ -91,8 +93,8 @@ class Psbooster(PsBase):
     def get_parameters():
         params = super(Psbooster, Psbooster).get_parameters()
         params.add_parameter(
-            name="ring", 
-            type=int, 
+            name="ring",
+            type=int,
             choices=(1, 2, 3, 4),
             required=True,
             help="Ring to use.")

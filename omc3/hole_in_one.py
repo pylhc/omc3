@@ -30,14 +30,14 @@ by a different set of files:
 To run either of the two or both steps, see options ``--harpy`` and ``--optics``.
 """
 from __future__ import annotations
+
 import os
-from collections.abc import Generator
 from copy import deepcopy
 from datetime import datetime, timezone
 from os.path import abspath, basename, dirname, join
+from typing import TYPE_CHECKING
 
 import turn_by_turn as tbt
-from generic_parser import DotDict
 from generic_parser.entrypoint_parser import (
     EntryPoint,
     EntryPointParameters,
@@ -54,6 +54,11 @@ from omc3.optics_measurements import measure_optics, phase
 from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -252,8 +257,8 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--coupling_method**
         Choices: ``(0, 1, 2)``
         Default: ``2``
-      - **coupling_pairing**: Pairing mode for 2 BPM coupling method. If 0 is given, omc3 
-        will try to determine the best candidate. If a number n>=1 is given, then some BPMs are 
+      - **coupling_pairing**: Pairing mode for 2 BPM coupling method. If 0 is given, omc3
+        will try to determine the best candidate. If a number n>=1 is given, then some BPMs are
         skipped and the n-th following BPM downstream is used for the pairing.
 
         Flags: **--coupling_pairing**
@@ -302,7 +307,7 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--union**
         Action: ``store_true``
 
-      - **analyse_dpp** *(float)*: Filter files to analyse by this value 
+      - **analyse_dpp** *(float)*: Filter files to analyse by this value
         (in analysis for tune, phase, rdt and crdt). Use `None` for no filtering.
 
         Flags: **--analyse_dpp**
@@ -436,7 +441,7 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
         bunch_id_str = f"_bunchID{bunch_id}"
         new_options.files = join(dir_name, f"{file_name}{bunch_id_str}{suffix}")
         yield (
-            tbt.TbtData([tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns), 
+            tbt.TbtData([tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns),
             new_options
         )
 
@@ -444,7 +449,7 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
 def _measure_optics(lins, optics_opt):
     if len(lins) == 0:
         lins = optics_opt.files
-    
+
     if optics_opt.accelerator.model is None:
         raise AttributeError("No accelerator model was provided. Cannot perform optics analysis.")
 
@@ -572,7 +577,7 @@ def harpy_params():
 
 def _optics_entrypoint(params):
     options, rest = EntryPoint(optics_params(), strict=False).parse(params)
-    
+
     if "rdt" in options.nonlinear and not 2 <= options.rdt_magnet_order <= 8:
         raise AttributeError("The magnet order for RDT calculation should be between 2 and 8 (inclusive).")
 

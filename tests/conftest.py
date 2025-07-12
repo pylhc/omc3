@@ -9,21 +9,19 @@ import random
 import shutil
 import string
 import sys
+from collections.abc import Callable
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
-from collections.abc import Callable
+
 import git
-
-
+import pytest
+from generic_parser import DotDict
 from pandas._testing import assert_dict_equal
 from pandas.testing import assert_frame_equal
 
-import pytest
-
-from generic_parser import DotDict
-from omc3 import model
 import omc3
+from omc3 import model
 
 INPUTS = Path(__file__).parent / 'inputs'
 MODELS = INPUTS / "models"

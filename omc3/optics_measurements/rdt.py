@@ -7,7 +7,7 @@ It provides functions to compute global resonance driving terms **f_jklm**.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -32,8 +32,8 @@ from omc3.optics_measurements.constants import (
     NAME2,
     PHASE,
     PHASE_ADV,
-    REAL,
     RDT_FOLDER,
+    REAL,
     S2,
     S,
 )
@@ -42,19 +42,15 @@ from omc3.optics_measurements.data_models import (
     check_and_warn_about_offmomentum_data,
     filter_for_dpp,
 )
-from omc3.optics_measurements.phase import (
-    COMPENSATED,
-    UNCOMPENSATED,
-    CompensationMode,
-    PhaseDict,
-)
+from omc3.optics_measurements.phase import COMPENSATED, UNCOMPENSATED, CompensationMode, PhaseDict
 from omc3.optics_measurements.toolbox import df_diff
-from omc3.optics_measurements.tune import TuneDict
 from omc3.utils import iotools, logging_tools, stats
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from generic_parser import DotDict
     from numpy.typing import ArrayLike
+
+    from omc3.optics_measurements.tune import TuneDict
 
 NBPMS_FOR_90 = 3
 LOGGER = logging_tools.get_logger(__name__)
@@ -127,7 +123,7 @@ def calculate(
     meas_input = deepcopy(measure_input)
     meas_input["compensation"] = CompensationMode.NONE
     LOGGER.info(f"Calculating RDTs up to magnet order {meas_input['rdt_magnet_order']}")
-    
+
     dpp_value = meas_input.analyse_dpp
     if dpp_value is None:
         for plane in PLANES:
@@ -141,7 +137,7 @@ def calculate(
     for rdts, plane_str  in ((single_plane_rdts, single), (double_plane_rdts, double)):
         for plane in PLANES:
             bpm_names = input_files.bpms(
-                plane=plane if (plane_str == single) else None, 
+                plane=plane if (plane_str == single) else None,
                 dpp_value=dpp_value
             )
 
@@ -166,19 +162,19 @@ def write(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, plane: 
 @contextmanager
 def _check_amp_error(rdt: RDTTuple):
     """ Context manager to catch a specific type of ValueError, regarding the AMP_ column not found in the output,
-    as raised by get_line_sign_and_suffix. 
-    
+    as raised by get_line_sign_and_suffix.
+
     Alternatively, we could just raise a custom Error Type? """
     try:
-        yield 
+        yield
     except ValueError as e:
         error_str = str(e)
         message  = f"RDT calculation failed for {jklm2str(*rdt)}."
 
-        if "column AMP" not in error_str:  # raise unexpected Value errors 
+        if "column AMP" not in error_str:  # raise unexpected Value errors
             raise ValueError(message) from e
-            
-        LOGGER.warning(f"{message}: {error_str}")  
+
+        LOGGER.warning(f"{message}: {error_str}")
 
 
 def _rdt_to_str(rdt: RDTTuple):
@@ -189,15 +185,16 @@ def _rdt_to_str(rdt: RDTTuple):
 def _rdt_to_order_and_type(rdt: RDTTuple):
     j, k, l, m = rdt  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
-    orders = dict(((1, "dipole"), 
-                   (2, "quadrupole"), 
-                   (3, "sextupole"), 
-                   (4, "octupole"),
-                   (5, "decapole"),
-                   (6, "dodecapole"),
-                   (7, "tetradecapole"),
-                   (8, "hexadecapole"),
-                 ))
+    orders = {
+        1: "dipole",
+        2: "quadrupole",
+        3: "sextupole",
+        4: "octupole",
+        5: "decapole",
+        6: "dodecapole",
+        7: "tetradecapole",
+        8: "hexadecapole",
+    }
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
@@ -219,9 +216,8 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
 
     # Merge final dataframe
     model: pd.DataFrame = meas_input.accelerator.model
-    for_rdts = pd.merge(filtered.loc[:, [NAME2, MEASUREMENT, f"{ERR}{MEASUREMENT}"]], model.loc[:, [S]],
+    return pd.merge(filtered.loc[:, [NAME2, MEASUREMENT, f"{ERR}{MEASUREMENT}"]], model.loc[:, [S]],
                         how="inner", left_index=True, right_index=True)
-    return for_rdts
 
 
 def _get_n_upper_diagonals(n, shape):
@@ -230,8 +226,7 @@ def _get_n_upper_diagonals(n, shape):
 
 def _determine_line(rdt: RDTTuple, plane: str) -> dict[str, LineTuple]:
     j, k, l, m = rdt  # noqa: E741
-    lines = dict(X=(1 - j + k, m - l, 0),
-                 Y=(k - j, 1 - l + m, 0))
+    lines = {"X": (1 - j + k, m - l, 0), "Y": (k - j, 1 - l + m, 0)}
     return lines[plane]
 
 
@@ -244,7 +239,7 @@ def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple):
 
 
 def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invariants, plane, rdt: RDTTuple):
-    dpp_value = meas_input.analyse_dpp 
+    dpp_value = meas_input.analyse_dpp
 
     df = pd.DataFrame(phase_data)
     second_bpms = df.loc[:, NAME2].to_numpy()
@@ -259,7 +254,7 @@ def _process_rdt(meas_input: DotDict, input_files: InputFiles, phase_data, invar
     comp_coeffs1 = to_complex(df_all_amps.loc[df.index, :], df_all_phases.loc[df.index, :])
     # Multiples of tunes needs to be added to phase at second BPM if that is in second turn
     comp_coeffs2 = to_complex(
-        df_all_amps.loc[second_bpms, :], 
+        df_all_amps.loc[second_bpms, :],
         _add_tunes_if_in_second_turn(
             df, input_files, line, df_all_phases.loc[second_bpms, :].to_numpy(), dpp_value
         )
@@ -377,14 +372,10 @@ def complex_secondary_lines(phase_adv: ArrayLike[float], err_padv: ArrayLike[flo
 
 
 def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1):
-    try:
+    with suppress(AttributeError):
         amplitudes = amplitudes.to_numpy()
-    except AttributeError:
-        pass
 
-    try:
+    with suppress(AttributeError):
         phases = phases.to_numpy()
-    except AttributeError:
-        pass
 
     return amplitudes * np.exp(2j * np.pi * phases / period)

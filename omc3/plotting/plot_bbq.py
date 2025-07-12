@@ -67,16 +67,16 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 - **y_lim** *(float)*:
 
     Y-Axis limits.
-    
-
 """
+from __future__ import annotations
+
 from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
 
 import matplotlib.dates as mdates
 import numpy as np
-from generic_parser import entrypoint, EntryPointParameters
+from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
 from generic_parser.entrypoint_parser import save_options_to_config
 from matplotlib import pyplot as plt
@@ -86,12 +86,17 @@ from pandas.plotting import register_matplotlib_converters
 from omc3 import amplitude_detuning_analysis as ad_ana
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
-from omc3.plotting.utils import colors as pcolors, style as pstyle
+from omc3.plotting.utils import colors as pcolors
+from omc3.plotting.utils import style as pstyle
 from omc3.tune_analysis import kick_file_modifiers as kick_mod
-from omc3.tune_analysis.constants import (get_mav_window_header, get_used_in_mav_col,
-                                          get_bbq_col, get_mav_col)
+from omc3.tune_analysis.constants import (
+    get_bbq_col,
+    get_mav_col,
+    get_mav_window_header,
+    get_used_in_mav_col,
+)
 from omc3.utils import logging_tools
-from omc3.utils.iotools import UnionPathStr, PathOrStr, PathOrStrOrDataFrame
+from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame, UnionPathStr
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -168,7 +173,7 @@ def main(opt):
     _save_options(opt)
     pstyle.set_style(opt.pop("plot_styles"), opt.pop("manual_style"))
 
-    bbq_df = kick_mod.read_timed_dataframe(opt.input) if isinstance(opt.input, (Path, str)) else opt.input
+    bbq_df = kick_mod.read_timed_dataframe(opt.input) if isinstance(opt.input, Path | str) else opt.input
     opt.pop("input")
 
     if opt.kick is not None:
@@ -179,7 +184,7 @@ def main(opt):
         with suppress(KeyError):
             window = bbq_df.headers[get_mav_window_header()]
 
-        kick_df = kick_mod.read_timed_dataframe(opt.kick) if isinstance(opt.kick, (Path, str)) else opt.kick
+        kick_df = kick_mod.read_timed_dataframe(opt.kick) if isinstance(opt.kick, Path | str) else opt.kick
         opt.interval = ad_ana.get_approx_bbq_interval(bbq_df, kick_df.index, window)
         bbq_df = bbq_df.loc[opt.interval[0]:opt.interval[1]]
     opt.pop("kick")
@@ -229,7 +234,7 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
                                     bbq_df[get_bbq_col(plane)],
                                     color=pcolors.change_color_brightness(color, .4),
                                     marker="o", markerfacecolor="None",
-                                    label="$Q_{:s}$".format(plane.lower(),)
+                                    label=f"$Q_{plane.lower():s}$"
                                     )[0]
         filtered_data = bbq_df.loc[mask, get_bbq_col(plane)].dropna()
         handles[len(PLANES)+idx] = axs[idx].plot(filtered_data.index, filtered_data.to_numpy(),
@@ -256,7 +261,7 @@ def _plot_bbq_data(bbq_df, interval=None, x_lim=None, y_lim=None, two_plots=Fals
             axs[idx].axvline(x=interval[1], color="red")
 
         if two_plots:
-            axs[idx].set_ylabel("$Q_{:s}$".format(PLANES[idx]))
+            axs[idx].set_ylabel(f"$Q_{PLANES[idx]:s}$")
         else:
             axs[idx].set_ylabel('Tune')
 

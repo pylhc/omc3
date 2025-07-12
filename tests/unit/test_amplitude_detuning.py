@@ -24,23 +24,23 @@ def test_bbq_plot(tmp_path):
 @pytest.mark.extended
 @pytest.mark.parametrize("method", ["cut", "minmax"])
 def test_amplitude_detuning_full(tmp_path, method):
-    setup = dict(
-        beam=1,
-        kick=get_input_dir(),
-        plane="Y",
-        label="B1Vkicks",
-        bbq_in=get_input_dir() / "bbq_ampdet.tfs",
-        detuning_order=1,
-        output=tmp_path,
-        window_length=100 if method != "outliers" else 50,
-        tunes=[0.2838, 0.3104],
-        tune_cut=0.001,
-        tunes_minmax=[0.2828, 0.2848, 0.3094, 0.3114],
-        fine_window=50,
-        fine_cut=4e-4,
-        outlier_limit=1e-4,
-        bbq_filtering_method=method,
-    )
+    setup = {
+        "beam": 1,
+        "kick": get_input_dir(),
+        "plane": "Y",
+        "label": "B1Vkicks",
+        "bbq_in": get_input_dir() / "bbq_ampdet.tfs",
+        "detuning_order": 1,
+        "output": tmp_path,
+        "window_length": 100 if method != "outliers" else 50,
+        "tunes": [0.2838, 0.3104],
+        "tune_cut": 0.001,
+        "tunes_minmax": [0.2828, 0.2848, 0.3094, 0.3114],
+        "fine_window": 50,
+        "fine_cut": 4e-4,
+        "outlier_limit": 1e-4,
+        "bbq_filtering_method": method,
+    }
     kick_df, bbq_df = analyse_with_bbq_corrections(**setup)
 
     assert len(list(tmp_path.glob("*.tfs"))) == 2
@@ -49,14 +49,14 @@ def test_amplitude_detuning_full(tmp_path, method):
 
 @pytest.mark.extended
 def test_no_bbq_input(tmp_path):
-    setup = dict(
-        beam=1,
-        kick=get_input_dir(),
-        plane="Y",
-        label="B1Vkicks",
-        detuning_order=1,
-        output=tmp_path,
-    )
+    setup = {
+        "beam": 1,
+        "kick": get_input_dir(),
+        "plane": "Y",
+        "label": "B1Vkicks",
+        "detuning_order": 1,
+        "output": tmp_path,
+    }
     kick_df, bbq_df = analyse_with_bbq_corrections(**setup)
 
     assert bbq_df is None
@@ -66,18 +66,18 @@ def test_no_bbq_input(tmp_path):
 
 @pytest.mark.extended
 def test_amplitude_detuning_2d(tmp_path):
-    setup = dict(
-        beam=1,
-        kick=get_2d_input_dir(),
-        plane="XY",
-        label="B1 2D Kicks",
-        bbq_in=get_2d_input_dir() / "bbq_ampdet.tfs",
-        detuning_order=1,
-        output=tmp_path,
-        window_length=100,
-        outlier_limit=2e-4,
-        bbq_filtering_method="outliers",
-    )
+    setup = {
+        "beam": 1,
+        "kick": get_2d_input_dir(),
+        "plane": "XY",
+        "label": "B1 2D Kicks",
+        "bbq_in": get_2d_input_dir() / "bbq_ampdet.tfs",
+        "detuning_order": 1,
+        "output": tmp_path,
+        "window_length": 100,
+        "outlier_limit": 2e-4,
+        "bbq_filtering_method": "outliers",
+    }
     kick_df, bbq_df = analyse_with_bbq_corrections(**setup)
 
     assert len(list(tmp_path.glob("*.tfs"))) == 2
@@ -92,15 +92,15 @@ def test_amplitude_detuning_2d(tmp_path):
 
 @pytest.mark.extended
 def test_amplitude_detuning_previous_bbq_compensation(tmp_path):
-    setup = dict(
-        beam=1,
-        kick=get_input_dir(),
-        plane="Y",
-        label="B1VKicks",
-        bbq_in="previous",
-        detuning_order=1,
-        output=tmp_path,
-    )
+    setup = {
+        "beam": 1,
+        "kick": get_input_dir(),
+        "plane": "Y",
+        "label": "B1VKicks",
+        "bbq_in": "previous",
+        "detuning_order": 1,
+        "output": tmp_path,
+    }
     kick_df, bbq_df = analyse_with_bbq_corrections(**setup)
 
     assert len(list(tmp_path.glob("*.tfs"))) == 1

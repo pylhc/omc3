@@ -1,9 +1,9 @@
-""" 
+"""
 Tests for the hole in one analysis.
 Tests hole_in_one as a unit, to see if it runs as expected.
 
-A goal to implement these tests was to make sure that the 
-following bugs are fixed, i.e. for omc3 <= 0.15.3 some of the test configurations will fail for 
+A goal to implement these tests was to make sure that the
+following bugs are fixed, i.e. for omc3 <= 0.15.3 some of the test configurations will fail for
 one of the following reasons:
 
     - In the optics analysis ERRAMPX/Y was required, but this column
@@ -15,14 +15,14 @@ one of the following reasons:
 
     - Pandas to numpy dtype conversions for the lin files went wrong and numpy had 'obj' arrays.
     https://github.com/pylhc/omc3/issues/453
-    
+
     - RDT and CRDT dimensions mismatch when off-momentum files were analysed.
     https://github.com/pylhc/omc3/issues/456
 
 """
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -48,6 +48,9 @@ from omc3.optics_measurements.constants import (
     TOTAL_PHASE_NAME,
 )
 from tests.conftest import INPUTS, ids_str
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 MODEL_DIR = INPUTS / "models" / "2022_inj_b1_acd"
 SDDS_DIR = INPUTS / "lhcb1_tbt_inj_on_off_mom"
@@ -115,9 +118,9 @@ def test_hole_in_two(tmp_path, clean, which_files, caplog):
             _check_nonlinear_optics_files(optics_output, "crdt", order=rdt_order)
 
             _check_caplog_for_rdt_warnings(
-                caplog, 
-                to_be_found=(which_files == "all") and (dpp is None), 
-                phase_compensation=compensation != phase.CompensationMode.NONE, 
+                caplog,
+                to_be_found=(which_files == "all") and (dpp is None),
+                phase_compensation=compensation != phase.CompensationMode.NONE,
             )
 
 
@@ -162,10 +165,10 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
     _check_linear_optics_files(output, off_momentum=(which_files == "all"))
     _check_nonlinear_optics_files(output, "rdt", order=rdt_order)
     _check_nonlinear_optics_files(output, "crdt", order=rdt_order)
-    
+
     _check_caplog_for_rdt_warnings(
-        caplog, 
-        to_be_found=False,  # no warnings should be present, as dpp is set to 0 
+        caplog,
+        to_be_found=False,  # no warnings should be present, as dpp is set to 0
         phase_compensation=False,  # phase compensation set to "none" above
     )
 
@@ -195,7 +198,7 @@ def _check_linear_optics_files(outputdir: Path, off_momentum: bool = False):
         for filename in   (DISPERSION_NAME,):
             for plane in ("x", "y"):
                 assert (outputdir / f"{filename}{plane}{EXT}").is_file()
-        
+
         assert (outputdir / f"{NORM_DISP_NAME}{'x'}{EXT}").is_file()
 
 
@@ -210,8 +213,7 @@ def _check_nonlinear_optics_files(outputdir: Path, type_: str, order: int):
         for orientation in ("normal", "skew"):
             full_manget_name = f"{orientation}_{magnet}"
 
-            if type_ == "crdt":
-                if full_manget_name in ("skew_octupole", "normal_quadrupole"):
+            if type_ == "crdt" and full_manget_name in ("skew_octupole", "normal_quadrupole"):
                     continue
 
             magnet_dir = nonlin_dir / full_manget_name
@@ -224,7 +226,7 @@ def _check_caplog_for_rdt_warnings(caplog, to_be_found: bool = False, phase_comp
     required = {"RDT": 2, "CRDT": 2, "Tune": 2, "Phase": 2 * (1 + phase_compensation)}  # per plane; phase: also per compensation
 
     for record in caplog.records:
-        for key in found.keys():
+        for key in found:
             if f"included in the {key} calculation" in record.msg:
                 assert to_be_found, "Warnings still present, but should not have been!"
                 assert "Off-momentum files for analysis found!" in record.msg
@@ -237,10 +239,10 @@ def _check_caplog_for_rdt_warnings(caplog, to_be_found: bool = False, phase_comp
 
 
 def _get_sdds_files(which: str) -> list[Path]:
-    if which in SDDS_FILES.keys():
+    if which in SDDS_FILES:
         return [SDDS_DIR / sdds_file for sdds_file in SDDS_FILES[which]]
 
-    if "all":    
-        return [SDDS_DIR / sdds_file for sdds_file in SDDS_FILES["0Hz"] + SDDS_FILES["+50Hz"] + SDDS_FILES["-50Hz"]] 
-    
+    if "all":
+        return [SDDS_DIR / sdds_file for sdds_file in SDDS_FILES["0Hz"] + SDDS_FILES["+50Hz"] + SDDS_FILES["-50Hz"]]
+
     raise ValueError(f"which should be one of {SDDS_FILES.keys()} or 'all'")

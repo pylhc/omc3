@@ -4,12 +4,18 @@ PS Booster Model Creator
 
 This module provides convenience functions for model creation of the ``PSB``.
 """
+from __future__ import annotations
+
 import shutil
+from typing import TYPE_CHECKING
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
-from omc3.model.accelerators.psbooster import Psbooster
-from omc3.model.model_creators.ps_base_model_creator import PsBaseModelCreator
 from omc3.model.constants import ERROR_DEFFS_TXT
+from omc3.model.model_creators.ps_base_model_creator import PsBaseModelCreator
+
+if TYPE_CHECKING:
+    from omc3.model.accelerators.psbooster import Psbooster
+
 
 class PsboosterModelCreator(PsBaseModelCreator):
     acc_model_name: str = "psb"

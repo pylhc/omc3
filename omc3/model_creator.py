@@ -7,17 +7,20 @@ Entrypoint to run the model creator for LHC, PSBooster and PS models.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.model import manager as model_manager
 from omc3.model.accelerators.accelerator import Accelerator, AcceleratorDefinitionError
 from omc3.model.constants import Fetcher
-from omc3.model.model_creators.abstract_model_creator import ModelCreator
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.parsertools import print_help, require_param
+
+if TYPE_CHECKING:
+    from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -142,7 +145,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
         print("---- Model Creator | Usage ----\n")
         print_help(model_manager._get_params())
         print_help(_get_params())
-        return
+        return None
 
     # proceed to the creator
     accel_inst: Accelerator = model_manager.get_accelerator(accel_opt)
@@ -167,7 +170,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
     except AcceleratorDefinitionError:
         if not opt.list_choices:
             raise
-        return
+        return None
 
     # Save config only now, to not being written out for each time the choices are listed
     save_config(outputdir, opt=opt, unknown_opt=accel_opt, script=__file__)

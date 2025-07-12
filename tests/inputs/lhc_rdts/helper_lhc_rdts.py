@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
 import tfs
 import turn_by_turn as tbt
 from cpymad.madx import Madx
@@ -30,6 +30,9 @@ from tests.utils.lhc_rdts.functions import (
     get_tbt_name,
 )
 
+if TYPE_CHECKING:
+    import pandas as pd
+
 ACC_MODELS = Path("/afs/cern.ch/eng/acc-models/lhc/2024/")
 assert ACC_MODELS.exists(), "ACC_MODELS does not exist"
 
@@ -41,7 +44,7 @@ DATA_DIR.mkdir(exist_ok=True)
 MADX_FILENAME = "job.create_model_nominal.madx"
 
 def to_ng_rdts(rdts: list[str] | tuple[str]) -> list[str]:
-    return list(set([rdt.split("_")[0] for rdt in rdts]))
+    return list({rdt.split("_")[0] for rdt in rdts})
 
 
 def create_model_dir(beam: int) -> None:
@@ -59,9 +62,9 @@ def create_model_dir(beam: int) -> None:
         modifiers=[ACC_MODELS / "operation/optics/R2024aRP_A30cmC30cmA10mL200cm.madx"],
         outputdir=model_dir,
     )
-    with open(model_dir / MADX_FILENAME, "r") as f:
+    with open(model_dir / MADX_FILENAME) as f:
         lines = f.readlines()
-    
+
     # Make the sequence as beam 1 or 2
     make_madx_seq(model_dir, lines, beam)
 
@@ -94,7 +97,7 @@ save, sequence=lhcb{beam}, file="lhcb{beam}_saved.seq", noexpr=false;
 def handle_beam4(line: str) -> str:
     if "define_nominal_beams" in line: # replace the beam definition with beam 4 (bv=1 not -1)
         return "beam, sequence=LHCB2, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;\n"
-    elif "acc-models-lhc/lhc.seq" in line: # replace the sequence with beam 4
+    if "acc-models-lhc/lhc.seq" in line: # replace the sequence with beam 4
         return line.replace("acc-models-lhc/lhc.seq", "acc-models-lhc/lhcb4.seq")
     return line
 
@@ -106,22 +109,22 @@ def update_model_with_ng(beam: int) -> None:
         # Create twiss_elements and twiss_ac and twiss data tables in model folder
         mad.send(f"""
 hnams = {{
-    "name", "type", "title", "origin", "date", "time", "refcol", "direction", 
-    "observe", "energy", "deltap", "length", "q1", "q2", "q3", "dq1", "dq2", 
+    "name", "type", "title", "origin", "date", "time", "refcol", "direction",
+    "observe", "energy", "deltap", "length", "q1", "q2", "q3", "dq1", "dq2",
     "dq3", "alfap", "etap", "gammatr"
-}}        
+}}
 cols = {{
     'name', 'kind','s','betx','alfx','bety','alfy', 'mu1' ,'mu2', 'r11', 'r12',
     'r21', 'r22', 'x','y','dx','dpx','dy','dpy'
 }}
 str_cols = py:recv()
 cols = MAD.utility.tblcat(cols, str_cols)
-if {beam} == 1 then  -- Cycle the sequence to the correct location 
+if {beam} == 1 then  -- Cycle the sequence to the correct location
     MADX.lhcb1:cycle("MSIA.EXIT.B1")
 end
 -- Calculate the twiss parameters with coupling and observe the BPMs
 ! Coupling needs to be true to calculate Edwards-Teng parameters and R matrix
-twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}} 
+twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}}
 -- Select everything
 twiss_elements:select(nil, \ -> true)
 -- Deselect the drifts
@@ -187,8 +190,7 @@ def convert_tfs_to_madx(tfs_df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     tfs_df = tfs_df.set_index("NAME")
 
     # Remove the rows with "$start" and "$end" in the NAME column
-    tfs_df = tfs_df.filter(regex=r"^(?!\$start|\$end).*$", axis="index")
-    return tfs_df
+    return tfs_df.filter(regex=r"^(?!\$start|\$end).*$", axis="index")
 
 
 strength_cols = ["k1l", "k2l", "k3l", "k4l", "k5l", "k1sl", "k2sl", "k3sl", "k4sl", "k5sl"]
@@ -306,8 +308,8 @@ def get_twiss_elements(beam: int) -> tfs.TfsDataFrame:
 twiss_elements = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true}}
         """)
         add_strengths_to_twiss(mad, "twiss_elements")
-        df = mad.twiss_elements.to_df()
-    return df
+        return mad.twiss_elements.to_df()
+
 
 def write_tbt_file(beam: int) -> pd.DataFrame:
     tbt_path = DATA_DIR / get_tbt_name(beam,)
@@ -315,7 +317,7 @@ def write_tbt_file(beam: int) -> pd.DataFrame:
     with MAD() as mad:
         initialise_model(mad, beam)
         observe_BPMs(mad, beam)
-        # Octupolar resonances are harder to observe with only 1000 turns 
+        # Octupolar resonances are harder to observe with only 1000 turns
         # so we need to increase the kick amplitude for order 3
         mad.send(f"""
 local t0 = os.clock()

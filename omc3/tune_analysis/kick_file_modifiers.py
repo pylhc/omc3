@@ -4,34 +4,56 @@ Kick File Modifiers
 
 Functions to add data to or extract data from **kick_ac** files.
 """
-from pathlib import Path
-from typing import Tuple, Union, Sequence
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 import tfs
-from scipy import odr
 from tfs import TfsDataFrame
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import KICK_NAME, TIME, ERR, NAT_TUNE, ACTION
+from omc3.optics_measurements.constants import ACTION, ERR, KICK_NAME, NAT_TUNE, TIME
 from omc3.tune_analysis import bbq_tools
-from omc3.tune_analysis.bbq_tools import OutlierFilterOpt, FilterOpts, MinMaxFilterOpt
-from omc3.tune_analysis.constants import (get_odr_header_coeff_corrected,
-                                          get_odr_header_err_coeff_corrected,
-                                          get_odr_header_err_coeff, get_odr_header_coeff,
-                                          get_natq_corr_col, get_corr_natq_err_col,
-                                          get_natq_err_col, get_natq_col, get_bbq_col,
-                                          get_mav_col, get_mav_err_col, get_used_in_mav_col,
-                                          get_time_col, get_action_col, get_action_err_col,
-                                          get_mav_window_header, get_outlier_limit_header,
-                                          get_fine_window_header, get_fine_cut_header,
-                                          get_min_tune_header, get_max_tune_header,
-                                          AmpDetData, FakeOdrOutput, get_kick_out_name, COEFFICIENT, CORRECTED,
-                                          get_odr_header_default,
-                                          )
+from omc3.tune_analysis.bbq_tools import FilterOpts, MinMaxFilterOpt, OutlierFilterOpt
+from omc3.tune_analysis.constants import (
+    COEFFICIENT,
+    CORRECTED,
+    AmpDetData,
+    FakeOdrOutput,
+    get_action_col,
+    get_action_err_col,
+    get_bbq_col,
+    get_corr_natq_err_col,
+    get_fine_cut_header,
+    get_fine_window_header,
+    get_kick_out_name,
+    get_mav_col,
+    get_mav_err_col,
+    get_mav_window_header,
+    get_max_tune_header,
+    get_min_tune_header,
+    get_natq_col,
+    get_natq_corr_col,
+    get_natq_err_col,
+    get_odr_header_coeff,
+    get_odr_header_coeff_corrected,
+    get_odr_header_default,
+    get_odr_header_err_coeff,
+    get_odr_header_err_coeff_corrected,
+    get_outlier_limit_header,
+    get_time_col,
+    get_used_in_mav_col,
+)
 from omc3.utils import logging_tools
 from omc3.utils.time_tools import CERNDatetime, get_cern_time_format
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
+
+    from scipy import odr
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -81,7 +103,7 @@ def add_bbq_data(kick_df: pd.DataFrame, bbq_df: pd.DataFrame, column: str, bbq_c
 
 
 def add_moving_average(kickac_df: TfsDataFrame, bbq_df: TfsDataFrame, filter_opt: FilterOpts,
-                       ) -> Tuple[TfsDataFrame, TfsDataFrame]:
+                       ) -> tuple[TfsDataFrame, TfsDataFrame]:
     """Adds the moving average of the bbq data to kickac_df and bbq_df."""
     LOG.debug("Calculating moving average.")
 
@@ -166,7 +188,7 @@ def add_corrected_natural_tunes(kickac_df: pd.DataFrame) -> pd.DataFrame:
     return kickac_df
 
 
-def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output, 
+def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output,
             action_plane: str, tune_plane: str, corrected: bool = False):
     """
     Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.
@@ -273,16 +295,16 @@ def get_timestamp_index(index: pd.Index) -> pd.Index:
     return pd.Index([i.timestamp() for i in index])
 
 
-def read_timed_dataframe(path: Union[str, Path]) -> tfs.TfsDataFrame:
+def read_timed_dataframe(path: Path | str) -> tfs.TfsDataFrame:
     df = tfs.read(path, index=get_time_col())
     df.index = pd.Index([CERNDatetime.from_cern_utc_string(i) for i in df.index], dtype=object)
     return df
 
 
-def write_timed_dataframe(path: Union[str, Path], df: tfs.TfsDataFrame):
+def write_timed_dataframe(path: Path | str, df: tfs.TfsDataFrame):
     df = df.copy()
     df.index = pd.Index([i.strftime(get_cern_time_format()) for i in df.index], dtype=str)
-    tfs.write(path, df, save_index=get_time_col(), headerswidth=max(len(k) for k in df.headers.keys()))
+    tfs.write(path, df, save_index=get_time_col(), headerswidth=max(len(key) for key in df.headers))
 
 
 def read_two_kick_files_from_folder(folder: Path) -> tfs.TfsDataFrame:

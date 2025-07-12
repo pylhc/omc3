@@ -1,7 +1,7 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
-from collections.abc import Sequence
 
 import numpy as np
 import pytest
@@ -87,8 +87,8 @@ class CorrectionParameters:
     include_ips_in_arc_by_arc: str | None = None
     seed: int = 0
 
-    
-    
+
+
 def get_skew_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"2018_inj_b{beam}_11m" / "twiss_skew_quadrupole_error.dat",
@@ -129,7 +129,7 @@ def get_arc_by_arc_params(beam):
 
 
 # Tests -----------------------------------------------------------------------
- 
+
 @pytest.mark.basic
 @pytest.mark.parametrize('correction_type', ('skew', 'normal'))
 def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction_type: Literal['skew', 'normal', 'arc_by_arc']):
@@ -159,10 +159,10 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
 
     # create fake measurement data
     params, errors = zip(
-        *[(k, v) for k, v in RELATIVE_ERRORS.items() 
+        *[(k, v) for k, v in RELATIVE_ERRORS.items()
         if k in correction_params.optics_params or f"{k}R" in correction_params.optics_params]
     )
-    
+
     randomize = [VALUES, ERRORS]
 
     fake_measurement(
@@ -196,7 +196,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
         "model": tfs.read(model_inj_beams.model_dir / TWISS_ELEMENTS_DAT, index=NAME),
         "errors": twiss_errors_df,
     }
-    
+
     # Test if corrected model is closer to model used to create measurement
     diff_rms_prev = None
     for iter_step in range(iterations):
@@ -206,7 +206,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
             model_iter_df = tfs.read(tmp_path / f"twiss_{iter_step}.tfs", index=NAME)
             model_iter_df = add_coupling_to_model(model_iter_df)
             models[f"iter{iter_step}"] = model_iter_df
-        
+
 
         diff_df = diff_twiss_parameters(model_iter_df, twiss_errors_df, correction_params.optics_params)
         if TUNE in correction_params.optics_params:
@@ -228,7 +228,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
         if diff_rms_prev is not None:
             # assert RMS after correction smaller than tolerances
             for param in correction_params.optics_params:
-                tolerance = RMS_TOL_DICT[param] 
+                tolerance = RMS_TOL_DICT[param]
                 assert diff_rms[param] < tolerance, (
                     f"RMS for {param} in iteration {iter_step} larger than tolerance: "
                     f"{diff_rms[param]} >= {tolerance}."
@@ -242,18 +242,18 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
             )
 
         diff_rms_prev = diff_rms
-    
+
 
 
 @pytest.mark.basic
 @pytest.mark.parametrize('correction_type', ('arc_by_arc',))
 def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict, correction_type: Literal['skew', 'normal', 'arc_by_arc']):
-    """ This test is similar to `test_lhc_global_correct` above, 
+    """ This test is similar to `test_lhc_global_correct` above,
     but as the arc-by-arc correction does not work yet as intended (see https://github.com/pylhc/omc3/issues/480),
     checking the improvement of the phase-advance does not work very well.
     So no randomizing errors here and only one iteration step.
     And the used correctors are only the ones in the arcs with errors.
-    
+
     TODO: (after #480 has been fixed)
      - Remove which correctors are used, should be automatic in the global correction
      - Compare RMS phase advance to model over all arcs (getting smaller and being below tolerance)
@@ -280,10 +280,10 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
 
     # create fake measurement data
     params, errors = zip(
-        *[(k, v) for k, v in RELATIVE_ERRORS.items() 
+        *[(k, v) for k, v in RELATIVE_ERRORS.items()
         if k in correction_params.optics_params or f"{k}R" in correction_params.optics_params]
     )
-    
+
     randomize = []
 
     fake_measurement(
@@ -319,7 +319,7 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
     }
 
     # Test if corrected model is closer to model used to create measurement
-    model_iter_df = tfs.read(tmp_path / f"twiss_1.tfs", index=NAME)
+    model_iter_df = tfs.read(tmp_path / "twiss_1.tfs", index=NAME)
     models['iter1'] = model_iter_df
 
     for plane in ("X", "Y"):
@@ -332,8 +332,8 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
         for arc in ['23', '34', '67', '78']:  # check only arcs with errors for now
             bpm_start  = f'BPM.8R{arc[0]}.B{beam}'
             bpm_end  = f'BPM.8L{arc[1]}.B{beam}'
-            abs_phase_diff_arc_after = abs(corrected_mu.loc[bpm_end] - corrected_mu.loc[bpm_start]) 
-            abs_phase_diff_arc_before = abs(diff_mu_errors.loc[bpm_end] - diff_mu_errors.loc[bpm_start]) 
+            abs_phase_diff_arc_after = abs(corrected_mu.loc[bpm_end] - corrected_mu.loc[bpm_start])
+            abs_phase_diff_arc_before = abs(diff_mu_errors.loc[bpm_end] - diff_mu_errors.loc[bpm_start])
 
             assert abs_phase_diff_arc_after < abs_phase_diff_arc_before
 
@@ -359,9 +359,9 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
         delta_k=2e-5,
         **model_inj_beams,
     )
-    
+
     # Verify response creation
-    assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict.keys())
+    assert all(ORBIT_DPP in response_dict[key].columns for key in response_dict)
 
     # Create fake measurement
     dpp_path = CORRECTION_INPUTS / "deltap" / f"twiss_dpp_{dpp:.1e}_B{beam}.dat"
@@ -400,10 +400,10 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
 
 
 def _plot_arc_by_arc(beam, **kwargs):
-    """ Plot the arc-by-arc phase advance. 
+    """ Plot the arc-by-arc phase advance.
 
     Inputs should be data-frames with columns ``S``, ``MUX``, ``MUY``
-    
+
     This function is here for debugging purposes.
     """
     from matplotlib import pyplot as plt
@@ -418,14 +418,14 @@ def _plot_arc_by_arc(beam, **kwargs):
         for ip in df_model.index[df_model.index.str.startswith("IP")]:
             ax.axvline(df_model.loc[ip, "S"], color="k", linestyle="--")
             ax.text(
-                df_model.loc[ip, "S"], 1.05, ip, 
+                df_model.loc[ip, "S"], 1.05, ip,
                 transform=transforms.blended_transform_factory(ax.transData, ax.transAxes)
             )
-        
+
         for name, df in kwargs.items():
             ax.plot(df["S"],df[f"MU{plane}"] - df_model.loc[df.index, f"MU{plane}"], label=name)
-        
+
         ax.plot(df_error["S"],df_error[f"MU{plane}"] - df_iter1.loc[df_error.index, f"MU{plane}"], label='predicted corrected')
-        
+
         ax.legend()
     plt.show()
