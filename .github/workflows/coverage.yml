@@ -9,7 +9,7 @@ on:  # Runs on all push events to master branch and any push related to a pull r
 
 jobs:
   coverage:
-      uses: pylhc/.github/.github/workflows/coverage.yml@master
+      uses: pylhc/.github/.github/workflows/coverage.yml@python_coverage_action
       with:
         src-dir: omc3
         pytest-options: -m "not cern_network" --cov-report term-missing
