@@ -97,5 +97,5 @@ class Iota(Accelerator):
         self.particle = opt.particle
 
     @classmethod
-    def verify_object(self):
+    def verify_object(cls):
         pass  # TODO
