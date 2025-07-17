@@ -350,7 +350,7 @@ class OOMFormatter(mpl.ticker.ScalarFormatter):
         self.fformat = fformat
         mpl.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=mathText)
 
-    def _set_orderOfMagnitude(self, nothing):
+    def _set_orderOfMagnitude(self, nothing):  # noqa: N802
         self.orderOfMagnitude = self.oom
 
     def _set_format(self, vmin, vmax):

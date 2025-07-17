@@ -342,7 +342,7 @@ def add_root_handler(handler):
     logging.getLogger("").addHandler(handler)
 
 
-def getLogger(name):
+def getLogger(name):  # noqa: N802 (we mimic logging.getLogger)
     """Convenience function so the caller does not have to import logging."""
     return logging.getLogger(name)
 
