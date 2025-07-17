@@ -11,17 +11,20 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 
 HARPY_SETTINGS = {
     "clean": True,
-    "to_write": ['lin',],
+    "to_write": [
+        "lin",
+    ],
     "max_peak": [0.02],
     "turn_bits": 12,
 }
 
+
 # ==== HARPY
 @pytest.mark.basic
 def test_default_harpy_resonance(tmp_path: Path):
-    '''
+    """
     Check that the --resonances flag indeed gives us up to 4th order by default
-    '''
+    """
     model: Path = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files: list[Path] = [INPUTS / "lhc_200_turns.sdds"]
 
@@ -70,9 +73,9 @@ def test_default_harpy_resonance(tmp_path: Path):
 @pytest.mark.basic
 @pytest.mark.parametrize("order", [1, 12])
 def test_harpy_bad_resonance_order(tmp_path: Path, order: int):
-    '''
+    """
     Check that the --resonances maximum order is 8
-    '''
+    """
     model: Path = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files: list[Path] = [INPUTS / "lhc_200_turns.sdds"]
 
@@ -91,14 +94,17 @@ def test_harpy_bad_resonance_order(tmp_path: Path, order: int):
             unit="mm",
             resonances=order,  # this parameter is the culprit
         )
-    assert "magnet order for resonance lines calculation should be between 2 and 8 (inclusive)" in str(e_info)
+    assert (
+        "magnet order for resonance lines calculation should be between 2 and 8 (inclusive)"
+        in str(e_info)
+    )
 
 
 @pytest.mark.extended
 def test_harpy_high_order_resonance(tmp_path: Path):
-    '''
+    """
     Check the --resonances flag  with higher magnet orders: dodecapole (6)
-    '''
+    """
     model: Path = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files: list[Path] = [INPUTS / "lhc_200_turns.sdds"]
 
@@ -132,13 +138,12 @@ def test_harpy_high_order_resonance(tmp_path: Path):
             _assert_amp_lin(line, linfiles, present=True)
 
 
-
 # ==== OPTICS
 @pytest.mark.extended
 def test_optics_default_rdt_order(tmp_path: Path):
-    '''
+    """
     Check the --rdt_magnet_order default (4)
-    '''
+    """
     model: Path = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files: list[Path] = [INPUTS / "lhc_200_turns.sdds"]
 
@@ -177,14 +182,14 @@ def test_optics_default_rdt_order(tmp_path: Path):
     prefixes = ("normal", "skew")
     for magnet in magnets:
         for prefix in prefixes:
-            assert f'{prefix}_{magnet}' in rdt_dir_names
+            assert f"{prefix}_{magnet}" in rdt_dir_names
 
     # And verify the RDTs are hre
     sample_rdts = {
-        "normal_sextupole": ['f3000_x', 'f0120_y'],
-        "skew_sextupole": ['f2001_x', 'f0030_y'],
-        "normal_octupole": ['f4000_x', 'f0040_y'],
-        "skew_octupole": ['f0310_y', 'f3001_x'],
+        "normal_sextupole": ["f3000_x", "f0120_y"],
+        "skew_sextupole": ["f2001_x", "f0030_y"],
+        "normal_octupole": ["f4000_x", "f0040_y"],
+        "skew_octupole": ["f0310_y", "f3001_x"],
     }
     for magnet_type, rdts in sample_rdts.items():
         actual_rdt_files = [child.name for child in (tmp_path / "rdt" / magnet_type).iterdir()]
@@ -195,9 +200,9 @@ def test_optics_default_rdt_order(tmp_path: Path):
 @pytest.mark.extended
 @pytest.mark.parametrize("order", [1, 9])
 def test_optics_wrong_rdt_magnet_order(tmp_path: Path, order: int):
-    '''
+    """
     Check that --rdt_magnet_order raises when > 8
-    '''
+    """
     model: Path = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files: list[Path] = [INPUTS / "lhc_200_turns.sdds"]
 
@@ -226,7 +231,7 @@ def test_optics_wrong_rdt_magnet_order(tmp_path: Path, order: int):
             accel="lhc",
             year="2022",
             beam=1,
-            nonlinear=['rdt'],
+            nonlinear=["rdt"],
             rdt_magnet_order=order,  # this parameter is the culprit
         )
     assert "magnet order for RDT calculation should be between 2 and 8 (inclusive)" in str(e_info)
@@ -234,9 +239,9 @@ def test_optics_wrong_rdt_magnet_order(tmp_path: Path, order: int):
 
 @pytest.mark.extended
 def test_optics_higher_rdt_magnet_order(tmp_path: Path):
-    '''
+    """
     Check the --rdt_magnet_order with higher magnet orders: dodecapole (6)
-    '''
+    """
     model: Path = INPUTS / "models" / "2022_inj_b1_acd" / TWISS_DAT
     input_files = [str(INPUTS / "lhc_200_turns.sdds")]
 
@@ -273,36 +278,38 @@ def test_optics_higher_rdt_magnet_order(tmp_path: Path):
     rdt_dir_names = [child.name for child in (tmp_path / "rdt").iterdir()]
     assert len(rdt_dir_names) == 10
 
-    magnets = 'quadrupole', 'sextupole', 'octupole', 'decapole', 'dodecapole'
-    prefixes = ('normal', 'skew')
+    magnets = "quadrupole", "sextupole", "octupole", "decapole", "dodecapole"
+    prefixes = ("normal", "skew")
     for magnet in magnets:
         for prefix in prefixes:
-            assert f'{prefix}_{magnet}' in rdt_dir_names
+            assert f"{prefix}_{magnet}" in rdt_dir_names
 
     # And verify the RDTs are hre
     sample_rdts = {
-        'normal_sextupole': ['f3000_x', 'f0120_y'],
-        'skew_sextupole': ['f2001_x', 'f0030_y'],
-        'normal_octupole': ['f4000_x', 'f0040_y'],
-        'skew_octupole': ['f0310_y', 'f3001_x'],
-        'normal_decapole': ['f5000_x', 'f0320_y'],
-        'skew_decapole': ['f0410_y', 'f1301_x'],
-        'normal_dodecapole': ['f0060_y', 'f6000_x'],
-        'skew_dodecapole': ['f0510_y', 'f1005_x'],
-                   }
+        "normal_sextupole": ["f3000_x", "f0120_y"],
+        "skew_sextupole": ["f2001_x", "f0030_y"],
+        "normal_octupole": ["f4000_x", "f0040_y"],
+        "skew_octupole": ["f0310_y", "f3001_x"],
+        "normal_decapole": ["f5000_x", "f0320_y"],
+        "skew_decapole": ["f0410_y", "f1301_x"],
+        "normal_dodecapole": ["f0060_y", "f6000_x"],
+        "skew_dodecapole": ["f0510_y", "f1005_x"],
+    }
     for magnet_type, rdts in sample_rdts.items():
         actual_rdt_files = [child.name for child in (tmp_path / "rdt" / magnet_type).iterdir()]
         for rdt in rdts:
             assert f"{rdt}.tfs" in actual_rdt_files
 
 
-def _assert_amp_lin(line: tuple[int, int], lin_dict: dict[str, tfs.TfsDataFrame], present: bool) -> None:
-    '''
+def _assert_amp_lin(
+    line: tuple[int, int], lin_dict: dict[str, tfs.TfsDataFrame], present: bool
+) -> None:
+    """
     Check if an amplitude and its error exist in the lin columns
     e.g. AMP04 and ERRAMP04
-    '''
-    amp_str = f'AMP{line[0]}{line[1]}'.replace('-', '_')
-    erramp_str = f'ERR{amp_str}'
+    """
+    amp_str = f"AMP{line[0]}{line[1]}".replace("-", "_")
+    erramp_str = f"ERR{amp_str}"
     for plane, lin in lin_dict.items():
         if present:
             assert amp_str in lin.columns
