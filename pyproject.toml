@@ -171,7 +171,7 @@ ignore = [
 ]
 extend-select = [
     "F",        # Pyflakes rules
-    # "W",        # PyCodeStyle warnings
+    "W",        # PyCodeStyle warnings
     "E",        # PyCodeStyle errors
     "I",        # Sort imports properly
     "A",        # Detect shadowed builtins
