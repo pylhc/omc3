@@ -158,7 +158,7 @@ def _logfile_wrapper(file_path=None):
 
 
 @contextlib.contextmanager
-def _madx_input_wrapper(content, file_path=None):
+def _madx_input_wrapper(content, file_path: Path | str = None):
     """
     Writes content into an output file and returns filepath.
     If ``file_path`` is not given, the output file is temporary and will be deleted afterwards.
@@ -178,7 +178,7 @@ def _madx_input_wrapper(content, file_path=None):
         yield file_path
     finally:
         if temp_file:
-            os.remove(file_path)
+            Path(file_path).unlink()
 
 
 def _raise_madx_error(log=None, file=None):

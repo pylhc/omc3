@@ -24,6 +24,7 @@ from logging import (  # make them available directly
     NOTSET,
     WARNING,
 )
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -139,7 +140,7 @@ class TempFile:
         except OSError:
             self.log_func(f"{self.path:s}: -file does not exist-")
         else:
-            os.remove(self.path)
+            Path(self.path).unlink()
 
 
 @contextmanager
