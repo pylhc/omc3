@@ -238,31 +238,34 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
     resp = resp.transpose(2, 1, 0)
     model_index = list(keys).index("0")
 
-    # create normalized dispersion and dividing BET by nominal model
-    NDX_arr = np.divide(resp[columns.index(f"{DISPERSION}X")], np.sqrt(resp[columns.index(f"{BETA}X")]))
-    NDY_arr = np.divide(resp[columns.index(f"{DISPERSION}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")]))
+    # Create normalized dispersion and dividing BET by nominal model
+    NDX_arr = np.divide(resp[columns.index(f"{DISPERSION}X")], np.sqrt(resp[columns.index(f"{BETA}X")]))  # noqa: N806
+    NDY_arr = np.divide(resp[columns.index(f"{DISPERSION}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")]))  # noqa: N806
     resp[columns.index(f"{BETA}X")] = np.divide(
-        resp[columns.index(f"{BETA}X")], resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis]
+        resp[columns.index(f"{BETA}X")],
+        resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis]
     )
     resp[columns.index(f"{BETA}Y")] = np.divide(
-        resp[columns.index(f"{BETA}Y")], resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
+        resp[columns.index(f"{BETA}Y")],
+        resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
     )
 
-    # subtracting nominal model from data
+    # Subtracting nominal model from data
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
-    NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])
-    NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index][:, np.newaxis])
+    NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])  # noqa: N806
+    NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index][:, np.newaxis])  # noqa: N806
 
     # Remove difference of nominal model with itself (bunch of zeros) and divide by increment
     resp = np.delete(resp, model_index, axis=2)
-    NDX_arr = np.delete(NDX_arr, model_index, axis=1)
-    NDY_arr = np.delete(NDY_arr, model_index, axis=1)
+    NDX_arr = np.delete(NDX_arr, model_index, axis=1)  # noqa: N806
+    NDY_arr = np.delete(NDY_arr, model_index, axis=1)  # noqa: N806
     keys.remove("0")
 
-    NDX_arr = np.divide(NDX_arr, resp[columns.index(f"{INCR}")])
-    NDY_arr = np.divide(NDY_arr, resp[columns.index(f"{INCR}")])
-    resp = np.divide(resp,resp[columns.index(f"{INCR}")])
-    Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T
+    # Divide by increment
+    NDX_arr = np.divide(NDX_arr, resp[columns.index(f"{INCR}")])  # noqa: N806
+    NDY_arr = np.divide(NDY_arr, resp[columns.index(f"{INCR}")])  # noqa: N806
+    resp = np.divide(resp, resp[columns.index(f"{INCR}")])
+    Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T  # noqa: N806
 
     with suppress_warnings(ComplexWarning):  # raised as everything is complex-type now
         return {

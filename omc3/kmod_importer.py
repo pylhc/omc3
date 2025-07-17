@@ -274,27 +274,27 @@ def calculate_all_lumi_imbalances(
         tfs.TfsDataFrame: DataFrame with the luminosity imbalance.
     """
     sets_of_ips = list(combinations(averaged_results.keys(), 2))
-    for ipA, ipB in sets_of_ips:
-        LOG.debug(f"Calculating lumi imbalance between {ipA} and {ipB}")
+    for ip_a, ip_b in sets_of_ips:
+        LOG.debug(f"Calculating lumi imbalance between {ip_a} and {ip_b}")
         betastar = _get_betastar(
-            df_model, ipA
+            df_model, ip_a
         )  # does not really matter which IP, for output name only
 
         # Calculate luminosity imbalance
-        data = {ip.lower(): averaged_results[ip][0] for ip in (ipA, ipB)}
+        data = {ip.lower(): averaged_results[ip][0] for ip in (ip_a, ip_b)}
         try:
             df = calculate_lumi_imbalance(**data, output_dir=output_dir, betastar=betastar)
         except KeyError as e:
             # Most likely because not all data available (e.g. only one beam).
             LOG.debug(
-                f"Could not calculate lumi imbalance between {ipA} and {ipB}. Skipping.",
+                f"Could not calculate lumi imbalance between {ip_a} and {ip_b}. Skipping.",
                 exc_info=e,
             )
             continue
 
         # Print luminosity imbalance
         imb, err_imb = df.headers[f"{LUMINOSITY}{IMBALANCE}"], df.headers[f"{ERR}{LUMINOSITY}{IMBALANCE}"]
-        LOG.info(f"Luminosity imbalance between {ipA} and {ipB}: {imb:.2e} +/- {err_imb:.2e}")
+        LOG.info(f"Luminosity imbalance between {ip_a} and {ip_b}: {imb:.2e} +/- {err_imb:.2e}")
 
 
 def _get_betastar(df_model: tfs.TfsDataFrame, ip: str) -> list[float, float]:

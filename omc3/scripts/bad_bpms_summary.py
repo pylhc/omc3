@@ -301,9 +301,9 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
         tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.
 
     """
-    TO_IGNORE = (HarpyReasons.NOT_IN_MODEL, )
-    TO_MARK = (HarpyReasons.KNOWN, )
-    COMMENT = "#"
+    to_ignore = (HarpyReasons.NOT_IN_MODEL, )
+    to_mark = (HarpyReasons.KNOWN, )
+    comment = "#"
 
     plane = svd_file.name[-1]
 
@@ -313,12 +313,12 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
     lines = [(line[0].strip(), line[1].lower().strip()) for line in lines]
 
     # filter bpms/lines
-    lines = [line for line in lines if not line[0].startswith(COMMENT) and line[1] not in TO_IGNORE]
+    lines = [line for line in lines if not line[0].startswith(comment) and line[1] not in to_ignore]
 
     # group bpm names and attach reasons
     bpms = defaultdict(list)
     for line in lines:
-        bpm = f"[{line[0]}]" if line[1] in TO_MARK else line[0]
+        bpm = f"[{line[0]}]" if line[1] in to_mark else line[0]
         for reason in HarpyReasons:
             if reason.value.lower() in line[1] and reason.name not in bpms[bpm]:
                     bpms[bpm].append(reason.name)

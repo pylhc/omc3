@@ -122,7 +122,7 @@ def _get_data_without_slope(mask, x, y):
     try:
         from numpy.exceptions import RankWarning as IgnoredWarning
     except ImportError:  # it does not exist on numpy versions supporting 3.9
-        IgnoredWarning = Warning
+        IgnoredWarning = Warning  # noqa: N806 (it is a class)
 
     # We filter out the "Polyfit may be poorly conditioned" warning that can happen
     # during the polyfit. We relay it as a logged message, which allows us to avoid

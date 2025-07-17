@@ -129,25 +129,25 @@ def calculate_coupling(
     bpm_pairs_y, deltas_y = _find_pair(phases_y, meas_input.coupling_pairing)
 
     LOGGER.debug("Computing complex lines from spectra")
-    A01: np.ndarray = 0.5 * _get_complex_line(
+    A01: np.ndarray = 0.5 * _get_complex_line(  # noqa: N806
         joined[SECONDARY_AMPLITUDE_X] * np.exp(joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
-    B10: np.ndarray = 0.5 * _get_complex_line(
+    B10: np.ndarray = 0.5 * _get_complex_line(  # noqa: N806
         joined[SECONDARY_AMPLITUDE_Y] * np.exp(joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
-    A0_1: np.ndarray = 0.5 * _get_complex_line(
+    A0_1: np.ndarray = 0.5 * _get_complex_line(  # noqa: N806
         joined[SECONDARY_AMPLITUDE_X] * np.exp(-joined[SECONDARY_FREQUENCY_X] * PI2I), deltas_x, bpm_pairs_x
     )
-    B_10: np.ndarray = 0.5 * _get_complex_line(
+    B_10: np.ndarray = 0.5 * _get_complex_line(  # noqa: N806
         joined[SECONDARY_AMPLITUDE_Y] * np.exp(-joined[SECONDARY_FREQUENCY_Y] * PI2I), deltas_y, bpm_pairs_y
     )
 
-    q1001_from_A = -np.angle(A01) + (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1001_from_B = np.angle(B10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    q1001_from_A = -np.angle(A01) + (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2  # noqa: N806
+    q1001_from_B = np.angle(B10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2  # noqa: N806
     eq_1001 = np.exp(1.0j * q1001_from_A) + np.exp(1.0j * q1001_from_B)
 
-    q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2
-    q1010_from_B = -np.angle(B_10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2
+    q1010_from_A = -np.angle(A0_1) - (bd * joined[f"{COL_MU}Y"].to_numpy() - 0.25) * PI2  # noqa: N806
+    q1010_from_B = -np.angle(B_10) - (bd * joined[f"{COL_MU}X"].to_numpy() - 0.25) * PI2  # noqa: N806
     eq_1010 = np.exp(1.0j * q1010_from_A) + np.exp(1.0j * q1010_from_B)
 
     LOGGER.debug("Computing average of coupling RDTs")
@@ -158,16 +158,14 @@ def calculate_coupling(
     tune_separation = np.abs(tune_dict["X"]["QFM"] % 1.0 - tune_dict["Y"]["QFM"] % 1.0)
 
     LOGGER.debug("Calculating approximated Cminus")
-    C_approx = 4.0 * tune_separation * np.mean(np.abs(f1001))
-    header_dict["Cminus_approx"] = C_approx
-    LOGGER.info(
-        f"|C-| (approx) = {C_approx:.5f}, tune_sep = {tune_separation:.3f}, from Eq.1 in PRSTAB 17,051004"
-    )
+    cminus_approx = 4.0 * tune_separation * np.mean(np.abs(f1001))
+    header_dict["Cminus_approx"] = cminus_approx
+    LOGGER.info(f"|C-| (approx) = {cminus_approx:.5f}, tune_sep = {tune_separation:.3f}, from Eq.1 in PRSTAB 17,051004")
 
     LOGGER.debug("Calculating exact Cminus")
-    C_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * np.exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
-    header_dict["Cminus_exact"] = C_exact
-    LOGGER.info(f"|C-| (exact)  = {C_exact:.5f}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
+    cminus_exact = np.abs(4.0 * tune_separation * np.mean(f1001 * np.exp(1.0j * (joined[f"{COL_MU}X"] - joined[f"{COL_MU}Y"]))))
+    header_dict["Cminus_exact"] = cminus_exact
+    LOGGER.info(f"|C-| (exact)  = {cminus_exact:.5f}, from Eq.2 w/o i*s*Delta/R in PRSTAB 17,051004")
 
     if meas_input.compensation == CompensationMode.MODEL:
         LOGGER.debug("Compensating coupling RDT values by model")
@@ -204,12 +202,12 @@ def compensate_rdts_by_model(
     f1010 = np.array(f1010)
 
     LOGGER.debug("Retrieving model's natural tunes")  # QFM is free since model is ACD/ADT- driven model
-    Qx = PI2 * tune_dict["X"]["QFM"]
-    Qy = PI2 * tune_dict["Y"]["QFM"]
+    Qx = PI2 * tune_dict["X"]["QFM"]  # noqa: N806
+    Qy = PI2 * tune_dict["Y"]["QFM"]  # noqa: N806
 
     LOGGER.debug("Retrieving model's driven tunes")  # QM is driven as model is ACD/ADT-driven model
-    Qx_driven = PI2 * tune_dict["X"]["QM"]
-    Qy_driven = PI2 * tune_dict["Y"]["QM"]
+    Qx_driven = PI2 * tune_dict["X"]["QM"]  # noqa: N806
+    Qy_driven = PI2 * tune_dict["Y"]["QM"]  # noqa: N806
 
     LOGGER.debug("Computing scaling factor from driven model")
     f1001_scaling_factor = np.sqrt(np.abs(np.sin(Qy_driven - Qx) * np.sin(Qx_driven - Qy))) / np.abs(np.sin(Qx - Qy))
