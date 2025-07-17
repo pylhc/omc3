@@ -94,9 +94,9 @@ def ids_str(template: str) -> Callable[[Any], str]:
 
 
 def assert_tfsdataframe_equal(df1, df2, compare_keys=True, **kwargs):
-    """ Wrapper to compare two TfsDataFrames with 
-    `assert_frame_equal` for the data and `assert_dict_equal` for the headers. 
-    
+    """ Wrapper to compare two TfsDataFrames with
+    `assert_frame_equal` for the data and `assert_dict_equal` for the headers.
+
     The `kwargs` are passed to `assert_frame_equal`.
     """
     assert_dict_equal(df1.headers, df2.headers, compare_keys=compare_keys)
@@ -213,5 +213,5 @@ def acc_models_ps_2021(tmp_path_factory):
 def clone_acc_models(tmp_path_factory, accel: str, year: int):
     """ Clone the acc-models directory for the specified accelerator from github into a temporary directory. """
     tmp_path = tmp_path_factory.mktemp(f"acc-models-{accel}-{year}")
-    git.Repo.clone_from(GITLAB_REPO_ACC_MODELS.format(accel), tmp_path, branch=str(year)) 
+    git.Repo.clone_from(GITLAB_REPO_ACC_MODELS.format(accel), tmp_path, branch=str(year))
     return tmp_path

@@ -56,7 +56,7 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
 
     meas_paths = [get_measurement_dir(ip, i+1)  for i in range(n_files)]
     new_meas_paths = [tmp_path / f"single_beam_meas_{i+1}" for i in range(n_files)]
-    
+
     for tmp_meas, old_meas in zip(new_meas_paths, meas_paths):
         beam_dir = f"{BEAM_DIR}{beam}"
         (tmp_meas / beam_dir).mkdir(parents=True, exist_ok=True)

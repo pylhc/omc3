@@ -36,7 +36,7 @@ def test_kmod_import_averaged_folder_beam(tmp_path, beam):
 
     path_bpm_ip1 = get_averages_dir(ip=1, n_files=2)
     path_bpm_ip5 = get_averages_dir(ip=5, n_files=2) 
-    
+
     import_kmod_data(
         measurements=[path_bpm_ip1, path_bpm_ip5],
         model=model, 
@@ -65,13 +65,13 @@ def test_kmod_import_files_beam(tmp_path, beam, files, read):
     paths = []
     if "bpm" in files:
         paths += [_get_bpm_input_path(beam, ip, betas) for ip in (1, 5)]
-    
+
     if "betastar" in files:
         paths += [_get_betastar_input_path(beam, ip, betas) for ip in (1, 5)]
-    
+
     if read:
         paths = [tfs.read(path) for path in paths]
-    
+
     import_kmod_data(
         measurements=paths, 
         model=model, 
@@ -84,7 +84,7 @@ def test_kmod_import_files_beam(tmp_path, beam, files, read):
         ref_paths = []
         if "bpm" in files:
             ref_paths += [_get_bpm_reference_path(beam, plane)]
-        
+
         if "betastar" in files:
             ref_paths += [_get_betastar_reference_path(beam, plane)]
 

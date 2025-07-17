@@ -9,7 +9,7 @@ omc3_dir = Path(__file__).parents[4]
 
 def run_dpp(offset, beam):
     """
-    Run a twiss on a 2018 LHC model with a given dpp offset. Then, correct and match before 
+    Run a twiss on a 2018 LHC model with a given dpp offset. Then, correct and match before
     writing the final twiss to a file, which only contains select BPMs, and the phase advances and s.
     This is used by the test_lhc_global_correct_dpp to verify that the global correction can
     calculate the dpp offset input in the fake measurement.
@@ -26,7 +26,7 @@ def run_dpp(offset, beam):
     option, echo;
     exec, cycle_sequences();
     exec, define_nominal_beams();
-    
+
     call, file = '{omc3_dir}/tests/inputs/models/2018_inj_b{beam}_11m/opticsfile.1'; !@modifier
 
     select, flag = twiss, pattern = 'BPM.*B[12]', column = name, s, {PHASE_ADV}x, {PHASE_ADV}y;

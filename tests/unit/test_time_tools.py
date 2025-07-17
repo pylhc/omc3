@@ -61,7 +61,7 @@ def test_fold():
     # see https://peps.python.org/pep-0495/
     folded = tt.AcceleratorDatetime["lhc"](2020, 10, 25, 1, 0, 0)
     no_fold = tt.AcceleratorDatetime["lhc"](2020, 10, 25, 0, 0, 0)
-    
+
     assert folded.local.hour == no_fold.local.hour
     assert folded.local.fold == 1
     assert no_fold.local.fold == 0

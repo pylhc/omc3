@@ -61,7 +61,7 @@ for beam in [1, 2]:
 
     # Run MAD-NG twiss to get the RDTs
     model_ng = run_twiss_rdts(beam, ng_rdts) 
-    
+
     # Convert the MAD-NG output to a MAD-X style TFS (waiting for TFS update)
     model_ng = convert_tfs_to_madx(model_ng)
 
@@ -70,7 +70,7 @@ for beam in [1, 2]:
 
     # Save the model
     save_ng_model(model_ng, beam)
-    
+
     if run_madng:
         # Run MAD-NG track to produce a TBT file
         write_tbt_file(beam)
@@ -91,7 +91,7 @@ for beam in [1, 2]:
         analysis_runtime = time.time()
         rdt_dfs = get_rdts_from_optics_analysis(beam)
         print(f"Analysis Runtime: {time.time() - analysis_runtime}")
-        
+
         file_ext = get_file_suffix(beam)
         model_ng = tfs.read(DATA_DIR / f"{MODEL_NG_PREFIX}_{file_ext}.tfs", index="NAME")
 

@@ -83,7 +83,7 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
                 ref_file = tfs.read(ref_path)
                 out_file = tfs.read(tmp_path / ref_path.name)
                 assert_tfsdataframe_equal(ref_file, out_file, check_like=True)
-    
+
     # Check all the combinations are created
     if ips == "158":  # just some quick tests
         # lumi --
