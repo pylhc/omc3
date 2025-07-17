@@ -82,7 +82,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 import tfs
 from generic_parser import EntryPoint
 
@@ -99,6 +98,8 @@ from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Sequence
+
+    import numpy as np
 
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent

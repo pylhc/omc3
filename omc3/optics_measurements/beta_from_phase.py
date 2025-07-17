@@ -16,7 +16,7 @@ import pandas as pd
 import tfs
 from scipy.linalg import circulant
 
-from omc3 import __version__ as VERSION
+from omc3 import __version__ as VERSION  # noqa: N812
 from omc3.definitions.constants import PI2
 from omc3.optics_measurements.constants import (
     ALPHA,

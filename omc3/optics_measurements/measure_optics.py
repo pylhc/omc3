@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import tfs
 
-from omc3 import __version__ as VERSION
+from omc3 import __version__ as VERSION  # noqa: N812
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import (
     beta_from_amplitude,
