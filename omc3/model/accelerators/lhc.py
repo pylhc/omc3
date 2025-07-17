@@ -82,6 +82,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 import tfs
 from generic_parser import EntryPoint
 
@@ -328,8 +329,10 @@ class Lhc(Accelerator):
             return [["MKD.O5L6.B1", "TCTPH.4L1.B1"], ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
         return None
 
-    def get_synch_BPMs(self, index):
+    def get_synch_BPMs(self, index: np.ndarray):
         # expect passing index.to_numpy()
+        # TODO: couldn't the following just be:
+        # np.isin(index, self.model.loc[f"BPMSW.33L2.B{self.beam}":].index)
         if self.beam == 1:
             return [i in index for i in self.model.loc["BPMSW.33L2.B1":].index]
         if self.beam == 2:
