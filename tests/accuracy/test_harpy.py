@@ -2,7 +2,6 @@ import itertools
 import os
 import random
 import string
-import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -43,11 +42,11 @@ HARPY_INPUT = list(itertools.product(*HARPY_SETTINGS.values()))
 def test_harpy(_test_file, _model_file):
 
     [clean, keep_exact_zeros, sing_val, peak_to_peak, window, max_peak, svd_dominance_limit,
-     num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits ] = HARPY_INPUT[0]
+     num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits] = HARPY_INPUT[0]
 
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
-    _write_tbt_file(model, os.path.dirname(_test_file))
+    _write_tbt_file(model, _test_file.parent)
     hole_in_one_entrypoint(harpy=True,
                            clean=clean,
                            keep_exact_zeros=keep_exact_zeros,
@@ -75,11 +74,11 @@ def test_harpy(_test_file, _model_file):
 def test_harpy_without_model(_test_file, _model_file):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
-    _write_tbt_file(model, os.path.dirname(_test_file))
+    _write_tbt_file(model, _test_file.parent)
     hole_in_one_entrypoint(harpy=True,
                            clean=True,
                            autotunes="transverse",
-                           outputdir=os.path.dirname(_test_file),
+                           outputdir=_test_file.parent,
                            files=[_test_file],
                            to_write=["lin"],
                            turn_bits=18,
@@ -96,7 +95,7 @@ def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, sing_val, p
                          svd_dominance_limit, num_svd_iterations, tolerance, tune_clean_limit, turn_bits, output_bits):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
-    _write_tbt_file(model, os.path.dirname(_test_file))
+    _write_tbt_file(model, _test_file.parent)
     hole_in_one_entrypoint(harpy=True,
                            clean=clean,
                            keep_exact_zeros=keep_exact_zeros,
@@ -111,7 +110,7 @@ def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, sing_val, p
                            turn_bits=turn_bits,
                            output_bits=output_bits,
                            autotunes="transverse",
-                           outputdir=os.path.dirname(_test_file),
+                           outputdir=_test_file.parent,
                            files=[_test_file],
                            model=_model_file,
                            to_write=["lin"],
@@ -121,7 +120,7 @@ def test_harpy_run(_test_file, _model_file, clean, keep_exact_zeros, sing_val, p
 def test_freekick_harpy(_test_file, _model_file):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
-    _write_tbt_file(model, os.path.dirname(_test_file))
+    _write_tbt_file(model, _test_file.parent)
     hole_in_one_entrypoint(harpy=True,
                            clean=True,
                            autotunes="transverse",
@@ -151,11 +150,11 @@ def test_freekick_harpy(_test_file, _model_file):
 def test_harpy_3d(_test_file, _model_file):
     model = _get_model_dataframe()
     tfs.write(_model_file, model, save_index="NAME")
-    _write_tbt_file(model, os.path.dirname(_test_file))
+    _write_tbt_file(model, _test_file.parent)
     hole_in_one_entrypoint(harpy=True,
                            clean=True,
                            autotunes="all",
-                           outputdir=os.path.dirname(_test_file),
+                           outputdir=_test_file.parent,
                            files=[_test_file],
                            model=_model_file,
                            to_write=["lin"],
@@ -191,7 +190,7 @@ def _assert_spectra(lin, model):
                                 model.loc[:, f"MU{_other(plane)}"].to_numpy())) < LIMITS["P2"]
 
 
-def _get_model_dataframe():
+def _get_model_dataframe() -> pd.DataFrame:
     np.random.seed(1234567)
     return pd.DataFrame(
         data={
@@ -217,7 +216,7 @@ def _write_tbt_file(model: tfs.TfsDataFrame, dir_path: Path) -> None:
         Y=pd.DataFrame(data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y + COUPLING * data_x, index=model.index))
     ]
     tbt_data = tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=NTURNS)  # let date default
-    tbt.write(os.path.join(dir_path, "test_file"), tbt_data)
+    tbt.write(dir_path /"test_file", tbt_data)
 
 
 def _other(plane: str) -> str:
