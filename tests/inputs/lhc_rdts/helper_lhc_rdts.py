@@ -136,7 +136,7 @@ twiss_elements:deselect{{pattern="drift"}}
             # True below is to make sure only selected rows are written
             f"""twiss_elements:write("{model_dir / TWISS_ELEMENTS_DAT}", cols, hnams, true)"""
         )
-        observe_BPMs(mad, beam)
+        observe_bpms(mad, beam)
         mad.send(f"""
 twiss_ac   = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true, observe=1}}
 twiss_data = twiss {{sequence=MADX.lhcb{beam}, mapdef=4, coupling=true, observe=1}}
@@ -157,7 +157,7 @@ py:send(1)
     export_tfs_to_madx(model_dir / TWISS_DAT)
 
 
-def observe_BPMs(mad: MAD, beam: int) -> None:
+def observe_bpms(mad: MAD, beam: int) -> None:
     mad.send(f"""
 local observed in MAD.element.flags
 MADX.lhcb{beam}:deselect(observed)
@@ -289,7 +289,7 @@ def run_twiss_rdts(beam: int, rdts: list[str]) -> tfs.TfsDataFrame:
     rdt_order = get_max_rdt_order(rdts)
     with MAD() as mad:
         initialise_model(mad, beam)
-        observe_BPMs(mad, beam)
+        observe_bpms(mad, beam)
         mad["twiss_result", "twiss_mflw"] = mad.twiss(
             sequence=f"MADX.lhcb{beam}",
             coupling=True,
@@ -316,7 +316,7 @@ def write_tbt_file(beam: int) -> pd.DataFrame:
     tfs_path = DATA_DIR / get_tbt_name(beam, sdds=False)
     with MAD() as mad:
         initialise_model(mad, beam)
-        observe_BPMs(mad, beam)
+        observe_bpms(mad, beam)
         # Octupolar resonances are harder to observe with only 1000 turns
         # so we need to increase the kick amplitude for order 3
         mad.send(f"""

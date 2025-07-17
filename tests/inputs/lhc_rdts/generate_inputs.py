@@ -36,7 +36,7 @@ from tests.inputs.lhc_rdts.helper_lhc_rdts import (
 from tests.utils.compression import compress_model
 from tests.utils.lhc_rdts.constants import DATA_DIR, MODEL_NG_PREFIX
 from tests.utils.lhc_rdts.functions import (
-    filter_out_BPM_near_IPs,
+    filter_out_bpm_near_ips,
     get_file_suffix,
     get_rdt_names,
     get_rdts_from_optics_analysis,
@@ -66,7 +66,7 @@ for beam in [1, 2]:
     model_ng = convert_tfs_to_madx(model_ng)
 
     # Remove the BPMs around the IP
-    model_ng = filter_out_BPM_near_IPs(model_ng)
+    model_ng = filter_out_bpm_near_ips(model_ng)
 
     # Save the model
     save_ng_model(model_ng, beam)
@@ -79,7 +79,7 @@ for beam in [1, 2]:
         analytical_df = get_twiss_elements(beam)
         analytical_df = convert_tfs_to_madx(analytical_df)
         analytical_df = calculate_rdts(analytical_df, ng_rdts, feeddown=2)
-        analytical_df = filter_out_BPM_near_IPs(analytical_df)
+        analytical_df = filter_out_bpm_near_ips(analytical_df)
         save_analytical_model(analytical_df, beam)
 
     if save_omc3_analysis:

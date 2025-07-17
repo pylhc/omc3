@@ -57,7 +57,7 @@ def test_tab_widget():
 
 @pytest.mark.basic
 @pytest.mark.parametrize('WindowClass', (SimpleTabWindow, VerticalTabWindow))
-def test_tab_window(monkeypatch, WindowClass):
+def test_tab_window(monkeypatch, WindowClass):  # noqa: N803 (it is a class)
     # Preparation ---
     monkeypatch.setattr("omc3.plotting.utils.windows.QApplication", MockQApplication)
     monkeypatch.setattr("omc3.plotting.utils.windows.QMainWindow", MockQMainWindow)
@@ -104,7 +104,7 @@ class MockQWidget:
         self.layout = None
         self.title = title
 
-    def setLayout(self, layout):
+    def setLayout(self, layout):  # noqa: N802 (mock the exact name)
         self.layout = layout
 
 
@@ -117,10 +117,10 @@ class MockQTabWidget:
         self.added_tabs = {}
         self.position = 0
 
-    def addTab(self, tab, tab_title):
+    def addTab(self, tab, tab_title):  # noqa: N802 (mock the exact name)
         self.added_tabs[tab_title] = tab
 
-    def setTabPosition(self, position):
+    def setTabPosition(self, position):  # noqa: N802 (mock the exact name)
         self.position = position
 
 
@@ -130,7 +130,7 @@ class MockLayout:
         self.widgets = []
 
 
-    def addWidget(self, widget):
+    def addWidget(self, widget):  # noqa: N802 (mock the exact name)
         self.widgets.append(widget)
 
 
@@ -164,10 +164,10 @@ class MockQMainWindow:
         self.size = None
         self.shown = False
 
-    def setWindowTitle(self, title):
+    def setWindowTitle(self, title):  # noqa: N802 (mock the exact name)
         self.title = title
 
-    def setCentralWidget(self, widget):
+    def setCentralWidget(self, widget):  # noqa: N802 (mock the exact name)
         self.central_widget = widget
 
     def resize(self, width, height):
