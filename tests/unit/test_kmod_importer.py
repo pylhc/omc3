@@ -45,17 +45,17 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
     import_kmod_results(
         meas_paths=[get_measurement_dir(ip=ip, i_meas=i) for ip in ips for i in range(1, n_files+1)],
         beam=beam,
-        model=get_model_path(beam), 
+        model=get_model_path(beam),
         output_dir=tmp_path,
     )
 
     # OUTPUT CHECKS --------------------------------------------
     # Check the basics, if anything looks weird ---
-    assert len(list(tmp_path.glob(f"*{EXT}"))) == 4  # beta_kmod x/y, betastar x/y 
+    assert len(list(tmp_path.glob(f"*{EXT}"))) == 4  # beta_kmod x/y, betastar x/y
     average_dir = tmp_path / AVERAGE_DIR
 
     assert average_dir.is_dir()
-    assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP  
+    assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP
     assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] # AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map
 
     # Check the content ---

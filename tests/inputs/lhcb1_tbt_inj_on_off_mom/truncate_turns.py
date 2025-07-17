@@ -1,4 +1,4 @@
-""" 
+"""
 This folder contains LHC Beam 1 files at injection:
 
  - first three files are at 0Hz

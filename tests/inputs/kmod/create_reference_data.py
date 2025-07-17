@@ -3,7 +3,7 @@ Run as module to avoid import errors.
 
 ```
 python -m tests.inputs.kmod.create_reference_data
-```  
+```
 """
 from pathlib import Path
 
@@ -29,7 +29,7 @@ def create_model(beam: int):
         accel="lhc",
         type="nominal",
         nat_tunes=[0.28, 0.31],
-        drv_tunes=[0.27, 0.322], 
+        drv_tunes=[0.27, 0.322],
         driven_excitation="acd",
         dpp=0.0,
         energy=6800.0,

@@ -31,9 +31,9 @@ def test_kmod_averaging(tmp_path, ip, n_files):
     ref_output_dir = get_reference_dir(ip, n_files)
 
     average_kmod_results(
-        meas_paths=meas_paths, 
+        meas_paths=meas_paths,
         output_dir=tmp_path,
-        ip=ip, 
+        ip=ip,
         betastar=betas,
         plot=True
      )
@@ -65,9 +65,9 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
 
     with caplog.at_level(logging.WARNING):
         average_kmod_results(
-            meas_paths=new_meas_paths, 
+            meas_paths=new_meas_paths,
             output_dir=tmp_path,
-            ip=ip, 
+            ip=ip,
             betastar=betas,
             plot=True
         )
@@ -87,7 +87,7 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
 def _assert_correct_files_are_present(outputdir: Path, ip: int, betas: list[float], beams: Sequence[int] = (1, 2)) -> None:
     """Simply checks the expected converted files are present in the outputdir"""
     all_files = (
-        get_all_tfs_filenames(ip, betas, beams) + 
+        get_all_tfs_filenames(ip, betas, beams) +
         [f"ip{ip}_{PARAM_WAIST}.pdf", f"ip{ip}_{PARAM_BETA}.pdf", f"ip{ip}_{PARAM_BETABEAT}.pdf"]
     )
     for file_name in all_files:
@@ -134,9 +134,9 @@ def update_reference_files():
             meas_paths = [get_measurement_dir(ip, i+1) for i in range(n_files)]
             output_dir = get_reference_dir(ip, n_files)
             average_kmod_results(
-                meas_paths=meas_paths, 
+                meas_paths=meas_paths,
                 output_dir=output_dir,
-                ip=ip, 
+                ip=ip,
                 betastar=betas,
                 plot=False
             )
