@@ -10,9 +10,7 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 
 HARPY_SETTINGS = {
     "clean": True,
-    "to_write": [
-        "lin",
-    ],
+    "to_write": ["lin"],
     "max_peak": [0.02],
     "turn_bits": 12,
 }
