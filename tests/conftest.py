@@ -1,9 +1,7 @@
 """
-Additional tools for pytests.
-The name ``conftest.py`` is chosen as it is used by pytest.
 Fixtures defined in here are discovered by all tests automatically.
-
-See also https://stackoverflow.com/a/34520971 .
+https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files
+See also https://stackoverflow.com/a/34520971.
 """
 from __future__ import annotations
 
