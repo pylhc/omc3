@@ -3,6 +3,7 @@ import os
 import random
 import string
 import tempfile
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -206,7 +207,7 @@ def _get_model_dataframe():
     )
 
 
-def _write_tbt_file(model, dir_path):
+def _write_tbt_file(model: tfs.TfsDataFrame, dir_path: Path) -> None:
     ints = np.arange(NTURNS) - NTURNS / 2
     data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] + model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
     data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] + model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
@@ -219,40 +220,36 @@ def _write_tbt_file(model, dir_path):
     tbt.write(os.path.join(dir_path, "test_file"), tbt_data)
 
 
-def _other(plane):
+def _other(plane: str) -> str:
     return "X" if plane == "Y" else "Y"
 
 
-def _couple(plane):
+def _couple(plane: str) -> str:
     return "10" if plane == "Y" else "01"
 
 
-def _rms(a):
+def _rms(a: np.ndarray) -> float:
     return np.sqrt(np.mean(np.square(a)))
 
 
-def _diff(a, b):
+def _diff(a: float, b: float) -> float:
     return a - b
 
 
-def _rel_diff(a, b):
+def _rel_diff(a: float, b: float) -> float:
     return (a / b) - 1
 
 
-def _angle_diff(a, b):
+def _angle_diff(a: float, b: float) -> float:
     ang = a - b
     return np.where(np.abs(ang) > 0.5, ang - np.sign(ang), ang)
 
 
 @pytest.fixture()
-def _test_file():
-    with tempfile.TemporaryDirectory() as cwd:
-        test_file = os.path.join(cwd, "test_file.sdds")
-        yield test_file
+def _test_file(tmp_path: Path) -> Path:
+    return tmp_path / "test_file.sdds"
 
 
 @pytest.fixture()
-def _model_file():
-    with tempfile.TemporaryDirectory() as cwd:
-        test_file = os.path.join(cwd, "model.tfs")
-        yield test_file
+def _model_file(tmp_path: Path) -> Path:
+    return tmp_path / "model.tfs"
