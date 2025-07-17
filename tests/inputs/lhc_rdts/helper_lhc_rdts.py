@@ -107,7 +107,7 @@ def update_model_with_ng(beam: int) -> None:
         seq_dir = -1 if beam == 2 else 1
         initialise_model(mad, beam, seq_dir=seq_dir)
         # Create twiss_elements and twiss_ac and twiss data tables in model folder
-        mad.send(f"""
+        mad.send(rf"""
 hnams = {{
     "name", "type", "title", "origin", "date", "time", "refcol", "direction",
     "observe", "energy", "deltap", "length", "q1", "q2", "q3", "dq1", "dq2",
@@ -253,7 +253,7 @@ end
 
 
 def ensure_bends_are_on(mad: MAD, beam: int) -> None:
-    mad.send(f"""
+    mad.send(rf"""
 for i, element in MADX.lhcb{beam}:iter() do
     if (element.kind == "sbend" or element.kind == "rbend") and (element.angle ~= 0 and element.k0 == 0) then
         element.k0 = \s->s.angle/s.l -- restore deferred expression

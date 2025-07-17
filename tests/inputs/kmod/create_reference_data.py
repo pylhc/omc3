@@ -40,7 +40,7 @@ def create_model(beam: int):
 
     # Compress ---
     df = tfs.read(THIS_DIR / f"b{beam}_model" / TWISS_ELEMENTS_DAT, index="NAME")
-    df = df.loc[df.index.str.match("^(M|B|IP\d$)"), ["S", "BETX", "BETY"]]
+    df = df.loc[df.index.str.match(r"^(M|B|IP\d$)"), ["S", "BETX", "BETY"]]
     tfs.write(get_model_path(beam), df, save_index="NAME")
 
 
