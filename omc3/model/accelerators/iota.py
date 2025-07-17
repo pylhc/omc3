@@ -63,13 +63,14 @@ from __future__ import annotations
 
 import logging
 import os
+from pathlib import Path
 
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
 
 LOGGER = logging.getLogger(__name__)
-CURRENT_DIR = os.path.dirname(__file__)
+CURRENT_DIR: Path = Path(__file__).parent
 
 
 class Iota(Accelerator):
