@@ -18,7 +18,7 @@ HARPY_SETTINGS = {
 
 # ==== HARPY
 @pytest.mark.basic
-def test_default_harpy_resonance(tmp_path):
+def test_default_harpy_resonance(tmp_path: Path):
     '''
     Check that the --resonances flag indeed gives us up to 4th order by default
     '''
@@ -62,7 +62,7 @@ def test_default_harpy_resonance(tmp_path):
 
 @pytest.mark.basic
 @pytest.mark.parametrize("order", [1, 12])
-def test_harpy_bad_resonance_order(tmp_path, order):
+def test_harpy_bad_resonance_order(tmp_path: Path, order: int):
     '''
     Check that the --resonances maximum order is 8
     '''
@@ -87,7 +87,7 @@ def test_harpy_bad_resonance_order(tmp_path, order):
 
 
 @pytest.mark.extended
-def test_harpy_high_order_resonance(tmp_path):
+def test_harpy_high_order_resonance(tmp_path: Path):
     '''
     Check the --resonances flag  with higher magnet orders: dodecapole (6)
     '''
@@ -122,7 +122,7 @@ def test_harpy_high_order_resonance(tmp_path):
 
 # ==== OPTICS
 @pytest.mark.extended
-def test_optics_default_rdt_order(tmp_path):
+def test_optics_default_rdt_order(tmp_path: Path):
     '''
     Check the --rdt_magnet_order default (4)
     '''
@@ -176,7 +176,7 @@ def test_optics_default_rdt_order(tmp_path):
 
 @pytest.mark.extended
 @pytest.mark.parametrize("order", [1, 9])
-def test_optics_wrong_rdt_magnet_order(tmp_path, order):
+def test_optics_wrong_rdt_magnet_order(tmp_path: Path, order: int):
     '''
     Check that --rdt_magnet_order raises when > 8
     '''
@@ -211,7 +211,7 @@ def test_optics_wrong_rdt_magnet_order(tmp_path, order):
 
 
 @pytest.mark.extended
-def test_optics_higher_rdt_magnet_order(tmp_path):
+def test_optics_higher_rdt_magnet_order(tmp_path: Path):
     '''
     Check the --rdt_magnet_order with higher magnet orders: dodecapole (6)
     '''
@@ -269,7 +269,7 @@ def test_optics_higher_rdt_magnet_order(tmp_path):
             assert f'{rdt}.tfs' in actual_rdts
 
 
-def _assert_amp_lin(line, lin_dict, present):
+def _assert_amp_lin(line: tuple[int, int], lin_dict: dict[str, tfs.TfsDataFrame], present: bool) -> None:
     '''
     Check if an amplitude and its error exist in the lin columns
     e.g. AMP04 and ERRAMP04
