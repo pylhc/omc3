@@ -180,7 +180,7 @@ extend-select = [
     "C4",       # Catch incorrect use of comprehensions, dict, list, etc
     "FA",       # Enforce from __future__ import annotations
     "FBT",      # detect boolean traps
-    # "ISC",      # Good use of string concatenation
+    "ISC",      # Good use of string concatenation
     "BLE",      # disallow catch-all exceptions
     "ICN",      # Use common import conventions
     "RET",      # Good return practices
