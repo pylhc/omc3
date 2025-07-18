@@ -62,8 +62,7 @@ def create_model_dir(beam: int) -> None:
         modifiers=[ACC_MODELS / "operation/optics/R2024aRP_A30cmC30cmA10mL200cm.madx"],
         outputdir=model_dir,
     )
-    with open(model_dir / MADX_FILENAME) as f:
-        lines = f.readlines()
+    lines = (model_dir / MADX_FILENAME).read_text().splitlines(keepends=True)
 
     # Make the sequence as beam 1 or 2
     make_madx_seq(model_dir, lines, beam)

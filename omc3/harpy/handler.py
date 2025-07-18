@@ -9,6 +9,7 @@ single-bunch `TbtData`.
 from __future__ import annotations
 
 from os.path import basename, join
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -180,10 +181,9 @@ def _compute_headers(panda, date=None):
     return headers
 
 
-def _write_bad_bpms(output_path_without_suffix, plane, bad_bpms_with_reasons):
-    with open(f"{output_path_without_suffix}.bad_bpms_{plane.lower()}", 'w') as bad_bpms_file:
-        for line in bad_bpms_with_reasons:
-            bad_bpms_file.write(f"{line}\n")
+def _write_bad_bpms(output_path_without_suffix, plane, bad_bpms_with_reasons) -> None:
+    bad_bpms_file = Path(f"{output_path_without_suffix}.bad_bpms_{plane.lower()}")
+    bad_bpms_file.write_text("\n".join(bad_bpms_with_reasons) + "\n")
 
 
 def _write_spectrum(output_path_without_suffix, plane, spectra):

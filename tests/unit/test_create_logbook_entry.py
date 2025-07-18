@@ -187,13 +187,13 @@ class MockAttachmentBuilder:
 
     @classmethod
     def from_file(cls, filename: Path | str):
-        with open(filename, "rb") as f:
-            contents = f.read()
+        contents = Path(filename).read_bytes()
         short_name = Path(filename).name
         mime_type = mimetypes.guess_type(short_name)[0]
         if mime_type is None:
             raise ValueError(f"Unable to determine the mime type of {filename}")
         return cls(contents, short_name, mime_type)
+
 
 @pytest.fixture()
 def patch_pylogbook(monkeypatch):

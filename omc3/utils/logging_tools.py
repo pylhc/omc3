@@ -125,17 +125,16 @@ class TempFile:
         log_func (func): The function with which the content should be logged (e.g. LOG.info).
     """
 
-    def __init__(self, file_path, log_func):
-        self.path = file_path
+    def __init__(self, file_path: Path | str, log_func):
+        self.path = Path(file_path)
         self.log_func = log_func
 
-    def __enter__(self):
+    def __enter__(self) -> Path:
         return self.path
 
     def __exit__(self, value, traceback):
         try:
-            with open(self.path) as f:
-                content = f.read()
+            content = Path(self.path).read_text()
             self.log_func(f"{self.path:s}:\n" + content)
         except OSError:
             self.log_func(f"{self.path:s}: -file does not exist-")

@@ -18,7 +18,7 @@ class TestLHCKnobs:
         if beam is not None:
             correctors_dir = correctors_dir / f"correctors_b{beam}"
 
-        with open(correctors_dir / f"{name}_correctors.json") as f:
+        with (correctors_dir / f"{name}_correctors.json").open() as f:
             return json.load(f)
 
 

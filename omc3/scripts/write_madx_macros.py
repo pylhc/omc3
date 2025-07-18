@@ -57,10 +57,9 @@ def define_observation_points_macros(list_of_bpms):
     return macro
 
 
-def tracking_macros(list_of_bpms, outdir):
-    obs_macro_file = outdir / OBS_POINTS
-    with open(obs_macro_file, 'w') as obs_script:
-        obs_script.write(define_observation_points_macros(list_of_bpms))
+def tracking_macros(list_of_bpms, outdir: Path | str):
+    obs_macro_file = Path(outdir) / OBS_POINTS
+    obs_macro_file.write_text(define_observation_points_macros(list_of_bpms))
     track_macros = _call(obs_macro_file)
     track_macros += """
     /*

@@ -11,6 +11,7 @@ import sys
 import time
 import warnings
 from contextlib import contextmanager
+from pathlib import Path
 
 
 @contextmanager
@@ -32,11 +33,8 @@ def silence():
     """
     Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.
     """
-    with open(os.devnull, "w") as devnull, log_out(stdout=devnull, stderr=devnull):
-        try:
-            yield
-        finally:
-            devnull.close()
+    with Path(os.devnull).open("w") as devnull, log_out(stdout=devnull, stderr=devnull):
+        yield
 
 
 @contextmanager

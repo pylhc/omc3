@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
 import tfs
@@ -52,7 +54,7 @@ FILENAME_MAP = {
 
 @pytest.mark.basic
 @pytest.mark.parametrize('orientation', ('skew', 'normal'))
-def test_read_measurement_data(tmp_path, model_inj_beams, orientation):
+def test_read_measurement_data(tmp_path: Path, model_inj_beams: dict, orientation: str):
     """ Tests if all necessary measurement data is read.
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
     is_skew = orientation == 'skew'
@@ -85,7 +87,7 @@ def test_read_measurement_data(tmp_path, model_inj_beams, orientation):
 
 @pytest.mark.basic
 @pytest.mark.parametrize('method', ('pinv', 'omp'))
-def test_lhc_global_correct_methods(tmp_path, model_inj_beams, method):
+def test_lhc_global_correct_methods(tmp_path: Path, model_inj_beams: dict, method: str):
     """Creates a fake measurement from a modfied model-twiss with
     quadrupole errors and runs global correction on this measurement.
     Hint: the `model_inj_beam1` fixture is defined in `conftest.py`."""
@@ -128,8 +130,9 @@ def test_lhc_global_correct_methods(tmp_path, model_inj_beams, method):
     if method == "pinv":
         assert len(correction.index) > n_correctors  # unless by accident
 
+
 @pytest.mark.basic
-def test_update_response(tmp_path, model_inj_beams):
+def test_update_response(tmp_path: Path, model_inj_beams: dict):
     """ Tests if the response is updated. """
     # create the accelerator instance
     knob = "kqd.a78"#f'kq10.l1b{beam}'
@@ -163,8 +166,7 @@ def test_update_response(tmp_path, model_inj_beams):
         assert_frame_equal(ref_resp_dict[key], new_resp_dict[key])
 
     corr_file = tmp_path / "corr.madx"
-    with open(corr_file, "w") as f:
-        f.write(f"{knob} = {knob}{delta.loc[knob, DELTA]:+.16e};")
+    corr_file.write_text(f"{knob} = {knob}{delta.loc[knob, DELTA]:+.16e};")
 
     # Now for response_madx with the model changed
     new_resp_dict = _update_response(

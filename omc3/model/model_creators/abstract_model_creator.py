@@ -502,7 +502,7 @@ def check_folder_choices(
     list_choices: bool = False,
     predicate=iotools.always_true,
     stem_only: bool = False,
-    ) -> Path | str:
+    ) -> Path:
     """
     A helper function that scans a selected folder for children, which will then be displayed as possible choices.
     This funciton allows the model-creator to get only the file/folder names, check
