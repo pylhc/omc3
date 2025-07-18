@@ -410,7 +410,7 @@ def rescale_amp(amp_data: pd.Series) -> pd.Series:
 
 def output_plot(fig_cont: FigureContainer):
     fig = fig_cont.fig
-    if fig_cont.path is not None:
+    if fig_cont.path is not None and fig_cont.path != "None":
         LOG.info(f"Saving Plot '{fig_cont.path}'")
         fig.savefig(fig_cont.path)
 
