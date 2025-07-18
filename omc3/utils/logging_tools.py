@@ -10,7 +10,6 @@ from __future__ import annotations
 import datetime
 import inspect
 import logging
-import os
 import sys
 import time
 import warnings
