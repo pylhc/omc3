@@ -78,9 +78,8 @@ def test_combined_bpms_stem_plot(tmp_path: Path, file_path: Path, bpms: tuple[st
 
 @pytest.mark.basic
 def test_no_tunes_in_files_plot(tmp_path: Path, file_path: Path, bpms: tuple[str, str]):
-    from glob import glob
 
-    for f in glob(f"{file_path}*"):
+    for f in file_path.parent.glob("*"):
         print(f)
     for f in INPUT_DIR_SPECTRUM_FILES.glob(f"{file_path.name}*"):
         copy(f, tmp_path)
