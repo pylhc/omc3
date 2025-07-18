@@ -71,10 +71,10 @@ class DebugMode:
         self.active = active
         if active:
             # get current logger
-            caller_file = _get_caller()
-            current_module = _get_current_module(caller_file)
+            caller_file: str = _get_caller()
+            current_module: str = _get_current_module(caller_file)
 
-            self.logger = logging.getLogger(".".join([current_module, os.path.basename(caller_file)]))
+            self.logger = logging.getLogger(".".join([current_module, Path(caller_file).name]))
 
             # set level to debug
             self.current_level = self.logger.getEffectiveLevel()
@@ -84,9 +84,8 @@ class DebugMode:
             # create logfile name:
             now = f"{datetime.datetime.now().isoformat():s}_"
             if log_file is None:
-                log_file = os.path.abspath(caller_file).replace(".pyc", "").replace(".py",
-                                                                                    "") + ".log"
-            self.log_file = os.path.join(os.path.dirname(log_file), now + os.path.basename(log_file))
+                log_file = str(Path(caller_file).resolve().with_suffix(".log"))
+            self.log_file = str(Path(log_file).parent / (now + Path(log_file).name))
             self.logger.debug(f"Writing log to file '{self.log_file:s}'.")
 
             # add handlers
@@ -106,7 +105,7 @@ class DebugMode:
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
-            log_id = "" if self.log_file is None else f"'{os.path.basename(self.log_file):s}'"
+            log_id = "" if self.log_file is None else f"'{Path(self.log_file).name}'"
             self.logger.debug(f"Exiting Debug-Mode {log_id:s} after {time_used:f}s.")
 
             # revert everything
@@ -368,7 +367,7 @@ def _get_caller() -> str:
     return str(caller_file)
 
 
-def _get_current_module(current_file=None):
+def _get_current_module(current_file=None) -> str:
     """Find the name of the current module."""
     if not current_file:
         current_file = _get_caller()
