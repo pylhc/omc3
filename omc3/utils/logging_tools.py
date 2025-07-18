@@ -355,16 +355,17 @@ def get_my_logger_name():
 # Private Methods ##############################################################
 
 
-def _get_caller():
+def _get_caller() -> str:
     """Find the caller of the current log-function."""
-    this_file, _ = os.path.splitext(__file__)
+    this_file: Path = Path(__file__).with_suffix("")
     caller_file = this_file
     caller_frame = inspect.currentframe()
+
     while this_file == caller_file:
         caller_frame = caller_frame.f_back
         (caller_file_full, _, _, _, _) = inspect.getframeinfo(caller_frame)
-        caller_file, _ = os.path.splitext(caller_file_full)
-    return caller_file
+        caller_file = Path(caller_file_full).with_suffix("")
+    return str(caller_file)
 
 
 def _get_current_module(current_file=None):
