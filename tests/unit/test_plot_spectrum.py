@@ -79,15 +79,19 @@ def test_combined_bpms_stem_plot(tmp_path: Path, file_path: Path, bpms: tuple[st
 @pytest.mark.basic
 def test_no_tunes_in_files_plot(tmp_path: Path, file_path: Path, bpms: tuple[str, str]):
 
-    for f in file_path.parent.glob("*"):
-        print(f)
+    # for f in file_path.parent.glob("*"):
+        # print(f)
+
     for f in INPUT_DIR_SPECTRUM_FILES.glob(f"{file_path.name}*"):
         copy(f, tmp_path)
+
     file_path = tmp_path / file_path.name
-    for p in PLANES:
-        fname = file_path.with_suffix(f"{file_path.suffix}.lin{p.lower()}")
+    for plane in PLANES:
+        # Removing tunes from linfile
+        fname = file_path.with_suffix(f"{file_path.suffix}.lin{plane.lower()}")
         df = tfs.read(fname)
-        tfs.write(fname, df.drop(columns=[f"TUNE{p.upper()}", f"NATTUNE{p.upper()}"]))
+        tfs.write(fname, df.drop(columns=[f"TUNE{plane.upper()}", f"NATTUNE{plane.upper()}"]))
+
     plot_spectrum(
         files=[file_path], bpms=bpms, combine_by=["files", "bpms"],
     )

@@ -8,7 +8,7 @@ It provides functions to compute kick actions.
 from __future__ import annotations
 
 from contextlib import suppress
-from os.path import join
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -64,7 +64,7 @@ def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dic
         return pd.DataFrame
     kick_frame = _rescale_actions(kick_frame, scale, plane)
     header = _get_header(header_dict, plane, scale)
-    tfs.write(join(measure_input.outputdir, f"{KICK_NAME}{plane.lower()}{EXT}"), kick_frame, header)
+    tfs.write(Path(measure_input.outputdir) / f"{KICK_NAME}{plane.lower()}{EXT}", kick_frame, header)
     return kick_frame.loc[:, [f"{SQRT_ACTION}{plane}", f"{ERR}{SQRT_ACTION}{plane}"]].to_numpy()
 
 
