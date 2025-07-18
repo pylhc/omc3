@@ -109,7 +109,6 @@ def run_string(
         log_file: If given writes ``MAD-X`` logging output.
         madx_path: Path to the ``MAD-X`` executable.
     """
-    log_file = Path(log_file)
     _check_log_and_output_files(output_file, log_file)
     _run(input_string, log_file, output_file, madx_path, cwd)
 
