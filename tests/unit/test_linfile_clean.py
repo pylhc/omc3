@@ -216,10 +216,10 @@ def test_main(tmp_path):
             assert_frame_equal(unfiltered[plane], filtered[plane])
 
     # Tests that inis were written and they are usable for re-running
-    inis = list(Path('.').glob("*.ini"))
+    inis = list(Path().glob("*.ini"))
     assert len(inis) == 2
     main(entry_cfg=sorted(inis)[0])
-    assert len(list(Path('.').glob("*.ini"))) == 3
+    assert len(list(Path().glob("*.ini"))) == 3
     _assert_nlinfiles(tmp_path, 2)
 
 

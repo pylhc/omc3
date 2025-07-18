@@ -155,7 +155,7 @@ def get_params():
 def main(opt):
     """Main function, to parse commandline input and separate restoration
     from cleaning."""
-    save_config(Path('.'), opt, __file__)
+    save_config(Path(), opt, __file__)
     if opt.restore:
         restore_files(opt.files)
         return
