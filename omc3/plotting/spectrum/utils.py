@@ -6,7 +6,6 @@ Common functions and sorting functions for the spectrum plotter.
 """
 from __future__ import annotations
 
-import os
 from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
@@ -237,54 +236,64 @@ def _fset(*args):
 # Specific Mappings ---
 
 
-def _get_id_single_fig_files_and_bpms(output_dir: str, default_name: str, filename: str,
-                                      bpm: str, filetype: str) -> IdData:
+def _get_id_single_fig_files_and_bpms(
+    output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ Same id for all plots. Creates single figure.
     The label of the lines is a combination of filename and bpm.
     """
     return IdData(
         id_=default_name,
         label=f"{filename} {bpm}",
-        path=_get_figure_path(output_dir, filename=None,
-                              figurename=f"{default_name}.{filetype}")
+        path=str(
+            _get_figure_path(output_dir, filename=None, figurename=f"{default_name}.{filetype}")
+        )
     )
 
 
-def _get_id_single_fig_files(output_dir: str, default_name: str, filename: str,
-                             bpm: str, filetype: str) -> IdData:
+def _get_id_single_fig_files(
+        output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ BPM as id for plots.
     Creates len(bpm) figures, with filenames as labels for lines.
     """
     return IdData(
         id_=bpm,
         label=filename,
-        path=_get_figure_path(output_dir, filename=None,
-                              figurename=f"{default_name}_{bpm}.{filetype}")
+        path=str(
+            _get_figure_path(output_dir, filename=None, figurename=f"{default_name}_{bpm}.{filetype}")
+        )
     )
 
 
-def _get_id_single_fig_bpms(output_dir: str, default_name: str, filename: str,
-                            bpm: str, filetype: str) -> IdData:
+def _get_id_single_fig_bpms(
+    output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ Filename as ID for plots.
     Creates len(files) figures, with bpms as lables for lines.
     """
-    return IdData(id_=filename,
-                  label=bpm,
-                  path=_get_figure_path(output_dir, filename=filename,
-                                        figurename=f"{default_name}.{filetype}")
-                  )
+    return IdData(
+        id_=filename,
+        label=bpm,
+        path=str(
+            _get_figure_path(output_dir, filename=filename, figurename=f"{default_name}.{filetype}")
+        )
+    )
 
 
-def _get_id_multi_fig(output_dir: str, default_name: str, filename: str,
-                      bpm: str, filetype: str) -> IdData:
+def _get_id_multi_fig(
+    output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ Combination of Filename and BPM as ID. Creates len(files)*len(bpms) plots.
     BPM-name is printed as label.
     """
-    return IdData(id_=f"{filename}_{bpm}",
-                  label=bpm,
-                  path=_get_figure_path(output_dir, filename=filename,
-                                        figurename=f"{default_name}_{bpm}.{filetype}")
-                  )
+    return IdData(
+        id_=f"{filename}_{bpm}",
+        label=bpm,
+        path=str(
+            _get_figure_path(output_dir, filename=filename, figurename=f"{default_name}_{bpm}.{filetype}")
+        )
+    )
 
 
 # Data Sorting -----------------------------------------------------------------
@@ -334,17 +343,17 @@ def get_unique_filenames(files: Iterable | Sized):
     return zip(paths, names)
 
 
-def _get_partial_filepath(path: Path, nparts: int):
+def _get_partial_filepath(path: Path, nparts: int) -> tuple[str, ...]:
     """ Returns the path from nparts until the end"""
     return path.parts[nparts:]
 
 
-def _get_valid_indices(amps, freqs):
+def _get_valid_indices(amps: pd.Series, freqs: pd.Series):
     """ Intersection of filtered AMPS and FREQS indices. """
     return index_filter(amps).intersection(index_filter(freqs))
 
 
-def index_filter(data: pd.Series):
+def index_filter(data: pd.Series) -> pd.Index:
     """ Only non-NaN and non-Zero data allowed.
     (Amps should not be zero due to _filter_amps() anyway.)"""
     return data[~(data.isna() | (data == 0))].index
@@ -378,7 +387,9 @@ def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Itera
     return found_bpms
 
 
-def _get_only_given_bpms(found_bpms, given_bpms, plane, file_path):
+def _get_only_given_bpms(
+    found_bpms: Iterable[str], given_bpms: Iterable[str], plane: str, file_path: Path | str
+) -> list[str]:
     found_bpms = [bpm for bpm in found_bpms if bpm in given_bpms]
     missing_bpms = [bpm for bpm in given_bpms if bpm not in found_bpms]
     if len(missing_bpms):
@@ -404,18 +415,19 @@ def output_plot(fig_cont: FigureContainer):
         fig.savefig(fig_cont.path)
 
 
-def _get_figure_path(out_dir, filename, figurename):
-    path = _make_output_dir(out_dir, filename)
+def _get_figure_path(out_dir: str, filename: str, figurename: str) -> Path:
+    path: Path = _make_output_dir(out_dir, filename)
     if path is not None and figurename is not None:
-        path = os.path.join(path, figurename)
+        path = path / figurename
     return path
 
 
-def _make_output_dir(out_dir, filename):
+def _make_output_dir(out_dir: Path | str, filename: str) -> Path:
     if out_dir is not None:
+        out_dir = Path(out_dir)
         if filename is not None:
-            out_dir = os.path.join(out_dir, os.path.splitext(filename)[0])
-        os.makedirs(out_dir, exist_ok=True)
+            out_dir = out_dir / Path(filename).stem
+        out_dir.mkdir(exist_ok=True)
     return out_dir
 
 
