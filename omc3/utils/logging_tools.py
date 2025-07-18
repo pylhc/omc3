@@ -371,20 +371,22 @@ def _get_current_module(current_file=None):
     """Find the name of the current module."""
     if not current_file:
         current_file = _get_caller()
-    path_parts = os.path.abspath(current_file).split(os.path.sep)
 
-    repo_parts = os.path.abspath(
-                    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
-                    ).split(os.path.sep)
-
+    # path_parts = os.path.abspath(current_file).split(os.path.sep)
+    # repo_parts = os.path.abspath(
+    #     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
+    # ).split(os.path.sep)
+    path_parts: tuple[str] = Path(current_file).resolve().parts
+    repo_parts = Path(__file__).resolve().parent.parent.parts
     return '.'.join(path_parts[len(repo_parts):-1])
 
 
 def _get_caller_logger_name():
     """Returns logger name of the caller."""
-    caller_file = _get_caller()
+    caller_file: str = _get_caller()
     current_module = _get_current_module(caller_file)
-    return ".".join([current_module, os.path.basename(caller_file)])
+    # return ".".join([current_module, os.path.basename(caller_file)])
+    return ".".join([current_module, Path(caller_file).name])
 
 
 def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
