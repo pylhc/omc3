@@ -8,7 +8,6 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 from __future__ import annotations
 
 import contextlib
-import os
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -221,7 +220,7 @@ class Accelerator:
 
             if acc_models.is_dir():
                 if acc_models.is_symlink():
-                    self.acc_model_path = Path(os.readlink(acc_models)).absolute()
+                    self.acc_model_path = Path(acc_models).readlink()
                 else:
                     self.acc_model_path = acc_models
             # else this wasn't an acc-models based model
