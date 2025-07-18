@@ -8,8 +8,8 @@ single-bunch `TbtData`.
 """
 from __future__ import annotations
 
-from os.path import basename, join
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -35,12 +35,17 @@ from omc3.harpy.constants import (
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
+if TYPE_CHECKING:
+    from typing import Any
+
+    from turn_by_turn import TbtData
+
 LOGGER = logging_tools.get_logger(__name__)
 ALL_PLANES = (*PLANES, "Z")
 PLANE_TO_NUM = {**P2N, "Z": 3}
 
 
-def run_per_bunch(tbt_data, harpy_input):
+def run_per_bunch(tbt_data: TbtData, harpy_input: dict[str, Any]):
     """
     Cleans data, analyses frequencies and searches for resonances.
 
@@ -53,7 +58,7 @@ def run_per_bunch(tbt_data, harpy_input):
     """
     model = None if harpy_input.model is None else tfs.read(harpy_input.model, index=COL_NAME).loc[:, 'S']
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
-    output_file_path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
+    output_file_path: Path = _get_output_path_without_suffix(harpy_input.outputdir, harpy_input.files)
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
         bpm_data = _scale_to_meters(bpm_data, harpy_input.unit)
@@ -181,22 +186,22 @@ def _compute_headers(panda, date=None):
     return headers
 
 
-def _write_bad_bpms(output_path_without_suffix, plane, bad_bpms_with_reasons) -> None:
+def _write_bad_bpms(output_path_without_suffix: Path | str, plane: str, bad_bpms_with_reasons: str) -> None:
     bad_bpms_file = Path(f"{output_path_without_suffix}.bad_bpms_{plane.lower()}")
     bad_bpms_file.write_text("\n".join(bad_bpms_with_reasons) + "\n")
 
 
-def _write_spectrum(output_path_without_suffix, plane, spectra):
+def _write_spectrum(output_path_without_suffix: Path | str, plane: str, spectra: tfs.TfsDataFrame) -> None:
     tfs.write(f"{output_path_without_suffix}{FILE_AMPS_EXT.format(plane=plane.lower())}", spectra["COEFFS"].abs().T)
     tfs.write(f"{output_path_without_suffix}{FILE_FREQS_EXT.format(plane=plane.lower())}", spectra["FREQS"].T)
 
 
-def _write_lin_tfs(output_path_without_suffix, plane, lin_frame):
+def _write_lin_tfs(output_path_without_suffix: Path | str, plane: str, lin_frame: tfs.TfsDataFrame) -> None:
     tfs.write(f"{output_path_without_suffix}{FILE_LIN_EXT.format(plane=plane.lower())}", lin_frame)
 
 
-def _get_output_path_without_suffix(output_dir, file_path):
-    return join(output_dir, basename(file_path))
+def _get_output_path_without_suffix(output_dir: str, file_path: str) -> Path:
+    return Path(output_dir) / Path(file_path).name
 
 
 def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -> pd.DataFrame:
