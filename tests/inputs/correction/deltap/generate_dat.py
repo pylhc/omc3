@@ -1,6 +1,7 @@
+from pathlib import Path
+
 from omc3 import madx_wrapper
 from omc3.optics_measurements.constants import PHASE_ADV
-from pathlib import Path
 
 # These paths means that the script can be run from any directory
 current_dir = Path(__file__).parent

@@ -1,4 +1,4 @@
-""" 
+"""
 Model Creator Manager
 ---------------------
 
@@ -61,12 +61,12 @@ CREATORS: dict[str, dict[CreatorType, type]] = {
 
 
 def get_model_creator_class(
-    accel: type[Accelerator] | Accelerator | str, 
+    accel: type[Accelerator] | Accelerator | str,
     creator_type: CreatorType
     ) -> type[ModelCreator]:
     """ Returns the model creator for the given accelerator and creator type.
     This function will raise a ValueError if the accelerator or creator type is unknown.
-    
+
     Args:
         accel: The accelerator to use, can be class, instance or name.
         creator_type: The type of model creator to use.
@@ -75,12 +75,12 @@ def get_model_creator_class(
         The model creator class.
     """
     name = accel if isinstance(accel, str) else accel.NAME
-    
+
     try:
         CREATORS[name]
     except KeyError:
         raise ValueError(f"Unknown accelerator '{name}' for a model creation.")
-    
+
     try:
         return CREATORS[name][creator_type]
     except KeyError:

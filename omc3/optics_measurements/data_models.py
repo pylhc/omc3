@@ -5,21 +5,28 @@ Data Models
 Models used in optics measurements to store and pass around data.
 """
 from __future__ import annotations
+
 from pathlib import Path
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-
 import tfs
+
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements import dpp, iforest
-from omc3.optics_measurements.constants import BPM_RESOLUTION, AMPLITUDE, CALIBRATION, ERR, ERR_CALIBRATION
+from omc3.optics_measurements.constants import (
+    AMPLITUDE,
+    BPM_RESOLUTION,
+    CALIBRATION,
+    ERR,
+    ERR_CALIBRATION,
+)
 from omc3.utils import logging_tools
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -35,8 +42,8 @@ class InputFiles(dict):
         - ``get_data`` (frame, column)
     """
     def __init__(self, files_to_analyse: Sequence[str|Path|tfs.TfsDataFrame], optics_opt: DotDict):
-        super(InputFiles, self).__init__(zip(PLANES, ([], [])))
-        read_files = isinstance(files_to_analyse[0], (str, Path))
+        super().__init__(zip(PLANES, ([], [])))
+        read_files = isinstance(files_to_analyse[0], Path | str)
         for file_in in files_to_analyse:
             for plane in PLANES:
                 df_to_load = (tfs.read(f"{file_in}.lin{plane.lower()}").set_index("NAME", drop=False)
@@ -45,7 +52,7 @@ class InputFiles(dict):
                 self[plane].append(self._repair_backwards_compatible_frame(df_to_load, plane))
 
         if len(self['X']) + len(self['Y']) == 0:
-            raise IOError("No valid input files")
+            raise OSError("No valid input files")
         dpp_values = dpp.calculate_dpoverp(self, optics_opt)
         LOGGER.info(f"DPPS: {dpp_values}")
         amp_dpp_values = dpp.calculate_amp_dpoverp(self, optics_opt)
@@ -88,7 +95,7 @@ class InputFiles(dict):
         if len(dpp_dfs) == 0:
             raise ValueError(f"No data found for dp/p {dpp_value} in plane {plane}")
         return dpp_dfs
-    
+
     def dpp_frames_indices(self, plane: str, dpp_value: float | None):
         """ Return the indices of the frames that match the dpp. """
         if dpp_value is None:
@@ -99,28 +106,28 @@ class InputFiles(dict):
     def _all_frames(self, plane: str):
         return self[plane]
 
-    def joined_frame(self, 
-        plane: str, 
-        columns: Sequence[str], 
-        dpp_value: float | None = None, 
-        dpp_amp: bool = False, 
-        how: str = 'inner', 
+    def joined_frame(self,
+        plane: str,
+        columns: Sequence[str],
+        dpp_value: float | None = None,
+        dpp_amp: bool = False,
+        how: str = 'inner',
         dtype: np.dtype = np.float64
     ) -> pd.DataFrame:
         """
         Constructs merged DataFrame from collected DataFrames in InputFiles,
         i.e. from the harpy output of the given measurements.
 
-        The input parameters to this function determine which data will be present in the 
+        The input parameters to this function determine which data will be present in the
         joined frame:
-        which `plane` to use, the `columns` to be included, 
-        a `dpp_value` filter (with tolerance from :data:`omc3.optics_measurements.dpp.DPP_TOLERANCE`) 
+        which `plane` to use, the `columns` to be included,
+        a `dpp_value` filter (with tolerance from :data:`omc3.optics_measurements.dpp.DPP_TOLERANCE`)
         and `how` to perform the merge.
 
         You can also specify what `dtype` the resulting data will have, this should normally be `float64`.
 
         The columns in the resulting Dataframe will be suffixed by `__#`, starting from `0`
-        with increasing integers for each of the input files.    
+        with increasing integers for each of the input files.
 
         Args:
             plane: marking the horizontal or vertical plane, **X** or **Y**.
@@ -129,8 +136,8 @@ class InputFiles(dict):
             dpp_amp: merges only files with non-zero dpp amplitude (i.e. 3Dkicks).
             how: whi way to use for merging: ``inner`` (intersection) or ``outer`` (union),
                 default is ``inner``.
-            dtype: dtype of the merged DataFrame. Usually `np.float64` should be used, 
-                   but in case you have string- or complex- data you will need to set this accordingly 
+            dtype: dtype of the merged DataFrame. Usually `np.float64` should be used,
+                   but in case you have string- or complex- data you will need to set this accordingly
                    or to `None` to avoid conversion.
 
         Returns:
@@ -138,7 +145,7 @@ class InputFiles(dict):
         """
         if how not in ['inner', 'outer']:
             raise RuntimeWarning("'how' should be either 'inner' or 'outer', 'inner' will be used.")
-        
+
         # select frames ---
         frames_to_join = self.dpp_frames(plane, dpp_value)
         if dpp_amp:
@@ -146,7 +153,7 @@ class InputFiles(dict):
 
         if len(frames_to_join) == 0:
             raise ValueError("No data found for non-zero |dp/p|")
-        
+
         # join frames ---
         joined_frame = frames_to_join[0].reindex(columns=columns, fill_value=np.nan)
         if len(frames_to_join) > 1:
@@ -190,7 +197,7 @@ class InputFiles(dict):
                 # Scale amplitude with the calibration
                 self[plane][i][f"{AMPLITUDE}{plane}"] = self[plane][i].loc[:, f"{AMPLITUDE}{plane}"] * data.loc[:, CALIBRATION]
 
-                if f"{ERR}{AMPLITUDE}{plane}" in self[plane][i].columns: 
+                if f"{ERR}{AMPLITUDE}{plane}" in self[plane][i].columns:
                     # Sum Amplitude Error (absolute) and Calibration Error (relative)
                     self[plane][i][f"{ERR}{AMPLITUDE}{plane}"] = np.sqrt(
                         self[plane][i][f"{ERR}{AMPLITUDE}{plane}"]**2 +
@@ -210,7 +217,7 @@ class InputFiles(dict):
             list of columns.
         """
         str_list = list(frame.columns[frame.columns.str.startswith(column + '__')].to_numpy())
-        new_list = list(map(lambda s: s[len(f"{column}__"):], str_list))
+        new_list = [s[len(f"{column}__"):] for s in str_list]
         new_list.sort(key=int)
         return [f"{column}__{x}" for x in new_list]
 
@@ -233,9 +240,9 @@ class InputFiles(dict):
 # DPP Filtering related functions ------------------------------------------------------------------
 
 def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, id_: str = None):
-    """ A helper function to check if off-momentum data is present in the input files, 
-    but no dpp-value is given by the user. 
-    
+    """ A helper function to check if off-momentum data is present in the input files,
+    but no dpp-value is given by the user.
+
     See https://github.com/pylhc/omc3/issues/456 .
     """
     on_momentum_files = input_files.dpp_frames_indices(plane, dpp_value=0)
@@ -246,7 +253,7 @@ def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, i
         "Off-momentum files for analysis found!\n"
         "They will be included"
     )
-    
+
     if id_ is not None:
         msg += f" in the {id_}"
 
@@ -254,10 +261,10 @@ def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, i
         ", which can make the results more inaccurate.\n"
         "To avoid, specify `analyse_dpp` or run the analysis only on on-momentum files"
     )
-    
+
     if id_ is not None:
         msg += f" or possibly deactivate the {id_}"
-    
+
     msg += "."
     LOGGER.warning(msg)
 

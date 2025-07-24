@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ from tests.accuracy.test_harpy import _get_model_dataframe
 @pytest.mark.basic
 @pytest.mark.parametrize("suffix", ("_my_suffix", None))
 def test_input_suffix_and_single_bunch(suffix):
-    """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches` 
+    """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffix is attached to single-bunch files."""
     file_name = "input_file.sdds"
     options = DotDict(
@@ -35,7 +35,7 @@ def test_input_suffix_and_single_bunch(suffix):
         assert "bunchID" not in opt.files
         assert data is tbt_data
         n_data += 1
-    
+
     assert n_data == 1
 
 
@@ -43,7 +43,7 @@ def test_input_suffix_and_single_bunch(suffix):
 @pytest.mark.parametrize("suffix", ("_my_suffix", None))
 @pytest.mark.parametrize("bunches", (None, (1, 15)))
 def test_input_suffix_and_multibunch(suffix, bunches):
-    """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches` 
+    """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffixes are attached to multi-bunch files and they are
     split up into single-bunch files correctly."""
     file_name = "input_file.sdds"
@@ -70,7 +70,7 @@ def test_input_suffix_and_multibunch(suffix, bunches):
         assert data.matrices[0] == matrix
         assert data.bunch_ids[0] == bunch_id
         n_data += 1
-    
+
     if bunches:
         assert n_data == len(bunches)
     else:
@@ -81,9 +81,9 @@ def test_input_suffix_and_multibunch(suffix, bunches):
 @pytest.mark.parametrize("suffix", ("_my_suffix", None))
 @pytest.mark.parametrize("bunches", (None, (1, 15)))
 def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
-    """ Runs harpy and checks that the right files are created. 
-    
-    Only with bunchID as we have enough tests in the accuracy tests, 
+    """ Runs harpy and checks that the right files are created.
+
+    Only with bunchID as we have enough tests in the accuracy tests,
     that implicitly check that the single-bunch files are created.
     """
     all_bunches = [1, 5, 15]
@@ -138,4 +138,4 @@ def create_tbt_data(model: pd.DataFrame, bunch_ids: Sequence[int] = (0, ), n_tur
     data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] + model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
     data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] + model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
     matrix = tbt.TransverseData(X=pd.DataFrame(data=data_x, index=model.index), Y=pd.DataFrame(data=data_y, index=model.index))
-    return tbt.TbtData(matrices=[matrix] * len(bunch_ids), bunch_ids=list(bunch_ids), nturns=n_turns)  
+    return tbt.TbtData(matrices=[matrix] * len(bunch_ids), bunch_ids=list(bunch_ids), nturns=n_turns)

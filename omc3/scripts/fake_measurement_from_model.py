@@ -70,7 +70,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
@@ -120,18 +119,20 @@ from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    import pandas as pd
+
 LOG = logging_tools.get_logger(__name__)
 
 OUTPUTNAMES_MAP = {
     # Names to be output on input of certain parameters.
     f'{BETA}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME)),
     f'{BETA}Y': tuple(f"{name}y" for name in (BETA_NAME, AMP_BETA_NAME)),
-    f'{DISPERSION}X': tuple([f"{DISPERSION_NAME}x"]),
-    f'{DISPERSION}Y': tuple([f"{DISPERSION_NAME}y"]),
+    f'{DISPERSION}X': (f"{DISPERSION_NAME}x",),
+    f'{DISPERSION}Y': (f"{DISPERSION_NAME}y",),
     f'{PHASE}X': tuple(f"{name}x" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
     f'{PHASE}Y': tuple(f"{name}y" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
-    F1010: tuple([F1010_NAME]),
-    F1001: tuple([F1001_NAME]),
+    F1010: (F1010_NAME,),
+    F1001: (F1001_NAME,),
     f'{NORM_DISPERSION}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
 }
 FAKED_HEADER: str = "FAKED_FROM"
@@ -384,10 +385,10 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
 
     # Naming with R, I, A, P as long as model is involved
     df = tfs.concat(
-        [create_measurement(df_twiss, model_col, relative_error, randomize) for model_col in column_map.keys()],
+        [create_measurement(df_twiss, model_col, relative_error, randomize) for model_col in column_map],
         axis=1
     )
-    for model_col in column_map.keys():
+    for model_col in column_map:
         df = append_model_param(df, df_model, model_col)
     df = append_model_s_and_phaseadv(df, df_model, planes="XY")
 
@@ -454,10 +455,7 @@ def create_measurement(df_twiss: pd.DataFrame, parameter: str, relative_error: f
         if VALUES in randomize:
             values = np.random.normal(values, errors)
 
-    df = tfs.TfsDataFrame({parameter: values,
-                           f"{ERR}{parameter}": errors},
-                          index=df_twiss.index)
-    return df
+    return tfs.TfsDataFrame({parameter: values, f"{ERR}{parameter}": errors}, index=df_twiss.index)
 
 
 def append_model_param(df: pd.DataFrame, df_model: pd.DataFrame, parameter: str, beat: bool = False) -> pd.DataFrame:

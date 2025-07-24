@@ -11,6 +11,8 @@ Provides mock functionality for packages necessitating the ``CERN GPN`` and only
     pytimber = cern_network_import("pytimber")
     db = pytimber.LoggingDB(source="nxcals")  # will raise if pytimber not installed
 """
+from __future__ import annotations
+
 import importlib
 
 

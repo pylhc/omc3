@@ -11,7 +11,9 @@ The files have been truncated to 250 turns (turns 3001 - 3250) to save space.
 """
 from collections.abc import Sequence
 from pathlib import Path
+
 import turn_by_turn as tbt
+
 
 def truncate_turns_on_data(tbt_data: tbt.TbtData, start_turn: int = 0, end_turn: int = None):
     if end_turn is None:

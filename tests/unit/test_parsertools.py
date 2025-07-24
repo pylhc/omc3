@@ -1,7 +1,8 @@
-from generic_parser.entrypoint_parser import ArgumentError
-from omc3.utils import parsertools
-from generic_parser import EntryPointParameters, EntryPoint
 import pytest
+from generic_parser import EntryPoint, EntryPointParameters
+
+from omc3.utils import parsertools
+
 
 @pytest.mark.basic
 def test_require_param():

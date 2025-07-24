@@ -1,9 +1,11 @@
-""" 
+"""
 Debugging tools
 ---------------
 
 Tools that can help with debugging.
 """
+from __future__ import annotations
+
 import os
 import sys
 

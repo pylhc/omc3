@@ -1,9 +1,17 @@
-import pytest
-import tfs 
-
-from tests.conftest import INPUTS, assert_tfsdataframe_equal
-from omc3.scripts.bad_bpms_summary import NAME, SOURCE, bad_bpms_summary, IFOREST, HARPY, merge_reasons
 import logging
+
+import pytest
+import tfs
+
+from omc3.scripts.bad_bpms_summary import (
+    HARPY,
+    IFOREST,
+    NAME,
+    SOURCE,
+    bad_bpms_summary,
+    merge_reasons,
+)
+from tests.conftest import INPUTS, assert_tfsdataframe_equal
 
 
 @pytest.mark.extended

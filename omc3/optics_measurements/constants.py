@@ -4,6 +4,8 @@ Constants
 
 Specific constants to be used in optics_measurements, to help with consistency.
 """
+from __future__ import annotations
+
 # File Names -------------------------------------------------------------------
 EXT: str = ".tfs"
 AMP_BETA_NAME: str = "beta_amplitude_"

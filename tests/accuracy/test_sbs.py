@@ -3,7 +3,7 @@ Test Segment-by-Segment
 -----------------------
 """
 from pathlib import Path
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,6 @@ from generic_parser import DotDict
 
 from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
-from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import OPTICS_SUBDIR, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
 from omc3.optics_measurements.constants import AMPLITUDE, IMAG, NAME, PHASE, REAL
@@ -21,17 +20,20 @@ from omc3.sbs_propagation import segment_by_segment
 from omc3.segment_by_segment.constants import logfile
 from omc3.segment_by_segment.propagables import (
     ALL_PROPAGABLES,
+    F1001,
+    F1010,
     AlphaPhase,
     BetaPhase,
     Dispersion,
-    F1001,
-    F1010,
     Phase,
     PropagableColumns,
 )
 from omc3.segment_by_segment.segments import Segment, SegmentDiffs
 from omc3.utils import logging_tools
 from tests.conftest import INPUTS
+
+if TYPE_CHECKING:
+    from omc3.model.accelerators.lhc import Lhc
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -79,15 +81,15 @@ class TestSbSLHC:
         # Preparation ----------------------------------------------------------
         twiss_elements = tfs.read(model_30cm_flat_beams.model_dir / TWISS_ELEMENTS_DAT, index=NAME)
         beam = model_30cm_flat_beams.beam
-        accel_opt = dict(
-            accel="lhc",
-            year=YEAR,
-            beam=beam,
-            nat_tunes=[0.31, 0.32],
-            dpp=0.0,
-            energy=6500,
-            modifiers=[acc_models_lhc_2025 / OPTICS_SUBDIR / OPTICS_30CM_FLAT],
-        )
+        accel_opt = {
+            "accel": "lhc",
+            "year": YEAR,
+            "beam": beam,
+            "nat_tunes": [0.31, 0.32],
+            "dpp": 0.0,
+            "energy": 6500,
+            "modifiers": [acc_models_lhc_2025 / OPTICS_SUBDIR / OPTICS_30CM_FLAT],
+        }
 
         correction_path = None
         if with_correction:
@@ -158,17 +160,17 @@ class TestSbSLHC:
         sbs_dir: Path = tmp_path / "my_sbs"
 
         beam = model_30cm_flat_beams.beam
-        accel_opt = dict(
-            accel="lhc",
-            year=YEAR,
-            beam=beam,
-            nat_tunes=[0.31, 0.32],
-            dpp=0.0,
-            energy=6800,
-            fetch=Fetcher.PATH,
-            path=acc_models_lhc_2025,
-            modifiers=[OPTICS_30CM_FLAT],
-        )
+        accel_opt = {
+            "accel": "lhc",
+            "year": YEAR,
+            "beam": beam,
+            "nat_tunes": [0.31, 0.32],
+            "dpp": 0.0,
+            "energy": 6800,
+            "fetch": Fetcher.PATH,
+            "path": acc_models_lhc_2025,
+            "modifiers": [OPTICS_30CM_FLAT],
+        }
 
         correction_path = None
         if with_correction:
@@ -315,10 +317,7 @@ def assert_all_close(
         df = df.loc[idx_slice]
 
     a_data = df[a]
-    if isinstance(b, str):
-        b_data = df[b]
-    else:
-        b_data = b
+    b_data = df[b] if isinstance(b, str) else b
 
     if rel is not None:
         a_data = a_data / df[rel]

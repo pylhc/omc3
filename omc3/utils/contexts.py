@@ -4,6 +4,8 @@ Contexts
 
 Provides contexts managers to use.
 """
+from __future__ import annotations
+
 import os
 import sys
 import time
@@ -30,8 +32,7 @@ def silence():
     """
     Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.
     """
-    devnull = open(os.devnull, "w")
-    with log_out(stdout=devnull, stderr=devnull):
+    with open(os.devnull, "w") as devnull, log_out(stdout=devnull, stderr=devnull):
         try:
             yield
         finally:
@@ -56,11 +57,6 @@ def suppress_warnings(warning_classes):
         yield
     for w in warn_list:
         if not issubclass(w.category, warning_classes):
-            print("{file:s}:{line:d}: {clas:s}: {message:s}".format(
-                file=w.filename,
-                line=w.lineno,
-                clas=w._category_name,
-                message=w.message.message,
-            ),
+            print(f"{w.filename:s}:{w.lineno:d}: {w._category_name:s}: {w.message.message:s}",
                 file=sys.stderr
             )

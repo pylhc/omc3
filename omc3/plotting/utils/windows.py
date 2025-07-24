@@ -20,21 +20,23 @@ and can either be added to a QT-Window or, if not installed, opened by `pyplot`.
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 
 import matplotlib as mpl
-from matplotlib import pyplot as plt, rcParams
-from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
 
 LOG = logging_tools.get_logger(__name__)
 
 # --- optional qtpy import block -----------------------------------------------
 
 try:
-    from qtpy.QtWidgets import (
-        QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget
-    )
+    from qtpy.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget
 except ImportError as e:
     LOG.debug(f"Could not import QtPy: {str(e)}")
     QMainWindow, QApplication, QVBoxLayout  = None, None, None

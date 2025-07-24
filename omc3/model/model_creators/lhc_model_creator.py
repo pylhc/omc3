@@ -15,11 +15,7 @@ import pandas as pd
 import tfs
 
 from omc3.correction.constants import ORBIT_DPP
-from omc3.model.accelerators.accelerator import (
-    AcceleratorDefinitionError,
-    AccExcitationMode,
-)
-from omc3.model.accelerators.lhc import Lhc
+from omc3.model.accelerators.accelerator import AcceleratorDefinitionError, AccExcitationMode
 from omc3.model.constants import (
     AFS_ACCELERATOR_MODEL_REPOSITORY,
     AFS_B2_ERRORS_ROOT,
@@ -29,9 +25,9 @@ from omc3.model.constants import (
     GENERAL_MACROS,
     JOB_MODEL_MADX_BEST_KNOWLEDGE,
     JOB_MODEL_MADX_NOMINAL,
-    LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH,
     LHC_MACROS,
     LHC_MACROS_RUN3,
+    LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH,
     MACROS_DIR,
     MADX_ENERGY_VAR,
     MODIFIER_TAG,
@@ -57,6 +53,8 @@ from omc3.utils.iotools import create_dirs, get_check_by_regex_func, get_check_s
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from omc3.model.accelerators.lhc import Lhc
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -72,7 +70,7 @@ class LhcModelCreator(ModelCreator):
 
     def __init__(self, accel: Lhc, *args, **kwargs):
         LOGGER.debug("Initializing LHC Model Creator")
-        super(LhcModelCreator, self).__init__(accel, *args, **kwargs)
+        super().__init__(accel, *args, **kwargs)
 
     def prepare_options(self, opt):
         """ Use the fetcher to list choices if requested. """
@@ -106,14 +104,14 @@ class LhcModelCreator(ModelCreator):
 
         # list optics choices ---
         if opt.list_choices:  # assumes we only want to list optics. Invoked even if modifiers are given!
-            check_folder_choices(  
+            check_folder_choices(
                 acc_model_path / OPTICS_SUBDIR,
                 msg="No modifier given",
                 selection=None,  # TODO: could check if user made valid choice
                 list_choices=opt.list_choices,
                 predicate=get_check_suffix_func(".madx")
             )  # raises AcceleratorDefinitionError
-        
+
         # Set acc model path to be used in model creator ---
         accel.acc_model_path = acc_model_path
 
@@ -196,7 +194,7 @@ class LhcModelCreator(ModelCreator):
     def get_base_madx_script(self) -> str:
         """ Returns the base LHC madx script."""
         accel: Lhc = self.accel
-        
+
         madx_script = self._get_sequence_initialize_script()
         if self._uses_ats_knobs():
             madx_script += "\n! ----- Matching Knobs -----\n"
@@ -211,11 +209,11 @@ class LhcModelCreator(ModelCreator):
 
         return madx_script
 
-    def _get_sequence_initialize_script(self) -> str: 
+    def _get_sequence_initialize_script(self) -> str:
         """ Returns the LHC sequence initialization script.
-        
-        This is split up here from the matching (in the base-script), 
-        to accompany the needs of the Best Knowledge Model Creator, 
+
+        This is split up here from the matching (in the base-script),
+        to accompany the needs of the Best Knowledge Model Creator,
         see below.
         """
         accel: Lhc = self.accel
@@ -239,7 +237,7 @@ class LhcModelCreator(ModelCreator):
         madx_script += "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
         madx_script += self._get_madx_main_sequence_loading()
         madx_script += "\noption, echo;  ! re-enable output to see the optics settings\n"
-        
+
         madx_script += "\n! ---- Call optics and other modifiers ----\n"
 
         if accel.modifiers is not None:
@@ -261,7 +259,7 @@ class LhcModelCreator(ModelCreator):
                 f"    exec, set_default_crossing_scheme();\n"
                 f"}}\n"
             )
-        
+
         if accel.acc_model_path is not None:
             remove_symmetry_knob_madx = accel.acc_model_path / LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH
             if remove_symmetry_knob_madx.exists():  # alternatively check if year != 2018/2021
@@ -277,10 +275,10 @@ class LhcModelCreator(ModelCreator):
             f"use, sequence = LHCB{accel.beam};\n"
         )
         return madx_script
-    
+
     def get_update_deltap_script(self, deltap: float | str) -> str:
         """ Update the dpp in the LHC.
-        
+
         Args:
             deltap (float | str): The dpp to update the LHC to.
         """
@@ -291,7 +289,7 @@ class LhcModelCreator(ModelCreator):
         madx_script = (
             f"twiss, deltap={deltap};\n"
             "correct, mode=svd;\n\n"
-            
+
             "! The same as match_tunes, but include deltap in the matching\n"
             f"exec, find_complete_tunes({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.beam});\n"
             f"match, deltap={deltap};\n"
@@ -347,15 +345,14 @@ class LhcModelCreator(ModelCreator):
                 "The accelerator definition is incomplete, mode "
                 "has to be specified (--lhcmode option missing?)."
             )
-    
+
     def get_tune_knobs(self) -> tuple[str, str]:
         accel: Lhc = self.accel
         if self._uses_run3_macros():
             return f"dQx.b{accel.beam}_op", f"dQy.b{accel.beam}_op"
-        elif self._uses_ats_knobs():
+        if self._uses_ats_knobs():
             return f"dQx.b{accel.beam}", f"dQy.b{accel.beam}"
-        else:
-            return f"KQTD.B{accel.beam}", f"KQTF.B{accel.beam}"
+        return f"KQTD.B{accel.beam}", f"KQTF.B{accel.beam}"
 
     # Private Methods ##########################################################
 
@@ -403,7 +400,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
 
         # Check given B2 errors ---
         exists = False
-        if accel.b2_errors is not None: 
+        if accel.b2_errors is not None:
             # check if user gave absolute path (! with_suffix does not work, due to '.' in name)
             exists = Path(f"{accel.b2_errors!s}.errors").is_file()
 
@@ -417,7 +414,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
             accel.b2_errors = check_folder_choices(  # returns full path
                 afs_dir,
                 msg="No valid b2 errors given.",
-                selection=accel.b2_errors, 
+                selection=accel.b2_errors,
                 list_choices=opt.list_choices,
                 predicate=get_check_by_regex_func(r"MB2022.+\.errors$"),
                 stem_only=True,
@@ -428,12 +425,12 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
     def check_accelerator_instance(self):
         accel: Lhc = self.accel
         super().check_accelerator_instance()
-        
+
         if accel.b2_errors is None:
             raise AcceleratorDefinitionError(
                 "No b2 errors specified. These are neccessary for the best knowledge model."
             )
-        
+
         if accel.excitation is not AccExcitationMode.FREE:
             raise AcceleratorDefinitionError(
                 "Don't set ACD or ADT for best knowledge model."
@@ -485,13 +482,13 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
             f"exec, do_twiss_elements(LHCB{accel.beam}, '{accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT}', {accel.dpp});\n"
         )
         return madx_script
-    
+
     def get_base_madx_script(self) -> str:
         accel: Lhc = self.accel
-        
+
         # don't load the super().get_base_madx_script as this also matches the tunes at the end,
         # which we skip here as we are using the data from the machine.
-        madx_script = self._get_sequence_initialize_script()  
+        madx_script = self._get_sequence_initialize_script()
 
         madx_script += (
             f"\n! ----- For Best Knowledge Model -----\n"
@@ -504,7 +501,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
 
 class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # -------------------------------------------
     """
-    Creates an updated model from multiple changeparameters inputs 
+    Creates an updated model from multiple changeparameters inputs
     (used in iterative correction).
     """
 
@@ -522,25 +519,25 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
             change_params (Sequence[Path]): Sequence of correction/matching files
         """
         LOGGER.debug("Initializing LHC Correction Model Creator")
-        super().__init__(accel, twiss_out, corr_files, update_dpp)  
+        super().__init__(accel, twiss_out, corr_files, update_dpp)
 
     def get_madx_script(self) -> str:
-        """ Get the madx script for the correction model creator, which updates the model after correcion. """  
+        """ Get the madx script for the correction model creator, which updates the model after correcion. """
         accel: Lhc = self.accel
-        madx_script = self.get_base_madx_script()  # do not super().get_madx_script as we don't need the uncorrected output. 
+        madx_script = self.get_base_madx_script()  # do not super().get_madx_script as we don't need the uncorrected output.
 
         # First set the dpp to the value in the accelerator model
         madx_script += f"{ORBIT_DPP} = {accel.dpp};\n"
 
         for corr_file in self.corr_files:  # Load the corrections, can also update ORBIT_DPP
             madx_script += f"call, file = '{corr_file!s}';\n"
-        
+
         if self.update_dpp: # If we are doing orbit correction, we need to ensure that a correct and a match is done
             madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
 
         madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{self.twiss_out!s}", {ORBIT_DPP});\n'
         return madx_script
-    
+
     def prepare_run(self) -> None:
         # As the matched/corrected model is created in the same directory as the original model,
         # we do not need to prepare as much.
@@ -549,7 +546,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         macros_path = self.accel.model_dir / MACROS_DIR
         if not macros_path.exists():
             raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path!s}.")
-    
+
     @property
     def files_to_check(self) -> list[str]:
         return [self.twiss_out, self.jobfile, self.logfile]
@@ -613,7 +610,7 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
             ])
 
         return madx_script
-    
+
     @property
     def files_to_check(self) -> list[str]:
         check_files = [self.twiss_forward, self.twiss_backward]

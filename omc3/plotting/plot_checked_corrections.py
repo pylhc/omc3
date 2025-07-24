@@ -149,8 +149,6 @@ Create plots for the correction tests performed with `omc3.scripts.correction_te
 - **y_lim** *(MultiClass)*:
 
     Limits on the y axis (Tupel)
-
-
 """
 from __future__ import annotations
 
@@ -161,7 +159,6 @@ from typing import TYPE_CHECKING
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
 
 from omc3.correction.constants import (
     CORRECTED_LABEL,
@@ -172,13 +169,13 @@ from omc3.correction.constants import (
 )
 from omc3.definitions.optics import (
     FILE_COLUMN_MAPPING,
+    NORM_DISP_NAME,
     RDT_AMPLITUDE_COLUMN,
     RDT_COLUMN_MAPPING,
     RDT_IMAG_COLUMN,
     RDT_PHASE_COLUMN,
     RDT_REAL_COLUMN,
     ColumnsAndLabels,
-    NORM_DISP_NAME,
 )
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.plot_optics_measurements import (
@@ -202,7 +199,9 @@ from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
     from generic_parser import DotDict
+    from matplotlib.figure import Figure
 
 
 LOG = logging_tools.get_logger(__name__)
@@ -284,7 +283,7 @@ def plot_checked_corrections(opt: DotDict):
         try:
             y_colmap = FILE_COLUMN_MAPPING[filename[:-1]].set_plane(filename[-1].upper())
         except KeyError:
-            if filename not in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX.keys():
+            if filename not in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX:
                 LOG.debug(f"Checked file {filename} will not be plotted.")
                 continue
             # Coupling RDTS:
@@ -326,8 +325,8 @@ def plot_checked_corrections(opt: DotDict):
     # Output -------------------------------------------------------------------
     if opt.output_dir:
         save_plots(
-            opt.output_dir, 
-            figure_dict=fig_dict, 
+            opt.output_dir,
+            figure_dict=fig_dict,
             input_dir=opt.input_dir if opt.individual_to_input else None
         )
 
@@ -337,18 +336,18 @@ def plot_checked_corrections(opt: DotDict):
 
 
 def _create_correction_plots_per_filename(
-        filename: str, 
-        measurements: Path, 
-        correction_dirs: dict[str, Path], 
-        x_colmap: ColumnsAndLabels, 
-        y_colmap: ColumnsAndLabels, 
-        ip_positions: str | dict[str, float] | Path, 
+        filename: str,
+        measurements: Path,
+        correction_dirs: dict[str, Path],
+        x_colmap: ColumnsAndLabels,
+        y_colmap: ColumnsAndLabels,
+        ip_positions: str | dict[str, float] | Path,
         opt: DotDict
     ):
     """ Plot measurements and all different correction scenarios into a single plot. """
     full_filename = f"{filename}{EXT}"
     file_label = filename
-    if filename in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX.keys():
+    if filename in COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX:
         file_label = f"{file_label}_{y_colmap.text_label}"
 
     # Plot corrections via plot_tfs (as they all have the same column names) ---
@@ -449,7 +448,7 @@ def save_plots(output_dir: Path, figure_dict: dict[str, Figure], input_dir: Path
         output_path = get_full_output_path(outdir, figname)
         LOG.debug(f"Saving corrections plot to '{output_path}'")
         fig.savefig(output_path)
-    
+
     if input_dir:
         LOG.info(f"Saved all correction plots in '{output_dir}'\n"
                  f"and into the correction-scenario in '{input_dir}'.")
@@ -461,7 +460,7 @@ def show_plots(figure_dict: dict[str, Figure]):
     """Displays the provided figures.
     If `qtpy` is installed, they are shown in a single window.
     The individual corrections are sorted into vertical tabs,
-    the optics parameter into horizontal tabs. 
+    the optics parameter into horizontal tabs.
     If `qtpy` is not installed, they are simply shown as individual figures.
     This is not recommended
     """
@@ -481,7 +480,7 @@ def show_plots(figure_dict: dict[str, Figure]):
     }
 
     figure_names = tuple(figure_dict.keys())
-    correction_names = sorted(set([k.split(SPLIT_ID)[0] for k in figure_names if SPLIT_ID in k]))
+    correction_names = sorted({k.split(SPLIT_ID)[0] for k in figure_names if SPLIT_ID in k})
     for correction_name in [None] + list(correction_names):
         if not correction_name:
             parameter_names = iter(sorted(k for k in figure_names if SPLIT_ID not in k))
@@ -495,10 +494,10 @@ def show_plots(figure_dict: dict[str, Figure]):
 
         for name_x in parameter_names:
             # extract the filename (and column-name in case of multi-correction-file)
-            tab_prename = name_x.split(SPLIT_ID)[-1] 
+            tab_prename = name_x.split(SPLIT_ID)[-1]
 
             if rdt_pattern.match(tab_prename):
-                # Handle RDTs: Get the rdt column and if it's amplitude or real, 
+                # Handle RDTs: Get the rdt column and if it's amplitude or real,
                 # we look for the respective complement column (phase, imag).
                 # Both, column and complement column are then added to the tab,
                 # which is named after the rdt followed by either AP (amp/phase) or RI (real/imag)).
@@ -519,7 +518,7 @@ def show_plots(figure_dict: dict[str, Figure]):
 
             else:
                 # Handle non-RDT columns: As they are sorted alphabetically, the current column
-                # is x and the following column is y. They are added to the tab, which 
+                # is x and the following column is y. They are added to the tab, which
                 # is named by the optics parameter without plane.
                 tab_name = " ".join(tab_prename.split("_")[:-1 if correction_name else -2])  # remove plane (and column-name)
                 tab_figs = [figure_dict[name_x]]
@@ -535,7 +534,7 @@ def _get_corrected_measurement_names(correction_dirs: Iterable[Path]) -> set[str
     """ Check all the corrections dirs for common tfs files."""
     tfs_files = None
     for idx, correction in enumerate(correction_dirs):
-        new_files = set(f.stem for f in correction.glob(f"*{EXT}"))
+        new_files = {f.stem for f in correction.glob(f"*{EXT}")}
         if not idx:
             tfs_files = new_files
             continue
