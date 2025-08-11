@@ -39,14 +39,14 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header, plane):
+def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, plane):
     """
     Calculates orbit.
 
     Args:
         meas_input: `OpticsInput` object
         input_files: Stores the input files tfs.
-        header: `OrderedDict` containing information about the analysis.
+        header: `dict` containing information about the analysis.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
@@ -61,14 +61,14 @@ def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header, plane)
     return output_df
 
 
-def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_dict, plane):
+def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane: str):
     """
     Calculates dispersion.
 
     Args:
         meas_input: `OpticsInput` object.
         input_files: Stores the input files tfs.
-        header_dict: `OrderedDict` containing information about the analysis.
+        header_dict: `dict` containing information about the analysis.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
@@ -79,7 +79,7 @@ def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_di
     return _calculate_dispersion_2d(meas_input, input_files, header_dict, plane)
 
 
-def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles, beta, header_dict):
+def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles, beta, header_dict: dict):
     """
     Calculates normalised dispersion.
 
@@ -87,7 +87,7 @@ def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles
         meas_input: `OpticsInput` object.
         input_files: Stores the input files tfs.
         beta: measured betas to get dispersion from normalised dispersion.
-        header_dict: `OrderedDict` containing information about the analysis.
+        header_dict: `dict` containing information about the analysis.
 
     Returns:
         `TfsDataFrame` corresponding to output file.
@@ -123,7 +123,7 @@ def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, heade
     return output_df
 
 
-def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, header_dict, plane):
+def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane):
     """Computes dispersion from 3D kicks."""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.model

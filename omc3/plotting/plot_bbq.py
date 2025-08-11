@@ -70,7 +70,6 @@ Provides the plotting function for the extracted and cleaned BBQ data from timbe
 """
 from __future__ import annotations
 
-from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
 
@@ -291,9 +290,7 @@ def _save_options(opt):
     if opt.output:
         out_path = Path(opt.output).parent
         out_path.mkdir(exist_ok=True, parents=True)
-        save_options_to_config(str(out_path / formats.get_config_filename(__file__)),
-                               OrderedDict(sorted(opt.items()))
-                               )
+        save_options_to_config(str(out_path / formats.get_config_filename(__file__)), dict(sorted(opt.items())))
 
 # Script Mode ------------------------------------------------------------------
 

@@ -45,14 +45,14 @@ if TYPE_CHECKING:
     from omc3.optics_measurements.data_models import InputFiles
 
 
-def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict, plane):
+def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict: dict, plane):
     """
 
     Args:
         measure_input: `OpticsInput` object.
         input_files: Stores the input files tfs.
         scale: measured beta functions.
-        header_dict: `OrderedDict` containing information about the analysis.
+        header_dict: `dict` containing information about the analysis.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:

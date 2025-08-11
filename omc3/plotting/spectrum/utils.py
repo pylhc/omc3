@@ -6,7 +6,6 @@ Common functions and sorting functions for the spectrum plotter.
 """
 from __future__ import annotations
 
-from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -51,7 +50,7 @@ class FigureContainer:
     """ Container for attaching additional information to one figure. """
     def __init__(self, path: str) -> None:
         self.fig, self.axes = plt.subplots(nrows=len(PLANES), ncols=1)
-        self.data = OrderedDict()  # make sure in plotting to use this order
+        self.data = {}
         self.tunes = {p: [] for p in PLANES}
         self.nattunes = {p: [] for p in PLANES}
         self.path = path

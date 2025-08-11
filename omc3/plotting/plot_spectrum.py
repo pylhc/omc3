@@ -187,7 +187,6 @@ one figure is used.
 """
 from __future__ import annotations
 
-from collections import OrderedDict
 from pathlib import Path
 
 import matplotlib as mpl
@@ -437,7 +436,7 @@ def _sort_opt(opt):
 def _save_options_to_config(opt):
     Path(opt.output_dir).mkdir(parents=True, exist_ok=True)
     save_options_to_config(
-        Path(opt.output_dir) / formats.get_config_filename(__file__), OrderedDict(sorted(opt.items()))
+        Path(opt.output_dir) / formats.get_config_filename(__file__), dict(sorted(opt.items()))
     )
 
 

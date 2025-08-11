@@ -39,7 +39,6 @@ given frequency interval.
 """
 from __future__ import annotations
 
-from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path
 
@@ -186,8 +185,7 @@ def _save_linfiles(lin_data, file_path, planes, id_suffix):
 
 def _save_options_to_config(opt):
     with suppress(IOError):
-        save_options_to_config(formats.get_config_filename(__file__),
-                               OrderedDict(sorted(opt.items())))
+        save_options_to_config(formats.get_config_filename(__file__), dict(sorted(opt.items())))
 
 
 # Script Mode ------------------------------------------------------------------
