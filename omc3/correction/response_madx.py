@@ -252,8 +252,13 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
 
     # Subtracting nominal model from data
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
+<<<<<<< HEAD
     NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])  # noqa: N806
     NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index][:, np.newaxis])  # noqa: N806
+=======
+    NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])
+    NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index][:, np.newaxis])
+>>>>>>> master
 
     # Remove difference of nominal model with itself (bunch of zeros) and divide by increment
     resp = np.delete(resp, model_index, axis=2)
@@ -261,11 +266,18 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
     NDY_arr = np.delete(NDY_arr, model_index, axis=1)  # noqa: N806
     keys.remove("0")
 
+<<<<<<< HEAD
     # Divide by increment
     NDX_arr = np.divide(NDX_arr, resp[columns.index(f"{INCR}")])  # noqa: N806
     NDY_arr = np.divide(NDY_arr, resp[columns.index(f"{INCR}")])  # noqa: N806
     resp = np.divide(resp, resp[columns.index(f"{INCR}")])
     Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T  # noqa: N806
+=======
+    NDX_arr = np.divide(NDX_arr, resp[columns.index(f"{INCR}")])
+    NDY_arr = np.divide(NDY_arr, resp[columns.index(f"{INCR}")])
+    resp = np.divide(resp,resp[columns.index(f"{INCR}")])
+    Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T
+>>>>>>> master
 
     with suppress_warnings(ComplexWarning):  # raised as everything is complex-type now
         return {

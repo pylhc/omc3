@@ -128,7 +128,11 @@ def get_rdts_from_optics_analysis(
                 "Tunes are far from the expected values, rdts will be wrong/outside the tolerance"
             )
     return {
+<<<<<<< HEAD
         rdt: filter_out_bpm_near_ips(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
+=======
+        rdt: filter_out_BPM_near_IPs(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
+>>>>>>> master
     }
 
 

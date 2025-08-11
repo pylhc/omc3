@@ -187,7 +187,12 @@ class MockAttachmentBuilder:
 
     @classmethod
     def from_file(cls, filename: Path | str):
+<<<<<<< HEAD
         contents = Path(filename).read_bytes()
+=======
+        with open(filename, "rb") as f:
+            contents = f.read()
+>>>>>>> master
         short_name = Path(filename).name
         mime_type = mimetypes.guess_type(short_name)[0]
         if mime_type is None:

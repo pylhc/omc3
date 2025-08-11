@@ -9,9 +9,14 @@ import random
 import shutil
 import string
 import sys
+from collections.abc import Callable
 from contextlib import contextmanager
 from pathlib import Path
+<<<<<<< HEAD
 from typing import TYPE_CHECKING, Any
+=======
+from typing import Any
+>>>>>>> master
 
 import git
 import pytest

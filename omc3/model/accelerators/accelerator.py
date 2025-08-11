@@ -8,6 +8,10 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 from __future__ import annotations
 
 import contextlib
+<<<<<<< HEAD
+=======
+import os
+>>>>>>> master
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING

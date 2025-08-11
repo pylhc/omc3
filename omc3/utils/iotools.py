@@ -285,7 +285,11 @@ def load_multiple_jsons(*files) -> dict:
     In case of duplicate keys, later files overwrite the earlier ones. """
     full_dict = {}
     for json_file in files:
+<<<<<<< HEAD
         with Path(json_file).open() as json_data:
+=======
+        with open(json_file) as json_data:
+>>>>>>> master
             full_dict.update(json.load(json_data))
     return full_dict
 

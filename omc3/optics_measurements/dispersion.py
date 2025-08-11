@@ -8,7 +8,11 @@ It provides functions to compute orbit, dispersion and normalised dispersion.
 from __future__ import annotations
 
 import logging
+<<<<<<< HEAD
 from pathlib import Path
+=======
+from os.path import join
+>>>>>>> master
 from typing import TYPE_CHECKING
 
 import numpy as np

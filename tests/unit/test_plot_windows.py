@@ -164,7 +164,11 @@ class MockQMainWindow:
         self.size = None
         self.shown = False
 
+<<<<<<< HEAD
     def setWindowTitle(self, title):  # noqa: N802 (mock the exact name)
+=======
+    def setWindowTitle(self, title):
+>>>>>>> master
         self.title = title
 
     def setCentralWidget(self, widget):  # noqa: N802 (mock the exact name)

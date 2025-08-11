@@ -10,12 +10,19 @@ INPUTS = Path(__file__).parent.parent / "inputs"
 
 HARPY_SETTINGS = {
     "clean": True,
+<<<<<<< HEAD
     "to_write": ["lin"],
+=======
+    "to_write": ['lin',],
+>>>>>>> master
     "max_peak": [0.02],
     "turn_bits": 12,
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 # ==== HARPY
 @pytest.mark.basic
 def test_default_harpy_resonance(tmp_path: Path):
@@ -39,11 +46,16 @@ def test_default_harpy_resonance(tmp_path: Path):
         unit="mm",
     )
 
+<<<<<<< HEAD
     files_prefix = tmp_path / "lhc_200_turns.sdds"
     linfiles = {
         "X": tfs.read(f"{files_prefix}.linx"),
         "Y": tfs.read(f"{files_prefix}.liny"),
     }
+=======
+    files = os.path.join(tmp_path, 'lhc_200_turns.sdds')
+    lin = {"X": tfs.read(f"{files}.linx"), "Y": tfs.read(f"{files}.liny")}
+>>>>>>> master
 
     # Some resonance lines for each order, as multiples of (Qx, Qy)
     # The same line on each plane is given by different RDT, but they're from the same magnet order
@@ -107,6 +119,7 @@ def test_harpy_high_order_resonance(tmp_path: Path):
 
     # First run the frequency analysis with default resonances value
     clean, to_write, max_peak, turn_bits = HARPY_SETTINGS.values()
+<<<<<<< HEAD
     hole_in_one_entrypoint(
         harpy=True,
         clean=clean,
@@ -125,6 +138,22 @@ def test_harpy_high_order_resonance(tmp_path: Path):
         "X": tfs.read(f"{files_prefix}.linx"),
         "Y": tfs.read(f"{files_prefix}.liny"),
     }
+=======
+    hole_in_one_entrypoint(harpy=True,
+                           clean=clean,
+                           turn_bits=turn_bits,
+                           autotunes="transverse",
+                           outputdir=tmp_path,
+                           files=input_files,
+                           model=model,
+                           to_write=to_write,
+                           unit="mm",
+                           resonances=6)
+
+
+    files = os.path.join(tmp_path, 'lhc_200_turns.sdds')
+    lin = {"X": tfs.read(f"{files}.linx"), "Y": tfs.read(f"{files}.liny")}
+>>>>>>> master
 
     r_lines = {
         5: [(-3, 1), (-1, -3), (3, -1), (0, -4), (0, 4)],

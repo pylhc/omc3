@@ -32,6 +32,7 @@ from tests.inputs.lhc_rdts.helper_lhc_rdts import (
     save_x_model,
     to_ng_rdts,
     write_tbt_file,
+<<<<<<< HEAD
 )
 from tests.utils.compression import compress_model
 from tests.utils.lhc_rdts.constants import DATA_DIR, MODEL_NG_PREFIX
@@ -42,6 +43,18 @@ from tests.utils.lhc_rdts.functions import (
     get_rdts_from_optics_analysis,
     run_harpy,
 )
+=======
+)
+from tests.utils.compression import compress_model
+from tests.utils.lhc_rdts.constants import DATA_DIR, MODEL_NG_PREFIX
+from tests.utils.lhc_rdts.functions import (
+    filter_out_BPM_near_IPs,
+    get_file_suffix,
+    get_rdt_names,
+    get_rdts_from_optics_analysis,
+    run_harpy,
+)
+>>>>>>> master
 
 run_madng = True
 run_analytical_model = True
