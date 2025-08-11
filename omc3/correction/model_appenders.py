@@ -12,19 +12,27 @@ from collections import defaultdict
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.definitions.constants import PI2
-from omc3.optics_measurements.constants import (BETA, NAME2, NORM_DISPERSION, PHASE_ADV,
-                                       TUNE, F1001, F1010, PHASE)
 from omc3.correction.constants import DIFF, MODEL, VALUE
-from omc3.utils import logging_tools
+from omc3.definitions.constants import PI2
+from omc3.optics_measurements.constants import (
+    BETA,
+    F1001,
+    F1010,
+    NAME2,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+)
 from omc3.optics_measurements.toolbox import df_diff, df_rel_diff
+from omc3.utils import logging_tools
 
-
-if TYPE_CHECKING:   
+if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+
+    import pandas as pd
 
 
 LOG = logging_tools.get_logger(__name__)
@@ -135,4 +143,3 @@ def add_coupling_to_model(model: pd.DataFrame) -> pd.DataFrame:
         for suffix, func in function_map.items():
             result_tfs_df[f"{rdt}{suffix}"] = func(coupling_rdts_df[rdt]).astype(np.float64)
     return result_tfs_df
-

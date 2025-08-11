@@ -5,20 +5,25 @@ TbT Converter
 Top-level script to convert turn-by-turn files from various formats to ``LHC`` binary SDDS files.
 Optionally, it can replicate files with added noise.
 """
+from __future__ import annotations
+
 import copy
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Sequence, Union
+from typing import TYPE_CHECKING
 
+import turn_by_turn as tbt
 from generic_parser.entrypoint_parser import (
     EntryPointParameters,
     entrypoint,
     save_options_to_config,
 )
 
-import turn_by_turn as tbt
 from omc3.definitions import formats
 from omc3.utils import iotools, logging_tools
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -164,7 +169,7 @@ def _drop_elements(tbt_data: tbt.TbtData, elements_to_drop: Sequence[str]) -> tb
     return copied_data
 
 
-def _file_name_without_sdds(filename: Union[str, Path]) -> str:
+def _file_name_without_sdds(filename: Path | str) -> str:
     """
     Returns the file name without suffix if the suffix is **.sdds**, else the filename.
     Previous elements in the file path are discarded.

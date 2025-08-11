@@ -4,6 +4,8 @@ Constants
 
 Specific constants to be used in ``harpy``, to help with consistency.
 """
+from __future__ import annotations
+
 # Output Fileextensions --------------------------------------------------------
 
 FILE_AMPS_EXT: str = ".amps{plane}"

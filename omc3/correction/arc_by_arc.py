@@ -1,9 +1,9 @@
-""" 
+"""
 Arc-by-Arc Global Correction
 ----------------------------
 
-In this module, functions are provided to modify the linear equation problem 
-in global correction, correcting the phase advance at each BPM, into a 
+In this module, functions are provided to modify the linear equation problem
+in global correction, correcting the phase advance at each BPM, into a
 problem of correcting the phase-advances over the whole arcs.
 
 This is done by identifying the closest BPM to the IPs defining the arc,
@@ -13,7 +13,7 @@ In the current implementation, only the measured data is modified
 to contain the arc phase advances, which will then be globally corrected with
 the given correctors.
 
-In a future implementation this should be extended to loop over each arc and 
+In a future implementation this should be extended to loop over each arc and
 correct each individually with only the correctors available in the respective arc.
 
 For now everything is very LHC specific, a future implementation should also
@@ -27,26 +27,27 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-import tfs
 
 from omc3.correction.constants import DIFF, ERROR, MODEL, VALUE, WEIGHT
-from omc3.definitions.constants import PLANE_TO_NUM 
+from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.optics_measurements.constants import NAME, NAME2, PHASE, TUNE
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
     from typing import Literal
 
+    import tfs
+
 
 LHC_ARCS = ('81', '12', '23', '34', '45', '56', '67', '78')
 
 
 def reduce_phase_measurements_to_arcs(
-    meas_dict: dict[str, pd.DataFrame], 
-    model: tfs.TfsDataFrame, 
+    meas_dict: dict[str, pd.DataFrame],
+    model: tfs.TfsDataFrame,
     include_ips: str | None = None
     ):
-    """ Reduce the phase-advance in the given measurement to the phase-advance 
+    """ Reduce the phase-advance in the given measurement to the phase-advance
     between two BPM-pairs at the extremities of each arc.
 
     Args:
@@ -84,7 +85,7 @@ def get_arc_by_arc_bpm_pairs(bpms:  Sequence[str],  include_ips: str | None = No
     bpm_pairs = {}
     for arc in LHC_ARCS:
         bpm_pairs[arc] = get_left_right_pair(bpms, arc)
-    
+
     if include_ips is None:
         return bpm_pairs
 
@@ -98,10 +99,10 @@ def get_arc_by_arc_bpm_pairs(bpms:  Sequence[str],  include_ips: str | None = No
         bpm_left, bpm_right = bpm_pairs[arc]
         if include_ips in ('left', 'both'):
             bpm_left = bpm_pairs[prev_arc][1]
-        
-        if include_ips in ('right', 'both'): 
+
+        if include_ips in ('right', 'both'):
             bpm_right = bpm_pairs[next_arc][0]
-        
+
         bpm_pairs_with_ips[arc] = (bpm_left, bpm_right)
 
     return bpm_pairs_with_ips
@@ -109,12 +110,12 @@ def get_arc_by_arc_bpm_pairs(bpms:  Sequence[str],  include_ips: str | None = No
 
 def get_left_right_pair(bpms: Sequence[str], arc: str) -> tuple[str, str]:
     """ Get the pair of BPMs that are furthest apart in the given arc, i.e.
-    the ones closest to the IPs defining the arc, left and right. 
-    
+    the ones closest to the IPs defining the arc, left and right.
+
     Args:
         bpms (Sequence[str]): List of BPMs.
         arc (str): Arc to find the BPMs in (e.g. '12')
-    
+
     Returns:
         tuple[str, str]: The found BPM pair.
     """
@@ -124,9 +125,9 @@ def get_left_right_pair(bpms: Sequence[str], arc: str) -> tuple[str, str]:
 
 
 def identify_closest_arc_bpm_to_ip(bpms: Sequence[str], ip: int, side: Literal["L", "R"]) -> str:
-    """ Pick the BPM with the lowest index from the given sequence, that is on the 
+    """ Pick the BPM with the lowest index from the given sequence, that is on the
     given side of the given IP.
-    
+
     TODO: Use a regex instead, filtering the list by [LR]IP and choose the lowest via sort.
     This would assure that also BPMW etc. could be used. (jdilly, 2025)
     """
@@ -137,7 +138,7 @@ def identify_closest_arc_bpm_to_ip(bpms: Sequence[str], ip: int, side: Literal["
         bpm = f'BPM.{ii}{side}{ip}.B{beam}'
         if bpm in bpms:
             return bpm
-    
+
     msg = (
         f"No BPM up to index {ii} could be found in the measurement of arc on {side} of IP{ip} "
         f" in beam {beam} for the arc-by-arc phase correction."
@@ -157,7 +158,7 @@ def get_bpm_pair_phases(phase_df: pd.DataFrame, bpm_pairs: dict[tuple[str, str]]
         tune (float): Model tune of the machine.
 
     Returns:
-        pd.DataFrame: New DataFrame containing the phase advances between the given bpm pairs. 
+        pd.DataFrame: New DataFrame containing the phase advances between the given bpm pairs.
     """
     arc_meas: list[dict] = []
     for bpm_pair in bpm_pairs.values():
@@ -171,24 +172,24 @@ def get_bpm_pair_phases(phase_df: pd.DataFrame, bpm_pairs: dict[tuple[str, str]]
         }
         results[DIFF] = results[VALUE] - results[MODEL]
         arc_meas.append(results)
-    
+
     return pd.DataFrame(arc_meas).set_index(NAME)
 
 
 def circular_sum_phase(phases: pd.Series, tune: float, bpm_pair: tuple[str, str]):
-    """ Calculate the sum of the phases from bpm to bpm 
+    """ Calculate the sum of the phases from bpm to bpm
     of the given bpm pair, taking into account the circularity of the accelerator. """
     idx_0, idx_1 = phases.index.get_loc(bpm_pair[0]), phases.index.get_loc(bpm_pair[1])
     if idx_0 < idx_1:
         return sum(phases[bpm_pair[0]:bpm_pair[1]])
-    
+
     # cycle phases
     inverted_result = sum(phases[bpm_pair[1]:bpm_pair[0]])
     return tune - inverted_result
 
 
 def circular_sum_phase_error(phase_errors: pd.Series, bpm_pair: tuple[str, str]):
-    """ Calculate the sum of the phases errors from bpm to bpm 
+    """ Calculate the sum of the phases errors from bpm to bpm
     of the given bpm pair, taking into account the circularity of the accelerator. """
     idx_0, idx_1 = phase_errors.index.get_loc(bpm_pair[0]), phase_errors.index.get_loc(bpm_pair[1])
     if idx_0 < idx_1:

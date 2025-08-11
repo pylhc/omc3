@@ -104,34 +104,40 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 
 - **y_lim** *(float, int None)*: Limits on the y axis (Tupel)
 """
+from __future__ import annotations
+
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict
-
-from matplotlib import pyplot as plt, rcParams
-from matplotlib.axes import Axes
+from typing import TYPE_CHECKING
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
-from omc3.plotting.optics_measurements.utils import FigureCollector, DataSet, IDMap, safe_format
-from omc3.plotting.utils.windows import (
-    PlotWidget, SimpleTabWindow, is_qtpy_installed, log_no_qtpy_many_windows, create_pyplot_window_from_fig
-)
+from omc3.plotting.optics_measurements.utils import DataSet, FigureCollector, IDMap, safe_format
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
-from omc3.plotting.utils import (
-    annotations as pannot,
-    lines as plines,
-    style as pstyle,
-    colors as pcolors,
-)
+from omc3.plotting.utils import annotations as pannot
+from omc3.plotting.utils import colors as pcolors
+from omc3.plotting.utils import lines as plines
+from omc3.plotting.utils import style as pstyle
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
-from omc3.utils.iotools import PathOrStr, save_config, OptionalStr, OptionalFloat
+from omc3.plotting.utils.windows import (
+    PlotWidget,
+    SimpleTabWindow,
+    create_pyplot_window_from_fig,
+    is_qtpy_installed,
+    log_no_qtpy_many_windows,
+)
+from omc3.utils.iotools import OptionalFloat, OptionalStr, PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
 
 LOG = get_logger(__name__)
 
@@ -414,10 +420,7 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
 
     column_planes = safe_format(column, planes)
     column = safe_format(column, plane)
-    if column_label is None:
-        column_label = column
-    else:
-        column_label = safe_format(column_label, plane.lower())
+    column_label = column if column_label is None else safe_format(column_label, plane.lower())
 
     axes_id = {'files': '_'.join(filename_parts),
                'columns': f'{column}',
@@ -558,10 +561,10 @@ def _create_plots(fig_collection, opt):
 
 
 
-def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
+def _plot_data(ax: Axes, data: dict[str, DataSet], change_marker: bool, ebar_alpha: float):
     for idx, (label, values) in enumerate(data.items()):
         ebar = ax.errorbar(values.x, values.y, yerr=values.err,
-                           ls=rcParams[u"lines.linestyle"],
+                           ls=rcParams["lines.linestyle"],
                            fmt=_get_marker(idx, change_marker),
                            label=label)
 
@@ -630,10 +633,8 @@ def _check_opt(opt):
     elif len(opt.column_labels) != len(opt.y_columns):
         raise AttributeError("The number of column-labels and number of y columns differ!")
 
-    if opt.same_figure is not None:
-        if opt.same_axes is not None and opt.same_figure in opt.same_axes:
-            raise AttributeError("Found the same option in 'same_axes' "
-                                 "and 'same_figure'. This is not allowed.")
+    if opt.same_figure is not None and opt.same_axes is not None and opt.same_figure in opt.same_axes:
+            raise AttributeError("Found the same option in 'same_axes' and 'same_figure'. This is not allowed.")
 
     return opt
 
@@ -670,8 +671,7 @@ def _get_marker(idx, change):
     """Return the marker used"""
     if change:
         return plines.MarkerList.get_marker(idx)
-    else:
-        return rcParams['lines.marker']
+    return rcParams['lines.marker']
 
 
 # Script Mode ------------------------------------------------------------------

@@ -5,6 +5,8 @@ ParserTools
 This module provides tools for the parsing of parameters.
 Maybe merge this into `generic_parser` one day.
 """
+from __future__ import annotations
+
 from textwrap import wrap
 
 

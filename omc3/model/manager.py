@@ -9,23 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from generic_parser.entrypoint_parser import (
-    EntryPoint,
-    EntryPointParameters,
-    entrypoint,
-)
+from generic_parser.entrypoint_parser import EntryPoint, EntryPointParameters, entrypoint
 
-from omc3.model.accelerators import (
-    esrf,
-    generic,
-    iota,
-    lhc,
-    petra,
-    ps,
-    psbooster,
-    skekb,
-    sps,
-)
+from omc3.model.accelerators import esrf, generic, iota, lhc, petra, ps, psbooster, skekb, sps
 
 if TYPE_CHECKING:
     from omc3.model.accelerators.accelerator import Accelerator
@@ -47,8 +33,8 @@ ACCELS = {
 def _get_params() -> EntryPointParameters:
     params = EntryPointParameters()
     params.add_parameter(
-        name="accel", 
-        required=True, 
+        name="accel",
+        required=True,
         choices=list(ACCELS.keys()),
         help="Choose the accelerator to use.Can be the class already."
     )
@@ -70,7 +56,7 @@ def get_accelerator(opt, other_opt) -> Accelerator:
 
 @entrypoint(_get_params())
 def get_accelerator_class(opt, other_opt) -> type[Accelerator]:
-    """ 
+    """
     Returns only the accelerator-class (non-instanciated).
     Only opt.accel is needed.
     """

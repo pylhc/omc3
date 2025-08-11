@@ -2,3 +2,4 @@
 # git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 # Add below, one per line, SHAs of commits corresponding to "formatting" / "revisions"
+820a51e3c67c8675880b9c949ac09f4db8bd8e9f

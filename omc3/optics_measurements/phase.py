@@ -31,14 +31,11 @@ from omc3.optics_measurements.constants import (
     TOTAL_PHASE_NAME,
     S,
 )
-from omc3.optics_measurements.data_models import (
-    InputFiles,
-    check_and_warn_about_offmomentum_data,
-)
+from omc3.optics_measurements.data_models import InputFiles, check_and_warn_about_offmomentum_data
 from omc3.optics_measurements.toolbox import ang_sum, df_ang_diff, df_diff
 from omc3.utils import logging_tools, stats
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from generic_parser import DotDict
@@ -49,8 +46,8 @@ if TYPE_CHECKING:
 
 PhaseDict = TypedDict(
     'PhaseDict', {
-        MODEL: pd.DataFrame, 
-        MEASUREMENT: pd.DataFrame, 
+        MODEL: pd.DataFrame,
+        MEASUREMENT: pd.DataFrame,
         f'{ERR}{MEASUREMENT}': pd.DataFrame
     }
 )
@@ -60,7 +57,7 @@ class CompensationMode:
     NONE: str = "none"
     MODEL: str = "model"
     EQUATION: str = "equation"
-    
+
     @classmethod
     def all(cls) -> list[str]:
         return [cls.NONE, cls.MODEL, cls.EQUATION]
@@ -76,7 +73,7 @@ def calculate(
     no_errors: bool = False,
 ) -> tuple[dict[str, PhaseDict], list[pd.DataFrame]]:
     """
-    Calculate phases for 'compensated' (aka 'free') and 'uncompensated' (aka 'driven') cases from the measurement files, 
+    Calculate phases for 'compensated' (aka 'free') and 'uncompensated' (aka 'driven') cases from the measurement files,
     and return a dictionary combining the results for each transverse plane.
 
     Args:
@@ -88,7 +85,7 @@ def calculate(
 
     Returns:
         A tuple of a dictionary and a list of corresponding phase DataFrames.
-        The dictionary contains the compensated and uncompensated results in `PhaseDict` form, 
+        The dictionary contains the compensated and uncompensated results in `PhaseDict` form,
         i.e. a dictionary of DataFrames with the phase models, measured and errors.
         The list contains the DataFrames with the phase advances between BPMs and the total phase advances,
         for both compensated and uncompensated cases.
@@ -121,7 +118,7 @@ def calculate(
             tunes=tunes,
             plane=plane,
             model_df=meas_input.accelerator.model_driven,
-            compensation=CompensationMode.NONE, 
+            compensation=CompensationMode.NONE,
             no_errors=no_errors,
         )
         dfs = dfs + drv_dfs
@@ -161,7 +158,7 @@ def _calculate_phase_advances(
         no_errors: if ``True``, measured errors shall not be propagated (only their spread).
 
     Returns:
-        A tuple of 
+        A tuple of
         - a `dictionary` of `TfsDataFrames` indexed (BPMi x BPMj) yielding phase advance `phi_ij`.
 
             - "MEAS": measured phase advances,
@@ -202,11 +199,11 @@ def _calculate_phase_advances(
     df = pd.merge(df, joined_df, how='inner', left_index=True, right_index=True)
 
     direction = meas_input.accelerator.beam_direction
-    df[input_files.get_columns(df, f"{PHASE_ADV}{plane}")] = direction * input_files.get_data(df, f"{PHASE_ADV}{plane}")     
-    
+    df[input_files.get_columns(df, f"{PHASE_ADV}{plane}")] = direction * input_files.get_data(df, f"{PHASE_ADV}{plane}")
+
     phases_mdl = df.loc[:, f"{PHASE_ADV}{plane}"].to_numpy()
     phase_advances = {MODEL: _get_square_data_frame(_get_all_phase_diff(phases_mdl), df.index)}
-    
+
     if compensation == CompensationMode.MODEL:
         df = _compensate_by_model(input_files, meas_input, df, plane)
 
@@ -221,7 +218,7 @@ def _calculate_phase_advances(
         phase_advances[f"{ERR}{MEASUREMENT}"] = _get_square_data_frame(
                 np.zeros((len(phases_meas), len(phases_meas))), df.index)
         return phase_advances
-    
+
     if meas_input.union:
         mask = np.isnan(phases_meas)
         phases_meas[mask], phases_errors[mask] = 0.0, np.inf
@@ -230,7 +227,7 @@ def _calculate_phase_advances(
     elif no_errors:
         phases_errors = None
     phases_3d = phases_meas[np.newaxis, :, :] - phases_meas[:, np.newaxis, :]
-    
+
     if phases_errors is not None:
         errors_3d = phases_errors[np.newaxis, :, :] + phases_errors[:, np.newaxis, :]
     else:
@@ -245,7 +242,7 @@ def _calculate_phase_advances(
 
 def _compensate_by_equation(phases_meas: ArrayLike, plane: str, tunes: TuneDict) -> ArrayLike:
     """ Compensate the measured phases by equation.
-    
+
     TODO: Reference!
      """
     driven_tune, free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
@@ -276,9 +273,9 @@ def _compensate_by_model(input_files: InputFiles, meas_input: DotDict, df: pd.Da
 
 
 def write(
-    dfs: Sequence[pd.DataFrame], 
-    headers: Sequence[dict[str, Any]] | dict[str, Any], 
-    output: str | Path, plane: str
+    dfs: Sequence[pd.DataFrame],
+    headers: Sequence[dict[str, Any]] | dict[str, Any],
+    output: Path | str, plane: str
     ):
     """ Write out the phase advance data into TFS-files."""
     LOGGER.info(f"Writing phases: {len(dfs)}")
@@ -295,11 +292,11 @@ def _create_output_df(phase_advances: PhaseDict, model: pd.DataFrame, plane: str
     """ Create the DataFrames to be written out into TFS-files.
 
     Args:
-        phase_advances (PhaseDict): Dictionary of phase-advance DataFrames 
-                                    as described in :func:`calculate_with_compensation`. 
-        model (pd.DataFrame): Model DataFrame (i.e. columns from twiss_elements + compensation). 
+        phase_advances (PhaseDict): Dictionary of phase-advance DataFrames
+                                    as described in :func:`calculate_with_compensation`.
+        model (pd.DataFrame): Model DataFrame (i.e. columns from twiss_elements + compensation).
         plane (str): Plane we are using ("X" or "Y").
-        tot (bool, optional): Create DataFrame for the total phase advance or BPM phase advances. 
+        tot (bool, optional): Create DataFrame for the total phase advance or BPM phase advances.
                               Defaults to False.
 
     Returns:
@@ -390,7 +387,7 @@ def write_special(meas_input: DotDict, phase_advances: pd.DataFrame, plane_tune:
                 minmu2,
                 bpm_phase_advance,
                 elems_to_bpms,
-            ]], 
+            ]],
             columns=special_phase_columns,
         )
         to_concat_rows.append(new_row)

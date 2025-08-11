@@ -1,5 +1,5 @@
 """
-Definitions 
+Definitions
 -----------
 
 This module provides definitions to be used with segment by segment
@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, fields
 
 
-@dataclass 
+@dataclass
 class MadXBoundaryConditions:
     """Store all boundary conditions for a Mad-X twiss."""
     alfx: float = None
@@ -30,5 +30,5 @@ class MadXBoundaryConditions:
     r22: float = None
 
     def as_dict(self):
-        return {f.name: getattr(self, f.name) for f in fields(self) 
+        return {f.name: getattr(self, f.name) for f in fields(self)
                 if getattr(self, f.name) is not None}

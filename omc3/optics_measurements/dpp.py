@@ -7,16 +7,18 @@ It provides functions to computes and arrange dp over p.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from collections.abc import Sequence
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     import tfs
     from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
 
 DPP_BIN_TOLERANCE: float = 1e-4
@@ -53,8 +55,8 @@ def _find_range_with_element(ranges, element):
 
 
 def _compute_ranges(dpps: Sequence[float], tolerance: float) -> list[list[int]]:
-    """ Groups the indices of dpps in bins of tolerance. 
-    The function first sorts the indices by their dpp value 
+    """ Groups the indices of dpps in bins of tolerance.
+    The function first sorts the indices by their dpp value
     adds a new group whenever the dpp of the next index is larger than the first value in the group.
 
     Works for now, but we could improve by using the mean dpp of the group to check against,
@@ -88,7 +90,7 @@ def append_dpp(list_of_tfs: Sequence[tfs.TfsFile], dpp_values: Sequence[float]):
     return list_of_tfs
 
 
-def calculate_dpoverp(input_files: InputFiles, meas_input: DotDict): 
+def calculate_dpoverp(input_files: InputFiles, meas_input: DotDict):
     df_orbit = pd.DataFrame(meas_input.accelerator.model).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['CO', 'CORMS']), how='inner',
                         left_index=True, right_index=True)
@@ -101,8 +103,8 @@ def calculate_dpoverp(input_files: InputFiles, meas_input: DotDict):
     amps = input_files.get_data(df_filtered, "CO")
     if amps.ndim == 1:
         return np.sum(dispersions * amps) / denom
-    else:
-        numer = np.sum(dispersions[:, None] * input_files.get_data(df_filtered, "CO"), axis=0)
+
+    numer = np.sum(dispersions[:, None] * input_files.get_data(df_filtered, "CO"), axis=0)
     return numer / denom
 
 
@@ -126,5 +128,3 @@ def calculate_amp_dpoverp(input_files: InputFiles, meas_input: DotDict):
     else:
         numer = np.sum(dispersions[:, None] * amps[mask_zeros, :], axis=0)
     return numer / denom
-
-

@@ -7,7 +7,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
+import logging
 from os.path import join
 from typing import TYPE_CHECKING
 
@@ -16,6 +16,7 @@ import pandas as pd
 import tfs
 
 from omc3.definitions.constants import PI2I
+from omc3.optics_measurements import dpp
 from omc3.optics_measurements.constants import (
     DELTA,
     DISPERSION_NAME,
@@ -25,11 +26,11 @@ from omc3.optics_measurements.constants import (
     NORM_DISP_NAME,
     ORBIT_NAME,
 )
-from omc3.optics_measurements import dpp 
 from omc3.utils import stats
-import logging
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from generic_parser import DotDict
 
     from omc3.optics_measurements.data_models import InputFiles
@@ -99,7 +100,7 @@ def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles
 def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, header, plane):
     dpps = input_files.dpps(plane)
     if _is_single_dpp_bin(dpps):
-        return
+        return None
 
     order = 2 if meas_input.second_order_dispersion else 1
     model = meas_input.accelerator.model
@@ -145,13 +146,13 @@ def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, heade
 def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputFiles, beta, header):
     # TODO there are no errors from orbit
     plane = "X"
-    
+
     dpps = input_files.dpps(plane)
     if _is_single_dpp_bin(dpps):
-        return
-    
+        return None
+
     order = 2 if meas_input.second_order_dispersion else 1
-    
+
     model = meas_input.accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS', f"AMP{plane}"])
     df_orbit[f"ND{plane}{MDL}"] = df_orbit.loc[:, f"D{plane}{MDL}"] / np.sqrt(
@@ -282,11 +283,11 @@ def _get_delta_columns(df, plane):
 
 
 def _is_single_dpp_bin(dpps: Sequence[float]) -> bool:
-    """ Checks if the files would be grouped into a single dpp-bin 
+    """ Checks if the files would be grouped into a single dpp-bin
     by :func:`omc3.optics_measurements.dpp._compute_ranges`. """
-    # alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1 
+    # alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1
     if any(np.isnan(dpps)):
         LOGGER.warning("DPPs contain NaN values. Skipping dispersion calculation.")
         return True  # i.e. skip dispersion calculation
 
-    return np.abs(np.max(dpps) - np.min(dpps)) <= 2 * dpp.DPP_BIN_TOLERANCE 
+    return np.abs(np.max(dpps) - np.min(dpps)) <= 2 * dpp.DPP_BIN_TOLERANCE

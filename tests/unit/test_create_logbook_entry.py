@@ -1,7 +1,6 @@
 import mimetypes
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Union
 
 import pytest
 from requests import HTTPError
@@ -175,19 +174,19 @@ class MockPylogbook:
         assert isinstance(name, str)
         assert isinstance(mime_type, str)
         assert "/" in mime_type
-        assert isinstance(contents, (str, bytes))
+        assert isinstance(contents, str | bytes)
         self.attachments.append(name)
 
 
 @dataclass
 class MockAttachmentBuilder:
     """ Basically copied from pylogbook. """
-    contents: Union[str, bytes]
+    contents: str | bytes
     short_name: str
     mime_type: str
 
     @classmethod
-    def from_file(cls, filename: Union[Path, str]):
+    def from_file(cls, filename: Path | str):
         with open(filename, "rb") as f:
             contents = f.read()
         short_name = Path(filename).name

@@ -5,11 +5,13 @@ Constants
 This module provides high-level functions to manage most functionality of ``model``.
 Specific constants to be used in ``model``, to help with consistency.
 """
+from __future__ import annotations
+
 from pathlib import Path
 
 from omc3.utils.misc import StrEnum
 
-PLANE_TO_HV: dict[str, str] = dict(X="H", Y="V")
+PLANE_TO_HV: dict[str, str] = {"X": "H", "Y": "V"}
 
 # Job Creation Files ---
 OBS_POINTS: str = "observation_points.def"
@@ -56,4 +58,3 @@ ACC_MODELS_PREFIX: str = AFS_ACCELERATOR_MODEL_REPOSITORY.name
 OPTICS_SUBDIR: Path = Path("operation/optics")
 STRENGTHS_SUBDIR: Path = Path("strengths")
 LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH: Path = Path("toolkit/remove-triplet-symmetry-knob.madx")
-

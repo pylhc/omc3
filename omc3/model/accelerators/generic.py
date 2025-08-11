@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 from generic_parser import EntryPoint
 

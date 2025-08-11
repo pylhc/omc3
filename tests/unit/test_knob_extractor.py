@@ -2,23 +2,34 @@ import logging
 import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Dict, Tuple, List, Any
+from typing import Any
 
 import numpy as np
 import pandas as pd
 import pytest
-from pandas._testing import assert_dict_equal, assert_frame_equal
-
 import tfs
 from generic_parser import EntryPoint
 from generic_parser.dict_parser import ArgumentError
+from pandas._testing import assert_dict_equal, assert_frame_equal
+
 from omc3 import knob_extractor
-from omc3.knob_extractor import (KNOB_CATEGORIES, _add_time_delta,
-                                 _extract_and_gather, _parse_knobs_defintions,
-                                 _parse_time, _write_knobsfile, lsa2name, main,
-                                 get_params, Col, get_madx_command, Head,
-                                 check_for_undefined_knobs, load_knobs_definitions, STATE_VARIABLES
-                                 )
+from omc3.knob_extractor import (
+    KNOB_CATEGORIES,
+    STATE_VARIABLES,
+    Col,
+    Head,
+    _add_time_delta,
+    _extract_and_gather,
+    _parse_knobs_defintions,
+    _parse_time,
+    _write_knobsfile,
+    check_for_undefined_knobs,
+    get_madx_command,
+    get_params,
+    load_knobs_definitions,
+    lsa2name,
+    main,
+)
 from tests.conftest import cli_args
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
@@ -85,20 +96,19 @@ class TestFullRun:
     @pytest.mark.basic
     @pytest.mark.parametrize("commandline", [True, False], ids=["as function", "cli"])
     def test_state(self, tmp_path, monkeypatch, caplog, commandline):
-        returns = {v: np.random.random() for v in STATE_VARIABLES.keys()}
+        returns = {v: np.random.random() for v in STATE_VARIABLES}
 
         # Mock Pytimber ---
         class MyLDB:
             def __init__(self, *args, **kwargs):
                 pass
-            
+
             @staticmethod
             def get(key, time):
                 intro = "LhcStateTracker:State:"
                 if key.startswith(intro):
                     return {key: ([time], [returns[key[len(intro):]]])}
-                else:
-                    raise ValueError("This test failed, probably because the StateKey changed. Update Test.")
+                raise ValueError("This test failed, probably because the StateKey changed. Update Test.")
 
         class MockTimber:
             LoggingDB = MyLDB
@@ -309,8 +319,8 @@ class TestIO:
     def test_load_knobdefinitions_fail_no_scaling(self, tmp_path):
         definition_file = tmp_path / "knob_defs_tmp.txt"
         definition_file.write_text(
-            f"knob1_madx, knob1/lsa\n"
-            f"knob2_madx, knob2/lsa\n"
+            "knob1_madx, knob1/lsa\n"
+            "knob2_madx, knob2/lsa\n"
         )
 
         with pytest.raises(pd.errors.ParserError) as e:
@@ -320,9 +330,7 @@ class TestIO:
     @pytest.mark.basic
     def test_load_knobdefinitions_fail_wrong_scaling(self, tmp_path):
         definition_file = tmp_path / "knob_defs_tmp.txt"
-        definition_file.write_text(
-            f"knob1_madx, knob1/lsa, wrong\n"
-        )
+        definition_file.write_text("knob1_madx, knob1/lsa, wrong\n")
 
         # with pytest.raises(pd.errors.ParserError):
         with pytest.raises(ValueError) as e:
@@ -382,28 +390,28 @@ class TestParser:
 
     @pytest.mark.basic
     def test_cli_parsing(self, main_entrypoint):
-        my_opts = dict(
-            knobs=["knob1", "knob2", "knob3"],
-            time="2022-06-23T12:53:01",
-            timedelta="_27y",
-            output="help.txt",
-            knob_definitions="knob_def.txt",
-        )
-        my_types = dict(
-            knobs=list,
-            time=str,
-            timedelta=str,
-            output=Path,
-            knob_definitions=Path,
-        )
+        my_opts = {
+            "knobs": ["knob1", "knob2", "knob3"],
+            "time": "2022-06-23T12:53:01",
+            "timedelta": "_27y",
+            "output": "help.txt",
+            "knob_definitions": "knob_def.txt",
+        }
+        my_types = {
+            "knobs": list,
+            "time": str,
+            "timedelta": str,
+            "output": Path,
+            "knob_definitions": Path,
+        }
 
         # run main
         with cli_args(*dict2args(my_opts)):
             opt = main_entrypoint.parse()
 
         # check all is correct
-        assert all(k in opt.keys() for k in my_opts.keys())
-        for k in my_opts.keys():
+        assert all(k in opt for k in my_opts)
+        for k in my_opts:
             assert str(my_opts[k]) == str(opt[k])
             assert isinstance(opt[k], my_types[k])
 
@@ -440,7 +448,7 @@ class TestInsideCERNNetwork:
         parsed_saved, _ = parse_output_file(path_saved)
 
         assert len(parsed_saved) == len(parsed_output)
-        for key in parsed_output.keys():
+        for key in parsed_output:
             assert parsed_output[key] == parsed_saved[key]
 
     @pytest.mark.cern_network
@@ -469,7 +477,7 @@ def knob_def(**kwargs):
     return pd.Series(dict(**kwargs))
 
 
-def parse_output_file(file_path) -> Tuple[Dict[str, float], str]:
+def parse_output_file(file_path) -> tuple[dict[str, float], str]:
     txt = Path(file_path).read_text()
     d = {}
     pattern = re.compile(r"\s*(\S+)\s*:=\s*([^;\s*]+)\s*;")
@@ -483,7 +491,7 @@ def parse_output_file(file_path) -> Tuple[Dict[str, float], str]:
     return d, txt
 
 
-def dict2args(args_dict: Dict[str, Any]) -> List[str]:
+def dict2args(args_dict: dict[str, Any]) -> list[str]:
     """ Convert a dictionary to an args-list.
     Keys are flags, values are their arguments. """
     args = []
@@ -507,7 +515,7 @@ def state_tfs() -> Path:
 
 
 @pytest.fixture()
-def saved_knobfile_and_time() -> Tuple[Path, str]:
+def saved_knobfile_and_time() -> tuple[Path, str]:
     return INPUTS / "knobs_2022-06-25.txt", "2022-06-25T00:20:00+00:00"
 
 

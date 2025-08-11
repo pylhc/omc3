@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
 import pytest
 import tfs
 from numpy import mean, sqrt, square
@@ -12,6 +11,11 @@ from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.optics_measurements.constants import F1001, F1010, IMAG, NAME, REAL
 from omc3.optics_measurements.phase import CompensationMode
 from tests.conftest import INPUTS
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pandas as pd
 
 COUPLING_INPUTS: Path = INPUTS / "coupling"
 MODELS: Path = INPUTS / "models"
@@ -37,7 +41,7 @@ def test_coupling_tracking(tmp_path, beam):
     )
     f1001 = tfs.read(tmp_path / f"{F1001.lower()}.tfs", index=NAME)
     f1010 = tfs.read(tmp_path / f"{F1010.lower()}.tfs", index=NAME)
-    
+
     coupling_getllm = tfs.read(COUPLING_INPUTS / f"getllm_beam{beam}.tfs", index=NAME)
     _compare_coupling(f1001, f1010, coupling_getllm)
 
@@ -47,8 +51,8 @@ def test_coupling_tracking(tmp_path, beam):
 
 
 # TODO:This tests does not really work. Not sure why or what the best method is to make it work.
-# To be discussed. Data (model, sdds, getllm) available upon request or from BetaBeat folder 
-# 2018-06-15, kick at 15:55 (getLLM folder is inside Measurement folder for that kick). jdilly 2024 
+# To be discussed. Data (model, sdds, getllm) available upon request or from BetaBeat folder
+# 2018-06-15, kick at 15:55 (getLLM folder is inside Measurement folder for that kick). jdilly 2024
 
 # @pytest.mark.extended
 # @pytest.mark.parametrize("beam", (1, 2), ids=["Beam1", "Beam2"])
@@ -93,7 +97,7 @@ def test_coupling_tracking(tmp_path, beam):
 #     )
 #     f1001 = tfs.read(tmp_path / f"{F1001.lower()}.tfs", index=NAME)
 #     f1010 = tfs.read(tmp_path / f"{F1010.lower()}.tfs", index=NAME)
-    
+
 #     coupling_getllm = tfs.read(getllm_dir / f"getcouple{suffix}.out", index=NAME)
 #     _compare_coupling(f1001, f1010, coupling_getllm)
 

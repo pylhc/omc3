@@ -7,13 +7,15 @@ It contains entrypoint the parent `Accelerator` class as well as other support c
 """
 from __future__ import annotations
 
-import re
+import contextlib
 import os
+import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 import tfs
+from generic_parser.entry_datatypes import get_multi_class
 from generic_parser.entrypoint_parser import EntryPointParameters
 
 from omc3.harpy.constants import COL_NAME as NAME
@@ -31,8 +33,9 @@ from omc3.model.constants import (
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, find_file
-from generic_parser.entry_datatypes import get_multi_class
 
+if TYPE_CHECKING:
+    import numpy as np
 
 LOG = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
@@ -43,7 +46,7 @@ class AccExcitationMode:  # TODO: use enum! (jdilly, 2025)
     FREE, ACD, ADT = range(3)
 
 
-DRIVEN_EXCITATIONS = dict(acd=AccExcitationMode.ACD, adt=AccExcitationMode.ADT)
+DRIVEN_EXCITATIONS = {"acd": AccExcitationMode.ACD, "adt": AccExcitationMode.ADT}
 
 
 class AccElementTypes:
@@ -181,25 +184,26 @@ class Accelerator:
         LOG.debug(f"  model path = {model_dir / TWISS_DAT}")
         try:
             self.model = tfs.read(model_dir / TWISS_DAT, index=NAME)
-        except IOError:
+        except OSError:
             bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
             self.model = self.elements.loc[bpm_mask, :]
         self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
-        try:
-            self.energy = float(self.model.headers["ENERGY"])  # always 450GeV because we do not set it anywhere properly...
-        except KeyError: #KEK model does not have energy in the header
-            pass
+
+        with contextlib.suppress(KeyError):
+            # always 450GeV because we do not set it anywhere properly...
+            # KeyError: KEK model does not have energy in the header for instance
+            self.energy = float(self.model.headers["ENERGY"])
 
         # Excitations #####################################
-        driven_filenames = dict(acd=model_dir / TWISS_AC_DAT, adt=model_dir / TWISS_ADT_DAT)
+        driven_filenames = {"acd": model_dir / TWISS_AC_DAT, "adt": model_dir / TWISS_ADT_DAT}
         if driven_filenames["acd"].is_file() and driven_filenames["adt"].is_file():
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
-        for key in driven_filenames.keys():
+        for key in driven_filenames:
             if driven_filenames[key].is_file():
                 self.excitation = DRIVEN_EXCITATIONS[key]
                 self.model_driven = tfs.read(driven_filenames[key], index=NAME)
 
-        if not self.excitation == AccExcitationMode.FREE:
+        if self.excitation != AccExcitationMode.FREE:
             self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
 
         # Best Knowledge #####################################

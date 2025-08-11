@@ -5,7 +5,7 @@ Performs an automated cleaning of different columns in the lin-file
 as a standalone script to allow for manual refinement after harpy is done.
 
 The type of cleaning is determined by the number of values in the ``limit``
-parameter. When no ``limit`` is given or a single number is given, 
+parameter. When no ``limit`` is given or a single number is given,
 auto-cleaning is performed:
 
 All data is assumed to be gaussian distributed around a "true" value,
@@ -21,7 +21,7 @@ Datapoints with a standard deviation smaller than the given limit are not
 cleaned. The limit is given in whatever units the data itself is in and
 is an absolute value.
 
-If two values are given for the ``limit`` parameter, all data-points in between 
+If two values are given for the ``limit`` parameter, all data-points in between
 these limits are kept and all data-points outside of these limits are cleaned.
 
 Cleaning is done per given file independently
@@ -86,16 +86,14 @@ also use isolation forest, BUT this probably needs some modification there
 as well, as it only cleans on TUNE, not on NATTUNE.
 And it requires an accelerator instance.
 """
-import shutil
-from numbers import Number
-from pathlib import Path
-from typing import Sequence, Union
+from __future__ import annotations
 
-import pandas as pd
+import shutil
+from pathlib import Path
+from typing import TYPE_CHECKING
+
 import tfs
-from generic_parser.entrypoint_parser import (
-    entrypoint, EntryPointParameters
-)
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.definitions.formats import BACKUP_FILENAME
 from omc3.harpy.constants import COL_NAME
@@ -104,46 +102,52 @@ from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.outliers import get_filter_mask
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from numbers import Number
+
+    import pandas as pd
+
 LOG = logging_tools.get_logger(__name__)
 
 
 def get_params():
     return EntryPointParameters(
-        files=dict(
-            required=True,
-            type=PathOrStr,
-            nargs='+',
-            help="List of paths to the lin-files, including suffix.",
-        ),
+        files={
+            'required': True,
+            'type': PathOrStr,
+            'nargs': '+',
+            'help': "List of paths to the lin-files, including suffix.",
+        },
         # restore backup
-        restore=dict(
-            action="store_true",
-            help=("Restore the latest backup of the files. "
+        restore={
+            'action': "store_true",
+            'help': ("Restore the latest backup of the files. "
                   "If this parameter is given, no cleaning is performed."),
-        ),
+        },
         # for actual cleaning
-        columns=dict(
-            nargs='+',
-            type=str,
-            help="Columns to clean on.",
-        ),
-        limit=dict(
-            type=float,
-            nargs='+',
-            help="Two values: Do not clean data-points in between these values. "
+        columns={
+            'nargs': '+',
+            'type': str,
+            'help': "Columns to clean on.",
+        },
+        limit={
+            'type': float,
+            'nargs': '+',
+            'help': "Two values: Do not clean data-points in between these values. "
                  "Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.",
-        ),
-        keep=dict(
-            nargs='+',
-            type=str,
-            help="Do not clean BPMs with given names.",
-        ),
-        backup=dict(
-            action="store_true",
-            help=("Create a backup of the files before overwriting. "
+        },
+        keep={
+            'nargs': '+',
+            'type': str,
+            'help': "Do not clean BPMs with given names.",
+        },
+        backup={
+            'action': "store_true",
+            'help': ("Create a backup of the files before overwriting. "
                   "The backups are numbered, with the highest number being "
                   "the latest backup.")
-        ),
+        },
     )
 
 
@@ -163,21 +167,21 @@ def main(opt):
 
 # Restore ----------------------------------------------------------------------
 
-def restore_files(files: Sequence[Union[Path, str]]):
+def restore_files(files: Sequence[Path | str]):
     """Restore backupped files."""
     failed = []
     for file in files:
         file = Path(file)
         try:
             _restore_file(file)
-        except IOError as e:
+        except OSError as e:
             failed.append(str(e))
 
     if len(failed):
         all_errors = '\n'.join(failed)
         if len(failed) == len(files):
-            raise IOError(f"Restoration of ALL files has failed\n{all_errors}")
-        raise IOError(f"Restoration of some files has failed, "
+            raise OSError(f"Restoration of ALL files has failed\n{all_errors}")
+        raise OSError(f"Restoration of some files has failed, "
                       f"but the others were restored:\n{all_errors}")
 
     LOG.info("Restoration successfully completed.")
@@ -187,7 +191,7 @@ def _restore_file(file):
     counter = 1
     backup_file = _get_backup_filepath(file, counter)
     if not backup_file.exists():
-        raise IOError(f"No backups found for file {file.name}")
+        raise OSError(f"No backups found for file {file.name}")
 
     # get last existing backup file
     while backup_file.exists():
@@ -202,7 +206,7 @@ def _restore_file(file):
 
 # Clean ------------------------------------------------------------------------
 
-def clean_columns(files: Sequence[Union[Path, str]], 
+def clean_columns(files: Sequence[Path | str],
                   columns: Sequence[str],
                   limit: float = None,   # default set in _check_limits
                   keep: Sequence[str] = None,  # default set below
@@ -234,7 +238,7 @@ def clean_columns(files: Sequence[Union[Path, str]],
         tfs.write_tfs(file, df, save_index=COL_NAME)
 
 
-def _check_limits(limit: Union[Sequence[Number], Number]) -> Sequence[Number]:
+def _check_limits(limit: Sequence[Number] | Number) -> Sequence[Number]:
     """ Check that one or two limits are given and convert them into a tuple if needed."""
     if limit is None:
         limit = (0.0,)
@@ -253,7 +257,7 @@ def _check_limits(limit: Union[Sequence[Number], Number]) -> Sequence[Number]:
 
     else:
         raise ValueError(f"Expected 1 or 2 limits, got {len(limit)}.")
-    
+
     return limit
 
 
@@ -268,7 +272,7 @@ def _filter_by_column(df: pd.DataFrame, column: str, limit: Sequence[Number], ke
         good_bpms = get_filter_mask(data=df[column], limit=limit[0]) | keep_bpms
     else:
         good_bpms = df[column].between(*limit) | keep_bpms
-    
+
     n_good, n_total = sum(good_bpms), len(good_bpms)
     LOG.info(f"Cleaned {n_total-n_good:d} of {n_total:d} elements in {column} ({n_good:d} remaining).")
     return df.loc[good_bpms, :]

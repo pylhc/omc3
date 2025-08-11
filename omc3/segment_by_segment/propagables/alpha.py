@@ -9,20 +9,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pandas as pd
-from tfs import TfsDataFrame
-
-from omc3.definitions.optics import OpticsMeasurement
 from omc3.optics_measurements.constants import ALPHA
 from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
-from omc3.segment_by_segment.propagables.phase import Phase 
+from omc3.segment_by_segment.propagables.phase import Phase
 from omc3.segment_by_segment.propagables.utils import PropagableColumns, common_indices
-from omc3.segment_by_segment.segments import SegmentDiffs
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+    import pandas as pd
+    from tfs import TfsDataFrame
+
+    from omc3.definitions.optics import OpticsMeasurement
+    from omc3.segment_by_segment.segments import SegmentDiffs
     IndexType = Sequence[str] | str | slice | pd.Index
     ValueErrorType = tuple[pd.Series, pd.Series] | tuple[float, float]
 
@@ -40,7 +41,7 @@ class AlphaPhase(Propagable):
         alpha = meas.beta_phase[plane].loc[names, c.column]
         error = meas.beta_phase[plane].loc[names, c.error_column]
         return alpha, error
-    
+
     @classmethod
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the alpha phase is in the measurement data. """
@@ -50,7 +51,7 @@ class AlphaPhase(Propagable):
         except FileNotFoundError:
             return False
         return True
-    
+
     def init_conditions_dict(self):
         # alpha needs to be inverted for backward propagation, i.e. the end-init
         init_cond = super().init_conditions_dict()
@@ -62,9 +63,9 @@ class AlphaPhase(Propagable):
     def get_segment_observation_points(self, plane: str):
         """ Return the measurement points for the given plane, that are in the segment. """
         return common_indices(
-            self.segment_models.forward.index, 
+            self.segment_models.forward.index,
             self._meas.beta_phase[plane].index
-        )  
+        )
 
     def add_differences(self, segment_diffs: SegmentDiffs):
         """ Calculate the differences between the propagated models and the measured values."""
@@ -73,9 +74,9 @@ class AlphaPhase(Propagable):
             # save to diffs/write to file (if allow_write is set)
             segment_diffs.alpha_phase[plane] = df
 
-    def _compute_measured(self, 
-            plane: str, 
-            seg_model: TfsDataFrame, 
+    def _compute_measured(self,
+            plane: str,
+            seg_model: TfsDataFrame,
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
         """ Compute the alpha-difference between the given segment model and the measured values."""
@@ -89,7 +90,7 @@ class AlphaPhase(Propagable):
         model_alpha = seg_model.loc[names, f"{ALPHA}{plane}"]
         if not forward:
             model_alpha = -model_alpha  # alpha needs to be inverted for backward propagation
-        model_phase = Phase.get_segment_phase(seg_model.loc[names, :], plane, forward) 
+        model_phase = Phase.get_segment_phase(seg_model.loc[names, :], plane, forward)
 
         # calculate difference
         alpha_diff = alpha - model_alpha
@@ -98,7 +99,7 @@ class AlphaPhase(Propagable):
         propagated_err = sbs_math.propagate_error_alpha(model_alpha, model_phase, init_condition)
         total_err = sbs_math.quadratic_add(err_alpha, propagated_err)
         return alpha_diff, total_err
-    
+
     def _compute_correction(
             self,
             plane: str,
@@ -114,7 +115,7 @@ class AlphaPhase(Propagable):
         alpha_diff = corrected_alpha - model_alpha
         if not forward:
             alpha_diff = -alpha_diff
-        
+
         # propagate the error
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
         propagated_err = sbs_math.propagate_error_alpha(corrected_alpha, model_phase, init_condition)

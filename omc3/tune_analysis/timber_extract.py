@@ -12,10 +12,11 @@ dependency and installing from the ``acc-py`` package index (by specifying ``--i
 https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and
 ``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).
 """
-import datetime
+from __future__ import annotations
+
 import re
 from contextlib import suppress
-from typing import Dict, List, NewType, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, NewType
 
 import numpy as np
 import tfs
@@ -26,6 +27,10 @@ from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
 from omc3.utils.time_tools import CERNDatetime
 
+if TYPE_CHECKING:
+    import datetime
+    from collections.abc import Sequence
+
 TIME_COL = const.get_time_col()
 START_TIME = const.get_tstart_head()
 END_TIME = const.get_tend_head()
@@ -35,11 +40,11 @@ pytimber = cern_network_import("pytimber")
 jpype = cern_network_import("jpype")
 
 MAX_RETRIES = 10  # number of retries on retryable exception
-AcceptableTimeStamp = NewType("AcceptableTimeStamp", Union[CERNDatetime, int, float])
+AcceptableTimeStamp = NewType("AcceptableTimeStamp", CERNDatetime | int | float)
 
 
 def lhc_fill_to_tfs(
-    fill_number: int, keys: Sequence[str] = None, names: Dict[str, str] = None
+    fill_number: int, keys: Sequence[str] = None, names: dict[str, str] = None
 ) -> tfs.TfsDataFrame:
     """
     Extracts data for keys of fill from ``Timber``.
@@ -61,7 +66,7 @@ def extract_between_times(
     t_start: AcceptableTimeStamp,
     t_end: AcceptableTimeStamp,
     keys: Sequence[str] = None,
-    names: Dict[str, str] = None,
+    names: dict[str, str] = None,
 ) -> tfs.TfsDataFrame:
     """
     Extracts data for keys between ``t_start`` and ``t_end`` from ``Timber``.
@@ -93,14 +98,14 @@ def extract_between_times(
             # We use timestamps to avoid any confusion with local time
             extract_dict = db.get(keys, t_start.timestamp(), t_end.timestamp())
         except jpype.java.lang.IllegalStateException as java_state_error:
-            raise IOError(
+            raise OSError(
                 "Could not get data from Timber, user probably has no access to NXCALS"
             ) from java_state_error
         except jpype.JException as java_exception:  # Might be a case for retries
             if "RetryableException" in str(java_exception) and (tries + 1) < MAX_RETRIES:
                 LOG.warning(f"Could not get data from Timber! Trial no {tries + 1} / {MAX_RETRIES}")
                 continue  # will go to the next iteratoin of the loop, so retry
-            raise IOError("Could not get data from timber!") from java_exception
+            raise OSError("Could not get data from timber!") from java_exception
         else:
             break
 
@@ -108,7 +113,7 @@ def extract_between_times(
             or all(not len(v) for v in extract_dict.values())  # values are empty
             or all(len(v) == 2 and not len(v[0]) for v in extract_dict.values())  # arrays are empty (size 2 for time/data)
     ):
-        raise IOError(f"Variables {keys} found but no data extracted in time {t_start.utc_string} - {t_end.utc_string} (UTC).\n"
+        raise OSError(f"Variables {keys} found but no data extracted in time {t_start.utc_string} - {t_end.utc_string} (UTC).\n"
                       f"Possible reasons:\n"
                       f"  - Too small time window.\n"
                       f"  - Old pytimber version.\n"
@@ -130,7 +135,7 @@ def extract_between_times(
     return out_df
 
 
-def get_tune_and_coupling_variables(db) -> List[str]:
+def get_tune_and_coupling_variables(db) -> list[str]:
     """
     Returns the tune and coupling variable names.
 
@@ -151,7 +156,7 @@ def get_tune_and_coupling_variables(db) -> List[str]:
 
 def get_fill_times(
     db, fill_number: int
-) -> Tuple[Union[datetime.datetime, float], Union[datetime.datetime, float]]:
+) -> tuple[datetime.datetime | float, datetime.datetime | float]:
     """
     Returns start and end time of fill with fill number.
 

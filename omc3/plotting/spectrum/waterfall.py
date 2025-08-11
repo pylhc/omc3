@@ -4,15 +4,29 @@ Plot Spectrum - Waterfall Plotter
 
 Waterfall plotting functionality for spectrum plotter.
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import matplotlib as mpl
 import numpy as np
-from generic_parser import DotDict
-from matplotlib import pyplot as plt, colors, rcParams
+from matplotlib import colors, rcParams
+from matplotlib import pyplot as plt
 
-from omc3.plotting.spectrum.utils import (plot_lines, PLANES, LABEL_Y_WATERFALL,
-                                          LABEL_X, AMPS, FREQS, output_plot)
+from omc3.plotting.spectrum.utils import (
+    AMPS,
+    FREQS,
+    LABEL_X,
+    LABEL_Y_WATERFALL,
+    PLANES,
+    output_plot,
+    plot_lines,
+)
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOG = logging_tools.getLogger(__name__)
 
@@ -94,7 +108,7 @@ def _format_axes(fig_cont, limits, ncol):
             ax.set_yticks(
                 ticks=range(len(ylabels)),
                 labels=ylabels,
-                fontdict={'fontsize': get_fontsize_as_float(rcParams[u'axes.labelsize']) * .5},
+                fontdict={'fontsize': get_fontsize_as_float(rcParams['axes.labelsize']) * .5},
             )
         ax.set_xlabel(LABEL_X)
         ax.set_ylabel(LABEL_Y_WATERFALL.format(plane=plane.upper()))

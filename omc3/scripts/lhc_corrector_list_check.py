@@ -1,4 +1,4 @@
-""" 
+"""
 Corrector Lists Check
 ---------------------
 
@@ -7,21 +7,27 @@ It checks if all the correctors in the LHC sequence are used in the variables.
 
 These checks are performed against the correction knobs used for global corrections.
 """
-from pathlib import Path
+from __future__ import annotations
+
 import re
+from argparse import ArgumentParser
+from typing import TYPE_CHECKING
+
 from omc3.model.accelerators.lhc import Lhc
 from omc3.model.constants import AFS_ACCELERATOR_MODEL_REPOSITORY
-from argparse import ArgumentParser
 
-ACC_MODELS_LHC: Path = AFS_ACCELERATOR_MODEL_REPOSITORY / "lhc" 
+if TYPE_CHECKING:
+    from pathlib import Path
+
+ACC_MODELS_LHC: Path = AFS_ACCELERATOR_MODEL_REPOSITORY / "lhc"
 LHC_SEQ_FILE: str = "lhc.seq"
 
 
 def parse_lhc_sequence(year: str) -> dict[int, set[str]]:
     """ Find all the correctors in the LHC sequence.
-    They follow the pattern 'kq[^fsx][.a-z0-9]+' 
+    They follow the pattern 'kq[^fsx][.a-z0-9]+'
 
-    They can be grouped into correctors for beam 1 and beam 2 
+    They can be grouped into correctors for beam 1 and beam 2
     depending on their ending 'b1' or 'b2'.
 
     Args:
@@ -32,16 +38,15 @@ def parse_lhc_sequence(year: str) -> dict[int, set[str]]:
     """
     text = (ACC_MODELS_LHC / year / LHC_SEQ_FILE).read_text()
     all_correctors: set[str] = set(re.findall(r"[\s\-\+=](kq[^fsx][.a-z0-9]+)", text))
-    correctors = {
-        1: set([c for c in all_correctors if c.endswith("b1") ]),
-        2: set([c for c in all_correctors if c.endswith("b2") ]),
+    return {
+        1: {corrector for corrector in all_correctors if corrector.endswith("b1")},
+        2: {corrector for corrector in all_correctors if corrector.endswith("b2")},
     }
-    return correctors
 
 
 def get_lhc_correctors(variables: list[str], beam: int, year: str) -> set[str]:
-    """ Get the correctors that are used in the variables. 
-    
+    """ Get the correctors that are used in the variables.
+
     Args:
         variables (list[str]): List of variable names.
         beam (int): Beam to use.
@@ -82,16 +87,16 @@ def main():
     """ Main function with argument parsing. """
     parser = ArgumentParser()
     parser.add_argument(
-        "--year", 
-        type=str, 
-        required=True, 
+        "--year",
+        type=str,
+        required=True,
         help="Year of the optics (or hllhc1.x version)."
     )
     parser.add_argument(
-        "--variables", 
-        type=str, 
-        required=True, 
-        nargs="+", 
+        "--variables",
+        type=str,
+        required=True,
+        nargs="+",
         help="Variables to check."
     )
     args = parser.parse_args()
@@ -105,7 +110,7 @@ def example():
             variables=[mqms, "MQT", "MQTL", "MQY"],
             year="2024",
         )
-    
+
     print("--------------------\n")
 
     for mqms in ["MQM_INJ", "MQM_TOP"]:

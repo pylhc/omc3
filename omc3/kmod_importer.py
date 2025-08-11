@@ -80,6 +80,7 @@ from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
@@ -121,8 +122,8 @@ def _get_params():
         help="Path to the directory where to write the output files.",
     )
     params.add_parameter(
-        name="show_plots", 
-        action="store_true", 
+        name="show_plots",
+        action="store_true",
         help="Show the plots."
     )
     return params
@@ -181,7 +182,7 @@ def import_kmod_results(opt: DotDict) -> None:
 
     results_list = [
         df
-        for ip in averaged_results.keys()
+        for ip in averaged_results
         for df in (
             averaged_results[ip][0],  # beta-star results
             averaged_results[ip][opt.beam],  # bpm results of the specific beam
@@ -237,8 +238,8 @@ def average_all_results(
 
 
 def _sort_paths_by_ip(
-    paths: Sequence[str | Path], beam: int
-    ) -> dict[str, list[str | Path]]:
+    paths: Sequence[Path | str], beam: int
+    ) -> dict[str, list[Path | str]]:
     """Sorts the kmod results files by IP.
 
     Identification of the IP is done by reading the `lsa_results.tfs` files.

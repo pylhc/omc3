@@ -2,8 +2,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from omc3.tune_analysis.bbq_tools import get_moving_average, clean_outliers_moving_average, MinMaxFilterOpt, \
-    OutlierFilterOpt
+from omc3.tune_analysis.bbq_tools import (
+    MinMaxFilterOpt,
+    OutlierFilterOpt,
+    clean_outliers_moving_average,
+    get_moving_average,
+)
 from omc3.tune_analysis.fitting_tools import get_poly_fun
 
 

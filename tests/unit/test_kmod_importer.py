@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pytest
 import tfs
 
@@ -22,7 +23,6 @@ from tests.unit.test_kmod_lumi_imbalance import REFERENCE_DIR
 from tests.unit.test_kmod_lumi_imbalance import (
     _get_effbetas_filename as _get_lumi_filename,
 )
-
 
 N_EFFECTIVE_FILES = {  # number of effective beta files given number of IPs
         1: 0,

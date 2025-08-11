@@ -20,10 +20,10 @@ import tfs
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANES
 
-MOTION = dict(free="_f", driven="_d")
-PLANE_TO_NUM = dict(X=1, Y=2)
-COUPLING_INDICES = dict(X="01", Y="10")
-OTHER = dict(X="Y", Y="X")
+MOTION = {"free": "_f", "driven": "_d"}
+PLANE_TO_NUM = {"X": 1, "Y": 2}
+COUPLING_INDICES = {"X": "01", "Y": "10"}
+OTHER = {"X": "Y", "Y": "X"}
 NOISE = 1e-4
 NTURNS = 6600
 ACTION = 5e-9

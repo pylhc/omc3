@@ -93,7 +93,7 @@ from omc3.model.accelerators.accelerator import (
 )
 from omc3.model.constants import OPTICS_SUBDIR
 from omc3.utils import logging_tools
-from omc3.utils.iotools import load_multiple_jsons, find_file
+from omc3.utils.iotools import find_file, load_multiple_jsons
 from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
@@ -230,13 +230,13 @@ class Lhc(Accelerator):
         elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
         if frm is not None and to is not None:
             if frm > to:
-                elems_matrix = elems_matrix[(elems_matrix.S >= frm) | (elems_matrix.S <= to)]
+                elems_matrix = elems_matrix[(frm <= elems_matrix.S) | (to >= elems_matrix.S)]
             else:
-                elems_matrix = elems_matrix[(elems_matrix.S >= frm) & (elems_matrix.S <= to)]
+                elems_matrix = elems_matrix[(frm <= elems_matrix.S) & (to >= elems_matrix.S)]
         elif frm is not None:
-            elems_matrix = elems_matrix[elems_matrix.S >= frm]
+            elems_matrix = elems_matrix[frm <= elems_matrix.S]
         elif to is not None:
-            elems_matrix = elems_matrix[elems_matrix.S <= to]
+            elems_matrix = elems_matrix[to >= elems_matrix.S]
 
         # create single list (some entries might contain multiple variable names, comma separated, e.g. "kqx.l2,ktqx2.l2")
         vars_by_position = _remove_dups_keep_order(
@@ -246,7 +246,7 @@ class Lhc(Accelerator):
 
         # Check if no filtering but only sorting was required
         if (frm is None) and (to is None) and (len(sorted_vars) != len(variables)):
-            unknown_vars = list(sorted(var for var in variables if var not in sorted_vars))
+            unknown_vars = sorted(var for var in variables if var not in sorted_vars)
             LOGGER.debug(f"The following variables do not have a location: {str(unknown_vars)}")
             sorted_vars = sorted_vars + unknown_vars
         return sorted_vars
@@ -317,7 +317,7 @@ class Lhc(Accelerator):
                 "not found in the common BPMs. Maybe cleaned?"
             ) from e
 
-    def important_phase_advances(self) -> list[list[str]]:
+    def important_phase_advances(self) -> list[list[str]] | None:
         if "hl" in self.year.lower():
             # skip if HiLumi, TODO: insert phase advances when they are finalised
             return []
@@ -326,15 +326,17 @@ class Lhc(Accelerator):
             return [["MKD.O5R6.B2", "TCTPH.4R1.B2"], ["MKD.O5R6.B2", "TCTPH.4R5.B2"]]
         if self.beam == 1:
             return [["MKD.O5L6.B1", "TCTPH.4L1.B1"], ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
+        return None
 
     def get_synch_BPMs(self, index):
         # expect passing index.to_numpy()
         if self.beam == 1:
             return [i in index for i in self.model.loc["BPMSW.33L2.B1":].index]
-        elif self.beam == 2:
+        if self.beam == 2:
             return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
+        return None
 
-    def get_accel_file(self, filename: str | Path) -> Path:
+    def get_accel_file(self, filename: Path | str) -> Path:
         return LHC_DIR / self.year / filename
 
 
@@ -344,7 +346,7 @@ class Lhc(Accelerator):
         if it exists, or the default directory. """
         return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
 
-    def _get_corrector_files(self, file_name: str | Path) -> list[Path]:
+    def _get_corrector_files(self, file_name: Path | str) -> list[Path]:
         """ Get the corrector files from the default directory AND
         the instance's specific directory if it exists AND the model directroy if it exists,
         in that order.

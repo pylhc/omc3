@@ -4,6 +4,8 @@ Plotting Utilities: Colors
 
 Helper functions to handle colors in plots.
 """
+from __future__ import annotations
+
 import colorsys
 from itertools import cycle
 
@@ -36,8 +38,7 @@ def rgb_plotly_to_mpl(rgb_string):
 
     rgb_string = rgb_string.replace("rgba", "").replace("rgb", "")
     rgb = eval(rgb_string)
-    rgb_norm = [c/255. for c in rgb]
-    return rgb_norm
+    return [c/255. for c in rgb]
 
 
 def change_color_brightness(color, amount=0.5):
@@ -49,7 +50,7 @@ def change_color_brightness(color, amount=0.5):
     """
     if not (0<=amount<=2):
         raise ValueError("The brightness change has to be between 0 and 2."
-                         " Instead it was {}".format(amount))
+                         f" Instead it was {amount}")
     try:
         c = mpl.colors.cnames[color]
     except KeyError:

@@ -228,7 +228,6 @@ well as a plot for all corrections (only EXPected) will be saved into the output
     Limits on the y axis (Tupel)
 
 """
-
 from __future__ import annotations
 
 import copy
@@ -236,16 +235,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pandas as pd
-import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
-from tfs import TfsDataFrame
 
 from omc3.correction import filters
 from omc3.correction import handler as global_correction
-from omc3.correction.constants import (
-    COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX,
-    MODEL_MATCHED_FILENAME,
-)
+from omc3.correction.constants import COUPLING_NAME_TO_MODEL_COLUMN_SUFFIX, MODEL_MATCHED_FILENAME
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.correction.response_twiss import PLANES
@@ -258,13 +252,8 @@ from omc3.definitions.optics import (
     ColumnsAndLabels,
     OpticsMeasurement,
 )
-from omc3.global_correction import (
-    CORRECTION_DEFAULTS,
-    OPTICS_PARAMS_CHOICES,
-    _get_default_values,
-)
+from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES, _get_default_values
 from omc3.model import manager
-from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (
     BETA,
     EXT,
@@ -289,6 +278,9 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from generic_parser import DotDict
+    from tfs import TfsDataFrame
+
+    from omc3.model.accelerators.accelerator import Accelerator
 
 
 LOG = logging_tools.get_logger(__name__)
@@ -461,11 +453,11 @@ def _get_corrections(
     # check correction files
     for name, corr_files in corr_dict.items():
         if not len(corr_files):
-            raise IOError(f"No corrections found for scenario {name}.")
+            raise OSError(f"No corrections found for scenario {name}.")
 
         do_not_exist = [f for f in corr_files if not f.exists()]
         if len(do_not_exist):
-            raise IOError(
+            raise OSError(
                 f"Some correction files do not exist for scenario {name}:"
                 f" {str(do_not_exist)}"
             )
@@ -504,7 +496,7 @@ def _get_measurement_filter(
 
     # add weights and use_errorbars as these are required in filters
     opt.use_errorbars = False
-    opt.weights = {param: 1.0 for param in opt.optics_params}
+    opt.weights = dict.fromkeys(opt.optics_params, 1.0)
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
 
     # use the indices as filters
@@ -563,9 +555,7 @@ def _create_model_and_write_diff_to_measurements(
     output_measurement = OpticsMeasurement(directory=output_dir, allow_write=True)
 
     for attribute, filename in measurement.filenames(exist=True).items():
-        rms_mask = rms_masks.get(
-            filename, None
-        )  # keys in rms_masks still with extension
+        rms_mask = rms_masks.get(filename)  # keys in rms_masks still with extension
         filename = filename.replace(EXT, "")
 
         try:
@@ -603,10 +593,7 @@ def _create_model_and_write_diff_to_measurements(
             LOG.debug(f"Checking correction for {attribute}")
             plane = filename[-1].upper()
             cols = colmap.set_plane(plane)
-            if filename[:-1] == TOTAL_PHASE_NAME:
-                model_cols = MU_COLUMN.set_plane(plane)
-            else:
-                model_cols = cols
+            model_cols = MU_COLUMN.set_plane(plane) if filename[:-1] == TOTAL_PHASE_NAME else cols
 
             _create_check_columns(
                 measurement=measurement,
@@ -753,8 +740,8 @@ def _create_check_columns(
 
 
 def _maybe_add_coupling_to_model(
-    model: tfs.TfsDataFrame, measurement: OpticsMeasurement
-) -> tfs.TfsDataFrame:
+    model: TfsDataFrame, measurement: OpticsMeasurement
+) -> TfsDataFrame:
     """Add coupling to the model, if terms corresponding to coupling RDTs are
     found in the provided measurements.
 
@@ -779,7 +766,7 @@ def _maybe_add_coupling_to_model(
 def _do_plots(corrections: dict[str, Any], opt: DotDict):
     """Plot the differences of the matched models to the measurement."""
     opt_plot = {
-        k: v for k, v in opt.items() if k in get_plotting_style_parameters().keys()
+        key: val for key, val in opt.items() if key in get_plotting_style_parameters()
     }
     opt_plot["input_dir"] = opt.output_dir
     opt_plot["output_dir"] = opt.output_dir

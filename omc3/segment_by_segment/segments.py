@@ -1,4 +1,4 @@
-""" 
+"""
 Segments
 --------
 
@@ -7,9 +7,8 @@ Classes to hold the information of the segments in the sbs definition.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-from tfs import TfsDataFrame
 from tfs.collection import Tfs, TfsCollection
 
 from omc3.optics_measurements.constants import (
@@ -18,11 +17,11 @@ from omc3.optics_measurements.constants import (
     BETA_NAME,
     DISPERSION_NAME,
     EXT,
+    F1001_NAME,
+    F1010_NAME,
     KMOD_BETA_NAME,
     NORM_DISP_NAME,
     PHASE_NAME,
-    F1001_NAME,
-    F1010_NAME,
 )
 from omc3.segment_by_segment.constants import (
     TWISS_BACKWARD,
@@ -31,6 +30,10 @@ from omc3.segment_by_segment.constants import (
     TWISS_FORWARD_CORRECTED,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from tfs import TfsDataFrame
 
 @ dataclass
 class Segment:
@@ -42,18 +45,18 @@ class Segment:
 
     @classmethod
     def init_from_element_name(cls, element_name: str):
-        """ Initialize from the string representation for elements 
+        """ Initialize from the string representation for elements
         as used in inputs."""
         segment = cls(element_name, element_name, element_name)
         segment.element = element_name
         return segment
-    
+
     @classmethod
     def init_from_segment_definition(cls, segment: str):
         """ Initialize from the string representation for segments
         as used in inputs."""
         return cls(*segment.split(","))
-    
+
     @classmethod
     def init_from_input(cls, input_str: str):
         """ Initialize from the string representation for segments or elements
@@ -77,7 +80,7 @@ class Segment:
 class SegmentModels(TfsCollection):
     """
     Class to hold and load the models of the segments created by MAD-X.
-    The filenames need to be the same as in 
+    The filenames need to be the same as in
     :class:`omc3.model.model_creators.abstract_model_creator.SegmentCreator`.
 
     Arguments:
@@ -90,7 +93,7 @@ class SegmentModels(TfsCollection):
     backward_corrected: TfsDataFrame = Tfs(TWISS_BACKWARD_CORRECTED, two_planes=False)
 
     def __init__(self, directory: Path, segment: Segment):
-        super(SegmentModels, self).__init__(directory)
+        super().__init__(directory)
         self.segment = segment
 
     def _get_filename(self, template: str):
@@ -119,8 +122,8 @@ class SegmentDiffs(TfsCollection):
     f1010 = Tfs(f"{PREFIX}{F1010_NAME}_{{name}}{EXT}", two_planes=False)
 
     def __init__(self, directory: Path, segment_name: str, *args, **kwargs):
-        super(SegmentDiffs, self).__init__(directory, *args, **kwargs)
-        self.segment_name = segment_name 
+        super().__init__(directory, *args, **kwargs)
+        self.segment_name = segment_name
 
     def _get_filename(self, template: str, plane: str | None = None):
         if plane is None:

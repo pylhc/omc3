@@ -9,23 +9,35 @@ This calculation is done using a combination of SVD decomposition zero_padded `f
 analysis.
 Also searches for resonances in the calculated spectra.
 """
-from numbers import Number
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-
-from omc3.utils import logging_tools, outliers
-from omc3.definitions.constants import PLANES, PI2
-from omc3.harpy.constants import (COL_TUNE, COL_AMP, COL_MU,
-                                  COL_NATTUNE, COL_NATAMP, COL_NATMU,
-                                  COL_FREQ, COL_PHASE)
 from optics_functions.rdt import get_all_to_order
+
+from omc3.definitions.constants import PI2, PLANES
+from omc3.harpy.constants import (
+    COL_AMP,
+    COL_FREQ,
+    COL_MU,
+    COL_NATAMP,
+    COL_NATMU,
+    COL_NATTUNE,
+    COL_PHASE,
+    COL_TUNE,
+)
+from omc3.utils import logging_tools, outliers
+
+if TYPE_CHECKING:
+    from numbers import Number
 
 LOGGER = logging_tools.getLogger(__name__)
 
 def _get_resonance_lines(order):
-    resonances = {'X': [], 
-                  'Y': [], 
+    resonances = {'X': [],
+                  'Y': [],
                   'Z': [(1, 0, 1), (0, 1, 1), (1, 0, -1), (0, 1, -1)]}
     # Get all the rdts up to a given order
     fterms = get_all_to_order(order)
@@ -88,7 +100,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     """
     df = pd.DataFrame(index=bpm_matrix.index)
     frequencies, coefficients = windowed_padded_rfft(harpy_input, bpm_matrix, tunes, usv)
-    df, not_tune_bpms = _get_main_resonances(tunes, dict(FREQS=frequencies, COEFFS=coefficients),
+    df, not_tune_bpms = _get_main_resonances(tunes, {"FREQS": frequencies, "COEFFS": coefficients},
                                                 plane, harpy_input.tolerance, df)
     cleaned_by_tune_bpms = clean_by_tune(df.loc[:, f"{COL_TUNE}{plane}"], harpy_input.tune_clean_limit)
     df = df.loc[df.index.difference(cleaned_by_tune_bpms)]
@@ -98,7 +110,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
 
     bad_bpms_summaries = _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms)
     bpm_matrix = bpm_matrix.loc[df.index]
-    spectra = dict(FREQS=frequencies.loc[df.index], COEFFS=coefficients.loc[df.index])
+    spectra = {"FREQS": frequencies.loc[df.index], "COEFFS": coefficients.loc[df.index]}
 
     if _get_natural_tunes(harpy_input, tunes) is not None:
         df_nattunes = _calculate_natural_tunes(
@@ -139,7 +151,7 @@ def find_resonances(tunes, nturns, plane, spectra, order_resonances):
     resonances_freqs = _compute_resonances_with_freqs(plane, tunes, resonance_lines)
     if tunes[2] > 0.0:
         resonances_freqs.update(_compute_resonances_with_freqs("Z", tunes, resonance_lines))
-    for resonance in resonances_freqs.keys():
+    for resonance in resonances_freqs:
         tolerance = _get_resonance_tolerance(resonance, nturns)
         max_coefs, max_freqs = _search_highest_coefs(resonances_freqs[resonance], tolerance,
                                                      spectra["FREQS"], spectra["COEFFS"])
@@ -207,8 +219,7 @@ def clean_by_tune(tunes: pd.Series, tune_clean_limit: Number) -> pd.Series:
             average is lower than this limit.
     """
     bad_bpms_mask = outliers.get_filter_mask(tunes, limit=tune_clean_limit)  # returns ``True`` for good BPMs
-    bad_bpms_names = tunes[~bad_bpms_mask].index
-    return bad_bpms_names
+    return tunes[~bad_bpms_mask].index
 
 
 def _get_bad_bpms_summary(not_tune_bpms, cleaned_by_tune_bpms):
@@ -331,7 +342,7 @@ def windowing(length, window='hamming'):
         "triangle": 1 - np.abs((ints2pi / np.pi) - 1),
         "rectangle": np.ones(length)
     }
-    if window not in windows.keys():
+    if window not in windows:
         raise NotImplementedError(f"Unknown windowing function {window}")
     return windows[window] / np.sum(windows[window])
 
@@ -358,7 +369,7 @@ def get_freq_mask(harpy_input, tunes, auto_tol):
         mask = _get_partial_freq_mask(harpy_input, mask, list(nattunes), harpy_input.tolerance)
     tol = harpy_input.tolerance if harpy_input.autotunes is None else auto_tol
     freqs = (list(tunes))
-    
+
     resonance_lines = _get_resonance_lines(harpy_input.resonances)
     for plane in PLANES:
         freqs.extend(_compute_resonance_freqs(plane, tunes, resonance_lines))

@@ -7,41 +7,41 @@ from omc3.optics_measurements import crdt
 from tests.conftest import INPUTS, MODELS
 
 # accuracy limits of crdt to ptc, octupole is relaxed as single octupole with a nonideal WP gives weak CRDT
-ACCURACY_LIMIT = dict(
-    skew_quadrupole=0.01,
-    normal_sextupole=0.01,
-    skew_sextupole=0.03,
-    normal_octupole=0.23,
-)
+ACCURACY_LIMIT = {
+    'skew_quadrupole': 0.01,
+    'normal_sextupole': 0.01,
+    'skew_sextupole': 0.03,
+    'normal_octupole': 0.23,
+}
 
 
 # Levels below which CRDT are not used for test comparison
-NOISELEVEL_AMP = dict(
-    skew_quadrupole=1E-2,
-    normal_sextupole=1E-2,
-    skew_sextupole=1E-2,
-    normal_octupole=0.5,
-)
-NOISELEVEL_COMPLEX = dict(
-    skew_quadrupole=1E-3,
-    normal_sextupole=1E-3,
-    skew_sextupole=1E-3,
-    normal_octupole=1.5,
-)
+NOISELEVEL_AMP = {
+    'skew_quadrupole': 1E-2,
+    'normal_sextupole': 1E-2,
+    'skew_sextupole': 1E-2,
+    'normal_octupole': 0.5,
+}
+NOISELEVEL_COMPLEX = {
+    'skew_quadrupole': 1E-3,
+    'normal_sextupole': 1E-3,
+    'skew_sextupole': 1E-3,
+    'normal_octupole': 1.5,
+}
 
 
-MEASURE_OPTICS_SETTINGS = dict(
-    harpy=False,
-    optics=True,
-    nonlinear=['crdt'],
-    compensation="none",
-    accel='lhc',
-    ats=True,
-    beam=1,
-    dpp=0.0,
-    model_dir=MODELS / "2018_inj_b1_11m",
-    year="2018",
-)
+MEASURE_OPTICS_SETTINGS = {
+    'harpy': False,
+    'optics': True,
+    'nonlinear': ['crdt'],
+    'compensation': "none",
+    'accel': 'lhc',
+    'ats': True,
+    'beam': 1,
+    'dpp': 0.0,
+    'model_dir': MODELS / "2018_inj_b1_11m",
+    'year': "2018",
+}
 
 LIN_DIR = INPUTS / "crdt"
 
