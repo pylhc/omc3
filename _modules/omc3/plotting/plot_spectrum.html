@@ -406,23 +406,35 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cycler</span><span class="w"> </span><span class="kn">import</span> <span class="n">cycler</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictAsString</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span>
-                                              <span class="n">save_options_to_config</span><span class="p">,</span> <span class="n">DotDict</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DotDict</span><span class="p">,</span>
+    <span class="n">EntryPointParameters</span><span class="p">,</span>
+    <span class="n">entrypoint</span><span class="p">,</span>
+    <span class="n">save_options_to_config</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.spectrum.stem</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_stem_plots</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.spectrum.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">NCOL_LEGEND</span><span class="p">,</span> <span class="n">LIN</span><span class="p">,</span>
-                                          <span class="n">FigureCollector</span><span class="p">,</span> <span class="n">get_unique_filenames</span><span class="p">,</span>
-                                          <span class="n">filter_amps</span><span class="p">,</span> <span class="n">get_bpms</span><span class="p">,</span> <span class="n">get_stem_id</span><span class="p">,</span>
-                                          <span class="n">get_waterfall_id</span><span class="p">,</span> <span class="n">get_data_for_bpm</span><span class="p">,</span>
-                                          <span class="n">load_spectrum_data</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.spectrum.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LIN</span><span class="p">,</span>
+    <span class="n">NCOL_LEGEND</span><span class="p">,</span>
+    <span class="n">FigureCollector</span><span class="p">,</span>
+    <span class="n">filter_amps</span><span class="p">,</span>
+    <span class="n">get_bpms</span><span class="p">,</span>
+    <span class="n">get_data_for_bpm</span><span class="p">,</span>
+    <span class="n">get_stem_id</span><span class="p">,</span>
+    <span class="n">get_unique_filenames</span><span class="p">,</span>
+    <span class="n">get_waterfall_id</span><span class="p">,</span>
+    <span class="n">load_spectrum_data</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.spectrum.waterfall</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_waterfall_plots</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">style</span> <span class="k">as</span> <span class="n">pstyle</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">VERTICAL_LINES_TEXT_LOCATIONS</span>
@@ -456,7 +468,7 @@
     <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span>
     <span class="n">waterfall_line_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">manual_style</span><span class="o">=</span><span class="p">{</span>
-        <span class="sa">u</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">:</span> <span class="n">get_reshuffled_tab20c</span><span class="p">(),</span>
+        <span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">:</span> <span class="n">get_reshuffled_tab20c</span><span class="p">(),</span>
     <span class="p">}</span>
 <span class="p">)</span>
 
@@ -656,7 +668,7 @@
 <span class="c1"># Load Data --------------------------------------------------------------------</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_sort_input_data</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">FigureCollector</span><span class="p">,</span> <span class="n">FigureCollector</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_sort_input_data</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FigureCollector</span><span class="p">,</span> <span class="n">FigureCollector</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load and sort input data by file and bpm and assign correct figure-containers.&quot;&quot;&quot;</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sorting input data.&quot;</span><span class="p">)</span>
 

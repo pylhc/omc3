@@ -227,17 +227,23 @@
 <span class="sd">It provides tools for fitting functions, mainly via odr.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.polynomial</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polynomial</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.odr</span><span class="w"> </span><span class="kn">import</span> <span class="n">RealData</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">ODR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.odr</span><span class="w"> </span><span class="kn">import</span> <span class="n">ODR</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">RealData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FakeOdrOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -342,7 +348,7 @@
 
 <div class="viewcode-block" id="map_odr_fit_to_planes">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.map_odr_fit_to_planes">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">map_odr_fit_to_planes</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FakeOdrOutput</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_odr_fit_to_planes</span><span class="p">(</span><span class="n">odr_fit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FakeOdrOutput</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Maps the calculated odr fit to fake odr fits with `beta` and `sd_beta`</span>
 <span class="sd">    attributes. These would be the results of first-order amplitude detuning</span>
 <span class="sd">    odr-fits when done independently by tune and kick plane.</span>
@@ -413,7 +419,7 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_filter_nans</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_nans</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all data points containing a NaN.</span>
 <span class="sd">    Assumes input arrays are all of shape 2xN.</span>
 <span class="sd">    TODO:</span>
@@ -425,7 +431,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_check_exact_zero_errors</span><span class="p">(</span><span class="n">xerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_exact_zero_errors</span><span class="p">(</span><span class="n">xerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">yerr</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if errors are exact zero and replace with minimum error, if so.</span>
 <span class="sd">    Done because ODR crashes on exact zero error-bars.</span>
 
@@ -448,9 +454,6 @@
     <span class="n">xerr</span> <span class="o">=</span> <span class="n">check_exact_zero_per_plane</span><span class="p">(</span><span class="n">xerr</span><span class="p">,</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
     <span class="n">yerr</span> <span class="o">=</span> <span class="n">check_exact_zero_per_plane</span><span class="p">(</span><span class="n">yerr</span><span class="p">,</span> <span class="s2">&quot;vertical&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span>
-
-
-
 </pre></div>
 
            </div>

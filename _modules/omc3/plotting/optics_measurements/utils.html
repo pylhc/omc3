@@ -225,14 +225,19 @@
 
 <span class="sd">This module contains utilities for the ``plotting`` module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
 
 <div class="viewcode-block" id="IDMap">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.IDMap">[docs]</a>
@@ -253,7 +258,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Container to store the data to plot.&quot;&quot;&quot;</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span>
     <span class="n">y</span><span class="p">:</span> <span class="n">ArrayLike</span>
-    <span class="n">err</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">err</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 
@@ -270,9 +275,9 @@
             <span class="n">axs</span> <span class="o">=</span> <span class="p">[</span><span class="n">axs</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">axes_ids</span> <span class="o">=</span> <span class="n">axes_ids</span>  <span class="c1"># to keep order</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ax_id</span><span class="p">:</span> <span class="n">ax</span> <span class="k">for</span> <span class="n">ax_id</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes_ids</span><span class="p">,</span> <span class="n">axs</span><span class="p">)}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xlabels</span> <span class="o">=</span> <span class="p">{</span><span class="n">ax_id</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ax_id</span> <span class="ow">in</span> <span class="n">axes_ids</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ylabels</span> <span class="o">=</span> <span class="p">{</span><span class="n">ax_id</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ax_id</span> <span class="ow">in</span> <span class="n">axes_ids</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">axes_ids</span><span class="p">,</span> <span class="n">axs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlabels</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">axes_ids</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ylabels</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">axes_ids</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">ax_id</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">ax_id</span> <span class="ow">in</span> <span class="n">axes_ids</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
 
@@ -288,7 +293,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>   <span class="c1"># dictionary of matplotlib figures, for output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">figs</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>       <span class="c1"># dictionary of FigureContainers, used internally</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figs</span><span class="p">)</span>
 
@@ -316,7 +321,7 @@
 
 <div class="viewcode-block" id="safe_format">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.optics_measurements.utils.safe_format">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">safe_format</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">insert</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_format</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">insert</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats label. Usually just ``.format()`` works fine, even if there is no {}-placeholder in</span>
 <span class="sd">    the label, but it might cause errors if latex is used in the label or ``None``. Hence the</span>

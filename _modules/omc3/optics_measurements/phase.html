@@ -252,14 +252,11 @@
     <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span>
     <span class="n">S</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">InputFiles</span><span class="p">,</span>
-    <span class="n">check_and_warn_about_offmomentum_data</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">check_and_warn_about_offmomentum_data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.toolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">ang_sum</span><span class="p">,</span> <span class="n">df_ang_diff</span><span class="p">,</span> <span class="n">df_diff</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span><span class="p">,</span> <span class="n">stats</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
@@ -270,8 +267,8 @@
 
 <span class="n">PhaseDict</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span>
     <span class="s1">&#39;PhaseDict&#39;</span><span class="p">,</span> <span class="p">{</span>
-        <span class="n">MODEL</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
-        <span class="n">MEASUREMENT</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
+        <span class="n">MODEL</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">MEASUREMENT</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">MEASUREMENT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
     <span class="p">}</span>
 <span class="p">)</span>
@@ -281,7 +278,7 @@
     <span class="n">NONE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
     <span class="n">MODEL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;model&quot;</span>
     <span class="n">EQUATION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;equation&quot;</span>
-    
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">MODEL</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">EQUATION</span><span class="p">]</span>
@@ -299,7 +296,7 @@
     <span class="n">no_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PhaseDict</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate phases for &#39;compensated&#39; (aka &#39;free&#39;) and &#39;uncompensated&#39; (aka &#39;driven&#39;) cases from the measurement files, </span>
+<span class="sd">    Calculate phases for &#39;compensated&#39; (aka &#39;free&#39;) and &#39;uncompensated&#39; (aka &#39;driven&#39;) cases from the measurement files,</span>
 <span class="sd">    and return a dictionary combining the results for each transverse plane.</span>
 
 <span class="sd">    Args:</span>
@@ -311,7 +308,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A tuple of a dictionary and a list of corresponding phase DataFrames.</span>
-<span class="sd">        The dictionary contains the compensated and uncompensated results in `PhaseDict` form, </span>
+<span class="sd">        The dictionary contains the compensated and uncompensated results in `PhaseDict` form,</span>
 <span class="sd">        i.e. a dictionary of DataFrames with the phase models, measured and errors.</span>
 <span class="sd">        The list contains the DataFrames with the phase advances between BPMs and the total phase advances,</span>
 <span class="sd">        for both compensated and uncompensated cases.</span>
@@ -344,7 +341,7 @@
             <span class="n">tunes</span><span class="o">=</span><span class="n">tunes</span><span class="p">,</span>
             <span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="p">,</span>
             <span class="n">model_df</span><span class="o">=</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model_driven</span><span class="p">,</span>
-            <span class="n">compensation</span><span class="o">=</span><span class="n">CompensationMode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span> 
+            <span class="n">compensation</span><span class="o">=</span><span class="n">CompensationMode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span>
             <span class="n">no_errors</span><span class="o">=</span><span class="n">no_errors</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="n">dfs</span> <span class="o">+</span> <span class="n">drv_dfs</span>
@@ -385,7 +382,7 @@
 <span class="sd">        no_errors: if ``True``, measured errors shall not be propagated (only their spread).</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A tuple of </span>
+<span class="sd">        A tuple of</span>
 <span class="sd">        - a `dictionary` of `TfsDataFrames` indexed (BPMi x BPMj) yielding phase advance `phi_ij`.</span>
 
 <span class="sd">            - &quot;MEAS&quot;: measured phase advances,</span>
@@ -426,11 +423,11 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">joined_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">direction</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">beam_direction</span>
-    <span class="n">df</span><span class="p">[</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">direction</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>     
-    
+    <span class="n">df</span><span class="p">[</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">direction</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="n">phases_mdl</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="n">phase_advances</span> <span class="o">=</span> <span class="p">{</span><span class="n">MODEL</span><span class="p">:</span> <span class="n">_get_square_data_frame</span><span class="p">(</span><span class="n">_get_all_phase_diff</span><span class="p">(</span><span class="n">phases_mdl</span><span class="p">),</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)}</span>
-    
+
     <span class="k">if</span> <span class="n">compensation</span> <span class="o">==</span> <span class="n">CompensationMode</span><span class="o">.</span><span class="n">MODEL</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">_compensate_by_model</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
 
@@ -445,7 +442,7 @@
         <span class="n">phase_advances</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">MEASUREMENT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_square_data_frame</span><span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">))),</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">phase_advances</span>
-    
+
     <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">union</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">)</span>
         <span class="n">phases_meas</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">phases_errors</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
@@ -454,7 +451,7 @@
     <span class="k">elif</span> <span class="n">no_errors</span><span class="p">:</span>
         <span class="n">phases_errors</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">phases_3d</span> <span class="o">=</span> <span class="n">phases_meas</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">phases_meas</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
-    
+
     <span class="k">if</span> <span class="n">phases_errors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">errors_3d</span> <span class="o">=</span> <span class="n">phases_errors</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">phases_errors</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -469,7 +466,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compensate_by_equation</span><span class="p">(</span><span class="n">phases_meas</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tunes</span><span class="p">:</span> <span class="n">TuneDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Compensate the measured phases by equation.</span>
-<span class="sd">    </span>
+
 <span class="sd">    TODO: Reference!</span>
 <span class="sd">     &quot;&quot;&quot;</span>
     <span class="n">driven_tune</span><span class="p">,</span> <span class="n">free_tune</span><span class="p">,</span> <span class="n">ac2bpmac</span> <span class="o">=</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;Q&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;QF&quot;</span><span class="p">],</span> <span class="n">tunes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="s2">&quot;ac2bpm&quot;</span><span class="p">]</span>
@@ -502,9 +499,9 @@
 <div class="viewcode-block" id="write">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.phase.write">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span>
-    <span class="n">dfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> 
-    <span class="n">headers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> 
-    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">dfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Write out the phase advance data into TFS-files.&quot;&quot;&quot;</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing phases: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -522,11 +519,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Create the DataFrames to be written out into TFS-files.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        phase_advances (PhaseDict): Dictionary of phase-advance DataFrames </span>
-<span class="sd">                                    as described in :func:`calculate_with_compensation`. </span>
-<span class="sd">        model (pd.DataFrame): Model DataFrame (i.e. columns from twiss_elements + compensation). </span>
+<span class="sd">        phase_advances (PhaseDict): Dictionary of phase-advance DataFrames</span>
+<span class="sd">                                    as described in :func:`calculate_with_compensation`.</span>
+<span class="sd">        model (pd.DataFrame): Model DataFrame (i.e. columns from twiss_elements + compensation).</span>
 <span class="sd">        plane (str): Plane we are using (&quot;X&quot; or &quot;Y&quot;).</span>
-<span class="sd">        tot (bool, optional): Create DataFrame for the total phase advance or BPM phase advances. </span>
+<span class="sd">        tot (bool, optional): Create DataFrame for the total phase advance or BPM phase advances.</span>
 <span class="sd">                              Defaults to False.</span>
 
 <span class="sd">    Returns:</span>
@@ -619,7 +616,7 @@
                 <span class="n">minmu2</span><span class="p">,</span>
                 <span class="n">bpm_phase_advance</span><span class="p">,</span>
                 <span class="n">elems_to_bpms</span><span class="p">,</span>
-            <span class="p">]],</span> 
+            <span class="p">]],</span>
             <span class="n">columns</span><span class="o">=</span><span class="n">special_phase_columns</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">to_concat_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>

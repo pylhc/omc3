@@ -233,19 +233,27 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">optics_functions.coupling</span><span class="w"> </span><span class="kn">import</span> <span class="n">coupling_via_cmatrix</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PI2</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BETA</span><span class="p">,</span> <span class="n">NAME2</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span>
-                                       <span class="n">TUNE</span><span class="p">,</span> <span class="n">F1001</span><span class="p">,</span> <span class="n">F1010</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">,</span> <span class="n">VALUE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PI2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">F1001</span><span class="p">,</span>
+    <span class="n">F1010</span><span class="p">,</span>
+    <span class="n">NAME2</span><span class="p">,</span>
+    <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.toolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">df_diff</span><span class="p">,</span> <span class="n">df_rel_diff</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>   
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -361,7 +369,6 @@
         <span class="k">for</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">function_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">result_tfs_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rdt</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">coupling_rdts_df</span><span class="p">[</span><span class="n">rdt</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result_tfs_df</span></div>
-
 
 </pre></div>
 

@@ -220,7 +220,7 @@
              
   <h1>Source code for omc3.segment_by_segment.definitions</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Definitions </span>
+<span class="sd">Definitions</span>
 <span class="sd">-----------</span>
 
 <span class="sd">This module provides definitions to be used with segment by segment</span>
@@ -232,7 +232,7 @@
 
 <div class="viewcode-block" id="MadXBoundaryConditions">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.definitions.MadXBoundaryConditions">[docs]</a>
-<span class="nd">@dataclass</span> 
+<span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MadXBoundaryConditions</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store all boundary conditions for a Mad-X twiss.&quot;&quot;&quot;</span>
     <span class="n">alfx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
@@ -253,7 +253,7 @@
     <span class="n">r22</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span></div>
 
 </pre></div>

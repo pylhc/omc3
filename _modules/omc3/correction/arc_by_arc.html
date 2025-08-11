@@ -219,12 +219,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.correction.arc_by_arc</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Arc-by-Arc Global Correction</span>
 <span class="sd">----------------------------</span>
 
-<span class="sd">In this module, functions are provided to modify the linear equation problem </span>
-<span class="sd">in global correction, correcting the phase advance at each BPM, into a </span>
+<span class="sd">In this module, functions are provided to modify the linear equation problem</span>
+<span class="sd">in global correction, correcting the phase advance at each BPM, into a</span>
 <span class="sd">problem of correcting the phase-advances over the whole arcs.</span>
 
 <span class="sd">This is done by identifying the closest BPM to the IPs defining the arc,</span>
@@ -234,7 +234,7 @@
 <span class="sd">to contain the arc phase advances, which will then be globally corrected with</span>
 <span class="sd">the given correctors.</span>
 
-<span class="sd">In a future implementation this should be extended to loop over each arc and </span>
+<span class="sd">In a future implementation this should be extended to loop over each arc and</span>
 <span class="sd">correct each individually with only the correctors available in the respective arc.</span>
 
 <span class="sd">For now everything is very LHC specific, a future implementation should also</span>
@@ -248,15 +248,16 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">WEIGHT</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">NAME2</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">TUNE</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
 
 <span class="n">LHC_ARCS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;81&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">,</span> <span class="s1">&#39;23&#39;</span><span class="p">,</span> <span class="s1">&#39;34&#39;</span><span class="p">,</span> <span class="s1">&#39;45&#39;</span><span class="p">,</span> <span class="s1">&#39;56&#39;</span><span class="p">,</span> <span class="s1">&#39;67&#39;</span><span class="p">,</span> <span class="s1">&#39;78&#39;</span><span class="p">)</span>
@@ -265,11 +266,11 @@
 <div class="viewcode-block" id="reduce_phase_measurements_to_arcs">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.arc_by_arc.reduce_phase_measurements_to_arcs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reduce_phase_measurements_to_arcs</span><span class="p">(</span>
-    <span class="n">meas_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> 
-    <span class="n">model</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> 
+    <span class="n">meas_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
     <span class="n">include_ips</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reduce the phase-advance in the given measurement to the phase-advance </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reduce the phase-advance in the given measurement to the phase-advance</span>
 <span class="sd">    between two BPM-pairs at the extremities of each arc.</span>
 
 <span class="sd">    Args:</span>
@@ -310,7 +311,7 @@
     <span class="n">bpm_pairs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">arc</span> <span class="ow">in</span> <span class="n">LHC_ARCS</span><span class="p">:</span>
         <span class="n">bpm_pairs</span><span class="p">[</span><span class="n">arc</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_left_right_pair</span><span class="p">(</span><span class="n">bpms</span><span class="p">,</span> <span class="n">arc</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">include_ips</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">bpm_pairs</span>
 
@@ -324,10 +325,10 @@
         <span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span> <span class="o">=</span> <span class="n">bpm_pairs</span><span class="p">[</span><span class="n">arc</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">include_ips</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">):</span>
             <span class="n">bpm_left</span> <span class="o">=</span> <span class="n">bpm_pairs</span><span class="p">[</span><span class="n">prev_arc</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-        
-        <span class="k">if</span> <span class="n">include_ips</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">):</span> 
+
+        <span class="k">if</span> <span class="n">include_ips</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;both&#39;</span><span class="p">):</span>
             <span class="n">bpm_right</span> <span class="o">=</span> <span class="n">bpm_pairs</span><span class="p">[</span><span class="n">next_arc</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        
+
         <span class="n">bpm_pairs_with_ips</span><span class="p">[</span><span class="n">arc</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">bpm_left</span><span class="p">,</span> <span class="n">bpm_right</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">bpm_pairs_with_ips</span></div>
@@ -338,12 +339,12 @@
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.arc_by_arc.get_left_right_pair">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_left_right_pair</span><span class="p">(</span><span class="n">bpms</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">arc</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Get the pair of BPMs that are furthest apart in the given arc, i.e.</span>
-<span class="sd">    the ones closest to the IPs defining the arc, left and right. </span>
-<span class="sd">    </span>
+<span class="sd">    the ones closest to the IPs defining the arc, left and right.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        bpms (Sequence[str]): List of BPMs.</span>
 <span class="sd">        arc (str): Arc to find the BPMs in (e.g. &#39;12&#39;)</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple[str, str]: The found BPM pair.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -356,9 +357,9 @@
 <div class="viewcode-block" id="identify_closest_arc_bpm_to_ip">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.arc_by_arc.identify_closest_arc_bpm_to_ip">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">identify_closest_arc_bpm_to_ip</span><span class="p">(</span><span class="n">bpms</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">ip</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Pick the BPM with the lowest index from the given sequence, that is on the </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Pick the BPM with the lowest index from the given sequence, that is on the</span>
 <span class="sd">    given side of the given IP.</span>
-<span class="sd">    </span>
+
 <span class="sd">    TODO: Use a regex instead, filtering the list by [LR]IP and choose the lowest via sort.</span>
 <span class="sd">    This would assure that also BPMW etc. could be used. (jdilly, 2025)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -369,7 +370,7 @@
         <span class="n">bpm</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;BPM.</span><span class="si">{</span><span class="n">ii</span><span class="si">}{</span><span class="n">side</span><span class="si">}{</span><span class="n">ip</span><span class="si">}</span><span class="s1">.B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">if</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">bpm</span>
-    
+
     <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;No BPM up to index </span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2"> could be found in the measurement of arc on </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2"> of IP</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="sa">f</span><span class="s2">&quot; in beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> for the arc-by-arc phase correction.&quot;</span>
@@ -392,7 +393,7 @@
 <span class="sd">        tune (float): Model tune of the machine.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pd.DataFrame: New DataFrame containing the phase advances between the given bpm pairs. </span>
+<span class="sd">        pd.DataFrame: New DataFrame containing the phase advances between the given bpm pairs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">arc_meas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">bpm_pair</span> <span class="ow">in</span> <span class="n">bpm_pairs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -406,7 +407,7 @@
         <span class="p">}</span>
         <span class="n">results</span><span class="p">[</span><span class="n">DIFF</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">VALUE</span><span class="p">]</span> <span class="o">-</span> <span class="n">results</span><span class="p">[</span><span class="n">MODEL</span><span class="p">]</span>
         <span class="n">arc_meas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">arc_meas</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">NAME</span><span class="p">)</span></div>
 
 
@@ -414,12 +415,12 @@
 <div class="viewcode-block" id="circular_sum_phase">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.arc_by_arc.circular_sum_phase">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">circular_sum_phase</span><span class="p">(</span><span class="n">phases</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">tune</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">bpm_pair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the sum of the phases from bpm to bpm </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the sum of the phases from bpm to bpm</span>
 <span class="sd">    of the given bpm pair, taking into account the circularity of the accelerator. &quot;&quot;&quot;</span>
     <span class="n">idx_0</span><span class="p">,</span> <span class="n">idx_1</span> <span class="o">=</span> <span class="n">phases</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">phases</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">idx_0</span> <span class="o">&lt;</span> <span class="n">idx_1</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">phases</span><span class="p">[</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-    
+
     <span class="c1"># cycle phases</span>
     <span class="n">inverted_result</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">phases</span><span class="p">[</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
     <span class="k">return</span> <span class="n">tune</span> <span class="o">-</span> <span class="n">inverted_result</span></div>
@@ -429,7 +430,7 @@
 <div class="viewcode-block" id="circular_sum_phase_error">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.arc_by_arc.circular_sum_phase_error">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">circular_sum_phase_error</span><span class="p">(</span><span class="n">phase_errors</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">bpm_pair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the sum of the phases errors from bpm to bpm </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the sum of the phases errors from bpm to bpm</span>
 <span class="sd">    of the given bpm pair, taking into account the circularity of the accelerator. &quot;&quot;&quot;</span>
     <span class="n">idx_0</span><span class="p">,</span> <span class="n">idx_1</span> <span class="o">=</span> <span class="n">phase_errors</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">phase_errors</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bpm_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">idx_0</span> <span class="o">&lt;</span> <span class="n">idx_1</span><span class="p">:</span>

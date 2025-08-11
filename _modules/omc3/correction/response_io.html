@@ -225,18 +225,20 @@
 
 <span class="sd">Input and output functions for response matrices.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">NaturalNameWarning</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -255,12 +257,11 @@
 <span class="sd">    default for not found entries are empty DataFrames.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fullresponse file </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fullresponse file </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading response matrices from file &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
     <span class="c1"># If encountering issues, remove the context manager and debug</span>
-    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">():</span>
-        <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">(),</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="n">_check_keys</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">optics_parameters</span><span class="p">,</span> <span class="s2">&quot;fullresponse&quot;</span><span class="p">)</span>
 
             <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
@@ -283,8 +284,7 @@
         <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fullresponse file </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2"> already exist and will be overwritten.&quot;</span><span class="p">)</span>
 
     <span class="c1"># If encountering issues, remove the context manager and debug</span>
-    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">():</span>
-        <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">complib</span><span class="o">=</span><span class="n">COMPLIB</span><span class="p">,</span> <span class="n">complevel</span><span class="o">=</span><span class="n">COMPLEVEL</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">(),</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">complib</span><span class="o">=</span><span class="n">COMPLIB</span><span class="p">,</span> <span class="n">complevel</span><span class="o">=</span><span class="n">COMPLEVEL</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">response_df</span> <span class="ow">in</span> <span class="n">fullresponse</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">response_df</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;table&quot;</span><span class="p">)</span></div>
 
@@ -301,16 +301,15 @@
 <span class="sd">    default for not found entries are empty Series.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Varmap file </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Varmap file </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading varmap from file &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
     <span class="c1"># If encountering issues, remove the context manager and debug</span>
-    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">():</span>
-        <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">(),</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="n">_check_keys</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">k_values</span><span class="p">,</span> <span class="s2">&quot;varmap&quot;</span><span class="p">)</span>
 
             <span class="n">varmap</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">store</span><span class="p">:</span>
                 <span class="n">_</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">subparam</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">k_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">k_values</span><span class="p">:</span>
                     <span class="k">continue</span>
@@ -328,8 +327,7 @@
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving varmap into file &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
     <span class="c1"># If encountering issues, remove the context manager and debug</span>
-    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">():</span>
-        <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">complib</span><span class="o">=</span><span class="n">COMPLIB</span><span class="p">,</span> <span class="n">complevel</span><span class="o">=</span><span class="n">COMPLEVEL</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">ignore_natural_name_warning</span><span class="p">(),</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">complib</span><span class="o">=</span><span class="n">COMPLIB</span><span class="p">,</span> <span class="n">complevel</span><span class="o">=</span><span class="n">COMPLEVEL</span><span class="p">)</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">varmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">subparam</span><span class="p">,</span> <span class="n">varmap_series</span> <span class="ow">in</span> <span class="n">sub</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">store</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">varmap_series</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">subparam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;table&quot;</span><span class="p">)</span></div>
@@ -351,7 +349,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_main_store_groups</span><span class="p">(</span><span class="n">store</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns sequence of unique main store groups.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">store</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="ignore_natural_name_warning">

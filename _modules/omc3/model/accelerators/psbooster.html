@@ -281,6 +281,8 @@
 
 <span class="sd">        action: ``store_true``</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
@@ -314,8 +316,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">():</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Psbooster</span><span class="p">,</span> <span class="n">Psbooster</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ring&quot;</span><span class="p">,</span> 
-            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> 
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ring&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Ring to use.&quot;</span><span class="p">)</span>

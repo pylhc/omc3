@@ -219,12 +219,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.sbs_propagation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; </span>
-<span class="sd">Segment-by-Segment Propagation </span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Segment-by-Segment Propagation</span>
 <span class="sd">------------------------------</span>
 
 <span class="sd">Runs the Segment-by-Segment propagation,</span>
-<span class="sd">i.e. it uses the measured values at the beginning (or the end) of the segments as inputs </span>
+<span class="sd">i.e. it uses the measured values at the beginning (or the end) of the segments as inputs</span>
 <span class="sd">to propagate via MAD-X through the given segments.</span>
 <span class="sd">It then compares the propagated values with the measured values in that segment.</span>
 
@@ -265,12 +265,12 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_creator</span>
@@ -306,49 +306,46 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.abstract_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-        <span class="n">MADXInputType</span><span class="p">,</span>
-        <span class="n">ModelCreator</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.abstract_model_creator</span><span class="w"> </span><span class="kn">import</span> <span class="n">MADXInputType</span><span class="p">,</span> <span class="n">ModelCreator</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
-        <span class="n">measurement_dir</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the measurement files.&quot;</span><span class="p">,</span>
-            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">elements</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Element name list to run in element mode.&quot;</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">segments</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Segments to run in segment mode with format: &quot;</span>
+        <span class="n">measurement_dir</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Path to the measurement files.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">elements</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Element name list to run in element mode.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">segments</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Segments to run in segment mode with format: &quot;</span>
                   <span class="s2">&quot;``segment_name,start,end``, where start and end &quot;</span>
                   <span class="s2">&quot;must be existing BPM names.&quot;</span><span class="p">),</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">corrections</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Corrections to use. Can be a dict of knob-value pairs, &quot;</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">corrections</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Corrections to use. Can be a dict of knob-value pairs, &quot;</span>
                  <span class="s2">&quot;a MAD-X string or a path to a file. &quot;</span>
                  <span class="s2">&quot;Note: all segements will have these corrections.&quot;</span><span class="p">),</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDict</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">output_dir</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory. If not given, the model-directory is used.&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="p">)</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStrOrDict</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Output directory. If not given, the model-directory is used.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="p">}</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">model_creator</span><span class="o">.</span><span class="n">get_fetcher_params</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">params</span>     
+    <span class="k">return</span> <span class="n">params</span>
 
 
 <div class="viewcode-block" id="segment_by_segment">
@@ -358,13 +355,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the segment-by-segment propagation.</span>
 
-<span class="sd">    Note: The corrections are the same for each segment, which means we only need to create </span>
+<span class="sd">    Note: The corrections are the same for each segment, which means we only need to create</span>
 <span class="sd">          them once, and for the remaining segments, we could just give the path to the output</span>
-<span class="sd">          file (as the segment creator checks if the file exists). </span>
+<span class="sd">          file (as the segment creator checks if the file exists).</span>
 <span class="sd">          But as we do not really know the output file here, and creation of the file is quick,</span>
 <span class="sd">          we just let the segment creator overwrite the file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">fetcher_opts</span> <span class="o">=</span> <span class="n">DotDict</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">model_creator</span><span class="o">.</span><span class="n">get_fetcher_params</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()})</span>
+    <span class="n">fetcher_opts</span> <span class="o">=</span> <span class="n">DotDict</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">model_creator</span><span class="o">.</span><span class="n">get_fetcher_params</span><span class="p">()})</span>
 
     <span class="n">accel</span><span class="p">:</span> <span class="n">Accelerator</span> <span class="o">=</span> <span class="n">model_manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">accel_opt</span><span class="p">)</span>
     <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">_check_output_directory</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">accel</span><span class="p">)</span>
@@ -384,10 +381,10 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_maybe_create_nominal_model</span><span class="p">(</span><span class="n">accel</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">fetcher_opts</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Creates a nominal model in the accel.model_dir. </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Creates a nominal model in the accel.model_dir.</span>
 <span class="sd">    This is only needed, if the twiss-elements file is missing. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">elements</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># No need to create a nominal model</span>
-        <span class="k">return</span> 
+        <span class="k">return</span>
 
     <span class="n">creator_class</span> <span class="o">=</span> <span class="n">get_model_creator_class</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="p">)</span>
     <span class="n">creator</span><span class="p">:</span> <span class="n">ModelCreator</span> <span class="o">=</span> <span class="n">creator_class</span><span class="p">(</span>
@@ -419,12 +416,12 @@
 <span class="sd">    Then madx is run to create the specified segments and the output files</span>
 <span class="sd">    are made accessible by a SegmentModels TfsCollection by all propagables, which</span>
 <span class="sd">    are then returned.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        accel (Accelerator): Accelerator instance. Needs to be loaded from model directory</span>
 <span class="sd">        segment_in (Segment): Rough Segment specification. Might be refined later.</span>
 <span class="sd">        measurement (OpticsMeasurement): TfsCollection of the optics measurement files.</span>
-<span class="sd">        corrections (MADXInputType): Corrections to use. Can be a dict of knob-value pairs, </span>
+<span class="sd">        corrections (MADXInputType): Corrections to use. Can be a dict of knob-value pairs,</span>
 <span class="sd">                                     a MAD-X string or a path to a file.</span>
 <span class="sd">        fetcher_opts (DotDict): Options for the fetcher, if needed.</span>
 
@@ -432,9 +429,9 @@
 <span class="sd">        List of propagables with access to the created segment models.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">segment</span> <span class="o">=</span> <span class="n">extend_segment</span><span class="p">(</span><span class="n">segment_in</span><span class="p">,</span> <span class="n">accel</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">measurement</span><span class="p">)</span>
-    
+
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Evaluating segment </span><span class="si">{</span><span class="n">segment</span><span class="si">!s}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> 
+        <span class="sa">f</span><span class="s2">&quot;Evaluating segment </span><span class="si">{</span><span class="n">segment</span><span class="si">!s}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
         <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">segment</span> <span class="o">==</span> <span class="n">segment_in</span> <span class="k">else</span>
         <span class="sa">f</span><span class="s2">&quot;This has been input as </span><span class="si">{</span><span class="n">segment_in</span><span class="si">!s}</span><span class="s2">.&quot;</span>
     <span class="p">)</span>
@@ -442,16 +439,16 @@
     <span class="n">measured_classes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Propagable</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">propg</span> <span class="k">for</span> <span class="n">propg</span> <span class="ow">in</span> <span class="n">ALL_PROPAGABLES</span> <span class="k">if</span> <span class="n">propg</span><span class="o">.</span><span class="n">in_measurement</span><span class="p">(</span><span class="n">measurement</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">Phase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;No measurement for Phase found in the given measurement directory.&quot;</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="p">(</span><span class="n">F1001</span> <span class="ow">in</span> <span class="n">measured_classes</span> <span class="ow">or</span> <span class="n">F1010</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">)</span> <span class="ow">and</span> <span class="n">BetaPhase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Beta-from-Phase is required for Coupling propagations!&quot;</span><span class="p">)</span>
-    
+
     <span class="n">propagables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Propagable</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">propg</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">measurement</span><span class="p">,</span> <span class="n">accel</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="k">for</span> <span class="n">propg</span> <span class="ow">in</span> <span class="n">measured_classes</span><span class="p">]</span>
 
     <span class="c1"># Create the segment via madx</span>
     <span class="n">creator_class</span> <span class="o">=</span> <span class="n">get_model_creator_class</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">SEGMENT</span><span class="p">)</span>
     <span class="n">segment_creator</span> <span class="o">=</span> <span class="n">creator_class</span><span class="p">(</span>
-        <span class="n">accel</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">propagables</span><span class="p">,</span> 
+        <span class="n">accel</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">propagables</span><span class="p">,</span>
         <span class="n">corrections</span><span class="o">=</span><span class="n">corrections</span><span class="p">,</span>
         <span class="n">logfile</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">logfile</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">segment</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
     <span class="p">)</span>
@@ -476,7 +473,7 @@
 
 <div class="viewcode-block" id="extend_segment">
 <a class="viewcode-back" href="../../entrypoints/correction.html#omc3.sbs_propagation.extend_segment">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">extend_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">:</span> <span class="n">Segment</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Segment</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extend_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">:</span> <span class="n">Segment</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">measurement</span><span class="p">:</span> <span class="n">OpticsMeasurement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Segment</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a new segment with elements that are contained in the measurement.</span>
 
 <span class="sd">    This function takes a segment with start and end that might not</span>
@@ -485,7 +482,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        segment (Segment): The segment to be processed (see Segment class).</span>
-<span class="sd">        model (DataFrame): The model where to take all the element names from. Both the</span>
+<span class="sd">        model (pd.DataFrame): The model where to take all the element names from. Both the</span>
 <span class="sd">            start and end of the segment have to be present in this model</span>
 <span class="sd">            NAME attribute.</span>
 
@@ -519,19 +516,17 @@
 <span class="sd">        output_dir (Path, optional): Output directory. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        SegmentDiffs: TfsCollection of the differences per propagable.    </span>
+<span class="sd">        SegmentDiffs: TfsCollection of the differences per propagable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">segment_diffs</span> <span class="o">=</span> <span class="n">SegmentDiffs</span><span class="p">(</span>
-        <span class="n">directory</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> 
-        <span class="n">segment_name</span><span class="o">=</span><span class="n">segment_name</span><span class="p">,</span> 
+        <span class="n">directory</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="n">segment_name</span><span class="o">=</span><span class="n">segment_name</span><span class="p">,</span>
         <span class="n">allow_write</span><span class="o">=</span><span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">propagable</span> <span class="ow">in</span> <span class="n">propagables</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">):</span>
             <span class="n">propagable</span><span class="o">.</span><span class="n">add_differences</span><span class="p">(</span><span class="n">segment_diffs</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
-            <span class="k">pass</span>
-    <span class="k">return</span> <span class="n">segment_diffs</span> </div>
+    <span class="k">return</span> <span class="n">segment_diffs</span></div>
 
 
 
@@ -543,23 +538,23 @@
     <span class="n">segments</span> <span class="o">=</span> <span class="n">_parse_segments</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
     <span class="n">elements</span> <span class="o">=</span> <span class="n">_parse_elements</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">)</span><span class="o">.</span><span class="n">isdisjoint</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">}</span><span class="o">.</span><span class="n">isdisjoint</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">SbsDefinitionError</span><span class="p">(</span><span class="s2">&quot;Duplicated names in segments and elements.&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">segments</span><span class="p">,</span> <span class="n">elements</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_segments</span><span class="p">(</span><span class="n">segment_definitions</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Segment</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Segment</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert all segment definitions to Segments.     </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert all segment definitions to Segments.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        segment_definitions (Sequence[str | Segment]): List of segment definitions or Segments. </span>
+<span class="sd">        segment_definitions (Sequence[str | Segment]): List of segment definitions or Segments.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        SbsDefinitionError: When there are duplicated names or when the definition is not recognized.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[Segment]: List of parsed segments. </span>
+<span class="sd">        List[Segment]: List of parsed segments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">segment_definitions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
@@ -574,7 +569,7 @@
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">SbsDefinitionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to parse segment string </span><span class="si">{</span><span class="n">segment_def</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">segments</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">SbsDefinitionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated segment name &#39;</span><span class="si">{</span><span class="n">segment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
         <span class="n">segments</span><span class="p">[</span><span class="n">segment</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">segment</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">segments</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
@@ -590,23 +585,22 @@
 <span class="sd">        SbsDefinitionError: When there are duplicated names.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[Segment]: List of the parsed segments. </span>
+<span class="sd">        List[Segment]: List of the parsed segments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">elements</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">elements</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">SbsDefinitionError</span><span class="p">(</span><span class="s2">&quot;Duplicated names in element list.&quot;</span><span class="p">)</span>
-    <span class="n">elem_segments</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Segment</span><span class="p">)</span> <span class="k">else</span> <span class="n">Segment</span><span class="o">.</span><span class="n">init_from_element_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">elem_segments</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Segment</span><span class="p">)</span> <span class="k">else</span> <span class="n">Segment</span><span class="o">.</span><span class="n">init_from_element_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_select_closest</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">all_names</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">eval_cond</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">back</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Select the closest element to the given name, going forward or backward, until the condition is met.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        name (str): Name to start  </span>
-<span class="sd">        all_names (pd.Index): Pandas Index of all element names (e.g. from model) </span>
-<span class="sd">        eval_cond (Callable[[str], bool]): Function taking a single argument (the name) and returning a boolean, </span>
+<span class="sd">        name (str): Name to start</span>
+<span class="sd">        all_names (pd.Index): Pandas Index of all element names (e.g. from model)</span>
+<span class="sd">        eval_cond (Callable[[str], bool]): Function taking a single argument (the name) and returning a boolean,</span>
 <span class="sd">                                           whether this name can be used or not (e.g. is in the measurement).</span>
 <span class="sd">        back (bool, optional): Search direction, False for forwards and True for backwards. Defaults to False.</span>
 
@@ -654,7 +648,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Copying model files...&quot;</span><span class="p">)</span>
     <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
+
     <span class="k">for</span> <span class="n">twiss</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TWISS_DAT</span><span class="p">,</span> <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">twiss</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="n">twiss</span><span class="p">)</span>
 
@@ -669,7 +663,7 @@
         <span class="k">if</span> <span class="n">dst_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="n">dst_file</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">():</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">dst_file</span><span class="si">!s}</span><span class="s2">, already exists.&quot;</span><span class="p">)</span>
             <span class="k">continue</span>
-        
+
         <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">dst_file</span><span class="p">,</span> <span class="n">symlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># copies symlinks as symlinks</span>
         <span class="k">else</span><span class="p">:</span>

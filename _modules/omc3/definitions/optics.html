@@ -219,7 +219,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.definitions.optics</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Optics</span>
 <span class="sd">------</span>
 
@@ -230,17 +230,48 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">fields</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXPECTED</span><span class="p">,</span> <span class="n">DIFF</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ALPHA</span><span class="p">,</span> <span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">AMP_BETA_NAME</span><span class="p">,</span> <span class="n">ORBIT_NAME</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
-    <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span>
-    <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">MDL</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">S_MODEL</span><span class="p">,</span> <span class="n">KMOD_BETA_NAME</span><span class="p">,</span>
-    <span class="n">EXT</span><span class="p">,</span> <span class="n">NAME</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">DRIVEN_TOTAL_PHASE_NAME</span><span class="p">,</span> <span class="n">DRIVEN_PHASE_NAME</span><span class="p">,</span> <span class="n">IP_NAME</span><span class="p">,</span>
-    <span class="n">KMOD_IP_NAME</span><span class="p">,</span> <span class="n">KICK_NAME</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">ORBIT</span><span class="p">,</span> <span class="n">F1001_NAME</span><span class="p">,</span> <span class="n">F1010_NAME</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">RMS</span><span class="p">,</span> <span class="n">MASKED</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils.annotations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ylabels</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tfs.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsCollection</span><span class="p">,</span> <span class="n">Tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tfs.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tfs</span><span class="p">,</span> <span class="n">TfsCollection</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIFF</span><span class="p">,</span> <span class="n">EXPECTED</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ALPHA</span><span class="p">,</span>
+    <span class="n">AMP_BETA_NAME</span><span class="p">,</span>
+    <span class="n">AMPLITUDE</span><span class="p">,</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">BETA_NAME</span><span class="p">,</span>
+    <span class="n">DELTA</span><span class="p">,</span>
+    <span class="n">DISPERSION</span><span class="p">,</span>
+    <span class="n">DISPERSION_NAME</span><span class="p">,</span>
+    <span class="n">DRIVEN_PHASE_NAME</span><span class="p">,</span>
+    <span class="n">DRIVEN_TOTAL_PHASE_NAME</span><span class="p">,</span>
+    <span class="n">ERR</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">F1001_NAME</span><span class="p">,</span>
+    <span class="n">F1010_NAME</span><span class="p">,</span>
+    <span class="n">IMAG</span><span class="p">,</span>
+    <span class="n">IP_NAME</span><span class="p">,</span>
+    <span class="n">KICK_NAME</span><span class="p">,</span>
+    <span class="n">KMOD_BETA_NAME</span><span class="p">,</span>
+    <span class="n">KMOD_IP_NAME</span><span class="p">,</span>
+    <span class="n">MASKED</span><span class="p">,</span>
+    <span class="n">MDL</span><span class="p">,</span>
+    <span class="n">NAME</span><span class="p">,</span>
+    <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
+    <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+    <span class="n">ORBIT</span><span class="p">,</span>
+    <span class="n">ORBIT_NAME</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span>
+    <span class="n">PHASE_NAME</span><span class="p">,</span>
+    <span class="n">REAL</span><span class="p">,</span>
+    <span class="n">RMS</span><span class="p">,</span>
+    <span class="n">S_MODEL</span><span class="p">,</span>
+    <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils.annotations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ylabels</span>
 
 <span class="c1"># Files ------------------------------------------------------------------------</span>
 
@@ -334,7 +365,7 @@
             <span class="o">**</span><span class="n">values_fixed_plane</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="ColumnsAndLabels.set_label_formatted">
 <a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.set_label_formatted">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_label_formatted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ColumnsAndLabels</span><span class="p">:</span>

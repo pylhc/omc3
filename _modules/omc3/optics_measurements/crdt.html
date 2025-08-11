@@ -230,7 +230,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -261,7 +260,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">circular_nanerror</span><span class="p">,</span> <span class="n">circular_nanmean</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -316,7 +317,7 @@
         <span class="n">signflip</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;term&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;F_NO2&quot;</span><span class="p">,</span> <span class="s2">&quot;F_NO1&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
 
         <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
-            <span class="n">result_df</span><span class="p">,</span> 
+            <span class="n">result_df</span><span class="p">,</span>
             <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;plane&quot;</span><span class="p">],</span> <span class="n">lines_and_phases</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">),</span>
             <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>

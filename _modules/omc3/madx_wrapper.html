@@ -227,6 +227,8 @@
 
 <span class="sd">Usage: ``python madx_wrapper.py --file your_madx_file.madx``</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
@@ -417,13 +419,13 @@
     <span class="k">if</span> <span class="n">log</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;warning: Twiss failed:  MAD-X continues&quot;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; At least one twiss failed.&quot;</span>
 
-            <span class="k">try</span><span class="p">:</span> 
+            <span class="k">try</span><span class="p">:</span>
                 <span class="n">last_line</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="k">pass</span>

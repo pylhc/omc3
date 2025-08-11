@@ -233,7 +233,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
 
@@ -242,14 +241,14 @@
 <div class="viewcode-block" id="Measurement">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.Measurement">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Measurement</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Very simple container for a value and its error. </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Very simple container for a value and its error.</span>
 <span class="sd">    Implements only negation and addition with another Measurement. &quot;&quot;&quot;</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">error</span><span class="p">:</span> <span class="nb">float</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Measurement</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Measurement</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Measurement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">error</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span></div>
 
@@ -257,7 +256,7 @@
 
 <div class="viewcode-block" id="SegmentBoundaryConditions">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.SegmentBoundaryConditions">[docs]</a>
-<span class="nd">@dataclass</span> 
+<span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SegmentBoundaryConditions</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store boundary conditions with error as used by the error propagation functions.&quot;&quot;&quot;</span>
     <span class="n">alpha</span><span class="p">:</span> <span class="n">Measurement</span> <span class="o">=</span> <span class="kc">None</span>
@@ -276,7 +275,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagates the phase-error.</span>
 <span class="sd">    See Eq. (2) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ .</span>
 <span class="sd">    This implementation has a minus-sign instead of the first plus-sign as in the reference,</span>
-<span class="sd">    this seems to be the correct implementation, </span>
+<span class="sd">    this seems to be the correct implementation,</span>
 <span class="sd">    as found e.g. in https://github.com/pylhc/MESS/tree/master/FODO_Test_Lattice/Phase_Error_Propagation</span>
 
 <span class="sd">    Args:</span>
@@ -285,7 +284,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alpha0</span><span class="p">,</span> <span class="n">erralpha0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">alpha</span>
     <span class="n">beta0</span><span class="p">,</span> <span class="n">errbeta0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">beta</span>
-    
+
     <span class="n">sin2phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">dphi</span><span class="p">)</span>
     <span class="n">cos2phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">dphi</span><span class="p">)</span>
 
@@ -309,7 +308,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alpha0</span><span class="p">,</span> <span class="n">erralpha0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">alpha</span>
     <span class="n">beta0</span><span class="p">,</span> <span class="n">errbeta0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">beta</span>
-    
+
     <span class="n">sin2phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">dphi</span><span class="p">)</span>
     <span class="n">cos2phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">dphi</span><span class="p">)</span>
 
@@ -363,7 +362,7 @@
     <span class="n">alpha0</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">alpha</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
-        <span class="n">errdispersion0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="n">beta0</span><span class="p">)</span> <span class="o">*</span> 
+        <span class="n">errdispersion0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="n">beta0</span><span class="p">)</span> <span class="o">*</span>
         <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">dphi</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">dphi</span><span class="p">))</span>
     <span class="p">)</span></div>
 
@@ -426,7 +425,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1001_amp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">propagate_error_f1001_amp</span><span class="p">(</span><span class="n">dphix</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">dphiy</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">SegmentBoundaryConditions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.</span>
-<span class="sd">       </span>
+
 <span class="sd">    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</span>
 
 <span class="sd">    Args:</span>
@@ -446,7 +445,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1001_phase">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">propagate_error_f1001_phase</span><span class="p">(</span><span class="n">dphix</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">dphiy</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">SegmentBoundaryConditions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.</span>
-<span class="sd">       </span>
+
 <span class="sd">    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</span>
 
 <span class="sd">    Args:</span>
@@ -454,7 +453,7 @@
 <span class="sd">        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).</span>
 <span class="sd">        init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">phase0</span><span class="p">,</span> <span class="n">errphase0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">f1001_phase</span>    
+    <span class="n">phase0</span><span class="p">,</span> <span class="n">errphase0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">f1001_phase</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">errphase0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">dphix</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># return Series if input is Series</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -469,7 +468,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">propagate_error_f1010_real</span><span class="p">(</span><span class="n">dphix</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">dphiy</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">SegmentBoundaryConditions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagates the error on the real part of f1010 through dphix and dphiy phase-advance,</span>
 <span class="sd">    based on the initial amplitude and phase error of f1010.</span>
-<span class="sd">    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , </span>
+<span class="sd">    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ ,</span>
 <span class="sd">    yet the phases dphix and dphiy are subtracted from the initial rdt phase.</span>
 
 <span class="sd">    Args:</span>
@@ -495,7 +494,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">propagate_error_f1010_imag</span><span class="p">(</span><span class="n">dphix</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">dphiy</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">SegmentBoundaryConditions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagates the error on the imaginary part of f1010 through dphix and dphiy phase-advance,</span>
 <span class="sd">    based on the initial amplitude and phase error of f1010.</span>
-<span class="sd">    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ , </span>
+<span class="sd">    See Eq. (7) in  [LangnerDevelopmentsSegmentbySegmentTechnique2015]_ ,</span>
 <span class="sd">    yet the phases dphix and dphiy are subtracted from the initial rdt phase.</span>
 
 <span class="sd">    Args:</span>
@@ -520,7 +519,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1010_amp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">propagate_error_f1010_amp</span><span class="p">(</span><span class="n">dphix</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">dphiy</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">SegmentBoundaryConditions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.</span>
-<span class="sd">       </span>
+
 <span class="sd">    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</span>
 
 <span class="sd">    Args:</span>
@@ -540,7 +539,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1010_phase">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">propagate_error_f1010_phase</span><span class="p">(</span><span class="n">dphix</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">dphiy</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">SegmentBoundaryConditions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.</span>
-<span class="sd">       </span>
+
 <span class="sd">    TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</span>
 
 <span class="sd">    Args:</span>
@@ -548,7 +547,7 @@
 <span class="sd">        dphiy (ArrayLike): Phase advances in y from initial position to observation point(s).</span>
 <span class="sd">        init (PropagableBoundaryConditions): Initial conditions for f1001 amplitude and phase and their uncertainties.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">phase0</span><span class="p">,</span> <span class="n">errphase0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">f1010_phase</span>    
+    <span class="n">phase0</span><span class="p">,</span> <span class="n">errphase0</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">f1010_phase</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">errphase0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">dphix</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
@@ -557,7 +556,7 @@
 
 
 <span class="c1"># Other Math -------------------------------------------------------------------</span>
-    
+
 <div class="viewcode-block" id="phase_diff">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.phase_diff">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">phase_diff</span><span class="p">(</span><span class="n">phase_a</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">phase_b</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
@@ -571,7 +570,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.math.quadratic_add">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">quadratic_add</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the root-sum-squared of the given values.</span>
-<span class="sd">    The individual &quot;values&quot; can be ``pd.Series`` and then their </span>
+<span class="sd">    The individual &quot;values&quot; can be ``pd.Series`` and then their</span>
 <span class="sd">    elements are summed by indices.&quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="mf">0.</span>
     <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>

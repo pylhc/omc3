@@ -226,21 +226,28 @@
 <span class="sd">Models used in optics measurements to store and pass around data.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpp</span><span class="p">,</span> <span class="n">iforest</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">BPM_RESOLUTION</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">CALIBRATION</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">ERR_CALIBRATION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AMPLITUDE</span><span class="p">,</span>
+    <span class="n">BPM_RESOLUTION</span><span class="p">,</span>
+    <span class="n">CALIBRATION</span><span class="p">,</span>
+    <span class="n">ERR</span><span class="p">,</span>
+    <span class="n">ERR_CALIBRATION</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -258,8 +265,8 @@
 <span class="sd">        - ``get_data`` (frame, column)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files_to_analyse</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="o">|</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">optics_opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">InputFiles</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">PLANES</span><span class="p">,</span> <span class="p">([],</span> <span class="p">[])))</span>
-        <span class="n">read_files</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">files_to_analyse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">PLANES</span><span class="p">,</span> <span class="p">([],</span> <span class="p">[])))</span>
+        <span class="n">read_files</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">files_to_analyse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">file_in</span> <span class="ow">in</span> <span class="n">files_to_analyse</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
                 <span class="n">df_to_load</span> <span class="o">=</span> <span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_in</span><span class="si">}</span><span class="s2">.lin</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -268,7 +275,7 @@
                 <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_repair_backwards_compatible_frame</span><span class="p">(</span><span class="n">df_to_load</span><span class="p">,</span> <span class="n">plane</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;No valid input files&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;No valid input files&quot;</span><span class="p">)</span>
         <span class="n">dpp_values</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">calculate_dpoverp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPPS: </span><span class="si">{</span><span class="n">dpp_values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">amp_dpp_values</span> <span class="o">=</span> <span class="n">dpp</span><span class="o">.</span><span class="n">calculate_amp_dpoverp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
@@ -314,7 +321,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dpp_dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found for dp/p </span><span class="si">{</span><span class="n">dpp_value</span><span class="si">}</span><span class="s2"> in plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dpp_dfs</span>
-    
+
 <div class="viewcode-block" id="InputFiles.dpp_frames_indices">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.dpp_frames_indices">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dpp_frames_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
@@ -330,28 +337,28 @@
 
 <div class="viewcode-block" id="InputFiles.joined_frame">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.joined_frame">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">joined_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
-        <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
-        <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> 
-        <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">dpp_amp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">how</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;inner&#39;</span><span class="p">,</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">joined_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dpp_amp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">how</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;inner&#39;</span><span class="p">,</span>
         <span class="n">dtype</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructs merged DataFrame from collected DataFrames in InputFiles,</span>
 <span class="sd">        i.e. from the harpy output of the given measurements.</span>
 
-<span class="sd">        The input parameters to this function determine which data will be present in the </span>
+<span class="sd">        The input parameters to this function determine which data will be present in the</span>
 <span class="sd">        joined frame:</span>
-<span class="sd">        which `plane` to use, the `columns` to be included, </span>
-<span class="sd">        a `dpp_value` filter (with tolerance from :data:`omc3.optics_measurements.dpp.DPP_TOLERANCE`) </span>
+<span class="sd">        which `plane` to use, the `columns` to be included,</span>
+<span class="sd">        a `dpp_value` filter (with tolerance from :data:`omc3.optics_measurements.dpp.DPP_TOLERANCE`)</span>
 <span class="sd">        and `how` to perform the merge.</span>
 
 <span class="sd">        You can also specify what `dtype` the resulting data will have, this should normally be `float64`.</span>
 
 <span class="sd">        The columns in the resulting Dataframe will be suffixed by `__#`, starting from `0`</span>
-<span class="sd">        with increasing integers for each of the input files.    </span>
+<span class="sd">        with increasing integers for each of the input files.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
@@ -360,8 +367,8 @@
 <span class="sd">            dpp_amp: merges only files with non-zero dpp amplitude (i.e. 3Dkicks).</span>
 <span class="sd">            how: whi way to use for merging: ``inner`` (intersection) or ``outer`` (union),</span>
 <span class="sd">                default is ``inner``.</span>
-<span class="sd">            dtype: dtype of the merged DataFrame. Usually `np.float64` should be used, </span>
-<span class="sd">                   but in case you have string- or complex- data you will need to set this accordingly </span>
+<span class="sd">            dtype: dtype of the merged DataFrame. Usually `np.float64` should be used,</span>
+<span class="sd">                   but in case you have string- or complex- data you will need to set this accordingly</span>
 <span class="sd">                   or to `None` to avoid conversion.</span>
 
 <span class="sd">        Returns:</span>
@@ -369,7 +376,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">how</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="s1">&#39;outer&#39;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">RuntimeWarning</span><span class="p">(</span><span class="s2">&quot;&#39;how&#39; should be either &#39;inner&#39; or &#39;outer&#39;, &#39;inner&#39; will be used.&quot;</span><span class="p">)</span>
-        
+
         <span class="c1"># select frames ---</span>
         <span class="n">frames_to_join</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dpp_amp</span><span class="p">:</span>
@@ -377,7 +384,7 @@
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No data found for non-zero |dp/p|&quot;</span><span class="p">)</span>
-        
+
         <span class="c1"># join frames ---</span>
         <span class="n">joined_frame</span> <span class="o">=</span> <span class="n">frames_to_join</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames_to_join</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -424,7 +431,7 @@
                 <span class="c1"># Scale amplitude with the calibration</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">CALIBRATION</span><span class="p">]</span>
 
-                <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span> 
+                <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                     <span class="c1"># Sum Amplitude Error (absolute) and Calibration Error (relative)</span>
                     <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
                         <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">AMPLITUDE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
@@ -447,7 +454,7 @@
 <span class="sd">            list of columns.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">str_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">column</span> <span class="o">+</span> <span class="s1">&#39;__&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">):],</span> <span class="n">str_list</span><span class="p">))</span>
+        <span class="n">new_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">):]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">str_list</span><span class="p">]</span>
         <span class="n">new_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">new_list</span><span class="p">]</span></div>
 
@@ -477,9 +484,9 @@
 <div class="viewcode-block" id="check_and_warn_about_offmomentum_data">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.check_and_warn_about_offmomentum_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_and_warn_about_offmomentum_data</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A helper function to check if off-momentum data is present in the input files, </span>
-<span class="sd">    but no dpp-value is given by the user. </span>
-<span class="sd">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A helper function to check if off-momentum data is present in the input files,</span>
+<span class="sd">    but no dpp-value is given by the user.</span>
+
 <span class="sd">    See https://github.com/pylhc/omc3/issues/456 .</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">on_momentum_files</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">dpp_frames_indices</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -490,7 +497,7 @@
         <span class="s2">&quot;Off-momentum files for analysis found!</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;They will be included&quot;</span>
     <span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">id_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; in the </span><span class="si">{</span><span class="n">id_</span><span class="si">}</span><span class="s2">&quot;</span>
 
@@ -498,10 +505,10 @@
         <span class="s2">&quot;, which can make the results more inaccurate.</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;To avoid, specify `analyse_dpp` or run the analysis only on on-momentum files&quot;</span>
     <span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">id_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; or possibly deactivate the </span><span class="si">{</span><span class="n">id_</span><span class="si">}</span><span class="s2">&quot;</span>
-    
+
     <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 

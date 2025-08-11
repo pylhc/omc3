@@ -225,17 +225,21 @@
 
 <span class="sd">Tools to handle BBQ data.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">NDArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.outliers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_filter_mask</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">NDArray</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -276,12 +280,12 @@
 
 
 
-<span class="n">FilterOpts</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">OutlierFilterOpt</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">MinMaxFilterOpt</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span><span class="p">]]</span>
+<span class="n">FilterOpts</span> <span class="o">=</span> <span class="n">OutlierFilterOpt</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">MinMaxFilterOpt</span><span class="p">,</span> <span class="n">MinMaxFilterOpt</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="get_moving_average">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">MinMaxFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">MinMaxFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered</span>
 <span class="sd">    beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)</span>
@@ -327,7 +331,7 @@
 
 <div class="viewcode-block" id="clean_outliers_moving_average">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">clean_outliers_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">clean_outliers_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries, by means of</span>
 <span class="sd">    :func:`outlier filter &lt;omc3.utils.outliers.get_filter_mask&gt;`.</span>
@@ -354,7 +358,7 @@
 <span class="c1"># Private methods ############################################################</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">clean_mask</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">],</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">clean_mask</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the moving average of data series with a window of length and interpolated ``NaNs``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -364,11 +368,9 @@
     <span class="k">if</span> <span class="n">is_datetime_index</span><span class="p">:</span>
         <span class="c1"># in case data_series has datetime or similar as index</span>
         <span class="c1"># interpolation works in some pandas/numpy combinations, in some not</span>
-        <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
             <span class="c1"># if clean_mask is a Series, bring into the right order and make array ...</span>
             <span class="n">clean_mask</span> <span class="o">=</span> <span class="n">clean_mask</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="k">pass</span>
 
         <span class="c1"># ... as we change the index of data now</span>
         <span class="n">data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>

@@ -225,6 +225,8 @@
 
 <span class="sd">This module contains the cleaning functionality of ``harpy``.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
@@ -284,11 +286,11 @@
 
     <span class="n">bpm_data</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_bad_bpms</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
     <span class="n">bad_bpms_with_reasons</span> <span class="o">=</span> <span class="n">_get_bad_bpms_summary</span><span class="p">(</span>
-        <span class="n">harpy_input</span><span class="p">,</span> 
-        <span class="n">known</span><span class="o">=</span><span class="n">known_bad_bpms</span><span class="p">,</span> 
-        <span class="n">flat</span><span class="o">=</span><span class="n">bpm_flatness</span><span class="p">,</span> 
-        <span class="n">spike</span><span class="o">=</span><span class="n">bpm_spikes</span><span class="p">,</span> 
-        <span class="n">zero</span><span class="o">=</span><span class="n">exact_zeros</span><span class="p">,</span> 
+        <span class="n">harpy_input</span><span class="p">,</span>
+        <span class="n">known</span><span class="o">=</span><span class="n">known_bad_bpms</span><span class="p">,</span>
+        <span class="n">flat</span><span class="o">=</span><span class="n">bpm_flatness</span><span class="p">,</span>
+        <span class="n">spike</span><span class="o">=</span><span class="n">bpm_spikes</span><span class="p">,</span>
+        <span class="n">zero</span><span class="o">=</span><span class="n">exact_zeros</span><span class="p">,</span>
         <span class="n">nan</span><span class="o">=</span><span class="n">bpm_nans</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">_report_clean_stats</span><span class="p">(</span><span class="n">original_bpms</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">bad_bpms_with_reasons</span><span class="p">)</span>
@@ -382,7 +384,7 @@
     <span class="p">}</span>
 
     <span class="c1"># Quick check that catches coding errors/typos:</span>
-    <span class="n">unknown_kwargs</span> <span class="o">=</span> <span class="p">[</span><span class="n">kwarg</span> <span class="k">for</span> <span class="n">kwarg</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">if</span> <span class="n">kwarg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">human_readable</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+    <span class="n">unknown_kwargs</span> <span class="o">=</span> <span class="p">[</span><span class="n">kwarg</span> <span class="k">for</span> <span class="n">kwarg</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">if</span> <span class="n">kwarg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">human_readable</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unknown_kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown reason(s) for Bad-BPMs: </span><span class="si">{</span><span class="n">unknown_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -393,16 +395,16 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_report_clean_stats</span><span class="p">(</span><span class="n">n_total_bpms</span><span class="p">,</span> <span class="n">n_good_bpms</span><span class="p">,</span> <span class="n">bad_bpms_with_reasons</span><span class="p">):</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filtering done:&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># As it not written out yet, provide more info in case of raising errors:</span>
     <span class="n">bad_bpms_message</span> <span class="o">=</span> <span class="s2">&quot;Bad BPMs found:</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="n">bad_bpms_message</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bad_bpms_with_reasons</span><span class="p">)</span>
-    
+
     <span class="c1"># If all BPMs have been bad ---</span>
     <span class="k">if</span> <span class="n">n_good_bpms</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">bad_bpms_message</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Total Number of BPMs after filtering is zero.&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># The good, the bad and the ugly BPMs ---</span>
     <span class="n">n_bad_bpms</span> <span class="o">=</span> <span class="n">n_total_bpms</span> <span class="o">-</span> <span class="n">n_good_bpms</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(Statistics for file reading) Total BPMs: </span><span class="si">{</span><span class="n">n_total_bpms</span><span class="si">}</span><span class="s2">, &quot;</span>
@@ -413,7 +415,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than half of BPMs are bad. &quot;</span>
                          <span class="s2">&quot;This could be because a bunch not present in the machine has been &quot;</span>
                          <span class="s2">&quot;selected or because of a problem with the phasing of the BPMs.&quot;</span><span class="p">)</span>
-    
+
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">bad_bpms_message</span><span class="p">)</span>
 
 

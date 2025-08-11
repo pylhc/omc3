@@ -226,20 +226,25 @@
 <span class="sd">Top-level script to convert turn-by-turn files from various formats to ``LHC`` binary SDDS files.</span>
 <span class="sd">Optionally, it can replicate files with added noise.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">turn_by_turn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tbt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">EntryPointParameters</span><span class="p">,</span>
     <span class="n">entrypoint</span><span class="p">,</span>
     <span class="n">save_options_to_config</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">turn_by_turn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tbt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -388,7 +393,7 @@
     <span class="k">return</span> <span class="n">copied_data</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_file_name_without_sdds</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_file_name_without_sdds</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the file name without suffix if the suffix is **.sdds**, else the filename.</span>
 <span class="sd">    Previous elements in the file path are discarded.</span>

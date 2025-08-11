@@ -227,8 +227,10 @@
 <span class="sd">It provides functions to compute kick actions.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -236,18 +238,31 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccElementTypes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">ACTION</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">DPP</span><span class="p">,</span>
-                                                <span class="n">DPPAMP</span><span class="p">,</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">KICK_NAME</span><span class="p">,</span>
-                                                <span class="n">NAT_TUNE</span><span class="p">,</span> <span class="n">PEAK2PEAK</span><span class="p">,</span>
-                                                <span class="n">RES</span><span class="p">,</span>
-                                                <span class="n">RESCALE_FACTOR</span><span class="p">,</span> <span class="n">RMS</span><span class="p">,</span>
-                                                <span class="n">SQRT_ACTION</span><span class="p">,</span> <span class="n">TIME</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">CLOSED_ORBIT</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="n">weighted_error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ACTION</span><span class="p">,</span>
+    <span class="n">AMPLITUDE</span><span class="p">,</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">CLOSED_ORBIT</span><span class="p">,</span>
+    <span class="n">DPP</span><span class="p">,</span>
+    <span class="n">DPPAMP</span><span class="p">,</span>
+    <span class="n">ERR</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">KICK_NAME</span><span class="p">,</span>
+    <span class="n">NAT_TUNE</span><span class="p">,</span>
+    <span class="n">PEAK2PEAK</span><span class="p">,</span>
+    <span class="n">RES</span><span class="p">,</span>
+    <span class="n">RESCALE_FACTOR</span><span class="p">,</span>
+    <span class="n">RMS</span><span class="p">,</span>
+    <span class="n">SQRT_ACTION</span><span class="p">,</span>
+    <span class="n">TIME</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">weighted_error</span><span class="p">,</span> <span class="n">weighted_mean</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputFiles</span>
 
 
@@ -304,8 +319,7 @@
 
         <span class="c1"># calculate data from measurement</span>
         <span class="n">kick_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">calc_columns</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_action</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-    <span class="n">kick_frame</span> <span class="o">=</span> <span class="n">kick_frame</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">column_types</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">kick_frame</span>
+    <span class="k">return</span> <span class="n">kick_frame</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">column_types</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_action</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">lin</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -368,20 +382,24 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_column_mapping</span><span class="p">(</span><span class="n">plane</span><span class="p">):</span>
     <span class="n">plane_number</span> <span class="o">=</span> <span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
-    <span class="n">load_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span>
-        <span class="p">(</span><span class="n">TIME</span><span class="p">,</span>                      <span class="s2">&quot;TIME&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">DPP</span><span class="p">,</span>                       <span class="n">DPP</span><span class="p">),</span>
-        <span class="p">(</span><span class="n">DPPAMP</span><span class="p">,</span>                    <span class="n">DPPAMP</span><span class="p">),</span>
-        <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
-        <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
-    <span class="p">])</span>
-    <span class="n">calc_columns</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">load_columns</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">TIME</span><span class="p">:</span> <span class="s2">&quot;TIME&quot;</span><span class="p">,</span>
+        <span class="n">DPP</span><span class="p">:</span> <span class="n">DPP</span><span class="p">,</span>
+        <span class="n">DPPAMP</span><span class="p">:</span> <span class="n">DPPAMP</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane_number</span><span class="si">}{</span><span class="n">RMS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">calc_columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
     <span class="n">column_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">TIME</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
-    <span class="n">column_types</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">float</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">load_columns</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">calc_columns</span><span class="p">})</span>
+    <span class="n">column_types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">load_columns</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">calc_columns</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">load_columns</span><span class="p">,</span> <span class="n">calc_columns</span><span class="p">,</span> <span class="n">column_types</span>
 </pre></div>
 

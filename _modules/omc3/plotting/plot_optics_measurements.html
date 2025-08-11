@@ -387,20 +387,27 @@
 <span class="sd">- **y_lim** *(OptionalFloat)*:</span>
 
 <span class="sd">    Limits on the y axis (Tupel)</span>
-
-
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictAsString</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.optics</span><span class="w"> </span><span class="kn">import</span> <span class="n">POSITION_COLUMN_MAPPING</span><span class="p">,</span> <span class="n">FILE_COLUMN_MAPPING</span><span class="p">,</span> <span class="n">ColumnsAndLabels</span><span class="p">,</span> <span class="n">RDT_COLUMN_MAPPING</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">IMAG</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.optics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FILE_COLUMN_MAPPING</span><span class="p">,</span>
+    <span class="n">POSITION_COLUMN_MAPPING</span><span class="p">,</span>
+    <span class="n">RDT_COLUMN_MAPPING</span><span class="p">,</span>
+    <span class="n">ColumnsAndLabels</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">REAL</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.rdt</span><span class="w"> </span><span class="kn">import</span> <span class="n">_rdt_to_order_and_type</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">DEFAULTS</span><span class="p">,</span> <span class="n">IP_POS_DEFAULT</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">plot_tfs</span><span class="p">,</span> <span class="n">OptionalFloat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULTS</span><span class="p">,</span> <span class="n">IP_POS_DEFAULT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionalFloat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">plot_tfs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.spectrum.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_unique_filenames</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.utils.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">VERTICAL_LINES_TEXT_LOCATIONS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
@@ -577,10 +584,7 @@
 
         <span class="n">is_rdt</span> <span class="o">=</span> <span class="n">optics_parameter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
         <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">get_unique_filenames</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">folders</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
-            <span class="n">file_labels</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">labels</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flabels</span><span class="p">)</span> <span class="k">for</span> <span class="n">flabels</span> <span class="ow">in</span> <span class="n">file_labels</span><span class="p">]</span>
+        <span class="n">file_labels</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">labels</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flabels</span><span class="p">)</span> <span class="k">for</span> <span class="n">flabels</span> <span class="ow">in</span> <span class="n">file_labels</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">is_rdt</span><span class="p">:</span>
             <span class="n">fig_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_plot_rdt</span><span class="p">(</span>
@@ -709,10 +713,8 @@
         <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">column_label</span><span class="si">}</span><span class="s1"> </span><span class="se">{{</span><span class="s1">0</span><span class="se">}}</span><span class="s1">&#39;</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">suppress_column_legend</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">same_fig</span> <span class="o">==</span> <span class="s1">&#39;planes&#39;</span><span class="p">:</span>
-            <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">]</span>   <span class="c1">#  show planes in labels as all are in same axes</span>
+        <span class="c1">#  second option: show planes in labels as all are in same axes</span>
+        <span class="n">column_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">same_fig</span> <span class="o">==</span> <span class="s1">&#39;planes&#39;</span> <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">]</span>
 
     <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">delta</span><span class="p">:</span>
@@ -744,7 +746,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_plot_norm_dispersion</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">file_labels</span><span class="p">,</span> <span class="n">x_column</span><span class="p">,</span> <span class="n">x_label</span><span class="p">,</span> <span class="n">ip_positions</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plotting function for normalized dispersion.</span>
-<span class="sd">    Normalized dispersion is special, as we only evaluate the horizontal plane (X) in the optics measurements. </span>
+<span class="sd">    Normalized dispersion is special, as we only evaluate the horizontal plane (X) in the optics measurements.</span>
 <span class="sd">    We therefore plot the delta in the second (lower) plot.&quot;&quot;&quot;</span>
     <span class="n">y_column</span><span class="p">,</span> <span class="n">error_column</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">y_label</span> <span class="o">=</span> <span class="n">_get_columns_and_label</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">delta_y_column</span><span class="p">,</span> <span class="n">delta_error_column</span><span class="p">,</span> <span class="n">delta_column_label</span><span class="p">,</span> <span class="n">delta_y_label</span> <span class="o">=</span> <span class="n">_get_columns_and_label</span><span class="p">(</span><span class="n">optics_parameter</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -793,7 +795,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_ip_positions</span><span class="p">(</span><span class="n">ip_positions</span><span class="p">,</span> <span class="n">xaxis</span><span class="p">,</span> <span class="n">ip_pattern</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip_positions</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip_positions</span><span class="p">,</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">positions</span> <span class="o">=</span> <span class="n">IP_POS_DEFAULT</span><span class="p">[</span><span class="n">ip_positions</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>

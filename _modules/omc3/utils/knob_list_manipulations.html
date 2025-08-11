@@ -221,10 +221,10 @@
   <h1>Source code for omc3.utils.knob_list_manipulations</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot; Knob Manipulation Utilities &quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
-
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
@@ -244,31 +244,31 @@
 <span class="sd">        all_knobs_by_class (dict[str, list[str]]): The dictionary of all classes and their variables.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">classes_or_knobs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">([</span><span class="n">knob</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="o">.</span><span class="n">values</span><span class="p">()])))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">all_knobs_by_class</span><span class="o">.</span><span class="n">values</span><span class="p">()))))</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes_or_knobs</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="c1"># if not checked, lead to each char being treates as a knob. </span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classes must be an iterable, not a string: </span><span class="si">{</span><span class="n">classes_or_knobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  
+        <span class="c1"># if not checked, lead to each char being treates as a knob.</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classes must be an iterable, not a string: </span><span class="si">{</span><span class="n">classes_or_knobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">add_classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
-    
-    <span class="n">remove_classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
+    <span class="n">add_classes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">}</span>
+
+    <span class="n">remove_classes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">remove_classes</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following classes will be removed from the correctors:</span><span class="se">\n</span><span class="si">{</span><span class="n">remove_classes</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">add_knobs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">knob</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">knob</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">knob</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
+    <span class="n">add_knobs</span> <span class="o">=</span> <span class="p">{</span><span class="n">knob</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">knob</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">knob</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">add_knobs</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The following names are not found as corrector/variable classes and &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;are assumed to be the variable names directly instead:</span><span class="se">\n</span><span class="si">{</span><span class="n">add_knobs</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">remove_knobs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">knob</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">knob</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">knob</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">)</span>
+    <span class="n">remove_knobs</span> <span class="o">=</span> <span class="p">{</span><span class="n">knob</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">classes_or_knobs</span> <span class="k">if</span> <span class="n">knob</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="ow">and</span> <span class="n">knob</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_knobs_by_class</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">remove_knobs</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following names will not be used as correctors, as requested:</span><span class="se">\n</span><span class="si">{</span><span class="n">remove_knobs</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
-    
+
     <span class="n">knobs_to_add</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span><span class="n">all_knobs_by_class</span><span class="p">[</span><span class="n">corr_cls</span><span class="p">]</span> <span class="k">for</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">add_classes</span><span class="p">))</span> <span class="o">|</span> <span class="n">add_knobs</span>
     <span class="n">knobs_to_remove</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_flatten_list</span><span class="p">(</span><span class="n">all_knobs_by_class</span><span class="p">[</span><span class="n">corr_cls</span><span class="p">]</span> <span class="k">for</span> <span class="n">corr_cls</span> <span class="ow">in</span> <span class="n">remove_classes</span><span class="p">))</span> <span class="o">|</span> <span class="n">remove_knobs</span>
     <span class="n">knobs_to_use</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">knobs_to_add</span> <span class="o">-</span> <span class="n">knobs_to_remove</span><span class="p">)</span>
-    
+
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All knobs to use:</span><span class="se">\n</span><span class="si">{</span><span class="n">knobs_to_use</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">knobs_to_use</span></div>
 
@@ -276,7 +276,6 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_flatten_list</span><span class="p">(</span><span class="n">my_list</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">my_list</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
-
 </pre></div>
 
            </div>

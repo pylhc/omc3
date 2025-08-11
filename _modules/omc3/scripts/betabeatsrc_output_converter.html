@@ -230,23 +230,38 @@
 <span class="sd">compensation by analytic equation while ``_free2`` corresponds to compensation via effective model. It is</span>
 <span class="sd">written in GetLLM (at least once) here: https://github.com/pylhc/Beta-Beat.src/blob/63c5e39f63b03c00d18289cc9813a912fa6b933f/GetLLM/GetLLM.py#L606</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DotDict</span><span class="p">,</span>
     <span class="n">EntryPointParameters</span><span class="p">,</span>
     <span class="n">entrypoint</span><span class="p">,</span>
     <span class="n">save_options_to_config</span><span class="p">,</span>
-    <span class="n">DotDict</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">AMPLITUDE</span><span class="p">,</span> <span class="n">AMP_BETA_NAME</span><span class="p">,</span><span class="n">BETA_NAME</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">,</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span>
-                                                <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">IMAG</span><span class="p">,</span> <span class="n">MDL</span><span class="p">,</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span> <span class="n">ORBIT_NAME</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span>
-                                                <span class="n">PHASE_NAME</span><span class="p">,</span> <span class="n">REAL</span><span class="p">,</span> <span class="n">TOTAL_PHASE_NAME</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AMP_BETA_NAME</span><span class="p">,</span>
+    <span class="n">AMPLITUDE</span><span class="p">,</span>
+    <span class="n">BETA_NAME</span><span class="p">,</span>
+    <span class="n">DELTA</span><span class="p">,</span>
+    <span class="n">DISPERSION_NAME</span><span class="p">,</span>
+    <span class="n">ERR</span><span class="p">,</span>
+    <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">IMAG</span><span class="p">,</span>
+    <span class="n">MDL</span><span class="p">,</span>
+    <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
+    <span class="n">ORBIT_NAME</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">,</span>
+    <span class="n">PHASE_NAME</span><span class="p">,</span>
+    <span class="n">REAL</span><span class="p">,</span>
+    <span class="n">TOTAL_PHASE_NAME</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.toolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">df_ang_diff</span><span class="p">,</span> <span class="n">df_diff</span><span class="p">,</span> <span class="n">df_err_sum</span><span class="p">,</span> <span class="n">df_ratio</span><span class="p">,</span> <span class="n">df_rel_diff</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">contexts</span><span class="p">,</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 
@@ -351,8 +366,8 @@
 <div class="viewcode-block" id="convert_old_beta_from_amplitude">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_beta_from_amplitude</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ampbeta&quot;</span><span class="p">,</span>
@@ -392,8 +407,8 @@
 <div class="viewcode-block" id="convert_old_beta_from_phase">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_beta_from_phase</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span>
@@ -441,8 +456,8 @@
 <div class="viewcode-block" id="convert_old_phase">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_phase">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_phase</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;phase&quot;</span><span class="p">,</span>
@@ -486,8 +501,8 @@
 <div class="viewcode-block" id="convert_old_total_phase">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_total_phase</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;phasetot&quot;</span><span class="p">,</span>
@@ -531,8 +546,8 @@
 <div class="viewcode-block" id="convert_old_closed_orbit">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_closed_orbit</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;CO&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ORBIT_NAME</span><span class="p">,</span>
@@ -569,8 +584,8 @@
 <div class="viewcode-block" id="convert_old_dispersion">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_dispersion</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DISPERSION_NAME</span><span class="p">,</span>
@@ -606,8 +621,8 @@
 <div class="viewcode-block" id="convert_old_normalised_dispersion">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_normalised_dispersion</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ND&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
@@ -648,8 +663,8 @@
 <div class="viewcode-block" id="convert_old_coupling">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_coupling">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_old_coupling</span><span class="p">(</span>
-    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outputdir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">old_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;couple&quot;</span><span class="p">,</span>
     <span class="n">new_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;f&quot;</span>

@@ -227,11 +227,13 @@
 <span class="sd">It provides tools to correct phases of a main spectral line in a case where damped (exponentially</span>
 <span class="sd">decaying) oscillations are analysed.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">COL_TUNE</span><span class="p">,</span> <span class="n">COL_MU</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PI2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">COL_MU</span><span class="p">,</span> <span class="n">COL_TUNE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 

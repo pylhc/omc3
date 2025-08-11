@@ -219,7 +219,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.model_creators.sps_model_creator</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">SPS Model Creator</span>
 <span class="sd">-----------------</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -259,7 +259,7 @@
 <div class="viewcode-block" id="SpsModelCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpsModelCreator</span><span class="p">(</span><span class="n">ModelCreator</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="n">acc_model_name</span> <span class="o">=</span> <span class="s2">&quot;sps&quot;</span> 
+    <span class="n">acc_model_name</span> <span class="o">=</span> <span class="s2">&quot;sps&quot;</span>
     <span class="n">_start_bpm</span> <span class="o">=</span> <span class="s2">&quot;BPH.13008&quot;</span>  <span class="c1"># BPM to cycle to</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -272,7 +272,7 @@
                 <span class="s2">&quot;The accelerator definition is incomplete: &quot;</span>
                 <span class="s2">&quot;SPS model creation only works with acc-models, but `acc-model-path` was not set. &quot;</span>
             <span class="p">)</span>
-        
+
         <span class="c1"># vvv ---  same as in LHC, maybe merge? (jdilly, 2025)</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
@@ -296,21 +296,21 @@
                 <span class="s2">&quot;The following modifier files do not exist: &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">inexistent_modifiers</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        
+
         <span class="c1"># ^^^ --- same as in LHC</span>
-        
+
         <span class="c1"># Final check to have at least one strength-file (but only warn user)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.str&quot;</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span><span class="p">):</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;None of the modifiers given ends in &#39;.str&#39;, which is kind of expected for the SPS model creation.&quot;</span>
             <span class="p">)</span>
-    
+
 <div class="viewcode-block" id="SpsModelCreator.prepare_options">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator.prepare_options">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Use the fetcher to list choices if requested. &quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Sps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
-        
+
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">fetch</span> <span class="o">==</span> <span class="n">Fetcher</span><span class="o">.</span><span class="n">PATH</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
@@ -336,8 +336,8 @@
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>  
-            <span class="c1"># all modifiers are actually checked against existing in the </span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>
+            <span class="c1"># all modifiers are actually checked against existing in the</span>
             <span class="c1"># prepare_run() function. So here we can simply list the strengths files.</span>
             <span class="n">check_folder_choices</span><span class="p">(</span>
                 <span class="n">acc_model_path</span> <span class="o">/</span> <span class="n">STRENGTHS_SUBDIR</span><span class="p">,</span>
@@ -350,7 +350,7 @@
         <span class="c1"># Set the found paths ---</span>
         <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="o">=</span> <span class="n">acc_model_path</span></div>
 
-    
+
 <div class="viewcode-block" id="SpsModelCreator.get_base_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator.get_base_madx_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -414,9 +414,9 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># I thought cycling to markers has less side-effects, but it seems it doesn&#39;t matter. </span>
+            <span class="c1"># I thought cycling to markers has less side-effects, but it seems it doesn&#39;t matter.</span>
             <span class="c1"># If this is anyway useful, we can add it. (jdilly, 2025)</span>
-            <span class="c1"># marker_name = f&quot;OMC_MARKER_{self._start_bpm}&quot;  </span>
+            <span class="c1"># marker_name = f&quot;OMC_MARKER_{self._start_bpm}&quot;</span>
             <span class="c1"># madx_script += (</span>
             <span class="c1">#     f&quot;    {marker_name}: marker;\n&quot;</span>
             <span class="c1">#     f&quot;    install, element={marker_name}, at=-{self._start_bpm}-&gt;L, from={self._start_bpm};\n&quot;</span>
@@ -466,19 +466,19 @@
                 <span class="sa">f</span><span class="s2">&quot;    vacmap43 := 2*(cos(2*pi*qyd)-cos(2*pi*qy0))/(betyac*sin(2*pi*qy0));</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_select_command</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">RE_DICT</span><span class="p">[</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">],</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;    twiss, file = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_AC_DAT</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> 
+                <span class="sa">f</span><span class="s2">&quot;    twiss, file = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_AC_DAT</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 </div>
 
-    
+
 
 <div class="viewcode-block" id="SpsCorrectionModelCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsCorrectionModelCreator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpsCorrectionModelCreator</span><span class="p">(</span><span class="n">CorrectionModelCreator</span><span class="p">,</span> <span class="n">SpsModelCreator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an updated model from multiple changeparameters inputs </span>
+<span class="sd">    Creates an updated model from multiple changeparameters inputs</span>
 <span class="sd">    (used in iterative correction).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="SpsCorrectionModelCreator.prepare_run">

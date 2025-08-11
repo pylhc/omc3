@@ -227,6 +227,8 @@
 <span class="sd">Tools are provided to handle the cleaning, frequency analysis and resonance search for a</span>
 <span class="sd">single-bunch `TbtData`.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">join</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -234,11 +236,22 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">PLANE_TO_NUM</span> <span class="k">as</span> <span class="n">P2N</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span> <span class="k">as</span> <span class="n">P2N</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">clean</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">kicker</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">FILE_AMPS_EXT</span><span class="p">,</span> <span class="n">FILE_FREQS_EXT</span><span class="p">,</span> <span class="n">FILE_LIN_EXT</span><span class="p">,</span>
-                                  <span class="n">COL_NAME</span><span class="p">,</span> <span class="n">COL_TUNE</span><span class="p">,</span> <span class="n">COL_AMP</span><span class="p">,</span> <span class="n">COL_MU</span><span class="p">,</span>
-                                  <span class="n">COL_NATTUNE</span><span class="p">,</span> <span class="n">COL_NATAMP</span><span class="p">,</span> <span class="n">COL_PHASE</span><span class="p">,</span> <span class="n">COL_ERR</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">COL_AMP</span><span class="p">,</span>
+    <span class="n">COL_ERR</span><span class="p">,</span>
+    <span class="n">COL_MU</span><span class="p">,</span>
+    <span class="n">COL_NAME</span><span class="p">,</span>
+    <span class="n">COL_NATAMP</span><span class="p">,</span>
+    <span class="n">COL_NATTUNE</span><span class="p">,</span>
+    <span class="n">COL_PHASE</span><span class="p">,</span>
+    <span class="n">COL_TUNE</span><span class="p">,</span>
+    <span class="n">FILE_AMPS_EXT</span><span class="p">,</span>
+    <span class="n">FILE_FREQS_EXT</span><span class="p">,</span>
+    <span class="n">FILE_LIN_EXT</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit</span>
 
@@ -271,8 +284,8 @@
 
     <span class="n">tune_estimates</span> <span class="o">=</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">tunes</span> <span class="k">if</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">autotunes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">frequency</span><span class="o">.</span><span class="n">estimate_tunes</span><span class="p">(</span>
         <span class="n">harpy_input</span><span class="p">,</span> <span class="n">usvs</span> <span class="k">if</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">clean</span> <span class="k">else</span>
-        <span class="nb">dict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">clean</span><span class="o">.</span><span class="n">svd_decomposition</span><span class="p">(</span><span class="n">bpm_datas</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">),</span>
-             <span class="n">Y</span><span class="o">=</span><span class="n">clean</span><span class="o">.</span><span class="n">svd_decomposition</span><span class="p">(</span><span class="n">bpm_datas</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">)))</span>
+        <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">clean</span><span class="o">.</span><span class="n">svd_decomposition</span><span class="p">(</span><span class="n">bpm_datas</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">),</span>
+         <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">clean</span><span class="o">.</span><span class="n">svd_decomposition</span><span class="p">(</span><span class="n">bpm_datas</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">)})</span>
 
     <span class="n">spectra</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
@@ -320,17 +333,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_closed_orbit_analysis</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">bpm_res</span><span class="p">):</span>
     <span class="n">lin_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
         <span class="n">index</span><span class="o">=</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
-        <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="p">(</span><span class="n">COL_NAME</span><span class="p">,</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()),</span>
-                <span class="p">(</span>
-                    <span class="s2">&quot;S&quot;</span><span class="p">,</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span>
-                    <span class="k">else</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
-                <span class="p">),</span>
-            <span class="p">]</span>
-        <span class="p">),</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">COL_NAME</span><span class="p">:</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">model</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
+        <span class="p">},</span>
     <span class="p">)</span>
     <span class="n">lin_frame</span><span class="p">[</span><span class="s1">&#39;BPM_RES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">bpm_res</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">bpm_res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">lin_frame</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
     <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time for orbit_analysis: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
@@ -439,12 +445,12 @@
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;NOISE&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_NATTUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">COL_NATAMP</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;NOISE&#39;</span><span class="p">]</span>
-    
+
     <span class="c1"># Create dedicated dataframe with error columns to assign later (cleaner</span>
     <span class="c1"># and faster than assigning individual columns)</span>
     <span class="n">df_amp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
         <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">noise_scaled</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]))</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">},</span>
-        <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> 
+        <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Float64Dtype</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">df_amp</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_amp</span>

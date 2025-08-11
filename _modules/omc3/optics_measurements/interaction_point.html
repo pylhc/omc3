@@ -231,20 +231,21 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PI2</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">IP_NAME</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">,</span> <span class="n">MEASUREMENT</span><span class="p">,</span> <span class="n">ERR</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERR</span><span class="p">,</span> <span class="n">EXT</span><span class="p">,</span> <span class="n">IP_NAME</span><span class="p">,</span> <span class="n">MEASUREMENT</span><span class="p">,</span> <span class="n">MODEL</span><span class="p">,</span> <span class="n">S</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span> 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span> 
     <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="n">phase</span>
 
 
@@ -290,9 +291,9 @@
 <div class="viewcode-block" id="write">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.write">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">df_ips</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Write the interaction point data to disk. </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Write the interaction point data to disk.</span>
 <span class="sd">    Empty DataFrames are skipped on write.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        df_ips (pd.DataFrame): The interaction point data.</span>
 <span class="sd">        headers (dict[str, Any]): The headers for the tfs file.</span>

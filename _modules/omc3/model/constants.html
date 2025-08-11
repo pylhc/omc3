@@ -226,11 +226,13 @@
 <span class="sd">This module provides high-level functions to manage most functionality of ``model``.</span>
 <span class="sd">Specific constants to be used in ``model``, to help with consistency.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 
-<span class="n">PLANE_TO_HV</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+<span class="n">PLANE_TO_HV</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="s2">&quot;V&quot;</span><span class="p">}</span>
 
 <span class="c1"># Job Creation Files ---</span>
 <span class="n">OBS_POINTS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;observation_points.def&quot;</span>
@@ -280,7 +282,6 @@
 <span class="n">OPTICS_SUBDIR</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;operation/optics&quot;</span><span class="p">)</span>
 <span class="n">STRENGTHS_SUBDIR</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;strengths&quot;</span><span class="p">)</span>
 <span class="n">LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;toolkit/remove-triplet-symmetry-knob.madx&quot;</span><span class="p">)</span>
-
 </pre></div>
 
            </div>

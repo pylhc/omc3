@@ -228,14 +228,27 @@
 <span class="sd">yet operates on two twiss files instead.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DISPERSION</span><span class="p">,</span> <span class="n">BETA</span><span class="p">,</span> <span class="n">PHASE_ADV</span><span class="p">,</span> <span class="n">TUNE</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">,</span> <span class="n">NORM_DISPERSION</span><span class="p">,</span> <span class="n">DELTA</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">DELTA</span><span class="p">,</span>
+    <span class="n">DISPERSION</span><span class="p">,</span>
+    <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+    <span class="n">PHASE</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.toolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">ang_diff</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
 
 <div class="viewcode-block" id="diff_twiss_parameters">

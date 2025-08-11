@@ -219,22 +219,24 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.utils.math_classes</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Math Classes</span>
 <span class="sd">------------</span>
 
-<span class="sd">Provides a mixin class to inherit numerical classes, which ensures </span>
+<span class="sd">Provides a mixin class to inherit numerical classes, which ensures</span>
 <span class="sd">proper conversion after maths operations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 
 <div class="viewcode-block" id="MathMixin">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.math_classes.MathMixin">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MathMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A Mixin Class to be able to inherit from a numerical class and  </span>
-<span class="sd">        perform operations with it, while returning an instance of the inheriting class. </span>
-<span class="sd">        </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A Mixin Class to be able to inherit from a numerical class and</span>
+<span class="sd">        perform operations with it, while returning an instance of the inheriting class.</span>
+
 <span class="sd">        Caveats:</span>
-<span class="sd">         - This assumes that the inheriting class accepts an instance of its parent class </span>
+<span class="sd">         - This assumes that the inheriting class accepts an instance of its parent class</span>
 <span class="sd">           in its initialization method !!</span>
 <span class="sd">         - Use this as the FIRST class in inheritance !</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -262,8 +264,8 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__pow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__pow__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    
-    <span class="c1"># Handle reverse operations </span>
+
+    <span class="c1"># Handle reverse operations</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__rtruediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__rtruediv__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>

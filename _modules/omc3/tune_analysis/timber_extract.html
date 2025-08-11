@@ -233,10 +233,11 @@
 <span class="sd">https://acc-py-repo.cern.ch/repository/vr-py-releases/simple`` and</span>
 <span class="sd">``--trusted-host acc-py-repo.cern.ch`` to your ``pip`` installation command).</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">NewType</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
@@ -247,6 +248,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.time_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">CERNDatetime</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
 <span class="n">TIME_COL</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_time_col</span><span class="p">()</span>
 <span class="n">START_TIME</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_tstart_head</span><span class="p">()</span>
 <span class="n">END_TIME</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">get_tend_head</span><span class="p">()</span>
@@ -256,13 +261,13 @@
 <span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
 
 <span class="n">MAX_RETRIES</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># number of retries on retryable exception</span>
-<span class="n">AcceptableTimeStamp</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;AcceptableTimeStamp&quot;</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">CERNDatetime</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span>
+<span class="n">AcceptableTimeStamp</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;AcceptableTimeStamp&quot;</span><span class="p">,</span> <span class="n">CERNDatetime</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="lhc_fill_to_tfs">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lhc_fill_to_tfs</span><span class="p">(</span>
-    <span class="n">fill_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fill_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts data for keys of fill from ``Timber``.</span>
@@ -287,7 +292,7 @@
     <span class="n">t_start</span><span class="p">:</span> <span class="n">AcceptableTimeStamp</span><span class="p">,</span>
     <span class="n">t_end</span><span class="p">:</span> <span class="n">AcceptableTimeStamp</span><span class="p">,</span>
     <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts data for keys between ``t_start`` and ``t_end`` from ``Timber``.</span>
@@ -319,14 +324,14 @@
             <span class="c1"># We use timestamps to avoid any confusion with local time</span>
             <span class="n">extract_dict</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">t_start</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(),</span> <span class="n">t_end</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">jpype</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">IllegalStateException</span> <span class="k">as</span> <span class="n">java_state_error</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
                 <span class="s2">&quot;Could not get data from Timber, user probably has no access to NXCALS&quot;</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">java_state_error</span>
         <span class="k">except</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JException</span> <span class="k">as</span> <span class="n">java_exception</span><span class="p">:</span>  <span class="c1"># Might be a case for retries</span>
             <span class="k">if</span> <span class="s2">&quot;RetryableException&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">java_exception</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">MAX_RETRIES</span><span class="p">:</span>
                 <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not get data from Timber! Trial no </span><span class="si">{</span><span class="n">tries</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">MAX_RETRIES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>  <span class="c1"># will go to the next iteratoin of the loop, so retry</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;Could not get data from timber!&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">java_exception</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Could not get data from timber!&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">java_exception</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">break</span>
 
@@ -334,7 +339,7 @@
             <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">extract_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>  <span class="c1"># values are empty</span>
             <span class="ow">or</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">extract_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>  <span class="c1"># arrays are empty (size 2 for time/data)</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variables </span><span class="si">{</span><span class="n">keys</span><span class="si">}</span><span class="s2"> found but no data extracted in time </span><span class="si">{</span><span class="n">t_start</span><span class="o">.</span><span class="n">utc_string</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">t_end</span><span class="o">.</span><span class="n">utc_string</span><span class="si">}</span><span class="s2"> (UTC).</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variables </span><span class="si">{</span><span class="n">keys</span><span class="si">}</span><span class="s2"> found but no data extracted in time </span><span class="si">{</span><span class="n">t_start</span><span class="o">.</span><span class="n">utc_string</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">t_end</span><span class="o">.</span><span class="n">utc_string</span><span class="si">}</span><span class="s2"> (UTC).</span><span class="se">\n</span><span class="s2">&quot;</span>
                       <span class="sa">f</span><span class="s2">&quot;Possible reasons:</span><span class="se">\n</span><span class="s2">&quot;</span>
                       <span class="sa">f</span><span class="s2">&quot;  - Too small time window.</span><span class="se">\n</span><span class="s2">&quot;</span>
                       <span class="sa">f</span><span class="s2">&quot;  - Old pytimber version.</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -359,7 +364,7 @@
 
 <div class="viewcode-block" id="get_tune_and_coupling_variables">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_tune_and_coupling_variables</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_tune_and_coupling_variables</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the tune and coupling variable names.</span>
 
@@ -383,7 +388,7 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_fill_times">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_fill_times</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span> <span class="n">fill_number</span><span class="p">:</span> <span class="nb">int</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns start and end time of fill with fill number.</span>
 

@@ -230,23 +230,9 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">EntryPoint</span><span class="p">,</span>
-    <span class="n">EntryPointParameters</span><span class="p">,</span>
-    <span class="n">entrypoint</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">esrf</span><span class="p">,</span>
-    <span class="n">generic</span><span class="p">,</span>
-    <span class="n">iota</span><span class="p">,</span>
-    <span class="n">lhc</span><span class="p">,</span>
-    <span class="n">petra</span><span class="p">,</span>
-    <span class="n">ps</span><span class="p">,</span>
-    <span class="n">psbooster</span><span class="p">,</span>
-    <span class="n">skekb</span><span class="p">,</span>
-    <span class="n">sps</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">esrf</span><span class="p">,</span> <span class="n">generic</span><span class="p">,</span> <span class="n">iota</span><span class="p">,</span> <span class="n">lhc</span><span class="p">,</span> <span class="n">petra</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">psbooster</span><span class="p">,</span> <span class="n">skekb</span><span class="p">,</span> <span class="n">sps</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
@@ -268,8 +254,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accel&quot;</span><span class="p">,</span> 
-        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accel&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ACCELS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the accelerator to use.Can be the class already.&quot;</span>
     <span class="p">)</span>
@@ -296,7 +282,7 @@
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator_class">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_accelerator_class</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Accelerator</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns only the accelerator-class (non-instanciated).</span>
 <span class="sd">    Only opt.accel is needed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

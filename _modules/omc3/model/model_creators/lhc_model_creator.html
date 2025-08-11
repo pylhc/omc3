@@ -236,11 +236,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ORBIT_DPP</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AcceleratorDefinitionError</span><span class="p">,</span>
-    <span class="n">AccExcitationMode</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.lhc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lhc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcceleratorDefinitionError</span><span class="p">,</span> <span class="n">AccExcitationMode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AFS_ACCELERATOR_MODEL_REPOSITORY</span><span class="p">,</span>
     <span class="n">AFS_B2_ERRORS_ROOT</span><span class="p">,</span>
@@ -250,9 +246,9 @@
     <span class="n">GENERAL_MACROS</span><span class="p">,</span>
     <span class="n">JOB_MODEL_MADX_BEST_KNOWLEDGE</span><span class="p">,</span>
     <span class="n">JOB_MODEL_MADX_NOMINAL</span><span class="p">,</span>
-    <span class="n">LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH</span><span class="p">,</span>
     <span class="n">LHC_MACROS</span><span class="p">,</span>
     <span class="n">LHC_MACROS_RUN3</span><span class="p">,</span>
+    <span class="n">LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH</span><span class="p">,</span>
     <span class="n">MACROS_DIR</span><span class="p">,</span>
     <span class="n">MADX_ENERGY_VAR</span><span class="p">,</span>
     <span class="n">MODIFIER_TAG</span><span class="p">,</span>
@@ -278,6 +274,8 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.lhc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lhc</span>
+
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -295,7 +293,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing LHC Model Creator&quot;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">LhcModelCreator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LhcModelCreator.prepare_options">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.prepare_options">[docs]</a>
@@ -331,14 +329,14 @@
 
         <span class="c1"># list optics choices ---</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>  <span class="c1"># assumes we only want to list optics. Invoked even if modifiers are given!</span>
-            <span class="n">check_folder_choices</span><span class="p">(</span>  
+            <span class="n">check_folder_choices</span><span class="p">(</span>
                 <span class="n">acc_model_path</span> <span class="o">/</span> <span class="n">OPTICS_SUBDIR</span><span class="p">,</span>
                 <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No modifier given&quot;</span><span class="p">,</span>
                 <span class="n">selection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># TODO: could check if user made valid choice</span>
                 <span class="n">list_choices</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">,</span>
                 <span class="n">predicate</span><span class="o">=</span><span class="n">get_check_suffix_func</span><span class="p">(</span><span class="s2">&quot;.madx&quot;</span><span class="p">)</span>
             <span class="p">)</span>  <span class="c1"># raises AcceleratorDefinitionError</span>
-        
+
         <span class="c1"># Set acc model path to be used in model creator ---</span>
         <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="o">=</span> <span class="n">acc_model_path</span></div>
 
@@ -430,7 +428,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the base LHC madx script.&quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
-        
+
         <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sequence_initialize_script</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_ats_knobs</span><span class="p">():</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Matching Knobs -----</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -446,11 +444,11 @@
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sequence_initialize_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sequence_initialize_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the LHC sequence initialization script.</span>
-<span class="sd">        </span>
-<span class="sd">        This is split up here from the matching (in the base-script), </span>
-<span class="sd">        to accompany the needs of the Best Knowledge Model Creator, </span>
+
+<span class="sd">        This is split up here from the matching (in the base-script),</span>
+<span class="sd">        to accompany the needs of the Best Knowledge Model Creator,</span>
 <span class="sd">        see below.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
@@ -474,7 +472,7 @@
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;option, -echo;  ! suppress output from base sequence loading to keep the log small</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_madx_main_sequence_loading</span><span class="p">()</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">option, echo;  ! re-enable output to see the optics settings</span><span class="se">\n</span><span class="s2">&quot;</span>
-        
+
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ---- Call optics and other modifiers ----</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -496,7 +494,7 @@
                 <span class="sa">f</span><span class="s2">&quot;    exec, set_default_crossing_scheme();</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">remove_symmetry_knob_madx</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="o">/</span> <span class="n">LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH</span>
             <span class="k">if</span> <span class="n">remove_symmetry_knob_madx</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># alternatively check if year != 2018/2021</span>
@@ -512,12 +510,12 @@
             <span class="sa">f</span><span class="s2">&quot;use, sequence = LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span>
-    
+
 <div class="viewcode-block" id="LhcModelCreator.get_update_deltap_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_update_deltap_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_update_deltap_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deltap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Update the dpp in the LHC.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            deltap (float | str): The dpp to update the LHC to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -528,7 +526,7 @@
         <span class="n">madx_script</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;twiss, deltap=</span><span class="si">{</span><span class="n">deltap</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;correct, mode=svd;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            
+
             <span class="s2">&quot;! The same as match_tunes, but include deltap in the matching</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;exec, find_complete_tunes(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;match, deltap=</span><span class="si">{</span><span class="n">deltap</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -585,15 +583,14 @@
                 <span class="s2">&quot;The accelerator definition is incomplete, mode &quot;</span>
                 <span class="s2">&quot;has to be specified (--lhcmode option missing?).&quot;</span>
             <span class="p">)</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">get_tune_knobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_run3_macros</span><span class="p">():</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;dQx.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">_op&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dQy.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">_op&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_ats_knobs</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_ats_knobs</span><span class="p">():</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;dQx.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dQy.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;KQTD.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;KQTF.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;KQTD.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;KQTF.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="c1"># Private Methods ##########################################################</span>
 
@@ -646,7 +643,7 @@
 
         <span class="c1"># Check given B2 errors ---</span>
         <span class="n">exists</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># check if user gave absolute path (! with_suffix does not work, due to &#39;.&#39; in name)</span>
             <span class="n">exists</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="si">!s}</span><span class="s2">.errors&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
 
@@ -660,7 +657,7 @@
             <span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span> <span class="o">=</span> <span class="n">check_folder_choices</span><span class="p">(</span>  <span class="c1"># returns full path</span>
                 <span class="n">afs_dir</span><span class="p">,</span>
                 <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No valid b2 errors given.&quot;</span><span class="p">,</span>
-                <span class="n">selection</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="p">,</span> 
+                <span class="n">selection</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="p">,</span>
                 <span class="n">list_choices</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">,</span>
                 <span class="n">predicate</span><span class="o">=</span><span class="n">get_check_by_regex_func</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;MB2022.+\.errors$&quot;</span><span class="p">),</span>
                 <span class="n">stem_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -672,12 +669,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_accelerator_instance</span><span class="p">()</span>
-        
+
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
                 <span class="s2">&quot;No b2 errors specified. These are neccessary for the best knowledge model.&quot;</span>
             <span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
                 <span class="s2">&quot;Don&#39;t set ACD or ADT for best knowledge model.&quot;</span>
@@ -735,15 +732,15 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
-    
+
 <div class="viewcode-block" id="LhcBestKnowledgeCreator.get_base_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.get_base_madx_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
-        
+
         <span class="c1"># don&#39;t load the super().get_base_madx_script as this also matches the tunes at the end,</span>
         <span class="c1"># which we skip here as we are using the data from the machine.</span>
-        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sequence_initialize_script</span><span class="p">()</span>  
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sequence_initialize_script</span><span class="p">()</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- For Best Knowledge Model -----</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -760,7 +757,7 @@
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCorrectionModelCreator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LhcCorrectionModelCreator</span><span class="p">(</span><span class="n">CorrectionModelCreator</span><span class="p">,</span> <span class="n">LhcModelCreator</span><span class="p">):</span>  <span class="c1"># -------------------------------------------</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an updated model from multiple changeparameters inputs </span>
+<span class="sd">    Creates an updated model from multiple changeparameters inputs</span>
 <span class="sd">    (used in iterative correction).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -778,28 +775,28 @@
 <span class="sd">            change_params (Sequence[Path]): Sequence of correction/matching files</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing LHC Correction Model Creator&quot;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="n">twiss_out</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">,</span> <span class="n">update_dpp</span><span class="p">)</span>  
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="n">twiss_out</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">,</span> <span class="n">update_dpp</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LhcCorrectionModelCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCorrectionModelCreator.get_madx_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Get the madx script for the correction model creator, which updates the model after correcion. &quot;&quot;&quot;</span>  
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Get the madx script for the correction model creator, which updates the model after correcion. &quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
-        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>  <span class="c1"># do not super().get_madx_script as we don&#39;t need the uncorrected output. </span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>  <span class="c1"># do not super().get_madx_script as we don&#39;t need the uncorrected output.</span>
 
         <span class="c1"># First set the dpp to the value in the accelerator model</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">for</span> <span class="n">corr_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_files</span><span class="p">:</span>  <span class="c1"># Load the corrections, can also update ORBIT_DPP</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">corr_file</span><span class="si">!s}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_dpp</span><span class="p">:</span> <span class="c1"># If we are doing orbit correction, we need to ensure that a correct and a match is done</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_update_deltap_script</span><span class="p">(</span><span class="n">deltap</span><span class="o">=</span><span class="n">ORBIT_DPP</span><span class="p">)</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s1">, &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_out</span><span class="si">!s}</span><span class="s1">&quot;, </span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s1">);</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
-    
+
 <div class="viewcode-block" id="LhcCorrectionModelCreator.prepare_run">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCorrectionModelCreator.prepare_run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -811,7 +808,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">macros_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Folder for the macros does not exist at </span><span class="si">{</span><span class="n">macros_path</span><span class="si">!s}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">files_to_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobfile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">]</span></div>
@@ -881,7 +878,7 @@
 
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">files_to_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">check_files</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_forward</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">twiss_backward</span><span class="p">]</span>

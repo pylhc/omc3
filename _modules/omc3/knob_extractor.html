@@ -289,9 +289,10 @@
 <span class="c1"># Fixes:</span>
 <span class="c1"># &#39;Error: Could not find or load main class (...) aircompressor-0.26.jar&#39;</span>
 <span class="c1">#</span>
-<span class="c1"># This ia a hack, please remove at the earliest convenience. For updates see: </span>
+<span class="c1"># This ia a hack, please remove at the earliest convenience. For updates see:</span>
 <span class="c1"># https://cern.service-now.com/service-portal?id=ticket&amp;table=incident&amp;n=INC3768823</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
 <span class="k">if</span> <span class="s2">&quot;PATH&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span> <span class="ow">and</span> <span class="s2">&quot;/mcr/bin&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]:</span>
     <span class="n">parts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
     <span class="n">parts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;/mcr/bin&quot;</span><span class="p">)</span>
@@ -308,16 +309,16 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span><span class="w"> </span><span class="kn">import</span> <span class="n">relativedelta</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span><span class="w"> </span><span class="kn">import</span> <span class="n">relativedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.logging_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-   <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span> 
+   <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
 <span class="n">pytimber</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pytimber&quot;</span><span class="p">)</span>
 
@@ -438,10 +439,10 @@
 
 <span class="n">USAGE_EXAMPLES</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Usage Examples:</span>
 
-<span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00     </span>
+<span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00</span>
 <span class="s2">    extracts the chromaticity and dispersion knobs at 14h on May 4th 2022</span>
 
-<span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time now _2h </span>
+<span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time now _2h</span>
 <span class="s2">    extracts the chromaticity and dispersion knobs as of 2 hours ago</span>
 
 <span class="s2">python -m omc3.knob_extractor --state</span>
@@ -454,28 +455,28 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
-        <span class="n">knobs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">knobs</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;A list of knob names or categories to extract. &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Available categories are: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">),</span>
-            <span class="n">default</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-        <span class="p">),</span>
-        <span class="n">time</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="p">},</span>
+        <span class="n">time</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;At what time to extract the knobs. &quot;</span>
                 <span class="s2">&quot;Accepts ISO-format (YYYY-MM-DDThh:mm:ss), timestamp or &#39;now&#39;. &quot;</span>
                 <span class="s2">&quot;The default timezone for the ISO-format is local time, &quot;</span>
                 <span class="s2">&quot;but you can force e.g. UTC by adding +00:00.&quot;</span>
             <span class="p">),</span>
-            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;now&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">timedelta</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;now&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">timedelta</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;Add this timedelta to the given time. &quot;</span>
                 <span class="s2">&quot;The format of timedelta is &#39;((</span><span class="se">\\</span><span class="s2">d+)(</span><span class="se">\\</span><span class="s2">w))+&#39; &quot;</span>
                 <span class="s2">&quot;with the second token being one of &quot;</span>
@@ -485,29 +486,29 @@
                 <span class="s2">&quot;This allows for easily getting the setting &quot;</span>
                 <span class="s2">&quot;e.g. 2h ago: &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).&quot;</span>
             <span class="p">),</span>
-        <span class="p">),</span>
-        <span class="n">state</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">},</span>
+        <span class="n">state</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;Prints the state of the StateTracker. &quot;</span>
                 <span class="s2">&quot;Does not extract anything else.&quot;</span>
             <span class="p">),</span>
-        <span class="p">),</span>
-        <span class="n">output</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">},</span>
+        <span class="n">output</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;Specify user-defined output path. &quot;</span>
                 <span class="s2">&quot;This should probably be `model_dir/knobs.madx`&quot;</span>
             <span class="p">),</span>
-        <span class="p">),</span>
-        <span class="n">knob_definitions</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">},</span>
+        <span class="n">knob_definitions</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;User defined path to the knob-definitions, &quot;</span>
                 <span class="s2">&quot;or (via python) a dataframe containing the knob definitions &quot;</span>
                 <span class="s2">&quot;with the columns &#39;madx&#39;, &#39;lsa&#39; and &#39;scaling&#39;.&quot;</span>
             <span class="p">),</span>
-        <span class="p">),</span>
+        <span class="p">},</span>
     <span class="p">)</span>
 
 
@@ -515,15 +516,15 @@
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.main">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span>
     <span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">argument_parser_args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-        <span class="n">epilog</span><span class="o">=</span><span class="n">USAGE_EXAMPLES</span><span class="p">,</span>
-        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
-        <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;Knob Extraction Tool.&quot;</span>
-    <span class="p">)</span>
+    <span class="n">argument_parser_args</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;epilog&quot;</span><span class="p">:</span> <span class="n">USAGE_EXAMPLES</span><span class="p">,</span>
+        <span class="s2">&quot;formatter_class&quot;</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
+        <span class="s2">&quot;prog&quot;</span><span class="p">:</span> <span class="s2">&quot;Knob Extraction Tool.&quot;</span>
+    <span class="p">}</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Main knob extracting function. &quot;&quot;&quot;</span>
-    <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> 
+    <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
                              <span class="n">sparkprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spark.ui.showConsoleProgress&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">_parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
@@ -855,19 +856,15 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse delta-string and add time-delta to time. &quot;&quot;&quot;</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">delta_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">MINUS_CHARS</span> <span class="k">else</span> <span class="mi">1</span>
     <span class="n">all_deltas</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)(\w)&quot;</span><span class="p">,</span> <span class="n">delta_str</span><span class="p">)</span>  <span class="c1"># tuples (value, timeunit-char)</span>
-
     <span class="c1"># mapping char to the time-unit as accepted by relativedelta,</span>
     <span class="c1"># following ISO-8601 for time durations</span>
-    <span class="n">char2unit</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">s</span><span class="o">=</span><span class="s1">&#39;seconds&#39;</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="s1">&#39;hours&#39;</span><span class="p">,</span>
-        <span class="n">d</span><span class="o">=</span><span class="s1">&#39;days&#39;</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="s1">&#39;weeks&#39;</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="s1">&#39;months&#39;</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="s2">&quot;years&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-
+    <span class="n">char2unit</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s1">&#39;seconds&#39;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s1">&#39;hours&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s1">&#39;days&#39;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="s1">&#39;weeks&#39;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="s1">&#39;months&#39;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="c1"># add all deltas, which are tuples of (value, timeunit-char)</span>
     <span class="n">time_parts</span> <span class="o">=</span> <span class="p">{</span><span class="n">char2unit</span><span class="p">[</span><span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span> <span class="n">sign</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">all_deltas</span><span class="p">}</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">+</span> <span class="n">relativedelta</span><span class="p">(</span><span class="o">**</span><span class="n">time_parts</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">time</span>
+    <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="n">relativedelta</span><span class="p">(</span><span class="o">**</span><span class="n">time_parts</span><span class="p">)</span>
 
 
 <span class="c1"># Other tools ------------------------------------------------------------------</span>

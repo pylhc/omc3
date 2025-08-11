@@ -228,7 +228,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -237,6 +237,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PI2I</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DELTA</span><span class="p">,</span>
     <span class="n">DISPERSION_NAME</span><span class="p">,</span>
@@ -246,11 +247,11 @@
     <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
     <span class="n">ORBIT_NAME</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpp</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputFiles</span>
@@ -329,7 +330,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_dispersion_2d</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
     <span class="n">dpps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">_is_single_dpp_bin</span><span class="p">(</span><span class="n">dpps</span><span class="p">):</span>
-        <span class="k">return</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="n">order</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">second_order_dispersion</span> <span class="k">else</span> <span class="mi">1</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span>
@@ -375,13 +376,13 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_normalised_dispersion_2d</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
     <span class="c1"># TODO there are no errors from orbit</span>
     <span class="n">plane</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>
-    
+
     <span class="n">dpps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">_is_single_dpp_bin</span><span class="p">(</span><span class="n">dpps</span><span class="p">):</span>
-        <span class="k">return</span>
-    
+        <span class="k">return</span> <span class="kc">None</span>
+
     <span class="n">order</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">second_order_dispersion</span> <span class="k">else</span> <span class="mi">1</span>
-    
+
     <span class="n">model</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">_get_merged_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;CO&#39;</span><span class="p">,</span> <span class="s1">&#39;CORMS&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
     <span class="n">df_orbit</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ND</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_orbit</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;D</span><span class="si">{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
@@ -512,14 +513,14 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_single_dpp_bin</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Checks if the files would be grouped into a single dpp-bin </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Checks if the files would be grouped into a single dpp-bin</span>
 <span class="sd">    by :func:`omc3.optics_measurements.dpp._compute_ranges`. &quot;&quot;&quot;</span>
-    <span class="c1"># alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1 </span>
+    <span class="c1"># alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">dpps</span><span class="p">)):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;DPPs contain NaN values. Skipping dispersion calculation.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># i.e. skip dispersion calculation</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpps</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dpp</span><span class="o">.</span><span class="n">DPP_BIN_TOLERANCE</span> 
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpps</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dpp</span><span class="o">.</span><span class="n">DPP_BIN_TOLERANCE</span>
 </pre></div>
 
            </div>

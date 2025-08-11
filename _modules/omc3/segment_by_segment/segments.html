@@ -219,7 +219,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.segment_by_segment.segments</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; </span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Segments</span>
 <span class="sd">--------</span>
 
@@ -228,9 +228,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tfs.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tfs</span><span class="p">,</span> <span class="n">TfsCollection</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -239,11 +238,11 @@
     <span class="n">BETA_NAME</span><span class="p">,</span>
     <span class="n">DISPERSION_NAME</span><span class="p">,</span>
     <span class="n">EXT</span><span class="p">,</span>
+    <span class="n">F1001_NAME</span><span class="p">,</span>
+    <span class="n">F1010_NAME</span><span class="p">,</span>
     <span class="n">KMOD_BETA_NAME</span><span class="p">,</span>
     <span class="n">NORM_DISP_NAME</span><span class="p">,</span>
     <span class="n">PHASE_NAME</span><span class="p">,</span>
-    <span class="n">F1001_NAME</span><span class="p">,</span>
-    <span class="n">F1010_NAME</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.segment_by_segment.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TWISS_BACKWARD</span><span class="p">,</span>
@@ -252,6 +251,10 @@
     <span class="n">TWISS_FORWARD_CORRECTED</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
 
 <div class="viewcode-block" id="Segment">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment">[docs]</a>
@@ -267,13 +270,13 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_element_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">init_from_element_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize from the string representation for elements </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize from the string representation for elements</span>
 <span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
         <span class="n">segment</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">element_name</span><span class="p">)</span>
         <span class="n">segment</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">element_name</span>
         <span class="k">return</span> <span class="n">segment</span></div>
 
-    
+
 <div class="viewcode-block" id="Segment.init_from_segment_definition">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_segment_definition">[docs]</a>
     <span class="nd">@classmethod</span>
@@ -282,7 +285,7 @@
 <span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">segment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span></div>
 
-    
+
 <div class="viewcode-block" id="Segment.init_from_input">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_input">[docs]</a>
     <span class="nd">@classmethod</span>
@@ -315,7 +318,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SegmentModels</span><span class="p">(</span><span class="n">TfsCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to hold and load the models of the segments created by MAD-X.</span>
-<span class="sd">    The filenames need to be the same as in </span>
+<span class="sd">    The filenames need to be the same as in</span>
 <span class="sd">    :class:`omc3.model.model_creators.abstract_model_creator.SegmentCreator`.</span>
 
 <span class="sd">    Arguments:</span>
@@ -328,7 +331,7 @@
     <span class="n">backward_corrected</span><span class="p">:</span> <span class="n">TfsDataFrame</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">TWISS_BACKWARD_CORRECTED</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="n">Segment</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SegmentModels</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">segment</span> <span class="o">=</span> <span class="n">segment</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -360,8 +363,8 @@
     <span class="n">f1010</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">F1010_NAME</span><span class="si">}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">segment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SegmentDiffs</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">segment_name</span> <span class="o">=</span> <span class="n">segment_name</span> 
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segment_name</span> <span class="o">=</span> <span class="n">segment_name</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">plane</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

@@ -228,13 +228,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_multi_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">COL_NAME</span> <span class="k">as</span> <span class="n">NAME</span>
@@ -252,8 +254,9 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">find_file</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_multi_class</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">CURRENT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
@@ -264,7 +267,7 @@
     <span class="n">FREE</span><span class="p">,</span> <span class="n">ACD</span><span class="p">,</span> <span class="n">ADT</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
 
-<span class="n">DRIVEN_EXCITATIONS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">acd</span><span class="o">=</span><span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">,</span> <span class="n">adt</span><span class="o">=</span><span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ADT</span><span class="p">)</span>
+<span class="n">DRIVEN_EXCITATIONS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;acd&quot;</span><span class="p">:</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">,</span> <span class="s2">&quot;adt&quot;</span><span class="p">:</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ADT</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="AccElementTypes">
@@ -407,25 +410,26 @@
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  model path = </span><span class="si">{</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_DAT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
             <span class="n">bpm_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RE_DICT</span><span class="p">[</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_mask</span><span class="p">,</span> <span class="p">:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Q1&quot;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Q2&quot;</span><span class="p">])]</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;ENERGY&quot;</span><span class="p">])</span>  <span class="c1"># always 450GeV because we do not set it anywhere properly...</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span> <span class="c1">#KEK model does not have energy in the header</span>
-            <span class="k">pass</span>
+
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
+            <span class="c1"># always 450GeV because we do not set it anywhere properly...</span>
+            <span class="c1"># KeyError: KEK model does not have energy in the header for instance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;ENERGY&quot;</span><span class="p">])</span>
 
         <span class="c1"># Excitations #####################################</span>
-        <span class="n">driven_filenames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">acd</span><span class="o">=</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_AC_DAT</span><span class="p">,</span> <span class="n">adt</span><span class="o">=</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ADT_DAT</span><span class="p">)</span>
+        <span class="n">driven_filenames</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;acd&quot;</span><span class="p">:</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_AC_DAT</span><span class="p">,</span> <span class="s2">&quot;adt&quot;</span><span class="p">:</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ADT_DAT</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">driven_filenames</span><span class="p">[</span><span class="s2">&quot;acd&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">driven_filenames</span><span class="p">[</span><span class="s2">&quot;adt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;ADT as well as ACD models provided. Choose only one.&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">driven_filenames</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">driven_filenames</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">driven_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">=</span> <span class="n">DRIVEN_EXCITATIONS</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model_driven</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">driven_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">model_driven</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Q1&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_driven</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Q2&quot;</span><span class="p">]]</span>
 
         <span class="c1"># Best Knowledge #####################################</span>

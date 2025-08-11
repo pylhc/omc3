@@ -226,6 +226,8 @@
 <span class="sd">Functions for easier use of logging, like automatic logger setup</span>
 <span class="sd">(see: :meth:`~utils.logging_tools.get_logger`).</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -251,7 +253,7 @@
 
 <span class="n">DIVIDER</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span>
 <span class="n">NEWLINE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># levelname + divider + 2</span>
-<span class="n">BASIC_FORMAT</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(levelname)7s</span><span class="s1"> </span><span class="si">{div:s}</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1"> </span><span class="si">{div:s}</span><span class="s1"> </span><span class="si">%(name)s</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">div</span><span class="o">=</span><span class="n">DIVIDER</span><span class="p">)</span>
+<span class="n">BASIC_FORMAT</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;%(levelname)7s </span><span class="si">{</span><span class="n">DIVIDER</span><span class="si">:</span><span class="s1">s</span><span class="si">}</span><span class="s1"> %(message)s </span><span class="si">{</span><span class="n">DIVIDER</span><span class="si">:</span><span class="s1">s</span><span class="si">}</span><span class="s1"> %(name)s&#39;</span>
 <span class="n">COLOR_LEVEL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;150;150;255m&#39;</span>
 <span class="n">COLOR_MESSAGE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m&#39;</span>
 <span class="n">COLOR_MESSAGE_LOW</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\33</span><span class="s1">[0m</span><span class="se">\33</span><span class="s1">[38;2;140;140;140m&#39;</span>
@@ -268,7 +270,7 @@
 
 <div class="viewcode-block" id="MaxFilter">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.MaxFilter">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MaxFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MaxFilter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;To get messages only up to a certain level.&quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__level</span> <span class="o">=</span> <span class="n">level</span>
@@ -280,7 +282,7 @@
 
 <div class="viewcode-block" id="DebugMode">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.DebugMode">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">DebugMode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DebugMode</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context Manager for the debug mode.</span>
 <span class="sd">    Hint: Does not work with ``@contextmanager`` from contextlib (even though nicer code),</span>
@@ -305,12 +307,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Running in Debug-Mode.&quot;</span><span class="p">)</span>
 
             <span class="c1"># create logfile name:</span>
-            <span class="n">now</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:s}</span><span class="s2">_&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">_&quot;</span>
             <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">caller_file</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.pyc&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span>
                                                                                     <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">log_file</span><span class="p">),</span> <span class="n">now</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">log_file</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing log to file &#39;</span><span class="si">{:s}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing log to file &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 
             <span class="c1"># add handlers</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">file_h</span> <span class="o">=</span> <span class="n">file_handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">)</span>
@@ -329,9 +331,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
             <span class="c1"># summarize</span>
             <span class="n">time_used</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
-            <span class="n">log_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&#39;</span><span class="si">{:s}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Exiting Debug-Mode </span><span class="si">{:s}</span><span class="s2"> after </span><span class="si">{:f}</span><span class="s2">s.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_id</span><span class="p">,</span> <span class="n">time_used</span><span class="p">))</span>
+            <span class="n">log_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exiting Debug-Mode </span><span class="si">{</span><span class="n">log_id</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">time_used</span><span class="si">:</span><span class="s2">f</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>
 
             <span class="c1"># revert everything</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_level</span><span class="p">)</span>
@@ -342,7 +343,7 @@
 
 <div class="viewcode-block" id="TempFile">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.logging_tools.TempFile">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TempFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TempFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context Manager. Lets another function write into a temporary file and logs its contents.</span>
 <span class="sd">    It won&#39;t open the file, so only the files path is returned.</span>
@@ -361,11 +362,11 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_func</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:s}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="n">content</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_func</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:s}</span><span class="s2">: -file does not exist-&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_func</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">content</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_func</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">: -file does not exist-&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
 
@@ -387,7 +388,7 @@
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">log_func</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:s}</span><span class="s2"> (l. </span><span class="si">{:d}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">caller_line</span><span class="p">))</span>
+                <span class="n">log_func</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2"> (l. </span><span class="si">{</span><span class="n">caller_line</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="n">old_mode</span></div>
 
@@ -648,8 +649,7 @@
                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
                     <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
 
-    <span class="n">current_module</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_parts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">repo_parts</span><span class="p">):</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">current_module</span>
+    <span class="k">return</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_parts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">repo_parts</span><span class="p">):</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_caller_logger_name</span><span class="p">():</span>
@@ -687,9 +687,7 @@
 
     <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">COLOR_NAME</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
     <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">DIVIDER</span><span class="p">,</span> <span class="n">COLOR_DIVIDER</span> <span class="o">+</span> <span class="n">DIVIDER</span><span class="p">)</span>
-    <span class="n">format_string</span> <span class="o">=</span> <span class="n">format_string</span> <span class="o">+</span> <span class="n">COLOR_RESET</span>
-
-    <span class="k">return</span> <span class="n">format_string</span>
+    <span class="k">return</span> <span class="n">format_string</span> <span class="o">+</span> <span class="n">COLOR_RESET</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_isatty</span><span class="p">():</span>

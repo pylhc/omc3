@@ -329,27 +329,22 @@
 <span class="sd">- **y_lim** *(float)*:</span>
 
 <span class="sd">    Tune limits in units of tune scale (y-axis).</span>
-
-
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entry_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictAsString</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatplotlibDeprecationWarning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatplotlibDeprecationWarning</span><span class="p">,</span> <span class="n">rcParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">colors</span> <span class="k">as</span> <span class="n">mcolors</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.axes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">odr</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tfs.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">significant_digits</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span><span class="p">,</span> <span class="n">UNIT_IN_METERS</span>
@@ -359,10 +354,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">const</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">fitting_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">kick_file_modifiers</span> <span class="k">as</span> <span class="n">kick_mod</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis.kick_file_modifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmpDetData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress_warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">UnionPathStr</span><span class="p">,</span> <span class="n">save_config</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.axes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">odr</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.tune_analysis.kick_file_modifiers</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmpDetData</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -372,85 +376,85 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
-        <span class="n">kicks</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Kick files as data frames or tfs files.&quot;</span><span class="p">,</span>
-            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">labels</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Labels for the data. Needs to be same length as kicks.&quot;</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">plane</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plane of the kicks.&quot;</span><span class="p">,</span>
-            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PLANES</span><span class="p">),</span> <span class="s1">&#39;3D&#39;</span><span class="p">],</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">detuning_order</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Order of the detuning as int. Basically just the order of the applied fit.&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">correct_acd</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Correct for AC-Dipole kicks.&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">output</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Save the amplitude detuning plot here. &quot;</span>
+        <span class="n">kicks</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Kick files as data frames or tfs files.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Labels for the data. Needs to be same length as kicks.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">plane</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Plane of the kicks.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PLANES</span><span class="p">),</span> <span class="s1">&#39;3D&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">detuning_order</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Order of the detuning as int. Basically just the order of the applied fit.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">correct_acd</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Correct for AC-Dipole kicks.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">output</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Save the amplitude detuning plot here. &quot;</span>
                   <span class="s2">&quot;Give filename with extension. An id for the 4 different &quot;</span>
                   <span class="s2">&quot;plots will be added before the suffix.&quot;</span><span class="p">),</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">show</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show the amplitude detuning plot.&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">y_lim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tune limits in units of tune scale (y-axis).&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">x_lim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Action limits in um (x-axis).&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">action_unit</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Unit the action is given in.&quot;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">UNIT_IN_METERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">action_plot_unit</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Unit the action should be plotted in.&quot;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;um&quot;</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">UNIT_IN_METERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">manual_style</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">DictAsString</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional style rcParameters which update the set of predefined ones.&#39;</span>
-        <span class="p">),</span>
-        <span class="n">plot_styles</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plotting styles.&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">UnionPathStr</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude_detuning&#39;</span><span class="p">],</span>
-        <span class="p">),</span>
-        <span class="n">tune_scale</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plotting exponent of the tune.&quot;</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">bbq_corrected</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plot the data with BBQ correction (``True``) or without (``False``).&quot;</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">show</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Show the amplitude detuning plot.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">y_lim</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Tune limits in units of tune scale (y-axis).&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">x_lim</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Action limits in um (x-axis).&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">action_unit</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Unit the action is given in.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">UNIT_IN_METERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">action_plot_unit</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Unit the action should be plotted in.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;um&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">UNIT_IN_METERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">manual_style</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">DictAsString</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s1">&#39;Additional style rcParameters which update the set of predefined ones.&#39;</span>
+        <span class="p">},</span>
+        <span class="n">plot_styles</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Plotting styles.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">UnionPathStr</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude_detuning&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+        <span class="n">tune_scale</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Plotting exponent of the tune.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">bbq_corrected</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Plot the data with BBQ correction (``True``) or without (``False``).&quot;</span>
                  <span class="s2">&quot; ``None`` plots both in separate plots. Default: ``None``.&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
-        <span class="p">)</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="p">}</span>
     <span class="p">)</span>
 
 
@@ -480,7 +484,7 @@
 
 <span class="c1"># 2D Plots ----------------------------</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_plot_2d</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_2d</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Figure</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 2D Plots per kick-plane and with/without BBQ correction. &quot;&quot;&quot;</span>
     <span class="n">figs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">limits</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get_subdict</span><span class="p">([</span><span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="s1">&#39;y_lim&#39;</span><span class="p">])</span>
@@ -579,12 +583,9 @@
     <span class="n">f_low</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">fit_fun</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">))</span>
     <span class="n">f_upp</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">fit_fun</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">NFIT</span><span class="p">)</span>
-
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">])</span> <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">NFIT</span><span class="p">)</span>
     <span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">color</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_color</span><span class="p">()</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f_low</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">f_upp</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="mf">.3</span><span class="p">),</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">10</span><span class="p">)</span>
@@ -593,7 +594,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_plot_detuning</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">AmpDetData</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">limits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+                   <span class="n">limits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the detuning and the ODR into axes.&quot;&quot;&quot;</span>
     <span class="n">x_lim</span> <span class="o">=</span> <span class="n">_get_default</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">action</span><span class="o">+</span><span class="n">data</span><span class="o">.</span><span class="n">action_err</span><span class="p">)])</span>
     <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
@@ -610,7 +611,7 @@
                 <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_format_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
     <span class="c1"># labels</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -724,7 +725,7 @@
     <span class="k">return</span> <span class="n">figs</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_plot_detuning_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AmpDetData</span><span class="p">],</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_fits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_detuning_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AmpDetData</span><span class="p">],</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_fits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Plot the detuning and the ODR into axes.&quot;&quot;&quot;</span>
     <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">jx</span><span class="p">,</span> <span class="n">jx_err</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">.</span><span class="n">action_err</span>
@@ -775,7 +776,7 @@
 
 <div class="viewcode-block" id="plot_odr_3d">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr_3d">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_odr_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">odr_fits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">],</span> <span class="n">xymax</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_odr_3d</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">odr_fits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">odr</span><span class="o">.</span><span class="n">Output</span><span class="p">],</span> <span class="n">xymax</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the odr fit in 3D.&quot;&quot;&quot;</span>
 
     <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span> <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">color</span>
@@ -856,8 +857,8 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_format_axes_3d</span><span class="p">(</span>
-        <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">ax_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">acd</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">ax_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">acd</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="c1"># labels</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">ax_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ax_labels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
@@ -1008,7 +1009,6 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-
 </pre></div>
 
            </div>

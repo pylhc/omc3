@@ -226,7 +226,7 @@
 <span class="sd">as a standalone script to allow for manual refinement after harpy is done.</span>
 
 <span class="sd">The type of cleaning is determined by the number of values in the ``limit``</span>
-<span class="sd">parameter. When no ``limit`` is given or a single number is given, </span>
+<span class="sd">parameter. When no ``limit`` is given or a single number is given,</span>
 <span class="sd">auto-cleaning is performed:</span>
 
 <span class="sd">All data is assumed to be gaussian distributed around a &quot;true&quot; value,</span>
@@ -242,7 +242,7 @@
 <span class="sd">cleaned. The limit is given in whatever units the data itself is in and</span>
 <span class="sd">is an absolute value.</span>
 
-<span class="sd">If two values are given for the ``limit`` parameter, all data-points in between </span>
+<span class="sd">If two values are given for the ``limit`` parameter, all data-points in between</span>
 <span class="sd">these limits are kept and all data-points outside of these limits are cleaned.</span>
 
 <span class="sd">Cleaning is done per given file independently</span>
@@ -307,16 +307,14 @@
 <span class="sd">as well, as it only cleans on TUNE, not on NATTUNE.</span>
 <span class="sd">And it requires an accelerator instance.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Number</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">entrypoint</span><span class="p">,</span> <span class="n">EntryPointParameters</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKUP_FILENAME</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">COL_NAME</span>
@@ -325,46 +323,52 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.outliers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_filter_mask</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Number</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
-        <span class="n">files</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of paths to the lin-files, including suffix.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">files</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="s2">&quot;List of paths to the lin-files, including suffix.&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="c1"># restore backup</span>
-        <span class="n">restore</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Restore the latest backup of the files. &quot;</span>
+        <span class="n">restore</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Restore the latest backup of the files. &quot;</span>
                   <span class="s2">&quot;If this parameter is given, no cleaning is performed.&quot;</span><span class="p">),</span>
-        <span class="p">),</span>
+        <span class="p">},</span>
         <span class="c1"># for actual cleaning</span>
-        <span class="n">columns</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Columns to clean on.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">limit</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Two values: Do not clean data-points in between these values. &quot;</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="s2">&quot;Columns to clean on.&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">limit</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="s2">&quot;Two values: Do not clean data-points in between these values. &quot;</span>
                  <span class="s2">&quot;Single value (auto-clean): Do not clean data-points deviating less than this limit from the average.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">keep</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not clean BPMs with given names.&quot;</span><span class="p">,</span>
-        <span class="p">),</span>
-        <span class="n">backup</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Create a backup of the files before overwriting. &quot;</span>
+        <span class="p">},</span>
+        <span class="n">keep</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="s2">&quot;Do not clean BPMs with given names.&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">backup</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Create a backup of the files before overwriting. &quot;</span>
                   <span class="s2">&quot;The backups are numbered, with the highest number being &quot;</span>
                   <span class="s2">&quot;the latest backup.&quot;</span><span class="p">)</span>
-        <span class="p">),</span>
+        <span class="p">},</span>
     <span class="p">)</span>
 
 
@@ -389,21 +393,21 @@
 
 <div class="viewcode-block" id="restore_files">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.linfile_clean.restore_files">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">restore_files</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">restore_files</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore backupped files.&quot;&quot;&quot;</span>
     <span class="n">failed</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
         <span class="n">file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_restore_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed</span><span class="p">):</span>
         <span class="n">all_errors</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restoration of ALL files has failed</span><span class="se">\n</span><span class="si">{</span><span class="n">all_errors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restoration of some files has failed, &quot;</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restoration of ALL files has failed</span><span class="se">\n</span><span class="si">{</span><span class="n">all_errors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restoration of some files has failed, &quot;</span>
                       <span class="sa">f</span><span class="s2">&quot;but the others were restored:</span><span class="se">\n</span><span class="si">{</span><span class="n">all_errors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Restoration successfully completed.&quot;</span><span class="p">)</span></div>
@@ -414,7 +418,7 @@
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">backup_file</span> <span class="o">=</span> <span class="n">_get_backup_filepath</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">backup_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No backups found for file </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No backups found for file </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># get last existing backup file</span>
     <span class="k">while</span> <span class="n">backup_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -431,7 +435,7 @@
 
 <div class="viewcode-block" id="clean_columns">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.linfile_clean.clean_columns">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">clean_columns</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> 
+<span class="k">def</span><span class="w"> </span><span class="nf">clean_columns</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
                   <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                   <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>   <span class="c1"># default set in _check_limits</span>
                   <span class="n">keep</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># default set below</span>
@@ -464,7 +468,7 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_check_limits</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Number</span><span class="p">],</span> <span class="n">Number</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Number</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_limits</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Number</span><span class="p">]</span> <span class="o">|</span> <span class="n">Number</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Number</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Check that one or two limits are given and convert them into a tuple if needed.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">limit</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,)</span>
@@ -483,7 +487,7 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected 1 or 2 limits, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="n">limit</span>
 
 
@@ -498,7 +502,7 @@
         <span class="n">good_bpms</span> <span class="o">=</span> <span class="n">get_filter_mask</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">|</span> <span class="n">keep_bpms</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">good_bpms</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="o">*</span><span class="n">limit</span><span class="p">)</span> <span class="o">|</span> <span class="n">keep_bpms</span>
-    
+
     <span class="n">n_good</span><span class="p">,</span> <span class="n">n_total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">good_bpms</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_bpms</span><span class="p">)</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cleaned </span><span class="si">{</span><span class="n">n_total</span><span class="o">-</span><span class="n">n_good</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">n_total</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> elements in </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">n_good</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> remaining).&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">good_bpms</span><span class="p">,</span> <span class="p">:]</span>

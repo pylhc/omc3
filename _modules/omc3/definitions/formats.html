@@ -225,8 +225,10 @@
 
 <span class="sd">Recurring formats are defined here.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;%Y_%m_</span><span class="si">%d</span><span class="s2">@%H_%M_%S_</span><span class="si">%f</span><span class="s2">&quot;</span>  <span class="c1"># CERN default</span>
 <span class="n">CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{script:s}</span><span class="s2">_</span><span class="si">{time:s}</span><span class="s2">.ini&quot;</span>
@@ -241,7 +243,6 @@
         <span class="n">script</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">script</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span>
         <span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">TIME</span><span class="p">)</span>
     <span class="p">)</span></div>
-
 
 </pre></div>
 

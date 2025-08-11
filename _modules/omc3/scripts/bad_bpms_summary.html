@@ -232,9 +232,9 @@
 
 <span class="sd">  Get bad BPMs for LHC-Beam 1 from September 2024 and 2024-10-03</span>
 
-<span class="sd">  .. code-block:: none </span>
+<span class="sd">  .. code-block:: none</span>
 
-<span class="sd">    python -m omc3.scripts.bad_bpms_summary --dates 2024-09-* 2024-10-03 --accel_glob LHCB1 --outfile bad_bpms_sep_2024.txt  --print_percentage 50 </span>
+<span class="sd">    python -m omc3.scripts.bad_bpms_summary --dates 2024-09-* 2024-10-03 --accel_glob LHCB1 --outfile bad_bpms_sep_2024.txt  --print_percentage 50</span>
 
 
 
@@ -288,10 +288,11 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.iforest</span><span class="w"> </span><span class="kn">import</span> <span class="n">FEATURE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">OptionalFloat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionalFloat</span><span class="p">,</span> <span class="n">PathOrStr</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -357,12 +358,12 @@
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outfile&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the file to write out.&quot;</span> 
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the file to write out.&quot;</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;print_percentage&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">OptionalFloat</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print out BPMs that appear in more than this percentage of measurements.&quot;</span> 
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print out BPMs that appear in more than this percentage of measurements.&quot;</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accel_glob&quot;</span><span class="p">,</span>
@@ -379,11 +380,11 @@
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">outfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outfile</span><span class="p">)</span>
         <span class="n">outfile</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
+
     <span class="n">df_collection</span> <span class="o">=</span> <span class="n">collect_bad_bpms</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="n">opt</span><span class="o">.</span><span class="n">dates</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">accel_glob</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="o">.</span><span class="n">with_stem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">outfile</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_collected&quot;</span><span class="p">),</span> <span class="n">merge_reasons</span><span class="p">(</span><span class="n">df_collection</span><span class="p">))</span>
-    
+
     <span class="n">df_evaluated</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">df_collection</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">merge_reasons</span><span class="p">(</span><span class="n">df_evaluated</span><span class="p">))</span>
@@ -426,7 +427,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms within selected dates.</span>
-<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -442,28 +443,28 @@
         <span class="k">if</span> <span class="n">date_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
             <span class="n">collect_and_append</span><span class="p">(</span><span class="n">date_dir</span><span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>  
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">date_dir</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>
                 <span class="n">collect_and_append</span><span class="p">(</span><span class="n">date_dir</span><span class="p">)</span>
-    
+
     <span class="c1"># Check and return ---</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">):</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No bad-bpms found! Resulting TfsDataFrame will be empty.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">get_empty_df</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> </div>
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="collect_date">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_date">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">collect_date</span><span class="p">(</span><span class="n">date_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">accel_glob</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Collect bad-bpms for a single date, by checking the sub-directories </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Collect bad-bpms for a single date, by checking the sub-directories</span>
 <span class="sd">    which conform to the `accel_glob` pattern.</span>
 
 <span class="sd">    In each accel directory, check for sub-directories named `Measurements` and `Results`,</span>
 <span class="sd">    which in turn contain which in turn have entries containing the bad-bpms files.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        date_dir (Path): Path to the date directory.</span>
 <span class="sd">        accel_glob (str): Accelerator name (glob for the sub-directories).</span>
@@ -475,7 +476,7 @@
 
     <span class="k">for</span> <span class="n">accel_dir</span> <span class="ow">in</span> <span class="n">date_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">accel_glob</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">subdir_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MEASUREMENTS_DIR</span><span class="p">,</span> <span class="n">RESULTS_DIR</span><span class="p">):</span>
-            <span class="n">analysis_stage_dir</span> <span class="o">=</span> <span class="n">accel_dir</span> <span class="o">/</span> <span class="n">subdir_name</span> 
+            <span class="n">analysis_stage_dir</span> <span class="o">=</span> <span class="n">accel_dir</span> <span class="o">/</span> <span class="n">subdir_name</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">analysis_stage_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
                 <span class="k">continue</span>
 
@@ -491,21 +492,21 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> </div>
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-    
+
 
 <div class="viewcode-block" id="collect_bad_bpm_files_in_dir">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpm_files_in_dir">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">collect_bad_bpm_files_in_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Collect bad-bpms for a single measurement directory.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        directory (Path): Path to the directory possibly containing bad-bpm files of type `file_types`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.TfsDataFrame: TfsDataFrame with all bad-bpms from the given directory.</span>
-<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">readers_map</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">BAD_BPMS_HARPY</span><span class="p">:</span> <span class="n">read_harpy_bad_bpms_file</span><span class="p">,</span>
@@ -522,18 +523,18 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
-    
+
     <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 
 <span class="c1"># File Readers --</span>
-            
+
 <div class="viewcode-block" id="read_harpy_bad_bpms_file">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.read_harpy_bad_bpms_file">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_harpy_bad_bpms_file</span><span class="p">(</span><span class="n">svd_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Reads a harpy bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        svd_file (Path): Path to the bad-bpm file.</span>
 
@@ -547,14 +548,14 @@
 
     <span class="n">plane</span> <span class="o">=</span> <span class="n">svd_file</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="c1"># Read and parse file </span>
+    <span class="c1"># Read and parse file</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">svd_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
 
     <span class="c1"># filter bpms/lines</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">COMMENT</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TO_IGNORE</span><span class="p">]</span>
-    
+
     <span class="c1"># group bpm names and attach reasons</span>
     <span class="n">bpms</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
@@ -568,7 +569,7 @@
             <span class="k">if</span> <span class="s2">&quot;unknown&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">[</span><span class="n">bpm</span><span class="p">]:</span>
                 <span class="n">bpms</span><span class="p">[</span><span class="n">bpm</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;unknown&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Create DataFrame    </span>
+    <span class="c1"># Create DataFrame</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">get_empty_df</span><span class="p">()</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">NAME</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">REASONS</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">bpms</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>  <span class="c1"># each entry is a list</span>
@@ -583,7 +584,7 @@
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.read_iforest_bad_bpms_file">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_iforest_bad_bpms_file</span><span class="p">(</span><span class="n">iforest_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Reads an iforest bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        iforest_file (Path): Path to the bad-bpm file.</span>
 
@@ -601,7 +602,7 @@
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">NAME</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">REASONS</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">bpms</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">PLANE</span><span class="p">]</span> <span class="o">=</span> <span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">SOURCE</span><span class="p">]</span> <span class="o">=</span> <span class="n">IFOREST</span> 
+    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">SOURCE</span><span class="p">]</span> <span class="o">=</span> <span class="n">IFOREST</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">FILE</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">iforest_file</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
 
@@ -620,7 +621,7 @@
 <span class="sd">    - Count the total number of (unique) files for each combination of accelerator, source and plane</span>
 
 <span class="sd">    From this information the percentage of how often a BPM is deemed bad is calculated.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        df (tfs.TfsDataFrame): TfsDataFrame with all bad-bpms.</span>
 
@@ -646,17 +647,16 @@
     <span class="n">df_counted</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">PERCENTAGE</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
         <span class="p">(</span><span class="n">df_counted</span><span class="p">[</span><span class="n">COUNT</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_counted</span><span class="p">[</span><span class="n">FILE_COUNT</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span>
     <span class="p">)</span>
-    
-    <span class="n">df_counted</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">df_counted</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">PERCENTAGE</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">df_counted</span></div>
+
+    <span class="k">return</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">df_counted</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">PERCENTAGE</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="print_results">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.print_results">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_results</span><span class="p">(</span><span class="n">df_counted</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">print_percentage</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Log the results to console (INFO level if logger is setup, print otherwise). </span>
-<span class="sd">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Log the results to console (INFO level if logger is setup, print otherwise).</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        df_counted (tfs.TfsDataFrame): TfsDataFrame with the evaluated results.</span>
 <span class="sd">        print_percentage (float): Print out BPMs that appear in more than this percentage of measurements.</span>
@@ -665,7 +665,7 @@
     <span class="n">printer</span> <span class="o">=</span> <span class="nb">print</span>
     <span class="k">if</span> <span class="n">LOG</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
         <span class="n">printer</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">info</span>
-    
+
     <span class="n">planes</span> <span class="o">=</span> <span class="n">df_counted</span><span class="p">[</span><span class="n">PLANE</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 
     <span class="n">printer</span><span class="p">(</span><span class="s2">&quot;Bad BPMs Summary. Hint: &#39;[BPM]&#39; were filtered as known bad BPMs.&quot;</span><span class="p">)</span>
@@ -691,24 +691,24 @@
                 <span class="c1"># Print Table ---</span>
                 <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;BPM&#39;</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;X&#39;</span><span class="si">:</span><span class="s2">^18s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;Y&#39;</span><span class="si">:</span><span class="s2">^18s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;Reasons&#39;</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2">  &quot;</span> <span class="o">+</span> 
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2">  &quot;</span> <span class="o">+</span>
                     <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                        <span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="si">{:^18s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FILE_COUNT</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span> <span class="k">else</span> 
+
+                        <span class="s2">&quot;</span><span class="si">{:^18s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FILE_COUNT</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span> <span class="k">else</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PERCENTAGE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">% &quot;</span>
                         <span class="s2">&quot;</span><span class="si">{:&lt;11s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COUNT</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FILE_COUNT</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
                         <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
-                        <span class="p">)</span>
+
                     <span class="p">)</span> <span class="o">+</span>
                     <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="s2">&quot; | &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">REASONS</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">REASONS</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">]))</span>
-                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> 
+                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
                 <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Print a list ---</span>
                 <span class="n">df_filtered</span> <span class="o">=</span> <span class="n">df_counted</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">percentage_mask</span> <span class="o">&amp;</span> <span class="n">source_mask</span> <span class="o">&amp;</span> <span class="n">accel_mask</span><span class="p">,</span> <span class="p">:]</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">PLANE</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">PERCENTAGE</span><span class="p">]</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">% (</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">COUNT</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">FILE_COUNT</span><span class="p">]</span><span class="si">}</span><span class="s2">)  </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">REASONS</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span> 
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;20s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">PLANE</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">PERCENTAGE</span><span class="p">]</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">% (</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">COUNT</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="n">FILE_COUNT</span><span class="p">]</span><span class="si">}</span><span class="s2">)  </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">REASONS</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
                 <span class="p">)</span>
             <span class="n">printer</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Highest bad BPMs of </span><span class="si">{</span><span class="n">accel</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
