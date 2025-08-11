@@ -331,7 +331,7 @@ def stream_handler(stream=sys.stdout, level=DEBUG, fmt=BASIC_FORMAT, max_level=N
 
 def add_module_handler(handler):
     """Add handler at current module level."""
-    current_module = _get_current_module()
+    current_module: str = _get_current_module()
     logging.getLogger(current_module).addHandler(handler)
 
 
@@ -366,7 +366,7 @@ def _get_caller() -> str:
     return str(caller_file)
 
 
-def _get_current_module(current_file=None) -> str:
+def _get_current_module(current_file: str | None = None) -> str:
     """Find the name of the current module."""
     if not current_file:
         current_file = _get_caller()
