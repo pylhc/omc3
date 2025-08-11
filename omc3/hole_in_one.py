@@ -31,18 +31,10 @@ To run either of the two or both steps, see options ``--harpy`` and ``--optics``
 """
 from __future__ import annotations
 
-<<<<<<< HEAD
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-=======
-import os
-from copy import deepcopy
-from datetime import datetime, timezone
-from os.path import abspath, basename, dirname, join
-from typing import TYPE_CHECKING
->>>>>>> master
 
 import turn_by_turn as tbt
 from generic_parser.entrypoint_parser import (

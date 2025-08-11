@@ -7,11 +7,7 @@ It provides functions to calculate beta functions from amplitude data.
 """
 from __future__ import annotations
 
-<<<<<<< HEAD
 from pathlib import Path
-=======
-from os.path import join
->>>>>>> master
 from typing import TYPE_CHECKING
 
 import numpy as np

@@ -6,10 +6,6 @@ Common functions and sorting functions for the spectrum plotter.
 """
 from __future__ import annotations
 
-<<<<<<< HEAD
-=======
-import os
->>>>>>> master
 from collections import OrderedDict
 from contextlib import suppress
 from pathlib import Path

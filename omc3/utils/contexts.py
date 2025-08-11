@@ -33,16 +33,8 @@ def silence():
     """
     Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.
     """
-<<<<<<< HEAD
     with Path(os.devnull).open("w") as devnull, log_out(stdout=devnull, stderr=devnull):
         yield
-=======
-    with open(os.devnull, "w") as devnull, log_out(stdout=devnull, stderr=devnull):
-        try:
-            yield
-        finally:
-            devnull.close()
->>>>>>> master
 
 
 @contextmanager

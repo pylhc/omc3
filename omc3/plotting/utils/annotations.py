@@ -26,11 +26,7 @@ ylabels: dict[str, str] = {
     "alpha":              r'$\alpha_{{{0}}} \quad [m]$',
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
-<<<<<<< HEAD
     "betabeat_permil":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$' '\u2030'r'$]$',  # noqa: ISC001 (wtf JoschD)
-=======
-    "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$' '\u2030'r'$]$',
->>>>>>> master
     "dbeta":              r"$\beta'_{{{0}}} \quad [m]$",
     "dbetabeat":          r'$1 \; / \; \beta_{{{0}}} \cdot \partial\beta_{{{0}}} \; / \; \partial\delta_{{{0}}}$',
     "norm_dispersion":    r'D$_{{{0}}} \; / \; \sqrt{{\beta_{{{0}}}}} \quad \left[\sqrt{{\rm m}}\right]$',

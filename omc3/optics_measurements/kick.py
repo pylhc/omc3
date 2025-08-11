@@ -8,11 +8,7 @@ It provides functions to compute kick actions.
 from __future__ import annotations
 
 from contextlib import suppress
-<<<<<<< HEAD
 from pathlib import Path
-=======
-from os.path import join
->>>>>>> master
 from typing import TYPE_CHECKING
 
 import numpy as np

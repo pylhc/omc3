@@ -313,11 +313,7 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
     lines = [(line[0].strip(), line[1].lower().strip()) for line in lines]
 
     # filter bpms/lines
-<<<<<<< HEAD
     lines = [line for line in lines if not line[0].startswith(comment) and line[1] not in to_ignore]
-=======
-    lines = [line for line in lines if not line[0].startswith(COMMENT) and line[1] not in TO_IGNORE]
->>>>>>> master
 
     # group bpm names and attach reasons
     bpms = defaultdict(list)

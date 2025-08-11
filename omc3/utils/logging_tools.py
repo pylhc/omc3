@@ -83,14 +83,8 @@ class DebugMode:
             # create logfile name:
             now = f"{datetime.datetime.now().isoformat():s}_"
             if log_file is None:
-<<<<<<< HEAD
                 log_file = str(Path(caller_file).resolve().with_suffix(".log"))
             self.log_file = str(Path(log_file).parent / (now + Path(log_file).name))
-=======
-                log_file = os.path.abspath(caller_file).replace(".pyc", "").replace(".py",
-                                                                                    "") + ".log"
-            self.log_file = os.path.join(os.path.dirname(log_file), now + os.path.basename(log_file))
->>>>>>> master
             self.logger.debug(f"Writing log to file '{self.log_file:s}'.")
 
             # add handlers
@@ -110,11 +104,7 @@ class DebugMode:
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
-<<<<<<< HEAD
             log_id = "" if self.log_file is None else f"'{Path(self.log_file).name}'"
-=======
-            log_id = "" if self.log_file is None else f"'{os.path.basename(self.log_file):s}'"
->>>>>>> master
             self.logger.debug(f"Exiting Debug-Mode {log_id:s} after {time_used:f}s.")
 
             # revert everything
@@ -142,12 +132,7 @@ class TempFile:
 
     def __exit__(self, value, traceback):
         try:
-<<<<<<< HEAD
             content = Path(self.path).read_text()
-=======
-            with open(self.path) as f:
-                content = f.read()
->>>>>>> master
             self.log_func(f"{self.path:s}:\n" + content)
         except OSError:
             self.log_func(f"{self.path:s}: -file does not exist-")
@@ -386,19 +371,12 @@ def _get_current_module(current_file=None) -> str:
     if not current_file:
         current_file = _get_caller()
 
-<<<<<<< HEAD
     # path_parts = os.path.abspath(current_file).split(os.path.sep)
     # repo_parts = os.path.abspath(
     #     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
     # ).split(os.path.sep)
     path_parts: tuple[str] = Path(current_file).resolve().parts
     repo_parts = Path(__file__).resolve().parent.parent.parts
-=======
-    repo_parts = os.path.abspath(
-                    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
-                    ).split(os.path.sep)
-
->>>>>>> master
     return '.'.join(path_parts[len(repo_parts):-1])
 
 

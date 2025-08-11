@@ -80,11 +80,7 @@ class PsBaseModelCreator(ModelCreator, ABC):
 
         # if no `.beam` file is found, try any madx job file, maybe we get lucky there
         if not len(possible_beam_files):
-<<<<<<< HEAD
             possible_beam_files: list[Path] = list(cycle_point_path.glob("*.*job"))
-=======
-            possible_beam_files = list(cycle_point_path.glob("*.*job"))
->>>>>>> master
 
             if not len(possible_beam_files):
                 raise AcceleratorDefinitionError(f"No beam file found in {cycle_point_path}")

@@ -8,12 +8,8 @@ single-bunch `TbtData`.
 """
 from __future__ import annotations
 
-<<<<<<< HEAD
 from pathlib import Path
 from typing import TYPE_CHECKING
-=======
-from os.path import basename, join
->>>>>>> master
 
 import numpy as np
 import pandas as pd

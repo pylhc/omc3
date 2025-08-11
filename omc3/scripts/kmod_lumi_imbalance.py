@@ -204,11 +204,7 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
     ip_a, ip_b = df_effective_betas.index
     lumi_imb, lumi_imb_err = get_imbalance_w_err(
         *tuple(df_effective_betas.loc[ip_a, :]),
-<<<<<<< HEAD
         *tuple(df_effective_betas.loc[ip_b, :]),
-=======
-        *tuple(df_effective_betas.loc[ip_b, :])
->>>>>>> master
     )
 
     df_effective_betas.headers[f'{LUMINOSITY}{IMBALANCE}'] = lumi_imb
@@ -223,11 +219,7 @@ def get_imbalance_w_err(
     ) -> tuple[float, float]:
     """
     Calculate the luminosity imbalance IP_A / IP_B  and its error, based on the effective betas for IP_A and IP_B.
-<<<<<<< HEAD
     This implies that all the other beam parameters (see Eq (17) in https://cds.cern.ch/record/941318/files/p361.pdf)
-=======
-    This implies, that all the other beam parameters (see e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf)
->>>>>>> master
     are the same for both IPs.
     """
     result = beta_ip_b / beta_ip_a  # inverse due to beta in the denominator for lumi
@@ -235,15 +227,9 @@ def get_imbalance_w_err(
     return result, err
 
 
-<<<<<<< HEAD
 def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float, float]:
     """ Calculates the effective beta*, i.e. the denominator of the luminosity as given in
     Eq(17) of https://cds.cern.ch/record/941318/files/p361.pdf without any constants
-=======
-def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
-    """ Calculates the effective beta*, i.e. the denominator of the luminosity as given in e.g.
-    Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf , without any constants
->>>>>>> master
     as we assume here that these are equal for both IPs, and we only care about the ratio.
     """
     b1x, b1y, b2x, b2y = _get_betastar_beams(df_ip)
@@ -257,17 +243,12 @@ def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
     # Error propagation:
     dbeta_db1x = dbeta_db2x = 0.25 * sqrt_y / sqrt_x
     dbeta_db1y = dbeta_db2y = 0.25 * sqrt_x / sqrt_y
-<<<<<<< HEAD
     sigma = np.sqrt(
         (dbeta_db1x * db1x) ** 2
         + (dbeta_db1y * db1y) ** 2
         + (dbeta_db2x * db2x) ** 2
         + (dbeta_db2y * db2y) ** 2
     )
-=======
-    sigma = np.sqrt((dbeta_db1x * db1x) ** 2 + (dbeta_db1y * db1y) ** 2 +
-                    (dbeta_db2x * db2x) ** 2 + (dbeta_db2y * db2y) ** 2)
->>>>>>> master
     return beta, sigma
 
 

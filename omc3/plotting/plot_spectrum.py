@@ -187,13 +187,8 @@ one figure is used.
 """
 from __future__ import annotations
 
-<<<<<<< HEAD
 from collections import OrderedDict
 from pathlib import Path
-=======
-import os
-from collections import OrderedDict
->>>>>>> master
 
 import matplotlib as mpl
 from cycler import cycler

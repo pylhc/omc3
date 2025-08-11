@@ -62,12 +62,7 @@ def create_model_dir(beam: int) -> None:
         modifiers=[ACC_MODELS / "operation/optics/R2024aRP_A30cmC30cmA10mL200cm.madx"],
         outputdir=model_dir,
     )
-<<<<<<< HEAD
     lines = (model_dir / MADX_FILENAME).read_text().splitlines(keepends=True)
-=======
-    with open(model_dir / MADX_FILENAME) as f:
-        lines = f.readlines()
->>>>>>> master
 
     # Make the sequence as beam 1 or 2
     make_madx_seq(model_dir, lines, beam)
@@ -320,11 +315,7 @@ def write_tbt_file(beam: int) -> pd.DataFrame:
     tfs_path = DATA_DIR / get_tbt_name(beam, sdds=False)
     with MAD() as mad:
         initialise_model(mad, beam)
-<<<<<<< HEAD
         observe_bpms(mad, beam)
-=======
-        observe_BPMs(mad, beam)
->>>>>>> master
         # Octupolar resonances are harder to observe with only 1000 turns
         # so we need to increase the kick amplitude for order 3
         mad.send(f"""

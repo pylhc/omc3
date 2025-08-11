@@ -205,11 +205,7 @@ def create_segment(
     segment = extend_segment(segment_in, accel.elements, measurement)
 
     LOGGER.info(
-<<<<<<< HEAD
         f"Evaluating segment {segment!s}.\n"
-=======
-        f"Evaluating segment {segment!s}.\n" +
->>>>>>> master
         "" if segment == segment_in else
         f"This has been input as {segment_in!s}."
     )
