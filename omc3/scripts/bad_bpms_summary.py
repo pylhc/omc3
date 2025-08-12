@@ -58,7 +58,7 @@ from __future__ import annotations
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import numpy as np
 import pandas as pd
@@ -301,9 +301,9 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
         tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.
 
     """
-    to_ignore = (HarpyReasons.NOT_IN_MODEL, )
-    to_mark = (HarpyReasons.KNOWN, )
-    comment = "#"
+    to_ignore: Final = (HarpyReasons.NOT_IN_MODEL, )
+    to_mark: Final = (HarpyReasons.KNOWN, )
+    comment: Final = "#"
 
     plane = svd_file.name[-1]
 
