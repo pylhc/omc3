@@ -106,7 +106,6 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 """
 from __future__ import annotations
 
-from collections import OrderedDict
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -664,7 +663,7 @@ def _get_axes_ids(opt):
                     id_ = get_id(filename, y_col, file_label, column_label, same_axes_set,
                                  opt.same_figure, opt.output_prefix, plane, opt.planes).axes_id
                     axes_ids.append(id_)
-    return list(OrderedDict.fromkeys(axes_ids).keys())  # unique list with preserved order
+    return list(dict.fromkeys(axes_ids).keys())  # unique list with preserved order
 
 
 def _get_marker(idx, change):

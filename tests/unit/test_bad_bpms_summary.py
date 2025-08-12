@@ -16,7 +16,7 @@ from tests.conftest import INPUTS, assert_tfsdataframe_equal
 
 @pytest.mark.extended
 def test_bad_bpms_summary(tmp_path, caplog):
-    
+
     outfile = tmp_path / "bad_bpms_summary.tfs"
     with caplog.at_level(logging.INFO):
         df_eval = bad_bpms_summary(

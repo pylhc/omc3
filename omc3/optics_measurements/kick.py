@@ -8,7 +8,7 @@ It provides functions to compute kick actions.
 from __future__ import annotations
 
 from contextlib import suppress
-from os.path import join
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -45,14 +45,14 @@ if TYPE_CHECKING:
     from omc3.optics_measurements.data_models import InputFiles
 
 
-def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict, plane):
+def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict: dict, plane):
     """
 
     Args:
         measure_input: `OpticsInput` object.
         input_files: Stores the input files tfs.
         scale: measured beta functions.
-        header_dict: `OrderedDict` containing information about the analysis.
+        header_dict: `dict` containing information about the analysis.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
@@ -64,7 +64,7 @@ def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dic
         return pd.DataFrame
     kick_frame = _rescale_actions(kick_frame, scale, plane)
     header = _get_header(header_dict, plane, scale)
-    tfs.write(join(measure_input.outputdir, f"{KICK_NAME}{plane.lower()}{EXT}"), kick_frame, header)
+    tfs.write(Path(measure_input.outputdir) / f"{KICK_NAME}{plane.lower()}{EXT}", kick_frame, header)
     return kick_frame.loc[:, [f"{SQRT_ACTION}{plane}", f"{ERR}{SQRT_ACTION}{plane}"]].to_numpy()
 
 

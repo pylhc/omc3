@@ -8,16 +8,16 @@ from omc3.hole_in_one import hole_in_one_entrypoint
 from omc3.model.constants import TWISS_ELEMENTS_DAT
 from omc3.optics_measurements import phase
 
-N_TURNS = 200       
+N_TURNS = 200
 THIS_DIR = Path(__file__).parent
 SDDS_FILE = THIS_DIR / "MULTITURN_ACQ__18-11-24_16-04-57.sdds"  # /user/spsop/MultiTurn/
-MODEL_DIR = THIS_DIR / "model_Q20_noacd" 
+MODEL_DIR = THIS_DIR / "model_Q20_noacd"
 TEST_FILE = THIS_DIR / f"sps_{N_TURNS}turns.sdds"
 
 
 def reduce_tbt_turns():
     """ Reduce the amount of turns in the tbt file to N_TURNS. """
-    tbt_data = tbt.read_tbt(SDDS_FILE,  datatype="sps") 
+    tbt_data = tbt.read_tbt(SDDS_FILE,  datatype="sps")
     tbt_data.matrices[0].X = tbt_data.matrices[0].X.loc[:, :N_TURNS]
     tbt_data.matrices[0].Y = tbt_data.matrices[0].Y.loc[:, :N_TURNS]
     tbt_data.nturns = N_TURNS
@@ -35,7 +35,7 @@ def reduce_twiss_elements():
 
 
 def run_analysis():
-    """ Run the omc3 analysis on the sps data. 
+    """ Run the omc3 analysis on the sps data.
     To test if it works and also to create the spectrum files for the spectrum plot tests.
     Similar to what is done in `tests/unit/test_hole_in_one/test_hole_in_one_sps`.
     """

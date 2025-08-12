@@ -99,6 +99,7 @@ from omc3.utils.knob_list_manipulations import get_vars_by_classes
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Sequence
 
+
 LOGGER = logging_tools.get_logger(__name__)
 CURRENT_DIR = Path(__file__).parent
 LHC_DIR = CURRENT_DIR / "lhc"
@@ -326,14 +327,6 @@ class Lhc(Accelerator):
             return [["MKD.O5R6.B2", "TCTPH.4R1.B2"], ["MKD.O5R6.B2", "TCTPH.4R5.B2"]]
         if self.beam == 1:
             return [["MKD.O5L6.B1", "TCTPH.4L1.B1"], ["MKD.O5L6.B1", "TCTPH.4L5.B1"]]
-        return None
-
-    def get_synch_BPMs(self, index):
-        # expect passing index.to_numpy()
-        if self.beam == 1:
-            return [i in index for i in self.model.loc["BPMSW.33L2.B1":].index]
-        if self.beam == 2:
-            return [i in index for i in self.model.loc["BPMSW.33R8.B2":].index]
         return None
 
     def get_accel_file(self, filename: Path | str) -> Path:

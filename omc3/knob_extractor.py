@@ -477,7 +477,7 @@ def _write_knobsfile(output: Path | str, collected_knobs: tfs.TfsDataFrame):
         category_knobs["Other Knobs"] = collected_knobs
 
     # Write them out
-    with open(output, "w") as outfile:
+    with Path(output).open("w") as outfile:
         outfile.write("!! --- knobs extracted by knob_extractor\n")
         outfile.write(f"!! --- extracted knobs for time {collected_knobs.headers[Head.time]}\n\n")
         for category, knobs_df in category_knobs.items():

@@ -19,7 +19,7 @@ from tests.utils.lhc_rdts.constants import (
 LOGGER = logging.getLogger(__name__)
 
 
-def filter_out_BPM_near_IPs(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+def filter_out_bpm_near_ips(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     """Filter the DataFrame to include only BPMs."""
     return df.filter(regex=r"^BPM\.[1-9][0-9].", axis="index")
 
@@ -128,7 +128,7 @@ def get_rdts_from_optics_analysis(
                 "Tunes are far from the expected values, rdts will be wrong/outside the tolerance"
             )
     return {
-        rdt: filter_out_BPM_near_IPs(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
+        rdt: filter_out_bpm_near_ips(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
     }
 
 

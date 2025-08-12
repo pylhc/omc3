@@ -26,7 +26,7 @@ ylabels: dict[str, str] = {
     "alpha":              r'$\alpha_{{{0}}} \quad [m]$',
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
-    "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$' '\u2030'r'$]$',
+    "betabeat_permil":   '$\\Delta \\beta_{{{0}}} \\; / \\; \\beta_{{{0}}} \\; [\u2030]$',
     "dbeta":              r"$\beta'_{{{0}}} \quad [m]$",
     "dbetabeat":          r'$1 \; / \; \beta_{{{0}}} \cdot \partial\beta_{{{0}}} \; / \; \partial\delta_{{{0}}}$',
     "norm_dispersion":    r'D$_{{{0}}} \; / \; \sqrt{{\beta_{{{0}}}}} \quad \left[\sqrt{{\rm m}}\right]$',
@@ -345,12 +345,12 @@ class OOMFormatter(mpl.ticker.ScalarFormatter):
 
     See: set_sci_magnitude
     """
-    def __init__(self, order=0, fformat="%1.1f", offset=True, mathText=True):
+    def __init__(self, order=0, fformat="%1.1f", offset=True, math_text=True):
         self.oom = order
         self.fformat = fformat
-        mpl.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=mathText)
+        mpl.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=math_text)
 
-    def _set_orderOfMagnitude(self, nothing):
+    def _set_orderOfMagnitude(self, nothing):  # noqa: N802
         self.orderOfMagnitude = self.oom
 
     def _set_format(self, vmin, vmax):
@@ -371,7 +371,7 @@ def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, ma
         offset (bool): Formatter offset.
         math_text (bool): Whether to use mathText.
     """
-    oomf = OOMFormatter(order=order, fformat=fformat, offset=offset, mathText=math_text)
+    oomf = OOMFormatter(order=order, fformat=fformat, offset=offset, math_text=math_text)
 
     if axis == "x" or axis == "both":
         ax.xaxis.set_major_formatter(oomf)

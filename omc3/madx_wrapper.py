@@ -25,14 +25,14 @@ LOG = logging_tools.get_logger(__name__)
 _LOCAL_PATH = Path(__file__).parent / "bin"
 
 if "darwin" in sys.platform:
-    _MADX_BIN = "madx-macosx64-gnu"
+    _MADX_BIN: str = "madx-macosx64-gnu"
 elif "win" in sys.platform:
-    _MADX_BIN = "madx-win64-gnu.exe"
+    _MADX_BIN: str = "madx-win64-gnu.exe"
 else:
-    _MADX_BIN = "madx-linux64-gnu"
+    _MADX_BIN: str = "madx-linux64-gnu"
 
-MADX_PATH = _LOCAL_PATH / _MADX_BIN
-warnings.simplefilter('always', DeprecationWarning)
+MADX_PATH: Path = _LOCAL_PATH / _MADX_BIN
+warnings.simplefilter("always", DeprecationWarning)
 
 
 class MadxError(Exception):
@@ -77,8 +77,13 @@ def main(opt):
     )
 
 
-def run_file(input_file: Path, output_file: Path = None, log_file: Path = None,
-             madx_path: Path = MADX_PATH, cwd: Path = None):
+def run_file(
+    input_file: Path,
+    output_file: Path | None = None,
+    log_file: Path | None = None,
+    madx_path: Path | str = MADX_PATH,
+    cwd: Path | None = None
+):
     """
     Runs ``MAD-X`` on a given script in a subprocess.
 
@@ -89,13 +94,16 @@ def run_file(input_file: Path, output_file: Path = None, log_file: Path = None,
         madx_path: Path to the ``MAD-X`` executable.
     """
     input_string = input_file.read_text()
-    run_string(input_string, output_file=output_file, log_file=log_file,
-               madx_path=madx_path, cwd=cwd)
+    run_string(input_string, output_file=output_file, log_file=log_file, madx_path=madx_path, cwd=cwd)
 
 
-def run_string(input_string: str,
-               output_file: Path = None, log_file: Path = None,
-               madx_path: Path = MADX_PATH, cwd: Path = None):
+def run_string(
+    input_string: str,
+    output_file: Path | None = None,
+    log_file: Path = None,
+    madx_path: Path | str = MADX_PATH,
+    cwd: Path | None = None,
+):
     """
     Runs ``MAD-X`` on a given string in a subprocess.
 
@@ -109,7 +117,13 @@ def run_string(input_string: str,
     _run(input_string, log_file, output_file, madx_path, cwd)
 
 
-def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH, cwd=None):
+def _run(
+    full_madx_script: str,
+    log_file: Path | None = None,
+    output_file: Path | None = None,
+    madx_path: Path | str = MADX_PATH,
+    cwd = None
+) -> None:
     """Starts the ``MAD-X`` process."""
     with _madx_input_wrapper(full_madx_script, output_file) as madx_jobfile:
         process = subprocess.Popen(
@@ -133,13 +147,15 @@ def _run(full_madx_script, log_file=None, output_file=None, madx_path=MADX_PATH,
 def _check_log_and_output_files(output_file, log_file):
     """Check read/write access. The EAFP way."""
     if output_file is not None:
-        open(output_file, "a").close()
+        with Path(output_file).open("a"):
+            pass
     if log_file is not None:
-        open(log_file, "a").close()
+        with Path(log_file).open("a"):
+            pass
 
 
 @contextlib.contextmanager
-def _logfile_wrapper(file_path=None):
+def _logfile_wrapper(file_path: Path | str | None = None):
     """Logs into file and debug if file is given, into info otherwise."""
     if file_path is None:
         def log_handler(line):
@@ -147,8 +163,9 @@ def _logfile_wrapper(file_path=None):
             if len(line):
                 LOG.log(logging_tools.MADX, line)
         yield log_handler
+
     else:
-        with open(file_path, "w") as log_file:
+        with Path(file_path).open("w") as log_file:
             def log_handler(line):
                 log_file.write(line)
                 line = line.rstrip()
@@ -158,7 +175,7 @@ def _logfile_wrapper(file_path=None):
 
 
 @contextlib.contextmanager
-def _madx_input_wrapper(content, file_path=None):
+def _madx_input_wrapper(content: str, file_path: Path | str  | None = None):
     """
     Writes content into an output file and returns filepath.
     If ``file_path`` is not given, the output file is temporary and will be deleted afterwards.
@@ -168,17 +185,16 @@ def _madx_input_wrapper(content, file_path=None):
         fd, file_path = mkstemp(suffix=".madx", prefix="job.", text=True)
         os.close(fd)  # close file descriptor
         if content:
-            with open(file_path, "w") as f:
-                f.write(content)
+            Path(file_path).write_text(content)
     else:
         temp_file = False
-        with open(file_path, "w") as f:
-            f.write(content)
+        Path(file_path).write_text(content)
+
     try:
         yield file_path
     finally:
         if temp_file:
-            os.remove(file_path)
+            Path(file_path).unlink()
 
 
 def _raise_madx_error(log=None, file=None):

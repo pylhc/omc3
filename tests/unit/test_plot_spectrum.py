@@ -38,7 +38,7 @@ def test_unique_filenames():
 
 
 @pytest.mark.basic
-def test_basic_functionality(tmp_path, file_path, bpms):
+def test_basic_functionality(tmp_path: Path, file_path: Path, bpms: tuple[str, str]):
     stem, waterfall = plot_spectrum(
         plot_type=["stem", "waterfall"],
         files=[file_path],
@@ -60,7 +60,7 @@ def test_basic_functionality(tmp_path, file_path, bpms):
 
 
 @pytest.mark.basic
-def test_combined_bpms_stem_plot(tmp_path, file_path, bpms):
+def test_combined_bpms_stem_plot(tmp_path: Path, file_path: Path, bpms: tuple[str, str]):
     stem, waterfall = plot_spectrum(
         files=[file_path],
         output_dir=str(tmp_path),
@@ -77,25 +77,28 @@ def test_combined_bpms_stem_plot(tmp_path, file_path, bpms):
 
 
 @pytest.mark.basic
-def test_no_tunes_in_files_plot(tmp_path, file_path, bpms):
-    from glob import glob
+def test_no_tunes_in_files_plot(tmp_path: Path, file_path: Path, bpms: tuple[str, str]):
 
-    for f in glob(f"{file_path}*"):
-        print(f)
+    # for f in file_path.parent.glob("*"):
+        # print(f)
+
     for f in INPUT_DIR_SPECTRUM_FILES.glob(f"{file_path.name}*"):
         copy(f, tmp_path)
+
     file_path = tmp_path / file_path.name
-    for p in PLANES:
-        fname = file_path.with_suffix(f"{file_path.suffix}.lin{p.lower()}")
+    for plane in PLANES:
+        # Removing tunes from linfile
+        fname = file_path.with_suffix(f"{file_path.suffix}.lin{plane.lower()}")
         df = tfs.read(fname)
-        tfs.write(fname, df.drop(columns=[f"TUNE{p.upper()}", f"NATTUNE{p.upper()}"]))
+        tfs.write(fname, df.drop(columns=[f"TUNE{plane.upper()}", f"NATTUNE{plane.upper()}"]))
+
     plot_spectrum(
         files=[file_path], bpms=bpms, combine_by=["files", "bpms"],
     )
 
 
 @pytest.mark.basic
-def test_single_plane_bpms_stem_plot(tmp_path):
+def test_single_plane_bpms_stem_plot(tmp_path: Path):
     """ Use the SPS data to check that also single-plane BPMs can be plotted.
     (this caused an error prior v0.21.0 as it was trying to plot `None`)
     """
@@ -117,7 +120,7 @@ def test_single_plane_bpms_stem_plot(tmp_path):
 
 
 @pytest.mark.basic
-def test_crash_too_low_amplimit(tmp_path):
+def test_crash_too_low_amplimit(tmp_path: Path):
     with pytest.raises(ValueError):
         plot_spectrum(
             files=["test"], output_dir=str(tmp_path), amp_limit=-1.0,
@@ -125,22 +128,22 @@ def test_crash_too_low_amplimit(tmp_path):
 
 
 @pytest.mark.basic
-def test_crash_file_not_found_amplimit(tmp_path):
+def test_crash_file_not_found_amplimit(tmp_path: Path):
     with pytest.raises(FileNotFoundError):
         plot_spectrum(
             files=["test"], output_dir=str(tmp_path),
         )
 
 
-def _get_output_dir(tmp_path, file_path):
+def _get_output_dir(tmp_path: Path, file_path: Path):
     return tmp_path / file_path.with_suffix("").name
 
 
 @pytest.fixture
-def file_path():
+def file_path() -> Path:
     return INPUT_DIR_SPECTRUM_FILES / "spec_test.sdds"
 
 
 @pytest.fixture
-def bpms():
+def bpms() -> tuple[str, str]:
     return ["BPM.10L1.B1", "BPM.10L2.B1"]

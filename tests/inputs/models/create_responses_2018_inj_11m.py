@@ -1,10 +1,10 @@
-""" Script to create the varmap and response files in this model-folder. 
+""" Script to create the varmap and response files in this model-folder.
 
 Run as module to avoid import errors.
 
 ```
 python -m tests.inputs.models.create_responses_2018_inj_11m
-```  
+```
 """
 import os
 import shutil

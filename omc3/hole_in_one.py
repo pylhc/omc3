@@ -31,11 +31,10 @@ To run either of the two or both steps, see options ``--harpy`` and ``--optics``
 """
 from __future__ import annotations
 
-import os
 from copy import deepcopy
 from datetime import datetime, timezone
-from os.path import abspath, basename, dirname, join
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import turn_by_turn as tbt
 from generic_parser.entrypoint_parser import (
@@ -346,10 +345,10 @@ def _get_suboptions(opt, rest):
             rest = add_to_arguments(rest, entry_params=optics_params(),
                                     files=harpy_opt.files,
                                     outputdir=harpy_opt.outputdir)
-            harpy_opt.outputdir = join(harpy_opt.outputdir, LINFILES_SUBFOLDER)
+            harpy_opt.outputdir = Path(harpy_opt.outputdir) / LINFILES_SUBFOLDER
             if harpy_opt.model is not None:
                 rest = add_to_arguments(rest, entry_params={"model_dir": {"flags": "--model_dir"}},
-                                        model_dir=dirname(abspath(harpy_opt.model)))
+                                        model_dir=Path(harpy_opt.model).parent)
     else:
         harpy_opt = None
 
@@ -365,26 +364,29 @@ def _get_suboptions(opt, rest):
     return harpy_opt, optics_opt, accel_opt
 
 
-def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
+def _write_config_file(
+    harpy_opt: dict[str, Any], optics_opt: dict[str, Any], accelerator_opt: dict[str, Any]
+) -> None:
     """Write the parsed options into a config file for later use."""
-    all_opt = {}
+    all_options: dict[str, Any] = {}
+
     if harpy_opt is not None:
-        all_opt["harpy"] = True
-        all_opt.update(sorted(harpy_opt.items()))
+        all_options["harpy"] = True
+        all_options.update(sorted(harpy_opt.items()))
 
     if optics_opt is not None:
         optics_opt = dict(sorted(optics_opt.items()))
         optics_opt.pop('accelerator')
 
-        all_opt["optics"] = True
-        all_opt.update(optics_opt)
-        all_opt.update(sorted(accelerator_opt.items()))
+        all_options["optics"] = True
+        all_options.update(optics_opt)
+        all_options.update(sorted(accelerator_opt.items()))
 
-    out_dir = all_opt["outputdir"]
+    out_dir = Path(all_options["outputdir"])
     file_name = DEFAULT_CONFIG_FILENAME.format(time=datetime.now(timezone.utc).strftime(formats.TIME))
-    iotools.create_dirs(out_dir)
 
-    save_options_to_config(os.path.join(out_dir, file_name), all_opt)
+    iotools.create_dirs(out_dir)
+    save_options_to_config(out_dir / file_name, all_options)
 
 
 def _run_harpy(harpy_options):
@@ -408,19 +410,20 @@ def _replicate_harpy_options_per_file(options):
     return list_of_options
 
 
-def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
-    ) -> Generator[tuple[tbt.TbtData, DotDict], None, None]:
+def _add_suffix_and_iter_bunches(
+    tbt_data: tbt.TbtData, options: DotDict
+) -> Generator[tuple[tbt.TbtData, DotDict], None, None]:
     # hint: options.files is now a single file because of _replicate_harpy_options_per_file
     # it is also only used here to define the output name, as the tbt-data is already loaded.
 
-    dir_name = dirname(options.files)
-    file_name = basename(options.files)
-    suffix = options.suffix or ""
+    dir_name: Path = Path(options.files).parent
+    file_name: str = Path(options.files).name
+    suffix: str = options.suffix or ""
 
     # Single bunch ---
     if tbt_data.nbunches == 1:
         if suffix:
-            options.files = join(dir_name, f"{file_name}{suffix}")
+            options.files = str(dir_name / f"{file_name}{suffix}")
         yield tbt_data, options
         return
 
@@ -439,7 +442,7 @@ def _add_suffix_and_iter_bunches(tbt_data: tbt.TbtData, options: DotDict
 
         new_options = deepcopy(options)
         bunch_id_str = f"_bunchID{bunch_id}"
-        new_options.files = join(dir_name, f"{file_name}{bunch_id_str}{suffix}")
+        new_options.files = str(dir_name / f"{file_name}{bunch_id_str}{suffix}")
         yield (
             tbt.TbtData([tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns),
             new_options

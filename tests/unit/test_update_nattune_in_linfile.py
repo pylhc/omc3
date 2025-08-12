@@ -1,4 +1,3 @@
-import os
 from contextlib import suppress
 from pathlib import Path
 
@@ -120,8 +119,8 @@ def _get_input_file():
 def _clean_output_files():
     for out_file in _get_input_dir().glob(f'*{RENAME_SUFFIX}.lin*'):
         with suppress(IOError):
-            os.remove(out_file)
+            out_file.unlink()
 
     for ini_file in Path.cwd().glob('*update_nattune*.ini'):
         with suppress(IOError):
-            os.remove(ini_file)
+            ini_file.unlink()

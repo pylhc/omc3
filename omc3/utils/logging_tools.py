@@ -10,7 +10,6 @@ from __future__ import annotations
 import datetime
 import inspect
 import logging
-import os
 import sys
 import time
 import warnings
@@ -24,6 +23,7 @@ from logging import (  # make them available directly
     NOTSET,
     WARNING,
 )
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -70,10 +70,10 @@ class DebugMode:
         self.active = active
         if active:
             # get current logger
-            caller_file = _get_caller()
-            current_module = _get_current_module(caller_file)
+            caller_file: str = _get_caller()
+            current_module: str = _get_current_module(caller_file)
 
-            self.logger = logging.getLogger(".".join([current_module, os.path.basename(caller_file)]))
+            self.logger = logging.getLogger(".".join([current_module, Path(caller_file).name]))
 
             # set level to debug
             self.current_level = self.logger.getEffectiveLevel()
@@ -83,9 +83,8 @@ class DebugMode:
             # create logfile name:
             now = f"{datetime.datetime.now().isoformat():s}_"
             if log_file is None:
-                log_file = os.path.abspath(caller_file).replace(".pyc", "").replace(".py",
-                                                                                    "") + ".log"
-            self.log_file = os.path.join(os.path.dirname(log_file), now + os.path.basename(log_file))
+                log_file = str(Path(caller_file).resolve().with_suffix(".log"))
+            self.log_file = str(Path(log_file).parent / (now + Path(log_file).name))
             self.logger.debug(f"Writing log to file '{self.log_file:s}'.")
 
             # add handlers
@@ -105,7 +104,7 @@ class DebugMode:
         if self.active:
             # summarize
             time_used = time.time() - self.start_time
-            log_id = "" if self.log_file is None else f"'{os.path.basename(self.log_file):s}'"
+            log_id = "" if self.log_file is None else f"'{Path(self.log_file).name}'"
             self.logger.debug(f"Exiting Debug-Mode {log_id:s} after {time_used:f}s.")
 
             # revert everything
@@ -124,22 +123,21 @@ class TempFile:
         log_func (func): The function with which the content should be logged (e.g. LOG.info).
     """
 
-    def __init__(self, file_path, log_func):
-        self.path = file_path
+    def __init__(self, file_path: Path | str, log_func):
+        self.path = Path(file_path)
         self.log_func = log_func
 
-    def __enter__(self):
+    def __enter__(self) -> Path:
         return self.path
 
     def __exit__(self, value, traceback):
         try:
-            with open(self.path) as f:
-                content = f.read()
+            content = Path(self.path).read_text()
             self.log_func(f"{self.path:s}:\n" + content)
         except OSError:
             self.log_func(f"{self.path:s}: -file does not exist-")
         else:
-            os.remove(self.path)
+            Path(self.path).unlink()
 
 
 @contextmanager
@@ -333,7 +331,7 @@ def stream_handler(stream=sys.stdout, level=DEBUG, fmt=BASIC_FORMAT, max_level=N
 
 def add_module_handler(handler):
     """Add handler at current module level."""
-    current_module = _get_current_module()
+    current_module: str = _get_current_module()
     logging.getLogger(current_module).addHandler(handler)
 
 
@@ -342,7 +340,7 @@ def add_root_handler(handler):
     logging.getLogger("").addHandler(handler)
 
 
-def getLogger(name):
+def getLogger(name):  # noqa: N802 (we mimic logging.getLogger)
     """Convenience function so the caller does not have to import logging."""
     return logging.getLogger(name)
 
@@ -355,36 +353,34 @@ def get_my_logger_name():
 # Private Methods ##############################################################
 
 
-def _get_caller():
+def _get_caller() -> str:
     """Find the caller of the current log-function."""
-    this_file, _ = os.path.splitext(__file__)
+    this_file: Path = Path(__file__).with_suffix("")
     caller_file = this_file
     caller_frame = inspect.currentframe()
+
     while this_file == caller_file:
         caller_frame = caller_frame.f_back
         (caller_file_full, _, _, _, _) = inspect.getframeinfo(caller_frame)
-        caller_file, _ = os.path.splitext(caller_file_full)
-    return caller_file
+        caller_file = Path(caller_file_full).with_suffix("")
+    return str(caller_file)
 
 
-def _get_current_module(current_file=None):
+def _get_current_module(current_file: str | None = None) -> str:
     """Find the name of the current module."""
     if not current_file:
         current_file = _get_caller()
-    path_parts = os.path.abspath(current_file).split(os.path.sep)
 
-    repo_parts = os.path.abspath(
-                    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.path.pardir)
-                    ).split(os.path.sep)
-
+    path_parts: tuple[str] = Path(current_file).resolve().parts
+    repo_parts = Path(__file__).resolve().parent.parent.parts
     return '.'.join(path_parts[len(repo_parts):-1])
 
 
 def _get_caller_logger_name():
     """Returns logger name of the caller."""
-    caller_file = _get_caller()
+    caller_file: str = _get_caller()
     current_module = _get_current_module(caller_file)
-    return ".".join([current_module, os.path.basename(caller_file)])
+    return ".".join([current_module, Path(caller_file).name])
 
 
 def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):

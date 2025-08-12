@@ -332,7 +332,7 @@ def test_lhc_creation_absolute_modifier_path(tmp_path: Path, acc_models_lhc_2022
 
 @pytest.mark.basic
 def test_lhc_creation_modifier_nonexistent(tmp_path, acc_models_lhc_2018):
-    NONEXISTENT = Path("opticsfile.non_existent")
+    non_existent = Path("opticsfile.non_existent")
     accel_opt = {
         "accel": "lhc",
         "year": "2018",
@@ -343,13 +343,16 @@ def test_lhc_creation_modifier_nonexistent(tmp_path, acc_models_lhc_2018):
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2018,
-        "modifiers": [NONEXISTENT]
+        "modifiers": [non_existent]
     }
     with pytest.raises(FileNotFoundError) as creation_error:
         create_instance_and_model(
-            outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+            outputdir=tmp_path,
+            type="nominal",
+            logfile=tmp_path / "madx_log.txt",
+            **accel_opt,
         )
-    assert NONEXISTENT.name in str(creation_error.value)
+    assert non_existent.name in str(creation_error.value)
 
 
 @pytest.mark.basic

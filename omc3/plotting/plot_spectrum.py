@@ -187,8 +187,7 @@ one figure is used.
 """
 from __future__ import annotations
 
-import os
-from collections import OrderedDict
+from pathlib import Path
 
 import matplotlib as mpl
 from cycler import cycler
@@ -435,10 +434,10 @@ def _sort_opt(opt):
 # Output ---
 
 def _save_options_to_config(opt):
-    os.makedirs(opt.output_dir, exist_ok=True)
-    save_options_to_config(os.path.join(opt.output_dir, formats.get_config_filename(__file__)),
-                           OrderedDict(sorted(opt.items()))
-                           )
+    Path(opt.output_dir).mkdir(parents=True, exist_ok=True)
+    save_options_to_config(
+        Path(opt.output_dir) / formats.get_config_filename(__file__), dict(sorted(opt.items()))
+    )
 
 
 # Load Data --------------------------------------------------------------------

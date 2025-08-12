@@ -6,15 +6,15 @@ This script creates the data required for the lhc_rdts test. The order of operat
 1. Create the model for the specific beam, these are stored in seperate folders.
 2. Retrieve the RDTs - could be a constant. Is a function for flexibility.
 3. Run MAD-NG twiss to get the values of the RDTs.
-4. Convert the MAD-NG output to a MAD-X style TFS. This must be done as OMC3 only 
-reads MAD-X TFS files for the model, and expects some things about the file. 
+4. Convert the MAD-NG output to a MAD-X style TFS. This must be done as OMC3 only
+reads MAD-X TFS files for the model, and expects some things about the file.
 Also, this function reduces the file size.
-5. Remove the BPMs around the IP, as due to the phase advances, these RDTs are 
+5. Remove the BPMs around the IP, as due to the phase advances, these RDTs are
 less accurate when calculated from OMC3.
 6. Save just the RDTS to a TFS file.
 7. Run MAD-NG track to produce a TBT file - a fake measurement.
 8. Run the analytical model to get the RDTs.
-9. Other OMC3 analysis - this is only required if you want to analyse everything rather than just run the test. 
+9. Other OMC3 analysis - this is only required if you want to analyse everything rather than just run the test.
 """
 import time
 
@@ -36,7 +36,7 @@ from tests.inputs.lhc_rdts.helper_lhc_rdts import (
 from tests.utils.compression import compress_model
 from tests.utils.lhc_rdts.constants import DATA_DIR, MODEL_NG_PREFIX
 from tests.utils.lhc_rdts.functions import (
-    filter_out_BPM_near_IPs,
+    filter_out_bpm_near_ips,
     get_file_suffix,
     get_rdt_names,
     get_rdts_from_optics_analysis,
@@ -60,17 +60,17 @@ for beam in [1, 2]:
     ng_rdts = to_ng_rdts(get_rdt_names())
 
     # Run MAD-NG twiss to get the RDTs
-    model_ng = run_twiss_rdts(beam, ng_rdts) 
-    
+    model_ng = run_twiss_rdts(beam, ng_rdts)
+
     # Convert the MAD-NG output to a MAD-X style TFS (waiting for TFS update)
     model_ng = convert_tfs_to_madx(model_ng)
 
     # Remove the BPMs around the IP
-    model_ng = filter_out_BPM_near_IPs(model_ng)
+    model_ng = filter_out_bpm_near_ips(model_ng)
 
     # Save the model
     save_ng_model(model_ng, beam)
-    
+
     if run_madng:
         # Run MAD-NG track to produce a TBT file
         write_tbt_file(beam)
@@ -79,7 +79,7 @@ for beam in [1, 2]:
         analytical_df = get_twiss_elements(beam)
         analytical_df = convert_tfs_to_madx(analytical_df)
         analytical_df = calculate_rdts(analytical_df, ng_rdts, feeddown=2)
-        analytical_df = filter_out_BPM_near_IPs(analytical_df) 
+        analytical_df = filter_out_bpm_near_ips(analytical_df)
         save_analytical_model(analytical_df, beam)
 
     if save_omc3_analysis:
@@ -91,7 +91,7 @@ for beam in [1, 2]:
         analysis_runtime = time.time()
         rdt_dfs = get_rdts_from_optics_analysis(beam)
         print(f"Analysis Runtime: {time.time() - analysis_runtime}")
-        
+
         file_ext = get_file_suffix(beam)
         model_ng = tfs.read(DATA_DIR / f"{MODEL_NG_PREFIX}_{file_ext}.tfs", index="NAME")
 
@@ -103,7 +103,7 @@ for beam in [1, 2]:
             # Now we know all the BPMs are the same, make sure they are in the same order
             rdt_dfs[rdt] = rdt_df.loc[model_ng.index]
 
-        save_x_model(rdt_dfs, beam) 
+        save_x_model(rdt_dfs, beam)
     print("Done with beam", beam)
 
 print("Script finished")

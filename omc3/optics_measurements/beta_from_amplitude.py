@@ -7,7 +7,7 @@ It provides functions to calculate beta functions from amplitude data.
 """
 from __future__ import annotations
 
-from os.path import join
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -41,7 +41,7 @@ def calculate(meas_input: DotDict, input_files: InputFiles, tune_dict, beta_phas
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
     beta_amp = add_rescaled_beta_columns(beta_amp, x_ratio, plane)
     header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].to_numpy()), x_ratio)
-    tfs.write(join(meas_input.outputdir, f"{AMP_BETA_NAME}{plane.lower()}{EXT}"), beta_amp, header_d, save_index='NAME')
+    tfs.write(Path(meas_input.outputdir) / f"{AMP_BETA_NAME}{plane.lower()}{EXT}", beta_amp, header_d, save_index='NAME')
     return x_ratio
 
 

@@ -6,7 +6,6 @@ This module contains utilities for the ``plotting`` module.
 """
 from __future__ import annotations
 
-from collections import OrderedDict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -59,8 +58,8 @@ class FigureContainer:
 class FigureCollector:
     """Class to collect figure containers and manage data adding."""
     def __init__(self) -> None:
-        self.fig_dict = OrderedDict()   # dictionary of matplotlib figures, for output
-        self.figs = OrderedDict()       # dictionary of FigureContainers, used internally
+        self.fig_dict = {}  # dictionary of matplotlib figures, for output
+        self.figs = {}  # dictionary of FigureContainers, used internally
 
     def __len__(self) -> int:
         return len(self.figs)

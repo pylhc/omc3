@@ -208,24 +208,24 @@ class MockKerberos:
         self.response = False
         self.clean = False
 
-    def authGSSClientInit(self, *args):
+    def authGSSClientInit(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         assert args[0] == RBAC._KRB5_SERVICE
         self.init = True
         return self.AUTH_GSS_COMPLETE, self._MYCONTEXT
 
-    def authGSSClientStep(self, *args):
+    def authGSSClientStep(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         self.step = True
         assert args[0] == self._MYCONTEXT  # should be whatever context the Init provides
 
-    def authGSSClientResponse(self, *args):
+    def authGSSClientResponse(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         assert args[0] == self._MYCONTEXT  # should be whatever context the Init provides
         self.response = True
         return self.user.kerberos
 
-    def authGSSClientClean(self, *args):
+    def authGSSClientClean(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         assert args[0] == self._MYCONTEXT  # should be whatever context the Init provides
         self.clean = True

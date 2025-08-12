@@ -342,6 +342,6 @@ class Propagable(ABC):
 
     @classmethod
     @abstractmethod
-    def in_measurement(self, meas: OpticsMeasurement) -> bool:
+    def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the respective measurement for this propagable is available. """
         ...
