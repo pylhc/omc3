@@ -229,7 +229,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -268,14 +268,14 @@
 
 <div class="viewcode-block" id="calculate">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.kick.calculate">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">header_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        measure_input: `OpticsInput` object.</span>
 <span class="sd">        input_files: Stores the input files tfs.</span>
 <span class="sd">        scale: measured beta functions.</span>
-<span class="sd">        header_dict: `OrderedDict` containing information about the analysis.</span>
+<span class="sd">        header_dict: `dict` containing information about the analysis.</span>
 <span class="sd">        plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
 
 <span class="sd">    Returns:</span>
@@ -287,7 +287,7 @@
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
     <span class="n">kick_frame</span> <span class="o">=</span> <span class="n">_rescale_actions</span><span class="p">(</span><span class="n">kick_frame</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">_get_header</span><span class="p">(</span><span class="n">header_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
-    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KICK_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">kick_frame</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KICK_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kick_frame</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">kick_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">SQRT_ACTION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
 
 

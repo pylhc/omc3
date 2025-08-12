@@ -291,7 +291,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
@@ -515,9 +514,7 @@
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
         <span class="n">out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
         <span class="n">out_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">save_options_to_config</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out_path</span> <span class="o">/</span> <span class="n">formats</span><span class="o">.</span><span class="n">get_config_filename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span>
-                               <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
-                               <span class="p">)</span>
+        <span class="n">save_options_to_config</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out_path</span> <span class="o">/</span> <span class="n">formats</span><span class="o">.</span><span class="n">get_config_filename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
 
 <span class="c1"># Script Mode ------------------------------------------------------------------</span>
 

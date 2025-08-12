@@ -565,7 +565,7 @@
 <span class="sd">    In case of duplicate keys, later files overwrite the earlier ones. &quot;&quot;&quot;</span>
     <span class="n">full_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">json_file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
             <span class="n">full_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_data</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">full_dict</span></div>
 

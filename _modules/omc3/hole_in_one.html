@@ -252,11 +252,10 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">basename</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">join</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">turn_by_turn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tbt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -570,10 +569,10 @@
             <span class="n">rest</span> <span class="o">=</span> <span class="n">add_to_arguments</span><span class="p">(</span><span class="n">rest</span><span class="p">,</span> <span class="n">entry_params</span><span class="o">=</span><span class="n">optics_params</span><span class="p">(),</span>
                                     <span class="n">files</span><span class="o">=</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">files</span><span class="p">,</span>
                                     <span class="n">outputdir</span><span class="o">=</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-            <span class="n">harpy_opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">LINFILES_SUBFOLDER</span><span class="p">)</span>
+            <span class="n">harpy_opt</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="n">LINFILES_SUBFOLDER</span>
             <span class="k">if</span> <span class="n">harpy_opt</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">rest</span> <span class="o">=</span> <span class="n">add_to_arguments</span><span class="p">(</span><span class="n">rest</span><span class="p">,</span> <span class="n">entry_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model_dir&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;flags&quot;</span><span class="p">:</span> <span class="s2">&quot;--model_dir&quot;</span><span class="p">}},</span>
-                                        <span class="n">model_dir</span><span class="o">=</span><span class="n">dirname</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">model</span><span class="p">)))</span>
+                                        <span class="n">model_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">harpy_opt</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -589,26 +588,29 @@
     <span class="k">return</span> <span class="n">harpy_opt</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">,</span> <span class="n">accel_opt</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_config_file</span><span class="p">(</span><span class="n">harpy_opt</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">,</span> <span class="n">accelerator_opt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_config_file</span><span class="p">(</span>
+    <span class="n">harpy_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">optics_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">accelerator_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the parsed options into a config file for later use.&quot;&quot;&quot;</span>
-    <span class="n">all_opt</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">all_options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">if</span> <span class="n">harpy_opt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">all_opt</span><span class="p">[</span><span class="s2">&quot;harpy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">all_opt</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="n">all_options</span><span class="p">[</span><span class="s2">&quot;harpy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">all_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
     <span class="k">if</span> <span class="n">optics_opt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">optics_opt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">optics_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
         <span class="n">optics_opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;accelerator&#39;</span><span class="p">)</span>
 
-        <span class="n">all_opt</span><span class="p">[</span><span class="s2">&quot;optics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">all_opt</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">optics_opt</span><span class="p">)</span>
-        <span class="n">all_opt</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">accelerator_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="n">all_options</span><span class="p">[</span><span class="s2">&quot;optics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">all_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">optics_opt</span><span class="p">)</span>
+        <span class="n">all_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">accelerator_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
-    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">all_opt</span><span class="p">[</span><span class="s2">&quot;outputdir&quot;</span><span class="p">]</span>
+    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">all_options</span><span class="p">[</span><span class="s2">&quot;outputdir&quot;</span><span class="p">])</span>
     <span class="n">file_name</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">))</span>
-    <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
 
-    <span class="n">save_options_to_config</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="n">all_opt</span><span class="p">)</span>
+    <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+    <span class="n">save_options_to_config</span><span class="p">(</span><span class="n">out_dir</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">all_options</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_run_harpy</span><span class="p">(</span><span class="n">harpy_options</span><span class="p">):</span>
@@ -632,19 +634,20 @@
     <span class="k">return</span> <span class="n">list_of_options</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_add_suffix_and_iter_bunches</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">DotDict</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">DotDict</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_suffix_and_iter_bunches</span><span class="p">(</span>
+    <span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">DotDict</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">DotDict</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="c1"># hint: options.files is now a single file because of _replicate_harpy_options_per_file</span>
     <span class="c1"># it is also only used here to define the output name, as the tbt-data is already loaded.</span>
 
-    <span class="n">dir_name</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
-    <span class="n">file_name</span> <span class="o">=</span> <span class="n">basename</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
-    <span class="n">suffix</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">dir_name</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">files</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">files</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># Single bunch ---</span>
     <span class="k">if</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">suffix</span><span class="p">:</span>
-            <span class="n">options</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dir_name</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">yield</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">options</span>
         <span class="k">return</span>
 
@@ -663,7 +666,7 @@
 
         <span class="n">new_options</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
         <span class="n">bunch_id_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_bunchID</span><span class="si">{</span><span class="n">bunch_id</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">new_options</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">bunch_id_str</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">new_options</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dir_name</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">bunch_id_str</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">yield</span> <span class="p">(</span>
             <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">([</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="n">index</span><span class="p">]],</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="p">[</span><span class="n">bunch_id</span><span class="p">],</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nturns</span><span class="p">),</span>
             <span class="n">new_options</span>

@@ -430,7 +430,7 @@
     <span class="n">ip_a</span><span class="p">,</span> <span class="n">ip_b</span> <span class="o">=</span> <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">index</span>
     <span class="n">lumi_imb</span><span class="p">,</span> <span class="n">lumi_imb_err</span> <span class="o">=</span> <span class="n">get_imbalance_w_err</span><span class="p">(</span>
         <span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_a</span><span class="p">,</span> <span class="p">:]),</span>
-        <span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_b</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_b</span><span class="p">,</span> <span class="p">:]),</span>
     <span class="p">)</span>
 
     <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">LUMINOSITY</span><span class="si">}{</span><span class="n">IMBALANCE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lumi_imb</span>
@@ -443,23 +443,25 @@
 
 <div class="viewcode-block" id="get_imbalance_w_err">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_imbalance_w_err">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_imbalance_w_err</span><span class="p">(</span><span class="n">ipA_beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipA_beta_err</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipB_beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ipB_beta_err</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_imbalance_w_err</span><span class="p">(</span>
+        <span class="n">beta_ip_a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta_err_ip_a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta_ip_b</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta_err_ip_b</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the luminosity imbalance IP_A / IP_B  and its error, based on the effective betas for IP_A and IP_B.</span>
-<span class="sd">    This implies, that all the other beam parameters (see e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf)</span>
+<span class="sd">    This implies that all the other beam parameters (see Eq (17) in https://cds.cern.ch/record/941318/files/p361.pdf)</span>
 <span class="sd">    are the same for both IPs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">ipB_beta</span> <span class="o">/</span> <span class="n">ipA_beta</span>  <span class="c1"># inverse due to beta in the denominator for lumi</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="n">result</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">ipB_beta_err</span><span class="o">/</span><span class="n">ipB_beta</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">ipA_beta_err</span><span class="o">/</span><span class="n">ipA_beta</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">beta_ip_b</span> <span class="o">/</span> <span class="n">beta_ip_a</span>  <span class="c1"># inverse due to beta in the denominator for lumi</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">result</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">beta_err_ip_b</span><span class="o">/</span><span class="n">beta_ip_b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta_err_ip_a</span><span class="o">/</span><span class="n">beta_ip_a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">err</span></div>
 
 
 
 <div class="viewcode-block" id="get_effective_beta_star_w_err">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_effective_beta_star_w_err">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the effective beta*, i.e. the denominator of the luminosity as given in e.g.</span>
-<span class="sd">    Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf , without any constants</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the effective beta*, i.e. the denominator of the luminosity as given in</span>
+<span class="sd">    Eq(17) of https://cds.cern.ch/record/941318/files/p361.pdf without any constants</span>
 <span class="sd">    as we assume here that these are equal for both IPs, and we only care about the ratio.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">b1x</span><span class="p">,</span> <span class="n">b1y</span><span class="p">,</span> <span class="n">b2x</span><span class="p">,</span> <span class="n">b2y</span> <span class="o">=</span> <span class="n">_get_betastar_beams</span><span class="p">(</span><span class="n">df_ip</span><span class="p">)</span>
@@ -473,8 +475,12 @@
     <span class="c1"># Error propagation:</span>
     <span class="n">dbeta_db1x</span> <span class="o">=</span> <span class="n">dbeta_db2x</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">sqrt_y</span> <span class="o">/</span> <span class="n">sqrt_x</span>
     <span class="n">dbeta_db1y</span> <span class="o">=</span> <span class="n">dbeta_db2y</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">sqrt_x</span> <span class="o">/</span> <span class="n">sqrt_y</span>
-    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">dbeta_db1x</span> <span class="o">*</span> <span class="n">db1x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">dbeta_db1y</span> <span class="o">*</span> <span class="n">db1y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-                    <span class="p">(</span><span class="n">dbeta_db2x</span> <span class="o">*</span> <span class="n">db2x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">dbeta_db2y</span> <span class="o">*</span> <span class="n">db2y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">dbeta_db1x</span> <span class="o">*</span> <span class="n">db1x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="o">+</span> <span class="p">(</span><span class="n">dbeta_db1y</span> <span class="o">*</span> <span class="n">db1y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="o">+</span> <span class="p">(</span><span class="n">dbeta_db2x</span> <span class="o">*</span> <span class="n">db2x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="o">+</span> <span class="p">(</span><span class="n">dbeta_db2y</span> <span class="o">*</span> <span class="n">db2y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">beta</span><span class="p">,</span> <span class="n">sigma</span></div>
 
 

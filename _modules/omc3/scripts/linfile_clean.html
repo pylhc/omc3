@@ -378,7 +378,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main function, to parse commandline input and separate restoration</span>
 <span class="sd">    from cleaning.&quot;&quot;&quot;</span>
-    <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(),</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">restore</span><span class="p">:</span>
         <span class="n">restore_files</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
         <span class="k">return</span>

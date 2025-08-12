@@ -648,14 +648,14 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Calculates dispersion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object.</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
-<li><p><strong>header_dict</strong> -- <cite>OrderedDict</cite> containing information about the analysis.</p></li>
+<li><p><strong>header_dict</strong> -- <cite>dict</cite> containing information about the analysis.</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
@@ -667,7 +667,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_normalised_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_normalised_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_normalised_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_normalised_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Calculates normalised dispersion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -675,7 +675,7 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object.</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
 <li><p><strong>beta</strong> -- measured betas to get dispersion from normalised dispersion.</p></li>
-<li><p><strong>header_dict</strong> -- <cite>OrderedDict</cite> containing information about the analysis.</p></li>
+<li><p><strong>header_dict</strong> -- <cite>dict</cite> containing information about the analysis.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -686,14 +686,14 @@ It provides functions to compute orbit, dispersion and normalised dispersion.</p
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_orbit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_orbit"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.dispersion.</span></span><span class="sig-name descname"><span class="pre">calculate_orbit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/dispersion.html#calculate_orbit"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Calculates orbit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
-<li><p><strong>header</strong> -- <cite>OrderedDict</cite> containing information about the analysis.</p></li>
+<li><p><strong>header</strong> -- <cite>dict</cite> containing information about the analysis.</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
@@ -813,14 +813,14 @@ It provides functions to compute kick actions.</p>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.kick.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/kick.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.kick.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measure_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">InputFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/kick.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>measure_input</strong> -- <cite>OpticsInput</cite> object.</p></li>
 <li><p><strong>input_files</strong> -- Stores the input files tfs.</p></li>
 <li><p><strong>scale</strong> -- measured beta functions.</p></li>
-<li><p><strong>header_dict</strong> -- <cite>OrderedDict</cite> containing information about the analysis.</p></li>
+<li><p><strong>header_dict</strong> -- <cite>dict</cite> containing information about the analysis.</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
