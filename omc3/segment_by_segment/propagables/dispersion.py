@@ -130,7 +130,7 @@ class DispersionMomentum(Propagable):
     def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
         c = cls.columns.planed(plane)
         pdispersion = meas.dispersion[plane].loc[names, c.column]
-        # dperror = meas.dispersion[plane].loc[names, c.error_column] # No error in the measured dpx
+        # No error in the measured dpx,dpy
         return pdispersion, 0
 
     @classmethod
@@ -164,7 +164,6 @@ class DispersionMomentum(Propagable):
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
         """ Compute the dispersion difference between the given segment model and the measured values."""
-        init_condition = self._init_start(plane) if forward else self._init_end(plane)
 
         # get the measured values
         names = self.get_segment_observation_points(plane)
@@ -172,25 +171,19 @@ class DispersionMomentum(Propagable):
 
         # get the propagated values
         model_pdisp = seg_model.loc[names, f"{DISPERSION}P{plane}"]
-        # model_phase = Phase.get_segment_phase(seg_model.loc[names, :], plane, forward)
 
         # calculate difference
         pdisp_diff = pdisp - model_pdisp
 
-        # propagate the error
-        # propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
-        # total_err = sbs_math.quadratic_add(err_disp, propagated_err)
+        # No error propagation for now
         return pdisp_diff, 0
 
     def _compute_elements(self, plane: str, seg_model: pd.DataFrame, forward: bool):
         """ Compute get the propagated dispersion values from the segment model and calculate the propagated error.  """
-        # init_condition = self._init_start(plane) if forward else self._init_end(plane)
 
         model_pdisp = seg_model.loc[:, f"{DISPERSION}P{plane}"]
 
-        # propagate the error
-        # model_phase = Phase.get_segment_phase(seg_model, plane, forward)
-        # propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
+        # No error propagation for now
         return model_pdisp, 0
 
     def get_segment_observation_points(self, plane: str):
