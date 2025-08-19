@@ -117,6 +117,7 @@ class SegmentDiffs(TfsCollection):
     beta_kmod = Tfs(f"{PREFIX}{KMOD_BETA_NAME}{{plane}}_{{name}}{EXT}")
     beta_amp = Tfs(f"{PREFIX}{AMP_BETA_NAME}{{plane}}_{{name}}{EXT}")
     dispersion = Tfs(f"{PREFIX}{DISPERSION_NAME}{{plane}}_{{name}}{EXT}")
+    pdispersion = Tfs(f"{PREFIX}{DISPERSION_NAME}dp{{plane}}_{{name}}{EXT}")
     norm_dispersion = Tfs(f"{PREFIX}{NORM_DISP_NAME}{{plane}}_{{name}}{EXT}")
     f1001 = Tfs(f"{PREFIX}{F1001_NAME}_{{name}}{EXT}", two_planes=False)
     f1010 = Tfs(f"{PREFIX}{F1010_NAME}_{{name}}{EXT}", two_planes=False)

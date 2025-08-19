@@ -129,9 +129,9 @@ class DispersionMomentum(Propagable):
     @classmethod
     def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
         c = cls.columns.planed(plane)
-        ddispersion = meas.dispersion[plane].loc[names, c.column]
-        # error = meas.dispersion[plane].loc[names, c.error_column]
-        return ddispersion, 0
+        pdispersion = meas.dispersion[plane].loc[names, c.column]
+        # dperror = meas.dispersion[plane].loc[names, c.error_column] # No error in the measured dpx
+        return pdispersion, 0
 
     @classmethod
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
@@ -143,9 +143,55 @@ class DispersionMomentum(Propagable):
             return False
         return True
 
+    def init_conditions_dict(self):
+        # alpha needs to be inverted for backward propagation, i.e. the end-init
+        init_cond = super().init_conditions_dict()
+        for key, value in init_cond.items():
+            if "end" in key:
+                init_cond[key] = -value
+        return init_cond
+
     def add_differences(self, segment_diffs: SegmentDiffs):
         """ No need for differences, for now """
-        return None
+        dfs = self.get_difference_dataframes()
+        for plane, df in dfs.items():
+            # save to diffs/write to file (if allow_write is set)
+            segment_diffs.pdispersion[plane] = df
+
+    def _compute_measured(self,
+            plane: str,
+            seg_model: TfsDataFrame,
+            forward: bool
+        ) -> tuple[pd.Series, pd.Series]:
+        """ Compute the dispersion difference between the given segment model and the measured values."""
+        init_condition = self._init_start(plane) if forward else self._init_end(plane)
+
+        # get the measured values
+        names = self.get_segment_observation_points(plane)
+        pdisp, err_pdisp = self.get_at(names, self._meas, plane)
+
+        # get the propagated values
+        model_pdisp = seg_model.loc[names, f"{DISPERSION}P{plane}"]
+        # model_phase = Phase.get_segment_phase(seg_model.loc[names, :], plane, forward)
+
+        # calculate difference
+        pdisp_diff = pdisp - model_pdisp
+
+        # propagate the error
+        # propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
+        # total_err = sbs_math.quadratic_add(err_disp, propagated_err)
+        return pdisp_diff, 0
+
+    def _compute_elements(self, plane: str, seg_model: pd.DataFrame, forward: bool):
+        """ Compute get the propagated dispersion values from the segment model and calculate the propagated error.  """
+        # init_condition = self._init_start(plane) if forward else self._init_end(plane)
+
+        model_pdisp = seg_model.loc[:, f"{DISPERSION}P{plane}"]
+
+        # propagate the error
+        # model_phase = Phase.get_segment_phase(seg_model, plane, forward)
+        # propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
+        return model_pdisp, 0
 
     def get_segment_observation_points(self, plane: str):
         """ Return the measurement points for the given plane, that are in the segment. """
