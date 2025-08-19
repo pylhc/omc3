@@ -25,6 +25,7 @@ from omc3.segment_by_segment.propagables import (
     AlphaPhase,
     BetaPhase,
     Dispersion,
+    DispersionMomentum,
     Phase,
     PropagableColumns,
 )
@@ -60,6 +61,7 @@ class TestSbSLHC:
         BetaPhase: TestCfg(9e-2, 1e-10, 5e-4, "beta_phase"),
         AlphaPhase: TestCfg(1e-1, 1e-8, 8e-2, "alpha_phase"),
         Dispersion: TestCfg(1e-2, None, None, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
+        DispersionMomentum: TestCfg(1e-2, None, None, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
         F1001: TestCfg(5e-4, 5e-7, None, "f1001"),
         F1010: TestCfg(5e-4, 5e-6, None, "f1010"),
     }
@@ -87,7 +89,7 @@ class TestSbSLHC:
             "beam": beam,
             "nat_tunes": [0.31, 0.32],
             "dpp": 0.0,
-            "energy": 6500,
+            "energy": 6800,
             "modifiers": [acc_models_lhc_2025 / OPTICS_SUBDIR / OPTICS_30CM_FLAT],
         }
 
@@ -203,7 +205,7 @@ class TestSbSLHC:
             ]
 
         for propagable in ALL_PROPAGABLES:
-            if propagable is Dispersion:
+            if propagable in [Dispersion, DispersionMomentum]:
                 continue  # TODO: not working, see https://github.com/pylhc/omc3/issues/498
 
             cfg: TestCfg = self.config_map[propagable]
