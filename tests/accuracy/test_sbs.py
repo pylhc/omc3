@@ -60,7 +60,7 @@ class TestSbSLHC:
         Phase: TestCfg(1e-2, 1e-8, 5e-4, "phase"),
         BetaPhase: TestCfg(9e-2, 1e-10, 5e-4, "beta_phase"),
         AlphaPhase: TestCfg(1e-1, 1e-8, 8e-2, "alpha_phase"),
-        Dispersion: TestCfg(1e-2, None, None, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
+        Dispersion: TestCfg(1e-6, 1e-4, 1e-4, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
         DispersionMomentum: TestCfg(1e-2, None, None, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
         F1001: TestCfg(5e-4, 5e-7, None, "f1001"),
         F1010: TestCfg(5e-4, 5e-6, None, "f1010"),
@@ -205,7 +205,7 @@ class TestSbSLHC:
             ]
 
         for propagable in ALL_PROPAGABLES:
-            if propagable in [Dispersion, DispersionMomentum]:
+            if propagable in [DispersionMomentum]:
                 continue  # TODO: not working, see https://github.com/pylhc/omc3/issues/498
 
             cfg: TestCfg = self.config_map[propagable]
@@ -266,7 +266,6 @@ class TestSbSLHC:
                             assert sbs_df[col].abs().min() < self.eps_rdt_min  # for RDTs the init value is calculated,
                         else:
                             assert sbs_df[col].abs().min() == 0  # at least the first entry should show no difference
-
                         assert sbs_df[col].abs().max() > cfg.diff_max
                         assert sbs_df[err_col].all()
 
@@ -279,7 +278,7 @@ class TestSbSLHC:
                                 # TODO: check backward coupling, see https://github.com/pylhc/omc3/issues/498
                                 continue
 
-                            if propagable in [Phase, F1001, F1010]:  # check absolute difference
+                            if propagable in [Phase, F1001, F1010, Dispersion]:  # check absolute difference
                                 assert_all_close(sbs_df, correction, col, atol=eps)
                                 assert_all_close(sbs_df, expected, 0, atol=eps)
                             else:  # check relative difference
