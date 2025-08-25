@@ -9,7 +9,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from omc3.optics_measurements.constants import DISPERSION
+import numpy as np
+from pandas import Series
+
+from omc3.optics_measurements.constants import DISPERSION, MOMENTUM_DISPERSION
 from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.phase import Phase
@@ -121,17 +124,17 @@ class Dispersion(Propagable):
         return model_disp, propagated_err
 
 
-class DispersionMomentum(Propagable):
+class MomentumDispersion(Propagable):
 
     _init_pattern = "dp{}_{}"  # format(plane, ini/end)
-    columns: PropagableColumns = PropagableColumns("DP")
+    columns: PropagableColumns = PropagableColumns(MOMENTUM_DISPERSION)
 
     @classmethod
     def get_at(cls, names: IndexType, meas: OpticsMeasurement, plane: str) -> ValueErrorType:
         c = cls.columns.planed(plane)
-        pdispersion = meas.dispersion[plane].loc[names, c.column]
-        # No error in the measured dpx,dpy
-        return pdispersion, 0
+        momentum_dispersion = meas.dispersion[plane].loc[names, c.column]
+        model_momentum_dispersion_err = np.nan # No error in the measured dpx,dpy
+        return momentum_dispersion, model_momentum_dispersion_err
 
     @classmethod
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
@@ -144,7 +147,7 @@ class DispersionMomentum(Propagable):
         return True
 
     def init_conditions_dict(self):
-        # alpha needs to be inverted for backward propagation, i.e. the end-init
+        # needs to be inverted for backward propagation, i.e. the end-init
         init_cond = super().init_conditions_dict()
         for key, value in init_cond.items():
             if "end" in key:
@@ -152,39 +155,60 @@ class DispersionMomentum(Propagable):
         return init_cond
 
     def add_differences(self, segment_diffs: SegmentDiffs):
-        """ No need for differences, for now """
         dfs = self.get_difference_dataframes()
         for plane, df in dfs.items():
             # save to diffs/write to file (if allow_write is set)
-            segment_diffs.pdispersion[plane] = df
+            segment_diffs.momentum_dispersion[plane] = df
 
     def _compute_measured(self,
             plane: str,
             seg_model: TfsDataFrame,
             forward: bool
         ) -> tuple[pd.Series, pd.Series]:
-        """ Compute the dispersion difference between the given segment model and the measured values."""
+        """ Compute the momentum dispersion difference between the given segment model and the measured values."""
 
         # get the measured values
         names = self.get_segment_observation_points(plane)
-        pdisp, err_pdisp = self.get_at(names, self._meas, plane)
+        momentum_dispersion, err_pdisp = self.get_at(names, self._meas, plane)
 
         # get the propagated values
-        model_pdisp = seg_model.loc[names, f"{DISPERSION}P{plane}"]
+        model_momentum_dispersion = seg_model.loc[names, f"{MOMENTUM_DISPERSION}{plane}"]
+
+        if not forward:
+            model_momentum_dispersion = -model_momentum_dispersion
 
         # calculate difference
-        pdisp_diff = pdisp - model_pdisp
+        momentum_dispersion_diff = momentum_dispersion - model_momentum_dispersion
 
-        # No error propagation for now
-        return pdisp_diff, 0
+        propagated_err = Series(np.nan, index=model_momentum_dispersion.index) # No error propagation for now
+        return momentum_dispersion_diff, propagated_err
+
+    def _compute_correction(
+            self,
+            plane: str,
+            seg_model: pd.DataFrame,
+            seg_model_corr: pd.DataFrame,
+            forward: bool,
+        ) -> tuple[pd.Series, pd.Series]:
+        """Compute the momentum dispersion differennce between the nominal and the corrected model."""
+
+        model_momentum_dispersion = seg_model.loc[:, f"{MOMENTUM_DISPERSION}{plane}"]
+        corrected_momentum_dispersion = seg_model_corr.loc[:, f"{MOMENTUM_DISPERSION}{plane}"]
+
+        momentum_dispersion_diff = corrected_momentum_dispersion - model_momentum_dispersion
+        if not forward:
+            momentum_dispersion_diff = -momentum_dispersion_diff
+
+        propagated_err = Series(np.nan, index=model_momentum_dispersion.index) # No error propagation for now
+        return momentum_dispersion_diff, propagated_err
 
     def _compute_elements(self, plane: str, seg_model: pd.DataFrame, forward: bool):
-        """ Compute get the propagated dispersion values from the segment model and calculate the propagated error.  """
+        """ Compute get the propagated momentum dispersion values from the segment model and calculate the propagated error.  """
 
-        model_pdisp = seg_model.loc[:, f"{DISPERSION}P{plane}"]
+        model_momentum_dispersion = seg_model.loc[:, f"{MOMENTUM_DISPERSION}{plane}"]
 
-        # No error propagation for now
-        return model_pdisp, 0
+        pderror = Series(np.nan, index=model_momentum_dispersion.index) # No error propagation for now
+        return model_momentum_dispersion, pderror
 
     def get_segment_observation_points(self, plane: str):
         """ Return the measurement points for the given plane, that are in the segment. """
