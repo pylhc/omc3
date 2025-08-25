@@ -93,6 +93,7 @@ from omc3.optics_measurements.constants import (
     IMAG,
     MDL,
     MODEL_DIRECTORY,
+    MOMENTUM_DISPERSION,
     NAME,
     NAME2,
     NORM_DISP_NAME,
@@ -281,6 +282,11 @@ def create_dispersion(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter:
     plane = parameter[-1]
     df = create_measurement(df_twiss, parameter, relative_error, randomize)
     df = append_model_param(df, df_model, parameter)
+
+    df_dp = create_measurement(df_twiss, f'{MOMENTUM_DISPERSION}{plane}', relative_error, randomize)
+    df_dp = append_model_param(df_dp, df_model, f'{MOMENTUM_DISPERSION}{plane}')
+    df = tfs.concat([df, df_dp], axis=1, join='inner')
+
     df = append_model_s_and_phaseadv(df, df_model, planes=plane)
     df.headers = headers.copy()
     return {f'{DISPERSION_NAME}{plane.lower()}': df}

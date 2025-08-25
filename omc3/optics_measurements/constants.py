@@ -20,6 +20,7 @@ TOTAL_PHASE_NAME: str = "total_phase_"
 DRIVEN_PHASE_NAME: str = f"{PHASE_NAME}driven_"
 DRIVEN_TOTAL_PHASE_NAME: str = f"{TOTAL_PHASE_NAME}driven_"
 DISPERSION_NAME: str = "dispersion_"
+MOMENTUM_DISPERSION_NAME: str = 'momentum_dispersion_' # Segment-by-Segment only
 NORM_DISP_NAME: str = "normalised_dispersion_"
 ORBIT_NAME: str = "orbit_"
 KICK_NAME: str = "kick_"
@@ -66,6 +67,7 @@ NOISE: str = "NOISE"
 ORBIT: str = ""  # Column is plane (X or Y) in files
 CLOSED_ORBIT: str = "CO"
 DISPERSION: str = "D"
+MOMENTUM_DISPERSION: str = "DP"
 NORM_DISPERSION: str = "ND"
 
 MEASUREMENT: str = "MEAS"
