@@ -25,6 +25,7 @@ from omc3.segment_by_segment.propagables import (
     AlphaPhase,
     BetaPhase,
     Dispersion,
+    MomentumDispersion,
     Phase,
     PropagableColumns,
 )
@@ -59,7 +60,8 @@ class TestSbSLHC:
         Phase: TestCfg(1e-2, 1e-8, 5e-4, "phase"),
         BetaPhase: TestCfg(9e-2, 1e-10, 5e-4, "beta_phase"),
         AlphaPhase: TestCfg(1e-1, 1e-8, 8e-2, "alpha_phase"),
-        Dispersion: TestCfg(1e-2, None, None, "dispersion"),  # not really working at the moment, see https://github.com/pylhc/omc3/issues/498
+        Dispersion: TestCfg(1e-6, 1e-4, 1e-4, "dispersion"),
+        MomentumDispersion: TestCfg(1e-7, 1e-4, 1e-4, "momentum_dispersion"),
         F1001: TestCfg(5e-4, 5e-7, None, "f1001"),
         F1010: TestCfg(5e-4, 5e-6, None, "f1010"),
     }
@@ -87,7 +89,7 @@ class TestSbSLHC:
             "beam": beam,
             "nat_tunes": [0.31, 0.32],
             "dpp": 0.0,
-            "energy": 6500,
+            "energy": 6800,
             "modifiers": [acc_models_lhc_2025 / OPTICS_SUBDIR / OPTICS_30CM_FLAT],
         }
 
@@ -203,8 +205,6 @@ class TestSbSLHC:
             ]
 
         for propagable in ALL_PROPAGABLES:
-            if propagable is Dispersion:
-                continue  # TODO: not working, see https://github.com/pylhc/omc3/issues/498
 
             cfg: TestCfg = self.config_map[propagable]
             planes = [REAL, IMAG, AMPLITUDE, PHASE] if propagable.is_rdt() else "xy"
@@ -228,6 +228,13 @@ class TestSbSLHC:
                     beta_file = self.config_map[BetaPhase].file_name
                     meas_df = tfs.read(
                         INPUT_SBS / f"measurement_b{beam}" / f"{beta_file}_{plane}.tfs",
+                        index=NAME
+                    )
+                elif propagable is MomentumDispersion:
+                    # momentum dispersion is in the dispersion-measurement file
+                    dispersion_file = self.config_map[Dispersion].file_name
+                    meas_df = tfs.read(
+                        INPUT_SBS / f"measurement_b{beam}" / f"{dispersion_file}_{plane}.tfs",
                         index=NAME
                     )
                 else:
@@ -264,7 +271,6 @@ class TestSbSLHC:
                             assert sbs_df[col].abs().min() < self.eps_rdt_min  # for RDTs the init value is calculated,
                         else:
                             assert sbs_df[col].abs().min() == 0  # at least the first entry should show no difference
-
                         assert sbs_df[col].abs().max() > cfg.diff_max
                         assert sbs_df[err_col].all()
 
@@ -277,7 +283,7 @@ class TestSbSLHC:
                                 # TODO: check backward coupling, see https://github.com/pylhc/omc3/issues/498
                                 continue
 
-                            if propagable in [Phase, F1001, F1010]:  # check absolute difference
+                            if propagable in [Phase, F1001, F1010, Dispersion, MomentumDispersion]:  # check absolute difference
                                 assert_all_close(sbs_df, correction, col, atol=eps)
                                 assert_all_close(sbs_df, expected, 0, atol=eps)
                             else:  # check relative difference
