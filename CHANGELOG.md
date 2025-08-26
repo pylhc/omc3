@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2025-08-26 - v0.24.5 - _yangelis_
+
+- Fixed/Added:
+  - Segement-by-Segment dispersion propagation by adding momentum dispersion propagable.
+
 #### 2025-04-28 - v0.24.4 - _wvangoet_
 
 - Fixed:
@@ -346,7 +351,7 @@
     (over moving average window)
   - Action error calculated from error on the spectral line
     (which in turn is the same as NOISE)
-  
+
 #### 2022-11-01 - v0.6.6
 
 - Bugfixes:
@@ -477,7 +482,7 @@
   - more usages of constants for strings (e.g. column names)
   - introducing pathlib.Path in some places
   - output-paths in model job-files are relative
-  
+
 - Fixed:
   - Matplotlib warnings for `set_window_title`
   - excluded Windows and MacOS py3.9 from normal testing, due to installation issues of pyTables
