@@ -643,7 +643,7 @@ HARPY_DEFAULTS = {
     "max_peak": 0.02,
     "svd_dominance_limit": 0.925,
     "num_svd_iterations": 3,
-    "tolerance": 0.01,
+    "tolerance": 0.005,
     "tune_clean_limit": 1e-5,
     "window": "hann",
     "turn_bits": 20,
