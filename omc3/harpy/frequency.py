@@ -118,7 +118,7 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
         if any(abs(t - n) < tune_tol for n, t in zip(nattunes[:2], tunes[:2])):
             if all(n == t for n, t in zip(nattunes[:2], tunes[:2])):
                 # Different error to try and be more informative
-                raise ValueError( 
+                raise ValueError(
                     "Natural tunes match driven tunes. "
                     "If analysing a simulation without an ACD don't give the nattunes or natdeltas."
                 )
