@@ -115,9 +115,10 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     nattunes = _get_natural_tunes(harpy_input, tunes)
     tune_tol = harpy_input.tolerance
     if nattunes is not None:
-        if any(abs(t - n) < tune_tol and n != 0 for n, t in zip(nattunes, tunes)):
+        # Each plane that has 0 for the nattunes is ignored.
+        if any(abs(t - n) < tune_tol for n, t in zip(nattunes, tunes) if n != 0):
             raise ValueError(
-                "Driven tunes exist within the natural tune tolerance."
+                "At least one of the driven tunes is within the tolerance window of finding the natural tunes. "
                 "Please check the input parameters."
             )
         df_nattunes = _calculate_natural_tunes(spectra, nattunes, tune_tol, plane)
