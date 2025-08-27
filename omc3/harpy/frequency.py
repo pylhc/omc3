@@ -112,10 +112,17 @@ def harpy_per_plane(harpy_input, bpm_matrix, usv, tunes, plane):
     bpm_matrix = bpm_matrix.loc[df.index]
     spectra = {"FREQS": frequencies.loc[df.index], "COEFFS": coefficients.loc[df.index]}
 
-    if _get_natural_tunes(harpy_input, tunes) is not None:
-        df_nattunes = _calculate_natural_tunes(
-            spectra, _get_natural_tunes(harpy_input, tunes), harpy_input.tolerance, plane
-        )
+    nattunes = _get_natural_tunes(harpy_input, tunes)
+    tune_tol = harpy_input.tolerance
+    if nattunes is not None:
+        if all(n == t for n, t in zip(nattunes[:2], tunes[:2])):
+            LOGGER.warning("Natural tunes match driven tunes, is this intended?")
+        elif any(abs(t - n) > tune_tol for n, t in zip(nattunes[:2], tunes[:2])):
+            raise ValueError(
+                "Driven tunes exist within the natural tune tolerance."
+                "Please check the input parameters."
+            )
+        df_nattunes = _calculate_natural_tunes(spectra, nattunes, harpy_input.tolerance, plane)
         df = pd.concat([df, df_nattunes], axis=1, sort=False)
 
         df[f"{COL_NATMU}{plane}"] = _realign_phases(df.loc[:, f"{COL_NATMU}{plane}"].to_numpy(),
