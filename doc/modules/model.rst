@@ -3,85 +3,85 @@ Model
 
 .. automodule:: omc3.model.manager
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.constants
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.accelerator
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.esrf
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.generic
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.lhc
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.ps
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.psbooster
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.skekb
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.sps
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.iota
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.accelerators.petra
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.model_creators.manager
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.model_creators.lhc_model_creator
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.model_creators.ps_model_creator
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.model_creators.psbooster_model_creator
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.model.model_creators.sps_model_creator
     :members:
-    :noindex:
+    :no-index-entry:
 

@@ -3,14 +3,14 @@ Definitions
 
 .. automodule:: omc3.definitions.constants
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.definitions.formats
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.definitions.optics
     :members:
-    :noindex:
+    :no-index-entry:

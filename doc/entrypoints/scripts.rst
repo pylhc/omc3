@@ -3,49 +3,49 @@ Scripts
 
 .. automodule:: omc3.scripts.betabeatsrc_output_converter
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.kmod_averages
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.kmod_import
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.kmod_lumi_imbalance
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.update_nattune_in_linfile
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.write_madx_macros
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.fake_measurement_from_model
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.linfile_clean
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.bad_bpms_summary
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.scripts.lhc_corrector_list_check
     :members:
-    :noindex:
+    :no-index-entry:
