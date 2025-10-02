@@ -1,7 +1,6 @@
 import mimetypes
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Union
 
 import pytest
 from requests import HTTPError
@@ -10,12 +9,13 @@ from omc3.scripts import create_logbook_entry
 from tests.conftest import cli_args
 
 INPUT = Path(__file__).parent.parent / "inputs"
+INPUT_SPEC_FILES = INPUT / "lhc_harpy_output"
 
 
 # noinspection PyTypeChecker
 class TestMain:
     text = "Here is some text"
-    files = (INPUT / "spec_test.sdds.linx", INPUT / "spec_test.sdds.liny")
+    files = (INPUT_SPEC_FILES / "spec_test.sdds.linx", INPUT_SPEC_FILES / "spec_test.sdds.liny")
     filenames = ("testfile1.linx", "testfile2.liny")
     tags=["Beam_1_Analysis", "Shift_Summary"]
 
@@ -147,12 +147,12 @@ class MockPylogbook:
         self.text = None
         self.tags = None
 
-    def Client(self, *args, **kwargs):
+    def Client(self, *args, **kwargs):  # noqa: N802 (mock the exact name)
         """ Mocks the pylogbook module. """
         assert kwargs["rbac_token"] == MockRBAC.token
         return self
 
-    def ActivitiesClient(self, logbook, **kwargs):
+    def ActivitiesClient(self, logbook, **kwargs):  # noqa: N802 (mock the exact name)
         """ Mocks the pylogbook module. """
         assert kwargs["client"] == self  # whatever Client returns
         assert logbook == self.expected_logbook
@@ -174,26 +174,26 @@ class MockPylogbook:
         assert isinstance(name, str)
         assert isinstance(mime_type, str)
         assert "/" in mime_type
-        assert isinstance(contents, (str, bytes))
+        assert isinstance(contents, str | bytes)
         self.attachments.append(name)
 
 
 @dataclass
 class MockAttachmentBuilder:
     """ Basically copied from pylogbook. """
-    contents: Union[str, bytes]
+    contents: str | bytes
     short_name: str
     mime_type: str
 
     @classmethod
-    def from_file(cls, filename: Union[Path, str]):
-        with open(filename, "rb") as f:
-            contents = f.read()
+    def from_file(cls, filename: Path | str):
+        contents = Path(filename).read_bytes()
         short_name = Path(filename).name
         mime_type = mimetypes.guess_type(short_name)[0]
         if mime_type is None:
             raise ValueError(f"Unable to determine the mime type of {filename}")
         return cls(contents, short_name, mime_type)
+
 
 @pytest.fixture()
 def patch_pylogbook(monkeypatch):

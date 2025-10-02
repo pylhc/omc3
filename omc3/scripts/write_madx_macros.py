@@ -16,11 +16,15 @@ Write out madx scripts for the tracking macros.
 
     Path to twissfile with observationspoint in the NAME column.
 """
+from __future__ import annotations
+
+from pathlib import Path
 
 import tfs
-from pathlib import Path
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
+
 from omc3.model.constants import OBS_POINTS
-from generic_parser.entrypoint_parser import entrypoint, EntryPointParameters
+
 
 def get_params():
     params = EntryPointParameters()
@@ -53,10 +57,9 @@ def define_observation_points_macros(list_of_bpms):
     return macro
 
 
-def tracking_macros(list_of_bpms, outdir):
-    obs_macro_file = outdir / OBS_POINTS
-    with open(obs_macro_file, 'w') as obs_script:
-        obs_script.write(define_observation_points_macros(list_of_bpms))
+def tracking_macros(list_of_bpms: list[str], outdir: Path | str):
+    obs_macro_file = Path(outdir) / OBS_POINTS
+    obs_macro_file.write_text(define_observation_points_macros(list_of_bpms))
     track_macros = _call(obs_macro_file)
     track_macros += """
     /*
@@ -76,7 +79,7 @@ def tracking_macros(list_of_bpms, outdir):
     PTC_TRACK_END;
     PTC_END;
     }
-    
+
     /*
     * Performs a single particle tracking of the active sequence using MAD-X track.
     * @param start_x: Particle horizontal start position.

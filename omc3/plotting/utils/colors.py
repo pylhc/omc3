@@ -4,11 +4,12 @@ Plotting Utilities: Colors
 
 Helper functions to handle colors in plots.
 """
+from __future__ import annotations
+
 import colorsys
 from itertools import cycle
 
-import matplotlib
-from matplotlib import colors as mc
+import matplotlib as mpl
 
 
 def get_mpl_color(idx=None):
@@ -37,8 +38,7 @@ def rgb_plotly_to_mpl(rgb_string):
 
     rgb_string = rgb_string.replace("rgba", "").replace("rgb", "")
     rgb = eval(rgb_string)
-    rgb_norm = [c/255. for c in rgb]
-    return rgb_norm
+    return [c/255. for c in rgb]
 
 
 def change_color_brightness(color, amount=0.5):
@@ -50,16 +50,13 @@ def change_color_brightness(color, amount=0.5):
     """
     if not (0<=amount<=2):
         raise ValueError("The brightness change has to be between 0 and 2."
-                         " Instead it was {}".format(amount))
+                         f" Instead it was {amount}")
     try:
-        c = mc.cnames[color]
+        c = mpl.colors.cnames[color]
     except KeyError:
         c = color
 
-    try:
-        c = colorsys.rgb_to_hls(*mc.ColorConverter().to_rgb(c))  # matplotlib 1.5
-    except AttributeError:
-        c = colorsys.rgb_to_hls(*mc.to_rgb(c))  # matplotlib > 2
+    c = colorsys.rgb_to_hls(*mpl.colors.to_rgb(c))
     return colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
 
 
@@ -76,5 +73,5 @@ def change_ebar_alpha_for_line(ebar, alpha):
 def change_ebar_alpha_for_axes(ax, alpha):
     """Wrapper for change_ebar_alpha_for_line to change all in one axes."""
     for ebar in ax.containers:
-        if isinstance(ebar, matplotlib.container.ErrorbarContainer):
+        if isinstance(ebar, mpl.container.ErrorbarContainer):
             change_ebar_alpha_for_line(ebar, alpha)

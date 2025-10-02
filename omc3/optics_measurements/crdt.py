@@ -9,7 +9,6 @@ https://arxiv.org/pdf/1402.1461.pdf.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -40,7 +39,9 @@ from omc3.optics_measurements.rdt import get_line_sign_and_suffix
 from omc3.utils import iotools, logging_tools
 from omc3.utils.stats import circular_nanerror, circular_nanmean
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -93,7 +94,7 @@ def calculate(measure_input: DotDict, input_files: InputFiles, invariants, heade
         signflip = -1 if crdt['term'] in ("F_NO2", "F_NO1") else 1
 
         result_df = pd.merge(
-            result_df, 
+            result_df,
             input_files.joined_frame(crdt["plane"], lines_and_phases.values(), dpp_value=dpp_value),
             how='inner', left_index=True, right_index=True
         )

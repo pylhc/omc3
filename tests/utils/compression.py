@@ -1,17 +1,18 @@
-from pathlib import Path
 import logging
+from pathlib import Path
 
 import tfs
-from omc3.model.constants import TWISS_ELEMENTS_DAT, TWISS_DAT, TWISS_ADT_DAT, TWISS_AC_DAT
+
+from omc3.model.constants import TWISS_AC_DAT, TWISS_ADT_DAT, TWISS_DAT, TWISS_ELEMENTS_DAT
 
 LOGGER = logging.getLogger(__name__)
 
 def model_files(model_dir: Path) -> list[Path]:
     """Return all possible twiss files in the model directory.
-    
+
     Args:
         model_dir (Path): The directory containing the twiss files.
-    
+
     Returns:
         list[Path]: The twiss files in the model directory.
     """
@@ -21,7 +22,7 @@ def model_files(model_dir: Path) -> list[Path]:
         model_dir / TWISS_AC_DAT,
         model_dir / TWISS_ADT_DAT,
     ]
-    
+
 def compress_model(model_dir: Path) -> None:
     """Compress the twiss files in the model directory.
 
@@ -41,7 +42,7 @@ def compress_model(model_dir: Path) -> None:
 
 def decompress_model(model_dir: Path) -> None:
     """Decompress the twiss files in the model directory.
-    
+
     Args:
         model_dir (Path): The directory containing the twiss files.
     """

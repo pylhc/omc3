@@ -4,16 +4,32 @@ Plot Spectrum - Stem Plotter
 
 Stem plotting functionality for spectrum plotter.
 """
-import matplotlib
-from generic_parser import DotDict
-from matplotlib import pyplot as plt, lines as mlines
+from __future__ import annotations
 
-from omc3.plotting.spectrum.utils import (plot_lines, FigureContainer, get_cycled_color,
-                                          get_approx_size_in_axes_coordinates,
-                                          PLANES, STEM_LINES_ALPHA, LABEL_Y_SPECTRUM,
-                                          LABEL_X, AMPS, FREQS, output_plot)
+from typing import TYPE_CHECKING
+
+from matplotlib import lines as mlines
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
+
+from omc3.plotting.spectrum.utils import (
+    AMPS,
+    FREQS,
+    LABEL_X,
+    LABEL_Y_SPECTRUM,
+    PLANES,
+    STEM_LINES_ALPHA,
+    FigureContainer,
+    get_approx_size_in_axes_coordinates,
+    get_cycled_color,
+    output_plot,
+    plot_lines,
+)
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOG = logging_tools.getLogger(__name__)
 
@@ -73,16 +89,16 @@ def _format_axes(fig_cont: FigureContainer, limits: DotDict):
 
 
 def _create_legend(ax, labels, lines, ncol):
-    lines_params = dict(
-        marker=matplotlib.rcParams[u'lines.marker'],
-        markersize=matplotlib.rcParams[u'font.size'] * 0.5,
-        linestyle='None',
-    )
-    legend_params = dict(
-        loc='lower right',
-        ncol=ncol,
-        fancybox=False, shadow=False, frameon=False,
-    )
+    lines_params = {
+        "marker": rcParams['lines.marker'],
+        "markersize": rcParams['font.size'] * 0.5,
+        "linestyle": 'None',
+    }
+    legend_params = {
+        "loc": 'lower right',
+        "ncol": ncol,
+        "fancybox": False, "shadow": False, "frameon": False,
+    }
     handles = [mlines.Line2D([], [], color=get_cycled_color(idx), label=bpm, **lines_params)
                for idx, bpm in enumerate(labels)]
     leg = ax.legend(handles=handles, **legend_params)
@@ -97,6 +113,6 @@ def _create_legend(ax, labels, lines, ncol):
 
     # move above line-labels
     nlines = sum([line is not None for line in lines.values()]) + 0.05
-    label_size = get_fontsize_as_float(matplotlib.rcParams['axes.labelsize'])
+    label_size = get_fontsize_as_float(rcParams['axes.labelsize'])
     y_shift = get_approx_size_in_axes_coordinates(leg.axes, label_size=label_size) * nlines
     leg.axes.legend(handles=handles, bbox_to_anchor=(1. + x_shift, 1. + y_shift), **legend_params)

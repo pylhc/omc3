@@ -1,0 +1,7 @@
+seqedit, sequence=sps;
+    flatten;
+    fakemagnetf: multipole, l=0, knl = {0, 5e-4, 1e-3};
+    fakemagnetd: multipole, l=0, knl = {0, 5e-4, 1e-3};
+    install, element=fakemagnetf, at=QF.52410->L/2, from=QF.52410;
+    install, element=fakemagnetd, at=QD.52510->L/2, from=QD.52510;
+endedit;

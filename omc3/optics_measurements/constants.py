@@ -4,10 +4,13 @@ Constants
 
 Specific constants to be used in optics_measurements, to help with consistency.
 """
+from __future__ import annotations
+
 # File Names -------------------------------------------------------------------
 EXT: str = ".tfs"
 AMP_BETA_NAME: str = "beta_amplitude_"
 BETA_NAME: str = "beta_phase_"
+ALPHA_NAME: str = "alpha_phase_"  # Segment-by-Segment only
 KMOD_BETA_NAME: str = "beta_kmod_"  # TODO Check in Michis repo
 KMOD_IP_NAME: str = "interaction_point_kmod_"  # TODO Check in Michis repo
 CHROM_BETA_NAME: str = "chrom_beta_"
@@ -17,6 +20,7 @@ TOTAL_PHASE_NAME: str = "total_phase_"
 DRIVEN_PHASE_NAME: str = f"{PHASE_NAME}driven_"
 DRIVEN_TOTAL_PHASE_NAME: str = f"{TOTAL_PHASE_NAME}driven_"
 DISPERSION_NAME: str = "dispersion_"
+MOMENTUM_DISPERSION_NAME: str = 'momentum_dispersion_' # Segment-by-Segment only
 NORM_DISP_NAME: str = "normalised_dispersion_"
 ORBIT_NAME: str = "orbit_"
 KICK_NAME: str = "kick_"
@@ -42,6 +46,7 @@ MASKED: str = "MASKED"
 # Names
 S: str = "S"
 S2: str = f"{S}2"
+S_MODEL: str = f"{S}{MDL}"
 NAME: str = "NAME"
 NAME2: str = f"{NAME}2"
 TUNE: str = "Q"
@@ -62,6 +67,7 @@ NOISE: str = "NOISE"
 ORBIT: str = ""  # Column is plane (X or Y) in files
 CLOSED_ORBIT: str = "CO"
 DISPERSION: str = "D"
+MOMENTUM_DISPERSION: str = "DP"
 NORM_DISPERSION: str = "ND"
 
 MEASUREMENT: str = "MEAS"
@@ -111,7 +117,8 @@ RESULTS_FILE_NAME: str = "results"  # contains betastar results
 # file names defined by omc3
 AVERAGED_BETASTAR_FILENAME: str = "averaged_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m"
 AVERAGED_BPM_FILENAME: str = "averaged_bpm_beam{beam}_ip{ip}_beta{betastar_x:.2f}m{betastar_y:.2f}m"
-EFFECTIVE_BETAS_FILENAME: str = "effective_betas_beta{betastar_x:.2f}m{betastar_y:.2f}m"
+EFFECTIVE_BETAS_FILENAME: str = "effective_betas_ip{ip_a}_ip{ip_b}_beta{betastar_x:.2f}m{betastar_y:.2f}m"
 
 BETA_KMOD_FILENAME: str = "beta_kmod_"
 BETA_STAR_FILENAME: str = "betastar_"
+MODEL_DIRECTORY: str = "Model_directory"   # wish this was 'ModelDirectory' but too afraid to change it (jdilly 2023)

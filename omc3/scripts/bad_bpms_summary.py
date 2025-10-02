@@ -11,9 +11,9 @@ their given number of appearances after 'harpy' and 'isolation forest'.
 
   Get bad BPMs for LHC-Beam 1 from September 2024 and 2024-10-03
 
-  .. code-block:: none 
+  .. code-block:: none
 
-    python -m omc3.scripts.bad_bpms_summary --dates 2024-09-* 2024-10-03 --accel_glob LHCB1 --outfile bad_bpms_sep_2024.txt  --print_percentage 50 
+    python -m omc3.scripts.bad_bpms_summary --dates 2024-09-* 2024-10-03 --accel_glob LHCB1 --outfile bad_bpms_sep_2024.txt  --print_percentage 50
 
 
 
@@ -58,7 +58,7 @@ from __future__ import annotations
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import numpy as np
 import pandas as pd
@@ -67,10 +67,11 @@ from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.optics_measurements.iforest import FEATURE
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr, OptionalFloat
+from omc3.utils.iotools import OptionalFloat, PathOrStr
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
     from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
@@ -103,6 +104,7 @@ class HarpyReasons(str, Enum):
     NO_TUNE = "main resonance has not been found"
     TUNE_CLEAN = "too far from average"
     SVD_PEAK = "svd"
+    NANS = "found nan"
 
 
 # Files ---
@@ -132,12 +134,12 @@ def get_params():
     params.add_parameter(
         name="outfile",
         type=PathOrStr,
-        help="Path to the file to write out." 
+        help="Path to the file to write out."
     )
     params.add_parameter(
         name="print_percentage",
         type=OptionalFloat,
-        help="Print out BPMs that appear in more than this percentage of measurements." 
+        help="Print out BPMs that appear in more than this percentage of measurements."
     )
     params.add_parameter(
         name="accel_glob",
@@ -154,11 +156,11 @@ def bad_bpms_summary(opt: DotDict) -> tfs.TfsDataFrame:
     if opt.outfile is not None:
         outfile = Path(opt.outfile)
         outfile.parent.mkdir(parents=True, exist_ok=True)
-    
+
     df_collection = collect_bad_bpms(Path(opt.root), opt.dates, opt.accel_glob)
     if outfile is not None:
         tfs.write(outfile.with_stem(f"{outfile.stem}_collected"), merge_reasons(df_collection))
-    
+
     df_evaluated = evaluate(df_collection)
     if outfile is not None:
         tfs.write(outfile, merge_reasons(df_evaluated))
@@ -193,7 +195,7 @@ def collect_bad_bpms(root: Path, dates: Sequence[Path | str], accel_glob: str) -
 
     Returns:
         tfs.TfsDataFrame: TfsDataFrame with all bad-bpms within selected dates.
-    
+
     """
     dfs = []
 
@@ -209,25 +211,25 @@ def collect_bad_bpms(root: Path, dates: Sequence[Path | str], accel_glob: str) -
         if date_dir.is_dir():
             collect_and_append(date_dir)
 
-        else:  
+        else:
             for date_dir in root.glob(date):
                 collect_and_append(date_dir)
-    
+
     # Check and return ---
     if not len(dfs):
         LOG.warning("No bad-bpms found! Resulting TfsDataFrame will be empty.")
         return get_empty_df()
 
-    return tfs.concat(dfs, axis="index", ignore_index=True) 
+    return tfs.concat(dfs, axis="index", ignore_index=True)
 
 
 def collect_date(date_dir: Path, accel_glob: str) -> tfs.TfsDataFrame | None:
-    """ Collect bad-bpms for a single date, by checking the sub-directories 
+    """ Collect bad-bpms for a single date, by checking the sub-directories
     which conform to the `accel_glob` pattern.
 
     In each accel directory, check for sub-directories named `Measurements` and `Results`,
     which in turn contain which in turn have entries containing the bad-bpms files.
-    
+
     Args:
         date_dir (Path): Path to the date directory.
         accel_glob (str): Accelerator name (glob for the sub-directories).
@@ -239,7 +241,7 @@ def collect_date(date_dir: Path, accel_glob: str) -> tfs.TfsDataFrame | None:
 
     for accel_dir in date_dir.glob(accel_glob):
         for subdir_name in (MEASUREMENTS_DIR, RESULTS_DIR):
-            analysis_stage_dir = accel_dir / subdir_name 
+            analysis_stage_dir = accel_dir / subdir_name
             if not analysis_stage_dir.is_dir():
                 continue
 
@@ -255,18 +257,18 @@ def collect_date(date_dir: Path, accel_glob: str) -> tfs.TfsDataFrame | None:
     if not len(dfs):
         return None
 
-    return tfs.concat(dfs, axis="index", ignore_index=True) 
-    
+    return tfs.concat(dfs, axis="index", ignore_index=True)
+
 
 def collect_bad_bpm_files_in_dir(directory: Path) -> tfs.TfsDataFrame | None:
     """ Collect bad-bpms for a single measurement directory.
-    
+
     Args:
         directory (Path): Path to the directory possibly containing bad-bpm files of type `file_types`.
 
     Returns:
         tfs.TfsDataFrame: TfsDataFrame with all bad-bpms from the given directory.
-    
+
     """
     readers_map = {
         BAD_BPMS_HARPY: read_harpy_bad_bpms_file,
@@ -283,15 +285,15 @@ def collect_bad_bpm_files_in_dir(directory: Path) -> tfs.TfsDataFrame | None:
 
     if not len(dfs):
         return None
-    
+
     return tfs.concat(dfs, axis="index", ignore_index=True)
 
 
 # File Readers --
-            
+
 def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
     """ Reads a harpy bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.
-    
+
     Args:
         svd_file (Path): Path to the bad-bpm file.
 
@@ -299,24 +301,24 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
         tfs.TfsDataFrame: TfsDataFrame with all unique bad-bpms.
 
     """
-    TO_IGNORE = (HarpyReasons.NOT_IN_MODEL, )
-    TO_MARK = (HarpyReasons.KNOWN, )
-    COMMENT = "#"
+    to_ignore: Final = (HarpyReasons.NOT_IN_MODEL, )
+    to_mark: Final = (HarpyReasons.KNOWN, )
+    comment: Final = "#"
 
     plane = svd_file.name[-1]
 
-    # Read and parse file 
+    # Read and parse file
     lines = svd_file.read_text().splitlines()
     lines = [line.strip().split(maxsplit=1) for line in lines]
     lines = [(line[0].strip(), line[1].lower().strip()) for line in lines]
 
     # filter bpms/lines
-    lines = [line for line in lines if not line[0].startswith(COMMENT) and line[1] not in TO_IGNORE]
-    
+    lines = [line for line in lines if not line[0].startswith(comment) and line[1] not in to_ignore]
+
     # group bpm names and attach reasons
     bpms = defaultdict(list)
     for line in lines:
-        bpm = f"[{line[0]}]" if line[1] in TO_MARK else line[0]
+        bpm = f"[{line[0]}]" if line[1] in to_mark else line[0]
         for reason in HarpyReasons:
             if reason.value.lower() in line[1] and reason.name not in bpms[bpm]:
                     bpms[bpm].append(reason.name)
@@ -326,7 +328,7 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
             if "unknown" not in bpms[bpm]:
                 bpms[bpm].append("unknown")
 
-    # Create DataFrame    
+    # Create DataFrame
     df = get_empty_df()
     df.loc[:, NAME] = list(bpms.keys())
     df.loc[:, REASONS] = pd.Series(bpms.values())  # each entry is a list
@@ -338,7 +340,7 @@ def read_harpy_bad_bpms_file(svd_file: Path) -> tfs.TfsDataFrame:
 
 def read_iforest_bad_bpms_file(iforest_file: Path) -> tfs.TfsDataFrame:
     """ Reads an iforest bad-bpm file and returns a TfsDataFrame with all unique bad-bpms.
-    
+
     Args:
         iforest_file (Path): Path to the bad-bpm file.
 
@@ -356,7 +358,7 @@ def read_iforest_bad_bpms_file(iforest_file: Path) -> tfs.TfsDataFrame:
     df.loc[:, NAME] = list(bpms.keys())
     df.loc[:, REASONS] = pd.Series(bpms.values())
     df.loc[:, PLANE] = plane.upper()
-    df.loc[:, SOURCE] = IFOREST 
+    df.loc[:, SOURCE] = IFOREST
     df.loc[:, FILE] = str(iforest_file)
     return df
 
@@ -372,7 +374,7 @@ def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     - Count the total number of (unique) files for each combination of accelerator, source and plane
 
     From this information the percentage of how often a BPM is deemed bad is calculated.
-    
+
     Args:
         df (tfs.TfsDataFrame): TfsDataFrame with all bad-bpms.
 
@@ -398,14 +400,13 @@ def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     df_counted.loc[:, PERCENTAGE] = round(
         (df_counted[COUNT] / df_counted[FILE_COUNT]) * 100, 2
     )
-    
-    df_counted = tfs.TfsDataFrame(df_counted.sort_values(PERCENTAGE, ascending=False), headers=df.headers)
-    return df_counted
+
+    return tfs.TfsDataFrame(df_counted.sort_values(PERCENTAGE, ascending=False), headers=df.headers)
 
 
 def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
-    """ Log the results to console (INFO level if logger is setup, print otherwise). 
-    
+    """ Log the results to console (INFO level if logger is setup, print otherwise).
+
     Args:
         df_counted (tfs.TfsDataFrame): TfsDataFrame with the evaluated results.
         print_percentage (float): Print out BPMs that appear in more than this percentage of measurements.
@@ -414,7 +415,7 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
     printer = print
     if LOG.hasHandlers():
         printer = LOG.info
-    
+
     planes = df_counted[PLANE].unique()
 
     printer("Bad BPMs Summary. Hint: '[BPM]' were filtered as known bad BPMs.")
@@ -440,24 +441,24 @@ def print_results(df_counted: tfs.TfsDataFrame, print_percentage: float):
                 # Print Table ---
                 header = f"{'BPM':>20s}  {'X':^18s}  {'Y':^18s}  {'Reasons'}\n"
                 msg = header + "\n".join(
-                    f"{name:>20s}  " + 
+                    f"{name:>20s}  " +
                     "  ".join(
-                        (
-                        "{:^18s}".format("-") if np.isnan(row[f'{FILE_COUNT}{plane}']) else 
+
+                        "{:^18s}".format("-") if np.isnan(row[f'{FILE_COUNT}{plane}']) else
                         f"{row[f'{PERCENTAGE}{plane}']:5.1f}% "
                         "{:<11s}".format(f"({int(row[f'{COUNT}{plane}']):d}/{int(row[f'{FILE_COUNT}{plane}']):d})")
                         for plane in ('X', 'Y')
-                        )
+
                     ) +
                     "  " + " | ".join(set(row[f'{REASONS}X'] + row[f'{REASONS}Y']))
-                    for name, row in df_merged.iterrows() 
+                    for name, row in df_merged.iterrows()
                 )
 
             else:
                 # Print a list ---
                 df_filtered = df_counted.loc[percentage_mask & source_mask & accel_mask, :]
                 msg = "\n".join(
-                    f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{row[FILE_COUNT]})  {' | '.join(row[REASONS])}" 
+                    f"{row[NAME]:>20s} {row[PLANE]}: {row[PERCENTAGE]:5.1f}% ({row[COUNT]}/{row[FILE_COUNT]})  {' | '.join(row[REASONS])}"
                     for _,row in df_filtered.iterrows()
                 )
             printer(f"Highest bad BPMs of {accel} from {source}:\n{msg}\n")

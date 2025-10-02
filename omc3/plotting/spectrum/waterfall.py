@@ -4,15 +4,29 @@ Plot Spectrum - Waterfall Plotter
 
 Waterfall plotting functionality for spectrum plotter.
 """
-import matplotlib
-import numpy as np
-from generic_parser import DotDict
-from matplotlib import pyplot as plt, colors
+from __future__ import annotations
 
-from omc3.plotting.spectrum.utils import (plot_lines, PLANES, LABEL_Y_WATERFALL,
-                                          LABEL_X, AMPS, FREQS, output_plot)
+from typing import TYPE_CHECKING
+
+import matplotlib as mpl
+import numpy as np
+from matplotlib import colors, rcParams
+from matplotlib import pyplot as plt
+
+from omc3.plotting.spectrum.utils import (
+    AMPS,
+    FREQS,
+    LABEL_X,
+    LABEL_Y_WATERFALL,
+    PLANES,
+    output_plot,
+    plot_lines,
+)
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 LOG = logging_tools.getLogger(__name__)
 
@@ -50,7 +64,7 @@ def _plot_waterfall(fig_cont, line_width, cmap, common_plane_colors):
                 _plot_color_mesh(ax, freqs, amps, idx_data, cmap, norm)
             else:
                 _plot_vlines(ax, freqs, amps, idx_data, cmap, norm, line_width)
-        ax.figure.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax)
+        ax.figure.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax)
 
 
 def _get_color_norm(minmax, plane, common):
@@ -90,11 +104,11 @@ def _format_axes(fig_cont, limits, ncol):
             ax.set_yticks(ticks=[], labels=[])
         else:
             # Provide ticks and labels together or matplotlib issues a UserWarning
-            # See "Discouraged" admonition at https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html 
+            # See "Discouraged" admonition at https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
             ax.set_yticks(
                 ticks=range(len(ylabels)),
                 labels=ylabels,
-                fontdict={'fontsize': get_fontsize_as_float(matplotlib.rcParams[u'axes.labelsize']) * .5},
+                fontdict={'fontsize': get_fontsize_as_float(rcParams['axes.labelsize']) * .5},
             )
         ax.set_xlabel(LABEL_X)
         ax.set_ylabel(LABEL_Y_WATERFALL.format(plane=plane.upper()))

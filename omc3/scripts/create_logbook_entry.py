@@ -46,18 +46,24 @@ from commandline.
     Tags to be added to the event.
 
 """
+from __future__ import annotations
+
 import mimetypes
 from pathlib import Path
-from typing import Iterable, Union, List
+from typing import TYPE_CHECKING
 
 import urllib3
-from requests.exceptions import HTTPError, ConnectionError, ConnectTimeout
+from generic_parser import EntryPointParameters, entrypoint
+from requests.exceptions import ConnectionError, ConnectTimeout, HTTPError  # noqa: A004
 
-from generic_parser import entrypoint, EntryPointParameters
-from omc3.utils.iotools import PathOrStr, OptionalStr
+from omc3.utils.iotools import OptionalStr, PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
 from omc3.utils.rbac import RBAC
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
 pylogbook = cern_network_import("pylogbook")  # raises ImportError if used
 
 # for typing:
@@ -81,38 +87,38 @@ LOGGER = get_logger(__name__)
 
 def get_params():
     return EntryPointParameters(
-        logbook=dict(
-            type=str,
-            help="Name of the logbook to create the entry in.",
-            default=OMC_LOGBOOK,
-        ),
-        text=dict(
-            type=str,
-            help="Text to be written into the new logbook entry.",
-            default="",
-        ),
-        files=dict(
-            type=PathOrStr,
-            nargs="+",
-            help="Files to attach to the new logbook entry.",
-        ),
-        filenames=dict(
-            type=OptionalStr,
-            nargs="+",
-            help=(
+        logbook={
+            "type": str,
+            "help": "Name of the logbook to create the entry in.",
+            "default": OMC_LOGBOOK,
+        },
+        text={
+            "type": str,
+            "help": "Text to be written into the new logbook entry.",
+            "default": "",
+        },
+        files={
+            "type": PathOrStr,
+            "nargs": "+",
+            "help": "Files to attach to the new logbook entry.",
+        },
+        filenames={
+            "type": OptionalStr,
+            "nargs": "+",
+            "help": (
                 "Filenames to be used with the given files. "
                 "If omitted, the original filenames will be used."
             ),
-        ),
-        tags=dict(
-            type=str,
-            nargs="+",
-            help="Tags to be added to the event.",
-        ),
-        pdf2png=dict(
-            action="store_true",
-            help="Convert pdf files to png and also upload these."
-        )
+        },
+        tags={
+            "type": str,
+            "nargs": "+",
+            "help": "Tags to be added to the event.",
+        },
+        pdf2png={
+            "action": "store_true",
+            "help": "Convert pdf files to png and also upload these."
+        }
     )
 
 
@@ -180,9 +186,9 @@ def _get_rbac_token() -> str:
     raise NameError("Could not get RBAC token.")
 
 
-def _get_attachments(files: Iterable[Union[str, Path]],
+def _get_attachments(files: Iterable[Path | str],
                      filenames: Iterable[str] = None,
-                     pdf2png: bool = False) -> List[AttachmentBuilderType]:
+                     pdf2png: bool = False) -> list[AttachmentBuilderType]:
     """ Read the file-attachments and assign their names. """
     if files is None:
         return []
@@ -222,7 +228,7 @@ def _get_attachments(files: Iterable[Union[str, Path]],
     return attachments
 
 
-def _add_mimetypes(files: Iterable[Union[str, Path]]):
+def _add_mimetypes(files: Iterable[Path | str]):
     """ Adds all unknown suffixes as plain/text, which should suffice for our
     purposes.
     TODO: if it's a binary sdds file, it should be 'application/octet-stream'
@@ -259,16 +265,14 @@ def _convert_pdf_to_png(filepath: Path):
         return None
 
     pixmap = doc[0].get_pixmap(dpi=PNG_DPI)  # only first page
-    attachment = AttachmentBuilder.from_bytes(
+    return AttachmentBuilder.from_bytes(
         contents=pixmap.tobytes("png"),
         mime_type="image/png",
         name=filepath.with_suffix(".png").name
     )
-    return attachment
 
 
 # Script Mode ------------------------------------------------------------------
 
 if __name__ == '__main__':
     main()
-

@@ -1,4 +1,4 @@
-""" 
+"""
 Average K-Modulation Results
 ----------------------------
 
@@ -51,7 +51,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import tfs
 from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
@@ -77,6 +76,7 @@ from omc3.utils.stats import weighted_error, weighted_mean
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    import pandas as pd
     from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
@@ -97,8 +97,8 @@ def _get_params() -> EntryPointParameters:
         help="Directories of K-modulation results to average.",
     )
     params.add_parameter(
-        name="ip", 
-        type=int, 
+        name="ip",
+        type=int,
         help="IP this result is from. Only used for filename and plot."
     )
     params.add_parameter(
@@ -113,13 +113,13 @@ def _get_params() -> EntryPointParameters:
         help="Path to the directory where to write the output files.",
     )
     params.add_parameter(
-        name="plot", 
-        action="store_true", 
+        name="plot",
+        action="store_true",
         help="Plot the averaged results."
     )
     params.add_parameter(
-        name="show_plots", 
-        action="store_true", 
+        name="show_plots",
+        action="store_true",
         help="Show the plots."
     )
     return params
@@ -148,19 +148,19 @@ def average_kmod_results(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
 
         plot (bool):
             If True, plots the averaged results. Default: False.
-        
+
         show_plots (bool):
             If True, show the plots. Default: False.
 
     Returns:
-        Dictionary of averaged kmod-result DataFrames by beams for the 
+        Dictionary of averaged kmod-result DataFrames by beams for the
         bpm-data and with key `0` for the beta-star data.
     """
     LOG.info("Starting K-mod averaging.")
     if opt.output_dir is not None:
         if opt.betastar is None:
             raise ValueError("Betastar not given. Cannot write out results.")
-        
+
         if opt.ip is None:
             raise ValueError("IP not given. Cannot write out results.")
 
@@ -180,17 +180,17 @@ def average_kmod_results(opt: DotDict) -> dict[int, tfs.TfsDataFrame]:
 
         filename = AVERAGED_BETASTAR_FILENAME.format(ip=opt.ip, betastar_x=opt.betastar[0], betastar_y=opt.betastar[1])
         tfs.write(opt.output_dir / f'{filename}{EXT}', averaged_results, save_index=BEAM)
-        
+
         for beam, df in averaged_bpm_results.items():
             filename = AVERAGED_BPM_FILENAME.format(beam=beam, ip=opt.ip, betastar_x=opt.betastar[0], betastar_y=opt.betastar[1])
             tfs.write(opt.output_dir / f'{filename}{EXT}', df, save_index=NAME)
 
     if opt.plot:
         plot_kmod_results(
-            data=averaged_results, 
-            ip=opt.ip, 
+            data=averaged_results,
+            ip=opt.ip,
             betastar=opt.betastar,
-            output_dir=opt.output_dir, 
+            output_dir=opt.output_dir,
             show=opt.show_plots
         )
 
@@ -224,11 +224,10 @@ def get_average_betastar_results(meas_paths: Sequence[Path]) -> tfs.TfsDataFrame
         if LABEL in mean_df.columns:
             mean_df[NAME] = mean_df[LABEL].apply(lambda s: f"IP{s[-1]}")
             mean_df = mean_df.drop(columns=[LABEL])
-        
+
         mean_df[BEAM] = beam
         final_results[beam] = mean_df
-    final_df = tfs.concat(final_results.values()).set_index(BEAM)
-    return final_df
+    return tfs.concat(final_results.values()).set_index(BEAM)
 
 
 def get_average_bpm_results(meas_paths: Sequence[Path]) -> dict[int, tfs.TfsDataFrame]:
@@ -253,20 +252,20 @@ def get_average_bpm_results(meas_paths: Sequence[Path]) -> dict[int, tfs.TfsData
         except FileNotFoundError as e:
             LOG.warning(f"Could not find all results for beam {beam}. Skipping.", exc_info=e)
             continue
-        
+
         final_results[beam] = _get_averaged_df(all_dfs)
     return final_results
 
 
 def _get_averaged_df(dfs: Sequence[pd.DataFrame]) -> pd.DataFrame:
     """ Calculate the average over the data in the given dfs.
-    
-    This function calculates the means and errors over the given dataframes, 
+
+    This function calculates the means and errors over the given dataframes,
     using the weighted_mean and weighted_error functions from the `stats` module,
     which takes the standard deviation of the data and their errors into account.
-    If no error column is present, 
+    If no error column is present,
 
-    It is assumed the same columns are present in all dataframes, 
+    It is assumed the same columns are present in all dataframes,
     and the average is only done on rows, that have common indices.
     The order of rows and columns is irrelevant.
 
@@ -293,11 +292,11 @@ def _get_averaged_df(dfs: Sequence[pd.DataFrame]) -> pd.DataFrame:
 
 
     data_cols = [
-        col for col in columns 
+        col for col in columns
         if (not col.startswith(ERR)) and (col not in no_average_cols + drop_cols)
     ]
 
-    # Compute the weighted mean and weighted error for each column 
+    # Compute the weighted mean and weighted error for each column
     avg_df = dfs[0].loc[index, no_average_cols]
 
     for data_col in data_cols:
@@ -310,7 +309,7 @@ def _get_averaged_df(dfs: Sequence[pd.DataFrame]) -> pd.DataFrame:
         errors = None
         if err_col is not None:
             errors = np.array([df.loc[index, err_col].values for df in dfs])
-        
+
         # Compute weighted mean and error
         avg_df.loc[index, data_col] = weighted_mean(data, errors, axis=0)
         avg_df.loc[index, err_col] = weighted_error(data, errors, axis=0, t_value_corr=False)

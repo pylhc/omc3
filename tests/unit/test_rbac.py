@@ -1,4 +1,3 @@
-import sys
 from dataclasses import dataclass
 
 import pytest
@@ -33,7 +32,7 @@ class TestRBACClass:
         rbac = RBAC(application=APPLICATION)
         username = "TestingUser"
         with pytest.raises(HTTPError) as e:
-            token = rbac.authenticate_location(username)
+            rbac.authenticate_location(username)
         assert REASONS["user"] in str(e)
 
     @pytest.mark.basic
@@ -48,7 +47,7 @@ class TestRBACClass:
         rbac = RBAC(application=APPLICATION)
         user = valid_users["adam"]
         with pytest.raises(HTTPError) as e:
-            token = rbac.authenticate_explicit(user.name, "wrongpassword")
+            rbac.authenticate_explicit(user.name, "wrongpassword")
         assert REASONS["pw"] in str(e)
 
     @pytest.mark.basic
@@ -63,14 +62,13 @@ class TestRBACClass:
         kerberos.validate()
 
     @pytest.mark.basic
-    def test_authenticate_explicit_fail(self, monkeypatch, mock_post):
+    def test_authenticate_explicit_fail_with_monkeypatch(self, monkeypatch, mock_post):
         rbac = RBAC(application=APPLICATION)
         user = valid_users["bertha"]
         kerberos = MockKerberos(user)
         monkeypatch.setenv(RBAC_USERNAME, "adam")
-        with mock_module_import("kerberos", kerberos):
-            with pytest.raises(HTTPError) as e:
-                token = rbac.authenticate_kerberos()
+        with mock_module_import("kerberos", kerberos), pytest.raises(HTTPError) as e:
+                rbac.authenticate_kerberos()
         assert REASONS["krb"] in str(e)
 
 
@@ -171,20 +169,20 @@ def mock_post_fun(address, **kwargs):
             assert len(data) == 3
 
         if mode == "kerberos":
-            assert "Krb5Ticket" in data.keys()
+            assert "Krb5Ticket" in data
             if user_data.kerberos != data["Krb5Ticket"]:
                 success = False
                 reason = REASONS["krb"]
 
         if mode == "explicit":
-            assert "Password" in data.keys()
+            assert "Password" in data
             if user_data.password != data["Password"]:
                 success = False
                 reason = REASONS["pw"]
 
     r = Response()
     r.status_code = 0 if success else 500
-    r._content = f"{VALID_RESPONSE}/{data['AccountName']}/{data['Application']}/{data['Lifetime']}".encode("utf-8") if success else None
+    r._content = f"{VALID_RESPONSE}/{data['AccountName']}/{data['Application']}/{data['Lifetime']}".encode() if success else None
     r.reason = reason
     return r
 
@@ -210,24 +208,24 @@ class MockKerberos:
         self.response = False
         self.clean = False
 
-    def authGSSClientInit(self, *args):
+    def authGSSClientInit(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         assert args[0] == RBAC._KRB5_SERVICE
         self.init = True
         return self.AUTH_GSS_COMPLETE, self._MYCONTEXT
 
-    def authGSSClientStep(self, *args):
+    def authGSSClientStep(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         self.step = True
         assert args[0] == self._MYCONTEXT  # should be whatever context the Init provides
 
-    def authGSSClientResponse(self, *args):
+    def authGSSClientResponse(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         assert args[0] == self._MYCONTEXT  # should be whatever context the Init provides
         self.response = True
         return self.user.kerberos
 
-    def authGSSClientClean(self, *args):
+    def authGSSClientClean(self, *args):  # noqa: N802 (mock the exact name)
         assert len(args)
         assert args[0] == self._MYCONTEXT  # should be whatever context the Init provides
         self.clean = True

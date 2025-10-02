@@ -6,20 +6,20 @@ This module contains some of the beta calculation related functionality of ``opt
 It provides functions to calculate beta functions from amplitude data.
 """
 from __future__ import annotations
-from os.path import join
+
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.optics_measurements.constants import (AMP_BETA_NAME, DELTA, ERR, EXT,
-                                                MDL, RES)
+from omc3.optics_measurements.constants import AMP_BETA_NAME, DELTA, ERR, EXT, MDL, RES
 from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
-from typing import TYPE_CHECKING 
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
-if TYPE_CHECKING: 
-    from generic_parser import DotDict 
     from omc3.optics_measurements.data_models import InputFiles
 
 
@@ -41,7 +41,7 @@ def calculate(meas_input: DotDict, input_files: InputFiles, tune_dict, beta_phas
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
     beta_amp = add_rescaled_beta_columns(beta_amp, x_ratio, plane)
     header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].to_numpy()), x_ratio)
-    tfs.write(join(meas_input.outputdir, f"{AMP_BETA_NAME}{plane.lower()}{EXT}"), beta_amp, header_d, save_index='NAME')
+    tfs.write(Path(meas_input.outputdir) / f"{AMP_BETA_NAME}{plane.lower()}{EXT}", beta_amp, header_d, save_index='NAME')
     return x_ratio
 
 
@@ -49,10 +49,9 @@ def phase_to_amp_ratio(measure_input, beta_phase, beta_amp, plane):
     ratio = pd.merge(beta_phase.loc[:, [f"BET{plane}"]], beta_amp.loc[:, [f"BET{plane}"]],
                      how='inner', left_index=True, right_index=True, suffixes=("ph", "amp"))
     ph_over_amp = df_ratio(ratio, f"BET{plane}ph", f"BET{plane}amp")
-    mask = (np.array(0.1 < np.abs(ph_over_amp)) & np.array(np.abs(ph_over_amp) < 10.0) &
+    mask = (np.array(np.abs(ph_over_amp) > 0.1) & np.array(np.abs(ph_over_amp) < 10.0) &
             np.array(measure_input.accelerator.get_element_types_mask(ratio.index, ["arc_bpm"])))
-    x_ratio = np.mean(ph_over_amp[mask])
-    return x_ratio
+    return np.mean(ph_over_amp[mask])
 
 
 def add_rescaled_beta_columns(df, ratio, plane):

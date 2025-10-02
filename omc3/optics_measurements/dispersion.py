@@ -7,8 +7,8 @@ It provides functions to compute orbit, dispersion and normalised dispersion.
 """
 from __future__ import annotations
 
-from collections.abc import Sequence
-from os.path import join
+import logging
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -16,6 +16,7 @@ import pandas as pd
 import tfs
 
 from omc3.definitions.constants import PI2I
+from omc3.optics_measurements import dpp
 from omc3.optics_measurements.constants import (
     DELTA,
     DISPERSION_NAME,
@@ -25,11 +26,11 @@ from omc3.optics_measurements.constants import (
     NORM_DISP_NAME,
     ORBIT_NAME,
 )
-from omc3.optics_measurements import dpp 
 from omc3.utils import stats
-import logging
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from generic_parser import DotDict
 
     from omc3.optics_measurements.data_models import InputFiles
@@ -38,14 +39,14 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header, plane):
+def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, plane):
     """
     Calculates orbit.
 
     Args:
         meas_input: `OpticsInput` object
         input_files: Stores the input files tfs.
-        header: `OrderedDict` containing information about the analysis.
+        header: `dict` containing information about the analysis.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
@@ -56,18 +57,18 @@ def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header, plane)
     df_orbit[f"{ERR}{plane}"] = stats.weighted_error(input_files.get_data(df_orbit, 'CO'), axis=1)
     df_orbit = _get_delta_columns(df_orbit, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    tfs.write(join(meas_input.outputdir, f"{ORBIT_NAME}{plane.lower()}{EXT}"), output_df, header, save_index='NAME')
+    tfs.write(Path(meas_input.outputdir) / f"{ORBIT_NAME}{plane.lower()}{EXT}", output_df, header, save_index='NAME')
     return output_df
 
 
-def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_dict, plane):
+def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane: str):
     """
     Calculates dispersion.
 
     Args:
         meas_input: `OpticsInput` object.
         input_files: Stores the input files tfs.
-        header_dict: `OrderedDict` containing information about the analysis.
+        header_dict: `dict` containing information about the analysis.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
@@ -78,7 +79,7 @@ def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_di
     return _calculate_dispersion_2d(meas_input, input_files, header_dict, plane)
 
 
-def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles, beta, header_dict):
+def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles, beta, header_dict: dict):
     """
     Calculates normalised dispersion.
 
@@ -86,7 +87,7 @@ def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles
         meas_input: `OpticsInput` object.
         input_files: Stores the input files tfs.
         beta: measured betas to get dispersion from normalised dispersion.
-        header_dict: `OrderedDict` containing information about the analysis.
+        header_dict: `dict` containing information about the analysis.
 
     Returns:
         `TfsDataFrame` corresponding to output file.
@@ -99,7 +100,7 @@ def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles
 def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, header, plane):
     dpps = input_files.dpps(plane)
     if _is_single_dpp_bin(dpps):
-        return
+        return None
 
     order = 2 if meas_input.second_order_dispersion else 1
     model = meas_input.accelerator.model
@@ -118,11 +119,11 @@ def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, heade
                                            df_orbit.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], plane)
     df_orbit = _get_delta_columns(df_orbit, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    tfs.write(join(meas_input.outputdir, f"{DISPERSION_NAME}{plane.lower()}{EXT}"), output_df, header, save_index='NAME')
+    tfs.write(Path(meas_input.outputdir) / f"{DISPERSION_NAME}{plane.lower()}{EXT}", output_df, header, save_index='NAME')
     return output_df
 
 
-def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, header_dict, plane):
+def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane):
     """Computes dispersion from 3D kicks."""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.model
@@ -138,20 +139,20 @@ def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, heade
     df_orbit[f"DP{plane}"] = _calculate_dp(model, df_orbit.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], plane)
     df_orbit = _get_delta_columns(df_orbit, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    tfs.write(join(output, f"{DISPERSION_NAME}{plane.lower()}{EXT}"), output_df, header_dict, save_index='NAME')
+    tfs.write(Path(output) / f"{DISPERSION_NAME}{plane.lower()}{EXT}", output_df, header_dict, save_index='NAME')
     return output_df
 
 
 def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputFiles, beta, header):
     # TODO there are no errors from orbit
     plane = "X"
-    
+
     dpps = input_files.dpps(plane)
     if _is_single_dpp_bin(dpps):
-        return
-    
+        return None
+
     order = 2 if meas_input.second_order_dispersion else 1
-    
+
     model = meas_input.accelerator.model
     df_orbit = _get_merged_df(meas_input, input_files, plane, ['CO', 'CORMS', f"AMP{plane}"])
     df_orbit[f"ND{plane}{MDL}"] = df_orbit.loc[:, f"D{plane}{MDL}"] / np.sqrt(
@@ -177,7 +178,7 @@ def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputF
     df_orbit[f"{ERR}ND{plane}"] = global_factor * df_orbit.loc[:, 'STDNDX_unscaled']
     df_orbit = _calculate_from_norm_disp(df_orbit, model, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    tfs.write(join(meas_input.outputdir, f"{NORM_DISP_NAME}{plane.lower()}{EXT}"), output_df, header, save_index='NAME')
+    tfs.write(Path(meas_input.outputdir) / f"{NORM_DISP_NAME}{plane.lower()}{EXT}", output_df, header, save_index='NAME')
     return output_df
 
 
@@ -204,7 +205,7 @@ def _calculate_normalised_dispersion_3d(meas_input: DotDict, input_files: InputF
         input_files, df_orbit, scaled_amps, mask)
     df_orbit = _calculate_from_norm_disp(df_orbit, model, plane)
     output_df = df_orbit.loc[:, _get_output_columns(plane, df_orbit)]
-    tfs.write(join(output, f"{NORM_DISP_NAME}{plane.lower()}{EXT}"), output_df, header, save_index='NAME')
+    tfs.write(Path(output) / f"{NORM_DISP_NAME}{plane.lower()}{EXT}", output_df, header, save_index='NAME')
     return output_df
 
 
@@ -282,11 +283,11 @@ def _get_delta_columns(df, plane):
 
 
 def _is_single_dpp_bin(dpps: Sequence[float]) -> bool:
-    """ Checks if the files would be grouped into a single dpp-bin 
+    """ Checks if the files would be grouped into a single dpp-bin
     by :func:`omc3.optics_measurements.dpp._compute_ranges`. """
-    # alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1 
+    # alternatively: len(omc3.optics_measurements.dpp._compute_ranges(dpps, tolerance)) == 1
     if any(np.isnan(dpps)):
         LOGGER.warning("DPPs contain NaN values. Skipping dispersion calculation.")
         return True  # i.e. skip dispersion calculation
 
-    return np.abs(np.max(dpps) - np.min(dpps)) <= 2 * dpp.DPP_BIN_TOLERANCE 
+    return np.abs(np.max(dpps) - np.min(dpps)) <= 2 * dpp.DPP_BIN_TOLERANCE

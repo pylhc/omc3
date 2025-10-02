@@ -4,18 +4,20 @@ Response Matrix IO
 
 Input and output functions for response matrices.
 """
-
 from __future__ import annotations
 
 import logging
 import warnings
 from collections import defaultdict
-from collections.abc import Sequence
 from contextlib import contextmanager
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
 from tables import NaturalNameWarning
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from pathlib import Path
 
 LOG = logging.getLogger(__name__)
 
@@ -32,12 +34,11 @@ def read_fullresponse(path: Path, optics_parameters: Sequence[str] = None) -> di
     default for not found entries are empty DataFrames.
     """
     if not path.exists():
-        raise IOError(f"Fullresponse file {str(path)} does not exist.")
+        raise OSError(f"Fullresponse file {str(path)} does not exist.")
     LOG.info(f"Loading response matrices from file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="r") as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="r") as store:
             _check_keys(store, optics_parameters, "fullresponse")
 
             fullresponse = defaultdict(pd.DataFrame)
@@ -57,8 +58,7 @@ def write_fullresponse(path: Path, fullresponse: dict[str, pd.DataFrame]):
         LOG.warning(f"Fullresponse file {str(path)} already exist and will be overwritten.")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
             for param, response_df in fullresponse.items():
                 store.put(value=response_df, key=param, format="table")
 
@@ -72,16 +72,15 @@ def read_varmap(path: Path, k_values: Sequence[str] = None) -> dict[str, dict[st
     default for not found entries are empty Series.
     """
     if not path.exists():
-        raise IOError(f"Varmap file {str(path)} does not exist.")
+        raise OSError(f"Varmap file {str(path)} does not exist.")
     LOG.info(f"Loading varmap from file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="r") as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="r") as store:
             _check_keys(store, k_values, "varmap")
 
             varmap = defaultdict(lambda: defaultdict(pd.Series))
-            for key in store.keys():
+            for key in store:
                 _, param, subparam = key.split("/")
                 if k_values is not None and param not in k_values:
                     continue
@@ -96,8 +95,7 @@ def write_varmap(path: Path, varmap: dict[str, dict[str, pd.Series]]):
     LOG.info(f"Saving varmap into file '{str(path)}'")
 
     # If encountering issues, remove the context manager and debug
-    with ignore_natural_name_warning():
-        with pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
+    with ignore_natural_name_warning(), pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
             for param, sub in varmap.items():
                 for subparam, varmap_series in sub.items():
                     store.put(value=varmap_series, key=f"{param}/{subparam}", format="table")
@@ -106,19 +104,19 @@ def write_varmap(path: Path, varmap: dict[str, dict[str, pd.Series]]):
 # Helper -----------------------------------------------------------------------
 
 
-def _check_keys(store: pd.HDFStore, keys: Sequence[str], id: str):
+def _check_keys(store: pd.HDFStore, keys: Sequence[str], file_id: str):
     if keys is None:
         return
 
     groups = _main_store_groups(store)
     not_found = [k for k in keys if k not in groups]
     if len(not_found):
-        raise ValueError(f"The following keys could not be found in {id} file:" f" {', '.join(not_found)}")
+        raise ValueError(f"The following keys could not be found in {file_id} file: {', '.join(not_found)}")
 
 
 def _main_store_groups(store: pd.HDFStore) -> set[str]:
     """Returns sequence of unique main store groups."""
-    return {k.split("/")[1] for k in store.keys()}
+    return {key.split("/")[1] for key in store}
 
 
 @contextmanager

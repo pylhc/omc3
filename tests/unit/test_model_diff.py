@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import numpy as np
 import pytest
 import tfs
@@ -22,8 +20,10 @@ from omc3.optics_measurements.toolbox import ang_diff, ang_sum
 from tests.conftest import INPUTS, MODELS
 
 MODEL_INJ_BEAM1 = MODELS / "2018_inj_b1_11m" / TWISS_DAT
-MODEL_INJ_BEAM1_MQ_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_quadrupole_error.dat"
-MODEL_INJ_BEAM1_MQS_ERR = INPUTS / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
+CORRECTION_INJ_BEAM1_DIR = INPUTS / "correction" / "2018_inj_b1_11m"
+
+MODEL_INJ_BEAM1_MQ_ERR = CORRECTION_INJ_BEAM1_DIR / "twiss_quadrupole_error.dat"
+MODEL_INJ_BEAM1_MQS_ERR = CORRECTION_INJ_BEAM1_DIR / "twiss_skew_quadrupole_error.dat"
 
 EPS = 1e-12  # numerical accuracy, as the inverse calculation will not give the exact starting values
 

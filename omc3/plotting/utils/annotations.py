@@ -10,20 +10,23 @@ import itertools
 import re
 from typing import TYPE_CHECKING
 
-import matplotlib
+import matplotlib as mpl
 import pandas as pd
 import tfs
 from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 if TYPE_CHECKING:
     from pathlib import Path
+
     from matplotlib.axes import Axes
 
 # List of common y-labels. Sorry for the ugly.
 ylabels: dict[str, str] = {
+    "alpha":              r'$\alpha_{{{0}}} \quad [m]$',
     "beta":               r'$\beta_{{{0}}} \quad [m]$',
     "betabeat":           r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}}$',
-    "betabeat_permile":   r'$\Delta \beta_{{{0}}} \; / \; \beta_{{{0}}} [$'u'\u2030'r'$]$',
+    "betabeat_permil":   '$\\Delta \\beta_{{{0}}} \\; / \\; \\beta_{{{0}}} \\; [\u2030]$',
     "dbeta":              r"$\beta'_{{{0}}} \quad [m]$",
     "dbetabeat":          r'$1 \; / \; \beta_{{{0}}} \cdot \partial\beta_{{{0}}} \; / \; \partial\delta_{{{0}}}$',
     "norm_dispersion":    r'D$_{{{0}}} \; / \; \sqrt{{\beta_{{{0}}}}} \quad \left[\sqrt{{\rm m}}\right]$',
@@ -104,7 +107,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
     inside = 'inside' in mode
     lines_only = 'inside' not in mode and 'outside' not in mode and 'lines' in mode
 
-    if isinstance(ip_dict, (pd.DataFrame, pd.Series)):
+    if isinstance(ip_dict, pd.DataFrame | pd.Series):
         if isinstance(ip_dict, pd.DataFrame):
             ip_dict = ip_dict.iloc[:, 0]
         d = {}
@@ -112,7 +115,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
             d[ip] = ip_dict.loc[ip]
         ip_dict = d
 
-    for ip in ip_dict.keys():
+    for ip in ip_dict:
         if xlim[0] <= ip_dict[ip] <= xlim[1]:
             xpos = ip_dict[ip]
 
@@ -121,7 +124,7 @@ def show_ir(ip_dict, ax: Axes = None, mode: str = "inside") -> None:
 
             if not lines_only:
                 ypos = ylim[not inside] + (ylim[1] - ylim[0]) * 0.01
-                c = 'grey' if inside else matplotlib.rcParams["text.color"]
+                c = 'grey' if inside else rcParams["text.color"]
                 ax.text(xpos, ypos, ip, color=c, ha='center', va='bottom')
 
     ax.set_xlim(xlim)
@@ -232,8 +235,7 @@ def get_annotation(ax: Axes = None, by_reference: bool = True):
         if c.get_label() == 'plot_style_annotation':
             if by_reference:
                 return c
-            else:
-                return c.get_text()
+            return c.get_text()
     return None
 
 
@@ -250,8 +252,8 @@ def small_title(ax: Axes = None) -> None:
     # could not get set_title() to work properly, so one parameter at a time
     ax.title.set_position([1.0, 1.02])
     ax.title.set_transform(ax.transAxes)
-    ax.title.set_fontsize(matplotlib.rcParams['font.size'])
-    ax.title.set_fontweight(matplotlib.rcParams['font.weight'])
+    ax.title.set_fontsize(rcParams['font.size'])
+    ax.title.set_fontweight(rcParams['font.weight'])
     ax.title.set_verticalalignment('bottom')
     ax.title.set_horizontalalignment('right')
 
@@ -270,9 +272,7 @@ def figure_title(text: str, ax: Axes = None, pad: float = 0, **kwargs) -> None:
         ax = plt.gca()
 
     # could not get set_title() to work properly, so one parameter at a time
-    fdict = dict(fontsize=matplotlib.rcParams['font.size'],
-                 fontweight=matplotlib.rcParams['font.weight'],
-                 va="top", ha="center")
+    fdict = {"fontsize": rcParams['font.size'], "fontweight": rcParams['font.weight'], "va": "top", "ha": "center"}
     fdict.update(kwargs)
     ax.set_title(text, transform=ax.figure.transFigure, fontdict=fdict)
 
@@ -309,7 +309,7 @@ def make_top_legend(
 ):
     """Create a legend on top of the plot."""
     if ncol < 1:
-        return
+        return None
 
     if transposed:
         handles, labels = transpose_legend_order(ncol, handles, labels, ax)
@@ -336,7 +336,7 @@ def make_top_legend(
     return leg
 
 
-class OOMFormatter(matplotlib.ticker.ScalarFormatter):
+class OOMFormatter(mpl.ticker.ScalarFormatter):
     """
     Order of Magnitude Formatter.
 
@@ -345,18 +345,18 @@ class OOMFormatter(matplotlib.ticker.ScalarFormatter):
 
     See: set_sci_magnitude
     """
-    def __init__(self, order=0, fformat="%1.1f", offset=True, mathText=True):
+    def __init__(self, order=0, fformat="%1.1f", offset=True, math_text=True):
         self.oom = order
         self.fformat = fformat
-        matplotlib.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=mathText)
+        mpl.ticker.ScalarFormatter.__init__(self, useOffset=offset, useMathText=math_text)
 
-    def _set_orderOfMagnitude(self, nothing):
+    def _set_orderOfMagnitude(self, nothing):  # noqa: N802
         self.orderOfMagnitude = self.oom
 
     def _set_format(self, vmin, vmax):
         self.format = self.fformat
         if self._useMathText:
-            self.format = '$%s$' % matplotlib.ticker._mathdefault(self.format)
+            self.format = f'${mpl.ticker._mathdefault(self.format)}$'
 
 
 def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, math_text=True):
@@ -371,7 +371,7 @@ def set_sci_magnitude(ax, axis="both", order=0, fformat="%1.1f", offset=True, ma
         offset (bool): Formatter offset.
         math_text (bool): Whether to use mathText.
     """
-    oomf = OOMFormatter(order=order, fformat=fformat, offset=offset, mathText=math_text)
+    oomf = OOMFormatter(order=order, fformat=fformat, offset=offset, math_text=math_text)
 
     if axis == "x" or axis == "both":
         ax.xaxis.set_major_formatter(oomf)
@@ -399,4 +399,4 @@ def get_fontsize_as_float(font_size: str | float) -> float:
             None: 1.0}[font_size]
     except KeyError:
         return font_size
-    return scale * matplotlib.rcParams['font.size']
+    return scale * rcParams['font.size']

@@ -9,17 +9,17 @@ from tests.utils.lhc_rdts.constants import (
     ANALYSIS_DIR,
     DATA_DIR,
     FREQ_OUT_DIR,
-    NORMAL_SEXTUPOLE_RDTS,
-    NORMAL_OCTUPOLE_RDTS,
-    SKEW_SEXTUPOLE_RDTS,
-    SKEW_OCTUPOLE_RDTS,
     LHC_RDTS_TEST_DIR,
+    NORMAL_OCTUPOLE_RDTS,
+    NORMAL_SEXTUPOLE_RDTS,
+    SKEW_OCTUPOLE_RDTS,
+    SKEW_SEXTUPOLE_RDTS,
 )
 
 LOGGER = logging.getLogger(__name__)
 
 
-def filter_out_BPM_near_IPs(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
+def filter_out_bpm_near_ips(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
     """Filter the DataFrame to include only BPMs."""
     return df.filter(regex=r"^BPM\.[1-9][0-9].", axis="index")
 
@@ -78,8 +78,7 @@ def get_rdt_paths(rdts: list[str], output_dir: Path) -> dict[str, Path]:
 def get_tunes(output_dir: Path) -> list[float]:
     optics_file = output_dir / "beta_amplitude_x.tfs"
     headers = tfs.reader.read_headers(optics_file)
-    tunes = [headers["Q1"], headers["Q2"]]
-    return tunes
+    return [headers["Q1"], headers["Q2"]]
 
 
 def get_rdts_from_optics_analysis(
@@ -97,7 +96,7 @@ def get_rdts_from_optics_analysis(
     only_coupling = all(rdt.lower() in ["f1001", "f1010"] for rdt in rdts)
     rdt_order = get_max_rdt_order(rdts)
     tbt_name = get_tbt_name(beam)
-    
+
     if linfile_dir is None:
         linfile_dir = FREQ_OUT_DIR
     if model_dir is None:
@@ -115,7 +114,7 @@ def get_rdts_from_optics_analysis(
             accel="lhc",
             beam=beam,
             year="2024",
-            energy=6.8,
+            energy=6800,
             model_dir=model_dir,
             only_coupling=only_coupling,
             compensation="none",
@@ -128,10 +127,9 @@ def get_rdts_from_optics_analysis(
             raise ValueError(
                 "Tunes are far from the expected values, rdts will be wrong/outside the tolerance"
             )
-    dfs = {
-        rdt: filter_out_BPM_near_IPs(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
+    return {
+        rdt: filter_out_bpm_near_ips(tfs.read(path, index="NAME")) for rdt, path in rdt_paths.items()
     }
-    return dfs
 
 
 def run_harpy(beam: int, linfile_dir: Path = None) -> None:

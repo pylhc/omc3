@@ -1,6 +1,8 @@
+import shutil
 from dataclasses import dataclass, field
+from pathlib import Path
 
-import matplotlib
+import matplotlib as mpl
 import pytest
 import tfs
 from generic_parser import DotDict
@@ -52,11 +54,11 @@ class TestFullRun:
         output_dir = tmp_path / "Corrections"
         filter_kwargs = {}
         if use_filter:
-            filter_kwargs = dict(
-                optics_params=correction_params.optics_params[:2],  # PHASE[XY] or F1001[IR]
-                modelcut=[0.01, 0.01],
-                errorcut=[0.01, 0.01],
-            )
+            filter_kwargs = {
+                'optics_params': correction_params.optics_params[:2],  # PHASE[XY] or F1001[IR]
+                'modelcut': [0.01, 0.01],
+                'errorcut': [0.01, 0.01],
+            }
         optics_params = filter_kwargs.get("optics_params", [])
 
         # TEST RUN -----------------------------------------------------------------
@@ -81,6 +83,9 @@ class TestFullRun:
 
         assert (len(tfs_files) - len(twiss_files)) == n_meas_files
 
+        # remove kmod files from the list
+        tfs_files = [tfs_file for tfs_file in tfs_files if "kmod" not in tfs_file.name]
+
         if use_filter:
             # test if this test will check for the filtered optics parameters: (a meta-test)
             assert any(self._file_in_optics_params(tfs_file, optics_params) for tfs_file in tfs_files)
@@ -103,7 +108,7 @@ class TestFullRun:
             # Check tune in header
             for ntune in (1, 2):
                 tune_map = TUNE_COLUMN.set_plane(ntune)
-                assert len([k for k in df.headers.keys() if tune_map.column in k]) == 3
+                assert len([key for key in df.headers if tune_map.column in key]) == 3
                 assert tune_map.column in df.headers
                 assert tune_map.diff_correction_column in df.headers
                 assert tune_map.expected_column in df.headers
@@ -121,7 +126,7 @@ class TestFullRun:
                 self._check_rms_header(df, planed_map, is_masked=is_masked)
 
         # Check plotting output
-        pdf_files = list(output_dir.glob(f"*.{matplotlib.rcParams['savefig.format']}"))
+        pdf_files = list(output_dir.glob(f"*.{mpl.rcParams['savefig.format']}"))
         assert len(pdf_files) == (n_meas_files + 6) * 2  # rdts split into 4; plotting combined and individual
         for pdf_file in pdf_files:
             assert pdf_file.stat().st_size
@@ -176,7 +181,7 @@ class TestMeasurementFilter:
                 column_map = column_map.set_plane(filestem[-1].upper())
             except KeyError:
                 # RDT Columns
-                letter_map = {col[0]: col for col in RDT_COLUMN_MAPPING.keys()}
+                letter_map = {col[0]: col for col in RDT_COLUMN_MAPPING}
                 column_map: ColumnsAndLabels = RDT_COLUMN_MAPPING[letter_map[param[-1]]]
 
             filter_opt = DotDict(
@@ -236,7 +241,7 @@ class TestMeasurementFilter:
 
 
 class TestPlotting:
-    
+
     @pytest.mark.basic
     def test_normal_params(self, monkeypatch):
         figure_dict = {
@@ -277,7 +282,7 @@ class TestPlotting:
                     assert plottab.title == "param1"
                 else:
                     assert plottab.title == "param 2"
-    
+
     @pytest.mark.basic
     def test_single_plane_files(self, monkeypatch):
         single_name = SINGLE_PLANE_FILES[0]  # so far only one anyway
@@ -354,7 +359,7 @@ class TestPlotting:
             assert len(tab.tabs) == 2  # either 1 rdt 2 columns or 2 rdts 1 column
             if idx_tab:
                 assert tab.title == f"correction{idx_tab}"
-                
+
                 for idx, plottab in enumerate(tab.tabs):
                     title_parts = plottab.title.split(" ")
                     rdt = "f1001" if idx_tab == 1 else "f1010"
@@ -416,7 +421,7 @@ class MockPlotWidget:
     title: str = ""
 
 
-def _create_fake_measurement(tmp_path, model_path, twiss_path):
+def _create_fake_measurement(tmp_path: Path, model_path: Path, twiss_path: Path):
     model_df = tfs.read(model_path / TWISS_DAT, index=NAME)
     model_df = add_coupling_to_model(model_df)
 
@@ -430,3 +435,10 @@ def _create_fake_measurement(tmp_path, model_path, twiss_path):
         randomize=[],
         outputdir=tmp_path,
     )
+
+    # Add beta kmod files to the outputdir
+    kmod_x_path = twiss_path.parent.parent / "beta_kmod_x.tfs"
+    kmod_y_path = twiss_path.parent.parent / "beta_kmod_y.tfs"
+
+    shutil.copy(kmod_x_path, tmp_path / kmod_x_path.name)
+    shutil.copy(kmod_y_path, tmp_path / kmod_y_path.name)

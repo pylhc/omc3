@@ -1,5 +1,88 @@
 # OMC3 Changelog
 
+#### 2025-08-26 - v0.24.5 - _yangelis_
+
+- Fixed/Added:
+  - Segement-by-Segment dispersion propagation by adding momentum dispersion propagable.
+
+#### 2025-04-28 - v0.24.4 - _wvangoet_
+
+- Fixed:
+  - Correct element regex and fixes for SuperKEKB.
+
+#### 2025-04-28 - v0.24.3 - _jdilly_
+
+- Fixed:
+  - `kmod_lumi_imbalance` added IPs to output names.
+
+#### 2025-04-21 - v0.24.2 - _jdilly_
+
+- Fixed:
+  - `knob_extractor` added new knobs for 2025.
+
+#### 2025-04-04 - v0.24.1 - _jdilly_
+
+- Added:
+  - Corrector lists for 2025.
+  - Added `kqt13.l7b1` to the main `MQT` correctors list.
+  - `lhc_corrector_list_check`: Checks LHC-sequence against the corrector lists.
+
+#### 2025-04-03 - v0.24.0 - _jdilly_
+
+- Added:
+  - Additional Propagables: Dispersion (but not really working [#498](https://github.com/pylhc/omc3/issues/498)), Coupling (only forward working [#498](https://github.com/pylhc/omc3/issues/498])).
+
+#### 2025-04-01 - v0.23.01 - _jdilly_, _jgray_
+
+- Changed:
+  - `twiss_elements` via macro now contain all elements in the sequence.
+
+- Fixed:
+  - `check_corrections` does not error when different markers in the model and the measurement.
+
+- Added:
+  - Bad BPMs summary: NANS reason.
+
+#### 2025-03-13 - v0.23.0 - _jdilly_
+
+- Added:
+  - SPS model creation (Nominal, Segment and Correction).
+
+#### 2025-03-06 - v0.22.1 - _jdilly_
+
+- Fixed:
+  - Error in list b2 error choices for lhc best knowledge models.
+
+#### 2025-03-05 - v0.22.0 - _jdilly_
+
+- Added:
+  - Segment-by-Segment with phase-propagation.
+  - Listing of entry-points on calling `python -m omc3`, `python -m omc3.scripts` and `python -m omc3.plotting`.
+  - Measurement from model faker now also adds alpha (ALF) columns to the beta-output files.
+
+- Updated:
+  - MAD-X binaries to version 5.09.00.
+
+#### 2025-03-03 - v0.21.1 - _fscarlier_
+
+- Fixed:
+  - Correct function call in `omc3.kmod_importer` when running as script.
+  - Fixed k-mod import for single-IP imports.
+
+#### 2025-01-23 - v0.21.0 - _jdilly_, _fscarlier_, _fesoubel_
+
+- Fixed:
+  - Plot Optics Measurements: Added extra mpl style for clearer plots.
+  - LHC exciter BPM not found: Tells you which BPMs were searched for.
+  - Plot Spectrum: Correct error handling for Single-Plane BPMs.
+
+- Added:
+  - A `generic` accelerator class, that can be used for non-specifc accelerators.
+  - Global Correction: Total arc phase correction (`arc-by-arc`).
+  - Cleaning: Filter BPMs with NaNs.
+  - Cleaning: Log bad BPMs with reasons before raising errors.
+  - MAD-X wrapper: Inform about failed twiss.
+
 #### 2025-01-06 - v0.20.4 - _fsoubelet_
 
 - Fixed:
@@ -268,7 +351,7 @@
     (over moving average window)
   - Action error calculated from error on the spectral line
     (which in turn is the same as NOISE)
-  
+
 #### 2022-11-01 - v0.6.6
 
 - Bugfixes:
@@ -399,7 +482,7 @@
   - more usages of constants for strings (e.g. column names)
   - introducing pathlib.Path in some places
   - output-paths in model job-files are relative
-  
+
 - Fixed:
   - Matplotlib warnings for `set_window_title`
   - excluded Windows and MacOS py3.9 from normal testing, due to installation issues of pyTables

@@ -4,14 +4,18 @@ Utils
 
 This module contains utilities for the ``plotting`` module.
 """
-from collections import OrderedDict
+from __future__ import annotations
+
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Iterable, Optional
+from typing import TYPE_CHECKING
 
 from matplotlib.figure import Figure
-from numpy.typing import ArrayLike
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+
+    from numpy.typing import ArrayLike
 
 @dataclass
 class IDMap:
@@ -27,7 +31,7 @@ class DataSet:
     """Container to store the data to plot."""
     x: ArrayLike
     y: ArrayLike
-    err: Optional[ArrayLike] = None
+    err: ArrayLike | None = None
 
 
 class FigureContainer:
@@ -41,9 +45,9 @@ class FigureContainer:
             axs = [axs]
 
         self.axes_ids = axes_ids  # to keep order
-        self.axes = {ax_id: ax for ax_id, ax in zip(axes_ids, axs)}
-        self.xlabels = {ax_id: None for ax_id in axes_ids}
-        self.ylabels = {ax_id: None for ax_id in axes_ids}
+        self.axes = dict(zip(axes_ids, axs))
+        self.xlabels = dict.fromkeys(axes_ids)
+        self.ylabels = dict.fromkeys(axes_ids)
         self.data = {ax_id: {} for ax_id in axes_ids}
         self.path = path
 
@@ -54,9 +58,9 @@ class FigureContainer:
 class FigureCollector:
     """Class to collect figure containers and manage data adding."""
     def __init__(self) -> None:
-        self.fig_dict = OrderedDict()   # dictionary of matplotlib figures, for output
-        self.figs = OrderedDict()       # dictionary of FigureContainers, used internally
-    
+        self.fig_dict = {}  # dictionary of matplotlib figures, for output
+        self.figs = {}  # dictionary of FigureContainers, used internally
+
     def __len__(self) -> int:
         return len(self.figs)
 
@@ -78,7 +82,7 @@ class FigureCollector:
         figure_cont.data[axes_id][label] = data
 
 
-def safe_format(label: str, insert: str) -> Optional[str]:
+def safe_format(label: str, insert: str) -> str | None:
     """
     Formats label. Usually just ``.format()`` works fine, even if there is no {}-placeholder in
     the label, but it might cause errors if latex is used in the label or ``None``. Hence the

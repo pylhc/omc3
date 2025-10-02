@@ -1,13 +1,13 @@
-""" 
+"""
 K-Mod Luminosity Imbalance
 --------------------------
 
 Calculate the luminosity imbalance from the averaged K-modulation results,
-based on the effective betas for two IPs, i.e. assuming that apart from the 
+based on the effective betas for two IPs, i.e. assuming that apart from the
 beta-function all other parameters are identical for the two IPs.
 
 This script needs the data in the format of the average script `kmod_average.py`,
-as the imbalance is calculated over both beams and this data is only available 
+as the imbalance is calculated over both beams and this data is only available
 at that point.
 The dataframes therefore need to have the columns `BEAM`, `BETSTAR` and `ERRBETSTAR`,
 and data for both beams needs to be available.
@@ -68,7 +68,6 @@ from omc3.optics_measurements.constants import (
     EXT,
     IMBALANCE,
     LUMINOSITY,
-    MDL,
     NAME,
 )
 from omc3.utils import logging_tools
@@ -108,13 +107,13 @@ def _get_params() -> EntryPointParameters:
 @entrypoint(_get_params(), strict=True)
 def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
     """ Perform the luminosity imbalance calculation. """
-    output_path = opt.output_dir 
+    output_path = opt.output_dir
     if output_path is not None:
         output_path = Path(output_path)
         output_path.mkdir(parents=True, exist_ok=True)
         opt_cp = copy.copy(opt)
         for ip in IPS:
-            if not isinstance(opt_cp[ip], (Path, str)):
+            if opt_cp[ip] is not None and not isinstance(opt_cp[ip], Path | str):
                 opt_cp[ip] = "(was provided as DataFrame)"
         save_config(output_path, opt_cp, __file__)
 
@@ -127,12 +126,15 @@ def calculate_lumi_imbalance(opt: DotDict) -> tfs.TfsDataFrame:
         if len(opt.betastar) == 1:
             opt.betastar = [opt.betastar[0], opt.betastar[0]]
 
-        tfs.write(
-            output_path / f"{EFFECTIVE_BETAS_FILENAME.format(betastar_x=opt.betastar[0], betastar_y=opt.betastar[1])}{EXT}", 
-            df, 
-            save_index=NAME
+        ips = list(dfs.keys())
+        file_name = EFFECTIVE_BETAS_FILENAME.format(
+                ip_a=ips[0][-1],  # assumes last char is IP id
+                ip_b=ips[1][-1],  # assumes last char is IP id
+                betastar_x=opt.betastar[0],
+                betastar_y=opt.betastar[1]
         )
-    
+        tfs.write(output_path / f"{file_name}{EXT}", df, save_index=NAME)
+
     return df
 
 
@@ -146,7 +148,7 @@ def _read_and_check_dataframes(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
         if df is None:
             continue
 
-        if isinstance(df, (Path, str)):
+        if isinstance(df, Path | str):
             try:
                 df = tfs.read(df, index=BEAM)
             except KeyError as e:
@@ -170,7 +172,7 @@ def _read_and_check_dataframes(opt: DotDict) -> dict[str, tfs.TfsDataFrame]:
                 raise KeyError(msg)
 
         dfs[ip] = df
-    
+
     if len(dfs) != 2:
         msg = (
             "Lumi inbalance can only be calculated for exactly two IPs, "
@@ -188,44 +190,50 @@ def get_lumi_imbalance_df(**kwargs) -> tfs.TfsDataFrame:
     Args:
         ipA (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_A.
         ipB (tfs.TfsDataFrame): a `TfsDataFrame` with the averaged results from a kmod analysis, for IP_B.
-        (Actually, any name that ends with an integer is fine.)
-    
+        (Actually, any name is fine.)
+
     Returns:
         tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.
     """
+    LOG.debug(f"Calculating luminosity imbalance for ips {kwargs.keys()}")
+
     df_effective_betas = tfs.TfsDataFrame()
     for ip, df in kwargs.items():
         df_effective_betas.loc[ip.upper(), [f'{BETASTAR}', f'{ERR}{BETASTAR}']] = get_effective_beta_star_w_err(df)
-    
+
     ip_a, ip_b = df_effective_betas.index
     lumi_imb, lumi_imb_err = get_imbalance_w_err(
-        *tuple(df_effective_betas.loc[ip_a, :]), 
-        *tuple(df_effective_betas.loc[ip_b, :])
+        *tuple(df_effective_betas.loc[ip_a, :]),
+        *tuple(df_effective_betas.loc[ip_b, :]),
     )
-    
+
     df_effective_betas.headers[f'{LUMINOSITY}{IMBALANCE}'] = lumi_imb
     df_effective_betas.headers[f'{ERR}{LUMINOSITY}{IMBALANCE}'] = lumi_imb_err
+
+    LOG.debug(f"Imbalance: {lumi_imb} +/- {lumi_imb_err}")
     return df_effective_betas
 
 
-def get_imbalance_w_err(ipA_beta: float, ipA_beta_err: float, ipB_beta: float, ipB_beta_err: float) -> tuple[float, float]:
+def get_imbalance_w_err(
+        beta_ip_a: float, beta_err_ip_a: float, beta_ip_b: float, beta_err_ip_b: float
+    ) -> tuple[float, float]:
     """
     Calculate the luminosity imbalance IP_A / IP_B  and its error, based on the effective betas for IP_A and IP_B.
-    This implies, that all the other beam parameters (see e.g. Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf) 
+    This implies that all the other beam parameters (see Eq (17) in https://cds.cern.ch/record/941318/files/p361.pdf)
     are the same for both IPs.
     """
-    result = ipB_beta / ipA_beta  # inverse due to beta in the denominator for lumi
-    err = result * np.sqrt((ipB_beta_err/ipB_beta)**2 + (ipA_beta_err/ipA_beta)**2)
+    result = beta_ip_b / beta_ip_a  # inverse due to beta in the denominator for lumi
+    err = result * np.sqrt((beta_err_ip_b/beta_ip_b)**2 + (beta_err_ip_a/beta_ip_a)**2)
     return result, err
 
 
-def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
-    """ Calculates the effective beta*, i.e. the denominator of the luminosity as given in e.g. 
-    Eq(17): https://cds.cern.ch/record/941318/files/p361.pdf , without any constants 
-    as we assume here that these are equal for both IPs, and we only care about the ratio. 
+def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float, float]:
+    """ Calculates the effective beta*, i.e. the denominator of the luminosity as given in
+    Eq(17) of https://cds.cern.ch/record/941318/files/p361.pdf without any constants
+    as we assume here that these are equal for both IPs, and we only care about the ratio.
     """
     b1x, b1y, b2x, b2y = _get_betastar_beams(df_ip)
-    db1x, db2x, db1y, db2y = _get_betastar_beams(df_ip, errors=True) 
+    db1x, db2x, db1y, db2y = _get_betastar_beams(df_ip, errors=True)
 
     # Effective beta:
     sqrt_x = np.sqrt(b1x + b2x)
@@ -234,9 +242,13 @@ def get_effective_beta_star_w_err(df_ip: tfs.TfsDataFrame) -> tuple[float]:
 
     # Error propagation:
     dbeta_db1x = dbeta_db2x = 0.25 * sqrt_y / sqrt_x
-    dbeta_db1y = dbeta_db2y = 0.25 * sqrt_x / sqrt_y 
-    sigma = np.sqrt((dbeta_db1x * db1x) ** 2 + (dbeta_db1y * db1y) ** 2 +
-                    (dbeta_db2x * db2x) ** 2 + (dbeta_db2y * db2y) ** 2)
+    dbeta_db1y = dbeta_db2y = 0.25 * sqrt_x / sqrt_y
+    sigma = np.sqrt(
+        (dbeta_db1x * db1x) ** 2
+        + (dbeta_db1y * db1y) ** 2
+        + (dbeta_db2x * db2x) ** 2
+        + (dbeta_db2y * db2y) ** 2
+    )
     return beta, sigma
 
 

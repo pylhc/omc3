@@ -15,13 +15,12 @@ the `_get_filtered_generic` function.
 """
 from __future__ import annotations
 
+import contextlib
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import tfs
-from generic_parser import DotDict
 
 from omc3.correction.constants import ERROR, VALUE, WEIGHT
 from omc3.definitions.constants import PLANES
@@ -42,6 +41,9 @@ from omc3.utils import logging_tools, stats
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+
+    import pandas as pd
+    from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -229,10 +231,8 @@ def _get_smallest_data_mask(data, portion: float = 0.95) -> np.ndarray:
     return mask
 
 
-def _rename_phase_advance(response):
+def _rename_phase_advance(response) -> None:
     """Renames MU to PHASE inplace."""
     for plane in PLANES:
-        try:
+        with contextlib.suppress(KeyError):
             response[f"{PHASE}{plane}"] = response.pop(f"{PHASE_ADV}{plane}")
-        except KeyError:
-            pass

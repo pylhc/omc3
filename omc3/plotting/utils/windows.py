@@ -2,14 +2,14 @@
 Plot Window
 ------------
 
-In this module different classes are defined, allowing to put `matplotlib` figures 
+In this module different classes are defined, allowing to put `matplotlib` figures
 manually into GUI windows.
-These windows are QT-based, created with `qtpy` which allows to use 
+These windows are QT-based, created with `qtpy` which allows to use
 either PySide(2 or 6) or PyQt(5 or 6), depending on which it installed on the system.
-As the `qtpy` library is optional, there are some checks to make sure 
+As the `qtpy` library is optional, there are some checks to make sure
 the imports do not fail, but then the classes cannot be used.
 To check if QtPy is installed, either run :meth:`omc3.plotting.plot_window.is_qtpy_installed`
-or try to initialize one of the windows, which will fail with a TypeError, 
+or try to initialize one of the windows, which will fail with a TypeError,
 as they want to call QApplication which is set to `None`.
 
 An exception to all of this is  :meth:`omc3.plotting.plot_window.create_pyplot_window_from_fig`,
@@ -20,21 +20,23 @@ and can either be added to a QT-Window or, if not installed, opened by `pyplot`.
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 
-import matplotlib
-from matplotlib import pyplot as plt, rcParams
-from matplotlib.figure import Figure
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
 
 LOG = logging_tools.get_logger(__name__)
 
 # --- optional qtpy import block -----------------------------------------------
 
 try:
-    from qtpy.QtWidgets import (
-        QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget
-    )
+    from qtpy.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget
 except ImportError as e:
     LOG.debug(f"Could not import QtPy: {str(e)}")
     QMainWindow, QApplication, QVBoxLayout  = None, None, None
@@ -44,7 +46,7 @@ else:
     from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
     from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
     try:
-        matplotlib.use('qtagg')
+        mpl.use('qtagg')
     except ImportError as e:
         if "headless" not in str(e):
             raise
@@ -102,7 +104,7 @@ class TabWidget(QTabWidget):
         """A simple tab widget, that in addition
         to QTabWidget keeps track of the tabs via dictionary
         and can have a title.
-        
+
         Args:
             title (str): Title of the created Window
         """
@@ -119,7 +121,7 @@ class TabWidget(QTabWidget):
 class SimpleTabWindow:
 
     def __init__(self, title: str = "Simple Tab Window", size: tuple[int, int] = None):
-        """A simple GUI window, i.e. a standalone graphical application, 
+        """A simple GUI window, i.e. a standalone graphical application,
         which contains a single Tab-Widget, allowing the user to add tabs to it.
 
         Args:
@@ -132,7 +134,7 @@ class SimpleTabWindow:
         self.current_window = -1
         self.tabs_widget = TabWidget()
         self.main_window.setCentralWidget(self.tabs_widget)
-        
+
         if size is None:
             size_in_inch = rcParams["figure.figsize"]
             size = (int(size_in_inch[0] * 100), int(size_in_inch[1] * 100))  # Approximate
@@ -163,7 +165,7 @@ class VerticalTabWindow(SimpleTabWindow):
         Args:
             title (str): Title of the created Window.
             size (Tuple[int, int]): Size of the created window in pixels.
-        """        
+        """
         super().__init__(title, size)
         self.tabs_widget.setTabPosition(QTabWidget.West)
 
@@ -182,14 +184,14 @@ class VerticalTabWindow(SimpleTabWindow):
 
 
 def create_pyplot_window_from_fig(fig: Figure, title: str = None):
-    """Create a window from the given figure, which is managed by pyplot. 
+    """Create a window from the given figure, which is managed by pyplot.
     This is similar to how figures behave when created with `pyplot.figure()`,
     but you can crate the figure instance first and the manager later.
 
     Caveat: Uses private functions of pyplot.
 
     Args:
-        fig (Figure): figure to be managed by pyplot. 
+        fig (Figure): figure to be managed by pyplot.
         title (str): Title of the window.
     """
     if fig.canvas.manager is not None:

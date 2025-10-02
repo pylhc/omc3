@@ -38,7 +38,7 @@ Model Creation Keyword Args:
 
     - **energy** *(float)*:
 
-        Energy in **Tev**.
+        Energy in **GeV**.
 
 
     - **model_dir** *(str)*:
@@ -62,10 +62,15 @@ Model Creation Keyword Args:
 
         action: ``store_true``
 """
+from __future__ import annotations
+
 from generic_parser import EntryPoint
 
-from omc3.model.accelerators.accelerator import (Accelerator,
-                                                 AcceleratorDefinitionError)
+from omc3.model.accelerators.accelerator import (
+    AccElementTypes,
+    Accelerator,
+    AcceleratorDefinitionError,
+)
 from omc3.utils import logging_tools
 
 LOGGER = logging_tools.get_logger(__name__)
@@ -75,12 +80,22 @@ class SKekB(Accelerator):
     """KEK's SuperKEKB accelerator."""
     NAME = "skekb"
     RINGS = ("ler", "her")
+    RE_DICT: dict[str, str] = {
+        AccElementTypes.BPMS: r"^M*",
+        AccElementTypes.MAGNETS: r".*",
+        AccElementTypes.ARC_BPMS: r"^M*",
+    }
 
     @classmethod
     def get_parameters(cls):
         params = super(SKekB, SKekB).get_parameters()
-        params.add_parameter(name="ring", type=str, choices=cls.RINGS, required=True,
-                             help="HER or LER ring.")
+        params.add_parameter(
+            name="ring",
+            type=str,
+            choices=cls.RINGS,
+            required=True,
+            help="HER or LER ring."
+        )
         return params
 
     def __init__(self, *args, **kwargs):

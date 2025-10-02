@@ -5,6 +5,11 @@
             "affiliation": "CERN"
         },
         {
+            "name": "Yannis Angelis",
+            "affiliation": "CERN",
+            "orcid": "0009-0003-9057-5165"
+        },
+        {
             "name": "Felix Simon Carlier",
             "affiliation": "CERN",
             "orcid": "0000-0002-7173-8833"
@@ -64,6 +69,10 @@
         },
         {
             "name": "Andreas Wegscheider",
+            "affiliation": "CERN"
+        },
+        {
+            "name": "Wietse Van Goethem",
             "affiliation": "CERN"
         }
     ],

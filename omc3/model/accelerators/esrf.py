@@ -28,7 +28,7 @@ Model Creation Keyword Args:
 
     - **energy** *(float)*:
 
-        Energy in **Tev**.
+        Energy in **GeV**.
 
 
     - **model_dir** *(str)*:
@@ -52,6 +52,8 @@ Model Creation Keyword Args:
 
         action: ``store_true``
 """
+from __future__ import annotations
+
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator

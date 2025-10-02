@@ -2,44 +2,45 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+import tfs
 from scipy import stats
 
-import tfs
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.optics_measurements.constants import (
-    NAME,
-    S,
-    ERR,
-    MDL,
-    DELTA,
-    EXT,
-    NORM_DISP_NAME,
-    PHASE_NAME,
-    TOTAL_PHASE_NAME,
-    BETA_NAME,
     AMP_BETA_NAME,
-    DISPERSION_NAME,
-    REAL,
-    IMAG,
-    AMPLITUDE, F1010_NAME, F1001_NAME,
-    NORM_DISPERSION,
-    DISPERSION,
+    AMPLITUDE,
     BETA,
-    PHASE,
-    TUNE,
-    PHASE_ADV,
-    F1010,
+    BETA_NAME,
+    DELTA,
+    DISPERSION,
+    DISPERSION_NAME,
+    ERR,
+    EXT,
     F1001,
+    F1001_NAME,
+    F1010,
+    F1010_NAME,
+    IMAG,
+    MDL,
+    NAME,
+    NORM_DISP_NAME,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    PHASE_NAME,
+    REAL,
+    TOTAL_PHASE_NAME,
+    TUNE,
+    S,
 )
 from omc3.scripts.fake_measurement_from_model import (
-    _get_data,
+    ERRORS,
     OUTPUTNAMES_MAP,
     VALUES,
-    ERRORS,
+    _get_data,
 )
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from tests.conftest import INPUTS
-
 
 EPS = 1e-12  # allowed machine precision errors
 
@@ -73,9 +74,10 @@ def test_get_data_dataframe(beam1_path):
 
 
 @pytest.mark.basic
-def test_get_data_model(beam1_path, beam2_path):
-    """ Test that twiss and model are different if two are given. """
-    twiss, model = _get_data(twiss=beam1_path, model=beam2_path)
+def test_get_data_model(beam1_path):
+    """ Test that twiss and model are different if two are given.
+    Needs to be from the same beam, as `_get_data` does intersection on the index. """
+    twiss, model = _get_data(twiss=beam1_path, model=beam1_coupling_path())
     assert twiss.any().any()
     assert model.any().any()
     assert not twiss.equals(model)
@@ -166,14 +168,14 @@ def _test_error_columns(name, df, randomized, error_val):
             if name.startswith(TOTAL_PHASE_NAME):
                 idx = df.index[1:]
 
-            if name[:-1] in (PHASE_NAME, TOTAL_PHASE_NAME):
+            if param[:-1] in (PHASE, PHASE_ADV):
                 # phase errors are equal to the relative error
                 assert not any(df.loc[idx, col] - error_val)
-            elif name[:-1] in (BETA_NAME, AMP_BETA_NAME) and DELTA in col:
+            elif param[:-1] in (BETA, ) and DELTA in col:
                 # errdeltabet (beating) errors are also equal to the relative error,
                 # but with less precision
                 assert all(np.abs(df.loc[idx, col] - error_val) < EPS)
-            elif name[:-1] in (NORM_DISP_NAME):
+            elif param[:-1] in (NORM_DISPERSION, DISPERSION):
                 # not sure how to test this, but should already be tested with disp and beta
                 assert all(df.loc[idx, col])
             else:
@@ -238,7 +240,7 @@ def test_parameter(beam, parameter):
     )
 
     assert len(results)
-    assert all(name in results.keys() for name in OUTPUTNAMES_MAP[parameter])
+    assert all(name in results for name in OUTPUTNAMES_MAP[parameter])
 
     name_tester_map = {
         TOTAL_PHASE_NAME: _test_total_phase,
@@ -265,7 +267,7 @@ def _test_beta(df, plane, relative_error):
     assert all(df[f"{BETA}{plane}"]) > 0
     assert all(df[f"{ERR}{BETA}{plane}"]) > 0
     assert all(df[f"{ERR}{BETA}{plane}"] <= 5 * relative_error * np.abs(df[f"{BETA}{plane}{MDL}"]))  # rough estimate
-    assert all(np.abs(((df[f"{DELTA}{BETA}{plane}"] * df[f"{BETA}{plane}{MDL}"]) - df[f"{BETA}{plane}"] + df[f"{BETA}{plane}{MDL}"])) < EPS)
+    assert all(np.abs((df[f"{DELTA}{BETA}{plane}"] * df[f"{BETA}{plane}{MDL}"]) - df[f"{BETA}{plane}"] + df[f"{BETA}{plane}{MDL}"]) < EPS)
     assert all(np.abs(df[f"{ERR}{DELTA}{BETA}{plane}"] * df[f"{BETA}{plane}{MDL}"] - df[f"{ERR}{BETA}{plane}"]) < EPS)
     assert _gaussian_distribution_test(
         df[f"{BETA}{plane}"],
@@ -311,7 +313,7 @@ def _test_disp(df, plane, relative_error):
     assert _all_columns_present(df, DISPERSION, plane)
 
     assert all(df[f"{ERR}{DISPERSION}{plane}"] <= 5 * relative_error * np.abs(df[f"{DISPERSION}{plane}{MDL}"]))  # rough estimate
-    assert all(np.abs((df[f"{DELTA}{DISPERSION}{plane}"] - df[f"{DISPERSION}{plane}"] + df[f"{DISPERSION}{plane}{MDL}"])) < EPS)
+    assert all(np.abs(df[f"{DELTA}{DISPERSION}{plane}"] - df[f"{DISPERSION}{plane}"] + df[f"{DISPERSION}{plane}{MDL}"]) < EPS)
     assert all(np.abs(df[f"{ERR}{DELTA}{DISPERSION}{plane}"] - df[f"{ERR}{DISPERSION}{plane}"]) < EPS)
     if any(df[f"{DISPERSION}{plane}{MDL}"]):
         assert _gaussian_distribution_test(
@@ -325,7 +327,7 @@ def _test_norm_disp(df, plane, relative_error):
     assert _all_columns_present(df, NORM_DISPERSION, plane)
 
     assert all(df[f"{ERR}{NORM_DISPERSION}{plane}"] <= 5 * relative_error * np.abs(df[f"{NORM_DISPERSION}{plane}{MDL}"]))  # rough estimate
-    assert all(np.abs((df[f"{DELTA}{NORM_DISPERSION}{plane}"] - df[f"{NORM_DISPERSION}{plane}"] + df[f"{NORM_DISPERSION}{plane}{MDL}"])) < EPS)
+    assert all(np.abs(df[f"{DELTA}{NORM_DISPERSION}{plane}"] - df[f"{NORM_DISPERSION}{plane}"] + df[f"{NORM_DISPERSION}{plane}{MDL}"]) < EPS)
     assert all(np.abs(df[f"{ERR}{DELTA}{NORM_DISPERSION}{plane}"] - df[f"{ERR}{NORM_DISPERSION}{plane}"]) < EPS)
     if any(df[f"{NORM_DISPERSION}{plane}{MDL}"]):
         assert _gaussian_distribution_test(
@@ -341,7 +343,7 @@ def _test_coupling(df, plane, relative_error):
         assert _all_columns_present(df, param, plane)
 
         assert all(df[f"{ERR}{param}{plane}"] <= 5 * relative_error * np.abs(df[f"{param}{plane}{MDL}"]))  # rough estimate
-        assert all(np.abs((df[f"{DELTA}{param}{plane}"] - df[f"{param}{plane}"] + df[f"{param}{plane}{MDL}"])) < EPS)
+        assert all(np.abs(df[f"{DELTA}{param}{plane}"] - df[f"{param}{plane}"] + df[f"{param}{plane}{MDL}"]) < EPS)
         assert all(np.abs(df[f"{ERR}{DELTA}{param}{plane}"] - df[f"{ERR}{param}{plane}"]) < EPS)
         if any(df[f"{param}{plane}{MDL}"]):
             assert _gaussian_distribution_test(
@@ -394,7 +396,7 @@ def beam2_path():
 
 
 def beam1_coupling_path():
-    return INPUTS / "correction" / "inj_beam1" / "twiss_skew_quadrupole_error.dat"
+    return INPUTS / "correction" / "2018_inj_b1_11m" / "twiss_skew_quadrupole_error.dat"
 
 
 def beam_path(beam):

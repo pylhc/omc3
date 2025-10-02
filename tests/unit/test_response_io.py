@@ -1,11 +1,15 @@
 from pathlib import Path
 
-import pandas as pd
 import numpy as np
-
-from omc3.correction.response_io import write_fullresponse, read_fullresponse, write_varmap, read_varmap
+import pandas as pd
 import pytest
 
+from omc3.correction.response_io import (
+    read_fullresponse,
+    read_varmap,
+    write_fullresponse,
+    write_varmap,
+)
 
 INPUT_DIR = Path(__file__).parent.parent / "inputs"
 INJ_BEAM1_MODEL = INPUT_DIR / "models" / "2018_inj_b1_11m"

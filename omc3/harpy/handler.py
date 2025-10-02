@@ -10,12 +10,11 @@ single-bunch `TbtData`.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 import tfs
-import turn_by_turn as tbt
-from generic_parser import DotDict
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANE_TO_NUM as P2N
@@ -37,13 +36,17 @@ from omc3.harpy.constants import (
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
+if TYPE_CHECKING:
+    from generic_parser import DotDict
+    from turn_by_turn import TbtData
+
 LOGGER = logging_tools.get_logger(__name__)
 ALL_PLANES = (*PLANES, "Z")
 PLANE_TO_NUM = {**P2N, "Z": 3}
 
 
 def run_per_bunch(
-    tbt_data: tbt.TbtData, harpy_input: DotDict, file: Path
+    tbt_data: TbtData, harpy_input: DotDict, file: Path
 ) -> dict[str, tfs.TfsDataFrame]:
     """
     Cleans data, analyses frequencies and searches for resonances.
@@ -65,29 +68,28 @@ def run_per_bunch(
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
         bpm_data = _scale_to_meters(bpm_data, harpy_input.unit)
-        bpm_data, usvs[plane], bad_bpms[plane], bpm_res = clean.clean(
-            harpy_input, bpm_data, model
-        )
+        bpm_data, usvs[plane], bad_bpms[plane], bpm_res = clean.clean(harpy_input, bpm_data, model)
         lins[plane], bpm_datas[plane] = _closed_orbit_analysis(bpm_data, model, bpm_res)
 
-    tune_estimates = harpy_input.tunes
-    if harpy_input.autotunes is not None:
-        if harpy_input.clean:
-            usvs_data = usvs
-        else:
-            usvs_data = {
+    tune_estimates = (
+        harpy_input.tunes
+        if harpy_input.autotunes is None
+        else frequency.estimate_tunes(
+            harpy_input,
+            usvs
+            if harpy_input.clean
+            else {
                 "X": clean.svd_decomposition(bpm_datas["X"], harpy_input.sing_val),
                 "Y": clean.svd_decomposition(bpm_datas["Y"], harpy_input.sing_val),
-            }
-        tune_estimates = frequency.estimate_tunes(harpy_input, usvs_data)
+            },
+        )
+    )
 
     spectra = {}
     for plane in PLANES:
         with timeit(lambda spanned: LOGGER.debug(f"Time for harmonic_analysis: {spanned}")):
-            harpy_results, spectra[plane], bad_bpms_summaries = (
-                frequency.harpy_per_plane(
-                    harpy_input, bpm_datas[plane], usvs[plane], tune_estimates, plane
-                )
+            harpy_results, spectra[plane], bad_bpms_summaries = frequency.harpy_per_plane(
+                harpy_input, bpm_datas[plane], usvs[plane], tune_estimates, plane
             )
         if "bpm_summary" in harpy_input.to_write:
             bad_bpms[plane].extend(bad_bpms_summaries)
@@ -98,12 +100,12 @@ def run_per_bunch(
 
         lins[plane] = lins[plane].loc[harpy_results.index].join(harpy_results)
 
-        if harpy_input.is_free_kick:  
+        if harpy_input.is_free_kick:
             # Free kick assumes exponentially decaying oscillations.
             lins[plane] = kicker.phase_correction(bpm_datas[plane], lins[plane], plane)
 
     measured_tunes = [
-        lins["X"][f"{COL_TUNE}X"].mean(), 
+        lins["X"][f"{COL_TUNE}X"].mean(),
         lins["Y"][f"{COL_TUNE}Y"].mean(),
         lins["X"][f"{COL_TUNE}Z"].mean() if tune_estimates[2] > 0 else 0,
     ]
@@ -130,9 +132,7 @@ def run_per_bunch(
     return lins
 
 
-def _get_cut_tbt_matrix(
-    tbt_data: tbt.TbtData, turn_indices: list[int], plane: str
-) -> pd.DataFrame:
+def _get_cut_tbt_matrix(tbt_data: TbtData, turn_indices: list[int], plane: str) -> pd.DataFrame:
     start = max(0, min(turn_indices))
     end = min(max(turn_indices), tbt_data.matrices[0][plane].shape[1])
     return tbt_data.matrices[0][plane].iloc[:, start:end].T.reset_index(drop=True).T
@@ -155,17 +155,13 @@ def _closed_orbit_analysis(
             "S": np.arange(bpm_data.index.size) if model is None else model.loc[bpm_data.index],
         },
     )
-    
-    # Add the estimated BPM resolutions (clean_data - bpm_data).std() to the linear frame
     lin_frame["BPM_RES"] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
-    
-    # Perform orbit analysis and update the linear frame
     with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
         lin_frame = _get_orbit_data(lin_frame, bpm_data)
-    
+
     # Subtract the mean from BPM data
     mean_subtracted_bpm_data = bpm_data.subtract(bpm_data.mean(axis=1), axis=0)
-    
+
     return lin_frame, mean_subtracted_bpm_data
 
 
@@ -173,7 +169,7 @@ def _get_orbit_data(lin_frame: pd.DataFrame, bpm_data: pd.DataFrame) -> pd.DataF
     lin_frame["PK2PK"] = np.max(bpm_data, axis=1) - np.min(bpm_data, axis=1)
     lin_frame["CO"] = np.mean(bpm_data, axis=1)
     lin_frame["CORMS"] = np.std(bpm_data, axis=1) / np.sqrt(bpm_data.shape[1])
-    # TODO: Magic number 10?: Maybe accelerator dependent ... LHC 6-7?    
+    # TODO: Magic number 10?: Maybe accelerator dependent ... LHC 6-7?
     lin_frame["NOISE"] = lin_frame.loc[:, "BPM_RES"] / np.sqrt(bpm_data.shape[1]) / 10.0
     return lin_frame
 
@@ -210,9 +206,7 @@ def _sync_phase(lin_frame: pd.DataFrame, plane: str) -> pd.DataFrame:
     """
     phase = lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy()
     phase = phase - phase[0]
-    lin_frame[f"{COL_MU}{plane}SYNC"] = np.where(
-        np.abs(phase) > 0.5, phase - np.sign(phase), phase
-    )
+    lin_frame[f"{COL_MU}{plane}SYNC"] = np.where(np.abs(phase) > 0.5, phase - np.sign(phase), phase)
     return lin_frame
 
 
@@ -226,25 +220,24 @@ def _compute_headers(panda: pd.DataFrame, date: None | pd.Timestamp = None) -> d
                 pass
             else:
                 headers[f"{prefix}Q{PLANE_TO_NUM[plane]}"] = np.mean(bpm_tunes)
-                headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(bpm_tunes)  # TODO: not really the RMS?
+                headers[f"{prefix}Q{PLANE_TO_NUM[plane]}RMS"] = np.std(
+                    bpm_tunes
+                )  # TODO: not really the RMS?
     if date:
         headers["TIME"] = date.strftime(formats.TIME)
     return headers
 
 
 def _write_bad_bpms(
-    output_path_without_suffix: Path, plane: str, bad_bpms_with_reasons: list[str]
-):
-    with open(
-        f"{output_path_without_suffix}.bad_bpms_{plane.lower()}", "w"
-    ) as bad_bpms_file:
-        for line in bad_bpms_with_reasons:
-            bad_bpms_file.write(f"{line}\n")
+    output_path_without_suffix: Path | str, plane: str, bad_bpms_with_reasons: str
+) -> None:
+    bad_bpms_file = Path(f"{output_path_without_suffix}.bad_bpms_{plane.lower()}")
+    bad_bpms_file.write_text("\n".join(bad_bpms_with_reasons) + "\n")
 
 
 def _write_spectrum(
-    output_path_without_suffix: Path, plane: str, spectra: dict[str, np.ndarray]
-):
+    output_path_without_suffix: Path | str, plane: str, spectra: tfs.TfsDataFrame
+) -> None:
     tfs.write(
         f"{output_path_without_suffix}{FILE_AMPS_EXT.format(plane=plane.lower())}",
         spectra["COEFFS"].abs().T,
@@ -255,18 +248,14 @@ def _write_spectrum(
     )
 
 
-def _write_lin_tfs(
-    output_path_without_suffix: Path, plane: str, lin_frame: pd.DataFrame
-):
+def _write_lin_tfs(output_path_without_suffix: Path, plane: str, lin_frame: pd.DataFrame):
     tfs.write(
         f"{output_path_without_suffix}{FILE_LIN_EXT.format(plane=plane.lower())}",
         lin_frame,
     )
 
 
-def _rescale_amps_to_main_line_and_compute_noise(
-    df: pd.DataFrame, plane: str
-) -> pd.DataFrame:
+def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -> pd.DataFrame:
     """
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
@@ -293,8 +282,7 @@ def _rescale_amps_to_main_line_and_compute_noise(
     # and faster than assigning individual columns)
     df_amp = pd.DataFrame(
         data={
-            f"{COL_ERR}{col}": noise_scaled * np.sqrt(1 + np.square(df.loc[:, col]))
-            for col in cols
+            f"{COL_ERR}{col}": noise_scaled * np.sqrt(1 + np.square(df.loc[:, col])) for col in cols
         },
         index=df.index,
         dtype=pd.Float64Dtype(),

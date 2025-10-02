@@ -1,4 +1,3 @@
-import os
 from contextlib import suppress
 from pathlib import Path
 
@@ -6,8 +5,10 @@ import numpy as np
 import pytest
 import tfs
 
-from omc3.harpy.constants import COL_NATTUNE, COL_NATAMP, COL_TUNE, COL_AMP
-from omc3.scripts.update_nattune_in_linfile import main as update_nattune, PLANES
+from omc3.harpy.constants import COL_AMP, COL_NATAMP, COL_NATTUNE, COL_TUNE
+from omc3.scripts.update_nattune_in_linfile import PLANES
+from omc3.scripts.update_nattune_in_linfile import main as update_nattune
+from tests.conftest import INPUTS
 
 RENAME_SUFFIX = '_mytest'
 
@@ -108,7 +109,7 @@ def test_remove_some_not_found():
 
 
 def _get_input_dir():
-    return Path(__file__).parent.parent / 'inputs'
+    return INPUTS /  'lhc_harpy_output'
 
 
 def _get_input_file():
@@ -118,8 +119,8 @@ def _get_input_file():
 def _clean_output_files():
     for out_file in _get_input_dir().glob(f'*{RENAME_SUFFIX}.lin*'):
         with suppress(IOError):
-            os.remove(out_file)
+            out_file.unlink()
 
     for ini_file in Path.cwd().glob('*update_nattune*.ini'):
         with suppress(IOError):
-            os.remove(ini_file)
+            ini_file.unlink()

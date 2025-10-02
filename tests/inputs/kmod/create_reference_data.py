@@ -3,7 +3,7 @@ Run as module to avoid import errors.
 
 ```
 python -m tests.inputs.kmod.create_reference_data
-```  
+```
 """
 from pathlib import Path
 
@@ -28,19 +28,19 @@ def create_model(beam: int):
         outputdir=THIS_DIR / f"b{beam}_model",
         accel="lhc",
         type="nominal",
-        nat_tunes=(0.28, 0.31),
-        drv_tunes=(0.27, 0.322),
+        nat_tunes=[0.28, 0.31],
+        drv_tunes=[0.27, 0.322],
         driven_excitation="acd",
         dpp=0.0,
         energy=6800.0,
-        modifiers="R2024aRP_A22cmC22cmA10mL200cm.madx",
+        modifiers=["R2024aRP_A22cmC22cmA10mL200cm.madx"],
         fetch="afs",
-        year=2024,
+        year="2024",
     )
 
     # Compress ---
     df = tfs.read(THIS_DIR / f"b{beam}_model" / TWISS_ELEMENTS_DAT, index="NAME")
-    df = df.loc[df.index.str.match("^(M|B|IP\d$)"), ["S", "BETX", "BETY"]]
+    df = df.loc[df.index.str.match(r"^(M|B|IP\d$)"), ["S", "BETX", "BETY"]]
     tfs.write(get_model_path(beam), df, save_index="NAME")
 
 

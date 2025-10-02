@@ -4,25 +4,29 @@ Plot Spectrum - Utilities
 
 Common functions and sorting functions for the spectrum plotter.
 """
-import os
-from collections import OrderedDict
+from __future__ import annotations
+
 from contextlib import suppress
 from pathlib import Path
-from typing import Iterable, Sized, Union
+from typing import TYPE_CHECKING
 
-import matplotlib
 import numpy as np
-import pandas as pd
 import tfs
-from generic_parser import DotDict
-from matplotlib import transforms, axes, pyplot as plt
+from matplotlib import axes, rcParams, transforms
+from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
 from omc3.definitions.constants import PLANES
-from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT, COL_NAME
+from omc3.harpy.constants import COL_NAME, FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.plotting.utils.annotations import get_fontsize_as_float
 from omc3.plotting.utils.lines import VERTICAL_LINES_ALPHA, plot_vertical_line
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sized
+
+    import pandas as pd
+    from generic_parser import DotDict
 
 LOG = logging_tools.getLogger(__name__)
 
@@ -42,19 +46,23 @@ LIN = FILE_LIN_EXT.format(plane='')
 # Collector Classes ------------------------------------------------------------
 
 
-class FigureContainer(object):
+class FigureContainer:
     """ Container for attaching additional information to one figure. """
     def __init__(self, path: str) -> None:
         self.fig, self.axes = plt.subplots(nrows=len(PLANES), ncols=1)
-        self.data = OrderedDict()  # make sure in plotting to use this order
+        self.data = {}
         self.tunes = {p: [] for p in PLANES}
         self.nattunes = {p: [] for p in PLANES}
         self.path = path
-        self.minmax = {p: (1, 0) for p in PLANES}
+        self.minmax = dict.fromkeys(PLANES, (1, 0))
 
     def add_data(self, label: str, new_data: dict) -> None:
         self.data[label] = new_data
         for plane in PLANES:
+            if new_data[plane] is None:
+                LOG.warning(f'No data in plane {plane.upper()} found for {label}.')
+                continue
+
             # Add tunes
             try:
                 self.tunes[plane].append(new_data[plane][LIN].loc[f'TUNE{plane.upper()}'])
@@ -103,7 +111,7 @@ class FigureCollector:
 
 
 def plot_lines(fig_cont: FigureContainer, lines: DotDict) -> None:
-    label_size = get_fontsize_as_float(matplotlib.rcParams['axes.labelsize']) * 0.7
+    label_size = get_fontsize_as_float(rcParams['axes.labelsize']) * 0.7
     bottom_qlabel = 1.01
 
     for idx_plane, plane in enumerate(PLANES):
@@ -227,54 +235,64 @@ def _fset(*args):
 # Specific Mappings ---
 
 
-def _get_id_single_fig_files_and_bpms(output_dir: str, default_name: str, filename: str,
-                                      bpm: str, filetype: str) -> IdData:
+def _get_id_single_fig_files_and_bpms(
+    output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ Same id for all plots. Creates single figure.
     The label of the lines is a combination of filename and bpm.
     """
     return IdData(
         id_=default_name,
         label=f"{filename} {bpm}",
-        path=_get_figure_path(output_dir, filename=None,
-                              figurename=f"{default_name}.{filetype}")
+        path=str(
+            _get_figure_path(output_dir, filename=None, figurename=f"{default_name}.{filetype}")
+        )
     )
 
 
-def _get_id_single_fig_files(output_dir: str, default_name: str, filename: str,
-                             bpm: str, filetype: str) -> IdData:
+def _get_id_single_fig_files(
+        output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ BPM as id for plots.
     Creates len(bpm) figures, with filenames as labels for lines.
     """
     return IdData(
         id_=bpm,
         label=filename,
-        path=_get_figure_path(output_dir, filename=None,
-                              figurename=f"{default_name}_{bpm}.{filetype}")
+        path=str(
+            _get_figure_path(output_dir, filename=None, figurename=f"{default_name}_{bpm}.{filetype}")
+        )
     )
 
 
-def _get_id_single_fig_bpms(output_dir: str, default_name: str, filename: str,
-                            bpm: str, filetype: str) -> IdData:
+def _get_id_single_fig_bpms(
+    output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ Filename as ID for plots.
     Creates len(files) figures, with bpms as lables for lines.
     """
-    return IdData(id_=filename,
-                  label=bpm,
-                  path=_get_figure_path(output_dir, filename=filename,
-                                        figurename=f"{default_name}.{filetype}")
-                  )
+    return IdData(
+        id_=filename,
+        label=bpm,
+        path=str(
+            _get_figure_path(output_dir, filename=filename, figurename=f"{default_name}.{filetype}")
+        )
+    )
 
 
-def _get_id_multi_fig(output_dir: str, default_name: str, filename: str,
-                      bpm: str, filetype: str) -> IdData:
+def _get_id_multi_fig(
+    output_dir: str, default_name: str, filename: str, bpm: str, filetype: str
+) -> IdData:
     """ Combination of Filename and BPM as ID. Creates len(files)*len(bpms) plots.
     BPM-name is printed as label.
     """
-    return IdData(id_=f"{filename}_{bpm}",
-                  label=bpm,
-                  path=_get_figure_path(output_dir, filename=filename,
-                                        figurename=f"{default_name}_{bpm}.{filetype}")
-                  )
+    return IdData(
+        id_=f"{filename}_{bpm}",
+        label=bpm,
+        path=str(
+            _get_figure_path(output_dir, filename=filename, figurename=f"{default_name}_{bpm}.{filetype}")
+        )
+    )
 
 
 # Data Sorting -----------------------------------------------------------------
@@ -304,7 +322,7 @@ def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
     return data_series
 
 
-def get_unique_filenames(files: Union[Iterable, Sized]):
+def get_unique_filenames(files: Iterable | Sized):
     """ Way too complicated method to assure unique dictionary names,
         by going backwards through the file-path until the names differ.
     """
@@ -324,17 +342,17 @@ def get_unique_filenames(files: Union[Iterable, Sized]):
     return zip(paths, names)
 
 
-def _get_partial_filepath(path: Path, nparts: int):
+def _get_partial_filepath(path: Path, nparts: int) -> tuple[str, ...]:
     """ Returns the path from nparts until the end"""
     return path.parts[nparts:]
 
 
-def _get_valid_indices(amps, freqs):
+def _get_valid_indices(amps: pd.Series, freqs: pd.Series):
     """ Intersection of filtered AMPS and FREQS indices. """
     return index_filter(amps).intersection(index_filter(freqs))
 
 
-def index_filter(data: pd.Series):
+def index_filter(data: pd.Series) -> pd.Index:
     """ Only non-NaN and non-Zero data allowed.
     (Amps should not be zero due to _filter_amps() anyway.)"""
     return data[~(data.isna() | (data == 0))].index
@@ -364,11 +382,13 @@ def get_bpms(lin_files: dict, given_bpms: Iterable, filename: str, planes: Itera
             empty_planes += 1
 
     if empty_planes == len(planes):
-        raise IOError(f"(id:{filename}) No BPMs found in any plane!")
+        raise OSError(f"(id:{filename}) No BPMs found in any plane!")
     return found_bpms
 
 
-def _get_only_given_bpms(found_bpms, given_bpms, plane, file_path):
+def _get_only_given_bpms(
+    found_bpms: Iterable[str], given_bpms: Iterable[str], plane: str, file_path: Path | str
+) -> list[str]:
     found_bpms = [bpm for bpm in found_bpms if bpm in given_bpms]
     missing_bpms = [bpm for bpm in given_bpms if bpm not in found_bpms]
     if len(missing_bpms):
@@ -389,23 +409,24 @@ def rescale_amp(amp_data: pd.Series) -> pd.Series:
 
 def output_plot(fig_cont: FigureContainer):
     fig = fig_cont.fig
-    if fig_cont.path is not None:
+    if fig_cont.path is not None and fig_cont.path != "None":
         LOG.info(f"Saving Plot '{fig_cont.path}'")
         fig.savefig(fig_cont.path)
 
 
-def _get_figure_path(out_dir, filename, figurename):
-    path = _make_output_dir(out_dir, filename)
+def _get_figure_path(out_dir: str, filename: str, figurename: str) -> Path:
+    path: Path = _make_output_dir(out_dir, filename)
     if path is not None and figurename is not None:
-        path = os.path.join(path, figurename)
+        path = path / figurename
     return path
 
 
-def _make_output_dir(out_dir, filename):
+def _make_output_dir(out_dir: Path | str, filename: str) -> Path:
     if out_dir is not None:
+        out_dir = Path(out_dir)
         if filename is not None:
-            out_dir = os.path.join(out_dir, os.path.splitext(filename)[0])
-        os.makedirs(out_dir, exist_ok=True)
+            out_dir = out_dir / Path(filename).stem
+        out_dir.mkdir(exist_ok=True)
     return out_dir
 
 
@@ -414,7 +435,7 @@ def _make_output_dir(out_dir, filename):
 
 def get_cycled_color(idx: int):
     """ Get the color at (wrapped) idx in the color cycle. The CN-Method only works until 'C9'."""
-    cycle = matplotlib.rcParams[u"axes.prop_cycle"].by_key()['color']
+    cycle = rcParams["axes.prop_cycle"].by_key()['color']
     return cycle[idx % len(cycle)]
 
 

@@ -32,12 +32,11 @@ To run either of the two or both steps, see options ``--harpy`` and ``--optics``
 
 from __future__ import annotations
 
-from collections.abc import Generator
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import turn_by_turn as tbt
-from generic_parser import DotDict
 from generic_parser.entrypoint_parser import (
     EntryPoint,
     EntryPointParameters,
@@ -55,6 +54,11 @@ from omc3.optics_measurements.data_models import InputFiles
 from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from generic_parser import DotDict
+
 LOGGER = logging_tools.get_logger(__name__)
 
 DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
@@ -62,16 +66,8 @@ DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
 
 def hole_in_one_params():
     params = EntryPointParameters()
-    params.add_parameter(
-        name="harpy", 
-        action="store_true", 
-        help="Runs frequency analysis"
-    )
-    params.add_parameter(
-        name="optics", 
-        action="store_true", 
-        help="Measures the lattice optics"
-    )
+    params.add_parameter(name="harpy", action="store_true", help="Runs frequency analysis")
+    params.add_parameter(name="optics", action="store_true", help="Measures the lattice optics")
     return params
 
 
@@ -310,7 +306,7 @@ def hole_in_one_entrypoint(opt, rest):
         Flags: **--union**
         Action: ``store_true``
 
-      - **analyse_dpp** *(float)*: Filter files to analyse by this value 
+      - **analyse_dpp** *(float)*: Filter files to analyse by this value
         (in analysis for tune, phase, rdt and crdt). Use `None` for no filtering.
 
         Flags: **--analyse_dpp**
@@ -352,7 +348,7 @@ def _get_suboptions(opt, rest):
                 files=harpy_opt.files,
                 outputdir=harpy_opt.outputdir,
             )
-            harpy_opt.outputdir = harpy_opt.outputdir / LINFILES_SUBFOLDER
+            harpy_opt.outputdir = Path(harpy_opt.outputdir) / LINFILES_SUBFOLDER
             if harpy_opt.model is not None:
                 rest = add_to_arguments(
                     rest,
@@ -367,37 +363,37 @@ def _get_suboptions(opt, rest):
         accel_opt = manager.get_parsed_opt(rest)
         optics_opt.accelerator = manager.get_accelerator(rest)
         if not optics_opt.accelerator.excitation and optics_opt.compensation != "none":
-            raise AttributeError(
-                "Compensation requested and no driven model was provided."
-            )
+            raise AttributeError("Compensation requested and no driven model was provided.")
     else:
         optics_opt = None
         accel_opt = None
     return harpy_opt, optics_opt, accel_opt
 
 
-def _write_config_file(harpy_opt, optics_opt, accelerator_opt):
+def _write_config_file(
+    harpy_opt: dict[str, Any], optics_opt: dict[str, Any], accelerator_opt: dict[str, Any]
+) -> None:
     """Write the parsed options into a config file for later use."""
-    all_opt = {}
+    all_options: dict[str, Any] = {}
+
     if harpy_opt is not None:
-        all_opt["harpy"] = True
-        all_opt.update(sorted(harpy_opt.items()))
+        all_options["harpy"] = True
+        all_options.update(sorted(harpy_opt.items()))
 
     if optics_opt is not None:
         optics_opt = dict(sorted(optics_opt.items()))
         optics_opt.pop("accelerator")
 
-        all_opt["optics"] = True
-        all_opt.update(optics_opt)
-        all_opt.update(sorted(accelerator_opt.items()))
+        all_options["optics"] = True
+        all_options.update(optics_opt)
+        all_options.update(sorted(accelerator_opt.items()))
 
-    out_dir = Path(all_opt["outputdir"])
+    out_dir = Path(all_options["outputdir"])
     file_name = DEFAULT_CONFIG_FILENAME.format(
         time=datetime.now(timezone.utc).strftime(formats.TIME)
     )
     iotools.create_dirs(out_dir)
-
-    save_options_to_config(out_dir / file_name, all_opt)
+    save_options_to_config(out_dir / file_name, all_options)
 
 
 def _run_harpy(harpy_options):
@@ -419,14 +415,16 @@ def _run_harpy(harpy_options):
             )
     return lins
 
+
 def _add_suffix_and_iter_bunches(
     tbt_data: tbt.TbtData, options: DotDict, file: Path
 ) -> Generator[tuple[tbt.TbtData, Path], None, None]:
-    # file is only used here to define the output name, as the tbt-data is already loaded.
+    # hint: options.files is now a single file because of _replicate_harpy_options_per_file
+    # it is also only used here to define the output name, as the tbt-data is already loaded.
 
-    dir_name  = file.parent
-    file_name = file.name
-    suffix = options.suffix or ""
+    dir_name: Path = file.parent
+    file_name: str = file.name
+    suffix: str = options.suffix or ""
 
     # Single bunch ---
     if tbt_data.nbunches == 1:
@@ -439,9 +437,7 @@ def _add_suffix_and_iter_bunches(
     if options.bunch_ids is not None:
         unknown_bunches = set(options.bunch_ids) - set(tbt_data.bunch_ids)
         if unknown_bunches:
-            LOGGER.warning(
-                f"Bunch IDs {unknown_bunches} not present in multi-bunch file {file}."
-            )
+            LOGGER.warning(f"Bunch IDs {unknown_bunches} not present in multi-bunch file {file}.")
 
     for index in range(tbt_data.nbunches):
         bunch_id = tbt_data.bunch_ids[index]
@@ -451,9 +447,7 @@ def _add_suffix_and_iter_bunches(
         bunch_id_str = f"_bunchID{bunch_id}"
         file = dir_name / f"{file_name}{bunch_id_str}{suffix}"
         yield (
-            tbt.TbtData(
-                [tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns
-            ),
+            tbt.TbtData([tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns),
             file,
         )
 
@@ -461,6 +455,10 @@ def _add_suffix_and_iter_bunches(
 def _measure_optics(lins, optics_opt):
     if len(lins) == 0:
         lins = optics_opt.files
+
+    if optics_opt.accelerator.model is None:
+        raise AttributeError("No accelerator model was provided. Cannot perform optics analysis.")
+
     inputs = InputFiles(lins, optics_opt)
     iotools.create_dirs(optics_opt.outputdir)
     calibrations = measure_optics.copy_calibration_files(
@@ -474,17 +472,11 @@ def _measure_optics(lins, optics_opt):
 def _harpy_entrypoint(params):
     options, rest = EntryPoint(harpy_params(), strict=False).parse(params)
     if options.natdeltas is not None and options.nattunes is not None:
-        raise AttributeError(
-            "Colliding options found: --nattunes and --natdeltas. Choose only one"
-        )
+        raise AttributeError("Colliding options found: --nattunes and --natdeltas. Choose only one")
     if options.tunes is not None and options.autotunes is not None:
-        raise AttributeError(
-            "Colliding options found: --tunes and --autotunes. Choose only one"
-        )
+        raise AttributeError("Colliding options found: --tunes and --autotunes. Choose only one")
     if options.tunes is None and options.autotunes is None:
-        raise AttributeError(
-            "One of the options --tunes and --autotunes has to be used."
-        )
+        raise AttributeError("One of the options --tunes and --autotunes has to be used.")
     if options.svd_dominance_limit <= 0.0:
         raise AttributeError("SVD dominance limit should be positive")
     if options.bad_bpms is None:
@@ -504,13 +496,9 @@ def _harpy_entrypoint(params):
 
 def harpy_params():
     params = EntryPointParameters()
-    params.add_parameter(
-        name="files", required=True, nargs="+", help="TbT files to analyse"
-    )
+    params.add_parameter(name="files", required=True, nargs="+", help="TbT files to analyse")
     params.add_parameter(name="outputdir", required=True, help="Output directory.")
-    params.add_parameter(
-        name="suffix", type=str, help="User-defined suffix for output filenames."
-    )
+    params.add_parameter(name="suffix", type=str, help="User-defined suffix for output filenames.")
     params.add_parameter(name="model", help="Model for BPM locations")
     params.add_parameter(
         name="unit",
@@ -530,8 +518,7 @@ def harpy_params():
         name="bunch_ids",
         type=int,
         nargs="+",
-        help="Bunches to process in multi-bunch file. "
-        "If not specified, all bunches are processed.",
+        help="Bunches to process in multi-bunch file. If not specified, all bunches are processed.",
     )
     params.add_parameter(
         name="to_write",
@@ -600,8 +587,7 @@ def harpy_params():
     params.add_parameter(
         name="first_bpm",
         type=str,
-        help="First BPM in the measurement. "
-        "Used to resynchronise the TbT data with model.",
+        help="First BPM in the measurement. Used to resynchronise the TbT data with model.",
     )
     params.add_parameter(
         name="opposite_direction",
@@ -649,8 +635,7 @@ def harpy_params():
         name="tolerance",
         type=float,
         default=HARPY_DEFAULTS["tolerance"],
-        help="Tolerance specifying an interval in frequency domain, where to look "
-        "for the tunes.",
+        help="Tolerance specifying an interval in frequency domain, where to look for the tunes.",
     )
     params.add_parameter(
         name="is_free_kick",
@@ -711,9 +696,7 @@ def _optics_entrypoint(params):
 
 def optics_params():
     params = EntryPointParameters()
-    params.add_parameter(
-        name="files", required=True, nargs="+", help="Files for analysis"
-    )
+    params.add_parameter(name="files", required=True, nargs="+", help="Files for analysis")
     params.add_parameter(name="outputdir", required=True, help="Output directory")
     params.add_parameter(
         name="calibrationdir", type=str, help="Path to calibration files directory."
@@ -799,8 +782,7 @@ def optics_params():
         type=iotools.OptionalFloat,
         default=OPTICS_DEFAULTS["analyse_dpp"],
         help="Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt). "
-                             "Use `None` for no filtering"
-                        ,
+        "Use `None` for no filtering",
     )
     return params
 

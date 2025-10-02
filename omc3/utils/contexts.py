@@ -4,12 +4,19 @@ Contexts
 
 Provides contexts managers to use.
 """
+
+from __future__ import annotations
+
 import os
 import sys
 import time
 import warnings
 from contextlib import contextmanager
-from typing import Callable
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @contextmanager
@@ -31,12 +38,8 @@ def silence():
     """
     Suppress all console output, rerouting ``sys.stdout`` and ``sys.stderr`` to devnull.
     """
-    devnull = open(os.devnull, "w")
-    with log_out(stdout=devnull, stderr=devnull):
-        try:
-            yield
-        finally:
-            devnull.close()
+    with Path(os.devnull).open("w") as devnull, log_out(stdout=devnull, stderr=devnull):
+        yield
 
 
 @contextmanager
@@ -49,6 +52,7 @@ def timeit(function: Callable):
         time_used = time.time() - start_time
         function(time_used)
 
+
 @contextmanager
 def suppress_warnings(warning_classes):
     """Suppress all warnings of given classes."""
@@ -56,11 +60,7 @@ def suppress_warnings(warning_classes):
         yield
     for w in warn_list:
         if not issubclass(w.category, warning_classes):
-            print("{file:s}:{line:d}: {clas:s}: {message:s}".format(
-                file=w.filename,
-                line=w.lineno,
-                clas=w._category_name,
-                message=w.message.message,
-            ),
-                file=sys.stderr
+            print(
+                f"{w.filename:s}:{w.lineno:d}: {w._category_name:s}: {w.message.message:s}",
+                file=sys.stderr,
             )

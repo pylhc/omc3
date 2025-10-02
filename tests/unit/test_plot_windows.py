@@ -1,7 +1,7 @@
 import pytest
 from matplotlib.figure import Figure
 
-from omc3.plotting.utils.windows import PlotWidget, TabWidget, SimpleTabWindow, VerticalTabWindow
+from omc3.plotting.utils.windows import PlotWidget, SimpleTabWindow, TabWidget, VerticalTabWindow
 
 
 @pytest.mark.basic
@@ -42,7 +42,7 @@ def test_tab_widget():
     my_title = "Hello OMC!"
 
     # Execution ---
-    widget = MockTabWidget(title=my_title) 
+    widget = MockTabWidget(title=my_title)
     for tab in tabs:
         widget.add_tab(tab)
 
@@ -57,7 +57,7 @@ def test_tab_widget():
 
 @pytest.mark.basic
 @pytest.mark.parametrize('WindowClass', (SimpleTabWindow, VerticalTabWindow))
-def test_tab_window(monkeypatch, WindowClass):
+def test_tab_window(monkeypatch, WindowClass):  # noqa: N803 (it is a class)
     # Preparation ---
     monkeypatch.setattr("omc3.plotting.utils.windows.QApplication", MockQApplication)
     monkeypatch.setattr("omc3.plotting.utils.windows.QMainWindow", MockQMainWindow)
@@ -74,7 +74,7 @@ def test_tab_window(monkeypatch, WindowClass):
     my_size = (800, 600)
 
     # Execution ---
-    window = WindowClass(title=my_title, size=my_size) 
+    window = WindowClass(title=my_title, size=my_size)
     for tab in tabs:
         window.add_tab(tab)
 
@@ -89,7 +89,7 @@ def test_tab_window(monkeypatch, WindowClass):
     for tab, tab_added in zip(tabs, window.tabs_widget.added_tabs.values()):
         assert tab == tab_added
     assert window.tabs_widget.position == (MockQTabWidget.West if (WindowClass == VerticalTabWindow) else 0)
-    
+
     # Assert App ---
     assert not window.app.executed
     window.show()
@@ -104,7 +104,7 @@ class MockQWidget:
         self.layout = None
         self.title = title
 
-    def setLayout(self, layout):
+    def setLayout(self, layout):  # noqa: N802 (mock the exact name)
         self.layout = layout
 
 
@@ -117,10 +117,10 @@ class MockQTabWidget:
         self.added_tabs = {}
         self.position = 0
 
-    def addTab(self, tab, tab_title):
+    def addTab(self, tab, tab_title):  # noqa: N802 (mock the exact name)
         self.added_tabs[tab_title] = tab
 
-    def setTabPosition(self, position):
+    def setTabPosition(self, position):  # noqa: N802 (mock the exact name)
         self.position = position
 
 
@@ -130,7 +130,7 @@ class MockLayout:
         self.widgets = []
 
 
-    def addWidget(self, widget):
+    def addWidget(self, widget):  # noqa: N802 (mock the exact name)
         self.widgets.append(widget)
 
 
@@ -140,8 +140,8 @@ class MockFigureCanvas:
         self.figure = figure
 
 
-class MockNavigationToolbar():
-    
+class MockNavigationToolbar:
+
     def __init__(self, canvas, parent=None):
         self.canvas = canvas
         self.parent = parent
@@ -163,15 +163,15 @@ class MockQMainWindow:
         self.central_widget = None
         self.size = None
         self.shown = False
-    
-    def setWindowTitle(self, title):
+
+    def setWindowTitle(self, title):  # noqa: N802 (mock the exact name)
         self.title = title
 
-    def setCentralWidget(self, widget):
+    def setCentralWidget(self, widget):  # noqa: N802 (mock the exact name)
         self.central_widget = widget
 
     def resize(self, width, height):
         self.size = (width, height)
-    
+
     def show(self):
         self.shown = True

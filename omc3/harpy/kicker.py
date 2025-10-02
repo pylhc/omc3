@@ -7,12 +7,18 @@ It provides tools to correct phases of a main spectral line in a case where damp
 decaying) oscillations are analysed.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
-import pandas as pd
 
 from omc3.definitions.constants import PI2
 from omc3.harpy.constants import COL_MU, COL_TUNE
 from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 LOGGER = logging_tools.getLogger(__name__)
 
@@ -48,9 +54,7 @@ def phase_correction(
     e3 = np.sum(bpm_data * np.exp(damp_range) * np.cos(phase_range), axis=1)
     e4 = np.sum(np.exp(2 * damp_range) * np.cos(2 * phase_range), axis=1) * amp
     cor = (e1 - e2) / ((e3 - e4) * PI2)
-    lin_frame[f"{COL_MU}{plane}"] = (
-        lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy() + cor
-    )
+    lin_frame[f"{COL_MU}{plane}"] = lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy() + cor
     return lin_frame
 
 

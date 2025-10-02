@@ -6,8 +6,10 @@ This module contains kick functionality of ``optics_measurements``.
 It provides functions to compute kick actions.
 """
 from __future__ import annotations
+
 from contextlib import suppress
-from os.path import join
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -15,29 +17,42 @@ import tfs
 
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.model.accelerators.accelerator import AccElementTypes
-from omc3.optics_measurements.constants import (ACTION, AMPLITUDE, BETA, DPP,
-                                                DPPAMP, ERR, EXT, KICK_NAME,
-                                                NAT_TUNE, PEAK2PEAK,
-                                                RES,
-                                                RESCALE_FACTOR, RMS,
-                                                SQRT_ACTION, TIME, TUNE, S, CLOSED_ORBIT)
-from omc3.utils.stats import weighted_mean, weighted_error
+from omc3.optics_measurements.constants import (
+    ACTION,
+    AMPLITUDE,
+    BETA,
+    CLOSED_ORBIT,
+    DPP,
+    DPPAMP,
+    ERR,
+    EXT,
+    KICK_NAME,
+    NAT_TUNE,
+    PEAK2PEAK,
+    RES,
+    RESCALE_FACTOR,
+    RMS,
+    SQRT_ACTION,
+    TIME,
+    TUNE,
+    S,
+)
+from omc3.utils.stats import weighted_error, weighted_mean
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
 
 
-def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict, plane):
+def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dict: dict, plane):
     """
 
     Args:
         measure_input: `OpticsInput` object.
         input_files: Stores the input files tfs.
         scale: measured beta functions.
-        header_dict: `OrderedDict` containing information about the analysis.
+        header_dict: `dict` containing information about the analysis.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
@@ -49,7 +64,7 @@ def calculate(measure_input: DotDict, input_files: InputFiles, scale, header_dic
         return pd.DataFrame
     kick_frame = _rescale_actions(kick_frame, scale, plane)
     header = _get_header(header_dict, plane, scale)
-    tfs.write(join(measure_input.outputdir, f"{KICK_NAME}{plane.lower()}{EXT}"), kick_frame, header)
+    tfs.write(Path(measure_input.outputdir) / f"{KICK_NAME}{plane.lower()}{EXT}", kick_frame, header)
     return kick_frame.loc[:, [f"{SQRT_ACTION}{plane}", f"{ERR}{SQRT_ACTION}{plane}"]].to_numpy()
 
 
@@ -80,8 +95,7 @@ def _get_kick(measure_input, files, plane):
 
         # calculate data from measurement
         kick_frame.loc[i, calc_columns] = _get_action(measure_input, df, plane)
-    kick_frame = kick_frame.astype(column_types)
-    return kick_frame
+    return kick_frame.astype(column_types)
 
 
 def _get_action(meas_input, lin: pd.DataFrame, plane: str) -> np.ndarray:
@@ -144,18 +158,22 @@ def _get_model_arc_betas(measure_input, plane):
 
 def _get_column_mapping(plane):
     plane_number = PLANE_TO_NUM[plane]
-    load_columns = dict([
-        (TIME,                      "TIME"),
-        (DPP,                       DPP),
-        (DPPAMP,                    DPPAMP),
-        (f"{TUNE}{plane}",          f"{TUNE}{plane_number}"),
-        (f"{ERR}{TUNE}{plane}",     f"{TUNE}{plane_number}{RMS}"),
-        (f"{NAT_TUNE}{plane}",      f"{NAT_TUNE}{plane_number}"),
-        (f"{ERR}{NAT_TUNE}{plane}", f"{NAT_TUNE}{plane_number}{RMS}"),
-    ])
-    calc_columns = [f"{SQRT_ACTION}{plane}", f"{ERR}{SQRT_ACTION}{plane}",
-                    f"{ACTION}{plane}", f"{ERR}{ACTION}{plane}"]
+    load_columns = {
+        TIME: "TIME",
+        DPP: DPP,
+        DPPAMP: DPPAMP,
+        f"{TUNE}{plane}": f"{TUNE}{plane_number}",
+        f"{ERR}{TUNE}{plane}": f"{TUNE}{plane_number}{RMS}",
+        f"{NAT_TUNE}{plane}": f"{NAT_TUNE}{plane_number}",
+        f"{ERR}{NAT_TUNE}{plane}": f"{NAT_TUNE}{plane_number}{RMS}",
+    }
+    calc_columns = [
+        f"{SQRT_ACTION}{plane}",
+        f"{ERR}{SQRT_ACTION}{plane}",
+        f"{ACTION}{plane}",
+        f"{ERR}{ACTION}{plane}",
+    ]
 
     column_types = {TIME: str}
-    column_types.update({k: float for k in list(load_columns.keys())[1:] + calc_columns})
+    column_types.update(dict.fromkeys(list(load_columns.keys())[1:] + calc_columns, float))
     return load_columns, calc_columns, column_types

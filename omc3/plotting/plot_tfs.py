@@ -104,35 +104,39 @@ Easily plot tfs-files with all kinds of additional functionality and ways to com
 
 - **y_lim** *(float, int None)*: Limits on the y axis (Tupel)
 """
-from collections import OrderedDict
-from pathlib import Path
-from typing import Dict
+from __future__ import annotations
 
-import matplotlib
-from matplotlib import pyplot as plt, rcParams
-from matplotlib.axes import Axes
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.entry_datatypes import DictAsString
+from matplotlib import pyplot as plt
+from matplotlib import rcParams
 
 from omc3.definitions.constants import PLANES
 from omc3.optics_measurements.constants import EXT
 from omc3.plotting.optics_measurements.constants import DEFAULTS
-from omc3.plotting.optics_measurements.utils import FigureCollector, DataSet, IDMap, safe_format
-from omc3.plotting.utils.windows import (
-    PlotWidget, SimpleTabWindow, is_qtpy_installed, log_no_qtpy_many_windows, create_pyplot_window_from_fig
-)
+from omc3.plotting.optics_measurements.utils import DataSet, FigureCollector, IDMap, safe_format
 from omc3.plotting.spectrum.utils import get_unique_filenames, output_plot
-from omc3.plotting.utils import (
-    annotations as pannot, 
-    lines as plines,
-    style as pstyle, 
-    colors as pcolors,
-)
+from omc3.plotting.utils import annotations as pannot
+from omc3.plotting.utils import colors as pcolors
+from omc3.plotting.utils import lines as plines
+from omc3.plotting.utils import style as pstyle
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
-from omc3.utils.iotools import PathOrStr, save_config, OptionalStr, OptionalFloat
+from omc3.plotting.utils.windows import (
+    PlotWidget,
+    SimpleTabWindow,
+    create_pyplot_window_from_fig,
+    is_qtpy_installed,
+    log_no_qtpy_many_windows,
+)
+from omc3.utils.iotools import OptionalFloat, OptionalStr, PathOrStr, save_config
 from omc3.utils.logging_tools import get_logger, list2str
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
 
 LOG = get_logger(__name__)
 
@@ -415,10 +419,7 @@ def get_id(filename_parts, column, file_label, column_label, same_axes, same_fig
 
     column_planes = safe_format(column, planes)
     column = safe_format(column, plane)
-    if column_label is None:
-        column_label = column
-    else:
-        column_label = safe_format(column_label, plane.lower())
+    column_label = column if column_label is None else safe_format(column_label, plane.lower())
 
     axes_id = {'files': '_'.join(filename_parts),
                'columns': f'{column}',
@@ -511,7 +512,7 @@ def _share_xaxis(fig_collection):
         axs = fig_container.axes.values()
 
         # Axes.get_shared_x_axes() does not work here as it returns a GrouperView
-        # instead of the Grouper (i.e. _shared_axes['x'], matplotlib < 3.8), 
+        # instead of the Grouper (i.e. _shared_axes['x'], matplotlib < 3.8),
         # so we access _shared_axes directly
         fig_container.axes[fig_container.axes_ids[-1]]._shared_axes["x"].join(*axs)
 
@@ -549,7 +550,7 @@ def _create_plots(fig_collection, opt):
                 window.add_tab(tab)
             window.show()
             return
-        
+
         if len(fig_collection) > rcParams['figure.max_open_warning']:
             log_no_qtpy_many_windows()
 
@@ -557,12 +558,12 @@ def _create_plots(fig_collection, opt):
             create_pyplot_window_from_fig(fig_container.fig, title=fig_container.id)
         plt.show()
 
-            
 
-def _plot_data(ax: Axes, data: Dict[str, DataSet], change_marker: bool, ebar_alpha: float):
+
+def _plot_data(ax: Axes, data: dict[str, DataSet], change_marker: bool, ebar_alpha: float):
     for idx, (label, values) in enumerate(data.items()):
         ebar = ax.errorbar(values.x, values.y, yerr=values.err,
-                           ls=rcParams[u"lines.linestyle"],
+                           ls=rcParams["lines.linestyle"],
                            fmt=_get_marker(idx, change_marker),
                            label=label)
 
@@ -594,7 +595,7 @@ def _set_axes_layout(ax, x_lim, y_lim,  xlabel, ylabel):
 def get_full_output_path(folder, filename):
     if folder is None or filename is None:
         return None
-    return Path(folder) / f"{filename}.{matplotlib.rcParams['savefig.format']}"
+    return Path(folder) / f"{filename}.{rcParams['savefig.format']}"
 
 
 # Helper -----------------------------------------------------------------------
@@ -631,10 +632,8 @@ def _check_opt(opt):
     elif len(opt.column_labels) != len(opt.y_columns):
         raise AttributeError("The number of column-labels and number of y columns differ!")
 
-    if opt.same_figure is not None:
-        if opt.same_axes is not None and opt.same_figure in opt.same_axes:
-            raise AttributeError("Found the same option in 'same_axes' "
-                                 "and 'same_figure'. This is not allowed.")
+    if opt.same_figure is not None and opt.same_axes is not None and opt.same_figure in opt.same_axes:
+            raise AttributeError("Found the same option in 'same_axes' and 'same_figure'. This is not allowed.")
 
     return opt
 
@@ -664,15 +663,14 @@ def _get_axes_ids(opt):
                     id_ = get_id(filename, y_col, file_label, column_label, same_axes_set,
                                  opt.same_figure, opt.output_prefix, plane, opt.planes).axes_id
                     axes_ids.append(id_)
-    return list(OrderedDict.fromkeys(axes_ids).keys())  # unique list with preserved order
+    return list(dict.fromkeys(axes_ids).keys())  # unique list with preserved order
 
 
 def _get_marker(idx, change):
     """Return the marker used"""
     if change:
         return plines.MarkerList.get_marker(idx)
-    else:
-        return rcParams['lines.marker']
+    return rcParams['lines.marker']
 
 
 # Script Mode ------------------------------------------------------------------

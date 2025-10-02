@@ -185,23 +185,34 @@ one figure is used.
 
 
 """
-import os
-from collections import OrderedDict
-from typing import Tuple
+from __future__ import annotations
 
-import matplotlib
+from pathlib import Path
+
+import matplotlib as mpl
 from cycler import cycler
-
 from generic_parser.entry_datatypes import DictAsString
-from generic_parser.entrypoint_parser import (entrypoint, EntryPointParameters,
-                                              save_options_to_config, DotDict)
+from generic_parser.entrypoint_parser import (
+    DotDict,
+    EntryPointParameters,
+    entrypoint,
+    save_options_to_config,
+)
+
 from omc3.definitions import formats
 from omc3.plotting.spectrum.stem import create_stem_plots
-from omc3.plotting.spectrum.utils import (NCOL_LEGEND, LIN,
-                                          FigureCollector, get_unique_filenames,
-                                          filter_amps, get_bpms, get_stem_id,
-                                          get_waterfall_id, get_data_for_bpm,
-                                          load_spectrum_data)
+from omc3.plotting.spectrum.utils import (
+    LIN,
+    NCOL_LEGEND,
+    FigureCollector,
+    filter_amps,
+    get_bpms,
+    get_data_for_bpm,
+    get_stem_id,
+    get_unique_filenames,
+    get_waterfall_id,
+    load_spectrum_data,
+)
 from omc3.plotting.spectrum.waterfall import create_waterfall_plots
 from omc3.plotting.utils import style as pstyle
 from omc3.plotting.utils.lines import VERTICAL_LINES_TEXT_LOCATIONS
@@ -216,7 +227,7 @@ def get_reshuffled_tab20c():
     Reshuffle tab20c so that the colors change between next lines.
     Needs to be up here as it is used in ``DEFAULTS`` which is loaded early.
     """
-    tab20c = matplotlib.colormaps['tab20c'].colors
+    tab20c = mpl.colormaps['tab20c'].colors
     out = [None] * 20
     step, chunk = 4, 5
     for idx in range(step):
@@ -232,7 +243,7 @@ DEFAULTS = DotDict(
     filetype='pdf',
     waterfall_line_width=2,
     manual_style={
-        u'axes.prop_cycle': get_reshuffled_tab20c(),
+        'axes.prop_cycle': get_reshuffled_tab20c(),
     }
 )
 
@@ -329,7 +340,7 @@ def get_params():
                          default={},
                          help='Additional style rcParameters which update the set of predefined ones.'
                          )
- 
+
     return params
 
 
@@ -423,16 +434,16 @@ def _sort_opt(opt):
 # Output ---
 
 def _save_options_to_config(opt):
-    os.makedirs(opt.output_dir, exist_ok=True)
-    save_options_to_config(os.path.join(opt.output_dir, formats.get_config_filename(__file__)),
-                           OrderedDict(sorted(opt.items()))
-                           )
+    Path(opt.output_dir).mkdir(parents=True, exist_ok=True)
+    save_options_to_config(
+        Path(opt.output_dir) / formats.get_config_filename(__file__), dict(sorted(opt.items()))
+    )
 
 
 # Load Data --------------------------------------------------------------------
 
 
-def _sort_input_data(opt: DotDict) -> Tuple[FigureCollector, FigureCollector]:
+def _sort_input_data(opt: DotDict) -> tuple[FigureCollector, FigureCollector]:
     """Load and sort input data by file and bpm and assign correct figure-containers."""
     LOG.debug("Sorting input data.")
 

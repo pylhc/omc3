@@ -4,14 +4,33 @@ Constants
 
 Constants and definitions for the ``plotting`` module.
 """
+from __future__ import annotations
+
 # These below are here so they can be imported from the plotting
 # module of omc3 directly and not care where they originate / avoid
 # re-defining somewhere.
 from omc3.optics_measurements.constants import (  # noqa: F401
-    S, ERR, DELTA, AMPLITUDE, BETA, PHASE, REAL, IMAG,
-    AMP_BETA_NAME, BETA_NAME, CHROM_BETA_NAME, PHASE_NAME,  
-    SPECIAL_PHASE_NAME, TOTAL_PHASE_NAME, DISPERSION_NAME,
-    NORM_DISP_NAME, ORBIT_NAME, KICK_NAME, IP_NAME, PHASE_ADV, MDL
+    AMP_BETA_NAME,
+    AMPLITUDE,
+    BETA,
+    BETA_NAME,
+    CHROM_BETA_NAME,
+    DELTA,
+    DISPERSION_NAME,
+    ERR,
+    IMAG,
+    IP_NAME,
+    KICK_NAME,
+    MDL,
+    NORM_DISP_NAME,
+    ORBIT_NAME,
+    PHASE,
+    PHASE_ADV,
+    PHASE_NAME,
+    REAL,
+    SPECIAL_PHASE_NAME,
+    TOTAL_PHASE_NAME,
+    S,
 )
 
 IP_POS_DEFAULT = {
@@ -39,8 +58,8 @@ IP_POS_DEFAULT = {
 
 MANUAL_STYLE = {
     # differences to the standard style
-    u'lines.markersize': 5.0,
-    u'lines.linestyle': u'',
+    'lines.markersize': 5.0,
+    'lines.linestyle': '',
     # u'figure.figsize': [6, 3.8],
 }
 
@@ -50,5 +69,3 @@ DEFAULTS = {
     'ncol_legend': 3,
     'errorbar_alpha': .6,
 }
-
-

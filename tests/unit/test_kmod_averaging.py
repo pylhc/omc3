@@ -26,20 +26,20 @@ REFERENCE_DIR = KMOD_INPUT_DIR / "references"
 @pytest.mark.parametrize("ip", [1, 5], ids=ids_str("ip{}"))
 @pytest.mark.parametrize("n_files", [1, 2], ids=ids_str("{}files"))
 def test_kmod_averaging(tmp_path, ip, n_files):
-    beta = get_betastar_model(beam=1, ip=ip)
+    betas = get_betastar_values(beam=1, ip=ip)
     meas_paths = [get_measurement_dir(ip, i+1) for i in range(n_files)]
     ref_output_dir = get_reference_dir(ip, n_files)
 
     average_kmod_results(
-        meas_paths=meas_paths, 
+        meas_paths=meas_paths,
         output_dir=tmp_path,
-        ip=ip, 
-        betastar=beta,
+        ip=ip,
+        betastar=betas,
         plot=True
      )
-    _assert_correct_files_are_present(tmp_path, ip, beta[0])
+    _assert_correct_files_are_present(tmp_path, ip, betas)
 
-    for out_name in get_all_tfs_filenames(ip, beta[0]):
+    for out_name in get_all_tfs_filenames(ip, betas):
         out_file = tfs.read(tmp_path / out_name)
         ref_file = tfs.read(ref_output_dir / out_name)
         assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
@@ -51,12 +51,12 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
     ip = 1
     n_files = 2
 
-    beta = get_betastar_model(beam=beam, ip=ip)
+    betas = get_betastar_values(beam=beam, ip=ip)
     ref_output_dir = get_reference_dir(ip, n_files)
 
     meas_paths = [get_measurement_dir(ip, i+1)  for i in range(n_files)]
     new_meas_paths = [tmp_path / f"single_beam_meas_{i+1}" for i in range(n_files)]
-    
+
     for tmp_meas, old_meas in zip(new_meas_paths, meas_paths):
         beam_dir = f"{BEAM_DIR}{beam}"
         (tmp_meas / beam_dir).mkdir(parents=True, exist_ok=True)
@@ -65,16 +65,16 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
 
     with caplog.at_level(logging.WARNING):
         average_kmod_results(
-            meas_paths=new_meas_paths, 
+            meas_paths=new_meas_paths,
             output_dir=tmp_path,
-            ip=ip, 
-            betastar=beta,
+            ip=ip,
+            betastar=betas,
             plot=True
         )
     assert f"Could not find all results for beam {1 if beam == 2 else 2}" in caplog.text
-    _assert_correct_files_are_present(tmp_path, ip, beta[0], beams=[beam])
+    _assert_correct_files_are_present(tmp_path, ip, betas, beams=[beam])
 
-    for out_name in get_all_tfs_filenames(ip, beta[0], beams=[beam]):
+    for out_name in get_all_tfs_filenames(ip, betas, beams=[beam]):
         out_file = tfs.read(tmp_path / out_name)
         ref_file = tfs.read(ref_output_dir / out_name)
         if BEAM in ref_file.columns:
@@ -84,10 +84,10 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
 
 # Helper ---
 
-def _assert_correct_files_are_present(outputdir: Path, ip: int, beta: float, beams: Sequence[int] = (1, 2)) -> None:
+def _assert_correct_files_are_present(outputdir: Path, ip: int, betas: list[float], beams: Sequence[int] = (1, 2)) -> None:
     """Simply checks the expected converted files are present in the outputdir"""
     all_files = (
-        get_all_tfs_filenames(ip, beta, beams) + 
+        get_all_tfs_filenames(ip, betas, beams) +
         [f"ip{ip}_{PARAM_WAIST}.pdf", f"ip{ip}_{PARAM_BETA}.pdf", f"ip{ip}_{PARAM_BETABEAT}.pdf"]
     )
     for file_name in all_files:
@@ -106,17 +106,18 @@ def get_model_path(beam: int) -> Path:
     return KMOD_INPUT_DIR / f"b{beam}_twiss_22cm.dat"
 
 
-def get_betastar_model(beam: int, ip: int) -> Path:
+def get_betastar_values(beam: int, ip: int) -> list[float]:
+    """Extract the betastar values from the model."""
     model = tfs.read(get_model_path(beam), index=NAME)
-    return model.loc[f"IP{ip}", [f"{BETA}Y", f"{BETA}Y"]].tolist()
+    return model.loc[f"IP{ip}", [f"{BETA}X", f"{BETA}Y"]].tolist()
 
 
-def get_all_tfs_filenames(ip: int, beta: float, beams: Sequence[int] = (1, 2)) -> list[str]:
+def get_all_tfs_filenames(ip: int, betas: list[float], beams: Sequence[int] = (1, 2)) -> list[str]:
     return [
-        f"{AVERAGED_BPM_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip, beam=beam)}{EXT}"
+        f"{AVERAGED_BPM_FILENAME.format(betastar_x=betas[0], betastar_y=betas[1], ip=ip, beam=beam)}{EXT}"
         for beam in beams
     ] + [
-        f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=beta, betastar_y=beta, ip=ip)}{EXT}",
+        f"{AVERAGED_BETASTAR_FILENAME.format(betastar_x=betas[0], betastar_y=betas[1], ip=ip)}{EXT}",
     ]
 
 
@@ -125,16 +126,18 @@ def get_all_tfs_filenames(ip: int, beta: float, beams: Sequence[int] = (1, 2)) -
 def update_reference_files():
     """ Helper function to update the reference files. """
     REFERENCE_DIR.mkdir(exist_ok=True, parents=True)
-    for ip in (1, 5):
-        beta = get_betastar_model(beam=1, ip=ip)
+    for ip in (1, 5, 2, 8):
+        betas = get_betastar_values(beam=1, ip=ip)
         for n_files in (1, 2):
+            if ip  % 2 == 0 and n_files == 2:
+                continue # Skip the 2nd file for IP 2 and 8
             meas_paths = [get_measurement_dir(ip, i+1) for i in range(n_files)]
             output_dir = get_reference_dir(ip, n_files)
             average_kmod_results(
-                meas_paths=meas_paths, 
+                meas_paths=meas_paths,
                 output_dir=output_dir,
-                ip=ip, 
-                betastar=beta,
+                ip=ip,
+                betastar=betas,
                 plot=False
             )
             for ini_file in output_dir.glob("*.ini"):

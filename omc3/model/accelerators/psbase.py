@@ -1,6 +1,11 @@
-from generic_parser import DotDict
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from omc3.model.accelerators.accelerator import Accelerator
+
+if TYPE_CHECKING:
+    from generic_parser import DotDict
 
 class PsBase(Accelerator):
     """ Base class for Ps and PsBooster"""
@@ -17,8 +22,8 @@ class PsBase(Accelerator):
 
     def __init__(self, opt: DotDict):
         super().__init__(opt)
-        self.year = opt.year
-        self.scenario = opt.scenario
-        self.cycle_point = opt.cycle_point
-        self.beam_file = None
-        self.str_file = opt.str_file
+        self.year: str | None = opt.year
+        self.scenario: str | None = opt.scenario
+        self.cycle_point: str | None = opt.cycle_point
+        self.beam_file: str | None = None
+        self.str_file: str | None = opt.str_file

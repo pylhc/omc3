@@ -118,6 +118,7 @@ Also :math:`\Delta \Phi_{z,wj}` needs to be multiplied by :math:`2\pi` to be con
 
 """
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -125,15 +126,27 @@ import pandas as pd
 
 from omc3.correction.response_io import read_varmap
 from omc3.correction.sequence_evaluation import check_varmap_file
-from omc3.model.accelerators.accelerator import Accelerator
 from omc3.optics_measurements.constants import (
-    BETA, DISPERSION, F1001, F1010, NORM_DISPERSION, PHASE_ADV, TUNE, S, PHASE
+    BETA,
+    DISPERSION,
+    F1001,
+    F1010,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+    S,
 )
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from pathlib import Path
+
+    import tfs
+
+    from omc3.model.accelerators.accelerator import Accelerator
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -162,8 +175,11 @@ class TwissResponse:
     #            INIT
     ################################
 
-    def __init__(self, accel_inst, variable_categories, varmap_or_path, at_elements="bpms"):
-
+    def __init__(self,
+        accel_inst: Accelerator,
+        variable_categories: Sequence[str],
+        varmap_or_path: dict | Path | str,
+        at_elements: str = "bpms"):
         LOG.debug("Initializing TwissResponse.")
         with timeit(lambda t: LOG.debug(f"  Time initializing TwissResponse: {t} s")):
             # Get input
@@ -199,7 +215,7 @@ class TwissResponse:
             self._norm_dispersion_mapped = None
 
     @staticmethod
-    def _get_model_twiss(accel_inst):
+    def _get_model_twiss(accel_inst: Accelerator) -> tfs.TfsDataFrame:
         """ Load model, but keep only BPMs and Magnets """
         model = accel_inst.elements
         LOG.debug("Removing non-necessary entries:")
@@ -212,7 +228,7 @@ class TwissResponse:
         model.loc[DUMMY_ID, [f"{S}", f"{PHASE_ADV}X", f"{PHASE_ADV}Y"]] = 0.0
         return model
 
-    def _get_variable_mapping(self, varmap_or_path):
+    def _get_variable_mapping(self, varmap_or_path: dict | Path | str):
         """Get variable mapping as dictionary
 
         Dev hint: Define _variables first!
@@ -237,7 +253,7 @@ class TwissResponse:
             raise ValueError(f"Variables '{', '.join(check_var)}' cannot be found in sequence!")
 
         # drop mapping for unused variables
-        [mapping[order].pop(var) for order in mapping for var in mapping[order].keys() if var not in variables]
+        [mapping[order].pop(var) for order in mapping for var in mapping[order] if var not in variables]
         return mapping
 
     def _get_input_elements(self):
@@ -248,7 +264,7 @@ class TwissResponse:
         v2e = self._var_to_el
         tw = self._twiss
 
-        el_in = dict.fromkeys(k for k in v2e.keys() if k[-1] == 'L')
+        el_in = dict.fromkeys(key for key in v2e if key[-1] == "L")
         for order in el_in:
             el_order = []
             for var in v2e[order]:
@@ -286,6 +302,8 @@ class TwissResponse:
         if at_elements == "all":
             # all, obviously
             return [idx for idx in tw_idx if idx != DUMMY_ID]
+
+        return None
 
     ################################
     #       Response Matrix
@@ -416,7 +434,7 @@ class TwissResponse:
                 "Y": {"K1L": -1},
             }
             q_map = {"X": tw.Q1, "Y": tw.Q2}
-            disp_resp = dict.fromkeys(["{p:s}_{t:s}".format(p=p, t=t) for p in sign_map for t in sign_map[p]])
+            disp_resp = dict.fromkeys([f"{p:s}_{t:s}" for p in sign_map for t in sign_map[p]])
 
             for plane in sign_map:
                 q = q_map[plane]
@@ -428,7 +446,7 @@ class TwissResponse:
                 coeff_corr = 1 / (4 * np.sin(2 * np.pi * q))
                 for el_in, el_type in zip(els_per_type, el_types):
                     coeff_sign = sign_map[plane][el_type]
-                    out_str = "{p:s}_{t:s}".format(p=plane, t=el_type)
+                    out_str = f"{plane:s}_{el_type:s}"
 
                     if len(el_in):
                         pi2tau = 2 * np.pi * tau(adv[plane].loc[el_in, el_out], q)
@@ -682,8 +700,7 @@ class TwissResponse:
 
         if mapped:
             return self._phase_mapped
-        else:
-            return self._phase
+        return self._phase
 
     def get_phase_adv(self, mapped=True):
         """ Returns Response Matrix for Phase Advance """
@@ -695,8 +712,7 @@ class TwissResponse:
 
         if mapped:
             return self._phase_adv_mapped
-        else:
-            return self._phase_adv
+        return self._phase_adv
 
     def get_tune(self, mapped=True):
         """ Returns Response Matrix for the Tunes """
@@ -708,8 +724,7 @@ class TwissResponse:
 
         if mapped:
             return self._tune_mapped
-        else:
-            return self._tune
+        return self._tune
 
     def get_coupling(self, mapped=True):
         """ Returns Response Matrix for the coupling """
@@ -721,8 +736,7 @@ class TwissResponse:
 
         if mapped:
             return self._coupling_mapped
-        else:
-            return self._coupling
+        return self._coupling
 
     def get_variable_names(self):
         return self._variables
@@ -730,8 +744,7 @@ class TwissResponse:
     def get_variable_mapping(self, order=None):
         if order is None:
             return self._var_to_el
-        else:
-            return self._var_to_el[order]
+        return self._var_to_el[order]
 
     def get_response_for(self, observables=None) -> dict:  # Dict[str, ???]
         """ Calculates and returns only desired response matrices """
@@ -741,7 +754,7 @@ class TwissResponse:
 
         def disp_caller(func, plane):
             disp = func()
-            return response_add(*[disp[k] for k in disp.keys() if k.startswith(plane)])
+            return response_add(*[disp[key] for key in disp if key.startswith(plane)])
 
         def tune_caller(func, _unused):
             tune = func()
@@ -854,7 +867,7 @@ def create_response(
         tr = TwissResponse(accel_inst, vars_categories, varmap_path)
         response: dict = tr.get_response_for(optics_params)
 
-    if not any([resp.size for resp in response.values()]):
+    if not any(resp.size for resp in response.values()):
         raise ValueError("Responses are all empty. "
                          f"Are variables {tr.get_variable_names()} correct for '{optics_params}'?")
     return response

@@ -7,9 +7,10 @@ Does not use pyRBAC, because there is no KERBEROS login, instead this follows
 the poor man's (aka Michi) pure python RBAC
 https://gitlab.cern.ch/mihostet/lhc-access-screenshot/-/blob/5de481ff9903f64c531feffbd8ea93be474dd11c/lhc_access_screenshot/minirbac.py
 """
+from __future__ import annotations
+
 import os
 import pathlib
-from typing import Optional
 
 import requests
 
@@ -76,7 +77,7 @@ class RBAC:
         self.user = user
         return self._get_token(response)
 
-    def authenticate_location(self, user: Optional[str] = None) -> str:
+    def authenticate_location(self, user: str | None = None) -> str:
         """
         Authenticate explicitly via username and password.
 

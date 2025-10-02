@@ -5,17 +5,19 @@ This module contains tune calculations functionality of ``optics_measurements``.
 It provides functions to compute betatron tunes and structures to store them.
 """
 from __future__ import annotations
-import numpy as np
-import pandas as pd
-
-from omc3.definitions.constants import PLANES, PLANE_TO_NUM
-from omc3.optics_measurements.data_models import check_and_warn_about_offmomentum_data
-from omc3.utils import stats
 
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING: 
+import numpy as np
+
+from omc3.definitions.constants import PLANE_TO_NUM, PLANES
+from omc3.optics_measurements.data_models import check_and_warn_about_offmomentum_data
+from omc3.utils import stats
+
+if TYPE_CHECKING:
+    import pandas as pd
     from generic_parser import DotDict
+
     from omc3.optics_measurements.data_models import InputFiles
 
 
@@ -49,7 +51,7 @@ class TuneDict(dict):
     """
     # TODO: detail each key
     def __init__(self):
-        super(TuneDict, self).__init__(zip(PLANES, ({"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None},
+        super().__init__(zip(PLANES, ({"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None},
                                                     {"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None})))
 
     def get_lambda(self, plane):

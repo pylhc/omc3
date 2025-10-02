@@ -6,28 +6,43 @@ Utilities to append new columns to measurement and model dataframes.
 E.g. get differences between measurement and model and append those to
 the measurement data (for corrections).
 """
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Callable, Dict, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 from optics_functions.coupling import coupling_via_cmatrix
 
-from omc3.definitions.constants import PI2
-from omc3.optics_measurements.constants import (BETA, NORM_DISPERSION, PHASE_ADV,
-                                       TUNE, F1001, F1010, PHASE)
 from omc3.correction.constants import DIFF, MODEL, VALUE
-from omc3.utils import logging_tools
+from omc3.definitions.constants import PI2
+from omc3.optics_measurements.constants import (
+    BETA,
+    F1001,
+    F1010,
+    NAME2,
+    NORM_DISPERSION,
+    PHASE,
+    PHASE_ADV,
+    TUNE,
+)
 from omc3.optics_measurements.toolbox import df_diff, df_rel_diff
+from omc3.utils import logging_tools
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
+    import pandas as pd
+
 
 LOG = logging_tools.get_logger(__name__)
 
 
 def add_differences_to_model_to_measurements(
     model: pd.DataFrame,
-    measurement: Dict[str, pd.DataFrame],
+    measurement: dict[str, pd.DataFrame],
     keys: Sequence[str] = None,
-) -> Dict[str, pd.DataFrame]:
+) -> dict[str, pd.DataFrame]:
     """
     Provided with DataFrames from a model and a measurement, and a number of keys to be found in both,
     returns a dictionary with the variation from measurement to model for each key.
@@ -41,7 +56,7 @@ def add_differences_to_model_to_measurements(
     Returns:
         A dictionary of optics parameters and the resulting DataFrames.
     """
-    appenders: Dict[str, Callable] = _get_model_appenders()
+    appenders: dict[str, Callable] = _get_model_appenders()
     if keys is None:
         keys = measurement.keys()
 
@@ -52,7 +67,7 @@ def add_differences_to_model_to_measurements(
     return res_dict
 
 
-def _get_model_appenders() -> Dict[str, Callable]:
+def _get_model_appenders() -> dict[str, Callable]:
     return defaultdict(lambda:  _get_model_generic, {
         f"{PHASE}X": _get_model_phases, f"{PHASE}Y": _get_model_phases,
         f"{BETA}X": _get_model_betabeat, f"{BETA}Y": _get_model_betabeat,
@@ -67,10 +82,16 @@ def _get_model_generic(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.
 
 
 def _get_model_phases(model: pd.DataFrame, meas: pd.DataFrame, key: str) -> pd.DataFrame:
-    model_column = f"{PHASE_ADV}{key[-1]}"
+    plane = key[-1]
+    tunes = {'X':model.headers[f'{TUNE}1'],
+             'Y':model.headers[f'{TUNE}2'],
+             }
+    model_column = f"{PHASE_ADV}{plane}"
     with logging_tools.log_pandas_settings_with_copy(LOG.debug):
-        meas[MODEL] = (model.loc[meas["NAME2"].to_numpy(), model_column].to_numpy() -
-                       model.loc[meas.index.to_numpy(), model_column].to_numpy())
+        model_phases_advances = (model.loc[meas[NAME2].to_numpy(), model_column].to_numpy() -
+                                 model.loc[meas.index.to_numpy(), model_column].to_numpy())
+        model_phases_advances[model_phases_advances < 0] += tunes[plane]
+        meas[MODEL] = model_phases_advances
         meas[DIFF] = df_diff(meas, VALUE, MODEL)
     return meas
 
@@ -122,4 +143,3 @@ def add_coupling_to_model(model: pd.DataFrame) -> pd.DataFrame:
         for suffix, func in function_map.items():
             result_tfs_df[f"{rdt}{suffix}"] = func(coupling_rdts_df[rdt]).astype(np.float64)
     return result_tfs_df
-
