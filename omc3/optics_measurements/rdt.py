@@ -209,15 +209,12 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
         bpm_names
     )  # removes BPMs that are not in model
     filtered = phase_dict[MEASUREMENT].loc[bpm_names, bpm_names]
-    phase_meas = pd.concat(
-        (filtered % 1, (filtered.iloc[:, :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1), axis=1
-    )
-    second_bmps = np.abs(
-        phase_meas * _get_n_upper_diagonals(NBPMS_FOR_90, phase_meas.shape) - 0.25
-    ).idxmin(axis=1)
-    filtered.iloc[-NBPMS_FOR_90:, :NBPMS_FOR_90] = (
-        filtered.iloc[-NBPMS_FOR_90:, :NBPMS_FOR_90] + tunes[plane]["Q"]
-    ) % 1
+
+    # fmt: off
+    phase_meas = pd.concat((filtered % 1, (filtered.iloc[:, :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1), axis=1)
+    second_bmps = np.abs(phase_meas * _get_n_upper_diagonals(NBPMS_FOR_90, phase_meas.shape) - 0.25).idxmin(axis=1)
+    filtered.iloc[-NBPMS_FOR_90:, :NBPMS_FOR_90] = (filtered.iloc[-NBPMS_FOR_90:, :NBPMS_FOR_90] + tunes[plane]["Q"]) % 1
+    # fmt: on
 
     # get the pairs zip(bpm_names, second_bpms)
     filtered[NAME2] = second_bmps

@@ -22,12 +22,22 @@ from omc3.definitions.constants import PLANES
 from omc3.harpy import clean, frequency, kicker
 from omc3.harpy.constants import (
     COL_AMP,
+    COL_BPM_RES,
+    COL_CO,
+    COL_COEFFS,
+    COL_CORMS,
     COL_ERR,
+    COL_FREQS,
     COL_MU,
     COL_NAME,
     COL_NATAMP,
     COL_NATTUNE,
+    COL_NOISE,
+    COL_NOISE_SCALED,
     COL_PHASE,
+    COL_PK2PK,
+    COL_S,
+    COL_TIME,
     COL_TUNE,
     FILE_AMPS_EXT,
     FILE_FREQS_EXT,
@@ -60,7 +70,7 @@ def run_per_bunch(
     """
     model = None
     if harpy_input.model is not None:
-        model = tfs.read(harpy_input.model, index=COL_NAME).loc[:, "S"]
+        model = tfs.read(harpy_input.model, index=COL_NAME).loc[:, COL_S]
 
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
     output_file_path = harpy_input.outputdir / file.name
@@ -113,17 +123,17 @@ def run_per_bunch(
     for plane in PLANES:
         lins[plane] = lins[plane].join(
             frequency.find_resonances(
-                measured_tunes,
-                bpm_datas[plane].shape[1],
-                plane,
-                spectra[plane],
-                harpy_input.resonances,
+                tunes=measured_tunes,
+                nturns=bpm_datas[plane].shape[1],
+                plane=plane,
+                spectra=spectra[plane],
+                order_resonances=harpy_input.resonances,
             )
         )
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
-        lins[plane] = lins[plane].sort_values("S", axis=0, ascending=True)
+        lins[plane] = lins[plane].sort_values(COL_S, axis=0, ascending=True)
         lins[plane] = tfs.TfsDataFrame(
             lins[plane], headers=_compute_headers(lins[plane], tbt_data.date)
         )
@@ -152,10 +162,10 @@ def _closed_orbit_analysis(
         index=bpm_data.index.to_numpy(),
         data={
             COL_NAME: bpm_data.index.to_numpy(),
-            "S": np.arange(bpm_data.index.size) if model is None else model.loc[bpm_data.index],
+            COL_S: np.arange(bpm_data.index.size) if model is None else model.loc[bpm_data.index],
         },
     )
-    lin_frame["BPM_RES"] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
+    lin_frame[COL_BPM_RES] = 0.0 if bpm_res is None else bpm_res.loc[lin_frame.index]
     with timeit(lambda spanned: LOGGER.debug(f"Time for orbit_analysis: {spanned}")):
         lin_frame = _get_orbit_data(lin_frame, bpm_data)
 
@@ -166,24 +176,39 @@ def _closed_orbit_analysis(
 
 
 def _get_orbit_data(lin_frame: pd.DataFrame, bpm_data: pd.DataFrame) -> pd.DataFrame:
-    lin_frame["PK2PK"] = np.max(bpm_data, axis=1) - np.min(bpm_data, axis=1)
-    lin_frame["CO"] = np.mean(bpm_data, axis=1)
-    lin_frame["CORMS"] = np.std(bpm_data, axis=1) / np.sqrt(bpm_data.shape[1])
+    lin_frame[COL_PK2PK] = np.max(bpm_data, axis=1) - np.min(bpm_data, axis=1)
+    lin_frame[COL_CO] = np.mean(bpm_data, axis=1)
+    lin_frame[COL_CORMS] = np.std(bpm_data, axis=1) / np.sqrt(bpm_data.shape[1])
     # TODO: Magic number 10?: Maybe accelerator dependent ... LHC 6-7?
-    lin_frame["NOISE"] = lin_frame.loc[:, "BPM_RES"] / np.sqrt(bpm_data.shape[1]) / 10.0
+    lin_frame[COL_NOISE] = lin_frame.loc[:, COL_BPM_RES] / np.sqrt(bpm_data.shape[1]) / 10.0
     return lin_frame
 
 
 def _add_calculated_phase_errors(lin_frame: pd.DataFrame) -> pd.DataFrame:
-    noise = lin_frame.loc[:, "NOISE"].to_numpy()
-    if np.max(noise) == 0.0:
-        return lin_frame  # Do not calculated errors when no noise was calculated
-    for name_root in (COL_MU, COL_PHASE):
-        cols = [col for col in lin_frame.columns.to_numpy() if name_root in col]
-        for col in cols:
-            lin_frame[f"{COL_ERR}{col}"] = _get_spectral_phase_error(
-                lin_frame.loc[:, f"{col.replace(name_root, COL_AMP)}"], noise
-            )
+    """
+    Add calculated phase errors to the linear frame for all MU and PHASE columns.
+
+    For each column starting with COL_MU or COL_PHASE, computes the corresponding
+    error column using the spectral phase error formula.
+    """
+    if lin_frame.loc[:, COL_NOISE].max() == 0.0:
+        return lin_frame  # Skip if no noise data available
+
+    noise_values = lin_frame.loc[:, COL_NOISE].to_numpy()
+
+    # Get all columns that represent phases (MU or PHASE)
+    phase_columns = [col for col in lin_frame.columns if col.startswith((COL_MU, COL_PHASE))]
+
+    for phase_col in phase_columns:
+        # Corresponding amplitude column (e.g., MUX -> AMPX)
+        amplitude_col = phase_col.replace(COL_MU, COL_AMP).replace(COL_PHASE, COL_AMP)
+
+        # Calculate and assign the error
+        lin_frame[f"{COL_ERR}{phase_col}"] = _get_spectral_phase_error(
+            amplitude=lin_frame.loc[:, amplitude_col],
+            noise=noise_values,
+        )
+
     return lin_frame
 
 
@@ -224,7 +249,7 @@ def _compute_headers(panda: pd.DataFrame, date: None | pd.Timestamp = None) -> d
                     bpm_tunes
                 )  # TODO: not really the RMS?
     if date:
-        headers["TIME"] = date.strftime(formats.TIME)
+        headers[COL_TIME] = date.strftime(formats.TIME)
     return headers
 
 
@@ -240,11 +265,11 @@ def _write_spectrum(
 ) -> None:
     tfs.write(
         f"{output_path_without_suffix}{FILE_AMPS_EXT.format(plane=plane.lower())}",
-        spectra["COEFFS"].abs().T,
+        spectra[COL_COEFFS].abs().T,
     )
     tfs.write(
         f"{output_path_without_suffix}{FILE_FREQS_EXT.format(plane=plane.lower())}",
-        spectra["FREQS"].T,
+        spectra[COL_FREQS].T,
     )
 
 
@@ -270,13 +295,13 @@ def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -
     if f"{COL_NATAMP}{plane}" in df.columns:
         df[f"{COL_NATAMP}{plane}"] = df.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
 
-    if np.max(df.loc[:, "NOISE"].to_numpy()) == 0.0:
+    if df.loc[:, COL_NOISE].max() == 0.0:
         return df  # Do not calculate errors when no noise was calculated
-    noise_scaled = df.loc[:, "NOISE"] / amps
-    df.loc[:, "NOISE_SCALED"] = noise_scaled
-    df.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = df.loc[:, "NOISE"]
+    noise_scaled = df.loc[:, COL_NOISE] / amps
+    df.loc[:, COL_NOISE_SCALED] = noise_scaled
+    df.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = df.loc[:, COL_NOISE]
     if f"{COL_NATTUNE}{plane}" in df.columns:
-        df.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = df.loc[:, "NOISE"]
+        df.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = df.loc[:, COL_NOISE]
 
     # Create dedicated dataframe with error columns to assign later (cleaner
     # and faster than assigning individual columns)

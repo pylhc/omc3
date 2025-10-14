@@ -64,7 +64,8 @@ LOGGER = logging_tools.get_logger(__name__)
 DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
 
 
-def hole_in_one_params():
+def hole_in_one_params() -> EntryPointParameters:
+    """Create the entry point parameters for hole_in_one."""
     params = EntryPointParameters()
     params.add_parameter(name="harpy", action="store_true", help="Runs frequency analysis")
     params.add_parameter(name="optics", action="store_true", help="Measures the lattice optics")
@@ -72,7 +73,7 @@ def hole_in_one_params():
 
 
 @entrypoint(hole_in_one_params(), strict=False)
-def hole_in_one_entrypoint(opt, rest):
+def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
     """
     Runs frequency analysis and measures lattice optics.
 
@@ -338,7 +339,10 @@ def hole_in_one_entrypoint(opt, rest):
         _measure_optics(lins, optics_opt)
 
 
-def _get_suboptions(opt, rest):
+def _get_suboptions(
+    opt: DotDict, rest: list[str]
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None, dict[str, Any] | None]:
+    """Parse suboptions for harpy and optics modules."""
     if opt.harpy:
         harpy_opt, rest = _harpy_entrypoint(rest)
         if opt.optics:
@@ -396,7 +400,8 @@ def _write_config_file(
     save_options_to_config(out_dir / file_name, all_options)
 
 
-def _run_harpy(harpy_options):
+def _run_harpy(harpy_options: DotDict) -> list[Path]:
+    """Run frequency analysis on turn-by-turn data."""
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
@@ -419,21 +424,19 @@ def _run_harpy(harpy_options):
 def _add_suffix_and_iter_bunches(
     tbt_data: tbt.TbtData, options: DotDict, file: Path
 ) -> Generator[tuple[tbt.TbtData, Path], None, None]:
-    # hint: options.files is now a single file because of _replicate_harpy_options_per_file
-    # it is also only used here to define the output name, as the tbt-data is already loaded.
-
+    """Add suffix to output files and iterate over bunches."""
     dir_name: Path = file.parent
     file_name: str = file.name
     suffix: str = options.suffix or ""
 
-    # Single bunch ---
+    # Single bunch
     if tbt_data.nbunches == 1:
         if suffix:
             file = dir_name / f"{file_name}{suffix}"
         yield tbt_data, file
         return
 
-    # Multibunch ---
+    # Multibunch
     if options.bunch_ids is not None:
         unknown_bunches = set(options.bunch_ids) - set(tbt_data.bunch_ids)
         if unknown_bunches:
@@ -452,7 +455,8 @@ def _add_suffix_and_iter_bunches(
         )
 
 
-def _measure_optics(lins, optics_opt):
+def _measure_optics(lins: list[Path], optics_opt: DotDict) -> None:
+    """Measure lattice optics from frequency spectra or files."""
     if len(lins) == 0:
         lins = optics_opt.files
 
@@ -469,7 +473,8 @@ def _measure_optics(lins, optics_opt):
         measure_optics.measure_optics(inputs, optics_opt)
 
 
-def _harpy_entrypoint(params):
+def _harpy_entrypoint(params: list[str]) -> tuple[DotDict, list[str]]:
+    """Parse harpy entry point parameters."""
     options, rest = EntryPoint(harpy_params(), strict=False).parse(params)
     if options.natdeltas is not None and options.nattunes is not None:
         raise AttributeError("Colliding options found: --nattunes and --natdeltas. Choose only one")
@@ -494,7 +499,8 @@ def _harpy_entrypoint(params):
     return options, rest
 
 
-def harpy_params():
+def harpy_params() -> EntryPointParameters:
+    """Create the entry point parameters for harpy."""
     params = EntryPointParameters()
     params.add_parameter(name="files", required=True, nargs="+", help="TbT files to analyse")
     params.add_parameter(name="outputdir", required=True, help="Output directory.")
@@ -683,7 +689,8 @@ def harpy_params():
     return params
 
 
-def _optics_entrypoint(params):
+def _optics_entrypoint(params: list[str]) -> tuple[DotDict, list[str]]:
+    """Parse optics entry point parameters."""
     options, rest = EntryPoint(optics_params(), strict=False).parse(params)
 
     if "rdt" in options.nonlinear and not 2 <= options.rdt_magnet_order <= 8:
@@ -694,7 +701,8 @@ def _optics_entrypoint(params):
     return options, rest
 
 
-def optics_params():
+def optics_params() -> EntryPointParameters:
+    """Create the entry point parameters for optics."""
     params = EntryPointParameters()
     params.add_parameter(name="files", required=True, nargs="+", help="Files for analysis")
     params.add_parameter(name="outputdir", required=True, help="Output directory")

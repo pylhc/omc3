@@ -16,15 +16,15 @@ from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
-    from generic_parser import DotDict
+    from generic_parser.tools import DotDict
 
 LOGGER = logging_tools.getLogger(__name__)
 NTS_LIMIT = 8.0  # Noise to signal limit
 
 
 def clean(
-    harpy_input: DotDict, bpm_data: pd.DataFrame, model: None | pd.DataFrame
-) -> tuple[pd.DataFrame, None | tuple[pd.DataFrame, np.ndarray], list[str], None | pd.Series]:
+    harpy_input: DotDict, bpm_data: pd.DataFrame, model: pd.Series | None
+) -> tuple[pd.DataFrame, tuple[pd.DataFrame, np.ndarray] | None, list[str], pd.Series | None]:
     """
     Cleans BPM TbT matrix: removes BPMs not present in the model and based on specified cuts.
     Also cleans the noise using singular value decomposition.
@@ -250,8 +250,8 @@ def _resync_bpms(harpy_input: DotDict, bpm_data: pd.DataFrame, model: pd.DataFra
 def svd_decomposition(
     matrix: pd.DataFrame,
     num_singular_values: int,
-    dominance_limit: float = None,
-    num_iter: int = None,
+    dominance_limit: float | None = None,
+    num_iter: int | None = None,
 ) -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
     """
     Computes reduced (K largest values) singular value decomposition of a matrix.
