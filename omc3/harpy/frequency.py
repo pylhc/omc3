@@ -137,13 +137,17 @@ def harpy_per_plane(
     }
 
     nattunes = _get_natural_tunes(harpy_input, tunes)
+    tune_tol = harpy_input.tolerance
     if nattunes is not None:
-        df_nattunes = _calculate_natural_tunes(
-            spectra,
-            nattunes,
-            harpy_input.tolerance,
-            plane,
-        )
+        # Each plane that has 0 for the nattunes is ignored.
+        if any(
+            abs(tune - nattune) < tune_tol for nattune, tune in zip(nattunes, tunes) if nattune != 0
+        ):
+            raise ValueError(
+                "At least one of the driven tunes is within the tolerance window of finding the natural tunes. "
+                "Please check the input parameters."
+            )
+        df_nattunes = _calculate_natural_tunes(spectra, nattunes, tune_tol, plane)
         harpy_results = pd.concat([harpy_results, df_nattunes], axis=1, sort=False)
 
         harpy_results = _realign_phases(
