@@ -191,10 +191,10 @@ def _add_calculated_phase_errors(lin_frame: pd.DataFrame) -> pd.DataFrame:
     For each column starting with COL_MU or COL_PHASE, computes the corresponding
     error column using the spectral phase error formula.
     """
-    if lin_frame.loc[:, COL_NOISE].max() == 0.0:
+    if lin_frame[COL_NOISE].max() == 0.0:
         return lin_frame  # Skip if no noise data available
 
-    noise_values = lin_frame.loc[:, COL_NOISE].to_numpy()
+    noise_values = lin_frame[COL_NOISE].to_numpy()
 
     # Get all columns that represent phases (MU or PHASE)
     phase_columns = [col for col in lin_frame.columns if col.startswith((COL_MU, COL_PHASE))]
@@ -205,7 +205,7 @@ def _add_calculated_phase_errors(lin_frame: pd.DataFrame) -> pd.DataFrame:
 
         # Calculate and assign the error
         lin_frame[f"{COL_ERR}{phase_col}"] = _get_spectral_phase_error(
-            amplitude=lin_frame.loc[:, amplitude_col],
+            amplitude=lin_frame[amplitude_col],
             noise=noise_values,
         )
 
@@ -229,7 +229,7 @@ def _sync_phase(lin_frame: pd.DataFrame, plane: str) -> pd.DataFrame:
     BPM at index 0 is always 0. It allows to compare phases of consecutive measurements and if
     some measurements stick out remove them from the data set. Original author is **skowron**.
     """
-    phase = lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy()
+    phase = lin_frame[f"{COL_MU}{plane}"].to_numpy()
     phase = phase - phase[0]
     lin_frame[f"{COL_MU}{plane}SYNC"] = np.where(np.abs(phase) > 0.5, phase - np.sign(phase), phase)
     return lin_frame
@@ -240,7 +240,7 @@ def _compute_headers(panda: pd.DataFrame, date: None | pd.Timestamp = None) -> d
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
             try:
-                bpm_tunes = panda.loc[:, f"{prefix}{COL_TUNE}{plane}"]
+                bpm_tunes = panda[f"{prefix}{COL_TUNE}{plane}"]
             except KeyError:
                 pass
             else:
@@ -287,21 +287,21 @@ def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -
     """
     cols = [col for col in df.columns.to_numpy() if col.startswith(COL_AMP)]
     cols.remove(f"{COL_AMP}{plane}")
-    df.loc[:, cols] = df.loc[:, cols].div(df.loc[:, f"{COL_AMP}{plane}"], axis="index")
-    amps = df.loc[:, f"{COL_AMP}{plane}"].to_numpy()
+    df[cols] = df[cols].div(df[f"{COL_AMP}{plane}"], axis="index")
+    amps = df[f"{COL_AMP}{plane}"].to_numpy()
     # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm] (03/2019)
     # TODO  later remove (05/2019)
     df[f"{COL_AMP}{plane}"] = amps / 2
     if f"{COL_NATAMP}{plane}" in df.columns:
-        df[f"{COL_NATAMP}{plane}"] = df.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
+        df[f"{COL_NATAMP}{plane}"] = df[f"{COL_NATAMP}{plane}"].to_numpy() / 2
 
-    if df.loc[:, COL_NOISE].max() == 0.0:
+    if df[COL_NOISE].max() == 0.0:
         return df  # Do not calculate errors when no noise was calculated
-    noise_scaled = df.loc[:, COL_NOISE] / amps
-    df.loc[:, COL_NOISE_SCALED] = noise_scaled
-    df.loc[:, f"{COL_ERR}{COL_AMP}{plane}"] = df.loc[:, COL_NOISE]
+    noise_scaled = df[COL_NOISE] / amps
+    df[COL_NOISE_SCALED] = noise_scaled
+    df[f"{COL_ERR}{COL_AMP}{plane}"] = df[COL_NOISE]
     if f"{COL_NATTUNE}{plane}" in df.columns:
-        df.loc[:, f"{COL_ERR}{COL_NATAMP}{plane}"] = df.loc[:, COL_NOISE]
+        df[f"{COL_ERR}{COL_NATAMP}{plane}"] = df[COL_NOISE]
 
     # Create dedicated dataframe with error columns to assign later (cleaner
     # and faster than assigning individual columns)
@@ -312,5 +312,5 @@ def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -
         index=df.index,
         dtype=pd.Float64Dtype(),
     )
-    df.loc[:, df_amp.columns] = df_amp
+    df[df_amp.columns] = df_amp
     return df

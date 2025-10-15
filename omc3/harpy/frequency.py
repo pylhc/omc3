@@ -326,6 +326,7 @@ def _realign_phases(df: pd.DataFrame, phase_col: str, tune_col: str, nturns: int
     freq_data = df.loc[:, tune_col]
     mid_phase = (phase_data + freq_data * nturns / 2) % 1
     realigned_phases = np.where(np.abs(mid_phase) > 0.5, mid_phase - np.sign(mid_phase), mid_phase)
+    # Return a new DataFrame to avoid modifying the original one, with the updated phase column
     return df.assign(**{phase_col: realigned_phases})
 
 
