@@ -460,15 +460,11 @@ def windowed_padded_rfft(
     coefs_reshaped = np.reshape(coefs, (n_bpms, n_bins, sub_bins))
     max_sub_bin_indices = np.argmax(np.abs(coefs_reshaped), axis=2)
     selected_indices = bin_start_indices + max_sub_bin_indices
-    # Free memory by deleting the reshaped array, as it's no longer needed
-    # del coefs_reshaped
 
     # Extract the selected coefficients and scale by 2 (since rfft gives half-spectrum)
     # This gives the complex amplitudes at the selected frequencies
     selected_coefficients = 2 * coefs[np.arange(n_bpms)[:, None], selected_indices]
     coefficients = pd.DataFrame(index=bpm_matrix.index, data=selected_coefficients)
-    # Free memory by deleting the original coefs array
-    # del coefs
 
     # Compute frequencies corresponding to the selected indices
     # Since the frequency array is the same for all BPMs, compute it once and index into it
