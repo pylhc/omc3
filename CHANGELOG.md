@@ -3,7 +3,7 @@
 #### 2025-10-TBD - v0.24.6 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
-  - Throw an Error when Tune Tolerance is too Large
+  - Throw an Error when Tune Tolerance is too Large, i.e. driven tunes are inside the tolerance of the natural tunes.
 
 - Changed:
   - Remove unnecessary `_replicate_harpy_options_per_file`
