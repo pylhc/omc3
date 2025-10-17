@@ -4,6 +4,7 @@ Handler
 
 This module contains high-level functions to manage most functionality of the corrections calculations.
 """
+
 from __future__ import annotations
 
 import copy
@@ -55,7 +56,7 @@ LOG = logging_tools.get_logger(__name__)
 
 
 def correct(accel_inst: Accelerator, opt: DotDict) -> None:
-    """ Perform global correction as described in :mod:`omc3.global_correction`.
+    """Perform global correction as described in :mod:`omc3.global_correction`.
 
     Args:
         accel_inst (Accelerator): Accelerator Instance
@@ -82,39 +83,55 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
     if opt.fullresponse_path is not None:
         resp_dict = _load_fullresponse(opt.fullresponse_path, vars_list)
     else:
-        resp_dict = response_twiss.create_response(accel_inst, opt.variable_categories, optics_params)
+        resp_dict = response_twiss.create_response(
+            accel_inst, opt.variable_categories, optics_params
+        )
 
     # the model in accel_inst is modified later, so save nominal model here to variables
     nominal_model = _maybe_add_coupling_to_model(accel_inst.model, optics_params)
     # apply filters to data
     meas_dict = filters.filter_measurement(optics_params, meas_dict, nominal_model, opt)
-    meas_dict = model_appenders.add_differences_to_model_to_measurements(nominal_model, meas_dict)
+    meas_dict = model_appenders.add_differences_to_model_to_measurements(
+        nominal_model, meas_dict
+    )
 
     if opt.arc_by_arc_phase:
         if not isinstance(accel_inst, lhc.Lhc):
-            raise NotImplementedError("Arc-by-Arc correction is only implemented for the LHC.")
-        meas_dict = abba.reduce_phase_measurements_to_arcs(meas_dict, nominal_model, opt.include_ips_in_arc_by_arc)
+            raise NotImplementedError(
+                "Arc-by-Arc correction is only implemented for the LHC."
+            )
+        meas_dict = abba.reduce_phase_measurements_to_arcs(
+            meas_dict, nominal_model, opt.include_ips_in_arc_by_arc
+        )
 
     resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
     resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
-    delta = tfs.TfsDataFrame(0., index=vars_list, columns=[DELTA])
+    delta = tfs.TfsDataFrame({DELTA: 0.0, ERROR: 0.0}, index=vars_list)
 
     # ######### Iteration Phase ######### #
     for iteration in range(opt.iterations):
-        LOG.info(f"Correction Iteration {iteration+1} of {opt.iterations}.")
+        LOG.info(f"Correction Iteration {iteration + 1} of {opt.iterations}.")
 
         # ######### Update Model and Response ######### #
         if iteration > 0:
             LOG.debug("Updating model via MAD-X.")
             corr_model_path = opt.output_dir / f"twiss_{iteration}{EXT}"
 
-            corr_model_elements = create_corrected_model(corr_model_path, [opt.change_params_path], accel_inst, update_deltap)
-            corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, optics_params)
+            corr_model_elements = create_corrected_model(
+                corr_model_path, [opt.change_params_path], accel_inst, update_deltap
+            )
+            corr_model_elements = _maybe_add_coupling_to_model(
+                corr_model_elements, optics_params
+            )
 
-            bpms_index_mask = accel_inst.get_element_types_mask(corr_model_elements.index, types=["bpm"])
+            bpms_index_mask = accel_inst.get_element_types_mask(
+                corr_model_elements.index, types=["bpm"]
+            )
             corr_model = corr_model_elements.loc[bpms_index_mask, :]
 
-            meas_dict = model_appenders.add_differences_to_model_to_measurements(corr_model, meas_dict)
+            meas_dict = model_appenders.add_differences_to_model_to_measurements(
+                corr_model, meas_dict
+            )
 
             if opt.update_response:
                 resp_dict = _update_response(
@@ -126,28 +143,41 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                     update_dpp=update_deltap,
                     update_response=opt.update_response,
                 )
-                resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
+                resp_dict = filters.filter_response_index(
+                    resp_dict, meas_dict, optics_params
+                )
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
         # ######### Actual optimization ######### #
-        delta += _calculate_delta(resp_matrix, meas_dict, optics_params, vars_list, opt.method, method_options)
+        delta += _calculate_delta(
+            resp_matrix, meas_dict, optics_params, vars_list, opt.method, method_options
+        )
 
         # remove unused correctors from vars_list
-        delta, resp_matrix, vars_list = _filter_by_strength(delta, resp_matrix, opt.min_corrector_strength)
+        delta, resp_matrix, vars_list = _filter_by_strength(
+            delta, resp_matrix, opt.min_corrector_strength
+        )
 
         # ######### Write Results ######### #
-        writeparams(opt.change_params_path, delta, "Values to match model to measurement.")  # needed for MAD-X in next iteration
-        LOG.debug(f"Cumulative delta: {np.sum(np.abs(delta.loc[:, DELTA].to_numpy())):.5e}")
+        writeparams(
+            opt.change_params_path, delta, "Values to match model to measurement."
+        )  # needed for MAD-X in next iteration
+        LOG.debug(
+            f"Cumulative delta: {np.sum(np.abs(delta.loc[:, DELTA].to_numpy())):.5e}"
+        )
 
         # write out each stage for testing/debug purposes; avoid for normal runs, to not clutter the output directory
         if is_debug() or is_pytest():
-            write_knob(opt.knob_path.with_stem(f"{opt.knob_path.stem}{iteration:d}"), delta)
+            write_knob(
+                opt.knob_path.with_stem(f"{opt.knob_path.stem}{iteration:d}"), delta
+            )
 
     # ######### Write Final Results ######### #
-    writeparams(opt.change_params_correct_path, -delta, "Values to correct the measurement.")
+    writeparams(
+        opt.change_params_correct_path, -delta, "Values to correct the measurement."
+    )
     write_knob(opt.knob_path, delta)
     LOG.info("Finished Iterative Global Correction.")
-
 
 
 def _update_response(
@@ -158,8 +188,8 @@ def _update_response(
     variable_categories: Sequence[str],
     update_dpp: bool,
     update_response: bool | str,
-    ) -> dict[str, pd.DataFrame]:
-    """ Create an updated response matrix.
+) -> dict[str, pd.DataFrame]:
+    """Create an updated response matrix.
 
     If we are to compute the response including the DPP, then we have to do so from MAD-X,
     as we do not have the analytical formulae. This therefore requires correction files to be
@@ -176,16 +206,22 @@ def _update_response(
 
     if update_dpp:
         LOG.info("Updating response via MAD-X, due to delta dpp requested.")
-        resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
+        resp_dict = response_madx.create_fullresponse(
+            accel_inst_cp, variable_categories
+        )
     else:
         if update_response == "madx":
             LOG.info("Updating response via MAD-X.")
-            resp_dict = response_madx.create_fullresponse(accel_inst_cp, variable_categories)
+            resp_dict = response_madx.create_fullresponse(
+                accel_inst_cp, variable_categories
+            )
         else:
             LOG.info("Updating response via analytical formulae.")
             accel_inst_cp.elements = corrected_elements
             # accel_inst_cp.model = corrected_model # - Not needed, don't think it's used by response_twiss (jgray 2024)
-            resp_dict = response_twiss.create_response(accel_inst_cp, variable_categories, optics_params)
+            resp_dict = response_twiss.create_response(
+                accel_inst_cp, variable_categories, optics_params
+            )
 
     return resp_dict
 
@@ -222,12 +258,12 @@ def get_filename_from_parameter(parameter: str, beta_filename: str) -> str:
 
 
 def get_measurement_data(
-        keys: Sequence[str],
-        meas_dir: Path,
-        beta_filename: str,
-        w_dict: dict[str, float] = None,
+    keys: Sequence[str],
+    meas_dir: Path,
+    beta_filename: str,
+    w_dict: dict[str, float] = None,
 ) -> tuple[list[str], dict[str, tfs.TfsDataFrame]]:
-    """ Loads all measurements defined by `keys` into a dictionary. """
+    """Loads all measurements defined by `keys` into a dictionary."""
     measurement = {}
     filtered_keys = keys
     if w_dict is not None:
@@ -243,10 +279,16 @@ def get_measurement_data(
         if key == f"{TUNE}":
             measurement[key] = pd.DataFrame(
                 {  # Just fractional tunes:
-                    VALUE: np.remainder([read_measurement_file(meas_dir, file_name)[f"{TUNE}1"],
-                                         read_measurement_file(meas_dir, file_name)[f"{TUNE}2"]],
-                                        [1, 1]),
-                    ERROR: np.array([0.001, 0.001])  # TODO measured errors not in the file
+                    VALUE: np.remainder(
+                        [
+                            read_measurement_file(meas_dir, file_name)[f"{TUNE}1"],
+                            read_measurement_file(meas_dir, file_name)[f"{TUNE}2"],
+                        ],
+                        [1, 1],
+                    ),
+                    ERROR: np.array(
+                        [0.001, 0.001]
+                    ),  # TODO measured errors not in the file
                 },
                 index=[f"{TUNE}1", f"{TUNE}2"],
             )
@@ -283,8 +325,10 @@ def _get_varlist(accel_cls: Accelerator, variables: Sequence[str]):  # TODO: Vir
     return varlist
 
 
-def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -> tfs.TfsDataFrame:
-    """ Add coupling to the model, if terms corresponding to coupling RDTs are
+def _maybe_add_coupling_to_model(
+    model: tfs.TfsDataFrame, keys: Sequence[str]
+) -> tfs.TfsDataFrame:
+    """Add coupling to the model, if terms corresponding to coupling RDTs are
     found in the provided keys.
 
     Args:
@@ -299,8 +343,13 @@ def _maybe_add_coupling_to_model(model: tfs.TfsDataFrame, keys: Sequence[str]) -
     return model
 
 
-def create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], accel_inst: Accelerator, update_dpp: bool = False) -> tfs.TfsDataFrame:
-    """ Use the calculated deltas in changeparameters.madx to create a corrected model """
+def create_corrected_model(
+    twiss_out: Path | str,
+    corr_files: Sequence[Path],
+    accel_inst: Accelerator,
+    update_dpp: bool = False,
+) -> tfs.TfsDataFrame:
+    """Use the calculated deltas in changeparameters.madx to create a corrected model"""
     creator_class = get_model_creator_class(accel_inst, CreatorType.CORRECTION)
     model_creator = creator_class(
         accel=accel_inst,
@@ -313,24 +362,28 @@ def create_corrected_model(twiss_out: Path | str, corr_files: Sequence[Path], ac
 
 
 def _join_responses(resp, keys, varslist):
-    """ Returns matrix #BPMs * #Parameters x #variables """
+    """Returns matrix #BPMs * #Parameters x #variables"""
     return (
         pd.concat(
             [resp[k] for k in keys],  # dataframes
             axis="index",  # axis to join along
             join="outer",  # =[pd.Index(varslist)]
             # other axes to use (pd Index obj required)
-        ).reindex(columns=varslist).fillna(0.0)
+        )
+        .reindex(columns=varslist)
+        .fillna(0.0)
     )
 
 
 def _join_columns(col, meas, keys):
-    """ Retuns vector: N= #BPMs * #Parameters (BBX, MUX etc.) """
+    """Retuns vector: N= #BPMs * #Parameters (BBX, MUX etc.)"""
     return np.concatenate([meas[key].loc[:, col].to_numpy() for key in keys], axis=0)
 
 
-def _filter_by_strength(delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_strength: float = 0):
-    """ Remove too small correctors """
+def _filter_by_strength(
+    delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_strength: float = 0
+):
+    """Remove too small correctors"""
     delta = delta.loc[delta[DELTA].abs() > min_strength]
     return delta, resp_matrix.loc[:, delta.index], delta.index.to_numpy()
 
@@ -339,54 +392,65 @@ def _filter_by_strength(delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_stre
 
 
 def _get_method_fun(method: str) -> Callable:
-    method_to_function_dict = {"pinv": _pseudo_inverse, "omp": _orthogonal_matching_pursuit}
+    method_to_function_dict = {
+        "pinv": _pseudo_inverse,
+        "omp": _orthogonal_matching_pursuit,
+    }
     return method_to_function_dict[method]
 
 
 def _pseudo_inverse(response_mat: pd.DataFrame, diff_vec, opt: DotDict):
-    """ Calculates the pseudo-inverse of the response via svd. (numpy) """
+    """Calculates the pseudo-inverse of the response via svd. (numpy)"""
     if opt.svd_cut is None:
         raise ValueError("svd_cut setting needed for pseudo inverse method.")
     return np.dot(np.linalg.pinv(response_mat, opt.svd_cut), diff_vec)
 
 
 def _orthogonal_matching_pursuit(response_mat: pd.DataFrame, diff_vec, opt: DotDict):
-    """ Calculated n_correctors via orthogonal matching pursuit"""
+    """Calculated n_correctors via orthogonal matching pursuit"""
     if opt.n_correctors is None:
         raise ValueError("n_correctors setting needed for orthogonal matching pursuit.")
 
-    res = OrthogonalMatchingPursuit(n_nonzero_coefs=opt.n_correctors).fit(response_mat, diff_vec)
+    res = OrthogonalMatchingPursuit(n_nonzero_coefs=opt.n_correctors).fit(
+        response_mat, diff_vec
+    )
     coef = res.coef_
-    LOG.debug(f"Orthogonal Matching Pursuit Results: \n"
-              f"  Chosen variables: {response_mat.columns.to_numpy()[coef.nonzero()]}\n"
-              f"  Score: {res.score(response_mat, diff_vec)}")
+    LOG.debug(
+        f"Orthogonal Matching Pursuit Results: \n"
+        f"  Chosen variables: {response_mat.columns.to_numpy()[coef.nonzero()]}\n"
+        f"  Score: {res.score(response_mat, diff_vec)}"
+    )
     return coef
 
 
 def _calculate_delta(
-        resp_matrix: pd.DataFrame,
-        meas_dict: dict,
-        keys: Sequence[str],
-        vars_list: Sequence[str],
-        method: str,
-        meth_opt
+    resp_matrix: pd.DataFrame,
+    meas_dict: dict,
+    keys: Sequence[str],
+    vars_list: Sequence[str],
+    method: str,
+    meth_opt,
 ):
     """Get the deltas for the variables.
 
     Output is Dataframe with one column 'DELTA' and vars_list index."""
     weight_vector = _join_columns(f"{WEIGHT}", meas_dict, keys)
+    error_vector = _join_columns(f"{ERROR}", meas_dict, keys)
     diff_vector = _join_columns(f"{DIFF}", meas_dict, keys)
 
     resp_weighted = resp_matrix.mul(weight_vector, axis="index")
     diff_weighted = diff_vector * weight_vector
+    err_weighted = (error_vector**2) * weight_vector
 
     delta = _get_method_fun(method)(resp_weighted, diff_weighted, meth_opt)
-    delta = tfs.TfsDataFrame(delta, index=vars_list, columns=[DELTA])
+    err = _get_method_fun(method)(resp_weighted, err_weighted, meth_opt)
+    delta = tfs.TfsDataFrame(
+        {DELTA: delta, ERROR: np.sqrt(np.abs(err))}, index=vars_list
+    )
 
     # check calculations
     update = np.dot(resp_weighted, delta[DELTA])
     _print_rms(meas_dict, diff_weighted, update)
-
     return delta
 
 
@@ -394,7 +458,7 @@ def _calculate_delta(
 
 
 def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
-    """ Prints current RMS status """
+    """Prints current RMS status"""
     f_str = "{:>20s} : {:.5e}"
     LOG.debug("RMS Measure - Model (before correction, w/o weights):")
     for key in meas:
@@ -402,7 +466,15 @@ def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
 
     LOG.info("RMS Measure - Model (before correction, w/ weights):")
     for key in meas:
-        LOG.info(f_str.format(key, rms(meas[key].loc[:, DIFF].to_numpy() * meas[key].loc[:, WEIGHT].to_numpy())))
+        LOG.info(
+            f_str.format(
+                key,
+                rms(
+                    meas[key].loc[:, DIFF].to_numpy()
+                    * meas[key].loc[:, WEIGHT].to_numpy()
+                ),
+            )
+        )
 
     LOG.info(f_str.format("All", rms(diff_w)))
     LOG.debug(f_str.format("R * delta", rms(r_delta_w)))
@@ -414,7 +486,7 @@ def _print_rms(meas: dict, diff_w, r_delta_w) -> None:
 
 
 def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
-    """ Write the current delta-values into a tfs file.
+    """Write the current delta-values into a tfs file.
     The values are written out with opposite sign to what is used above,
     i.e. they will show the correction to be applied in the machine.
 
@@ -424,16 +496,19 @@ def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
                               the corrector names as index.
     """
     a = datetime.datetime.fromtimestamp(time.time())
-    delta_out = -delta.loc[:, [DELTA]]
+    delta_out = delta.copy()
+    delta_out[DELTA] = -delta_out[DELTA]
     delta_out.headers["PATH"] = str(knob_path.parent)
     delta_out.headers["DATE"] = str(a.ctime())
-    delta_out.headers["HINT"] = ("The values in this file are already the correction values,"
-                                 f" i.e. with the same sign as in {knob_path.stem}_correct.madx")
+    delta_out.headers["HINT"] = (
+        "The values in this file are already the correction values,"
+        f" i.e. with the same sign as in {knob_path.stem}_correct.madx"
+    )
     tfs.write(knob_path, delta_out, save_index="NAME")
 
 
 def writeparams(path_to_file: Path, delta: pd.DataFrame, extra: str = "") -> None:
-    """ Write the changeparams-file that can be run by madx to update the model.
+    """Write the changeparams-file that can be run by madx to update the model.
 
     Args:
         path_to_file (Path): Path to the file to be written.
