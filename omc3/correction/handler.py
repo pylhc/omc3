@@ -141,9 +141,11 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
         # ######### Actual optimization ######### #
-        delta += _calculate_delta(
+        new_delta = _calculate_delta(
             resp_matrix, meas_dict, optics_params, vars_list, opt.method, method_options
         )
+        delta[DELTA] += new_delta[DELTA]
+        delta[ERROR] = np.sqrt(new_delta[ERROR] ** 2 + delta[ERROR] ** 2)
 
         # remove unused correctors from vars_list
         delta, resp_matrix, vars_list = _filter_by_strength(
