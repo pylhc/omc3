@@ -74,7 +74,7 @@ class InputFiles(dict):
         """
         # Check if the file has the new AMPLITUDE_UNIT header
         # If it does, no correction is needed
-        if hasattr(df, 'headers') and 'AMPLITUDE_UNIT' in df.headers:
+        if getattr(df, 'headers', {}).get('AMPLITUDE_UNIT') is not None:
             return df
         
         # Old files without the header need the correction (multiplication by 2)
