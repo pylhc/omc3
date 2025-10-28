@@ -417,7 +417,7 @@ def windowed_padded_rfft(
     harpy_input: DotDict,
     bpm_matrix: pd.DataFrame,
     tunes: list,
-    svd: tuple[pd.DataFrame, np.ndarray] = None,
+    svd: tuple[pd.DataFrame, np.ndarray] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Calculates the spectra using specified windowing function and zero-padding.
@@ -435,11 +435,11 @@ def windowed_padded_rfft(
     # Define lengths for padding and output
     padded_len = np.power(2, harpy_input.turn_bits)
     output_len = np.power(2, harpy_input.output_bits)
-    sub_bins = int(padded_len / output_len)
+    lines_per_bin = int(padded_len / output_len)  # number of frequency lines per output bin
 
-    # Get frequency mask
+    # Get frequency mask (selecting around resonances)
     mask = get_freq_mask(harpy_input, tunes, 2 / bpm_matrix.shape[1])
-    n_bins = int(np.sum(mask) / sub_bins)
+    n_bins = int(np.sum(mask) / lines_per_bin)
     n_bpms = len(bpm_matrix.index)
 
     if svd is None:
@@ -454,12 +454,12 @@ def windowed_padded_rfft(
         s_vt_freq = np.fft.rfft(windowed_sv, n=padded_len * 2)
         coefs = np.dot(u, s_vt_freq[:, mask])
 
-    # Reshape coefficients into bins and sub-bins, then find the index of the maximum amplitude in each sub-bin
-    # This identifies the best frequency within each bin for noise reduction
-    bin_start_indices = np.indices((n_bpms, n_bins))[1] * sub_bins
-    coefs_reshaped = np.reshape(coefs, (n_bpms, n_bins, sub_bins))
-    max_sub_bin_indices = np.argmax(np.abs(coefs_reshaped), axis=2)
-    selected_indices = bin_start_indices + max_sub_bin_indices
+    # Reshape coefficients into bins and sub-bins,
+    # then find the index of the maximum amplitude in each sub-bin.
+    bin_start_indices = np.arange(n_bins) * lines_per_bin
+    coefs_reshaped = np.reshape(coefs, (n_bpms, n_bins, lines_per_bin))
+    max_bin_indices = np.argmax(np.abs(coefs_reshaped), axis=2)
+    selected_indices = bin_start_indices + max_bin_indices  # shape (n_bpms, n_bins)
 
     # Extract the selected coefficients and scale by 2 (since rfft gives half-spectrum)
     # This gives the complex amplitudes at the selected frequencies
