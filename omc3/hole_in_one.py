@@ -450,7 +450,12 @@ def _add_suffix_and_iter_bunches(
         bunch_id_str = f"_bunchID{bunch_id}"
         file = dir_name / f"{file_name}{bunch_id_str}{suffix}"
         yield (
-            tbt.TbtData([tbt_data.matrices[index]], tbt_data.date, [bunch_id], tbt_data.nturns),
+            tbt.TbtData(
+                matrices=[tbt_data.matrices[index]],
+                nturns=tbt_data.nturns,
+                bunch_ids=[bunch_id],
+                meta=tbt_data.meta,
+            ),
             file,
         )
 

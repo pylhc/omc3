@@ -135,7 +135,7 @@ def run_per_bunch(
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
         lins[plane] = lins[plane].sort_values(COL_S, axis=0, ascending=True)
         lins[plane] = tfs.TfsDataFrame(
-            lins[plane], headers=_compute_headers(lins[plane], tbt_data.date)
+            lins[plane], headers=_compute_headers(lins[plane], tbt_data.meta.get("date"))
         )
         if "lin" in harpy_input.to_write:
             _write_lin_tfs(output_file_path, plane, lins[plane])
