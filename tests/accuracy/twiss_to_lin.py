@@ -165,10 +165,6 @@ def generate_lin_files(model, tune, nattune, motion="_d", dpp=0.0, beam_directio
             )
         ) + COUPLING * noise_freq_domain * np.random.randn(nbpms)
 
-        # backwards compatibility with drive  TODO remove
-        lin[f"{COL_AMP}{plane}"] = lin.loc[:, f"{COL_AMP}{plane}"].to_numpy() / 2
-        lin[f"{COL_NATAMP}{plane}"] = lin.loc[:, f"{COL_NATAMP}{plane}"].to_numpy() / 2
-
         lins[plane] = tfs.TfsDataFrame(lin, headers=_get_header(tune, nattune, plane)).set_index(
             COL_NAME, drop=False
         )
@@ -192,4 +188,5 @@ def _get_header(tunes, nattunes, plane):
         f"{NAT_TUNE}{PLANE_TO_NUM[plane]}": nattunes[plane],
         f"{NAT_TUNE}{PLANE_TO_NUM[plane]}RMS": 1e-6,
         COL_TIME: datetime.now(timezone.utc).strftime(formats.TIME),
+        "AMPLITUDE_UNIT": "m",
     }

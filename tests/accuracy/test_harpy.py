@@ -187,11 +187,10 @@ def test_freekick_harpy(_test_file: Path, _model_file: Path):
             < LIMITS["F1"]
         )
         # Main and secondary amplitudes
-        # TODO remove factor 2 - only for backwards compatibility with Drive
         assert (
             _rms(
                 _rel_diff(
-                    linfiles[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
+                    linfiles[plane].loc[:, f"AMP{plane}"].to_numpy(),
                     model_df.loc[:, f"AMP{plane}"].to_numpy(),
                 )
             )
@@ -266,11 +265,10 @@ def _assert_spectra(linfiles: dict[str, tfs.TfsDataFrame], model_df: tfs.TfsData
             < LIMITS["F2"]
         )
         # main and secondary amplitudes
-        # TODO remove factor 2 - only for backwards compatibility with Drive
         assert (
             _rms(
                 _rel_diff(
-                    linfiles[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
+                    linfiles[plane].loc[:, f"AMP{plane}"].to_numpy(),
                     model_df.loc[:, f"AMP{plane}"].to_numpy(),
                 )
             )
