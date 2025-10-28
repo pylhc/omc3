@@ -285,7 +285,7 @@ def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -
     TODO    follows non-transpararent convention
     TODO    the consequent analysis has to be changed if removed
     """
-    cols = [col for col in df.columns.to_numpy() if col.startswith(COL_AMP)]
+    cols = [col for col in df.columns if col.startswith(COL_AMP)]
     cols.remove(f"{COL_AMP}{plane}")
     df[cols] = df[cols].div(df[f"{COL_AMP}{plane}"], axis="index")
     amps = df[f"{COL_AMP}{plane}"].to_numpy()
