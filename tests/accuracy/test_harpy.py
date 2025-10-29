@@ -233,8 +233,7 @@ def test_harpy_3d(_test_file: Path, _model_file: Path):
         _rms(
             _rel_diff(
                 linfiles["X"].loc[:, "AMPZ"].to_numpy()
-                * linfiles["X"].loc[:, "AMPX"].to_numpy()
-                * 2,
+                * linfiles["X"].loc[:, "AMPX"].to_numpy(),
                 AMPZ * BASEAMP,
             )
         )
@@ -278,8 +277,7 @@ def _assert_spectra(linfiles: dict[str, tfs.TfsDataFrame], model_df: tfs.TfsData
             _rms(
                 _rel_diff(
                     linfiles[plane].loc[:, f"AMP{_couple(plane)}"].to_numpy()
-                    * linfiles[plane].loc[:, f"AMP{plane}"].to_numpy()
-                    * 2,
+                    * linfiles[plane].loc[:, f"AMP{plane}"].to_numpy(),
                     COUPLING * model_df.loc[:, f"AMP{_other(plane)}"].to_numpy(),
                 )
             )
