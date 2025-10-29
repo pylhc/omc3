@@ -13,6 +13,7 @@ In earlier implementations there was a split between all kinds of measures,
 i.e. beta, phase etc. In this implementation most of it is handled by
 the `_get_filtered_generic` function.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -52,7 +53,10 @@ LOG = logging_tools.get_logger(__name__)
 
 
 def filter_measurement(
-    keys: Sequence[str], meas: dict[str, pd.DataFrame], model: pd.DataFrame, opt: DotDict
+    keys: Sequence[str],
+    meas: dict[str, pd.DataFrame],
+    model: pd.DataFrame,
+    opt: DotDict,
 ) -> dict:
     """Filters measurements in `keys` based on the dict-entries (keys as in `keys`)
     in `opt.errorcut`, `opt.modelcut` and `opt.weights` and unifies the
@@ -81,7 +85,9 @@ def _get_measurement_filters() -> defaultdict:
     )
 
 
-def _get_filtered_generic(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> tfs.TfsDataFrame:
+def _get_filtered_generic(
+    col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict
+) -> tfs.TfsDataFrame:
     """
     Filters the provided column *col* of the measurement dataframe *meas*, based on the model values
     (from the *model* dataframe) and the filtering options given at the command line (for instance,
@@ -140,7 +146,9 @@ def _get_tunes(key: str, meas: pd.DataFrame, model, opt: DotDict):
     return meas
 
 
-def _get_coupling(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict) -> tfs.TfsDataFrame:
+def _get_coupling(
+    col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDict
+) -> tfs.TfsDataFrame:
     """
     Applies filters to the coupling dataframe *meas*. This is a bit hacky. Takes the measurement and
     model dataframes for one of the coupling RDTs (*meas* comes from **f1001.tfs** or **f1010.tfs**)
@@ -159,7 +167,9 @@ def _get_coupling(col: str, meas: pd.DataFrame, model: pd.DataFrame, opt: DotDic
         The filtered dataframe as a `~tfs.TfsDataFrame`.
     """
     # rename measurement column to key
-    column_map = {c[0]: c for c in [REAL, IMAG, AMPLITUDE, PHASE]}  # only REAL and IMAG implemented in responses so far
+    column_map = {
+        c[0]: c for c in [REAL, IMAG, AMPLITUDE, PHASE]
+    }  # only REAL and IMAG implemented in responses so far
     meas_col = column_map[col[-1]]
     meas.columns = meas.columns.str.replace(meas_col, col)
     return _get_filtered_generic(col, meas, model, opt)
