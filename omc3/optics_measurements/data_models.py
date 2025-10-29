@@ -68,7 +68,7 @@ class InputFiles(dict):
         """
         Multiplies unscaled amplitudes by 2 for old files without the AMPLITUDE_UNIT header.
         This is for backwards compatibility with Drive.
-        
+
         New harpy files (with AMPLITUDE_UNIT header set to 'm') don't need this correction
         as they already output amplitudes in the correct unit.
         """
@@ -76,7 +76,7 @@ class InputFiles(dict):
         # If it does, no correction is needed
         if getattr(df, 'headers', {}).get('AMPLITUDE_UNIT') is not None:
             return df
-        
+
         # Old files without the header need the correction (multiplication by 2)
         df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].to_numpy() * 2
         if f"NATAMP{plane}" in df.columns:
