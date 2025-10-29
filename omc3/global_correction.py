@@ -164,6 +164,7 @@ Possible problems and notes (lmalina, 2020):
  * Missing a part that treats the output from LSA
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -190,12 +191,22 @@ if TYPE_CHECKING:
 
 LOG = logging_tools.get_logger(__name__)
 
-OPTICS_PARAMS_CHOICES = (f"{PHASE}X", f"{PHASE}Y",
-                         f"{BETA}X", f"{BETA}Y",
-                         f"{NORM_DISPERSION}X",
-                         f"{TUNE}",
-                         f"{DISPERSION}X", f"{DISPERSION}Y",
-                         f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I")
+OPTICS_PARAMS_CHOICES = (
+    f"{PHASE}X",
+    f"{PHASE}Y",
+    f"{BETA}X",
+    f"{BETA}Y",
+    f"{NORM_DISPERSION}X",
+    f"{TUNE}",
+    f"{DISPERSION}X",
+    f"{DISPERSION}Y",
+    f"{F1001}R",
+    f"{F1001}I",
+    f"{F1010}R",
+    f"{F1010}I",
+    "X",
+    "Y",
+)
 
 CORRECTION_DEFAULTS = {
     "output_filename": "changeparameters_iter",
@@ -211,87 +222,126 @@ CORRECTION_DEFAULTS = {
 
 def correction_params():
     params = EntryPointParameters()
-    params.add_parameter(name="meas_dir",
-                         required=True,
-                         type=PathOrStr,
-                         help="Path to the directory containing the measurement files.",)
-    params.add_parameter(name="output_dir",
-                         required=True,
-                         type=PathOrStr,
-                         help="Path to the directory where to write the output files.", )
-    params.add_parameter(name="fullresponse_path",
-                         type=PathOrStr,
-                         help="Path to the fullresponse binary file.If not given, "
-                              "calculates the response analytically.",)
-    params.add_parameter(name="optics_params",
-                         type=str,
-                         nargs="+",
-                         default=list(CORRECTION_DEFAULTS["optics_params"]),
-                         choices=OPTICS_PARAMS_CHOICES,
-                         help=f"List of parameters to correct upon (e.g. {BETA}X {BETA}Y)", )
-    params.add_parameter(name="output_filename",
-                         default=CORRECTION_DEFAULTS["output_filename"],
-                         help="Identifier of the output files.", )
-    params.add_parameter(name="min_corrector_strength",
-                         type=float,
-                         default=0.,
-                         help="Minimum (absolute) strength of correctors.",)
-    params.add_parameter(name="modelcut",
-                         nargs="+",
-                         type=float,
-                         help="Reject BPMs whose deviation to the model is higher "
-                              "than the corresponding input. Input in order of optics_params.",)
-    params.add_parameter(name="errorcut",
-                         nargs="+",
-                         type=float,
-                         help="Reject BPMs whose error bar is higher than the corresponding "
-                              "input. Input in order of optics_params.",)
-    params.add_parameter(name="weights",
-                         nargs="+", type=float,
-                         help="Weight to apply to each measured quantity. "
-                              "Input in order of optics_params.",)
-    params.add_parameter(name="variable_categories",
-                         nargs="+",
-                         default=CORRECTION_DEFAULTS["variable_categories"],
-                         help="List of names of the variables classes to use.", )
-    params.add_parameter(name="beta_filename",
-                         default=CORRECTION_DEFAULTS["beta_filename"],
-                         help="Prefix of the beta file to use. E.g.: beta_phase_", )
-    params.add_parameter(name="method",
-                         type=str,
-                         choices=("pinv", "omp"),
-                         default=CORRECTION_DEFAULTS["method"],
-                         help="Optimization method to use.", )
-    params.add_parameter(name="svd_cut",
-                         type=float,
-                         default=CORRECTION_DEFAULTS["svd_cut"],
-                         help="Cutoff for small singular values of the pseudo inverse. "
-                              "(Method: 'pinv')Singular values smaller than "
-                              "rcond*largest_singular_value are set to zero", )
-    params.add_parameter(name="n_correctors",
-                         type=int,
-                         help="Maximum number of correctors to use. (Method: 'omp')")
-    params.add_parameter(name="iterations",
-                         type=int,
-                         default=CORRECTION_DEFAULTS["iterations"],
-                         help="Maximum number of correction iterations to perform. "
-                              "A value of `1` means the correction is calculated once."
-                              "In this case, the accelerator instance does not need to be able"
-                              "to produce a new model.", )
-    params.add_parameter(name="use_errorbars",
-                         action="store_true",
-                         help="Take into account the measured errorbars as weights.", )
-    params.add_parameter(name="update_response",
-                         action="store_true",
-                         help="Update the (analytical) response per iteration.", )
-    params.add_parameter(name="arc_by_arc_phase",
-                         action="store_true",
-                         help="Set to perform arc-by-arc total phase correction.", )
-    params.add_parameter(name="include_ips_in_arc_by_arc",
-                         type=str,
-                         choices=("left", "right", "both"),
-                         default=CORRECTION_DEFAULTS["include_ips_in_arc_by_arc"],
-                         help="If not specified only takes pure arcs. Otherwise it includes IPs left or right of arcs.", )
+    params.add_parameter(
+        name="meas_dir",
+        required=True,
+        type=PathOrStr,
+        help="Path to the directory containing the measurement files.",
+    )
+    params.add_parameter(
+        name="output_dir",
+        required=True,
+        type=PathOrStr,
+        help="Path to the directory where to write the output files.",
+    )
+    params.add_parameter(
+        name="fullresponse_path",
+        type=PathOrStr,
+        help="Path to the fullresponse binary file.If not given, "
+        "calculates the response analytically.",
+    )
+    params.add_parameter(
+        name="optics_params",
+        type=str,
+        nargs="+",
+        default=list(CORRECTION_DEFAULTS["optics_params"]),
+        choices=OPTICS_PARAMS_CHOICES,
+        help=f"List of parameters to correct upon (e.g. {BETA}X {BETA}Y)",
+    )
+    params.add_parameter(
+        name="output_filename",
+        default=CORRECTION_DEFAULTS["output_filename"],
+        help="Identifier of the output files.",
+    )
+    params.add_parameter(
+        name="min_corrector_strength",
+        type=float,
+        default=0.0,
+        help="Minimum (absolute) strength of correctors.",
+    )
+    params.add_parameter(
+        name="modelcut",
+        nargs="+",
+        type=float,
+        help="Reject BPMs whose deviation to the model is higher "
+        "than the corresponding input. Input in order of optics_params.",
+    )
+    params.add_parameter(
+        name="errorcut",
+        nargs="+",
+        type=float,
+        help="Reject BPMs whose error bar is higher than the corresponding "
+        "input. Input in order of optics_params.",
+    )
+    params.add_parameter(
+        name="weights",
+        nargs="+",
+        type=float,
+        help="Weight to apply to each measured quantity. "
+        "Input in order of optics_params.",
+    )
+    params.add_parameter(
+        name="variable_categories",
+        nargs="+",
+        default=CORRECTION_DEFAULTS["variable_categories"],
+        help="List of names of the variables classes to use.",
+    )
+    params.add_parameter(
+        name="beta_filename",
+        default=CORRECTION_DEFAULTS["beta_filename"],
+        help="Prefix of the beta file to use. E.g.: beta_phase_",
+    )
+    params.add_parameter(
+        name="method",
+        type=str,
+        choices=("pinv", "omp"),
+        default=CORRECTION_DEFAULTS["method"],
+        help="Optimization method to use.",
+    )
+    params.add_parameter(
+        name="svd_cut",
+        type=float,
+        default=CORRECTION_DEFAULTS["svd_cut"],
+        help="Cutoff for small singular values of the pseudo inverse. "
+        "(Method: 'pinv')Singular values smaller than "
+        "rcond*largest_singular_value are set to zero",
+    )
+    params.add_parameter(
+        name="n_correctors",
+        type=int,
+        help="Maximum number of correctors to use. (Method: 'omp')",
+    )
+    params.add_parameter(
+        name="iterations",
+        type=int,
+        default=CORRECTION_DEFAULTS["iterations"],
+        help="Maximum number of correction iterations to perform. "
+        "A value of `1` means the correction is calculated once."
+        "In this case, the accelerator instance does not need to be able"
+        "to produce a new model.",
+    )
+    params.add_parameter(
+        name="use_errorbars",
+        action="store_true",
+        help="Take into account the measured errorbars as weights.",
+    )
+    params.add_parameter(
+        name="update_response",
+        action="store_true",
+        help="Update the (analytical) response per iteration.",
+    )
+    params.add_parameter(
+        name="arc_by_arc_phase",
+        action="store_true",
+        help="Set to perform arc-by-arc total phase correction.",
+    )
+    params.add_parameter(
+        name="include_ips_in_arc_by_arc",
+        type=str,
+        choices=("left", "right", "both"),
+        default=CORRECTION_DEFAULTS["include_ips_in_arc_by_arc"],
+        help="If not specified only takes pure arcs. Otherwise it includes IPs left or right of arcs.",
+    )
     return params
 
 
@@ -309,7 +359,7 @@ def global_correction_entrypoint(opt: DotDict, accel_opt) -> None:
 
 
 def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
-    """ Check on options and put in missing values """
+    """Check on options and put in missing values"""
     def_dict = _get_default_values()
 
     # Check cuts and fill defaults
@@ -317,7 +367,9 @@ def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
         if opt[key] is None:
             opt[key] = [def_dict[key][p] for p in opt.optics_params]
         elif len(opt[key]) != len(opt.optics_params):
-            raise AttributeError(f"Length of {key} is not the same as of the optical parameters!")
+            raise AttributeError(
+                f"Length of {key} is not the same as of the optical parameters!"
+            )
         opt[key] = dict(zip(opt.optics_params, opt[key]))
 
     # Convert Strings to Paths
@@ -330,7 +382,9 @@ def _check_opt_add_dicts(opt: dict) -> dict:  # acts inplace...
 
 def _add_hardcoded_paths(opt: DotDict) -> DotDict:  # acts inplace...
     opt.change_params_path = opt.output_dir / f"{opt.output_filename}.madx"
-    opt.change_params_correct_path = opt.output_dir / f"{opt.output_filename}_correct.madx"
+    opt.change_params_correct_path = (
+        opt.output_dir / f"{opt.output_filename}_correct.madx"
+    )
     opt.knob_path = opt.output_dir / f"{opt.output_filename}.tfs"
     return opt
 
@@ -351,6 +405,8 @@ def _get_default_values() -> dict[str, dict[str, float]]:
             f"{F1001}I": 0.2,
             f"{F1010}R": 0.2,
             f"{F1010}I": 0.2,
+            "X": None,
+            "Y": None,
         },
         "errorcut": {
             f"{PHASE}X": 0.035,
@@ -365,6 +421,8 @@ def _get_default_values() -> dict[str, dict[str, float]]:
             f"{F1001}I": 0.02,
             f"{F1010}R": 0.02,
             f"{F1010}I": 0.02,
+            "X": 1e-4,
+            "Y": 1e-4,
         },
         "weights": {
             f"{PHASE}X": 1,
@@ -379,6 +437,8 @@ def _get_default_values() -> dict[str, dict[str, float]]:
             f"{F1001}I": 0,
             f"{F1010}R": 0,
             f"{F1010}I": 0,
+            "X": 1,
+            "Y": 1,
         },
     }
 

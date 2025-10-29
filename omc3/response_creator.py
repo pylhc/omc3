@@ -57,6 +57,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -77,6 +78,7 @@ if TYPE_CHECKING:
 
 
 LOG = logging_tools.get_logger(__name__)
+
 
 class ResponseCreatorType(StrEnum):
     TWISS: str = "twiss"
@@ -134,7 +136,12 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFram
     """
     LOG.info("Creating response.")
     if opt.outfile_path is not None:
-        save_config(Path(opt.outfile_path).parent, opt=opt, unknown_opt=other_opt, script=__file__)
+        save_config(
+            Path(opt.outfile_path).parent,
+            opt=opt,
+            unknown_opt=other_opt,
+            script=__file__,
+        )
 
     accel_inst = manager.get_accelerator(other_opt)
 
@@ -142,11 +149,11 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFram
         fullresponse = response_madx.create_fullresponse(
             accel_inst, opt.variable_categories, delta_k=opt.delta_k
         )
-
     elif opt.creator.lower() == ResponseCreatorType.TWISS:
         fullresponse = response_twiss.create_response(
             accel_inst, opt.variable_categories, opt.optics_params
         )
+    print(fullresponse)
 
     if opt.outfile_path is not None:
         write_fullresponse(opt.outfile_path, fullresponse)
