@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.accelerators.accelerator &mdash; omc3 0.24.5 documentation</title>
+  <title>omc3.model.accelerators.accelerator &mdash; omc3 0.24.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=f101d0f6"></script>
+      <script src="../../../../_static/documentation_options.js?v=c6f95a9c"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -226,6 +226,7 @@
 <span class="sd">This module provides high-level classes to define most functionality of ``model.accelerators``.</span>
 <span class="sd">It contains entrypoint the parent `Accelerator` class as well as other support classes.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
@@ -286,6 +287,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class to serve as an interface to implement the rest of the accelerators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">NAME</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">LOCAL_REPO_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)</span>
@@ -339,7 +341,9 @@
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the optics file to use (modifiers file).&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;xing&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If True, x-ing angles will be applied to model&quot;</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;xing&quot;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If True, x-ing angles will be applied to model&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span>
 
@@ -462,7 +466,7 @@
 <div class="viewcode-block" id="Accelerator.find_modifier">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.Accelerator.find_modifier">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_modifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modifier</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Try to find a modifier file, which might be given only by its name.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Try to find a modifier file, which might be given only by its name.</span>
 <span class="sd">        By default this is looking for full-path, model-dir and in the acc-models-path,</span>
 <span class="sd">        but should probably be overwritten by the accelerator sub-classes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -497,7 +501,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Natural tunes not set (missing `--nat_tunes` flag?)&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)&quot;</span><span class="p">)</span></div>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)&quot;</span>
+                <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Accelerator.get_exciter_bpm">
@@ -529,7 +535,9 @@
     <span class="nd">@model_driven</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_driven</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Driven model cannot be set for accelerator with free excitation mode.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="s2">&quot;Driven model cannot be set for accelerator with free excitation mode.&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_driven</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="c1"># Class methods ###########################################</span>
@@ -631,7 +639,7 @@
 <div class="viewcode-block" id="find_called_files_with_tag">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.accelerator.find_called_files_with_tag">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_called_files_with_tag</span><span class="p">(</span><span class="n">madx_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse lines that call a file and are tagged with the given tag and return</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse lines that call a file and are tagged with the given tag and return</span>
 <span class="sd">    a list of paths to these files.</span>
 
 <span class="sd">    This is mainly used to find the modifier tag in lines and return called file in these lines.</span>
@@ -647,7 +655,7 @@
     <span class="n">job_madx</span> <span class="o">=</span> <span class="n">madx_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
 
     <span class="n">called_files</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span>
-        <span class="sa">fr</span><span class="s2">&quot;\s*call,\s*file\s*=\s*[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?([^;\&#39;</span><span class="se">\&quot;</span><span class="s2">]+)[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?\s*;\s*</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">rf</span><span class="s2">&quot;\s*call,\s*file\s*=\s*[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?([^;\&#39;</span><span class="se">\&quot;</span><span class="s2">]+)[</span><span class="se">\&quot;</span><span class="s2">\&#39;]?\s*;\s*</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">job_madx</span><span class="p">,</span>
         <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
     <span class="p">)</span>

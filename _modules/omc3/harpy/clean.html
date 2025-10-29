@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.clean &mdash; omc3 0.24.5 documentation</title>
+  <title>omc3.harpy.clean &mdash; omc3 0.24.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=f101d0f6"></script>
+      <script src="../../../_static/documentation_options.js?v=c6f95a9c"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -225,7 +225,10 @@
 
 <span class="sd">This module contains the cleaning functionality of ``harpy``.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -233,13 +236,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">NTS_LIMIT</span> <span class="o">=</span> <span class="mf">8.</span>  <span class="c1"># Noise to signal limit</span>
+<span class="n">NTS_LIMIT</span> <span class="o">=</span> <span class="mf">8.0</span>  <span class="c1"># Noise to signal limit</span>
 
 
 <div class="viewcode-block" id="clean">
 <a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.clean.clean">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span>
+    <span class="n">harpy_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleans BPM TbT matrix: removes BPMs not present in the model and based on specified cuts.</span>
 <span class="sd">    Also cleans the noise using singular value decomposition.</span>
@@ -257,16 +265,21 @@
         <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Check BPMs names! None of the BPMs were found in the model!&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">clean</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bpms_not_in_model</span><span class="p">,</span> <span class="kc">None</span>
+
     <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time for filtering: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
         <span class="n">bpm_data</span><span class="p">,</span> <span class="n">bad_bpms_clean</span> <span class="o">=</span> <span class="n">_cut_cleaning</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
     <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time for SVD clean: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
         <span class="n">bpm_data</span><span class="p">,</span> <span class="n">bpm_res</span><span class="p">,</span> <span class="n">bad_bpms_svd</span><span class="p">,</span> <span class="n">usv</span> <span class="o">=</span> <span class="n">_svd_clean</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">)</span>
         <span class="n">all_bad_bpms</span> <span class="o">=</span> <span class="n">bpms_not_in_model</span> <span class="o">+</span> <span class="n">bad_bpms_clean</span> <span class="o">+</span> <span class="n">bad_bpms_svd</span>
+
     <span class="k">return</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">usv</span><span class="p">,</span> <span class="n">all_bad_bpms</span><span class="p">,</span> <span class="n">bpm_res</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_only_model_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_only_model_bpms</span><span class="p">(</span>
+    <span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
     <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="p">[]</span>
     <span class="n">bpm_data_in_model</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
@@ -274,7 +287,9 @@
     <span class="k">return</span> <span class="n">bpm_data_in_model</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s2"> not found in model&quot;</span> <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">not_in_model</span><span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_cut_cleaning</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_cut_cleaning</span><span class="p">(</span>
+    <span class="n">harpy_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of BPMs in the input </span><span class="si">{</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">known_bad_bpms</span> <span class="o">=</span> <span class="n">_detect_known_bad_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">bad_bpms</span><span class="p">)</span>
     <span class="n">bpm_flatness</span> <span class="o">=</span> <span class="n">_detect_flat_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">peak_to_peak</span><span class="p">)</span>
@@ -300,13 +315,16 @@
     <span class="k">return</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">bad_bpms_with_reasons</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_svd_clean</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_svd_clean</span><span class="p">(</span>
+    <span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">:</span> <span class="n">DotDict</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
     <span class="n">bpm_data_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">u_mat</span><span class="p">,</span> <span class="n">sv_mat</span><span class="p">,</span> <span class="n">u_mask</span> <span class="o">=</span> <span class="n">svd_decomposition</span><span class="p">(</span><span class="n">bpm_data</span> <span class="o">-</span> <span class="n">bpm_data_mean</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span>
-                                              <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">,</span>
-                                              <span class="n">dominance_limit</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">svd_dominance_limit</span><span class="p">,</span>
-                                              <span class="n">num_iter</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">num_svd_iterations</span><span class="p">)</span>
-
+    <span class="n">u_mat</span><span class="p">,</span> <span class="n">sv_mat</span><span class="p">,</span> <span class="n">u_mask</span> <span class="o">=</span> <span class="n">svd_decomposition</span><span class="p">(</span>
+        <span class="n">bpm_data</span> <span class="o">-</span> <span class="n">bpm_data_mean</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">,</span>
+        <span class="n">dominance_limit</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">svd_dominance_limit</span><span class="p">,</span>
+        <span class="n">num_iter</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">num_svd_iterations</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">clean_u</span><span class="p">,</span> <span class="n">dominant_bpms</span> <span class="o">=</span> <span class="n">_clean_dominant_bpms</span><span class="p">(</span><span class="n">u_mat</span><span class="p">,</span> <span class="n">u_mask</span><span class="p">,</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">svd_dominance_limit</span><span class="p">)</span>
     <span class="n">clean_data</span> <span class="o">=</span> <span class="n">clean_u</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sv_mat</span><span class="p">)</span> <span class="o">+</span> <span class="n">bpm_data_mean</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">u_mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="kc">None</span><span class="p">]</span>
     <span class="n">bpm_res</span> <span class="o">=</span> <span class="p">(</span><span class="n">clean_data</span> <span class="o">-</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">clean_u</span><span class="o">.</span><span class="n">index</span><span class="p">])</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -316,27 +334,36 @@
     <span class="n">average_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">clean_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;np.mean(np.std(A, axis=1): </span><span class="si">{</span><span class="n">average_signal</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bpm_res</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">NTS_LIMIT</span> <span class="o">*</span> <span class="n">average_signal</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The data is too noisy. The most probable explanation &quot;</span>
-                         <span class="s2">&quot;is that there was no excitation or it was very low.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">clean_data</span><span class="p">,</span> <span class="n">bpm_res</span><span class="p">,</span> <span class="n">dominant_bpms</span><span class="p">,</span> <span class="p">(</span><span class="n">clean_u</span><span class="p">,</span> <span class="n">sv_mat</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sv_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The data is too noisy. The most probable explanation &quot;</span>
+            <span class="s2">&quot;is that there was no excitation or it was very low.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">clean_data</span><span class="p">,</span>
+        <span class="n">bpm_res</span><span class="p">,</span>
+        <span class="n">dominant_bpms</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">clean_u</span><span class="p">,</span> <span class="n">sv_mat</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sv_mat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]),</span>
+    <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_detect_known_bad_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">list_of_bad_bpms</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_known_bad_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">list_of_bad_bpms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Searches for known bad BPMs.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">list_of_bad_bpms</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_detect_flat_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">min_peak_to_peak</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_flat_bpms</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">min_peak_to_peak</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Detects BPMs with the same values for all turns.&quot;&quot;&quot;</span>
-    <span class="n">cond</span> <span class="o">=</span> <span class="p">((</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">min_peak_to_peak</span><span class="p">)</span>
+    <span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">min_peak_to_peak</span>
     <span class="n">bpm_flatness</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">cond</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">if</span> <span class="n">bpm_flatness</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flat BPMS detected (diff min/max &lt;= </span><span class="si">{</span><span class="n">min_peak_to_peak</span><span class="si">}</span><span class="s2">. &quot;</span>
-                     <span class="sa">f</span><span class="s2">&quot;BPMs removed: </span><span class="si">{</span><span class="n">bpm_flatness</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Flat BPMS detected (diff min/max &lt;= </span><span class="si">{</span><span class="n">min_peak_to_peak</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;BPMs removed: </span><span class="si">{</span><span class="n">bpm_flatness</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">bpm_flatness</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_detect_bpms_with_spikes</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">max_peak_cut</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_bpms_with_spikes</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">max_peak_cut</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Detects BPMs with spikes &gt; `max_peak_cut`.&quot;&quot;&quot;</span>
     <span class="n">too_high</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_peak_cut</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
     <span class="n">too_low</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">max_peak_cut</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
@@ -353,10 +380,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Detects BPMs with NaN values.&quot;&quot;&quot;</span>
     <span class="n">nan_bpms</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">if</span> <span class="n">nan_bpms</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;NaN BPMs detected. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nan_bpms</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> BPMs removed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nan_bpms</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NaN BPMs detected. </span><span class="si">{</span><span class="n">nan_bpms</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> BPMs removed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nan_bpms</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">nan_bpms</span>
 
 
@@ -368,8 +392,7 @@
     <span class="n">exact_zeros</span> <span class="o">=</span> <span class="n">bpm_data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">if</span> <span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Exact zeros detected. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> BPMs removed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exact_zeros</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Exact zeros detected. </span><span class="si">{</span><span class="n">exact_zeros</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> BPMs removed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exact_zeros</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">exact_zeros</span>
 
@@ -407,14 +430,18 @@
 
     <span class="c1"># The good, the bad and the ugly BPMs ---</span>
     <span class="n">n_bad_bpms</span> <span class="o">=</span> <span class="n">n_total_bpms</span> <span class="o">-</span> <span class="n">n_good_bpms</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(Statistics for file reading) Total BPMs: </span><span class="si">{</span><span class="n">n_total_bpms</span><span class="si">}</span><span class="s2">, &quot;</span>
-                 <span class="sa">f</span><span class="s2">&quot;Good BPMs: </span><span class="si">{</span><span class="n">n_good_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_good_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%), &quot;</span>
-                 <span class="sa">f</span><span class="s2">&quot;Bad BPMs: </span><span class="si">{</span><span class="n">n_bad_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_bad_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;(Statistics for file reading) Total BPMs: </span><span class="si">{</span><span class="n">n_total_bpms</span><span class="si">}</span><span class="s2">, &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Good BPMs: </span><span class="si">{</span><span class="n">n_good_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_good_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%), &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Bad BPMs: </span><span class="si">{</span><span class="n">n_bad_bpms</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_bad_bpms</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n_total_bpms</span><span class="p">)</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">%)&quot;</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_good_bpms</span> <span class="o">/</span> <span class="n">n_total_bpms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">bad_bpms_message</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;More than half of BPMs are bad. &quot;</span>
-                         <span class="s2">&quot;This could be because a bunch not present in the machine has been &quot;</span>
-                         <span class="s2">&quot;selected or because of a problem with the phasing of the BPMs.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;More than half of BPMs are bad. &quot;</span>
+            <span class="s2">&quot;This could be because a bunch not present in the machine has been &quot;</span>
+            <span class="s2">&quot;selected or because of a problem with the phasing of the BPMs.&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">bad_bpms_message</span><span class="p">)</span>
 
@@ -426,13 +453,13 @@
     <span class="k">return</span> <span class="n">new_index</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_fix_polarity</span><span class="p">(</span><span class="n">wrong_polarity_names</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_fix_polarity</span><span class="p">(</span><span class="n">wrong_polarity_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixes wrong polarity.&quot;&quot;&quot;</span>
     <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">wrong_polarity_names</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">bpm_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">wrong_polarity_names</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">bpm_data</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_resync_bpms</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_resync_bpms</span><span class="p">(</span><span class="n">harpy_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resynchronizes BPMs between the injection point and start of the lattice.&quot;&quot;&quot;</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Will resynchronize BPMs&quot;</span><span class="p">)</span>
     <span class="n">bpm_pos</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">first_bpm</span><span class="p">)</span>
@@ -446,7 +473,12 @@
 
 <div class="viewcode-block" id="svd_decomposition">
 <a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.clean.svd_decomposition">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">svd_decomposition</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">num_singular_values</span><span class="p">,</span> <span class="n">dominance_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">svd_decomposition</span><span class="p">(</span>
+    <span class="n">matrix</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">num_singular_values</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">dominance_limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes reduced (K largest values) singular value decomposition of a matrix.</span>
 <span class="sd">    Requiring K singular values from MxN matrix results in matrices sized:</span>
@@ -464,22 +496,28 @@
 <span class="sd">        and the U matrix mask for cleaned elements.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">vt_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">u_mat_mask</span> <span class="o">=</span> <span class="n">_remove_dominant_elements</span><span class="p">(</span><span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">dominance_limit</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="n">num_iter</span><span class="p">)</span>
+    <span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">u_mat_mask</span> <span class="o">=</span> <span class="n">_remove_dominant_elements</span><span class="p">(</span>
+        <span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">dominance_limit</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="n">num_iter</span>
+    <span class="p">)</span>
 
-    <span class="n">available</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s_mat</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">)</span>
+    <span class="n">available</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s_mat</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_singular_values</span> <span class="o">&gt;</span> <span class="n">available</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested more singular values than available(=</span><span class="si">{</span><span class="n">available</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_singular_values</span><span class="p">,</span> <span class="n">available</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of singular values to keep: </span><span class="si">{</span><span class="n">keep</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">s_mat</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="n">keep</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">u_mat</span><span class="p">[:,</span> <span class="n">indices</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">s_mat</span><span class="p">[</span><span class="n">indices</span><span class="p">]),</span> <span class="n">vt_mat</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="p">:]),</span>
-            <span class="n">u_mat_mask</span><span class="p">[:,</span> <span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">indices</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span></div>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">u_mat</span><span class="p">[:,</span> <span class="n">indices</span><span class="p">]),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">s_mat</span><span class="p">[</span><span class="n">indices</span><span class="p">]),</span> <span class="n">vt_mat</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="p">:]),</span>
+        <span class="n">u_mat_mask</span><span class="p">[:,</span> <span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">indices</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="p">)</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_remove_dominant_elements</span><span class="p">(</span><span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">dominance_limit</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_remove_dominant_elements</span><span class="p">(</span>
+    <span class="n">u_mat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dominance_limit</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">num_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
     <span class="n">u_mat_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">u_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dominance_limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">u_mat_mask</span>
@@ -489,8 +527,10 @@
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_iter</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u_mat</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">dominance_limit</span><span class="p">):</span>
             <span class="k">break</span>
-        <span class="n">condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u_mat</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dominance_limit</span><span class="p">,</span>
-                                   <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u_mat</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u_mat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u_mat</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dominance_limit</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u_mat</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u_mat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="n">u_mat_mask</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">u_mat</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">u_mat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
@@ -499,13 +539,17 @@
     <span class="k">return</span> <span class="n">u_mat</span><span class="p">,</span> <span class="n">s_mat</span><span class="p">,</span> <span class="n">u_mat_mask</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_clean_dominant_bpms</span><span class="p">(</span><span class="n">u_mat</span><span class="p">,</span> <span class="n">u_mat_mask</span><span class="p">,</span> <span class="n">svd_dominance_limit</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_clean_dominant_bpms</span><span class="p">(</span>
+    <span class="n">u_mat</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">u_mat_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">svd_dominance_limit</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
     <span class="n">dominant_bpms</span> <span class="o">=</span> <span class="n">u_mat</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">u_mat_mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
     <span class="k">if</span> <span class="n">dominant_bpms</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad BPMs from SVD detected. Number of BPMs removed: </span><span class="si">{</span><span class="n">dominant_bpms</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">clean_u</span> <span class="o">=</span> <span class="n">u_mat</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">u_mat</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">dominant_bpms</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="n">clean_u</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> Dominant BPM in SVD, peak value &gt; </span><span class="si">{</span><span class="n">svd_dominance_limit</span><span class="si">}</span><span class="s2">&quot;</span>
-                     <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">dominant_bpms</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">clean_u</span><span class="p">,</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bpm_name</span><span class="si">}</span><span class="s2"> Dominant BPM in SVD, peak value &gt; </span><span class="si">{</span><span class="n">svd_dominance_limit</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">bpm_name</span> <span class="ow">in</span> <span class="n">dominant_bpms</span>
+    <span class="p">]</span>
 </pre></div>
 
            </div>
