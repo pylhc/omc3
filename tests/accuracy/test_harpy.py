@@ -232,8 +232,7 @@ def test_harpy_3d(_test_file: Path, _model_file: Path):
     assert (
         _rms(
             _rel_diff(
-                linfiles["X"].loc[:, "AMPZ"].to_numpy()
-                * linfiles["X"].loc[:, "AMPX"].to_numpy(),
+                linfiles["X"].loc[:, "AMPZ"].to_numpy() * linfiles["X"].loc[:, "AMPX"].to_numpy(),
                 AMPZ * BASEAMP,
             )
         )
