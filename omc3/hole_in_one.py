@@ -421,26 +421,25 @@ def _run_harpy(harpy_options: DotDict) -> list[Path]:
 
 
 def _parse_tbt_data(files: Iterable[Path | str | tbt.TbtData], tbt_datatype: str
-    ) -> list[tuple[tbt.TbtData, Path | str]]:
+    ) -> list[tuple[tbt.TbtData, str]]:
     """Parse the turn-by-turn data reading given files or TbtData objects."""
     if tbt_datatype == DATATYPE_TBT:
-        tbt_datas = [(file, file.meta.get("file")) for file in files]
-        if any(path is None for _, path in tbt_datas):
-            raise AttributeError(
+        try:
+            return [(file, Path(file.meta["file"]).name) for file in files]
+        except KeyError as e:
+            raise KeyError(
                 "To determine output naming for hole-in-one, "
-                "the given TbT objects must contain a 'file' entry in their meta data."
-            )
-        return tbt_datas
+                "the given TbT objects must contain a 'file' entry in their meta-data."
+            ) from e
 
-    return [(tbt.read_tbt(file, datatype=tbt_datatype), file) for file in files]
+    return [(tbt.read_tbt(file, datatype=tbt_datatype), Path(file).name) for file in files]
 
 
 def _add_suffix_and_iter_bunches(
-    tbt_data: tbt.TbtData, options: DotDict, file: Path | str
+    tbt_data: tbt.TbtData, options: DotDict, file_name: str
 ) -> Generator[tuple[tbt.TbtData, str], None, None]:
     """Add the additional suffix (if given by user) to output files and
     split the TbT data into bunches to analyse them individually."""
-    file_name: str = getattr(file, "name", file)  # Get name if Path, else use str
     suffix: str = options.suffix or ""
 
     # Single bunch
@@ -453,7 +452,7 @@ def _add_suffix_and_iter_bunches(
     if options.bunch_ids is not None:
         unknown_bunches = set(options.bunch_ids) - set(tbt_data.bunch_ids)
         if unknown_bunches:
-            LOGGER.warning(f"Bunch IDs {unknown_bunches} not present in multi-bunch file {file}.")
+            LOGGER.warning(f"Bunch IDs {unknown_bunches} not present in multi-bunch file {file_name}.")
 
     for index in range(tbt_data.nbunches):
         bunch_id = tbt_data.bunch_ids[index]

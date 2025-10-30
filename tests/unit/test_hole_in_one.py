@@ -203,7 +203,7 @@ def test_harpy_tbtdata_no_name(tmp_path):
     tbt_data = create_tbt_data(model=model, bunch_ids=[0])
     tbt_data.meta = {} # in case someone adds a meta in the create_tbt_data helper
 
-    with pytest.raises(AttributeError) as e:
+    with pytest.raises(KeyError) as e:
         hole_in_one_entrypoint(
             harpy=True,
             files=[tbt_data],

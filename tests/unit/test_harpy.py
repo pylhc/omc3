@@ -17,7 +17,7 @@ from tests.accuracy.test_harpy import _get_model_dataframe
 def test_input_suffix_and_single_bunch(suffix):
     """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffix is attached to single-bunch files."""
-    input_name = Path("input_file.sdds").name  # test with string
+    input_name = "input_file.sdds"
     options = DotDict(
         suffix=suffix,
         bunch_ids=None,
@@ -45,7 +45,7 @@ def test_input_suffix_and_multibunch(suffix, bunches):
     """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffixes are attached to multi-bunch files and they are
     split up into single-bunch files correctly."""
-    input_file = Path("input_file.sdds")  # test with Path
+    input_name = "input_file.sdds"
     options = DotDict(
         suffix=suffix,
         bunch_ids=None if bunches is None else list(bunches),
@@ -58,10 +58,10 @@ def test_input_suffix_and_multibunch(suffix, bunches):
     n_data = 0
     bunch_ids = bunches or tbt_data.bunch_ids
     matrices =  [tbt_data.matrices[tbt_data.bunch_ids.index(id_)] for id_ in bunch_ids]
-    for (data, filename_with_suffix), bunch_id, matrix in zip(_add_suffix_and_iter_bunches(tbt_data, options, input_file), bunch_ids, matrices):
+    for (data, filename_with_suffix), bunch_id, matrix in zip(_add_suffix_and_iter_bunches(tbt_data, options, input_name), bunch_ids, matrices):
         bunch_str = f"_bunchID{bunch_id}"
         suffix_str = suffix or ""
-        assert filename_with_suffix == f"{input_file.name}{bunch_str}{suffix_str}"
+        assert filename_with_suffix == f"{input_name}{bunch_str}{suffix_str}"
 
         assert len(data.matrices) == 1
         assert data.matrices[0] == matrix
