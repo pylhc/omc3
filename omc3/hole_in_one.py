@@ -34,7 +34,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any
 
 import turn_by_turn as tbt
 from generic_parser.entrypoint_parser import (
@@ -55,7 +55,7 @@ from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Generator, Iterable
 
     from generic_parser import DotDict
 
