@@ -14,6 +14,7 @@ import pandas as pd
 import tfs
 
 from omc3.definitions.constants import PLANES
+from omc3.harpy.constants import AMPLITUDE_UNIT_VALUE, HEADER_AMPLITUDE_UNIT
 from omc3.optics_measurements import dpp, iforest
 from omc3.optics_measurements.constants import (
     AMPLITUDE,
@@ -63,13 +64,24 @@ class InputFiles(dict):
             self[plane] = dpp.append_dpp(self[plane], dpp.arrange_dpps(dpp_values))
             self[plane] = dpp.append_amp_dpp(self[plane], amp_dpp_values)
 
-    @staticmethod  # TODO later remove
+    @staticmethod
     def _repair_backwards_compatible_frame(df, plane: str):
         """
-        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones.
-        This is for backwards compatibility with Drive,
-        i.e. harpy has this
+        Multiplies unscaled amplitudes by 2 for old files without the AMPLITUDE_UNIT header.
+        This is for backwards compatibility with Drive.
+
+        New harpy files (with AMPLITUDE_UNIT header set to 'm') don't need this correction
+        as they already output amplitudes in the correct unit.
         """
+        # Check if the file has the new AMPLITUDE_UNIT header
+        # If it does, no correction is needed
+        if (unit := getattr(df, 'headers', {}).get(HEADER_AMPLITUDE_UNIT)) is not None:
+            LOGGER.info(f"Detected amplitude unit '{unit}' for plane {plane}.")
+            assert unit == AMPLITUDE_UNIT_VALUE, f"Unexpected amplitude unit '{unit}' in file for plane {plane}."
+            # Potentially in the future, we could add conversion here if needed (jgray 10/2025)
+            return df
+
+        # Old files without the header need the correction (multiplication by 2)
         df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].to_numpy() * 2
         if f"NATAMP{plane}" in df.columns:
             df[f"NATAMP{plane}"] = df.loc[:, f"NATAMP{plane}"].to_numpy() * 2
