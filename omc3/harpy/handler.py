@@ -56,7 +56,7 @@ PLANE_TO_NUM = {**P2N, "Z": 3}
 
 
 def run_per_bunch(
-    tbt_data: TbtData, harpy_input: DotDict, file: Path
+    tbt_data: TbtData, harpy_input: DotDict, output_filename: str
 ) -> dict[str, tfs.TfsDataFrame]:
     """
     Cleans data, analyses frequencies and searches for resonances.
@@ -64,6 +64,7 @@ def run_per_bunch(
     Args:
         tbt_data: single bunch `TbtData`.
         harpy_input: Analysis settings taken from the commandline.
+        output_filename: Name of the output files (placed in `harpy_input.outputdir`).
 
     Returns:
         Dictionary with a `TfsDataFrame` per plane.
@@ -73,7 +74,7 @@ def run_per_bunch(
         model = tfs.read(harpy_input.model, index=COL_NAME).loc[:, COL_S]
 
     bpm_datas, usvs, lins, bad_bpms = {}, {}, {}, {}
-    output_file_path = harpy_input.outputdir / file.name
+    output_file_path = harpy_input.outputdir / output_filename
 
     for plane in PLANES:
         bpm_data = _get_cut_tbt_matrix(tbt_data, harpy_input.turns, plane)
