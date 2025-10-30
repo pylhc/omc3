@@ -445,9 +445,8 @@ def _add_suffix_and_iter_bunches(
 
     # Single bunch
     if tbt_data.nbunches == 1:
-        if suffix:
-            file_name = f"{file_name}{suffix}"
-        yield tbt_data, file_name
+        file_name_out = f"{file_name}{suffix}"
+        yield tbt_data, file_name_out
         return
 
     # Multibunch
@@ -462,7 +461,7 @@ def _add_suffix_and_iter_bunches(
             continue
 
         bunch_id_str = f"_bunchID{bunch_id}"
-        file_name = f"{file_name}{bunch_id_str}{suffix}"
+        file_name_out = f"{file_name}{bunch_id_str}{suffix}"
         yield (
             tbt.TbtData(
                 matrices=[tbt_data.matrices[index]],
@@ -470,7 +469,7 @@ def _add_suffix_and_iter_bunches(
                 bunch_ids=[bunch_id],
                 meta=tbt_data.meta,
             ),
-            file_name,
+            file_name_out,
         )
 
 
@@ -513,7 +512,6 @@ def _harpy_entrypoint(params: list[str]) -> tuple[DotDict, list[str]]:
         raise AttributeError(
             "The magnet order for resonance lines calculation should be between 2 and 8 (inclusive)."
         )
-    options.files = [Path(file) for file in options.files]
     options.outputdir = Path(options.outputdir)
     return options, rest
 
