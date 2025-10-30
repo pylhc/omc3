@@ -1,6 +1,17 @@
 # OMC3 Changelog
 
-#### 2025-10-TBD - v0.24.6 - _jgray_, _jdilly_, _fsoubelet_
+#### 2025-11-TBD - v0.25.0 - _jgray_, _jdilly_, _fsoubelet_
+- Changes:
+  - All new amplitude data files now include a header `AMPLITUDE_UNIT` specifying the unit of amplitude values.
+  - Before, we doubled the amplitude values read from files and divided by 2 when writing to maintain compatibility with old files.
+
+- Added:
+  - Tests for amplitude unit handling and backward compatibility.
+
+#### 2025-10-29 - v0.24.6 - _jgray_, _jdilly_, _fsoubelet_
+
+- Breaking change:
+  - Now requires `turn_by_turn>=1.0.0` due to new `meta` parameter.
 
 - Added:
   - Throw an Error when Tune Tolerance is too Large, i.e. driven tunes are inside the tolerance of the natural tunes.
