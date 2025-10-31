@@ -136,9 +136,6 @@ markers = [
 
 addopts = [
     "--import-mode=importlib",
-    "--cov-report=term-missing",
-    "--cov-config=pyproject.toml",
-    "--cov=omc3",
 ]
 
 # Helpful for pytest-debugging (leave commented out on commit):
