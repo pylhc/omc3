@@ -45,3 +45,6 @@ COL_NOISE_SCALED: str = "NOISE_SCALED"
 COL_COEFFS: str = "COEFFS"
 COL_FREQS: str = "FREQS"
 COL_TIME: str = "TIME"
+
+# Header Keys -----------------------------------------------------------------
+MAINLINE_UNIT: str = "MAINLINE_UNIT"

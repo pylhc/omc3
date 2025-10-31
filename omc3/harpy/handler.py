@@ -42,6 +42,7 @@ from omc3.harpy.constants import (
     FILE_AMPS_EXT,
     FILE_FREQS_EXT,
     FILE_LIN_EXT,
+    MAINLINE_UNIT,
 )
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
@@ -251,6 +252,7 @@ def _compute_headers(panda: pd.DataFrame, date: None | pd.Timestamp = None) -> d
                 )  # TODO: not really the RMS?
     if date:
         headers[COL_TIME] = date.strftime(formats.TIME)
+    headers[MAINLINE_UNIT] = "m"
     return headers
 
 
@@ -283,18 +285,12 @@ def _write_lin_tfs(output_path_without_suffix: Path, plane: str, lin_frame: pd.D
 
 def _rescale_amps_to_main_line_and_compute_noise(df: pd.DataFrame, plane: str) -> pd.DataFrame:
     """
-    TODO    follows non-transpararent convention
-    TODO    the consequent analysis has to be changed if removed
+    Rescale secondary amplitudes to main line amplitude and compute noise-related errors.
     """
     cols = [col for col in df.columns if col.startswith(COL_AMP)]
     cols.remove(f"{COL_AMP}{plane}")
     df[cols] = df[cols].div(df[f"{COL_AMP}{plane}"], axis="index")
     amps = df[f"{COL_AMP}{plane}"].to_numpy()
-    # Division by two for backwards compatibility with Drive, i.e. the unit is [2mm] (03/2019)
-    # TODO  later remove (05/2019)
-    df[f"{COL_AMP}{plane}"] = amps / 2
-    if f"{COL_NATAMP}{plane}" in df.columns:
-        df[f"{COL_NATAMP}{plane}"] = df[f"{COL_NATAMP}{plane}"].to_numpy() / 2
 
     if df[COL_NOISE].max() == 0.0:
         return df  # Do not calculate errors when no noise was calculated

@@ -178,33 +178,17 @@ def test_freekick_harpy(_test_file: Path, _model_file: Path):
     for plane in PLANES:
         # Main and secondary frequencies
         assert (
-            _rms(
-                _diff(
-                    linfiles[plane].loc[:, f"TUNE{plane}"].to_numpy(),
-                    model_df.loc[:, f"TUNE{plane}"].to_numpy(),
-                )
-            )
+            _rms(_diff(linfiles[plane].loc[:, f"TUNE{plane}"], model_df.loc[:, f"TUNE{plane}"]))
             < LIMITS["F1"]
         )
         # Main and secondary amplitudes
-        # TODO remove factor 2 - only for backwards compatibility with Drive
         assert (
-            _rms(
-                _rel_diff(
-                    linfiles[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
-                    model_df.loc[:, f"AMP{plane}"].to_numpy(),
-                )
-            )
+            _rms(_rel_diff(linfiles[plane].loc[:, f"AMP{plane}"], model_df.loc[:, f"AMP{plane}"]))
             < LIMITS["A1"]
         )
         # Main and secondary phases
         assert (
-            _rms(
-                _angle_diff(
-                    linfiles[plane].loc[:, f"MU{plane}"].to_numpy(),
-                    model_df.loc[:, f"MU{plane}"].to_numpy(),
-                )
-            )
+            _rms(_angle_diff(linfiles[plane].loc[:, f"MU{plane}"], model_df.loc[:, f"MU{plane}"]))
             < LIMITS["P1"]
         )
 
@@ -229,79 +213,55 @@ def test_harpy_3d(_test_file: Path, _model_file: Path):
     linfiles = {"X": tfs.read(f"{_test_file}.linx"), "Y": tfs.read(f"{_test_file}.liny")}
     model_df = tfs.read(_model_file)
     _assert_spectra(linfiles, model_df)
-    assert _rms(_diff(linfiles["X"].loc[:, "TUNEZ"].to_numpy(), TUNEZ)) < LIMITS["F2"]
+    assert _rms(_diff(linfiles["X"].loc[:, "TUNEZ"], TUNEZ)) < LIMITS["F2"]
     assert (
-        _rms(
-            _rel_diff(
-                linfiles["X"].loc[:, "AMPZ"].to_numpy()
-                * linfiles["X"].loc[:, "AMPX"].to_numpy()
-                * 2,
-                AMPZ * BASEAMP,
-            )
-        )
+        _rms(_rel_diff(linfiles["X"].loc[:, "AMPZ"] * linfiles["X"].loc[:, "AMPX"], AMPZ * BASEAMP))
         < LIMITS["A2"]
     )
-    assert _rms(_angle_diff(linfiles["X"].loc[:, "MUZ"].to_numpy(), MUZ)) < LIMITS["P2"]
+    assert _rms(_angle_diff(linfiles["X"].loc[:, "MUZ"], MUZ)) < LIMITS["P2"]
 
 
 def _assert_spectra(linfiles: dict[str, tfs.TfsDataFrame], model_df: tfs.TfsDataFrame):
     for plane in PLANES:
         # main and secondary frequencies
         assert (
-            _rms(
-                _diff(
-                    linfiles[plane].loc[:, f"TUNE{plane}"].to_numpy(),
-                    model_df.loc[:, f"TUNE{plane}"].to_numpy(),
-                )
-            )
+            _rms(_diff(linfiles[plane].loc[:, f"TUNE{plane}"], model_df.loc[:, f"TUNE{plane}"]))
             < LIMITS["F1"]
         )
         assert (
             _rms(
                 _diff(
-                    linfiles[plane].loc[:, f"FREQ{_couple(plane)}"].to_numpy(),
-                    model_df.loc[:, f"TUNE{_other(plane)}"].to_numpy(),
+                    linfiles[plane].loc[:, f"FREQ{_couple(plane)}"],
+                    model_df.loc[:, f"TUNE{_other(plane)}"],
                 )
             )
             < LIMITS["F2"]
         )
         # main and secondary amplitudes
-        # TODO remove factor 2 - only for backwards compatibility with Drive
         assert (
-            _rms(
-                _rel_diff(
-                    linfiles[plane].loc[:, f"AMP{plane}"].to_numpy() * 2,
-                    model_df.loc[:, f"AMP{plane}"].to_numpy(),
-                )
-            )
+            _rms(_rel_diff(linfiles[plane].loc[:, f"AMP{plane}"], model_df.loc[:, f"AMP{plane}"]))
             < LIMITS["A1"]
         )
         assert (
             _rms(
                 _rel_diff(
-                    linfiles[plane].loc[:, f"AMP{_couple(plane)}"].to_numpy()
-                    * linfiles[plane].loc[:, f"AMP{plane}"].to_numpy()
-                    * 2,
-                    COUPLING * model_df.loc[:, f"AMP{_other(plane)}"].to_numpy(),
+                    linfiles[plane].loc[:, f"AMP{_couple(plane)}"]
+                    * linfiles[plane].loc[:, f"AMP{plane}"],
+                    COUPLING * model_df.loc[:, f"AMP{_other(plane)}"],
                 )
             )
             < LIMITS["A2"]
         )
         # main and secondary phases
         assert (
-            _rms(
-                _angle_diff(
-                    linfiles[plane].loc[:, f"MU{plane}"].to_numpy(),
-                    model_df.loc[:, f"MU{plane}"].to_numpy(),
-                )
-            )
+            _rms(_angle_diff(linfiles[plane].loc[:, f"MU{plane}"], model_df.loc[:, f"MU{plane}"]))
             < LIMITS["P1"]
         )
         assert (
             _rms(
                 _angle_diff(
-                    linfiles[plane].loc[:, f"PHASE{_couple(plane)}"].to_numpy(),
-                    model_df.loc[:, f"MU{_other(plane)}"].to_numpy(),
+                    linfiles[plane].loc[:, f"PHASE{_couple(plane)}"],
+                    model_df.loc[:, f"MU{_other(plane)}"],
                 )
             )
             < LIMITS["P2"]
