@@ -26,9 +26,9 @@
 | omc3/global\_correction.py                              |       65 |        2 |     97% |  320, 387 |
 | omc3/harpy/\_\_init\_\_.py                              |        1 |        0 |    100% |           |
 | omc3/harpy/clean.py                                     |      151 |       15 |     90% |42, 90, 113, 188, 204-205, 215-216, 240-247 |
-| omc3/harpy/constants.py                                 |       25 |        0 |    100% |           |
+| omc3/harpy/constants.py                                 |       26 |        0 |    100% |           |
 | omc3/harpy/frequency.py                                 |      196 |        7 |     96% |151, 238, 507, 524-526, 546 |
-| omc3/harpy/handler.py                                   |      128 |        1 |     99% |       305 |
+| omc3/harpy/handler.py                                   |      126 |        1 |     99% |       301 |
 | omc3/harpy/kicker.py                                    |       27 |        0 |    100% |           |
 | omc3/hole\_in\_one.py                                   |      194 |       10 |     95% |332, 334, 372, 455, 481, 497, 499, 501, 503, 880 |
 | omc3/kmod\_importer.py                                  |       71 |        4 |     94% |287-293, 308 |
@@ -65,7 +65,7 @@
 | omc3/optics\_measurements/constants.py                  |       90 |        0 |    100% |           |
 | omc3/optics\_measurements/coupling.py                   |      160 |        4 |     98% |225, 241, 254-255 |
 | omc3/optics\_measurements/crdt.py                       |       83 |        0 |    100% |           |
-| omc3/optics\_measurements/data\_models.py               |      109 |       14 |     87% |55, 62, 96, 102, 147, 152, 155, 188-202 |
+| omc3/optics\_measurements/data\_models.py               |      115 |       15 |     87% |58, 65, 86, 113, 119, 164, 169, 172, 205-219 |
 | omc3/optics\_measurements/dispersion.py                 |      158 |       47 |     70% |78, 96, 111-112, 128-143, 161, 168-169, 175-176, 190-209, 243-252, 290-291 |
 | omc3/optics\_measurements/dpp.py                        |       74 |       14 |     81% |102, 105, 118-130 |
 | omc3/optics\_measurements/iforest.py                    |       67 |       46 |     31% |35-40, 44-47, 52-58, 62-63, 67-77, 81-90, 94-100, 104, 108-112 |
@@ -147,7 +147,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      103 |       18 |     83% |60-61, 73, 95, 121, 136, 141, 145, 149, 153, 163, 166, 171, 176, 186, 191, 196, 201 |
-|                                               **TOTAL** | **11597** | **1552** | **87%** |           |
+|                                               **TOTAL** | **11602** | **1553** | **87%** |           |
 
 
 ## Setup coverage badge
