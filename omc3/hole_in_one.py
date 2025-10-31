@@ -55,13 +55,14 @@ from omc3.utils import iotools, logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Generator, Iterable
 
     from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)
 
 DEFAULT_CONFIG_FILENAME = "analysis_{time:s}.ini"
+DATATYPE_TBT: str = "tbt_data"
 
 
 def hole_in_one_params() -> EntryPointParameters:
@@ -89,7 +90,8 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
         Action: ``store_true``
 
     Harpy Kwargs:
-      - **files**: TbT files to analyse
+      - **files**: TbT files to analyse.
+        Can also be the TbtData objects directly, if 'tbt_data' is chosen as datatype.
 
         Flags: **--files**
         Required: ``True``
@@ -405,15 +407,12 @@ def _run_harpy(harpy_options: DotDict) -> list[Path]:
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
         lins = []
-        tbt_datas = [
-            (tbt.read_tbt(file, datatype=harpy_options.tbt_datatype), file)
-            for file in harpy_options.files
-        ]
+        tbt_datas = _parse_tbt_data(harpy_options.files, harpy_options.tbt_datatype)
         for tbt_data, file in tbt_datas:
             lins.extend(
                 [
-                    handler.run_per_bunch(bunch_data, harpy_options, bunch_file)
-                    for bunch_data, bunch_file in _add_suffix_and_iter_bunches(
+                    handler.run_per_bunch(bunch_data, harpy_options, name_for_bunch)
+                    for bunch_data, name_for_bunch in _add_suffix_and_iter_bunches(
                         tbt_data, harpy_options, file
                     )
                 ]
@@ -421,26 +420,39 @@ def _run_harpy(harpy_options: DotDict) -> list[Path]:
     return lins
 
 
+def _parse_tbt_data(files: Iterable[Path | str | tbt.TbtData], tbt_datatype: str
+    ) -> list[tuple[tbt.TbtData, str]]:
+    """Parse the turn-by-turn data reading given files or TbtData objects."""
+    if tbt_datatype == DATATYPE_TBT:
+        try:
+            return [(file, Path(file.meta["file"]).name) for file in files]
+        except KeyError as e:
+            raise KeyError(
+                "To determine output naming for hole-in-one, "
+                "the given TbT objects must contain a 'file' entry in their meta-data."
+            ) from e
+
+    return [(tbt.read_tbt(file, datatype=tbt_datatype), Path(file).name) for file in files]
+
+
 def _add_suffix_and_iter_bunches(
-    tbt_data: tbt.TbtData, options: DotDict, file: Path
-) -> Generator[tuple[tbt.TbtData, Path], None, None]:
-    """Add suffix to output files and iterate over bunches."""
-    dir_name: Path = file.parent
-    file_name: str = file.name
+    tbt_data: tbt.TbtData, options: DotDict, file_name: str
+) -> Generator[tuple[tbt.TbtData, str], None, None]:
+    """Add the additional suffix (if given by user) to output files and
+    split the TbT data into bunches to analyse them individually."""
     suffix: str = options.suffix or ""
 
     # Single bunch
     if tbt_data.nbunches == 1:
-        if suffix:
-            file = dir_name / f"{file_name}{suffix}"
-        yield tbt_data, file
+        file_name_out = f"{file_name}{suffix}"
+        yield tbt_data, file_name_out
         return
 
     # Multibunch
     if options.bunch_ids is not None:
         unknown_bunches = set(options.bunch_ids) - set(tbt_data.bunch_ids)
         if unknown_bunches:
-            LOGGER.warning(f"Bunch IDs {unknown_bunches} not present in multi-bunch file {file}.")
+            LOGGER.warning(f"Bunch IDs {unknown_bunches} not present in multi-bunch file {file_name}.")
 
     for index in range(tbt_data.nbunches):
         bunch_id = tbt_data.bunch_ids[index]
@@ -448,7 +460,7 @@ def _add_suffix_and_iter_bunches(
             continue
 
         bunch_id_str = f"_bunchID{bunch_id}"
-        file = dir_name / f"{file_name}{bunch_id_str}{suffix}"
+        file_name_out = f"{file_name}{bunch_id_str}{suffix}"
         yield (
             tbt.TbtData(
                 matrices=[tbt_data.matrices[index]],
@@ -456,7 +468,7 @@ def _add_suffix_and_iter_bunches(
                 bunch_ids=[bunch_id],
                 meta=tbt_data.meta,
             ),
-            file,
+            file_name_out,
         )
 
 
@@ -499,18 +511,34 @@ def _harpy_entrypoint(params: list[str]) -> tuple[DotDict, list[str]]:
         raise AttributeError(
             "The magnet order for resonance lines calculation should be between 2 and 8 (inclusive)."
         )
-    options.files = [Path(file) for file in options.files]
     options.outputdir = Path(options.outputdir)
     return options, rest
 
 
 def harpy_params() -> EntryPointParameters:
     """Create the entry point parameters for harpy."""
+    # fmt: off
     params = EntryPointParameters()
-    params.add_parameter(name="files", required=True, nargs="+", help="TbT files to analyse")
-    params.add_parameter(name="outputdir", required=True, help="Output directory.")
-    params.add_parameter(name="suffix", type=str, help="User-defined suffix for output filenames.")
-    params.add_parameter(name="model", help="Model for BPM locations")
+    params.add_parameter(
+        name="files",
+        required=True,
+        nargs="+",
+        help="TbT files to analyse. Can also be the TbtData objects directly, if 'tbt_data' is chosen as datatype."
+    )
+    params.add_parameter(
+        name="outputdir",
+        required=True,
+        help="Output directory."
+    )
+    params.add_parameter(
+        name="suffix",
+        type=str,
+        help="User-defined suffix for output filenames."
+    )
+    params.add_parameter(
+        name="model",
+        help="Model for BPM locations"
+    )
     params.add_parameter(
         name="unit",
         type=str,
@@ -541,7 +569,7 @@ def harpy_params() -> EntryPointParameters:
     params.add_parameter(
         name="tbt_datatype",
         default=HARPY_DEFAULTS["tbt_datatype"],
-        choices=list(tbt.io.TBT_MODULES.keys()),
+        choices=list(tbt.io.TBT_MODULES.keys()) + [DATATYPE_TBT],
         help="Choose the datatype from which to import. ",
     )
 
@@ -584,7 +612,11 @@ def harpy_params() -> EntryPointParameters:
         "and renormalisation in iterative SVD cleaning of dominant BPMs."
         " This is also equal to maximal number of BPMs removed per SVD mode.",
     )
-    params.add_parameter(name="bad_bpms", nargs="*", help="Bad BPMs to clean.")
+    params.add_parameter(
+        name="bad_bpms",
+        nargs="*",
+        help="Bad BPMs to clean."
+    )
     params.add_parameter(
         name="wrong_polarity_bpms",
         nargs="*",
@@ -691,6 +723,7 @@ def harpy_params() -> EntryPointParameters:
         default=HARPY_DEFAULTS["resonances"],
         help="Maximum magnet order of resonance lines to calculate.",
     )
+    # fmt: on
     return params
 
 
@@ -708,11 +741,23 @@ def _optics_entrypoint(params: list[str]) -> tuple[DotDict, list[str]]:
 
 def optics_params() -> EntryPointParameters:
     """Create the entry point parameters for optics."""
+    # fmt: off
     params = EntryPointParameters()
-    params.add_parameter(name="files", required=True, nargs="+", help="Files for analysis")
-    params.add_parameter(name="outputdir", required=True, help="Output directory")
     params.add_parameter(
-        name="calibrationdir", type=str, help="Path to calibration files directory."
+        name="files",
+        required=True,
+        nargs="+",
+        help="Files for analysis"
+    )
+    params.add_parameter(
+        name="outputdir",
+        required=True,
+        help="Output directory"
+    )
+    params.add_parameter(
+        name="calibrationdir",
+        type=str,
+        help="Path to calibration files directory."
     )
     params.add_parameter(
         name="coupling_method",
@@ -761,7 +806,9 @@ def optics_params() -> EntryPointParameters:
         help="Use 3 BPM method in beta from phase",
     )
     params.add_parameter(
-        name="only_coupling", action="store_true", help="Calculate only coupling. "
+        name="only_coupling",
+        action="store_true",
+        help="Calculate only coupling. "
     )
     params.add_parameter(
         name="compensation",
@@ -797,6 +844,7 @@ def optics_params() -> EntryPointParameters:
         help="Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt). "
         "Use `None` for no filtering",
     )
+    # fmt: on
     return params
 
 
