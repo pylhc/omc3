@@ -63,6 +63,7 @@ dependencies = [
 [project.optional-dependencies]
 cern = [
   "jpype1 >= 1.3",
+  "nxcals >= 1.6.6",  # Direct NXCALS access
   "pytimber >= 3.0",  # NXCALS support
   "pylogbook >= 3.4",
   "kerberos >= 1.3.1",  # requires having krb-5config installed on the system
@@ -74,6 +75,7 @@ optional = [
 ]
 test = [
   "jpype1 >= 1.3",
+  "pyspark >= 3.5", # needed only for cern tests
   "pytest >= 7.0",
   "pytest-cov >= 2.9",
   "pytest-timeout >= 1.4",
