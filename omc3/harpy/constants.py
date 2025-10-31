@@ -47,5 +47,4 @@ COL_FREQS: str = "FREQS"
 COL_TIME: str = "TIME"
 
 # Header Keys -----------------------------------------------------------------
-HEADER_AMPLITUDE_UNIT: str = "AMPLITUDE_UNIT"
-AMPLITUDE_UNIT_VALUE: str = "m"  # meter (default unit for amplitudes) Please confirm this unit is correct!
+MAINLINE_UNIT: str = "MAINLINE_UNIT"

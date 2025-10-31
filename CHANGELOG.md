@@ -1,12 +1,15 @@
 # OMC3 Changelog
 
 #### 2025-11-TBD - v0.25.0 - _jgray_, _jdilly_, _fsoubelet_
-- Changes:
-  - All new amplitude data files now include a header `AMPLITUDE_UNIT` specifying the unit of amplitude values.
-  - Before, we doubled the amplitude values read from files and divided by 2 when writing to maintain compatibility with old files.
 
 - Added:
   - Tests for amplitude unit handling and backward compatibility.
+  - Allow passing of TbTData objects to hole-in-one directly
+
+- Changes:
+  - All new amplitude data files now include a header `AMPLITUDE_UNIT` specifying the unit of amplitude values.
+  - Before, we doubled the amplitude values read from files and divided by 2 when writing to maintain compatibility with old files. This is now removed, and no longer the case.
+
 
 #### 2025-10-29 - v0.24.6 - _jgray_, _jdilly_, _fsoubelet_
 

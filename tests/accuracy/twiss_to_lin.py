@@ -36,6 +36,7 @@ from omc3.harpy.constants import (
     COL_S,
     COL_TIME,
     COL_TUNE,
+    MAINLINE_UNIT,
 )
 from omc3.optics_measurements.constants import NAT_TUNE, TUNE
 
@@ -188,5 +189,5 @@ def _get_header(tunes, nattunes, plane):
         f"{NAT_TUNE}{PLANE_TO_NUM[plane]}": nattunes[plane],
         f"{NAT_TUNE}{PLANE_TO_NUM[plane]}RMS": 1e-6,
         COL_TIME: datetime.now(timezone.utc).strftime(formats.TIME),
-        "AMPLITUDE_UNIT": "m", # Please confirm this unit is correct!
+        MAINLINE_UNIT: "m",
     }

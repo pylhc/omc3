@@ -21,7 +21,6 @@ from omc3.definitions.constants import PLANE_TO_NUM as P2N
 from omc3.definitions.constants import PLANES
 from omc3.harpy import clean, frequency, kicker
 from omc3.harpy.constants import (
-    AMPLITUDE_UNIT_VALUE,
     COL_AMP,
     COL_BPM_RES,
     COL_CO,
@@ -43,7 +42,7 @@ from omc3.harpy.constants import (
     FILE_AMPS_EXT,
     FILE_FREQS_EXT,
     FILE_LIN_EXT,
-    HEADER_AMPLITUDE_UNIT,
+    MAINLINE_UNIT,
 )
 from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
@@ -252,7 +251,7 @@ def _compute_headers(panda: pd.DataFrame, date: None | pd.Timestamp = None) -> d
                 )  # TODO: not really the RMS?
     if date:
         headers[COL_TIME] = date.strftime(formats.TIME)
-    headers[HEADER_AMPLITUDE_UNIT] = AMPLITUDE_UNIT_VALUE # Please confirm this unit is correct!
+    headers[MAINLINE_UNIT] = "m"
     return headers
 
 
