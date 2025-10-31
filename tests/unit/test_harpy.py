@@ -17,7 +17,7 @@ from tests.accuracy.test_harpy import _get_model_dataframe
 def test_input_suffix_and_single_bunch(suffix):
     """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffix is attached to single-bunch files."""
-    file_name = Path("input_file.sdds")
+    input_name = "input_file.sdds"
     options = DotDict(
         suffix=suffix,
         bunch_ids=None,
@@ -28,10 +28,10 @@ def test_input_suffix_and_single_bunch(suffix):
         bunch_ids=[0],
     )
     n_data = 0
-    for data, file in _add_suffix_and_iter_bunches(tbt_data, options, file_name):
+    for data, file_name in _add_suffix_and_iter_bunches(tbt_data, options, input_name):
         suffix_str = suffix or ""
-        assert file.name.endswith(f"{file_name}{suffix_str}")
-        assert "bunchID" not in str(file)
+        assert file_name == f"{input_name}{suffix_str}"
+        assert "bunchID" not in input_name
         assert data is tbt_data
         n_data += 1
 
@@ -45,7 +45,7 @@ def test_input_suffix_and_multibunch(suffix, bunches):
     """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffixes are attached to multi-bunch files and they are
     split up into single-bunch files correctly."""
-    file_name = Path("input_file.sdds")
+    input_name = "input_file.sdds"
     options = DotDict(
         suffix=suffix,
         bunch_ids=None if bunches is None else list(bunches),
@@ -58,10 +58,10 @@ def test_input_suffix_and_multibunch(suffix, bunches):
     n_data = 0
     bunch_ids = bunches or tbt_data.bunch_ids
     matrices =  [tbt_data.matrices[tbt_data.bunch_ids.index(id_)] for id_ in bunch_ids]
-    for (data, file), bunch_id, matrix in zip(_add_suffix_and_iter_bunches(tbt_data, options, file_name), bunch_ids, matrices):
+    for (data, filename_with_suffix), bunch_id, matrix in zip(_add_suffix_and_iter_bunches(tbt_data, options, input_name), bunch_ids, matrices):
         bunch_str = f"_bunchID{bunch_id}"
         suffix_str = suffix or ""
-        assert file.name.endswith(f"{file_name}{bunch_str}{suffix_str}")
+        assert filename_with_suffix == f"{input_name}{bunch_str}{suffix_str}"
 
         assert len(data.matrices) == 1
         assert data.matrices[0] == matrix

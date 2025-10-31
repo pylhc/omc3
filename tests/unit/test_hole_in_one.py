@@ -25,6 +25,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from turn_by_turn import TbtData
+from tests.accuracy.test_harpy import _get_model_dataframe
+from tests.unit.test_harpy import create_tbt_data
 
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.hole_in_one import (
@@ -62,7 +65,6 @@ SDDS_FILES = {
     "+50Hz": ["Beam1@BunchTurn@2024_03_08@17_56_20_055_250turns.sdds", "Beam1@BunchTurn@2024_03_08@17_57_41_540_250turns.sdds", "Beam1@BunchTurn@2024_03_08@17_58_53_905_250turns.sdds"],
     "-50Hz": ["Beam1@BunchTurn@2024_03_08@18_24_02_100_250turns.sdds", "Beam1@BunchTurn@2024_03_08@18_25_23_729_250turns.sdds", "Beam1@BunchTurn@2024_03_08@18_26_41_811_250turns.sdds"],
 }
-
 
 @pytest.mark.extended
 @pytest.mark.parametrize("which_files", ("SINGLE", "0Hz", "all"))
@@ -172,6 +174,46 @@ def test_hole_in_one(tmp_path, clean, which_files, caplog):
         phase_compensation=False,  # phase compensation set to "none" above
     )
 
+
+@pytest.mark.basic
+def test_harpy_tbtdata_ok(tmp_path):
+    """ Tests the harpy entrypoint with `tbt_datatype == 'tbt_data'`."""
+    # Mock some TbT data
+    model = _get_model_dataframe()
+    tbt_data = create_tbt_data(model=model, bunch_ids=[0])
+    tbt_data.meta = {"file": "test.sdds"}
+
+    hole_in_one_entrypoint(
+        harpy=True,
+        files=[tbt_data],
+        tbt_datatype="tbt_data",
+        unit='m',
+        autotunes="transverse",
+        clean=False,
+        outputdir=tmp_path,
+    )
+
+
+@pytest.mark.basic
+def test_harpy_tbtdata_no_name(tmp_path):
+    """ Tests the harpy entrypoint by checking that meta-field `file` is required
+    when using `tbt_datatype == 'tbt_data'`."""
+    # Mock some TbT data
+    model = _get_model_dataframe()
+    tbt_data = create_tbt_data(model=model, bunch_ids=[0])
+    tbt_data.meta = {} # in case someone adds a meta in the create_tbt_data helper
+
+    with pytest.raises(KeyError) as e:
+        hole_in_one_entrypoint(
+            harpy=True,
+            files=[tbt_data],
+            tbt_datatype="tbt_data",
+            unit='m',
+            autotunes="transverse",
+            clean=False,
+            outputdir=tmp_path,
+        )
+    assert "must contain a 'file' entry" in str(e.value)
 
 # Helper -----------------------------------------------------------------------
 
