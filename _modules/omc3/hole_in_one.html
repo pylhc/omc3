@@ -276,13 +276,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">DEFAULT_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;analysis_</span><span class="si">{time:s}</span><span class="s2">.ini&quot;</span>
+<span class="n">DATATYPE_TBT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tbt_data&quot;</span>
 
 
 <div class="viewcode-block" id="hole_in_one_params">
@@ -315,7 +316,8 @@
 <span class="sd">        Action: ``store_true``</span>
 
 <span class="sd">    Harpy Kwargs:</span>
-<span class="sd">      - **files**: TbT files to analyse</span>
+<span class="sd">      - **files**: TbT files to analyse.</span>
+<span class="sd">        Can also be the TbtData objects directly, if &#39;tbt_data&#39; is chosen as datatype.</span>
 
 <span class="sd">        Flags: **--files**</span>
 <span class="sd">        Required: ``True``</span>
@@ -632,15 +634,12 @@
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">harpy_options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time for Harpy: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
         <span class="n">lins</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">tbt_datas</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">harpy_options</span><span class="o">.</span><span class="n">tbt_datatype</span><span class="p">),</span> <span class="n">file</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">harpy_options</span><span class="o">.</span><span class="n">files</span>
-        <span class="p">]</span>
+        <span class="n">tbt_datas</span> <span class="o">=</span> <span class="n">_parse_tbt_data</span><span class="p">(</span><span class="n">harpy_options</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">harpy_options</span><span class="o">.</span><span class="n">tbt_datatype</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">tbt_datas</span><span class="p">:</span>
             <span class="n">lins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="n">handler</span><span class="o">.</span><span class="n">run_per_bunch</span><span class="p">(</span><span class="n">bunch_data</span><span class="p">,</span> <span class="n">harpy_options</span><span class="p">,</span> <span class="n">bunch_file</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">bunch_data</span><span class="p">,</span> <span class="n">bunch_file</span> <span class="ow">in</span> <span class="n">_add_suffix_and_iter_bunches</span><span class="p">(</span>
+                    <span class="n">handler</span><span class="o">.</span><span class="n">run_per_bunch</span><span class="p">(</span><span class="n">bunch_data</span><span class="p">,</span> <span class="n">harpy_options</span><span class="p">,</span> <span class="n">name_for_bunch</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">bunch_data</span><span class="p">,</span> <span class="n">name_for_bunch</span> <span class="ow">in</span> <span class="n">_add_suffix_and_iter_bunches</span><span class="p">(</span>
                         <span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_options</span><span class="p">,</span> <span class="n">file</span>
                     <span class="p">)</span>
                 <span class="p">]</span>
@@ -648,26 +647,39 @@
     <span class="k">return</span> <span class="n">lins</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_tbt_data</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">],</span> <span class="n">tbt_datatype</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the turn-by-turn data reading given files or TbtData objects.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">tbt_datatype</span> <span class="o">==</span> <span class="n">DATATYPE_TBT</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">file</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s2">&quot;To determine output naming for hole-in-one, &quot;</span>
+                <span class="s2">&quot;the given TbT objects must contain a &#39;file&#39; entry in their meta-data.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">return</span> <span class="p">[(</span><span class="n">tbt</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">tbt_datatype</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_add_suffix_and_iter_bunches</span><span class="p">(</span>
-    <span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add suffix to output files and iterate over bunches.&quot;&quot;&quot;</span>
-    <span class="n">dir_name</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">parent</span>
-    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the additional suffix (if given by user) to output files and</span>
+<span class="sd">    split the TbT data into bunches to analyse them individually.&quot;&quot;&quot;</span>
     <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># Single bunch</span>
     <span class="k">if</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">suffix</span><span class="p">:</span>
-            <span class="n">file</span> <span class="o">=</span> <span class="n">dir_name</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">yield</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">file</span>
+        <span class="n">file_name_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">file_name_out</span>
         <span class="k">return</span>
 
     <span class="c1"># Multibunch</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">bunch_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">unknown_bunches</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">unknown_bunches</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bunch IDs </span><span class="si">{</span><span class="n">unknown_bunches</span><span class="si">}</span><span class="s2"> not present in multi-bunch file </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bunch IDs </span><span class="si">{</span><span class="n">unknown_bunches</span><span class="si">}</span><span class="s2"> not present in multi-bunch file </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span><span class="p">):</span>
         <span class="n">bunch_id</span> <span class="o">=</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
@@ -675,7 +687,7 @@
             <span class="k">continue</span>
 
         <span class="n">bunch_id_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_bunchID</span><span class="si">{</span><span class="n">bunch_id</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="n">dir_name</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">bunch_id_str</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">file_name_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">bunch_id_str</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">yield</span> <span class="p">(</span>
             <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">(</span>
                 <span class="n">matrices</span><span class="o">=</span><span class="p">[</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="n">index</span><span class="p">]],</span>
@@ -683,7 +695,7 @@
                 <span class="n">bunch_ids</span><span class="o">=</span><span class="p">[</span><span class="n">bunch_id</span><span class="p">],</span>
                 <span class="n">meta</span><span class="o">=</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
             <span class="p">),</span>
-            <span class="n">file</span><span class="p">,</span>
+            <span class="n">file_name_out</span><span class="p">,</span>
         <span class="p">)</span>
 
 
@@ -726,7 +738,6 @@
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
             <span class="s2">&quot;The magnet order for resonance lines calculation should be between 2 and 8 (inclusive).&quot;</span>
         <span class="p">)</span>
-    <span class="n">options</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">files</span><span class="p">]</span>
     <span class="n">options</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">rest</span>
 
@@ -735,11 +746,28 @@
 <a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.hole_in_one.harpy_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">harpy_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the entry point parameters for harpy.&quot;&quot;&quot;</span>
+    <span class="c1"># fmt: off</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;TbT files to analyse&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory.&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;suffix&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;User-defined suffix for output filenames.&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Model for BPM locations&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;TbT files to analyse. Can also be the TbtData objects directly, if &#39;tbt_data&#39; is chosen as datatype.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;suffix&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;User-defined suffix for output filenames.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Model for BPM locations&quot;</span>
+    <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
@@ -770,7 +798,7 @@
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">],</span>
-        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">TBT_MODULES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">TBT_MODULES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="n">DATATYPE_TBT</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype from which to import. &quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -813,7 +841,11 @@
         <span class="s2">&quot;and renormalisation in iterative SVD cleaning of dominant BPMs.&quot;</span>
         <span class="s2">&quot; This is also equal to maximal number of BPMs removed per SVD mode.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bad_bpms&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Bad BPMs to clean.&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bad_bpms&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Bad BPMs to clean.&quot;</span>
+    <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;wrong_polarity_bpms&quot;</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
@@ -920,6 +952,7 @@
         <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;resonances&quot;</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum magnet order of resonance lines to calculate.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="c1"># fmt: on</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -940,11 +973,23 @@
 <a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.hole_in_one.optics_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">optics_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the entry point parameters for optics.&quot;&quot;&quot;</span>
+    <span class="c1"># fmt: off</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Files for analysis&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;calibrationdir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to calibration files directory.&quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Files for analysis&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory&quot;</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;calibrationdir&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to calibration files directory.&quot;</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;coupling_method&quot;</span><span class="p">,</span>
@@ -993,7 +1038,9 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use 3 BPM method in beta from phase&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;only_coupling&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate only coupling. &quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;only_coupling&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate only coupling. &quot;</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;compensation&quot;</span><span class="p">,</span>
@@ -1029,6 +1076,7 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt). &quot;</span>
         <span class="s2">&quot;Use `None` for no filtering&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="c1"># fmt: on</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
 
