@@ -9,6 +9,7 @@ Then: Set one variable at a time to 1
 
 Compare results with case all==0.
 """
+
 from __future__ import annotations
 
 import multiprocessing
@@ -44,17 +45,17 @@ def evaluate_for_variables(
     variable_categories: Sequence[str],
     order: int = 4,
     num_proc: int = multiprocessing.cpu_count(),
-    temp_dir: Path | None = None
+    temp_dir: Path | None = None,
 ) -> dict:
-    """ Generate a dictionary containing response matrices for
-        beta, phase, dispersion, tune and coupling and saves it to a file.
+    """Generate a dictionary containing response matrices for
+    beta, phase, dispersion, tune and coupling and saves it to a file.
 
-        Args:
-            accel_inst (Accelerator): Accelerator Instance.
-            variable_categories (list): Categories of the variables/knobs to use. (from .json)
-            order (int or tuple): Max or [min, max] of K-value order to use.
-            num_proc (int): Number of processes to use in parallel.
-            temp_dir (Path): temporary directory. If ``None``, uses model_dir.
+    Args:
+        accel_inst (Accelerator): Accelerator Instance.
+        variable_categories (list): Categories of the variables/knobs to use. (from .json)
+        order (int or tuple): Max or [min, max] of K-value order to use.
+        num_proc (int): Number of processes to use in parallel.
+        temp_dir (Path): temporary directory. If ``None``, uses model_dir.
     """
     LOG.debug("Generating Fullresponse via Mad-X.")
     with timeit(lambda elapsed: LOG.debug(f"  Total time generating fullresponse: {elapsed}s")):
@@ -87,7 +88,8 @@ def _generate_madx_jobs(
     num_proc: int,
     temp_dir: Path,
 ) -> None:
-    """ Generates madx job-files """
+    """Generates madx job-files"""
+
     def _assign(var, value):
         return f"{var:s} = {value:d};\n"
 
@@ -120,14 +122,14 @@ def _generate_madx_jobs(
                 job_content += "\n"
 
         # last thing to do: get baseline
-        if proc_index+1 == num_proc:
+        if proc_index + 1 == num_proc:
             job_content += _do_macro("0")
 
         _get_jobfile(temp_dir, proc_index).write_text(job_content)
 
 
-def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None: # type: ignore
-    """ Call madx in parallel """
+def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:  # type: ignore
+    """Call madx in parallel"""
     LOG.debug(f"Starting {num_proc:d} MAD-X jobs...")
     madx_jobs = [_get_jobfile(temp_dir, index) for index in range(num_proc)]
     failed = [LOG.error(fail) for fail in process_pool.map(_launch_single_job, madx_jobs) if fail]
@@ -137,9 +139,9 @@ def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int)
 
 
 def _clean_up(variables: list[str], temp_dir: Path, num_proc: int) -> None:
-    """ Merge Logfiles and clean temporary outputfiles """
+    """Merge Logfiles and clean temporary outputfiles"""
     LOG.debug("Cleaning output and printing log...")
-    for var in (variables + ["0"]):
+    for var in variables + ["0"]:
         table_file = _get_tablefile(temp_dir, var)
         with suppress(FileNotFoundError):  # py3.8 missing_ok=True
             table_file.unlink()
@@ -166,10 +168,10 @@ def _clean_up(variables: list[str], temp_dir: Path, num_proc: int) -> None:
 def _load_madx_results(
     variables: Sequence[str],
     k_values: list[float],
-    process_pool: multiprocessing.Pool, # type: ignore
+    process_pool: multiprocessing.Pool,  # type: ignore
     temp_dir: str,
 ) -> dict:
-    """ Load the madx results in parallel and return var-tfs dictionary """
+    """Load the madx results in parallel and return var-tfs dictionary"""
     LOG.debug("Loading Madx Results.")
     path_and_vars = []
     for value in variables:
@@ -179,7 +181,7 @@ def _load_madx_results(
     mapping = dict([(order, {}) for order in k_values] + [(f"{order}L", {}) for order in k_values])
     for var, tfs_data in process_pool.map(_load_and_remove_twiss, path_and_vars):
         for order in k_values:
-            diff = (tfs_data[order] - base_tfs[order])
+            diff = tfs_data[order] - base_tfs[order]
             mask = diff != 0  # drop zeros, maybe abs(diff) < eps ?
             k_list = diff.loc[mask]
             mapping[order][var] = k_list
@@ -191,7 +193,7 @@ def _load_madx_results(
 
 
 def _get_orders(order: int) -> Sequence[str]:
-    """ Returns a list of strings with K-values to be used """
+    """Returns a list of strings with K-values to be used"""
     try:
         return [f"K{i:d}{s:s}" for i in range(3) for s in ["", "S"]]
     except TypeError:
@@ -199,22 +201,22 @@ def _get_orders(order: int) -> Sequence[str]:
 
 
 def _get_jobfile(folder: Path, index: int) -> Path:
-    """ Return names for jobfile and iterfile according to index """
+    """Return names for jobfile and iterfile according to index"""
     return folder / f"job.varmap.{index:d}.madx"
 
 
 def _get_tablefile(folder: Path, var: str) -> Path:
-    """ Return name of the variable-specific table file """
+    """Return name of the variable-specific table file"""
     return folder / f"table.{var}"
 
 
 def _get_surveyfile(folder: Path, index: int) -> Path:
-    """ Returns the name of the temporary survey file """
+    """Returns the name of the temporary survey file"""
     return folder / f"survey.{index:d}.tmp"
 
 
 def _launch_single_job(inputfile_path: Path):
-    """ Function for pool to start a single madx job """
+    """Function for pool to start a single madx job"""
     log_file = inputfile_path.with_name(f"{inputfile_path.name}.log")
     try:
         madx_wrapper.run_file(inputfile_path, log_file=log_file, cwd=inputfile_path.parent)
@@ -225,21 +227,23 @@ def _launch_single_job(inputfile_path: Path):
 
 
 def _load_and_remove_twiss(path_and_var: tuple[Path, str]) -> tuple[str, tfs.TfsDataFrame]:
-    """ Function for pool to retrieve results """
+    """Function for pool to retrieve results"""
     path, var = path_and_var
     twissfile = _get_tablefile(path, var)
     tfs_data = tfs.read(twissfile, index="NAME")
     return var, tfs_data
 
 
-def _create_basic_job(accel_inst: Accelerator, k_values: list[str], variables: Sequence[str]) -> str:
-    """ Create the madx-job basics needed
-        TEMPFILE needs to be replaced in the returned string.
+def _create_basic_job(
+    accel_inst: Accelerator, k_values: list[str], variables: Sequence[str]
+) -> str:
+    """Create the madx-job basics needed
+    TEMPFILE needs to be replaced in the returned string.
     """
     # get nominal setup from creator
     creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
     creator: ModelCreator = creator_class(accel_inst)
-    job_content = creator.get_base_madx_script()
+    job_content = creator.get_base_madx_script(accel_inst.model_dir)
 
     # create a survey and save it to a temporary file
     job_content += (
@@ -297,16 +301,18 @@ def _create_basic_job(accel_inst: Accelerator, k_values: list[str], variables: S
 
 
 def check_varmap_file(accel_inst: Accelerator, vars_categories):
-    """ Checks on varmap file and creates it if not in model folder.
-    """
+    """Checks on varmap file and creates it if not in model folder."""
     if accel_inst.modifiers is None:
-        raise ValueError("Optics not defined. Please provide modifiers.madx. "
-                         "Otherwise MADX evaluation might be unstable.")
+        raise ValueError(
+            "Optics not defined. Please provide modifiers.madx. "
+            "Otherwise MADX evaluation might be unstable."
+        )
 
-    varmap_path = Path(accel_inst.model_dir) / f"varmap_{'_'.join(sorted(set(vars_categories)))}.{EXT}"
+    varmap_path = (
+        Path(accel_inst.model_dir) / f"varmap_{'_'.join(sorted(set(vars_categories)))}.{EXT}"
+    )
     if not varmap_path.exists():
-        LOG.info(f"Variable mapping '{str(varmap_path):s}' not found. "
-                 "Evaluating it via madx.")
+        LOG.info(f"Variable mapping '{str(varmap_path):s}' not found. Evaluating it via madx.")
         mapping = evaluate_for_variables(accel_inst, vars_categories)
         write_varmap(varmap_path, mapping)
 

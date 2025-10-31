@@ -2,6 +2,7 @@
 SPS Model Creator
 -----------------
 """
+
 from __future__ import annotations
 
 from abc import ABC
@@ -66,8 +67,7 @@ class SpsModelCreator(ModelCreator, ABC):
 
         # hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)
         # hint: modifiers were at this point probably already checked (and adapted) in `prepare_run()`.
-        inexistent_modifiers = [
-            m for m in accel.modifiers if not (accel.model_dir / m).exists()]
+        inexistent_modifiers = [m for m in accel.modifiers if not (accel.model_dir / m).exists()]
         if len(inexistent_modifiers):
             raise AcceleratorDefinitionError(
                 "The following modifier files do not exist: "
@@ -83,14 +83,12 @@ class SpsModelCreator(ModelCreator, ABC):
             )
 
     def prepare_options(self, opt) -> bool:
-        """ Use the fetcher to list choices if requested. """
+        """Use the fetcher to list choices if requested."""
         accel: Sps = self.accel
 
         if opt.fetch == Fetcher.PATH:
             if opt.path is None:
-                raise AcceleratorDefinitionError(
-                    "Path fetcher chosen, but no path proivided."
-                )
+                raise AcceleratorDefinitionError("Path fetcher chosen, but no path proivided.")
             acc_model_path = Path(opt.path)
 
         elif opt.fetch == Fetcher.AFS:
@@ -100,7 +98,7 @@ class SpsModelCreator(ModelCreator, ABC):
                 msg="No optics tag (flag --year) given",
                 selection=accel.year,
                 list_choices=opt.list_choices,
-                predicate=Path.is_dir
+                predicate=Path.is_dir,
             )  # raises AcceleratorDefintionError if not valid choice
         else:
             LOGGER.warning(
@@ -119,29 +117,32 @@ class SpsModelCreator(ModelCreator, ABC):
                 msg="No/Unknown strength file (flag --str_file) selected",
                 selection=None,
                 list_choices=opt.list_choices,
-                predicate=get_check_suffix_func(".str")
+                predicate=get_check_suffix_func(".str"),
             )
 
         # Set the found paths ---
         accel.acc_model_path = acc_model_path
 
-    def get_base_madx_script(self):
+    def get_base_madx_script(self, cwd: Path | str) -> str:
         accel: Sps = self.accel
         use_excitation = accel.excitation != AccExcitationMode.FREE
+        seq_path = self._madx_path(accel.acc_model_path / "sps.seq", cwd)
 
         # The very basics ---
         madx_script = (
             "! Load Base Sequence and Strengths/Modifiers ---\n"
             "option, -echo;  ! suppress output from base sequence loading to keep the log small\n\n"
-            f"call, file = '{accel.acc_model_path / 'sps.seq'!s}';\n"
+            f"call, file = '{seq_path}';\n"
         )
 
         if accel.modifiers is not None:  # includes the strengths file
             for modifier in accel.modifiers:
-                madx_script += f"call, file = '{accel.acc_model_path / modifier!s}'; {MODIFIER_TAG}\n"
+                modifier_path = self._madx_path(modifier, cwd)
+                madx_script += f"call, file = '{modifier_path}'; {MODIFIER_TAG}\n"
 
+        toolkit_path = self._madx_path(accel.acc_model_path / "toolkit" / "macro.madx", cwd)
         madx_script += (
-            f"call, file ='{accel.acc_model_path / 'toolkit' / 'macro.madx'!s}';\n"
+            f"call, file ='{toolkit_path}';\n"
             "option, echo;\n\n"
             "! Create Beam ---\n"
             "beam;\n\n"
@@ -154,8 +155,8 @@ class SpsModelCreator(ModelCreator, ABC):
         if use_excitation or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
             madx_script += (
-                f"qxd={accel.drv_tunes[0]%1:.3f};\n"
-                f"qyd={accel.drv_tunes[1]%1:.3f};\n\n"
+                f"qxd={accel.drv_tunes[0] % 1:.3f};\n"
+                f"qyd={accel.drv_tunes[1] % 1:.3f};\n\n"
                 "! Prepare ACDipole Elements ---\n"
                 f"use_acd={use_excitation:d}; ! Switch the use of AC dipole\n\n"
                 "hacmap21 = 0;\n"
@@ -166,11 +167,7 @@ class SpsModelCreator(ModelCreator, ABC):
                 "ZKV_MARKER: marker;\n\n"
             )
 
-        madx_script += (
-            "! Cycle Sequence ---\n"
-            "seqedit, sequence=sps;\n"
-            "    flatten;\n"
-        )
+        madx_script += "! Cycle Sequence ---\nseqedit, sequence=sps;\n    flatten;\n"
 
         if use_excitation or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
@@ -194,48 +191,45 @@ class SpsModelCreator(ModelCreator, ABC):
             #     f"    install, element={marker_name}, at=-{self._start_bpm}->L, from={self._start_bpm};\n"
             #     f"    cycle, start = {marker_name};\n"
             # )
-            madx_script += (
-                f"    cycle, start = {self._start_bpm};\n"
-            )
+            madx_script += f"    cycle, start = {self._start_bpm};\n"
 
-        madx_script += (
-             "endedit;\n"
-             "use, sequence=sps;\n\n"
-        )
+        madx_script += "endedit;\nuse, sequence=sps;\n\n"
 
         # Match tunes ---
         madx_script += (
-             "! Match Tunes ---\n"
-            "exec, sps_match_tunes(qx0,qy0);\n\n"
+            "! Match Tunes ---\nexec, sps_match_tunes(qx0,qy0);\n\n"
             # "twiss, file = 'sps.tfs';\n"  # also not sure if needed
         )
         return madx_script
 
-    def get_madx_script(self):
+    def get_madx_script(self, cwd: Path | str) -> str:
         accel: Sps = self.accel
         use_excitation = accel.excitation != AccExcitationMode.FREE
 
-        madx_script = self.get_base_madx_script()
+        madx_script = self.get_base_madx_script(cwd)
+        twiss_path = self._madx_path(self.output_dir / TWISS_DAT, cwd)
+        twiss_elements_path = self._madx_path(self.output_dir / TWISS_ELEMENTS_DAT, cwd)
         madx_script += (
-             "! Create twiss data files ---\n"
+            "! Create twiss data files ---\n"
             f"{self._get_select_command(pattern=accel.RE_DICT[AccElementTypes.BPMS])}"
-            f"twiss, file = {accel.model_dir / TWISS_DAT};\n"
+            f"twiss, file = '{twiss_path}';\n"
             "\n"
             f"{self._get_select_command()}"
-            f"twiss, file = {accel.model_dir / TWISS_ELEMENTS_DAT};\n"
+            f"twiss, file = '{twiss_elements_path}';\n"
         )
 
         if use_excitation or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
+            twiss_ac_path = self._madx_path(self.output_dir / TWISS_AC_DAT, cwd)
             madx_script += (
                 f"if(use_acd == 1){{\n"
-                 "    betxac = table(twiss, hacmap, betx);\n"
-                 "    betyac = table(twiss, vacmap, bety);\n"
+                "    betxac = table(twiss, hacmap, betx);\n"
+                "    betyac = table(twiss, vacmap, bety);\n"
                 f"    hacmap21 := 2*(cos(2*pi*qxd)-cos(2*pi*qx0))/(betxac*sin(2*pi*qx0));\n"
                 f"    vacmap43 := 2*(cos(2*pi*qyd)-cos(2*pi*qy0))/(betyac*sin(2*pi*qy0));\n"
                 "\n"
                 f"{self._get_select_command(pattern=accel.RE_DICT[AccElementTypes.BPMS], indent=4)}"
-                f"    twiss, file = {accel.model_dir / TWISS_AC_DAT};\n"
+                f"    twiss, file = '{twiss_ac_path}';\n"
                 f"}}\n"
             )
         return madx_script
@@ -246,10 +240,12 @@ class SpsCorrectionModelCreator(CorrectionModelCreator, SpsModelCreator):
     Creates an updated model from multiple changeparameters inputs
     (used in iterative correction).
     """
+
     def prepare_run(self) -> None:
         # As the matched/corrected model is created in the same directory as the original model,
         # we do not need to prepare as much.
         self.check_accelerator_instance()
+
 
 class SpsSegmentCreator(SegmentCreator, SpsModelCreator):
     _sequence_name = "sps"

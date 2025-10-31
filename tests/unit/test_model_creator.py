@@ -29,6 +29,7 @@ from omc3.model.model_creators.lhc_model_creator import (
     LhcModelCreator,
 )
 from omc3.model_creator import create_instance_and_model
+from omc3.nxcals.constants import EXTRACTED_MQTS_FILENAME
 from omc3.optics_measurements.constants import NAME
 from tests.conftest import assert_frame_equal
 
@@ -41,6 +42,7 @@ LHC_2018_HIGH_BETA_MODIFIERS = [Path("R2018h_A90mC90mA10mL10m.madx")]
 UNAVAILABLE_FETCHER = "unavailable_fetcher"
 
 # ---- creation tests ------------------------------------------------------------------------------
+
 
 @pytest.mark.basic
 def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
@@ -70,7 +72,10 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
     accel_opt_duplicate["scenario"] = None
     with pytest.raises(AcceleratorDefinitionError) as e:
         create_instance_and_model(
-            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+            type="nominal",
+            outputdir=tmp_path,
+            logfile=tmp_path / "madx_log.txt",
+            **accel_opt_duplicate,
         )
     assert "flag --scenario" in str(e.value)
     assert "Selected: 'None'" in str(e.value)
@@ -79,7 +84,10 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
     accel_opt_duplicate["str_file"] = None
     with pytest.raises(AcceleratorDefinitionError) as e:
         create_instance_and_model(
-            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+            type="nominal",
+            outputdir=tmp_path,
+            logfile=tmp_path / "madx_log.txt",
+            **accel_opt_duplicate,
         )
     assert "flag --str_file" in str(e.value)
     assert "Selected: 'None'" in str(e.value)
@@ -104,6 +112,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
+
 
 # ps tune matching fails for 2018 optics
 # The magnets used for the different tune matching methods in > 2018 were installed in LS2.
@@ -135,7 +144,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
 def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
     accel_opt = {
         "accel": "ps",
-        "nat_tunes": [0.21, 0.323], # from madx_job file in acc_models
+        "nat_tunes": [0.21, 0.323],  # from madx_job file in acc_models
         "dpp": 0.0,
         "energy": 1.4,
         "year": "2018",
@@ -158,7 +167,10 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
 
     with pytest.raises(RuntimeError) as excinfo:
         create_instance_and_model(
-            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+            type="nominal",
+            outputdir=tmp_path,
+            logfile=tmp_path / "madx_log.txt",
+            **accel_opt_duplicate,
         )
     assert "Please provide the --energy ENERGY flag" in str(excinfo.value)
 
@@ -220,7 +232,7 @@ def test_lhc_creation_nominal_free_high_beta(tmp_path, acc_models_lhc_2018):
         "energy": 6500.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2018,
-        "modifiers": LHC_2018_HIGH_BETA_MODIFIERS
+        "modifiers": LHC_2018_HIGH_BETA_MODIFIERS,
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -239,7 +251,7 @@ def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2025):
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2025,
-        "modifiers": LHC_2025_30CM_MODIFIERS
+        "modifiers": LHC_2025_30CM_MODIFIERS,
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -256,7 +268,7 @@ def test_lhc_creation_nominal_2016(tmp_path):
         "nat_tunes": [0.31, 0.32],
         "dpp": 0.0,
         "energy": 6500.0,
-        "modifiers": [INPUTS / "models" / "modifiers_2016" / "opt_400_10000_400_3000.madx"]
+        "modifiers": [INPUTS / "models" / "modifiers_2016" / "opt_400_10000_400_3000.madx"],
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -266,7 +278,7 @@ def test_lhc_creation_nominal_2016(tmp_path):
 
 @pytest.mark.basic
 def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
-    (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
+    (tmp_path / EXTRACTED_MQTS_FILENAME).write_text("\n")
 
     corrections = tmp_path / "other_corrections.madx"
     corrections_str = "! just a comment to test the corrections file is actually loaded in madx. whfifhkdskjfshkdhfswojeorijr"
@@ -284,7 +296,7 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2025,
-        "modifiers": LHC_2025_30CM_MODIFIERS + [corrections]
+        "modifiers": LHC_2025_30CM_MODIFIERS + [corrections],
     }
 
     # like from the GUI, dump best knowledge on top of nominal
@@ -318,12 +330,14 @@ def test_lhc_creation_absolute_modifier_path(tmp_path: Path, acc_models_lhc_2022
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2022,
-        "modifiers": [(acc_models_lhc_2022 / rel_path).absolute()]
+        "modifiers": [(acc_models_lhc_2022 / rel_path).absolute()],
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    absolute_path = tmp_path / f"{ACC_MODELS_PREFIX}-{accel.NAME}" / rel_path  # replaced in model creation
+    absolute_path = (
+        tmp_path / f"{ACC_MODELS_PREFIX}-{accel.NAME}" / rel_path
+    )  # replaced in model creation
     madx_string = f"call, file = '{absolute_path!s}"
     assert madx_string in (tmp_path / JOB_MODEL_MADX_NOMINAL).read_text()
     assert madx_string in (tmp_path / "madx_log.txt").read_text()
@@ -343,7 +357,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path, acc_models_lhc_2018):
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2018,
-        "modifiers": [non_existent]
+        "modifiers": [non_existent],
     }
     with pytest.raises(FileNotFoundError) as creation_error:
         create_instance_and_model(
@@ -363,7 +377,10 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path, acc_models_lhc_2
     model_dir_relpath.mkdir()
 
     optics_file_relpath = Path("R2022a_A30cmC30cmA10mL200cm.madx")
-    shutil.copy(acc_models_lhc_2022 / "operation/optics" / optics_file_relpath, model_dir_relpath / optics_file_relpath.name)
+    shutil.copy(
+        acc_models_lhc_2022 / "operation/optics" / optics_file_relpath,
+        model_dir_relpath / optics_file_relpath.name,
+    )
 
     accel_opt = {
         "accel": "lhc",
@@ -390,8 +407,8 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path, acc_models_lhc_2
 
 @pytest.mark.basic
 def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
-    """ Checks if the post_run() method succeeds on an already existing given model (dir),
-    and then checks that it failes when removing individual files from that model. """
+    """Checks if the post_run() method succeeds on an already existing given model (dir),
+    and then checks that it failes when removing individual files from that model."""
     accel = get_accelerator(**model_25cm_beam1)
     LhcModelCreator(accel).post_run()
 
@@ -411,11 +428,12 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
         if file_path_moved.exists():
             shutil.move(file_path_moved, file_path)
 
+
 # ---- cli tests -----------------------------------------------------------------------------------
+
 
 @pytest.mark.basic
 def test_lhc_creator_cli(tmp_path, acc_models_lhc_2025, capsys):
-
     accel_opt = {
         "accel": "lhc",
         "year": "2025",
@@ -444,6 +462,7 @@ def test_lhc_creator_cli(tmp_path, acc_models_lhc_2025, capsys):
     for m in modifiers:
         assert m.endswith(".madx")
 
+
 @pytest.mark.basic
 def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
     accel_opt = {
@@ -469,14 +488,7 @@ def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
     scenarios = [c for c in scenarios if len(c) > 0]  # remove empty lines
     scenarios.sort()
 
-    assert scenarios == [
-        "ad",
-        "east",
-        "isolde",
-        "lhc",
-        "sftpro",
-        "tof"
-    ]
+    assert scenarios == ["ad", "east", "isolde", "lhc", "sftpro", "tof"]
 
     accel_opt["scenario"] = "lhc"
 
@@ -496,11 +508,12 @@ def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
         "3_extraction",
     ]
 
+
 @pytest.mark.basic
 def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
     accel_opt = {
         "accel": "ps",
-        "nat_tunes": [0.21, 0.323], # from madx_job file in acc_models
+        "nat_tunes": [0.21, 0.323],  # from madx_job file in acc_models
         "dpp": 0.0,
         "energy": 1.4,
         "year": "2018",
@@ -527,14 +540,13 @@ def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
         "4_flat_bottom_wo_QDN90",
     ]
 
+
 # ---- helper --------------------------------------------------------------------------------------
 
+
 def check_accel_from_dir_vs_options(
-    model_dir: Path,
-    accel_options: DotDict,
-    accel_from_opt: Accelerator,
-    best_knowledge=False
-    ):
+    model_dir: Path, accel_options: DotDict, accel_from_opt: Accelerator, best_knowledge=False
+):
     # creation via model_from_dir tests that all files are in place:
     accel_from_dir: Accelerator = get_accelerator(
         accel=accel_options["accel"],

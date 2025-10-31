@@ -4,9 +4,11 @@ Abstract Model Creator Class
 
 This module provides the template for all model creators.
 """
+
 from __future__ import annotations
 
 import contextlib
+import os
 import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -49,6 +51,7 @@ if TYPE_CHECKING:
 
     from omc3.segment_by_segment.propagables import Propagable
     from omc3.segment_by_segment.segments import Segment
+
     MADXInputType = Path | str | dict[str, str] | None
 
 LOGGER = logging_tools.get_logger(__file__)
@@ -59,6 +62,7 @@ class ModelCreator(ABC):
     Abstract class for the implementation of a model creator.
     All mandatory methods and convenience functions are defined here.
     """
+
     jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
 
     def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
@@ -93,31 +97,32 @@ class ModelCreator(ABC):
         pass
 
     def full_run(self):
-        """ Does the full run: preparation, running madx, post_run. """
+        """Does the full run: preparation, running madx, post_run."""
         # Prepare model-dir output directory
         self.prepare_run()
 
         # get madx-script with relative output-paths
         # (model_dir is base-path in get_madx_script)
-        self.accel.model_dir = Path()
-        madx_script = self.get_madx_script()
-        self.accel.model_dir = self.output_dir
+        madx_script = self.get_madx_script(cwd=self.accel.model_dir)
 
         # Run madx to create model
         run_string(
             madx_script,
             output_file=self.accel.model_dir / self.jobfile,
             log_file=self.logfile,
-            cwd=self.accel.model_dir
+            cwd=self.accel.model_dir,
         )
 
         # Check output and return accelerator instance
         self.post_run()
 
     @abstractmethod
-    def get_madx_script(self) -> str:
+    def get_madx_script(self, cwd: Path | str) -> str:
         """
         Returns the ``MAD-X`` script used to create the model (directory).
+
+        Args:
+            cwd (Path | str): The current working directory where the madx script will be run.
 
         Returns:
             The string of the ``MAD-X`` script used to used to create the model (directory).
@@ -125,22 +130,50 @@ class ModelCreator(ABC):
         pass
 
     @abstractmethod
-    def get_base_madx_script(self) -> str:
+    def get_base_madx_script(self, cwd: Path | str) -> str:
         """
         Returns the ``MAD-X`` script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
         as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).
+
+        Args:
+            cwd (Path | str): The current working directory where the madx script will be run.
 
         Returns:
             The string of the ``MAD-X`` script used to used to set-up the machine.
         """
         pass
 
+    def _madx_path(self, path: Path | str, cwd: Path | str) -> str:
+        """Return a MAD-X friendly path.
+
+        Absolute paths are returned unchanged so MAD-X can consume them directly. If the provided
+        path is not absolute, it is expressed relative to the working directory ``cwd``. This
+        keeps the generated scripts consistent regardless of the caller's current directory.
+        """
+
+        target = Path(path)
+        if target.is_absolute():
+            return target.as_posix()
+
+        cwd_path = Path(cwd)
+        cwd_norm = os.path.normpath(str(cwd_path))
+        target_norm = os.path.normpath(str(cwd_path / target))
+
+        try:
+            rel_path = os.path.relpath(target_norm, cwd_norm)
+        except ValueError as exc:  # pragma: no cover - platform dependent edge case
+            raise AcceleratorDefinitionError(
+                f"Path '{target}' cannot be expressed relative to working directory '{cwd_path}'."
+            ) from exc
+
+        return Path(rel_path).as_posix()
+
     def get_update_deltap_script(self, deltap: float | str) -> str:
-        """ Get the madx snippet that updates the dpp in the machine.
+        """Get the madx snippet that updates the dpp in the machine.
 
         Args:
             deltap (float | str): The dpp to update the machine to.
-         """
+        """
         raise NotImplementedError("Update dpp not implemented for this model creator.")
 
     def prepare_run(self) -> None:
@@ -184,8 +217,11 @@ class ModelCreator(ABC):
         for filename in self.files_to_check:
             with contextlib.suppress(KeyError):
                 # KeyError if just a file to check, not a file with attribute
-                setattr(self.accel, attribute_map[filename], tfs.read(self.accel.model_dir / filename, index=NAME))
-
+                setattr(
+                    self.accel,
+                    attribute_map[filename],
+                    tfs.read(self.accel.model_dir / filename, index=NAME),
+                )
 
     @property
     def files_to_check(self) -> list[str]:
@@ -201,7 +237,6 @@ class ModelCreator(ABC):
             AccExcitationMode.ADT: [TWISS_ADT_DAT],
         }
         return check_files + excitation_map[self.accel.excitation]
-
 
     @staticmethod
     def _check_files_exist(dir_: Path | str, files: Sequence[str]) -> None:
@@ -268,16 +303,16 @@ class ModelCreator(ABC):
             ]
 
     def prepare_modifiers(self):
-        """ Loop over the modifiers and make them full paths if found. """
+        """Loop over the modifiers and make them full paths if found."""
         accel: Accelerator = self.accel
         if accel.modifiers is not None:
             accel.modifiers = [accel.find_modifier(m) for m in accel.modifiers]
 
     @staticmethod
     def _get_select_command(pattern: str | None = None, indent: int = 0):
-        """ Returns a basic select command with the given pattern, the default columns and correct indentation. """
+        """Returns a basic select command with the given pattern, the default columns and correct indentation."""
         space = " " * indent
-        pattern_str = f" pattern=\"{pattern}\"," if pattern is not None else ""
+        pattern_str = f' pattern="{pattern}",' if pattern is not None else ""
         return (
             f"{space}select, flag=twiss, clear;\n"
             f"{space}select, flag=twiss,{pattern_str} column="
@@ -288,7 +323,7 @@ class ModelCreator(ABC):
 
 
 class SegmentCreator(ModelCreator, ABC):
-    """ Model creator for Segments, to be used in the Segment-by-Segment algorithm.
+    """Model creator for Segments, to be used in the Segment-by-Segment algorithm.
     These segments propagate the measured values from the beginning of the segment to the end.
 
     This only handles the MAD-X part of things.
@@ -298,12 +333,20 @@ class SegmentCreator(ModelCreator, ABC):
     The output is stored in the `twiss_forward` and `twiss_backward` files,
     which in turn can be used for further processing by the implemented Propagables.
     """
+
     jobfile = None  # set in init
     _sequence_name: str = None  # to be set by any accelerator using the default `get_madx_script`
 
-    def __init__(self, accel: Accelerator, segment: Segment, measurables: Iterable[Propagable],
-                 corrections: MADXInputType = None, *args, **kwargs):
-        """ Creates Segment of a model. """
+    def __init__(
+        self,
+        accel: Accelerator,
+        segment: Segment,
+        measurables: Iterable[Propagable],
+        corrections: MADXInputType = None,
+        *args,
+        **kwargs,
+    ):
+        """Creates Segment of a model."""
         LOGGER.debug("Initializing Segment Creator")
         super().__init__(accel, *args, **kwargs)
         self.segment = segment
@@ -335,8 +378,13 @@ class SegmentCreator(ModelCreator, ABC):
         shutil.copy(OMC3_MADX_MACROS_DIR / GENERAL_MACROS, general_macros_path)
 
     def _clean_models(self):
-        """ Remove models from previous runs. """
-        for twiss_file in (self.twiss_forward, self.twiss_forward_corrected, self.twiss_backward, self.twiss_backward_corrected):
+        """Remove models from previous runs."""
+        for twiss_file in (
+            self.twiss_forward,
+            self.twiss_forward_corrected,
+            self.twiss_backward,
+            self.twiss_backward_corrected,
+        ):
             output_twiss: Path = self.output_dir / twiss_file
             output_twiss.unlink(missing_ok=True)
 
@@ -372,9 +420,13 @@ class SegmentCreator(ModelCreator, ABC):
 
         raise NotImplementedError("Could not determine type of corrections. Aborting.")
 
-    def get_madx_script(self):
-        accel: Accelerator = self.accel
-        madx_script = self.get_base_madx_script()
+    def get_madx_script(self, cwd: Path | str) -> str:
+        madx_script = self.get_base_madx_script(cwd)
+
+        macros_path = self._madx_path(self.output_dir / MACROS_DIR / GENERAL_MACROS, cwd)
+        measurement_path = self._madx_path(self.output_dir / self.measurement_madx, cwd)
+        twiss_forward_path = self._madx_path(self.output_dir / self.twiss_forward, cwd)
+        twiss_backward_path = self._madx_path(self.output_dir / self.twiss_backward, cwd)
 
         if self._sequence_name is None:
             raise ValueError(
@@ -382,57 +434,71 @@ class SegmentCreator(ModelCreator, ABC):
                 f"the derived class '{self.__class__.__name__}'"
                 " must set the '_sequence_name' attribute.\n"
                 "This error should only be encountered during development. "
-                "If you encounter it later, please open an issue!")
+                "If you encounter it later, please open an issue!"
+            )
 
-        madx_script += "\n".join([
-             "",
-            f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
-             "",
-            f"call, file = '{accel.model_dir / MACROS_DIR / GENERAL_MACROS}';",
-             "",
-             "! Cycle the sequence to avoid negative length.",
-            f"seqedit, sequence={self._sequence_name};",
-             "    flatten;",
-            f"    cycle, start={self.segment.start};",
-             "endedit;",
-             "",
-            f"use, sequence = {self._sequence_name};",
-             "",
-             "twiss;",
-             "exec, save_initial_and_final_values(",
-            f"    {self._sequence_name},",
-            f"    {self.segment.start},",
-            f"    {self.segment.end}, ",
-            f"    \"{accel.model_dir / self.measurement_madx!s}\",",
-             "    biniSbSParams,",
-             "    bendSbSParams",
-             ");",
-             "",
-             "exec, extract_segment_sequence(",
-            f"    {self._sequence_name},",
-             "    forward_SbSSEQ,",
-             "    backward_SbSSEQ,",
-            f"    {self.segment.start},",
-            f"    {self.segment.end},",
-             ");",
-             "",
-             "beam, particle = proton, sequence=forward_SbSSEQ;",
-             "beam, particle = proton, sequence=backward_SbSSEQ;",
-            "",
-            f"exec, twiss_segment(forward_SbSSEQ, \"{self.twiss_forward!s}\", biniSbSParams);",
-            f"exec, twiss_segment(backward_SbSSEQ, \"{self.twiss_backward!s}\", bendSbSParams);",
-             "",
-        ])
+        madx_script += "\n".join(
+            [
+                "",
+                f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
+                "",
+                f"call, file = '{macros_path}';",
+                "",
+                "! Cycle the sequence to avoid negative length.",
+                f"seqedit, sequence={self._sequence_name};",
+                "    flatten;",
+                f"    cycle, start={self.segment.start};",
+                "endedit;",
+                "",
+                f"use, sequence = {self._sequence_name};",
+                "",
+                "twiss;",
+                "exec, save_initial_and_final_values(",
+                f"    {self._sequence_name},",
+                f"    {self.segment.start},",
+                f"    {self.segment.end}, ",
+                f'    "{measurement_path}",',
+                "    biniSbSParams,",
+                "    bendSbSParams",
+                ");",
+                "",
+                "exec, extract_segment_sequence(",
+                f"    {self._sequence_name},",
+                "    forward_SbSSEQ,",
+                "    backward_SbSSEQ,",
+                f"    {self.segment.start},",
+                f"    {self.segment.end},",
+                ");",
+                "",
+                "beam, particle = proton, sequence=forward_SbSSEQ;",
+                "beam, particle = proton, sequence=backward_SbSSEQ;",
+                "",
+                f'exec, twiss_segment(forward_SbSSEQ, "{twiss_forward_path}", biniSbSParams);',
+                f'exec, twiss_segment(backward_SbSSEQ, "{twiss_backward_path}", bendSbSParams);',
+                "",
+            ]
+        )
 
         if self.corrections is not None:
-            madx_script += "\n".join([
-                f"call, file=\"{self.corrections_madx!s}\";",
-                f"exec, twiss_segment(forward_SbSSEQ, "
-                f"\"{self.twiss_forward_corrected}\", biniSbSParams);",
-                f"exec, twiss_segment(backward_SbSSEQ, "
-                f"\"{self.twiss_backward_corrected}\", bendSbSParams);",
-                "",
-            ])
+            corrections_path = self._madx_path(self.output_dir / self.corrections_madx, cwd)
+            twiss_forward_corr_path = self._madx_path(
+                self.output_dir / self.twiss_forward_corrected,
+                cwd,
+            )
+            twiss_backward_corr_path = self._madx_path(
+                self.output_dir / self.twiss_backward_corrected,
+                cwd,
+            )
+            madx_script += "\n".join(
+                [
+                    f'call, file="{corrections_path}";',
+                    f"exec, twiss_segment(forward_SbSSEQ, "
+                    f'"{twiss_forward_corr_path}", biniSbSParams);',
+                    f"exec, twiss_segment(backward_SbSSEQ, "
+                    f'"{twiss_backward_corr_path}", bendSbSParams);',
+                    "",
+                ]
+            )
 
         return madx_script
 
@@ -447,7 +513,13 @@ class SegmentCreator(ModelCreator, ABC):
 class CorrectionModelCreator(ModelCreator):
     jobfile = None  # set in __init__
 
-    def __init__(self, accel: Accelerator, twiss_out: Path | str, corr_files: Sequence[Path | str], update_dpp: bool = False):
+    def __init__(
+        self,
+        accel: Accelerator,
+        twiss_out: Path | str,
+        corr_files: Sequence[Path | str],
+        update_dpp: bool = False,
+    ):
         """Model creator for the corrected/matched model of the LHC.
 
         Args:
@@ -462,12 +534,12 @@ class CorrectionModelCreator(ModelCreator):
 
         # use absolute paths to force files into twiss_out directory instead of model-dir
         self.jobfile = self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.madx"
-        self.logfile= self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
+        self.logfile = self.twiss_out.parent.absolute() / f"job.create_{self.twiss_out.stem}.log"
         self.corr_files = corr_files
         self.update_dpp = update_dpp
 
-    def get_madx_script(self) -> str:
-        """ Get the madx script for the correction model creator, which updates the model after correcion.
+    def get_madx_script(self, cwd: Path | str) -> str:
+        """Get the madx script for the correction model creator, which updates the model after correcion.
 
         This is a basic implementation which does not update the dpp, but should work for generic accelerators.
         """
@@ -476,17 +548,15 @@ class CorrectionModelCreator(ModelCreator):
                 f"Updating the dpp is not implemented for correction model creator of {self.accel.NAME}."
             )
 
-        madx_script = self.get_base_madx_script()  # do not get_madx_script as we don't need the uncorrected output.
+        # do not get_madx_script as we don't need the uncorrected output.
+        madx_script = self.get_base_madx_script(cwd)
 
         for corr_file in self.corr_files:  # Load the corrections
-            madx_script += f"call, file = '{corr_file!s}';\n"
+            madx_script += f"call, file = '{self._madx_path(corr_file, cwd)}';\n"
 
-        madx_script += (
-            f"{self._get_select_command()}\n"
-            f"twiss, file = {self.twiss_out!s};\n"
-        )
+        twiss_out_path = self._madx_path(self.twiss_out, cwd)
+        madx_script += f"{self._get_select_command()}\ntwiss, file = {twiss_out_path};\n"
         return madx_script
-
 
     @property
     def files_to_check(self) -> list[str]:
@@ -495,6 +565,7 @@ class CorrectionModelCreator(ModelCreator):
 
 # Helper functions -------------------------------------------------------------
 
+
 def check_folder_choices(
     parent: Path,
     msg: str,
@@ -502,7 +573,7 @@ def check_folder_choices(
     list_choices: bool = False,
     predicate=iotools.always_true,
     stem_only: bool = False,
-    ) -> Path:
+) -> Path:
     """
     A helper function that scans a selected folder for children, which will then be displayed as possible choices.
     This funciton allows the model-creator to get only the file/folder names, check
@@ -542,4 +613,6 @@ def check_folder_choices(
     if list_choices:
         for choice in choices:
             print(choice)
-    raise AcceleratorDefinitionError(f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]")
+    raise AcceleratorDefinitionError(
+        f"{msg}.\nSelected: '{selection}'.\nChoices: [{', '.join(choices)}]"
+    )
