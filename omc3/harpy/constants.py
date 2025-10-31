@@ -4,6 +4,7 @@ Constants
 
 Specific constants to be used in ``harpy``, to help with consistency.
 """
+
 from __future__ import annotations
 
 # Output Fileextensions --------------------------------------------------------
@@ -32,3 +33,18 @@ COL_NATMU: str = "NATMU"
 COL_FREQ: str = "FREQ"
 COL_PHASE: str = "PHASE"
 COL_ERR: str = "ERR"
+
+# Additional Column Names ---
+COL_S: str = "S"
+COL_BPM_RES: str = "BPM_RES"
+COL_PK2PK: str = "PK2PK"
+COL_CO: str = "CO"
+COL_CORMS: str = "CORMS"
+COL_NOISE: str = "NOISE"
+COL_NOISE_SCALED: str = "NOISE_SCALED"
+COL_COEFFS: str = "COEFFS"
+COL_FREQS: str = "FREQS"
+COL_TIME: str = "TIME"
+
+# Header Keys -----------------------------------------------------------------
+MAINLINE_UNIT: str = "MAINLINE_UNIT"

@@ -4,6 +4,7 @@ Contexts
 
 Provides contexts managers to use.
 """
+
 from __future__ import annotations
 
 import os
@@ -12,6 +13,10 @@ import time
 import warnings
 from contextlib import contextmanager
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @contextmanager
@@ -38,7 +43,7 @@ def silence():
 
 
 @contextmanager
-def timeit(function):
+def timeit(function: Callable):
     """Prints the time at the end of the context via ``function``."""
     start_time = time.time()
     try:
@@ -55,6 +60,7 @@ def suppress_warnings(warning_classes):
         yield
     for w in warn_list:
         if not issubclass(w.category, warning_classes):
-            print(f"{w.filename:s}:{w.lineno:d}: {w._category_name:s}: {w.message.message:s}",
-                file=sys.stderr
+            print(
+                f"{w.filename:s}:{w.lineno:d}: {w._category_name:s}: {w.message.message:s}",
+                file=sys.stderr,
             )

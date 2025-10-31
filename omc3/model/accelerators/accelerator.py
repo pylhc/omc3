@@ -5,6 +5,7 @@ Accelerator
 This module provides high-level classes to define most functionality of ``model.accelerators``.
 It contains entrypoint the parent `Accelerator` class as well as other support classes.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -60,6 +61,7 @@ class Accelerator:
     """
     Abstract class to serve as an interface to implement the rest of the accelerators.
     """
+
     NAME: str
     LOCAL_REPO_NAME: str | None = None
     # RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)
@@ -113,7 +115,9 @@ class Accelerator:
             help="Path to the optics file to use (modifiers file).",
         )
         params.add_parameter(
-            name="xing", action="store_true", help="If True, x-ing angles will be applied to model"
+            name="xing",
+            action="store_true",
+            help="If True, x-ing angles will be applied to model",
         )
         return params
 
@@ -234,7 +238,7 @@ class Accelerator:
             self.error_defs_file = errordefspath
 
     def find_modifier(self, modifier: Path | str):
-        """ Try to find a modifier file, which might be given only by its name.
+        """Try to find a modifier file, which might be given only by its name.
         By default this is looking for full-path, model-dir and in the acc-models-path,
         but should probably be overwritten by the accelerator sub-classes.
         """
@@ -266,7 +270,9 @@ class Accelerator:
             if self.nat_tunes is None:
                 raise AttributeError("Natural tunes not set (missing `--nat_tunes` flag?)")
             if self.excitation != AccExcitationMode.FREE and self.drv_tunes is None:
-                raise AttributeError("Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)")
+                raise AttributeError(
+                    "Driven excitation selected but no driven tunes given (missing `--drv_tunes` flag?)"
+                )
 
     def get_exciter_bpm(self, plane: str, commonbpms: list[str]):
         """
@@ -294,7 +300,9 @@ class Accelerator:
     @model_driven.setter
     def model_driven(self, value):
         if self.excitation == AccExcitationMode.FREE:
-            raise AcceleratorDefinitionError("Driven model cannot be set for accelerator with free excitation mode.")
+            raise AcceleratorDefinitionError(
+                "Driven model cannot be set for accelerator with free excitation mode."
+            )
         self._model_driven = value
 
     # Class methods ###########################################
@@ -378,7 +386,7 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
 
 
 def find_called_files_with_tag(madx_file: Path, tag: str) -> list[Path] | None:
-    """ Parse lines that call a file and are tagged with the given tag and return
+    """Parse lines that call a file and are tagged with the given tag and return
     a list of paths to these files.
 
     This is mainly used to find the modifier tag in lines and return called file in these lines.
@@ -394,7 +402,7 @@ def find_called_files_with_tag(madx_file: Path, tag: str) -> list[Path] | None:
     job_madx = madx_file.read_text()
 
     called_files = re.findall(
-        fr"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{tag}",
+        rf"\s*call,\s*file\s*=\s*[\"\']?([^;\'\"]+)[\"\']?\s*;\s*{tag}",
         job_madx,
         flags=re.IGNORECASE,
     )
