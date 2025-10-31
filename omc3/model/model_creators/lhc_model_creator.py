@@ -131,14 +131,12 @@ class LhcModelCreator(ModelCreator):
         shutil.copy(OMC3_MADX_MACROS_DIR / LHC_MACROS, macros_path / LHC_MACROS)
         shutil.copy(OMC3_MADX_MACROS_DIR / LHC_MACROS_RUN3, macros_path / LHC_MACROS_RUN3)
 
-
         if accel.energy is not None:
             core = f"{int(accel.energy):04d}"
 
             LOGGER.debug("Copying error defs for analytical N-BPM method")
             error_dir_path = accel.get_lhc_error_dir()
-            shutil.copy(error_dir_path /
-                        f"{core}GeV.tfs", accel.model_dir / ERROR_DEFFS_TXT)
+            shutil.copy(error_dir_path / f"{core}GeV.tfs", accel.model_dir / ERROR_DEFFS_TXT)
 
     def check_accelerator_instance(self) -> None:
         accel = self.accel
@@ -159,8 +157,7 @@ class LhcModelCreator(ModelCreator):
 
         # hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)
         # hint: modifiers were at this point probably already checked (and adapted) in `prepare_run()`.
-        inexistent_modifiers = [
-            m for m in accel.modifiers if not (accel.model_dir / m).exists()]
+        inexistent_modifiers = [m for m in accel.modifiers if not (accel.model_dir / m).exists()]
         if len(inexistent_modifiers):
             raise AcceleratorDefinitionError(
                 "The following modifier files do not exist: "
@@ -334,9 +331,9 @@ class LhcModelCreator(ModelCreator):
         accel: Lhc = self.accel
 
         if accel.acc_model_path is not None:
-            main_call = f'call, file = \'{accel.acc_model_path / "lhc.seq"}\';'
-            if accel.year.startswith('hl'):
-                main_call += f'\ncall, file = \'{accel.acc_model_path / "hllhc_sequence.madx"}\';'
+            main_call = f"call, file = '{accel.acc_model_path / 'lhc.seq'}';"
+            if accel.year.startswith("hl"):
+                main_call += f"\ncall, file = '{accel.acc_model_path / 'hllhc_sequence.madx'}';"
             return main_call
         try:
             return self._get_call_main()
@@ -388,8 +385,8 @@ class LhcModelCreator(ModelCreator):
         return call_main
 
 
-
-class LhcBestKnowledgeCreator(LhcModelCreator):  # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+class LhcBestKnowledgeCreator(LhcModelCreator):
     EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
     CORRECTIONS_FILENAME: str = "corrections.madx"
     jobfile: str = JOB_MODEL_MADX_BEST_KNOWLEDGE
@@ -432,9 +429,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
             )
 
         if accel.excitation is not AccExcitationMode.FREE:
-            raise AcceleratorDefinitionError(
-                "Don't set ACD or ADT for best knowledge model."
-            )
+            raise AcceleratorDefinitionError("Don't set ACD or ADT for best knowledge model.")
 
     def prepare_run(self):
         accel: Lhc = self.accel
@@ -455,7 +450,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
         # copy errors table ---
         b2_table = tfs.read(b2_error_path, index=NAME)
         gen_df = pd.DataFrame(
-            data=0.,
+            data=0.0,
             index=b2_table.index,
             columns=_b2_columns(),
         )
@@ -474,7 +469,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):  # -----------------------------
         madx_script += "\n! ----- Load MQTs -----\n"
         mqts_file = accel.model_dir / self.EXTRACTED_MQTS_FILENAME
         if mqts_file.exists():
-            madx_script += f"call, file = '{mqts_file}';\n"
+            madx_script += f"call, file = '{str(mqts_file.absolute())}';\n"
 
         madx_script += "\n! ----- Output Files -----\n"
         madx_script += (
@@ -522,20 +517,24 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         super().__init__(accel, twiss_out, corr_files, update_dpp)
 
     def get_madx_script(self) -> str:
-        """ Get the madx script for the correction model creator, which updates the model after correcion. """
+        """Get the madx script for the correction model creator, which updates the model after correcion."""
         accel: Lhc = self.accel
-        madx_script = self.get_base_madx_script()  # do not super().get_madx_script as we don't need the uncorrected output.
+
+        # do not super().get_madx_script as we don't need the uncorrected output.
+        madx_script = self.get_base_madx_script()
 
         # First set the dpp to the value in the accelerator model
         madx_script += f"{ORBIT_DPP} = {accel.dpp};\n"
 
         for corr_file in self.corr_files:  # Load the corrections, can also update ORBIT_DPP
-            madx_script += f"call, file = '{corr_file!s}';\n"
+            file = Path(corr_file).absolute()
+            madx_script += f"call, file = '{file!s}';\n"
 
-        if self.update_dpp: # If we are doing orbit correction, we need to ensure that a correct and a match is done
+        # If we are doing orbit correction, we need to ensure that a correct and a match is done
+        if self.update_dpp:
             madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
 
-        madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{self.twiss_out!s}", {ORBIT_DPP});\n'
+        madx_script += f'exec, do_twiss_elements(LHCB{accel.beam}, "{self.twiss_out.absolute()!s}", {ORBIT_DPP});\n'
         return madx_script
 
     def prepare_run(self) -> None:
@@ -545,7 +544,9 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         LOGGER.debug("Preparing model creation structure")
         macros_path = self.accel.model_dir / MACROS_DIR
         if not macros_path.exists():
-            raise AcceleratorDefinitionError(f"Folder for the macros does not exist at {macros_path!s}.")
+            raise AcceleratorDefinitionError(
+                f"Folder for the macros does not exist at {macros_path!s}."
+            )
 
     @property
     def files_to_check(self) -> list[str]:
@@ -553,6 +554,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
 
 
 # LHC Segment Creator ----------------------------------------------------------
+
 
 class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
 

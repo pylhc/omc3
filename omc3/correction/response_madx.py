@@ -127,20 +127,28 @@ def _generate_madx_jobs(
             if var_idx >= len(no_dpp_vars):
                 break
             var = no_dpp_vars[var_idx]
+            outfile = temp_dir / f"twiss.{var}"
+
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
-            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}'{deltap_twiss};\n"
+            current_job += f"twiss, file='{str(outfile.absolute())}'{deltap_twiss};\n"
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
+            outfile = temp_dir / "twiss.0"
+            current_job += f"twiss, file='{str(outfile.absolute())}'{deltap_twiss};\n"
 
-            if compute_deltap: # If ORBIT_DPP is in variables, we run this in the last iteration
-                # Due to the match and correction of the orbit, this needs to be run at the end of the process
+            if compute_deltap:
+                # If ORBIT_DPP is in variables, we run this in the last iteration
+                # Due to the matching and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[ORBIT_DPP] = delta_k
                 current_job += f"{ORBIT_DPP} = {ORBIT_DPP}{delta_k:+.15e};\n"
-                current_job += creator.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
-                current_job += f"twiss, deltap={ORBIT_DPP}, file='{str(temp_dir/f'twiss.{ORBIT_DPP}')}';\n"
+                # Do twiss, correct, match
+                current_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
+                outfile = temp_dir / f"twiss.{ORBIT_DPP}"
+                current_job += (
+                    f"twiss, deltap={ORBIT_DPP}, file='{str(outfile.absolute())}';\n"
+                )
         jobfile_path.write_text(current_job)
     return incr_dict
 

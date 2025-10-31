@@ -330,8 +330,7 @@ class Lhc(Accelerator):
         return None
 
     def get_accel_file(self, filename: Path | str) -> Path:
-        return LHC_DIR / self.year / filename
-
+        return Path(LHC_DIR / self.year / filename).absolute()
 
     # Private Methods ##############################################################
     def _get_corrector_elems(self) -> Path:
