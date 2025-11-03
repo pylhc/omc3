@@ -153,7 +153,7 @@ class ModelCreator(ABC):
 
         target = Path(path)
         if target.is_absolute():
-            return target.as_posix()
+            return target
 
         cwd_path = Path(cwd)
         cwd_norm = os.path.normpath(str(cwd_path))
@@ -166,7 +166,7 @@ class ModelCreator(ABC):
                 f"Path '{target}' cannot be expressed relative to working directory '{cwd_path}'."
             ) from exc
 
-        return Path(rel_path).as_posix()
+        return Path(rel_path)
 
     def get_update_deltap_script(self, deltap: float | str) -> str:
         """Get the madx snippet that updates the dpp in the machine.
