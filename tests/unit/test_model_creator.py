@@ -559,10 +559,10 @@ def check_accel_from_dir_vs_options(
     # Check that each modifier from dir is relative to model_dir if possible
     for mod_opt, mod_dir in zip(accel_from_opt.modifiers, accel_from_dir.modifiers):
         try:
-            mod_dir_rel = mod_dir.relative_to(model_dir)
+            mod_opt_rel = mod_opt.relative_to(model_dir)
         except ValueError:
-            mod_dir_rel = mod_dir
-        assert mod_opt == mod_dir_rel
+            mod_opt_rel = mod_opt
+        assert mod_dir == mod_opt_rel
 
     assert accel_from_opt.excitation == accel_from_dir.excitation
     assert accel_from_opt.model_dir == accel_from_dir.model_dir
