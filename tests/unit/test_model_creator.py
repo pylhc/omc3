@@ -25,7 +25,7 @@ from omc3.model.constants import (
 )
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import (
-    LhcBestKnowledgeCreator,
+    # LhcBestKnowledgeCreator,
     LhcModelCreator,
 )
 from omc3.model_creator import create_instance_and_model

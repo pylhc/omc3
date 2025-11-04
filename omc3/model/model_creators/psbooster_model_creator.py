@@ -15,8 +15,6 @@ from omc3.model.constants import ERROR_DEFFS_TXT
 from omc3.model.model_creators.ps_base_model_creator import PsBaseModelCreator
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from omc3.model.accelerators.psbooster import Psbooster
 
 

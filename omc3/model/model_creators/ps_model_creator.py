@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 import shutil
-from typing import TYPE_CHECKING
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.accelerators.ps import Ps
@@ -17,9 +16,6 @@ from omc3.model.constants import ERROR_DEFFS_TXT, MODIFIER_TAG
 from omc3.model.model_creators.ps_base_model_creator import PsBaseModelCreator
 
 LOGGER = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 class PsModelCreator(PsBaseModelCreator):
