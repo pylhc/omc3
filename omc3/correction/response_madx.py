@@ -153,7 +153,6 @@ def _generate_madx_jobs(
 
 
 def _get_madx_job(accel_inst: Accelerator) -> str:
-    # use relative paths as we use model_dir as cwd
     # get nominal setup from creator
     creator = _get_nominal_model_creator(accel_inst)
     job_content = creator.get_base_madx_script(accel_inst.model_dir)

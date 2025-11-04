@@ -25,35 +25,35 @@ if TYPE_CHECKING:
 class PsModelCreator(PsBaseModelCreator):
     acc_model_name: str = Ps.NAME
 
-    def get_madx_script(self, cwd: Path) -> str:
+    def get_madx_script(self) -> str:
         accel: Ps = self.accel
         if accel.energy is None:
             raise RuntimeError(
                 "PS model creation currently relies on manual Energy management. Please provide the --energy ENERGY flag"
             )
-        madx_script = self.get_base_madx_script(cwd)
+        madx_script = self.get_base_madx_script()
         replace_dict = {
             "USE_ACD": str(int(accel.excitation == AccExcitationMode.ACD)),
             "DPP": accel.dpp,
-            "OUTPUT": self._madx_path(self.output_dir, cwd),
+            "OUTPUT": self._madx_path(self.output_dir),
         }
         madx_template = accel.get_file("twiss.mask").read_text()
         madx_script += madx_template % replace_dict
         return madx_script
 
-    def get_base_madx_script(self, cwd: Path | str) -> str:
+    def get_base_madx_script(self) -> str:
         accel: Ps = self.accel
         use_acd = accel.excitation == AccExcitationMode.ACD
         replace_dict = {
-            "FILES_DIR": self._madx_path(accel.get_dir(), cwd),
+            "FILES_DIR": self._madx_path(accel.get_dir()),
             "USE_ACD": str(int(use_acd)),
             "NAT_TUNE_X": accel.nat_tunes[0],
             "NAT_TUNE_Y": accel.nat_tunes[1],
             "KINETICENERGY": 0 if accel.energy is None else accel.energy,
             "USE_CUSTOM_PC": "0" if accel.energy is None else "1",
-            "ACC_MODELS_DIR": self._madx_path(accel.acc_model_path, cwd),
-            "BEAM_FILE": self._madx_path(accel.beam_file, cwd),
-            "STR_FILE": self._madx_path(accel.str_file, cwd),
+            "ACC_MODELS_DIR": self._madx_path(accel.acc_model_path),
+            "BEAM_FILE": self._madx_path(accel.beam_file),
+            "STR_FILE": self._madx_path(accel.str_file),
             "DRV_TUNE_X": "0",
             "DRV_TUNE_Y": "0",
             "MODIFIERS": "",
@@ -65,7 +65,7 @@ class PsModelCreator(PsBaseModelCreator):
         if accel.modifiers:
             replace_dict["MODIFIERS"] = "\n".join(
                 [
-                    f" call, file = '{self._madx_path(modifier, cwd)}'; {MODIFIER_TAG}"
+                    f" call, file = '{self._madx_path(modifier)}'; {MODIFIER_TAG}"
                     for modifier in accel.modifiers
                 ]
             )

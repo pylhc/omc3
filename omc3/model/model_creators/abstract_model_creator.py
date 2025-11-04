@@ -8,7 +8,6 @@ This module provides the template for all model creators.
 from __future__ import annotations
 
 import contextlib
-import os
 import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -103,7 +102,7 @@ class ModelCreator(ABC):
 
         # get madx-script with relative output-paths
         # (model_dir is base-path in get_madx_script)
-        madx_script = self.get_madx_script(cwd=self.accel.model_dir)
+        madx_script = self.get_madx_script()
 
         # Run madx to create model
         run_string(
@@ -117,56 +116,36 @@ class ModelCreator(ABC):
         self.post_run()
 
     @abstractmethod
-    def get_madx_script(self, cwd: Path | str) -> str:
+    def get_madx_script(self) -> str:
         """
         Returns the ``MAD-X`` script used to create the model (directory).
-
-        Args:
-            cwd (Path | str): The current working directory where the madx script will be run.
-
-        Returns:
-            The string of the ``MAD-X`` script used to used to create the model (directory).
         """
         pass
 
     @abstractmethod
-    def get_base_madx_script(self, cwd: Path | str) -> str:
+    def get_base_madx_script(self) -> str:
         """
         Returns the ``MAD-X`` script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
         as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).
-
-        Args:
-            cwd (Path | str): The current working directory where the madx script will be run.
-
-        Returns:
-            The string of the ``MAD-X`` script used to used to set-up the machine.
         """
         pass
 
-    def _madx_path(self, path: Path | str, cwd: Path | str) -> str:
+    def _madx_path(self, path: Path | str) -> str:
         """Return a MAD-X friendly path.
 
-        Absolute paths are returned unchanged so MAD-X can consume them directly. If the provided
-        path is not absolute, it is expressed relative to the working directory ``cwd``. This
-        keeps the generated scripts consistent regardless of the caller's current directory.
+        Args:
+            path (Path | str): The path to convert.
+        Returns:
+            str: The path as a string, relative to the model dir if possible.
         """
-
-        target = Path(path)
-        if target.is_absolute():
-            return target
-
-        cwd_path = Path(cwd)
-        cwd_norm = os.path.normpath(str(cwd_path))
-        target_norm = os.path.normpath(str(cwd_path / target))
-
         try:
-            rel_path = os.path.relpath(target_norm, cwd_norm)
-        except ValueError as exc:  # pragma: no cover - platform dependent edge case
-            raise AcceleratorDefinitionError(
-                f"Path '{target}' cannot be expressed relative to working directory '{cwd_path}'."
-            ) from exc
-
-        return Path(rel_path)
+            # Try converting to a relative path if it is inside the cwd (model_dir)
+            return path.relative_to(self.accel.model_dir)
+        except ValueError:
+            LOGGER.debug(
+                f"Path {path} is not relative to the model dir {self.accel.model_dir}, using absolute path."
+            )
+            return path.absolute()
 
     def get_update_deltap_script(self, deltap: float | str) -> str:
         """Get the madx snippet that updates the dpp in the machine.
@@ -420,13 +399,13 @@ class SegmentCreator(ModelCreator, ABC):
 
         raise NotImplementedError("Could not determine type of corrections. Aborting.")
 
-    def get_madx_script(self, cwd: Path | str) -> str:
-        madx_script = self.get_base_madx_script(cwd)
+    def get_madx_script(self) -> str:
+        madx_script = self.get_base_madx_script()
 
-        macros_path = self._madx_path(self.output_dir / MACROS_DIR / GENERAL_MACROS, cwd)
-        measurement_path = self._madx_path(self.output_dir / self.measurement_madx, cwd)
-        twiss_forward_path = self._madx_path(self.output_dir / self.twiss_forward, cwd)
-        twiss_backward_path = self._madx_path(self.output_dir / self.twiss_backward, cwd)
+        macros_path = self._madx_path(self.output_dir / MACROS_DIR / GENERAL_MACROS)
+        measurement_path = self._madx_path(self.output_dir / self.measurement_madx)
+        twiss_forward_path = self._madx_path(self.output_dir / self.twiss_forward)
+        twiss_backward_path = self._madx_path(self.output_dir / self.twiss_backward)
 
         if self._sequence_name is None:
             raise ValueError(
@@ -480,14 +459,12 @@ class SegmentCreator(ModelCreator, ABC):
         )
 
         if self.corrections is not None:
-            corrections_path = self._madx_path(self.output_dir / self.corrections_madx, cwd)
+            corrections_path = self._madx_path(self.output_dir / self.corrections_madx)
             twiss_forward_corr_path = self._madx_path(
-                self.output_dir / self.twiss_forward_corrected,
-                cwd,
+                self.output_dir / self.twiss_forward_corrected
             )
             twiss_backward_corr_path = self._madx_path(
-                self.output_dir / self.twiss_backward_corrected,
-                cwd,
+                self.output_dir / self.twiss_backward_corrected
             )
             madx_script += "\n".join(
                 [
@@ -538,7 +515,7 @@ class CorrectionModelCreator(ModelCreator):
         self.corr_files = corr_files
         self.update_dpp = update_dpp
 
-    def get_madx_script(self, cwd: Path | str) -> str:
+    def get_madx_script(self) -> str:
         """Get the madx script for the correction model creator, which updates the model after correcion.
 
         This is a basic implementation which does not update the dpp, but should work for generic accelerators.
@@ -549,12 +526,12 @@ class CorrectionModelCreator(ModelCreator):
             )
 
         # do not get_madx_script as we don't need the uncorrected output.
-        madx_script = self.get_base_madx_script(cwd)
+        madx_script = self.get_base_madx_script()
 
         for corr_file in self.corr_files:  # Load the corrections
-            madx_script += f"call, file = '{self._madx_path(corr_file, cwd)}';\n"
+            madx_script += f"call, file = '{self._madx_path(corr_file)}';\n"
 
-        twiss_out_path = self._madx_path(self.twiss_out, cwd)
+        twiss_out_path = self._madx_path(self.twiss_out)
         madx_script += f"{self._get_select_command()}\ntwiss, file = {twiss_out_path};\n"
         return madx_script
 
