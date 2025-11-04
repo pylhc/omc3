@@ -155,7 +155,7 @@ def _generate_madx_jobs(
 def _get_madx_job(accel_inst: Accelerator) -> str:
     # get nominal setup from creator
     creator = _get_nominal_model_creator(accel_inst)
-    job_content = creator.get_base_madx_script(accel_inst.model_dir)
+    job_content = creator.get_base_madx_script()
     job_content += (
         "select, flag=twiss, clear;\n"
         f"select, flag=twiss, pattern='{accel_inst.RE_DICT[AccElementTypes.BPMS]}', "

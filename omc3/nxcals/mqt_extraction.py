@@ -4,75 +4,17 @@ Extraction of MQT (Quadrupole Trim) knob values from NXCALS.
 
 This module provides functions to retrieve MQT knob values for the LHC for a specified beam
 and time using NXCALS and LSA.
-
-**Arguments:**
-
-*--Required--*
-
-- **time** *(datetime|str)*:
-
-    The timestamp for which to retrieve the data (timezone-aware recommended). If a string is provided, it will be parsed to a datetime object, assuming UTC timezone.
-
-- **beam** *(int)*:
-
-    The beam number (1 or 2).
-
-- **output_dir** *(str|Path)*:
-    Path to the output directory where the MQT knob values will be saved in.
 """
 
 import logging
 from datetime import datetime
-from pathlib import Path
-
-from generic_parser import DotDict, EntryPointParameters, entrypoint
 
 # import jpype
 from pyspark.sql import SparkSession
 
-from omc3.nxcals.constants import EXTRACTED_MQTS_FILENAME
 from omc3.nxcals.knob_extraction import NXCalResult, get_knob_vals
-from omc3.utils.iotools import DateOrStr, PathOrStr
-from omc3.utils.mock import cern_network_import
-
-spark_session_builder = cern_network_import("nxcals.spark_session_builder")
 
 logger = logging.getLogger(__name__)
-
-
-def _get_params() -> EntryPointParameters:
-    """
-    Define the parameters for the MQT retrieval entry point.
-    """
-    return EntryPointParameters(
-        time={
-            "type": DateOrStr,
-            "help": "The timestamp for which to retrieve the data (timezone-aware recommended).",
-        },
-        beam={"type": int, "help": "The beam number (1 or 2)."},
-        output_dir={
-            "type": PathOrStr,
-            "help": "Path to the output directory where the MQT knob values will be saved in.",
-        },
-    )
-
-
-@entrypoint(_get_params(), strict=True)
-def retrieve_mqts(opt: DotDict) -> None:
-    """
-    Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam,
-    and save them to a file in the specified output directory.
-    """
-    spark = spark_session_builder.get_or_create()
-    mqt_vals = get_mqt_vals(spark, opt.time, opt.beam)
-    output_path = Path(opt.output_dir) / EXTRACTED_MQTS_FILENAME
-    with output_path.open("w") as f:
-        for result in mqt_vals:
-            timestamp_str = f"{result.timestamp:%Y-%m-%d %H:%M:%S%z}"
-            value_str = f"{result.value:.10E}".replace("E+", "E")
-            f.write(
-                f"{result.name:<15}= {value_str}; ! powerconverter: {result.pc_name} at {timestamp_str}\n"
-            )
 
 
 def get_mqts(beam: int) -> set[str]:
@@ -124,3 +66,23 @@ def get_mqt_vals(spark: SparkSession, time: datetime, beam: int) -> list[NXCalRe
     pattern = f"RPMBB.UA%.RQT%.A%B{beam}:I_MEAS"
     patterns = [pattern]
     return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ")
+
+
+def knobs_to_madx(mqt_vals: list[NXCalResult]) -> str:
+    """
+    Convert a list of NXCalResult objects to a MAD-X script string.
+
+    Args:
+        mqt_vals: List of NXCalResult objects containing knob values.
+
+    Returns:
+        A string containing the MAD-X script with knob assignments.
+    """
+    lines = []
+    for result in mqt_vals:
+        timestamp_str = f"{result.timestamp:%Y-%m-%d %H:%M:%S%z}"
+        value_str = f"{result.value:.10E}".replace("E+", "E")
+        lines.append(
+            f"{result.name:<15}= {value_str}; ! powerconverter: {result.pc_name} at {timestamp_str}\n"
+        )
+    return "".join(lines)

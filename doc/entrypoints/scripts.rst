@@ -49,3 +49,8 @@ Scripts
 .. automodule:: omc3.scripts.lhc_corrector_list_check
     :members:
     :noindex:
+
+
+.. automodule:: omc3.scripts.mqt_extraction
+    :members:
+    :noindex:

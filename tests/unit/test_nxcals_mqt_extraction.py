@@ -9,6 +9,7 @@ import pytest
 from omc3.nxcals import mqt_extraction
 from omc3.nxcals.constants import EXTRACTED_MQTS_FILENAME
 from omc3.nxcals.knob_extraction import NXCalResult
+from omc3.scripts import mqt_extraction as mqt_script
 
 SAMPLE_DIR = Path(__file__).parent.parent / "inputs" / "knob_extractor"
 TEST_CASES = (
@@ -67,7 +68,7 @@ def test_main_reproduces_reference_output(tmp_path, beam: int, sample_file: Path
     output_dir = tmp_path / f"beam{beam}"
     output_dir.mkdir()
 
-    mqt_extraction.retrieve_mqts(time=query_time, beam=beam, output_dir=output_dir)
+    mqt_script.retrieve_mqts(time=query_time, beam=beam, output_path=output_dir)
 
     output_path = output_dir / EXTRACTED_MQTS_FILENAME
 

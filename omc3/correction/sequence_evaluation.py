@@ -243,7 +243,7 @@ def _create_basic_job(
     # get nominal setup from creator
     creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
     creator: ModelCreator = creator_class(accel_inst)
-    job_content = creator.get_base_madx_script(accel_inst.model_dir)
+    job_content = creator.get_base_madx_script()
 
     # create a survey and save it to a temporary file
     job_content += (
