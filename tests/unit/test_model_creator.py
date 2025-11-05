@@ -557,12 +557,15 @@ def check_accel_from_dir_vs_options(
     _check_arrays(accel_from_opt.nat_tunes, accel_from_dir.nat_tunes, eps=1e-4, tunes=True)
     _check_arrays(accel_from_opt.drv_tunes, accel_from_dir.drv_tunes, eps=1e-4, tunes=True)
     # Check that each modifier from dir is relative to model_dir if possible
-    for mod_opt, mod_dir in zip(accel_from_opt.modifiers, accel_from_dir.modifiers):
-        try:
-            mod_opt_rel = mod_opt.relative_to(model_dir)
-        except ValueError:
-            mod_opt_rel = mod_opt
-        assert mod_dir == mod_opt_rel
+    if accel_from_opt.modifiers is not None and accel_from_dir.modifiers is not None:
+        for mod_opt, mod_dir in zip(accel_from_opt.modifiers, accel_from_dir.modifiers):
+            try:
+                mod_opt_rel = mod_opt.relative_to(model_dir)
+            except ValueError:
+                mod_opt_rel = mod_opt
+            assert mod_dir == mod_opt_rel
+    else:
+        assert accel_from_opt.modifiers == accel_from_dir.modifiers
 
     assert accel_from_opt.excitation == accel_from_dir.excitation
     assert accel_from_opt.model_dir == accel_from_dir.model_dir
