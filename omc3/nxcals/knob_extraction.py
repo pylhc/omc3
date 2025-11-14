@@ -41,6 +41,90 @@ class NXCalResult:
     pc_name: str
 
 
+# High-level Knob Extraction ---------------------------------------------------
+
+
+def get_knob_vals(
+    spark: SparkSession,
+    time: datetime,
+    beam: int,
+    patterns: list[str],
+    expected_knobs: set[str] | None = None,
+    log_prefix: str = "",
+    delta_days: int = 1,
+) -> list[NXCalResult]:
+    """
+    Retrieve knob values for a given beam and time using specified patterns.
+
+    Args:
+        spark (SparkSession): Active Spark session.
+        time (datetime): Time to retrieve data for.
+        beam (int): Beam number.
+        patterns (list[str]): List of variable patterns to retrieve.
+        expected_knobs (set[str] | None): Set of expected MAD-X knob names. If None, returns all found knobs.
+        log_prefix (str): Prefix for logging messages.
+        delta_days (int): Number of days to look back for data. Default is 1.
+
+    Returns:
+        list[NXCalResult]: List of NXCalResult objects with knob values.
+    """
+    LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
+
+    # Retrieve raw current measurements from NXCALS
+    combined_vars: list[NXCalResult] = []
+    for pattern in patterns:
+        LOGGER.info(f"{log_prefix}Getting currents for pattern {pattern} at {time}")
+        raw_vars = get_raw_vars(spark, time, pattern, delta_days)
+        combined_vars.extend(raw_vars)
+
+    # Get beam energy for K-value calculations
+    energy, _ = get_energy(spark, time)
+
+    # Prepare currents dict for LSA
+    currents = {strip_i_meas(var.name): var.value for var in combined_vars}
+
+    LOGGER.info(
+        f"{log_prefix}Calculating K values for {len(currents)} power converters with energy {energy} GeV"
+    )
+
+    # Calculate K values using LSA
+    lsa_client = pjlsa.LSAClient()
+    k_values = calc_k_from_iref(lsa_client, currents, energy)
+
+    # Transform K values keys to MAD-X format
+    k_values_madx = {map_pc_name_to_madx(key): value for key, value in k_values.items()}
+
+    found_keys = set(k_values_madx.keys())
+
+    if expected_knobs is None:
+        expected_knobs = found_keys
+
+    if missing_keys := expected_knobs - found_keys:
+        LOGGER.warning(f"{log_prefix}Missing K-values for knobs: {missing_keys}")
+
+    if unknown_keys := found_keys - expected_knobs:
+        LOGGER.warning(f"{log_prefix}Unknown K-values found: {unknown_keys}")
+
+    # Build result list with timestamps
+    timestamps = {map_pc_name_to_madx(var.name): var.timestamp for var in combined_vars}
+    pc_names = {map_pc_name_to_madx(var.name): var.pc_name for var in combined_vars}
+    results = []
+    for madx_name in expected_knobs:
+        value = k_values_madx.get(madx_name)
+        timestamp = timestamps.get(madx_name)
+        pc_name = pc_names.get(madx_name)
+
+        if value is not None and timestamp is not None and pc_name is not None:
+            results.append(NXCalResult(madx_name, value, timestamp, pc_name))
+        else:
+            LOGGER.warning(f"{log_prefix}Missing data for {madx_name}")
+
+    return results
+
+
+# NXCALS Data Retrieval --------------------------------------------------------
+
+
 def get_raw_vars(
     spark: SparkSession, time: datetime, var_name: str, delta_days: int = 1
 ) -> list[NXCalResult]:
@@ -133,57 +217,7 @@ def get_energy(spark: SparkSession, time: datetime) -> tuple[float, pd.Timestamp
     return raw_vars[0].value * scale, raw_vars[0].timestamp
 
 
-def map_pc_name_to_madx(pc_name: str) -> str:
-    """
-    Convert a power converter name or circuit name to its corresponding MAD-X name.
-
-    This function processes the input name by removing the ':I_MEAS' suffix if present,
-    extracting the circuit name from full power converter names (starting with 'RPMBB' or 'RPL'),
-    applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.
-
-    Args:
-        pc_name (str): The power converter or circuit name to convert.
-
-    Returns:
-        str: The converted MAD-X name.
-
-    Examples:
-        >>> map_pc_name_to_madx("RPMBB.UJ33.RCBH10.L1B1:I_MEAS")
-        'acb10.l1b1'
-        >>> map_pc_name_to_madx("RQT12.L5B1")
-        'kqt12.l5b1'
-    """
-    # Remove the ':I_MEAS' suffix if it exists
-    pc_name = strip_i_meas(pc_name)
-
-    # Extract circuit name from full power converter names
-    if "." in pc_name:
-        parts = pc_name.split(".")
-        # For full names like 'RPMBB.UJ33.RCBH10.L1B1', take from the third part onward, else use pc_name
-        circuit_name = ".".join(parts[2:]) if len(parts) > 2 else pc_name
-    else:
-        circuit_name = pc_name
-
-    # Apply MAD-X specific replacements
-    replacements = {"RQT": "KQT", "RCB": "ACB"}
-    for old, new in replacements.items():
-        circuit_name = circuit_name.replace(old, new)
-
-    # Return in lowercase as required by MAD-X
-    return circuit_name.lower()
-
-
-def strip_i_meas(text: str) -> str:
-    """
-    Remove the I_MEAS suffix from a variable name.
-
-    Args:
-        text (str): The variable name possibly ending with ':I_MEAS'.
-
-    Returns:
-        str: The variable name without the ':I_MEAS' suffix.
-    """
-    return text.removesuffix(":I_MEAS")
+# LSA K-value Calculation ------------------------------------------------------
 
 
 def calc_k_from_iref(lsa_client, currents: dict[str, float], energy: float) -> dict[str, float]:
@@ -224,79 +258,57 @@ def calc_k_from_iref(lsa_client, currents: dict[str, float], energy: float) -> d
     return res
 
 
-def get_knob_vals(
-    spark: SparkSession,
-    time: datetime,
-    beam: int,
-    patterns: list[str],
-    expected_knobs: set[str] | None = None,
-    log_prefix: str = "",
-    delta_days: int = 1,
-) -> list[NXCalResult]:
+# Utility Functions ------------------------------------------------------------
+
+
+def strip_i_meas(text: str) -> str:
     """
-    Retrieve knob values for a given beam and time using specified patterns.
+    Remove the I_MEAS suffix from a variable name.
 
     Args:
-        spark (SparkSession): Active Spark session.
-        time (datetime): Time to retrieve data for.
-        beam (int): Beam number.
-        patterns (list[str]): List of variable patterns to retrieve.
-        expected_knobs (set[str] | None): Set of expected MAD-X knob names. If None, returns all found knobs.
-        log_prefix (str): Prefix for logging messages.
-        delta_days (int): Number of days to look back for data. Default is 1.
+        text (str): The variable name possibly ending with ':I_MEAS'.
 
     Returns:
-        list[NXCalResult]: List of NXCalResult objects with knob values.
+        str: The variable name without the ':I_MEAS' suffix.
     """
-    LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
+    return text.removesuffix(":I_MEAS")
 
-    # Retrieve raw current measurements from NXCALS
-    combined_vars: list[NXCalResult] = []
-    for pattern in patterns:
-        LOGGER.info(f"{log_prefix}Getting currents for pattern {pattern} at {time}")
-        raw_vars = get_raw_vars(spark, time, pattern, delta_days)
-        combined_vars.extend(raw_vars)
 
-    # Get beam energy for K-value calculations
-    energy, _ = get_energy(spark, time)
+def map_pc_name_to_madx(pc_name: str) -> str:
+    """
+    Convert a power converter name or circuit name to its corresponding MAD-X name.
 
-    # Prepare currents dict for LSA
-    currents = {strip_i_meas(var.name): var.value for var in combined_vars}
+    This function processes the input name by removing the ':I_MEAS' suffix if present,
+    extracting the circuit name from full power converter names (starting with 'RPMBB' or 'RPL'),
+    applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.
 
-    LOGGER.info(
-        f"{log_prefix}Calculating K values for {len(currents)} power converters with energy {energy} GeV"
-    )
+    Args:
+        pc_name (str): The power converter or circuit name to convert.
 
-    # Calculate K values using LSA
-    lsa_client = pjlsa.LSAClient()
-    k_values = calc_k_from_iref(lsa_client, currents, energy)
+    Returns:
+        str: The converted MAD-X name.
 
-    # Transform K values keys to MAD-X format
-    k_values_madx = {map_pc_name_to_madx(key): value for key, value in k_values.items()}
+    Examples:
+        >>> map_pc_name_to_madx("RPMBB.UJ33.RCBH10.L1B1:I_MEAS")
+        'acb10.l1b1'
+        >>> map_pc_name_to_madx("RQT12.L5B1")
+        'kqt12.l5b1'
+    """
+    # Remove the ':I_MEAS' suffix if it exists
+    pc_name = strip_i_meas(pc_name)
 
-    found_keys = set(k_values_madx.keys())
+    # Extract circuit name from full power converter names
+    if "." in pc_name:
+        parts = pc_name.split(".")
+        # For full names like 'RPMBB.UJ33.RCBH10.L1B1', take from the third part onward, else use pc_name
+        circuit_name = ".".join(parts[2:]) if len(parts) > 2 else pc_name
+    else:
+        circuit_name = pc_name
 
-    if expected_knobs is None:
-        expected_knobs = found_keys
+    # Apply MAD-X specific replacements
+    replacements = {"RQT": "KQT", "RCB": "ACB"}
+    for old, new in replacements.items():
+        circuit_name = circuit_name.replace(old, new)
 
-    if missing_keys := expected_knobs - found_keys:
-        LOGGER.warning(f"{log_prefix}Missing K-values for knobs: {missing_keys}")
-
-    if unknown_keys := found_keys - expected_knobs:
-        LOGGER.warning(f"{log_prefix}Unknown K-values found: {unknown_keys}")
-
-    # Build result list with timestamps
-    timestamps = {map_pc_name_to_madx(var.name): var.timestamp for var in combined_vars}
-    pc_names = {map_pc_name_to_madx(var.name): var.pc_name for var in combined_vars}
-    results = []
-    for madx_name in expected_knobs:
-        value = k_values_madx.get(madx_name)
-        timestamp = timestamps.get(madx_name)
-        pc_name = pc_names.get(madx_name)
-
-        if value is not None and timestamp is not None and pc_name is not None:
-            results.append(NXCalResult(madx_name, value, timestamp, pc_name))
-        else:
-            LOGGER.warning(f"{log_prefix}Missing data for {madx_name}")
-
-    return results
+    # Return in lowercase as required by MAD-X
+    return circuit_name.lower()
