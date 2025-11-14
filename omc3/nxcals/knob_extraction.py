@@ -1,21 +1,36 @@
+"""
+Knob Extraction
+---------------
+
+This module provides functionality to extract knob values from NXCALS and convert them to
+MAD-X compatible format using LSA services.
+
+It handles retrieval of raw variable data from NXCALS, conversion of power converter
+currents to K-values, and mapping of power converter names to MAD-X naming
+conventions.
+"""
+
 from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING
 
 import jpype
 import pandas as pd
-from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 from pyspark.sql.window import Window
 
 from omc3.utils.mock import cern_network_import
 
+if TYPE_CHECKING:
+    from pyspark.sql import SparkSession
+
 pjlsa = cern_network_import("pjlsa")
 builders = cern_network_import("nxcals.api.extraction.data.builders")
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -32,20 +47,19 @@ def get_raw_vars(
     """
     Retrieve raw variable values from NXCALS.
 
-    Parameters
-    ----------
-    spark : SparkSession
-        Active Spark session
-    time : datetime
-        Python datetime (timezone-aware recommended)
-    var_name : str
-        Name or pattern of the variable(s) to retrieve
+    Args:
+        spark (SparkSession): Active Spark session.
+        time (datetime): Python datetime (timezone-aware recommended).
+        var_name (str): Name or pattern of the variable(s) to retrieve.
+        delta_days (int): Number of days to look back for data. Default is 1.
 
-    Returns
-    -------
-    dict[str, tuple[float, pd.Timestamp, str]]
-       Dictionary with full variable name as key, and (value, timestamp, full variable name) as value
-       for the latest sample of each matching variable at the given time
+    Returns:
+        list[NXCalResult]: List of NXCalResult containing variable name, value, timestamp,
+        and power converter name for the latest sample of each matching variable at the given time.
+
+    Raises:
+        RuntimeError: If no data is found for the variable in the given interval.
+        You may need to increase the delta_days if necessary.
     """
 
     # Ensure time is in UTC
@@ -54,10 +68,10 @@ def get_raw_vars(
     else:
         time = time.astimezone(timezone.utc)
 
-    # Look back 1 day to be sure we get at least one sample
+    # Look back delta_days (1 for mqts) to be sure we get at least one sample
     start_time = time - timedelta(days=delta_days)
     end_time = time
-    logger.info(f"Retrieving raw variables {var_name} from {start_time} to {end_time}")
+    LOGGER.info(f"Retrieving raw variables {var_name} from {start_time} to {end_time}")
 
     df = (
         builders.DataQuery.builder(spark)
@@ -70,9 +84,12 @@ def get_raw_vars(
 
     # Avoid full count() – just check if we have at least one row
     if df is None or not df.take(1):
-        raise RuntimeError(f"No data found for {var_name} in the given interval.")
+        raise RuntimeError(
+            f"No data found for {var_name} in {start_time} to {end_time}. "
+            f"You may need to increase the delta_days from {delta_days} days if necessary."
+        )
 
-    logger.info(f"Raw variables {var_name} retrieved successfully.")
+    LOGGER.info(f"Raw variables {var_name} retrieved successfully.")
 
     # Get the latest sample for each variable
     window_spec = Window.partitionBy("nxcals_variable_name").orderBy(
@@ -90,20 +107,24 @@ def get_raw_vars(
         raw_val = float(row["nxcals_value"])
         ts = pd.to_datetime(row["nxcals_timestamp"], unit="ns", utc=True)
         results.append(NXCalResult(full_varname, raw_val, ts, strip_i_meas(full_varname)))
-        logger.info(f"LHC value retrieved: {full_varname} = {raw_val:.2f} at {ts}")
+        LOGGER.info(f"LHC value retrieved: {full_varname} = {raw_val:.2f} at {ts}")
 
     return results
 
 
 def get_energy(spark: SparkSession, time: datetime) -> tuple[float, pd.Timestamp]:
     """
+    Retrieve the beam energy from NXCALS.
 
     Args:
-        spark (SparkSession): Active Spark session
-        time (datetime): Python datetime (timezone-aware recommended)
+        spark (SparkSession): Active Spark session.
+        time (datetime): Python datetime (timezone-aware recommended).
 
     Returns:
-        (energy_gev, timestamp): Beam energy in GeV and its timestamp
+        tuple[float, pd.Timestamp]: Beam energy in GeV and its timestamp.
+
+    Raises:
+        RuntimeError: If no energy data is found.
     """
     scale = 0.120
     raw_vars = get_raw_vars(spark, time, "HX:ENG")
@@ -155,6 +176,12 @@ def map_pc_name_to_madx(pc_name: str) -> str:
 def strip_i_meas(text: str) -> str:
     """
     Remove the I_MEAS suffix from a variable name.
+
+    Args:
+        text (str): The variable name possibly ending with ':I_MEAS'.
+
+    Returns:
+        str: The variable name without the ':I_MEAS' suffix.
     """
     return text.removesuffix(":I_MEAS")
 
@@ -164,12 +191,12 @@ def calc_k_from_iref(lsa_client, currents: dict[str, float], energy: float) -> d
     Calculate K values from IREF using the LSA service.
 
     Args:
-        lsa: The LSA service instance
-        currents: A dictionary of current values keyed by variable name
-        energy: The beam energy in GeV
+        lsa_client: The LSA client instance.
+        currents (dict[str, float]): Dictionary of current values keyed by variable name.
+        energy (float): The beam energy in GeV.
 
     Returns:
-        A dictionary of K values keyed by variable name
+        dict[str, float]: Dictionary of K values keyed by variable name.
     """
     # 1) Use the **instance** PJLSA already created
     lhc_service = lsa_client._lhcService  # <-- INSTANCE (do NOT use self._LhcService)
@@ -210,22 +237,23 @@ def get_knob_vals(
     Retrieve knob values for a given beam and time using specified patterns.
 
     Args:
-        spark: Spark session
-        time: Time to retrieve data for
-        beam: Beam number
-        patterns: List of variable patterns to retrieve
-        expected_knobs: Set of expected MAD-X knob names. If None, returns all found knobs.
-        log_prefix: Prefix for logging messages
+        spark (SparkSession): Active Spark session.
+        time (datetime): Time to retrieve data for.
+        beam (int): Beam number.
+        patterns (list[str]): List of variable patterns to retrieve.
+        expected_knobs (set[str] | None): Set of expected MAD-X knob names. If None, returns all found knobs.
+        log_prefix (str): Prefix for logging messages.
+        delta_days (int): Number of days to look back for data. Default is 1.
 
     Returns:
-        List of NXCalResult with knob values
+        list[NXCalResult]: List of NXCalResult objects with knob values.
     """
-    logger.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
+    LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
 
     # Retrieve raw current measurements from NXCALS
     combined_vars: list[NXCalResult] = []
     for pattern in patterns:
-        logger.info(f"{log_prefix}Getting currents for pattern {pattern} at {time}")
+        LOGGER.info(f"{log_prefix}Getting currents for pattern {pattern} at {time}")
         raw_vars = get_raw_vars(spark, time, pattern, delta_days)
         combined_vars.extend(raw_vars)
 
@@ -235,7 +263,7 @@ def get_knob_vals(
     # Prepare currents dict for LSA
     currents = {strip_i_meas(var.name): var.value for var in combined_vars}
 
-    logger.info(
+    LOGGER.info(
         f"{log_prefix}Calculating K values for {len(currents)} power converters with energy {energy} GeV"
     )
 
@@ -252,10 +280,10 @@ def get_knob_vals(
         expected_knobs = found_keys
 
     if missing_keys := expected_knobs - found_keys:
-        logger.warning(f"{log_prefix}Missing K-values for knobs: {missing_keys}")
+        LOGGER.warning(f"{log_prefix}Missing K-values for knobs: {missing_keys}")
 
     if unknown_keys := found_keys - expected_knobs:
-        logger.warning(f"{log_prefix}Unknown K-values found: {unknown_keys}")
+        LOGGER.warning(f"{log_prefix}Unknown K-values found: {unknown_keys}")
 
     # Build result list with timestamps
     timestamps = {map_pc_name_to_madx(var.name): var.timestamp for var in combined_vars}
@@ -269,6 +297,6 @@ def get_knob_vals(
         if value is not None and timestamp is not None and pc_name is not None:
             results.append(NXCalResult(madx_name, value, timestamp, pc_name))
         else:
-            logger.warning(f"{log_prefix}Missing data for {madx_name}")
+            LOGGER.warning(f"{log_prefix}Missing data for {madx_name}")
 
     return results
