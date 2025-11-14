@@ -128,16 +128,16 @@ def _generate_madx_jobs(
             if var_idx >= len(no_dpp_vars):
                 break
             var = no_dpp_vars[var_idx]
-            outfile = temp_dir / f"twiss.{var}"
 
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
-            current_job += f"twiss, file='{str(outfile.absolute())}'{deltap_twiss};\n"
+            current_job += f"twiss, file='{creator.resolve_madx_path(temp_dir / f'twiss.{var}')}'{deltap_twiss};\n"
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            outfile = temp_dir / "twiss.0"
-            current_job += f"twiss, file='{str(outfile.absolute())}'{deltap_twiss};\n"
+            current_job += (
+                f"twiss, file='{creator.resolve_madx_path(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
+            )
 
             if compute_deltap:
                 # If ORBIT_DPP is in variables, we run this in the last iteration
@@ -146,8 +146,7 @@ def _generate_madx_jobs(
                 current_job += f"{ORBIT_DPP} = {ORBIT_DPP}{delta_k:+.15e};\n"
                 # Do twiss, correct, match
                 current_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
-                outfile = temp_dir / f"twiss.{ORBIT_DPP}"
-                current_job += f"twiss, deltap={ORBIT_DPP}, file='{str(outfile.absolute())}';\n"
+                current_job += f"twiss, deltap={ORBIT_DPP}, file='{creator.resolve_madx_path(temp_dir / f'twiss.{ORBIT_DPP}')}';\n"
         jobfile_path.write_text(current_job)
     return incr_dict
 
@@ -211,9 +210,7 @@ def _load_madx_results(
     vars_and_paths = []
     for value in variables + ["0"]:
         vars_and_paths.append((value, temp_dir))
-    LOG.debug("Retrieving Twiss files in parallel...")
-    for var, path in vars_and_paths:
-        LOG.debug(f"  Variable: {var}, Path: {path}")
+    LOG.debug(f"Retrieving Twiss files for variables: {vars_and_paths}")
     var_to_twiss = {}
     for var, tfs_data in process_pool.map(_load_and_remove_twiss, vars_and_paths):
         tfs_data[INCR] = incr_dict[var]
@@ -352,8 +349,7 @@ def _add_coupling(
     """
     result_dict_of_tfs = copy.deepcopy(dict_of_tfs)
     with timeit(lambda elapsed: LOG.debug(f"  Time adding coupling: {elapsed} s")):
-        # already copies, so it's safe to act on them
-        for var, tfs_dframe in result_dict_of_tfs.items():
+        for _, tfs_dframe in result_dict_of_tfs.items():
             coupling_rdts_df = coupling_via_cmatrix(tfs_dframe)
             tfs_dframe[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
             tfs_dframe[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)

@@ -122,7 +122,7 @@ def _generate_madx_jobs(
                 job_content += "\n"
 
         # last thing to do: get baseline
-        if proc_index + 1 == num_proc:
+        if proc_index == num_proc - 1:
             job_content += _do_macro("0")
 
         _get_jobfile(temp_dir, proc_index).write_text(job_content)
