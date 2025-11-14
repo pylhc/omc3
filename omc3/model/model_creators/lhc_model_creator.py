@@ -352,10 +352,10 @@ class LhcModelCreator(ModelCreator):
         accel: Lhc = self.accel
 
         if acc_model_path is not None:
-            main_seq_rel = self.resolve_madx_path(acc_model_path / "lhc.seq")
+            main_seq_rel = acc_model_path / "lhc.seq"
             main_call = f"call, file = '{main_seq_rel}';"
             if accel.year.startswith("hl"):
-                hllhc_rel = self.resolve_madx_path(acc_model_path / "hllhc_sequence.madx")
+                hllhc_rel = acc_model_path / "hllhc_sequence.madx"
                 main_call += f"\ncall, file = '{hllhc_rel}';"
             return main_call
         try:

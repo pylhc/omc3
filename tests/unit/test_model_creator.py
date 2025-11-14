@@ -14,7 +14,6 @@ from omc3.model.accelerators.accelerator import (
     AccExcitationMode,
 )
 from omc3.model.constants import (
-    ACC_MODELS_PREFIX,
     JOB_MODEL_MADX_NOMINAL,
     OPTICS_SUBDIR,
     TWISS_AC_DAT,
@@ -318,7 +317,7 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
 
 
 @pytest.mark.basic
-def test_lhc_creation_absolute_modifier_path(tmp_path: Path, acc_models_lhc_2022: Path):
+def test_lhc_creation_relative_modifier_path(tmp_path: Path, acc_models_lhc_2022: Path):
     rel_path = OPTICS_SUBDIR / "R2022a_A30cmC30cmA10mL200cm.madx"
     accel_opt = {
         "accel": "lhc",
@@ -335,10 +334,8 @@ def test_lhc_creation_absolute_modifier_path(tmp_path: Path, acc_models_lhc_2022
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    absolute_path = (
-        tmp_path / f"{ACC_MODELS_PREFIX}-{accel.NAME}" / rel_path
-    )  # replaced in model creation
-    madx_string = f"call, file = '{absolute_path!s}"
+
+    madx_string = f"call, file = '{rel_path!s}"
     assert madx_string in (tmp_path / JOB_MODEL_MADX_NOMINAL).read_text()
     assert madx_string in (tmp_path / "madx_log.txt").read_text()
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
