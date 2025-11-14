@@ -278,7 +278,7 @@ class Lhc(Accelerator):
         LOGGER.info(f"Natural Tune X      [{self.nat_tunes[0]:10.3f}]")
         LOGGER.info(f"Natural Tune Y      [{self.nat_tunes[1]:10.3f}]")
         LOGGER.info(
-            f"Best Knowledge Model     [{'NO' if self.model_best_knowledge is None else 'OK':>10s}]"
+            f"Best Knowledge Model:     [{'NO' if self.model_best_knowledge is None else 'OK':>10s}]"
         )
 
         if self.excitation == AccExcitationMode.FREE:
