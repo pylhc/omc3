@@ -28,7 +28,7 @@ class PsboosterModelCreator(PsBaseModelCreator):
             "USE_ACD": str(int(accel.excitation == AccExcitationMode.ACD)),
             "RING": accel.ring,
             "DPP": accel.dpp,
-            "OUTPUT": self._madx_path(self.output_dir),
+            "OUTPUT": self.resolve_madx_path(self.output_dir),
         }
         madx_template = accel.get_file("twiss.mask").read_text()
         madx_script += madx_template % replace_dict
@@ -38,16 +38,16 @@ class PsboosterModelCreator(PsBaseModelCreator):
         accel: Psbooster = self.accel
         use_acd = accel.excitation == AccExcitationMode.ACD
         replace_dict = {
-            "FILES_DIR": self._madx_path(accel.get_dir()),
+            "FILES_DIR": self.resolve_madx_path(accel.get_dir()),
             "USE_ACD": str(int(use_acd)),
             "RING": str(accel.ring),
             "NAT_TUNE_X": accel.nat_tunes[0],
             "NAT_TUNE_Y": accel.nat_tunes[1],
             "KINETICENERGY": 0 if accel.energy is None else accel.energy,
             "USE_CUSTOM_PC": "0" if accel.energy is None else "1",
-            "ACC_MODELS_DIR": self._madx_path(accel.acc_model_path),
-            "BEAM_FILE": self._madx_path(accel.beam_file),
-            "STR_FILE": self._madx_path(accel.str_file),
+            "ACC_MODELS_DIR": self.resolve_madx_path(accel.acc_model_path),
+            "BEAM_FILE": self.resolve_madx_path(accel.beam_file),
+            "STR_FILE": self.resolve_madx_path(accel.str_file),
             "DRV_TUNE_X": "",
             "DRV_TUNE_Y": "",
         }
