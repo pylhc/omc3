@@ -56,17 +56,37 @@ def get_knob_vals(
     """
     Retrieve knob values for a given beam and time using specified patterns.
 
+    This is the main entry point for extracting magnet knob values from NXCALS. The function
+    performs a complete workflow:
+
+    1. Queries NXCALS for power converter current measurements (I_MEAS) using variable patterns
+    2. Retrieves the beam energy at the specified time
+    3. Converts currents to K-values (integrated quadrupole strengths) using LSA
+    4. Maps power converter names to MAD-X naming conventions
+    5. Returns knob values with their timestamps
+
+    The difference between patterns and knob names:
+    - **patterns**: NXCALS variable patterns (e.g., "RPMBB.UA%.RQT%.A%B1:I_MEAS") used to query
+      raw power converter current measurements. These follow CERN naming conventions and may
+      include wildcards (%).
+    - **expected_knobs**: MAD-X element names (e.g., "kqt12.a12b1") representing the final
+      knob names as used in MAD-X scripts. These are lowercase, simplified names.
+
     Args:
-        spark (SparkSession): Active Spark session.
+        spark (SparkSession): Active Spark session for NXCALS queries.
         time (datetime): Time to retrieve data for.
-        beam (int): Beam number.
-        patterns (list[str]): List of variable patterns to retrieve.
-        expected_knobs (set[str] | None): Set of expected MAD-X knob names. If None, returns all found knobs.
-        log_prefix (str): Prefix for logging messages.
+        beam (int): Beam number (1 or 2).
+        patterns (list[str]): List of NXCALS variable patterns to query for power converter
+            currents. Patterns can include SQL-like wildcards (%). Example:
+            "RPMBB.UA%.RQT%.A%B1:I_MEAS" matches all MQT quadrupole trim magnets for beam 1.
+        expected_knobs (set[str] | None): Set of expected MAD-X knob names to validate and filter
+            results. If None, returns all found knobs without validation.
+        log_prefix (str): Prefix for logging messages to distinguish different extraction runs.
         delta_days (int): Number of days to look back for data. Default is 1.
 
     Returns:
-        list[NXCalResult]: List of NXCalResult objects with knob values.
+        list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,
+            timestamps, and power converter names.
     """
     LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
 

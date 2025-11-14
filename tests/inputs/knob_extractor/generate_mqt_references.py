@@ -18,7 +18,7 @@ B2_SOURCE = Path(
 )
 
 # Output directory for test inputs
-OUTPUT_DIR = Path(__file__).parent.parent / "inputs" / "knob_extractor"
+OUTPUT_DIR = Path(__file__).parent
 
 
 def main():

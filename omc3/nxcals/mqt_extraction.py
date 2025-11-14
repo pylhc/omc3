@@ -1,9 +1,14 @@
 """
-Extraction of MQT (Quadrupole Trim) knob values from NXCALS.
-------------------------------------------------------------
+Extraction of MQT knobs from NXCALS.
+------------------------------------
 
-This module provides functions to retrieve MQT knob values for the LHC for a specified beam
-and time using NXCALS and LSA.
+This module provides functions to retrieve MQT (Quadrupole Trim) knob values for the LHC
+for a specified beam and time using NXCALS and LSA.
+
+There are two types per arc (focusing 'f' and defocusing 'd'), resulting in 16 MQT circuits
+per beam (8 arcs * 2 planes).
+
+The extraction uses the underlying `knob_extraction` module with MQT-specific patterns.
 """
 
 import logging
@@ -42,7 +47,9 @@ def get_mqts(beam: int) -> set[str]:
     return {f"kqt{t}.a{a}b{beam}" for t in types for a in arcs}
 
 
-def get_mqt_vals(spark: SparkSession, time: datetime, beam: int) -> list[NXCalResult]:
+def get_mqt_vals(
+    spark: SparkSession, time: datetime, beam: int, delta_days: int = 1
+) -> list[NXCalResult]:
     """
     Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.
 
@@ -54,6 +61,7 @@ def get_mqt_vals(spark: SparkSession, time: datetime, beam: int) -> list[NXCalRe
         spark (SparkSession): Active Spark session for NXCALS queries.
         time (datetime): The timestamp for which to retrieve the data (timezone-aware recommended).
         beam (int): The beam number (1 or 2).
+        delta_days (int): Number of days to look back for data. Default is 1.
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing the MAD-X knob names, K-values, and timestamps.
@@ -65,7 +73,7 @@ def get_mqt_vals(spark: SparkSession, time: datetime, beam: int) -> list[NXCalRe
     madx_mqts = get_mqts(beam)
     pattern = f"RPMBB.UA%.RQT%.A%B{beam}:I_MEAS"
     patterns = [pattern]
-    return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ")
+    return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", delta_days)
 
 
 def knobs_to_madx(mqt_vals: list[NXCalResult]) -> str:

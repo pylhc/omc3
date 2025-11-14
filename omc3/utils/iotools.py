@@ -129,17 +129,6 @@ class PathOrStrOrDict(metaclass=get_instance_faker_meta(dict, Path, str)):
         return value
 
 
-class DateOrStr(metaclass=get_instance_faker_meta(datetime, str)):
-    """A class that can be used as datetime and string parser input"""
-
-    def __new__(cls, value):
-        value = strip_quotes(value)
-        if isinstance(value, datetime):
-            return value
-        # assume string, rely on pandas to parse and throw if not possible
-        return pd.to_datetime(value, utc=True)
-
-
 class UnionPathStr(metaclass=get_instance_faker_meta(Path, str)):
     """A class that can be used as Path and string parser input, but does not convert to path."""
 
@@ -254,9 +243,7 @@ def maybe_add_command(opt: dict, script: str) -> dict:
         if the script names were different, just the original opt.
     """
     if script == sys.argv[0]:
-        opt[";command"] = " ".join(
-            [sys.executable] + sys.argv
-        )  # will be sorted to the beginning below
+        opt[";command"] = " ".join([sys.executable] + sys.argv)
     return opt
 
 
