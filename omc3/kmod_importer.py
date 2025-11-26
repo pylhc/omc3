@@ -372,8 +372,8 @@ def import_kmod_summary_table(
         all_av_x.append(df_av_x)
         all_av_y.append(df_av_y)
 
-    averaged_tables = {"X": (tfs.concat(all_av_x, ignore_index=True)).to_string(index=False),
-                       "Y": (tfs.concat(all_av_y, ignore_index=True)).to_string(index=False)}
+    averaged_tables = {"X": (tfs.concat(all_av_x, ignore_index=True)).to_markdown(),
+                       "Y": (tfs.concat(all_av_y, ignore_index=True)).to_markdown()}
 
     for beam in beams:
         LOG.debug(f"Processing result for: {beam}")
@@ -383,9 +383,9 @@ def import_kmod_summary_table(
             big_df_y = big_df[["IP", "NAME"] + cols_y]
             txt_output = []  
             for name, df in [("X", big_df_x), ("Y", big_df_y)]:
-                table_str = df.to_string(index=False)
-                txt_output.append(f"\n========================================= {beam} Results ({name}-plane) =================================================\n\n{table_str}\n")
-                txt_output.append(f"\n=========================== {beam} Averaged Results ({name}-plane) ======================================================\n\n{averaged_tables[name]}\n")
+                table_str = df.to_markdown()
+                txt_output.append(f"\n============================================ {beam} Results ({name}-plane) ====================================================\n\n{table_str}\n")
+                txt_output.append(f"\n=========================== {beam} Averaged Results ({name}-plane) ============================================================\n\n{averaged_tables[name]}\n")
 
             LOG.debug(f"Saving results for: {beam} ")
             with open(output_dir/f"{beam}_summary_logbook.txt", "w") as f:
