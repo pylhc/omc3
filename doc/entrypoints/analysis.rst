@@ -3,9 +3,9 @@ Analysis
 
 .. automodule:: omc3.hole_in_one
     :members:
-    :no-index-entry:
+    :noindex:
 
 
 .. automodule:: omc3.amplitude_detuning_analysis
     :members:
-    :no-index-entry:
+    :noindex:
