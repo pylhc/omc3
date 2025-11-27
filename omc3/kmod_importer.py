@@ -344,7 +344,7 @@ def import_kmod_summary_table(
             except KeyError as e:
                 LOG.debug("Could not parse IP from LABEL. Skipping entry.", exc_info=e)
                 return None
-                
+
             df = data_sngl_file[cols_x + cols_y].iloc[[0]]
             df.insert(0, "NAME", file_name)
             df.insert(0, "IP", ip_name)
