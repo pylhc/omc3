@@ -308,7 +308,7 @@ def _get_betastar(df_model: tfs.TfsDataFrame, ip: str) -> list[float, float]:
 def import_kmod_summary_table(
         meas_paths: Sequence[Path | str],
         averaged_meas_paths: Sequence[tfs.TfsDataFrame],
-        output_dir: Path | str = None
+        output_dir: Path | str | None = None
         ) -> None:
 
     """
