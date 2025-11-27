@@ -4,6 +4,7 @@ Data Models
 
 Models used in optics measurements to store and pass around data.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -14,6 +15,7 @@ import pandas as pd
 import tfs
 
 from omc3.definitions.constants import PLANES
+from omc3.harpy.constants import MAINLINE_UNIT
 from omc3.optics_measurements import dpp, iforest
 from omc3.optics_measurements.constants import (
     AMPLITUDE,
@@ -30,6 +32,7 @@ if TYPE_CHECKING:
     from generic_parser import DotDict
 
 LOGGER = logging_tools.get_logger(__name__)
+
 
 class InputFiles(dict):
     """
@@ -63,13 +66,27 @@ class InputFiles(dict):
             self[plane] = dpp.append_dpp(self[plane], dpp.arrange_dpps(dpp_values))
             self[plane] = dpp.append_amp_dpp(self[plane], amp_dpp_values)
 
-    @staticmethod  # TODO later remove
-    def _repair_backwards_compatible_frame(df, plane: str):
+    @staticmethod
+    def _repair_backwards_compatible_frame(
+        df: pd.DataFrame | tfs.TfsDataFrame, plane: str
+    ) -> pd.DataFrame | tfs.TfsDataFrame:
         """
-        Multiplies unscaled amplitudes by 2 to get from complex amplitudes to the real ones.
-        This is for backwards compatibility with Drive,
-        i.e. harpy has this
+        Multiplies unscaled amplitudes by 2 for old files without the AMPLITUDE_UNIT header.
+        This is for backwards compatibility with Drive.
+
+        New harpy files (with AMPLITUDE_UNIT header set to 'm') don't need this correction
+        as they already output amplitudes in the correct unit.
         """
+        # Check if the file has the AMPLITUDE_UNIT header since v0.25.0
+        # If it does, no correction is needed
+        if (unit := getattr(df, "headers", {}).get(MAINLINE_UNIT)) is not None:
+            LOGGER.info(f"Detected amplitude unit '{unit}' for plane {plane}.")
+            if unit != "m":
+                # Potentially in the future, we could add conversion here if needed (jgray 10/2025)
+                raise ValueError(f"Unexpected amplitude unit '{unit}' in file for plane {plane}.")
+            return df
+
+        # Old files without the header need the correction (multiplication by 2)
         df[f"AMP{plane}"] = df.loc[:, f"AMP{plane}"].to_numpy() * 2
         if f"NATAMP{plane}" in df.columns:
             df[f"NATAMP{plane}"] = df.loc[:, f"NATAMP{plane}"].to_numpy() * 2

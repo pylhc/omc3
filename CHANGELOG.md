@@ -1,5 +1,29 @@
 # OMC3 Changelog
 
+#### 2025-11-TBD - v0.25.0 - _jgray_, _jdilly_, _fsoubelet_
+
+- Added:
+  - Tests for amplitude unit handling and backward compatibility.
+  - Allow passing of TbTData objects to hole-in-one directly
+
+- Changes:
+  - All new amplitude data files now include a header `AMPLITUDE_UNIT` specifying the unit of amplitude values.
+  - Before, we doubled the amplitude values read from files and divided by 2 when writing to maintain compatibility with old files. This is now removed, and no longer the case.
+
+
+#### 2025-10-29 - v0.24.6 - _jgray_, _jdilly_, _fsoubelet_
+
+- Breaking change:
+  - Now requires `turn_by_turn>=1.0.0` due to new `meta` parameter.
+
+- Added:
+  - Throw an Error when Tune Tolerance is too Large, i.e. driven tunes are inside the tolerance of the natural tunes.
+
+- Changed:
+  - Remove unnecessary `_replicate_harpy_options_per_file`
+  - Internal cleaning of the `harpy` module
+
+
 #### 2025-08-26 - v0.24.5 - _yangelis_
 
 - Fixed/Added:
