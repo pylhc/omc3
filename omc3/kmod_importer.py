@@ -367,7 +367,7 @@ def import_kmod_summary_table(
     all_av_x, all_av_y = [], []
     for key, value in averaged_meas_paths.items():
         LOG.debug(f"Reading averaged results: {key}")
-        df_av_x, df_av_y = output_table_single_beam(value[0], True)
+        df_av_x, df_av_y = output_table_single_beam(value[0], av_res_flag=True)
         all_av_x.append(df_av_x)
         all_av_y.append(df_av_y)
 
@@ -387,7 +387,8 @@ def import_kmod_summary_table(
                 txt_output.append(f"\n=========================== {beam} Averaged Results ({name}-plane) ============================================================\n\n{averaged_tables[name]}\n")
 
             LOG.debug(f"Saving results for: {beam} ")
-            with open(output_dir/f"{beam}_summary_logbook.txt", "w") as f:
+            summary_path = output_dir / f"{beam}_summary_logbook.txt"
+            with summary_path.open("w") as f:
                 f.write("\n".join(txt_output))
             tfs.write(output_dir/f"{beam}_kmod_summary.tfs", big_df)
 
