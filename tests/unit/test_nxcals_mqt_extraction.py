@@ -154,9 +154,7 @@ def test_main_with_timedelta(tmp_path, beam: int):
     time_diff = abs((extraction_time - expected_time).total_seconds())
 
     # Should be close to 1 day ago, allow 5 minute tolerance
-    assert time_diff < 300, (
-        f"Extraction time should be ~1 day ago, but diff is {time_diff} seconds"
-    )
+    assert time_diff < 300, f"Extraction time should be ~1 day ago, but diff is {time_diff} seconds"
 
 
 @pytest.mark.cern_network
