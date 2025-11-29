@@ -349,7 +349,7 @@ def _add_coupling(
     """
     result_dict_of_tfs = copy.deepcopy(dict_of_tfs)
     with timeit(lambda elapsed: LOG.debug(f"  Time adding coupling: {elapsed} s")):
-        for _, tfs_dframe in result_dict_of_tfs.items():
+        for tfs_dframe in result_dict_of_tfs.values():
             coupling_rdts_df = coupling_via_cmatrix(tfs_dframe)
             tfs_dframe[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
             tfs_dframe[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
