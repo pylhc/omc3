@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import timezone
 from pathlib import Path
 
 import pandas as pd
@@ -54,7 +55,7 @@ def _load_results_from_file(file_path: Path, tz: str = "Europe/Zurich") -> list[
 def test_get_mqts_matches_sample(beam: int, sample_file: Path):
     sample_results = _load_results_from_file(sample_file)
     expected_names = {result.name for result in sample_results}
-    assert expected_names == mqt_extraction.get_mqts(beam=beam)
+    assert expected_names == mqt_extraction.generate_mqt_names(beam=beam)
 
 
 @pytest.mark.cern_network
@@ -96,7 +97,7 @@ def test_main_reproduces_reference_output(tmp_path, beam: int, sample_file: Path
 @pytest.mark.cern_network
 def test_get_mqts_invalid_beam():
     with pytest.raises(ValueError):
-        mqt_extraction.get_mqts(beam=3)
+        mqt_extraction.generate_mqt_names(beam=3)
 
 
 @pytest.mark.cern_network
@@ -132,15 +133,12 @@ def test_main_returns_tfs_dataframe(tmp_path, beam: int, sample_file: Path):
 
 
 @pytest.mark.cern_network
-@pytest.mark.parametrize("beam", [1, 2])
+@pytest.mark.parametrize("beam", [1, 2], ids=["beam1", "beam2"])
 def test_main_with_timedelta(tmp_path, beam: int):
     """Test that timedelta parameter works correctly."""
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     output_path = tmp_path / f"test_timedelta_b{beam}.madx"
-
-    # Get current time
-    now = datetime.now()
 
     # Call with timedelta going back 1 day
     result_df = mqt_extractor.main(
@@ -152,33 +150,33 @@ def test_main_with_timedelta(tmp_path, beam: int):
 
     # Verify the extraction time is approximately 1 day ago
     extraction_time = result_df.headers["EXTRACTION_TIME"]
-    time_diff = abs((now - extraction_time).total_seconds())
+    expected_time = datetime.now(timezone.utc) - timedelta(days=1)
+    time_diff = abs((extraction_time - expected_time).total_seconds())
 
-    # Should be close to 1 day (86400 seconds), allow 5 minute tolerance
-    one_day_seconds = 86400
-    assert abs(time_diff - one_day_seconds) < 300, (
-        f"Time difference should be ~1 day, but got {time_diff} seconds"
+    # Should be close to 1 day ago, allow 5 minute tolerance
+    assert time_diff < 300, (
+        f"Extraction time should be ~1 day ago, but diff is {time_diff} seconds"
     )
 
 
 @pytest.mark.cern_network
-@pytest.mark.parametrize("beam", [1, 2])
+@pytest.mark.parametrize("beam", [1, 2], ids=["beam1", "beam2"])
 def test_main_with_delta_days(tmp_path, beam: int):
     """Test that delta_days parameter is properly passed through."""
     from datetime import datetime, timedelta
 
     output_path = tmp_path / f"test_delta_days_b{beam}.madx"
 
-    # Use a time 3 days ago with delta_days=5 to ensure we get data
-    past_time = datetime.now() - timedelta(days=3)
+    # Use a time 1 day ago with delta_days=1 to ensure we get data
+    past_time = datetime.now(timezone.utc) - timedelta(hours=2)
 
-    # This should work because we're looking back 5 days
+    # This should work because we're looking back 1 day
     result_df = mqt_extractor.main(
-        time=past_time.isoformat(), beam=beam, output=output_path, delta_days=5
+        time=past_time.isoformat(), beam=beam, output=output_path, delta_days=1 / 12
     )
 
     # Should succeed and return valid data
-    assert len(result_df) == 16, "Expected 16 MQT entries with delta_days=5"
+    assert len(result_df) == 16, "Expected 16 MQT entries with delta_days=1"
     assert result_df.headers["BEAM"] == beam
 
 
@@ -187,7 +185,7 @@ def test_parse_time_now():
     from datetime import datetime
 
     result = mqt_extractor._parse_time("now")
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
 
     # Should be very close to now (within 1 second)
     diff = abs((now - result).total_seconds())
@@ -198,7 +196,7 @@ def test_parse_time_with_timedelta():
     """Test that _parse_time correctly applies timedelta."""
     from datetime import datetime
 
-    now_str = datetime.now().isoformat()
+    now_str = datetime.now(timezone.utc).isoformat()
 
     # Test positive timedelta
     result_plus = mqt_extractor._parse_time(now_str, "1h")

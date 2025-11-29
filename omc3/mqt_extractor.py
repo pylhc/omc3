@@ -49,12 +49,11 @@ per beam (8 arcs × 2 types).
     '_2h' while setting the `time` argument to 'now' (default).
 
 
-- **delta_days** *(int)*:
+- **delta_days** *(float)*:
 
     Number of days to look back for data in NXCALS.
 
-    default: ``1``
-
+    default: ``0.25`` (e.g. 6 hours)
 
 """
 
@@ -128,9 +127,9 @@ def get_params():
             ),
         },
         delta_days={
-            "type": int,
+            "type": float,
             "help": "Number of days to look back for data in NXCALS.",
-            "default": 1,
+            "default": 0.25,
         },
     )
 
@@ -191,12 +190,18 @@ def _write_mqt_file(output: Path | str, mqt_vals, time: datetime, beam: int):
 
 
 def _parse_time(time: str, timedelta: str = None) -> datetime:
-    """Parse time from given time-input."""
+    """Parse time from given time-input from command line."""
+    from datetime import timezone
+
     from omc3.knob_extractor import _add_time_delta, _parse_time_from_str
 
     t = _parse_time_from_str(time)
     if timedelta:
         t = _add_time_delta(t, timedelta)
+    if t.tzinfo is None:
+        # Since we were given a string, there is no way to know the intended timezone.
+        # We default to UTC to avoid confusion.
+        t = t.replace(tzinfo=timezone.utc)
     return t
 
 

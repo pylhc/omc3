@@ -51,7 +51,7 @@ def get_knob_vals(
     patterns: list[str],
     expected_knobs: set[str] | None = None,
     log_prefix: str = "",
-    delta_days: int = 1,
+    delta_days: float = 0.25,
 ) -> list[NXCALSResult]:
     """
     Retrieve knob values for a given beam and time using specified patterns.
@@ -82,7 +82,7 @@ def get_knob_vals(
         expected_knobs (set[str] | None): Set of expected MAD-X knob names to validate and filter
             results. If None, returns all found knobs without validation.
         log_prefix (str): Prefix for logging messages to distinguish different extraction runs.
-        delta_days (int): Number of days to look back for data. Default is 1.
+        delta_days (float): Number of days to look back for data. Default is 0.25.
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,
@@ -146,7 +146,7 @@ def get_knob_vals(
 
 
 def get_raw_vars(
-    spark: SparkSession, time: datetime, var_name: str, delta_days: int = 1
+    spark: SparkSession, time: datetime, var_name: str, delta_days: float = 0.25
 ) -> list[NXCALSResult]:
     """
     Retrieve raw variable values from NXCALS.
@@ -155,7 +155,7 @@ def get_raw_vars(
         spark (SparkSession): Active Spark session.
         time (datetime): Python datetime (timezone-aware recommended).
         var_name (str): Name or pattern of the variable(s) to retrieve.
-        delta_days (int): Number of days to look back for data. Default is 1.
+        delta_days (float): Number of days to look back for data. Default is 0.25.
 
     Returns:
         list[NXCalResult]: List of NXCalResult containing variable name, value, timestamp,
@@ -172,7 +172,7 @@ def get_raw_vars(
     else:
         time = time.astimezone(timezone.utc)
 
-    # Look back delta_days (1 for mqts) to be sure we get at least one sample
+    # Look back delta_days, may need up to 1 day to find data
     start_time = time - timedelta(days=delta_days)
     end_time = time
     LOGGER.info(f"Retrieving raw variables {var_name} from {start_time} to {end_time}")
@@ -260,11 +260,11 @@ def calc_k_from_iref(lsa_client, currents: dict[str, float], energy: float) -> d
     j_double = jpype.JClass("java.lang.Double")
 
     jmap = j_hash_map()
-    for k, v in currents.items():
-        if v is None:
-            raise ValueError(f"Current for {k} is None")
+    for power_converter, current in currents.items():
+        if current is None:
+            raise ValueError(f"Current for {power_converter} is None")
         # ensure primitive-compatible double values
-        jmap.put(k, j_double.valueOf(v))  # boxed; Java unboxes internally
+        jmap.put(power_converter, j_double.valueOf(current))  # boxed; Java unboxes internally
 
     # 3) Call: Map<String, Double> calculateKfromIREF(Map<String, Double>, double)
     out = lhc_service.calculateKfromIREF(jmap, float(energy))
@@ -326,7 +326,7 @@ def map_pc_name_to_madx(pc_name: str) -> str:
         circuit_name = pc_name
 
     # Apply MAD-X specific replacements
-    replacements = {"RQT": "KQT", "RCB": "ACB"}
+    replacements = {"RQ": "KQ", "RCB": "ACB"}
     for old, new in replacements.items():
         circuit_name = circuit_name.replace(old, new)
 

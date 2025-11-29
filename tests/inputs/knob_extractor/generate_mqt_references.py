@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Copy reference MQT extraction files for testing.
 

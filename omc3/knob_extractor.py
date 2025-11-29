@@ -591,7 +591,7 @@ def _parse_time_from_str(time_str: str) -> datetime:
     """ Parse time from given string. """
     # Now? ---
     if time_str.lower() == "now":
-        return datetime.now()
+        return datetime.now(timezone.utc)
 
     # ISOFormat? ---
     try:

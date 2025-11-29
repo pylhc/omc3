@@ -22,7 +22,7 @@ from omc3.nxcals.knob_extraction import NXCALSResult, get_knob_vals
 logger = logging.getLogger(__name__)
 
 
-def get_mqts(beam: int) -> set[str]:
+def generate_mqt_names(beam: int) -> set[str]:
     """
     Generate the set of MAD-X MQT (Quadrupole Trim) variable names for a given beam.
 
@@ -48,7 +48,7 @@ def get_mqts(beam: int) -> set[str]:
 
 
 def get_mqt_vals(
-    spark: SparkSession, time: datetime, beam: int, delta_days: int = 1
+    spark: SparkSession, time: datetime, beam: int, delta_days: float = 0.25
 ) -> list[NXCALSResult]:
     """
     Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.
@@ -59,18 +59,21 @@ def get_mqt_vals(
 
     Args:
         spark (SparkSession): Active Spark session for NXCALS queries.
-        time (datetime): The timestamp for which to retrieve the data (timezone-aware recommended).
+        time (datetime): The timestamp for which to retrieve the data (timezone-aware required).
         beam (int): The beam number (1 or 2).
-        delta_days (int): Number of days to look back for data. Default is 1.
+        delta_days (float): Number of days to look back for data. Default is 0.25.
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing the MAD-X knob names, K-values, and timestamps.
 
     Raises:
-        ValueError: If beam is not 1 or 2 (propagated from get_mqts).
+        ValueError: If beam is not 1 or 2 (propagated from get_mqts), or if time is not timezone-aware.
         RuntimeError: If no data is found in NXCALS or LSA calculations fail.
     """
-    madx_mqts = get_mqts(beam)
+    if time.tzinfo is None:
+        raise ValueError("Time must be timezone-aware.")
+
+    madx_mqts = generate_mqt_names(beam)
     pattern = f"RPMBB.UA%.RQT%.A%B{beam}:I_MEAS"
     patterns = [pattern]
     return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", delta_days)
