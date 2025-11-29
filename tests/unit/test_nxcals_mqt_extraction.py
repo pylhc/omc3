@@ -9,7 +9,7 @@ import pytest
 from omc3 import mqt_extractor
 from omc3.nxcals import mqt_extraction
 from omc3.nxcals.constants import EXTRACTED_MQTS_FILENAME
-from omc3.nxcals.knob_extraction import NXCalResult
+from omc3.nxcals.knob_extraction import NXCALSResult
 
 SAMPLE_DIR = Path(__file__).parent.parent / "inputs" / "knob_extractor"
 TEST_CASES = (
@@ -31,15 +31,15 @@ def _parse_mqt_line(line: str, tz: str = "Europe/Zurich") -> tuple[str, float, s
     return name, value, pc_name, timestamp
 
 
-def _load_results_from_file(file_path: Path, tz: str = "Europe/Zurich") -> list[NXCalResult]:
-    results: list[NXCalResult] = []
+def _load_results_from_file(file_path: Path, tz: str = "Europe/Zurich") -> list[NXCALSResult]:
+    results: list[NXCALSResult] = []
     for raw_line in file_path.read_text().splitlines():
         line = raw_line.strip()
         if not line or line.startswith("!"):
             continue
         name, value, pc_name, timestamp = _parse_mqt_line(line, tz=tz)
         results.append(
-            NXCalResult(
+            NXCALSResult(
                 name=name,
                 value=value,
                 timestamp=timestamp,
@@ -72,7 +72,7 @@ def test_main_reproduces_reference_output(tmp_path, beam: int, sample_file: Path
     mqt_extractor.main(time=query_time.isoformat(), beam=beam, output=output_path)
 
     expected_results = [
-        NXCalResult(
+        NXCALSResult(
             name=r.name,
             value=r.value,
             pc_name=r.pc_name,

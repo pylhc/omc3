@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 
 import jpype
 import pandas as pd
-from pyspark.sql import functions as f
+from pyspark.sql import functions
 from pyspark.sql.window import Window
 
 from omc3.utils.mock import cern_network_import
@@ -34,7 +34,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
-class NXCalResult:
+class NXCALSResult:
     name: str
     value: float
     timestamp: pd.Timestamp
@@ -52,7 +52,7 @@ def get_knob_vals(
     expected_knobs: set[str] | None = None,
     log_prefix: str = "",
     delta_days: int = 1,
-) -> list[NXCalResult]:
+) -> list[NXCALSResult]:
     """
     Retrieve knob values for a given beam and time using specified patterns.
 
@@ -91,7 +91,7 @@ def get_knob_vals(
     LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
 
     # Retrieve raw current measurements from NXCALS
-    combined_vars: list[NXCalResult] = []
+    combined_vars: list[NXCALSResult] = []
     for pattern in patterns:
         LOGGER.info(f"{log_prefix}Getting currents for pattern {pattern} at {time}")
         raw_vars = get_raw_vars(spark, time, pattern, delta_days)
@@ -135,7 +135,7 @@ def get_knob_vals(
         pc_name = pc_names.get(madx_name)
 
         if value is not None and timestamp is not None and pc_name is not None:
-            results.append(NXCalResult(madx_name, value, timestamp, pc_name))
+            results.append(NXCALSResult(madx_name, value, timestamp, pc_name))
         else:
             LOGGER.warning(f"{log_prefix}Missing data for {madx_name}")
 
@@ -147,7 +147,7 @@ def get_knob_vals(
 
 def get_raw_vars(
     spark: SparkSession, time: datetime, var_name: str, delta_days: int = 1
-) -> list[NXCalResult]:
+) -> list[NXCALSResult]:
     """
     Retrieve raw variable values from NXCALS.
 
@@ -197,11 +197,11 @@ def get_raw_vars(
 
     # Get the latest sample for each variable
     window_spec = Window.partitionBy("nxcals_variable_name").orderBy(
-        f.col("nxcals_timestamp").desc()
+        functions.col("nxcals_timestamp").desc()
     )
     latest_df = (
-        df.withColumn("row_num", f.row_number().over(window_spec))
-        .filter(f.col("row_num") == 1)
+        df.withColumn("row_num", functions.row_number().over(window_spec))
+        .filter(functions.col("row_num") == 1)
         .select("nxcals_variable_name", "nxcals_value", "nxcals_timestamp")
     )
 
@@ -210,7 +210,7 @@ def get_raw_vars(
         full_varname = row["nxcals_variable_name"]
         raw_val = float(row["nxcals_value"])
         ts = pd.to_datetime(row["nxcals_timestamp"], unit="ns", utc=True)
-        results.append(NXCalResult(full_varname, raw_val, ts, strip_i_meas(full_varname)))
+        results.append(NXCALSResult(full_varname, raw_val, ts, strip_i_meas(full_varname)))
         LOGGER.info(f"LHC value retrieved: {full_varname} = {raw_val:.2f} at {ts}")
 
     return results

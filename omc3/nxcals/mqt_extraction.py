@@ -17,7 +17,7 @@ from datetime import datetime
 # import jpype
 from pyspark.sql import SparkSession
 
-from omc3.nxcals.knob_extraction import NXCalResult, get_knob_vals
+from omc3.nxcals.knob_extraction import NXCALSResult, get_knob_vals
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ def get_mqts(beam: int) -> set[str]:
 
 def get_mqt_vals(
     spark: SparkSession, time: datetime, beam: int, delta_days: int = 1
-) -> list[NXCalResult]:
+) -> list[NXCALSResult]:
     """
     Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.
 
@@ -76,7 +76,7 @@ def get_mqt_vals(
     return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", delta_days)
 
 
-def knobs_to_madx(mqt_vals: list[NXCalResult]) -> str:
+def knobs_to_madx(mqt_vals: list[NXCALSResult]) -> str:
     """
     Convert a list of NXCalResult objects to a MAD-X script string.
 
