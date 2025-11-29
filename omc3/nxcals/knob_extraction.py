@@ -2,8 +2,8 @@
 Knob Extraction
 ---------------
 
-This module provides functionality to extract knob values from NXCALS and convert them to
-MAD-X compatible format using LSA services.
+This module provides functionality to extract knob values from NXCALS for the LHC and
+convert them to MAD-X compatible format using LSA services.
 
 It handles retrieval of raw variable data from NXCALS, conversion of power converter
 currents to K-values, and mapping of power converter names to MAD-X naming
@@ -54,7 +54,7 @@ def get_knob_vals(
     delta_days: float = 0.25,
 ) -> list[NXCALSResult]:
     """
-    Retrieve knob values for a given beam and time using specified patterns.
+    Retrieve knob values for a given beam and time using specified patterns for the LHC.
 
     This is the main entry point for extracting magnet knob values from NXCALS. The function
     performs a complete workflow:
@@ -218,7 +218,7 @@ def get_raw_vars(
 
 def get_energy(spark: SparkSession, time: datetime) -> tuple[float, pd.Timestamp]:
     """
-    Retrieve the beam energy from NXCALS.
+    Retrieve the beam energy of the LHC from NXCALS.
 
     Args:
         spark (SparkSession): Active Spark session.
@@ -242,7 +242,7 @@ def get_energy(spark: SparkSession, time: datetime) -> tuple[float, pd.Timestamp
 
 def calc_k_from_iref(lsa_client, currents: dict[str, float], energy: float) -> dict[str, float]:
     """
-    Calculate K values from IREF using the LSA service.
+    Calculate K values in the LHC from IREF using the LSA service.
 
     Args:
         lsa_client: The LSA client instance.
@@ -294,9 +294,11 @@ def strip_i_meas(text: str) -> str:
     return text.removesuffix(":I_MEAS")
 
 
+# Note: this will have to be updated if we ever want to support other magnet types
+# such as dipoles, sextupoles, octupoles, etc.
 def map_pc_name_to_madx(pc_name: str) -> str:
     """
-    Convert a power converter name or circuit name to its corresponding MAD-X name.
+    Convert an LHC power converter name or circuit name to its corresponding MAD-X name.
 
     This function processes the input name by removing the ':I_MEAS' suffix if present,
     extracting the circuit name from full power converter names (starting with 'RPMBB' or 'RPL'),
@@ -329,6 +331,4 @@ def map_pc_name_to_madx(pc_name: str) -> str:
     replacements = {"RQ": "KQ", "RCB": "ACB"}
     for old, new in replacements.items():
         circuit_name = circuit_name.replace(old, new)
-
-    # Return in lowercase as required by MAD-X
     return circuit_name.lower()
