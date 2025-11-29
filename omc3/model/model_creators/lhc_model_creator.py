@@ -606,46 +606,43 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
         twiss_forward_path = self.resolve_madx_path(self.output_dir / self.twiss_forward)
         twiss_backward_path = self.resolve_madx_path(self.output_dir / self.twiss_backward)
 
-        madx_script += "\n".join(
-            [
-                "",
-                f"! ----- Segment-by-Segment propagation for {self.segment.name} -----",
-                "",
-                "! Cycle the sequence to avoid negative length.",
-                f"seqedit, sequence=LHCB{accel.beam};",
-                "flatten;",
-                f"cycle, start={self.segment.start};",
-                "endedit;",
-                "",
-                f"use, period = LHCB{accel.beam};",
-                "option, echo;",
-                "",
-                "twiss;",
-                "exec, save_initial_and_final_values(",
-                f"    LHCB{accel.beam},",
-                f"    {self.segment.start},",
-                f"    {self.segment.end}, ",
-                f'    "{measurement_path}",',
-                f"    biniLHCB{accel.beam},",
-                f"    bendLHCB{accel.beam}",
-                ");",
-                "",
-                "exec, extract_segment_sequence(",
-                f"    LHCB{accel.beam},",
-                f"    forward_LHCB{accel.beam},",
-                f"    backward_LHCB{accel.beam},",
-                f"    {self.segment.start},",
-                f"    {self.segment.end},",
-                ");",
-                "",
-                f"beam, particle = proton, sequence=forward_LHCB{accel.beam}, energy = {MADX_ENERGY_VAR}, bv={accel.beam_direction:d};",
-                f"beam, particle = proton, sequence=backward_LHCB{accel.beam}, energy = {MADX_ENERGY_VAR}, bv={accel.beam_direction:d};",
-                "",
-                f'exec, twiss_segment(forward_LHCB{accel.beam}, "{twiss_forward_path}", biniLHCB{accel.beam});',
-                f'exec, twiss_segment(backward_LHCB{accel.beam}, "{twiss_backward_path}", bendLHCB{accel.beam});',
-                "",
-            ]
-        )
+        madx_script += f"""
+! ----- Segment-by-Segment propagation for {self.segment.name} -----
+
+! Cycle the sequence to avoid negative length.
+seqedit, sequence=LHCB{accel.beam};
+flatten;
+cycle, start={self.segment.start};
+endedit;
+
+use, period = LHCB{accel.beam};
+option, echo;
+
+twiss;
+exec, save_initial_and_final_values(
+    LHCB{accel.beam},
+    {self.segment.start},
+    {self.segment.end},
+    "{measurement_path}",
+    biniLHCB{accel.beam},
+    bendLHCB{accel.beam}
+);
+
+exec, extract_segment_sequence(
+    LHCB{accel.beam},
+    forward_LHCB{accel.beam},
+    backward_LHCB{accel.beam},
+    {self.segment.start},
+    {self.segment.end},
+);
+
+beam, particle = proton, sequence=forward_LHCB{accel.beam}, energy = {MADX_ENERGY_VAR}, bv={accel.beam_direction:d};
+beam, particle = proton, sequence=backward_LHCB{accel.beam}, energy = {MADX_ENERGY_VAR}, bv={accel.beam_direction:d};
+
+exec, twiss_segment(forward_LHCB{accel.beam}, "{twiss_forward_path}", biniLHCB{accel.beam});
+exec, twiss_segment(backward_LHCB{accel.beam}, "{twiss_backward_path}", bendLHCB{accel.beam});
+
+"""
 
         if self.corrections is not None:
             corrections_path = self.resolve_madx_path(self.output_dir / self.corrections_madx)
@@ -655,16 +652,12 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
             twiss_backward_corr_path = self.resolve_madx_path(
                 self.output_dir / self.twiss_backward_corrected
             )
-            madx_script += "\n".join(
-                [
-                    f'call, file = "{corrections_path}";',
-                    f"exec, twiss_segment(forward_LHCB{accel.beam}, "
-                    f'"{twiss_forward_corr_path}", biniLHCB{accel.beam});',
-                    f"exec, twiss_segment(backward_LHCB{accel.beam}, "
-                    f'"{twiss_backward_corr_path}", bendLHCB{accel.beam});',
-                    "",
-                ]
-            )
+            madx_script += f"""
+call, file = "{corrections_path}";
+exec, twiss_segment(forward_LHCB{accel.beam}, "{twiss_forward_corr_path}", biniLHCB{accel.beam});
+exec, twiss_segment(backward_LHCB{accel.beam}, "{twiss_backward_corr_path}", bendLHCB{accel.beam});
+
+"""
 
         return madx_script
 
