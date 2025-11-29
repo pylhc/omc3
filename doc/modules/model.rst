@@ -85,3 +85,11 @@ Model
     :members:
     :noindex:
 
+
+.. automodule:: omc3.model.model_creators.abstract_model_creator
+    :members:
+    :noindex:
+
+.. automodule:: omc3.model.model_creators.segment_creator
+    :members:
+    :noindex:

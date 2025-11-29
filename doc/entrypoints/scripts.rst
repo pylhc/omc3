@@ -6,7 +6,7 @@ Scripts
     :noindex:
 
 
-.. automodule:: omc3.scripts.kmod_averages
+.. automodule:: omc3.scripts.kmod_average
     :members:
     :noindex:
 
@@ -46,11 +46,11 @@ Scripts
     :noindex:
 
 
-.. automodule:: omc3.scripts.lhc_corrector_list_check
+.. automodule:: omc3.scripts.create_logbook_entry
     :members:
     :noindex:
 
 
-.. automodule:: omc3.scripts.mqt_extraction
+.. automodule:: omc3.scripts.lhc_corrector_list_check
     :members:
     :noindex:
