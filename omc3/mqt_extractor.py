@@ -8,7 +8,7 @@ The data is fetched from ``NXCALS`` through PySpark queries and converted to K-v
 
 MQT magnets are trim quadrupoles located in the LHC arcs, used for fine-tuning the optics.
 There are two types per arc (focusing 'f' and defocusing 'd'), resulting in 16 MQT magnets
-per beam (8 arcs × 2 types).
+per beam (8 arcs x 2 types).
 
 .. note::
     Please note that access to the GPN is required to use this functionality.
@@ -70,6 +70,7 @@ from omc3.nxcals.mqt_extraction import get_mqt_vals, knobs_to_madx
 from omc3.utils.iotools import PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
+from omc3.utils.time_tools import parse_time
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -155,7 +156,7 @@ def main(opt) -> tfs.TfsDataFrame:
             for madx name, value, timestamp, and power converter name.
     """
     spark = spark_session_builder.get_or_create(conf={"spark.ui.showConsoleProgress": "false"})
-    time = _parse_time(opt.time, opt.timedelta)
+    time = parse_time(opt.time, opt.timedelta)
 
     LOGGER.info(f"---- EXTRACTING MQT KNOBS @ {time} for Beam {opt.beam} ----")
     mqt_vals = get_mqt_vals(spark, time, opt.beam, delta_days=opt.delta_days)
@@ -184,25 +185,6 @@ def _write_mqt_file(output: Path | str, mqt_vals, time: datetime, beam: int):
         outfile.write("!! --- MQT knobs extracted by mqt_extractor\n")
         outfile.write(f"!! --- extracted MQT knobs for time {time}, beam {beam}\n\n")
         outfile.write(knobs_to_madx(mqt_vals))
-
-
-# Time Tools (copied from knob_extractor for consistency) ---------------------
-
-
-def _parse_time(time: str, timedelta: str = None) -> datetime:
-    """Parse time from given time-input from command line."""
-    from datetime import timezone
-
-    from omc3.knob_extractor import _add_time_delta, _parse_time_from_str
-
-    t = _parse_time_from_str(time)
-    if timedelta:
-        t = _add_time_delta(t, timedelta)
-    if t.tzinfo is None:
-        # Since we were given a string, there is no way to know the intended timezone.
-        # We default to UTC to avoid confusion.
-        t = t.replace(tzinfo=timezone.utc)
-    return t
 
 
 if __name__ == "__main__":

@@ -83,22 +83,21 @@ if "PATH" in os.environ and "/mcr/bin" in os.environ["PATH"]:
 import argparse
 import logging
 import math
-import re
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
 import tfs
-from dateutil.relativedelta import relativedelta
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
+from omc3.utils.time_tools import parse_time
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from datetime import datetime
 
 pytimber = cern_network_import("pytimber")
 
@@ -111,7 +110,6 @@ ACC_MODELS_LHC = Path("acc-models-lhc")
 KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
 KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
 
-MINUS_CHARS: tuple[str, ...] = ("_", "-")
 STATE_VARIABLES: dict[str, str] = {
     "opticName": "Optics",
     "beamProcess": "Beam Process",
@@ -184,7 +182,10 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
         "LHCBEAM1:IP-SDISP-QPBUMP",
         "LHCBEAM2:IP-SDISP-QPBUMP",
     ],
-    "mo": ["LHCBEAM1:LANDAU_DAMPING", "LHCBEAM2:LANDAU_DAMPING"],
+    "mo": [
+        "LHCBEAM1:LANDAU_DAMPING",
+        "LHCBEAM2:LANDAU_DAMPING",
+    ],
     "lumi_scan": [
         "LHCBEAM1:IP1_SEPSCAN_X_MM",
         "LHCBEAM1:IP1_SEPSCAN_Y_MM",
@@ -296,7 +297,7 @@ def main(opt) -> tfs.TfsDataFrame:
         loglevel=logging.ERROR,
         sparkprops={"spark.ui.showConsoleProgress": "false"},
     )
-    time = _parse_time(opt.time, opt.timedelta)
+    time = parse_time(opt.time, opt.timedelta)
 
     if opt.state:
         # Only print the state of the machine.
@@ -592,60 +593,6 @@ def get_madx_command(knob_data: pd.Series) -> str:
     if knob_data[Col.value] is None or pd.isna(knob_data[Col.value]):
         return f"! {knob_data[Col.madx]} : No Value extracted"
     return f"{knob_data[Col.madx]} := {knob_data[Col.value] * knob_data[Col.scaling]};"
-
-
-# Time Tools -------------------------------------------------------------------
-
-
-def _parse_time(time: str, timedelta: str = None) -> datetime:
-    """Parse time from given time-input."""
-    t = _parse_time_from_str(time)
-    if timedelta:
-        t = _add_time_delta(t, timedelta)
-    return t
-
-
-def _parse_time_from_str(time_str: str) -> datetime:
-    """Parse time from given string."""
-    # Now? ---
-    if time_str.lower() == "now":
-        return datetime.now(timezone.utc)
-
-    # ISOFormat? ---
-    try:
-        return datetime.fromisoformat(time_str)
-    except (TypeError, ValueError):
-        LOGGER.debug("Could not parse time string as ISO format")
-        pass
-
-    # Timestamp? ---
-    try:
-        return datetime.fromtimestamp(int(time_str))
-    except (TypeError, ValueError):
-        LOGGER.debug("Could not parse time string as a timestamp")
-        pass
-
-    raise ValueError(f"Couldn't read datetime '{time_str}'")
-
-
-def _add_time_delta(time: datetime, delta_str: str) -> datetime:
-    """Parse delta-string and add time-delta to time."""
-    sign = -1 if delta_str[0] in MINUS_CHARS else 1
-    all_deltas = re.findall(r"(\d+)(\w)", delta_str)  # tuples (value, timeunit-char)
-    # mapping char to the time-unit as accepted by relativedelta,
-    # following ISO-8601 for time durations
-    char2unit = {
-        "s": "seconds",
-        "m": "minutes",
-        "h": "hours",
-        "d": "days",
-        "w": "weeks",
-        "M": "months",
-        "Y": "years",
-    }
-    # add all deltas, which are tuples of (value, timeunit-char)
-    time_parts = {char2unit[delta[1]]: sign * int(delta[0]) for delta in all_deltas}
-    return time + relativedelta(**time_parts)
 
 
 # Other tools ------------------------------------------------------------------
