@@ -253,7 +253,7 @@ def calc_k_from_iref(lsa_client, currents: dict[str, float], energy: float) -> d
         dict[str, float]: Dictionary of K values keyed by variable name.
     """
     # 1) Use the **instance** PJLSA already created
-    lhc_service = lsa_client._lhcService  # <-- INSTANCE (do NOT use self._LhcService)
+    lhc_service = lsa_client._lhcService
 
     # 2) Build a java.util.HashMap<String, Double> (not a Python dict)
     j_hash_map = jpype.JClass("java.util.HashMap")
