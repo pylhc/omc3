@@ -510,12 +510,9 @@ class CorrectionModelCreator(ModelCreator):
         self.twiss_out = self.resolve_madx_path(twiss_out)
 
         # Take the directory of the twiss output as output dir
-        self.jobfile = self.resolve_madx_path(
-            self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.madx"
-        )
-        self.logfile = self.resolve_madx_path(
-            self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.log"
-        )
+        self.jobfile = self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.madx"
+
+        self.logfile = self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.log"
         self.corr_files = [self.resolve_madx_path(f) for f in corr_files]
         self.update_dpp = update_dpp
 

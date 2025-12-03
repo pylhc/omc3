@@ -128,7 +128,11 @@ class Lhc(Accelerator):
     def get_parameters():
         params = super(Lhc, Lhc).get_parameters()
         params.add_parameter(
-            name="beam", type=int, choices=(1, 2), required=True, help="Beam to use."
+            name="beam",
+            type=int,
+            choices=(1, 2),
+            required=True,
+            help="Beam to use.",
         )
         params.add_parameter(
             name="year",
@@ -329,7 +333,7 @@ class Lhc(Accelerator):
         return None
 
     def get_accel_file(self, filename: Path | str) -> Path:
-        return Path(LHC_DIR / self.year / filename).absolute()
+        return (LHC_DIR / self.year / filename).absolute()
 
     # Private Methods ##############################################################
     def _get_corrector_elems(self) -> Path:
