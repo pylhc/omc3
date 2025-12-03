@@ -44,8 +44,8 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 - **time** *(str)*:
 
     At what time to extract the knobs. Accepts ISO-format (YYYY-MM-
-    DDThh:mm:ss), timestamp or 'now'. The default timezone for the ISO-
-    format is local time, but you can force e.g. UTC by adding +00:00.
+    DDThh:mm:ss) with timezone, timestamp or 'now'. Timezone must be
+    specified for ISO-format (e.g. +00:00 for UTC).
 
     default: ``now``
 
@@ -212,7 +212,7 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
 
 USAGE_EXAMPLES = """Usage Examples:
 
-python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00
+python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00+00:00
     extracts the chromaticity and dispersion knobs at 14h on May 4th 2022
 
 python -m omc3.knob_extractor --knobs disp chroma --time now _2h
@@ -241,9 +241,8 @@ def get_params():
             "type": str,
             "help": (
                 "At what time to extract the knobs. "
-                "Accepts ISO-format (YYYY-MM-DDThh:mm:ss), timestamp or 'now'. "
-                "The default timezone for the ISO-format is local time, "
-                "but you can force e.g. UTC by adding +00:00."
+                "Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'. "
+                "Timezone must be specified for ISO-format (e.g. +00:00 for UTC)."
             ),
             "default": "now",
         },

@@ -182,27 +182,31 @@ def test_parse_time_now():
     """Test that _parse_time correctly handles 'now'."""
     from datetime import datetime
 
-    result = mqt_extractor._parse_time("now")
+    from omc3.utils.time_tools import parse_time
+
+    result = parse_time("now")
     now = datetime.now(timezone.utc)
 
     # Should be very close to now (within 1 second)
     diff = abs((now - result).total_seconds())
-    assert diff < 1, f"_parse_time('now') should return current time, diff was {diff}s"
+    assert diff < 1, f"parse_time('now') should return current time, diff was {diff}s"
 
 
 def test_parse_time_with_timedelta():
     """Test that _parse_time correctly applies timedelta."""
     from datetime import datetime
 
+    from omc3.utils.time_tools import parse_time
+
     now_str = datetime.now(timezone.utc).isoformat()
 
     # Test positive timedelta
-    result_plus = mqt_extractor._parse_time(now_str, "1h")
-    result_base = mqt_extractor._parse_time(now_str)
+    result_plus = parse_time(now_str, "1h")
+    result_base = parse_time(now_str)
     diff_plus = (result_plus - result_base).total_seconds()
     assert abs(diff_plus - 3600) < 1, f"1h timedelta should add 3600s, got {diff_plus}s"
 
     # Test negative timedelta
-    result_minus = mqt_extractor._parse_time(now_str, "_2h")
+    result_minus = parse_time(now_str, "_2h")
     diff_minus = (result_minus - result_base).total_seconds()
     assert abs(diff_minus + 7200) < 1, f"_2h timedelta should subtract 7200s, got {diff_minus}s"
