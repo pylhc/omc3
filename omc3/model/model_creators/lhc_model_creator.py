@@ -236,10 +236,6 @@ class LhcModelCreator(ModelCreator):
         see below.
         """
         accel: Lhc = self.accel
-        acc_model_path = None
-        if accel.acc_model_path is not None:
-            acc_model_path = Path(self.resolve_madx_path(accel.acc_model_path))
-
         madx_script = (
             f"{self._get_madx_script_info_comments()}\n\n"
             f"call, file = '{self.resolve_madx_path(accel.model_dir / MACROS_DIR / GENERAL_MACROS)}';\n"
@@ -255,7 +251,7 @@ class LhcModelCreator(ModelCreator):
         madx_script += (
             "option, -echo;  ! suppress output from base sequence loading to keep the log small\n"
         )
-        madx_script += self._get_madx_main_sequence_loading(acc_model_path)
+        madx_script += self._get_madx_main_sequence_loading()
         madx_script += "\noption, echo;  ! re-enable output to see the optics settings\n"
 
         madx_script += "\n! ---- Call optics and other modifiers ----\n"
@@ -348,10 +344,12 @@ class LhcModelCreator(ModelCreator):
             )
         return info_comments
 
-    def _get_madx_main_sequence_loading(self, acc_model_path: Path | None) -> str:
+    def _get_madx_main_sequence_loading(self) -> str:
         accel: Lhc = self.accel
 
-        if acc_model_path is not None:
+        if accel.acc_model_path is not None:
+            acc_model_path = Path(self.resolve_madx_path(accel.acc_model_path))
+
             main_seq_rel = acc_model_path / "lhc.seq"
             main_call = f"call, file = '{main_seq_rel}';"
             if accel.year.startswith("hl"):
