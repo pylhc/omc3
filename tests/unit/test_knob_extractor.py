@@ -18,10 +18,8 @@ from omc3.knob_extractor import (
     STATE_VARIABLES,
     Col,
     Head,
-    _add_time_delta,
     _extract_and_gather,
     _parse_knobs_defintions,
-    _parse_time,
     _write_knobsfile,
     check_for_undefined_knobs,
     get_madx_command,
@@ -30,6 +28,7 @@ from omc3.knob_extractor import (
     lsa2name,
     main,
 )
+from omc3.utils.time_tools import _add_time_delta, parse_time
 from tests.conftest import cli_args
 
 INPUTS = Path(__file__).parent.parent / "inputs" / "knob_extractor"
@@ -115,7 +114,7 @@ class TestFullRun:
 
         monkeypatch.setattr(knob_extractor, "pytimber", MockTimber())
 
-        time = datetime.now()
+        time = datetime.now(timezone.utc)
         # Main ---
         with caplog.at_level(logging.INFO):
             if commandline:
@@ -341,40 +340,38 @@ class TestIO:
 class TestTime:
     @pytest.mark.basic
     def test_time_and_delta(self):
-        time_str = "2022-06-26T03:00"
-        t1 = _parse_time(time_str)
+        time_str = "2022-06-26T03:00+00:00"
+        t1 = parse_time(time_str)
 
-        assert t1 == datetime(2022, 6, 26, 3, 0, 0)
+        assert t1 == datetime(2022, 6, 26, 3, 0, 0, tzinfo=timezone.utc)
 
         # 2 hours earlier
         t2 = _add_time_delta(t1, "_2h")
-        assert t2 == datetime(2022, 6, 26, 1, 0, 0)
+        assert t2 == datetime(2022, 6, 26, 1, 0, 0, tzinfo=timezone.utc)
 
         # 1 week earlier
         t2 = _add_time_delta(t1, "_1w")
-        assert t2 == datetime(2022, 6, 19, 3, 0, 0)
+        assert t2 == datetime(2022, 6, 19, 3, 0, 0, tzinfo=timezone.utc)
 
         # 1 week and 1 hour earlier
         t2 = _add_time_delta(t1, "_1w1h")
-        assert t2 == datetime(2022, 6, 19, 2, 0, 0)
+        assert t2 == datetime(2022, 6, 19, 2, 0, 0, tzinfo=timezone.utc)
 
         # 1 month later
         t2 = _add_time_delta(t1, "1M")
-        assert t2 == datetime(2022, 7, 26, 3, 0, 0)
+        assert t2 == datetime(2022, 7, 26, 3, 0, 0, tzinfo=timezone.utc)
 
         # 20 years later
         t2 = _add_time_delta(t1, "20Y")
-        assert t2 == datetime(2042, 6, 26, 3, 0, 0)
+        assert t2 == datetime(2042, 6, 26, 3, 0, 0, tzinfo=timezone.utc)
 
-        t3 = _parse_time(time_str, "20Y")
+        t3 = parse_time(time_str, "20Y")
         assert t2 == t3
 
     @pytest.mark.basic
     def test_timezones(self):
-        assert (
-                _parse_time("2022-06-26T03:00+02:00")
-                ==
-                datetime(2022, 6, 26, 3, 0, 0, tzinfo=timezone(timedelta(seconds=7200)))
+        assert parse_time("2022-06-26T03:00+02:00") == datetime(
+            2022, 6, 26, 3, 0, 0, tzinfo=timezone(timedelta(seconds=7200))
         )
 
 

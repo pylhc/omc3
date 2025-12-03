@@ -266,9 +266,7 @@ def get_params():
         },
         output={
             "type": PathOrStr,
-            "help": (
-                "Specify user-defined output path. This should probably be `model_dir/knobs.madx`"
-            ),
+            "help": "Specify user-defined output path. This should probably be `model_dir/knobs.madx`",
         },
         knob_definitions={
             "type": PathOrStrOrDataFrame,
