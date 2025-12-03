@@ -253,10 +253,10 @@ def _create_fullresponse_from_dict(
     # Create normalized dispersion and dividing BET by nominal model
     normalised_dispersion_x = np.divide(
         resp[columns.index(f"{DISPERSION}X")], np.sqrt(resp[columns.index(f"{BETA}X")])
-    )  # noqa: N806
+    )
     normalised_dispersion_y = np.divide(
         resp[columns.index(f"{DISPERSION}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")])
-    )  # noqa: N806
+    )
     resp[columns.index(f"{BETA}X")] = np.divide(
         resp[columns.index(f"{BETA}X")],
         resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis],
@@ -270,24 +270,27 @@ def _create_fullresponse_from_dict(
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
     normalised_dispersion_x = np.subtract(
         normalised_dispersion_x, normalised_dispersion_x[:, model_index][:, np.newaxis]
-    )  # noqa: N806
+    )
     normalised_dispersion_y = np.subtract(
         normalised_dispersion_y, normalised_dispersion_y[:, model_index][:, np.newaxis]
-    )  # noqa: N806
+    )
 
     # Remove difference of nominal model with itself (bunch of zeros) and divide by increment
     resp = np.delete(resp, model_index, axis=2)
-    normalised_dispersion_x = np.delete(normalised_dispersion_x, model_index, axis=1)  # noqa: N806
-    normalised_dispersion_y = np.delete(normalised_dispersion_y, model_index, axis=1)  # noqa: N806
+    normalised_dispersion_x = np.delete(normalised_dispersion_x, model_index, axis=1)
+    normalised_dispersion_y = np.delete(normalised_dispersion_y, model_index, axis=1)
     keys.remove("0")
 
     # Divide by increment
-    normalised_dispersion_x = np.divide(normalised_dispersion_x, resp[columns.index(f"{INCR}")])  # noqa: N806
-    normalised_dispersion_y = np.divide(normalised_dispersion_y, resp[columns.index(f"{INCR}")])  # noqa: N806
+    normalised_dispersion_x = np.divide(normalised_dispersion_x, resp[columns.index(f"{INCR}")])
+    normalised_dispersion_y = np.divide(normalised_dispersion_y, resp[columns.index(f"{INCR}")])
     resp = np.divide(resp, resp[columns.index(f"{INCR}")])
     tune_arr = np.column_stack(
-        (resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])
-    ).T  # noqa: N806
+        (
+            resp[columns.index(f"{TUNE}1"), 0, :],
+            resp[columns.index(f"{TUNE}2"), 0, :],
+        )
+    ).T
 
     # fmt: off
     with suppress_warnings(ComplexWarning):  # raised as everything is complex-type now
