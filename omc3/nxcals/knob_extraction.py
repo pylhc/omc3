@@ -168,9 +168,8 @@ def get_raw_vars(
 
     # Ensure time is in UTC
     if time.tzinfo is None:
-        time = time.replace(tzinfo=timezone.utc)
-    else:
-        time = time.astimezone(timezone.utc)
+        raise ValueError("Datetime object must be timezone-aware")
+    time = time.astimezone(timezone.utc)
 
     # Look back delta_days, may need up to 1 day to find data
     start_time = time - timedelta(days=delta_days)

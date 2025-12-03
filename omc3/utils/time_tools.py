@@ -136,9 +136,7 @@ def parse_time(time: str, timedelta: str = None) -> datetime:
     if timedelta:
         t = _add_time_delta(t, timedelta)
     if t.tzinfo is None:
-        # Since we were given a string, there is no way to know the intended timezone.
-        # We default to UTC to avoid confusion.
-        t = t.replace(tzinfo=timezone.utc)
+        raise ValueError("Datetime object must be timezone-aware")
     return t
 
 
