@@ -11,13 +11,18 @@ per beam (8 arcs * 2 planes).
 The extraction uses the underlying `knob_extraction` module with MQT-specific patterns.
 """
 
+from __future__ import annotations
+
 import logging
-from datetime import datetime
+from typing import TYPE_CHECKING
 
 # import jpype
-from pyspark.sql import SparkSession
-
 from omc3.nxcals.knob_extraction import NXCALSResult, get_knob_vals
+
+if TYPE_CHECKING:
+    from datetime import datetime
+
+    from pyspark.sql import SparkSession
 
 logger = logging.getLogger(__name__)
 
