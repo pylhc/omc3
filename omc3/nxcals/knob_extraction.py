@@ -8,6 +8,16 @@ convert them to MAD-X compatible format using LSA services.
 It handles retrieval of raw variable data from NXCALS, conversion of power converter
 currents to K-values, and mapping of power converter names to MAD-X naming
 conventions.
+
+This module requires the installation of `jpype`, `pyspark`, and access to the
+CERN network to connect to NXCALS and LSA services. You can install the required
+packages via pip:
+```
+pip install omc3[cern]
+```
+
+See the [NXCALS documentation](https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/)
+for more information on getting access and using the Python API.
 """
 
 from __future__ import annotations
