@@ -318,10 +318,10 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
 
 @pytest.mark.basic
 def test_lhc_creation_absolute_modifier_inside_accmodels(tmp_path: Path, acc_models_lhc_2022: Path):
-    """Test that an absolute path to a modifier inside acc-models is converted to a relative symlink path.
+    """Test that an absolute path to a modifier inside acc-models is converted to a relative path.
 
     When a modifier is given as an absolute path but is inside the acc-models directory,
-    it should be replaced with a relative path using the symlink in the model directory.
+    it should be replaced with a relative path in the model directory.
     """
     rel_path = OPTICS_SUBDIR / "R2022a_A30cmC30cmA10mL200cm.madx"
     accel_opt = {

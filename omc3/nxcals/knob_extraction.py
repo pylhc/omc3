@@ -13,7 +13,7 @@ This module requires the installation of `jpype`, `pyspark`, and access to the
 CERN network to connect to NXCALS and LSA services. You can install the required
 packages via pip:
 ```
-pip install omc3[cern]
+python -m pip install omc3[cern]
 ```
 
 See the [NXCALS documentation](https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/)
