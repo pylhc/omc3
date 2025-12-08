@@ -25,11 +25,10 @@ from omc3.model.constants import (
 )
 from omc3.model.manager import get_accelerator
 from omc3.model.model_creators.lhc_model_creator import (
-    # LhcBestKnowledgeCreator,
+    LhcBestKnowledgeCreator,
     LhcModelCreator,
 )
 from omc3.model_creator import create_instance_and_model
-from omc3.nxcals.constants import EXTRACTED_MQTS_FILENAME
 from omc3.optics_measurements.constants import NAME
 from tests.conftest import assert_frame_equal
 
@@ -278,7 +277,7 @@ def test_lhc_creation_nominal_2016(tmp_path):
 
 @pytest.mark.basic
 def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
-    (tmp_path / EXTRACTED_MQTS_FILENAME).write_text("\n")
+    (tmp_path / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME).write_text("\n")
 
     corrections = tmp_path / "other_corrections.madx"
     corrections_str = "! just a comment to test the corrections file is actually loaded in madx. whfifhkdskjfshkdhfswojeorijr"

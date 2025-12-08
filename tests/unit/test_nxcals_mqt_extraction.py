@@ -8,8 +8,8 @@ import pandas as pd
 import pytest
 
 from omc3 import mqt_extractor
+from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator
 from omc3.nxcals import mqt_extraction
-from omc3.nxcals.constants import EXTRACTED_MQTS_FILENAME
 from omc3.nxcals.knob_extraction import NXCALSResult
 
 SAMPLE_DIR = Path(__file__).parent.parent / "inputs" / "knob_extractor"
@@ -68,7 +68,7 @@ def test_main_reproduces_reference_output(tmp_path, beam: int, sample_file: Path
 
     output_dir = tmp_path / f"beam{beam}"
     output_dir.mkdir()
-    output_path = output_dir / EXTRACTED_MQTS_FILENAME
+    output_path = output_dir / LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME
 
     mqt_extractor.main(time=query_time.isoformat(), beam=beam, output=output_path)
 

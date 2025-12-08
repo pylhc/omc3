@@ -36,7 +36,10 @@ per beam (8 arcs x 2 types).
 - **output** *(PathOrStr)*:
 
     Specify user-defined output path. This should probably be
-    `model_dir/mqts.madx`
+    `model_dir/mqts.madx`. If not provided, the data is only returned
+    and not written to a file.
+
+    default: ``None``
 
 
 - **timedelta** *(str)*:
@@ -47,6 +50,8 @@ per beam (8 arcs x 2 types).
     1d = 1day, 7m30s = 7 min 30 secs. A prefix '_' specifies a negative
     timedelta. This allows for easily getting the setting e.g. 2h ago:
     '_2h' while setting the `time` argument to 'now' (default).
+
+    default: ``None``
 
 
 - **delta_days** *(float)*:

@@ -48,7 +48,6 @@ from omc3.model.model_creators.abstract_model_creator import (
     SegmentCreator,
     check_folder_choices,
 )
-from omc3.nxcals.constants import EXTRACTED_MQTS_FILENAME
 from omc3.optics_measurements.constants import NAME
 from omc3.utils.iotools import create_dirs, get_check_by_regex_func, get_check_suffix_func
 
@@ -411,6 +410,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
     CORRECTIONS_FILENAME: str = "corrections.madx"
     jobfile: str = JOB_MODEL_MADX_BEST_KNOWLEDGE
     files_to_check: tuple[str] = (TWISS_BEST_KNOWLEDGE_DAT, TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT)
+    EXTRACTED_MQTS_FILENAME: str = "extracted_mqts.str"
 
     def prepare_options(self, opt) -> bool:
         accel: Lhc = self.accel
@@ -489,7 +489,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         madx_script = self.get_base_madx_script()
 
         madx_script += "\n! ----- Load MQTs -----\n"
-        mqts_file = accel.model_dir / EXTRACTED_MQTS_FILENAME
+        mqts_file = accel.model_dir / self.EXTRACTED_MQTS_FILENAME
         if mqts_file.exists():
             mqts_path = self.resolve_madx_path(mqts_file)
             madx_script += f"call, file = '{mqts_path}';\n"
