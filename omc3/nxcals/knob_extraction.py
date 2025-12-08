@@ -29,8 +29,6 @@ from typing import TYPE_CHECKING
 
 import jpype
 import pandas as pd
-from pyspark.sql import functions
-from pyspark.sql.window import Window
 
 from omc3.utils.mock import cern_network_import
 
@@ -39,6 +37,8 @@ if TYPE_CHECKING:
 
 pjlsa = cern_network_import("pjlsa")
 builders = cern_network_import("nxcals.api.extraction.data.builders")
+functions = cern_network_import("pyspark.sql.functions")
+Window = cern_network_import("pyspark.sql.window.Window")
 
 LOGGER = logging.getLogger(__name__)
 

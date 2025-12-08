@@ -76,7 +76,6 @@ optional = [
 ]
 test = [
   "jpype1 >= 1.3",
-  "pyspark >= 3.5", # needed for test collection when cern extras are not installed
   "pytest >= 7.0",
   "pytest-cov >= 2.9",
   "pytest-timeout >= 1.4",
