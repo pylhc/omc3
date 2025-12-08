@@ -126,7 +126,7 @@ class SpsModelCreator(ModelCreator, ABC):
     def get_base_madx_script(self) -> str:
         accel: Sps = self.accel
         use_excitation = accel.excitation != AccExcitationMode.FREE
-        seq_path = self.resolve_madx_path(accel.acc_model_path / "sps.seq")
+        seq_path = self.resolve_path_for_madx(accel.acc_model_path / "sps.seq")
 
         # The very basics ---
         madx_script = (
@@ -137,10 +137,10 @@ class SpsModelCreator(ModelCreator, ABC):
 
         if accel.modifiers is not None:  # includes the strengths file
             for modifier in accel.modifiers:
-                modifier_path = self.resolve_madx_path(modifier)
+                modifier_path = self.resolve_path_for_madx(modifier)
                 madx_script += f"call, file = '{modifier_path}'; {MODIFIER_TAG}\n"
 
-        toolkit_path = self.resolve_madx_path(accel.acc_model_path / "toolkit" / "macro.madx")
+        toolkit_path = self.resolve_path_for_madx(accel.acc_model_path / "toolkit" / "macro.madx")
         madx_script += (
             f"call, file ='{toolkit_path}';\n"
             "option, echo;\n\n"
@@ -207,8 +207,8 @@ class SpsModelCreator(ModelCreator, ABC):
         use_excitation = accel.excitation != AccExcitationMode.FREE
 
         madx_script = self.get_base_madx_script()
-        twiss_path = self.resolve_madx_path(self.output_dir / TWISS_DAT)
-        twiss_elements_path = self.resolve_madx_path(self.output_dir / TWISS_ELEMENTS_DAT)
+        twiss_path = self.resolve_path_for_madx(self.output_dir / TWISS_DAT)
+        twiss_elements_path = self.resolve_path_for_madx(self.output_dir / TWISS_ELEMENTS_DAT)
         madx_script += (
             "! Create twiss data files ---\n"
             f"{self._get_select_command(pattern=accel.RE_DICT[AccElementTypes.BPMS])}"
@@ -220,7 +220,7 @@ class SpsModelCreator(ModelCreator, ABC):
 
         if use_excitation or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
-            twiss_ac_path = self.resolve_madx_path(self.output_dir / TWISS_AC_DAT)
+            twiss_ac_path = self.resolve_path_for_madx(self.output_dir / TWISS_AC_DAT)
             madx_script += (
                 f"if(use_acd == 1){{\n"
                 "    betxac = table(twiss, hacmap, betx);\n"

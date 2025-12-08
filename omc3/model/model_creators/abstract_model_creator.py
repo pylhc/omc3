@@ -129,7 +129,7 @@ class ModelCreator(ABC):
         """
         pass
 
-    def resolve_madx_path(self, path: Path | str) -> Path:
+    def resolve_path_for_madx(self, path: Path | str) -> Path:
         """Converts a given path to a path relative to the model dir if possible, otherwise returns the absolute path.
 
         Args:
@@ -402,10 +402,10 @@ class SegmentCreator(ModelCreator, ABC):
     def get_madx_script(self) -> str:
         madx_script = self.get_base_madx_script()
 
-        macros_path = self.resolve_madx_path(self.output_dir / MACROS_DIR / GENERAL_MACROS)
-        measurement_path = self.resolve_madx_path(self.output_dir / self.measurement_madx)
-        twiss_forward_path = self.resolve_madx_path(self.output_dir / self.twiss_forward)
-        twiss_backward_path = self.resolve_madx_path(self.output_dir / self.twiss_backward)
+        macros_path = self.resolve_path_for_madx(self.output_dir / MACROS_DIR / GENERAL_MACROS)
+        measurement_path = self.resolve_path_for_madx(self.output_dir / self.measurement_madx)
+        twiss_forward_path = self.resolve_path_for_madx(self.output_dir / self.twiss_forward)
+        twiss_backward_path = self.resolve_path_for_madx(self.output_dir / self.twiss_backward)
 
         if self._sequence_name is None:
             raise ValueError(
@@ -459,11 +459,11 @@ class SegmentCreator(ModelCreator, ABC):
         )
 
         if self.corrections is not None:
-            corrections_path = self.resolve_madx_path(self.output_dir / self.corrections_madx)
-            twiss_forward_corr_path = self.resolve_madx_path(
+            corrections_path = self.resolve_path_for_madx(self.output_dir / self.corrections_madx)
+            twiss_forward_corr_path = self.resolve_path_for_madx(
                 self.output_dir / self.twiss_forward_corrected
             )
-            twiss_backward_corr_path = self.resolve_madx_path(
+            twiss_backward_corr_path = self.resolve_path_for_madx(
                 self.output_dir / self.twiss_backward_corrected
             )
             madx_script += "\n".join(
@@ -507,13 +507,13 @@ class CorrectionModelCreator(ModelCreator):
         """
         LOGGER.debug("Initializing Correction Model Creator Base Attributes")
         super().__init__(accel)
-        self.twiss_out = self.resolve_madx_path(twiss_out)
+        self.twiss_out = self.resolve_path_for_madx(twiss_out)
 
         # Take the directory of the twiss output as output dir
         self.jobfile = self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.madx"
 
         self.logfile = self.twiss_out.parent / f"job.create_{self.twiss_out.stem}.log"
-        self.corr_files = [self.resolve_madx_path(f) for f in corr_files]
+        self.corr_files = [self.resolve_path_for_madx(f) for f in corr_files]
         self.update_dpp = update_dpp
 
     def get_madx_script(self) -> str:

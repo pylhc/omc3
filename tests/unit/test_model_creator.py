@@ -317,7 +317,12 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
 
 
 @pytest.mark.basic
-def test_lhc_creation_relative_modifier_path(tmp_path: Path, acc_models_lhc_2022: Path):
+def test_lhc_creation_absolute_modifier_inside_accmodels(tmp_path: Path, acc_models_lhc_2022: Path):
+    """Test that an absolute path to a modifier inside acc-models is converted to a relative symlink path.
+
+    When a modifier is given as an absolute path but is inside the acc-models directory,
+    it should be replaced with a relative path using the symlink in the model directory.
+    """
     rel_path = OPTICS_SUBDIR / "R2022a_A30cmC30cmA10mL200cm.madx"
     accel_opt = {
         "accel": "lhc",
@@ -335,10 +340,54 @@ def test_lhc_creation_relative_modifier_path(tmp_path: Path, acc_models_lhc_2022
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
 
+    # The absolute path inside acc-models should be converted to a relative symlink path
     madx_string = f"call, file = '{f'{ACC_MODELS_PREFIX}-lhc' / rel_path!s}'"
     assert madx_string in (tmp_path / JOB_MODEL_MADX_NOMINAL).read_text()
     assert madx_string in (tmp_path / "madx_log.txt").read_text()
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
+
+
+@pytest.mark.basic
+def test_lhc_creation_absolute_modifier_outside_accmodels(
+    tmp_path: Path, acc_models_lhc_2022: Path
+):
+    """Test that an absolute path to a modifier outside acc-models and model-dir remains absolute.
+
+    When a modifier is given as an absolute path outside both the model directory and
+    the acc-models directory, it should remain as an absolute path in the jobfile.
+    """
+    # Create a modifier file outside both acc-models and model directories
+    # We place it in a separate location to ensure it's truly external
+    external_modifier_dir = tmp_path / "external_modifiers"
+    external_modifier_dir.mkdir()
+    external_modifier_file = external_modifier_dir / "external_modifier.madx"
+    # Copy the content from real_modifier to external_modifier_file
+    external_modifier_file.write_text(
+        (acc_models_lhc_2022 / OPTICS_SUBDIR / "R2022a_A30cmC30cmA10mL200cm.madx").read_text()
+    )
+    model_dir = tmp_path / "model_dir"
+
+    accel_opt = {
+        "accel": "lhc",
+        "year": "2022",
+        "ats": True,
+        "beam": 1,
+        "nat_tunes": [0.31, 0.32],
+        "dpp": 0.0,
+        "energy": 6800.0,
+        "fetch": Fetcher.PATH,
+        "path": acc_models_lhc_2022,
+        "modifiers": [external_modifier_file.absolute()],
+    }
+    accel = create_instance_and_model(
+        outputdir=model_dir, type="nominal", logfile=model_dir / "madx_log.txt", **accel_opt
+    )
+
+    # The absolute path inside acc-models should be converted to a relative symlink path
+    madx_string = f"call, file = '{external_modifier_file.absolute()}'"
+    assert madx_string in (model_dir / JOB_MODEL_MADX_NOMINAL).read_text()
+    assert madx_string in (model_dir / "madx_log.txt").read_text()
+    check_accel_from_dir_vs_options(model_dir, accel_opt, accel)
 
 
 @pytest.mark.basic

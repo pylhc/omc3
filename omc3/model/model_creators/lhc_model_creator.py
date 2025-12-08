@@ -184,8 +184,8 @@ class LhcModelCreator(ModelCreator):
         accel: Lhc = self.accel
 
         madx_script = self.get_base_madx_script()
-        twiss_dat_path = self.resolve_madx_path(accel.model_dir / TWISS_DAT)
-        twiss_elements_path = self.resolve_madx_path(accel.model_dir / TWISS_ELEMENTS_DAT)
+        twiss_dat_path = self.resolve_path_for_madx(accel.model_dir / TWISS_DAT)
+        twiss_elements_path = self.resolve_path_for_madx(accel.model_dir / TWISS_ELEMENTS_DAT)
         madx_script += (
             f"exec, do_twiss_monitors(LHCB{accel.beam}, '{twiss_dat_path}', {accel.dpp});\n"
             f"exec, do_twiss_elements(LHCB{accel.beam}, '{twiss_elements_path}', {accel.dpp});\n"
@@ -194,8 +194,8 @@ class LhcModelCreator(ModelCreator):
             # allow user to modify script and enable excitation, if driven tunes are given
             use_acd = accel.excitation == AccExcitationMode.ACD
             use_adt = accel.excitation == AccExcitationMode.ADT
-            twiss_ac_path = self.resolve_madx_path(accel.model_dir / TWISS_AC_DAT)
-            twiss_adt_path = self.resolve_madx_path(accel.model_dir / TWISS_ADT_DAT)
+            twiss_ac_path = self.resolve_path_for_madx(accel.model_dir / TWISS_AC_DAT)
+            twiss_adt_path = self.resolve_path_for_madx(accel.model_dir / TWISS_ADT_DAT)
             madx_script += (
                 f"use_acd={use_acd:d};\n"
                 f"use_adt={use_adt:d};\n"
@@ -237,14 +237,14 @@ class LhcModelCreator(ModelCreator):
         accel: Lhc = self.accel
         madx_script = (
             f"{self._get_madx_script_info_comments()}\n\n"
-            f"call, file = '{self.resolve_madx_path(accel.model_dir / MACROS_DIR / GENERAL_MACROS)}';\n"
-            f"call, file = '{self.resolve_madx_path(accel.model_dir / MACROS_DIR / LHC_MACROS)}';\n"
+            f"call, file = '{self.resolve_path_for_madx(accel.model_dir / MACROS_DIR / GENERAL_MACROS)}';\n"
+            f"call, file = '{self.resolve_path_for_madx(accel.model_dir / MACROS_DIR / LHC_MACROS)}';\n"
         )
         madx_script += f"{MADX_ENERGY_VAR} = {accel.energy};\n"
         madx_script += "exec, define_nominal_beams();\n\n"
         if self._uses_run3_macros():
             LOGGER.debug("According to the optics year, Run 3 versions of the macros will be used")
-            madx_script += f"call, file = '{self.resolve_madx_path(accel.model_dir / MACROS_DIR / LHC_MACROS_RUN3)}';\n"
+            madx_script += f"call, file = '{self.resolve_path_for_madx(accel.model_dir / MACROS_DIR / LHC_MACROS_RUN3)}';\n"
 
         madx_script += "\n! ----- Calling Sequence -----\n"
         madx_script += (
@@ -258,7 +258,7 @@ class LhcModelCreator(ModelCreator):
         if accel.modifiers is not None:
             # if the modifier can be found in the model dir, use relative path
             madx_script += "".join(
-                f"call, file = '{self.resolve_madx_path(modifier)}'; {MODIFIER_TAG}\n"
+                f"call, file = '{self.resolve_path_for_madx(modifier)}'; {MODIFIER_TAG}\n"
                 for modifier in accel.modifiers
             )
 
@@ -280,7 +280,7 @@ class LhcModelCreator(ModelCreator):
                 Path(accel.acc_model_path) / LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH
             )
             if remove_symmetry_knob_abs.exists():  # alternatively check if year != 2018/2021
-                remove_symmetry_knob_path = self.resolve_madx_path(remove_symmetry_knob_abs)
+                remove_symmetry_knob_path = self.resolve_path_for_madx(remove_symmetry_knob_abs)
                 madx_script += (
                     "\n! ----- Remove IR symmetry definitions -----\n"
                     f'\ncall, file="{remove_symmetry_knob_path}"; '
@@ -347,7 +347,7 @@ class LhcModelCreator(ModelCreator):
         accel: Lhc = self.accel
 
         if accel.acc_model_path is not None:
-            acc_model_path = Path(self.resolve_madx_path(accel.acc_model_path))
+            acc_model_path = Path(self.resolve_path_for_madx(accel.acc_model_path))
 
             main_seq_rel = acc_model_path / "lhc.seq"
             main_call = f"call, file = '{main_seq_rel}';"
@@ -491,7 +491,7 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
         madx_script += "\n! ----- Load MQTs -----\n"
         mqts_file = accel.model_dir / self.EXTRACTED_MQTS_FILENAME
         if mqts_file.exists():
-            mqts_path = self.resolve_madx_path(mqts_file)
+            mqts_path = self.resolve_path_for_madx(mqts_file)
             madx_script += f"call, file = '{mqts_path}';\n"
         else:
             LOGGER.warning(
@@ -499,8 +499,8 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
             )
 
         madx_script += "\n! ----- Output Files -----\n"
-        twiss_bk_path = self.resolve_madx_path(accel.model_dir / TWISS_BEST_KNOWLEDGE_DAT)
-        twiss_bk_elements_path = self.resolve_madx_path(
+        twiss_bk_path = self.resolve_path_for_madx(accel.model_dir / TWISS_BEST_KNOWLEDGE_DAT)
+        twiss_bk_elements_path = self.resolve_path_for_madx(
             accel.model_dir / TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT
         )
         madx_script += (
@@ -518,9 +518,9 @@ class LhcBestKnowledgeCreator(LhcModelCreator):
 
         madx_script += (
             f"\n! ----- For Best Knowledge Model -----\n"
-            f"readmytable, file = '{self.resolve_madx_path(accel.model_dir / B2_ERRORS_TFS)}', table=errtab;\n"
+            f"readmytable, file = '{self.resolve_path_for_madx(accel.model_dir / B2_ERRORS_TFS)}', table=errtab;\n"
             f"seterr, table=errtab;\n"
-            f"call, file = '{self.resolve_madx_path(accel.model_dir / B2_SETTINGS_MADX)}';\n"
+            f"call, file = '{self.resolve_path_for_madx(accel.model_dir / B2_SETTINGS_MADX)}';\n"
         )
         return madx_script
 
@@ -571,7 +571,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
         if self.update_dpp:
             madx_script += self.get_update_deltap_script(deltap=ORBIT_DPP)
 
-        twiss_out_path = self.resolve_madx_path(self.output_dir / self.twiss_out)
+        twiss_out_path = self.resolve_path_for_madx(self.output_dir / self.twiss_out)
         madx_script += (
             f'exec, do_twiss_elements(LHCB{accel.beam}, "{twiss_out_path}", {ORBIT_DPP});\n'
         )
@@ -600,9 +600,9 @@ class LhcSegmentCreator(SegmentCreator, LhcModelCreator):
     def get_madx_script(self) -> str:
         accel: Lhc = self.accel
         madx_script = self.get_base_madx_script()
-        measurement_path = self.resolve_madx_path(self.output_dir / self.measurement_madx)
-        twiss_forward_path = self.resolve_madx_path(self.output_dir / self.twiss_forward)
-        twiss_backward_path = self.resolve_madx_path(self.output_dir / self.twiss_backward)
+        measurement_path = self.resolve_path_for_madx(self.output_dir / self.measurement_madx)
+        twiss_forward_path = self.resolve_path_for_madx(self.output_dir / self.twiss_forward)
+        twiss_backward_path = self.resolve_path_for_madx(self.output_dir / self.twiss_backward)
 
         madx_script += f"""
 ! ----- Segment-by-Segment propagation for {self.segment.name} -----
@@ -643,11 +643,11 @@ exec, twiss_segment(backward_LHCB{accel.beam}, "{twiss_backward_path}", bendLHCB
 """
 
         if self.corrections is not None:
-            corrections_path = self.resolve_madx_path(self.output_dir / self.corrections_madx)
-            twiss_forward_corr_path = self.resolve_madx_path(
+            corrections_path = self.resolve_path_for_madx(self.output_dir / self.corrections_madx)
+            twiss_forward_corr_path = self.resolve_path_for_madx(
                 self.output_dir / self.twiss_forward_corrected
             )
-            twiss_backward_corr_path = self.resolve_madx_path(
+            twiss_backward_corr_path = self.resolve_path_for_madx(
                 self.output_dir / self.twiss_backward_corrected
             )
             madx_script += f"""
