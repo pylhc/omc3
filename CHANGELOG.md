@@ -1,6 +1,11 @@
 # OMC3 Changelog
 
-#### 2025-11-TBD - v0.25.0 - _jgray_, _jdilly_, _fsoubelet_
+#### 2025-12-11 - v0.25.1 - _jdilly_
+
+- Fixed:
+  - Fixing phase-jump issue in segment-by-segment due to model-wraparound.
+
+#### 2025-10-31 - v0.25.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
   - Tests for amplitude unit handling and backward compatibility.

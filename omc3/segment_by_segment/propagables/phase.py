@@ -92,13 +92,12 @@ class Phase(Propagable):
         names = self.get_segment_observation_points(plane)
         meas_phase, meas_err = Phase.get_at(names, self._meas, plane)
 
-        # get the propagated values
-        tune = seg_model.headers[f"{TUNE}{PLANE_TO_NUM[plane]}"]
-
         # take care of circularity of accelerator (when the segment start is before first bpm in measurement)
-        s = self._elements_model.loc[names, S]
+        tune = self._elements_model.headers[f"{TUNE}{PLANE_TO_NUM[plane]}"] % 1
+        s = self._meas.total_phase[plane].loc[names, S]
         meas_phase = meas_phase - np.where(s > s.iloc[-1], tune, 0)
 
+        # get the propagated values ---
         # calculate phase with reference to segment (start/end)
         reference_element = names[0 if forward else -1]  # start of the propagation
         segment_meas_phase = meas_phase - meas_phase.loc[reference_element]

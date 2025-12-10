@@ -214,6 +214,8 @@ def generate(opt) -> dict[str, tfs.TfsDataFrame]:
     headers = {f"{TUNE}1": df_twiss[f"{TUNE}1"], f"{TUNE}2": df_twiss[f"{TUNE}2"]}
     if isinstance(opt.twiss, PathOrStr):
         headers[FAKED_HEADER] = str(opt.twiss)
+        if opt.model is None:
+            headers[MODEL_DIRECTORY] = Path(opt.twiss).parent
 
     if isinstance(opt.model, PathOrStr):
         headers[MODEL_DIRECTORY] = Path(opt.model).parent
