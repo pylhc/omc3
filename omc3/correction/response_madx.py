@@ -115,9 +115,6 @@ def _generate_madx_jobs(
         # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
         madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n"  # Set deltap to 0
-
-        # get update deltap setup from model creator
-        madx_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
         deltap_twiss = f", deltap={ORBIT_DPP}"
 
     for proc_idx in range(num_proc):
