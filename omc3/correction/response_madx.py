@@ -106,8 +106,9 @@ def _generate_madx_jobs(
     no_dpp_vars = [var for var in variables if var != ORBIT_DPP]
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
     creator = _get_nominal_model_creator(accel_inst)
+    creator.prepare_run()
 
-    madx_job = _get_madx_job(accel_inst)
+    madx_job = _get_madx_job(creator)
     deltap_twiss = ""
     if compute_deltap:
         # This is here only for multiple iteration of the global correction
@@ -149,13 +150,11 @@ def _generate_madx_jobs(
     return incr_dict
 
 
-def _get_madx_job(accel_inst: Accelerator) -> str:
-    # get nominal setup from creator
-    creator = _get_nominal_model_creator(accel_inst)
+def _get_madx_job(creator: ModelCreator) -> str:
     job_content = creator.get_base_madx_script()
     job_content += (
         "select, flag=twiss, clear;\n"
-        f"select, flag=twiss, pattern='{accel_inst.RE_DICT[AccElementTypes.BPMS]}', "
+        f"select, flag=twiss, pattern='{creator.accel.RE_DICT[AccElementTypes.BPMS]}', "
         "column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;\n\n"
     )
 

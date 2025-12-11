@@ -190,7 +190,10 @@ class Accelerator:
         except OSError:
             bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
             self.model = self.elements.loc[bpm_mask, :]
-        self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
+        self.nat_tunes = [
+            float(self.model.headers["Q1"]) % 1,
+            float(self.model.headers["Q2"]) % 1,
+        ]
 
         with contextlib.suppress(KeyError):
             # always 450GeV because we do not set it anywhere properly...
@@ -207,7 +210,10 @@ class Accelerator:
                 self.model_driven = tfs.read(driven_filenames[key], index=NAME)
 
         if self.excitation != AccExcitationMode.FREE:
-            self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
+            self.drv_tunes = [
+                self.model_driven.headers["Q1"] % 1,
+                self.model_driven.headers["Q2"] % 1,
+            ]
 
         # Best Knowledge #####################################
         best_knowledge_path = model_dir / TWISS_BEST_KNOWLEDGE_DAT
@@ -375,7 +381,7 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
     """Parse modifiers from job.create_model.madx or use modifiers.madx file."""
     job_file = model_dir / JOB_MODEL_MADX_NOMINAL
     if job_file.is_file():
-        return find_called_files_with_tag(job_file, MODIFIER_TAG)
+        return find_called_files_with_tag(job_file, model_dir, MODIFIER_TAG)
 
     # Legacy
     modifiers_file = model_dir / MODIFIERS_MADX
@@ -385,7 +391,7 @@ def _get_modifiers_from_modeldir(model_dir: Path) -> list[Path]:
     return None
 
 
-def find_called_files_with_tag(madx_file: Path, tag: str) -> list[Path] | None:
+def find_called_files_with_tag(madx_file: Path, model_dir: Path, tag: str) -> list[Path] | None:
     """Parse lines that call a file and are tagged with the given tag and return
     a list of paths to these files.
 
@@ -406,5 +412,7 @@ def find_called_files_with_tag(madx_file: Path, tag: str) -> list[Path] | None:
         job_madx,
         flags=re.IGNORECASE,
     )
-    called_files = [Path(m) for m in called_files]
+    # All modifiers are relative to model_dir or absolute paths
+    # If m is absolute, model_dir / m will just return m
+    called_files = [model_dir / m for m in called_files]
     return called_files or None

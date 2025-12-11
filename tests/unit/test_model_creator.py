@@ -1,5 +1,6 @@
 import copy
 import os
+import re
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -30,6 +31,7 @@ from omc3.model.model_creators.lhc_model_creator import (
 )
 from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import NAME
+from omc3.response_creator import create_response_entrypoint as create_response
 from tests.conftest import assert_frame_equal
 
 if TYPE_CHECKING:
@@ -585,6 +587,87 @@ def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
         "3_extraction",
         "4_flat_bottom_wo_QDN90",
     ]
+
+
+@pytest.mark.basic
+def test_model_job_file_reading(tmp_path, acc_models_lhc_2025):
+    """Test that the model reader correctly parses and reproduces job file structure.
+
+    This test creates a model, then uses the response creator to generate a new job file
+    by reading the model directory. The generated job file is compared with the original
+    nominal job file up to the coupling_knob line to ensure consistency.
+
+    This comprehensive test validates:
+    - Model directory reading and parsing
+    - Energy settings in twiss calculations
+    - Natural and driven tune configuration
+    - Path consistency and preservation
+    - Overall model reader/writer consistency
+    """
+
+    # Create a model first
+    accel_opt = {
+        "accel": "lhc",
+        "year": "2025",
+        "beam": 1,
+        "nat_tunes": [0.28, 0.31],
+        "drv_tunes": [0.27, 0.322],
+        "driven_excitation": "acd",
+        "dpp": 0.0,
+        "energy": 6800.0,
+        "fetch": Fetcher.PATH,
+        "path": acc_models_lhc_2025,
+        "modifiers": LHC_2025_30CM_MODIFIERS,
+    }
+    create_instance_and_model(
+        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+
+    # Run response creator to generate job.iterate.0.madx
+    create_response(
+        accel=accel_opt["accel"],
+        model_dir=tmp_path,
+        beam=accel_opt["beam"],
+        year=accel_opt["year"],
+        creator="madx",
+        delta_k=2e-5,
+        variable_categories=["orbit_dpp"],  # minimal variables to speed up test
+    )
+
+    # Check that the generated job file is identical to the model one up to the coupling_knob
+    jobfile_path = tmp_path / "job.iterate.0.madx"
+    model_path = tmp_path / JOB_MODEL_MADX_NOMINAL
+
+    # Read files and extract content up to coupling_knob line
+    def read_until_coupling_knob(filepath):
+        with filepath.open("r") as f:
+            lines = f.readlines()
+            coupling_idx = next(i for i, line in enumerate(lines) if "coupling_knob" in line)
+            return lines[: coupling_idx + 1]
+
+    jobfile_content = read_until_coupling_knob(jobfile_path)
+    model_content = read_until_coupling_knob(model_path)
+
+    # Check content is identical (excluding last line which may have small numerical differences)
+    assert jobfile_content[:-2] == model_content[:-2], "Generated job file differs from model file!"
+
+    # Extract and compare match_tunes parameters from the last line
+    # (small numerical differences are expected due to twiss rounding)
+    pattern = r"match_tunes\(([^,]+),\s*([^,]+),\s*([^,)]+)\)"
+    job_match = re.search(pattern, jobfile_content[-2])
+    model_match = re.search(pattern, model_content[-2])
+
+    assert job_match and model_match, "Both lines must contain match_tunes with same format"
+
+    job_q1, job_q2 = float(job_match.group(1)), float(job_match.group(2))
+    model_q1, model_q2 = float(model_match.group(1)), float(model_match.group(2))
+    job_beam = int(job_match.group(3))
+    model_beam = int(model_match.group(3))
+
+    assert abs(job_q1 - model_q1) < 1e-10, f"Q1 tunes differ: {job_q1} vs {model_q1}"
+    assert abs(job_q2 - model_q2) < 1e-10, f"Q2 tunes differ: {job_q2} vs {model_q2}"
+    assert job_beam == model_beam, f"Beam numbers differ: {job_beam} vs {model_beam}"
+    assert jobfile_content[-1] == model_content[-1], "Coupling knob lines differ"
 
 
 # ---- helper --------------------------------------------------------------------------------------

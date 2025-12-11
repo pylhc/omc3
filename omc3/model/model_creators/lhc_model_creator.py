@@ -326,7 +326,10 @@ class LhcModelCreator(ModelCreator):
             f"! Model directory        {Path(accel.model_dir).absolute()}\n"
         )
         if accel.acc_model_path is not None:
-            info_comments += f"! Acc-Models             {Path(accel.acc_model_path).absolute()}\n"
+            acc_model_path = Path(accel.acc_model_path)
+            info_comments += f"! Acc-Models             {acc_model_path.absolute()}\n"
+            if acc_model_path.is_symlink():
+                info_comments += f"! Acc-Models Origin      {acc_model_path.resolve()}\n"
         info_comments += (
             f"! LHC year               {accel.year}\n"
             f"! Natural Tune X         {accel.nat_tunes[0]:10.3f}\n"

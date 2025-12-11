@@ -24,8 +24,9 @@ cycle_sequences(): macro = {
 * Define the default nominal beams for the LHC beam1 and beam2.
 */
 define_nominal_beams(): macro = {
-    beam, sequence=LHCB1, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=1;
-    beam, sequence=LHCB2, particle=proton, energy=450, kbunch=1, npart=1.15E11, bv=-1;
+    if omc3_beam_energy == 0 { omc3_beam_energy = 450; }; ! GeV (backwards compatibility)
+    beam, sequence=LHCB1, particle=proton, energy=omc3_beam_energy, kbunch=1, npart=1.15E11, bv=1;
+    beam, sequence=LHCB2, particle=proton, energy=omc3_beam_energy, kbunch=1, npart=1.15E11, bv=-1;
 };
 
 
