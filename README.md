@@ -105,7 +105,7 @@
 | omc3/scripts/bad\_bpms\_summary.py                      |      185 |       13 |     93% |215-216, 220-221, 250, 258, 287, 327-329, 459-460, 470 |
 | omc3/scripts/betabeatsrc\_output\_converter.py          |      141 |       19 |     87% |165-166, 204-205, 213-214, 249-250, 291-292, 331-332, 366-367, 400-401, 440-441, 471 |
 | omc3/scripts/create\_logbook\_entry.py                  |       89 |       24 |     73% |72, 154-155, 163-186, 197, 217, 220, 226, 242, 253-268, 278 |
-| omc3/scripts/fake\_measurement\_from\_model.py          |      246 |        3 |     99% |526, 549, 566 |
+| omc3/scripts/fake\_measurement\_from\_model.py          |      248 |        3 |     99% |528, 551, 568 |
 | omc3/scripts/kmod\_average.py                           |      104 |        7 |     93% |162, 165, 179, 290-291, 305, 321 |
 | omc3/scripts/kmod\_import.py                            |      144 |        9 |     94% |248, 261-262, 308-312, 329, 351-352, 404 |
 | omc3/scripts/kmod\_lumi\_imbalance.py                   |       97 |       11 |     89% |125, 127, 154-160, 163, 167-172, 177-181, 270 |
@@ -118,12 +118,12 @@
 | omc3/segment\_by\_segment/definitions.py                |       22 |       22 |      0% |      7-33 |
 | omc3/segment\_by\_segment/math.py                       |      100 |        9 |     91% |30, 192-193, 209-210, 274-275, 291-292 |
 | omc3/segment\_by\_segment/propagables/\_\_init\_\_.py   |        9 |        0 |    100% |           |
-| omc3/segment\_by\_segment/propagables/abstract.py       |      136 |        8 |     94% |59, 82, 134-135, 316, 326, 334, 341 |
+| omc3/segment\_by\_segment/propagables/abstract.py       |      136 |        6 |     96% |59, 82, 316, 326, 334, 341 |
 | omc3/segment\_by\_segment/propagables/alpha.py          |       66 |        7 |     89% |51-52, 126-133 |
 | omc3/segment\_by\_segment/propagables/beta.py           |       57 |        7 |     88% |51-52, 118-125 |
-| omc3/segment\_by\_segment/propagables/coupling.py       |      133 |       13 |     90% |159-169, 206-207, 249-250, 271 |
-| omc3/segment\_by\_segment/propagables/dispersion.py     |      108 |       12 |     89% |54-55, 117-124, 145-146, 208-211 |
-| omc3/segment\_by\_segment/propagables/phase.py          |       75 |        6 |     92% |60-61, 138-142 |
+| omc3/segment\_by\_segment/propagables/coupling.py       |      133 |        9 |     93% |159-169, 271 |
+| omc3/segment\_by\_segment/propagables/dispersion.py     |      108 |        8 |     93% |117-124, 208-211 |
+| omc3/segment\_by\_segment/propagables/phase.py          |       75 |        6 |     92% |60-61, 137-141 |
 | omc3/segment\_by\_segment/propagables/utils.py          |       57 |        0 |    100% |           |
 | omc3/segment\_by\_segment/segments.py                   |       64 |        8 |     88% |51-53, 65-68, 73 |
 | omc3/tbt\_converter.py                                  |       59 |        3 |     95% |110, 128, 182 |
@@ -147,7 +147,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      103 |       18 |     83% |60-61, 73, 95, 121, 136, 141, 145, 149, 153, 163, 166, 171, 176, 186, 191, 196, 201 |
-|                                               **TOTAL** | **11602** | **1553** | **87%** |           |
+|                                               **TOTAL** | **11604** | **1543** | **87%** |           |
 
 
 ## Setup coverage badge
