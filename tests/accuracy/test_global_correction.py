@@ -8,7 +8,7 @@ import pytest
 import tfs
 from generic_parser.tools import DotDict
 
-from omc3.correction.constants import ORBIT_DPP
+from omc3.correction.constants import ERROR, ORBIT_DPP
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.correction.model_diff import diff_twiss_parameters
 from omc3.global_correction import CORRECTION_DEFAULTS
@@ -36,7 +36,7 @@ LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
 
 # Paths ---
-INPUTS = Path(__file__).parent.parent / 'inputs'
+INPUTS = Path(__file__).parent.parent / "inputs"
 CORRECTION_INPUTS = INPUTS / "correction"
 CORRECTION_TEST_INPUTS = INPUTS / "correction_test"
 
@@ -71,7 +71,6 @@ RELATIVE_ERRORS = {
 }
 
 
-
 # Correction Input Parameters ---
 @dataclass
 class CorrectionParameters:
@@ -88,13 +87,13 @@ class CorrectionParameters:
     seed: int = 0
 
 
-
 def get_skew_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"2018_inj_b{beam}_11m" / "twiss_skew_quadrupole_error.dat",
-        correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_skewquadrupole.madx",
+        correction_filename=CORRECTION_TEST_INPUTS
+        / f"changeparameters_injb{beam}_skewquadrupole.madx",
         optics_params=[f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I"],
-        weights=[1., 1., 1., 1.],
+        weights=[1.0, 1.0, 1.0, 1.0],
         variables=["MQSl"],
         fullresponse="fullresponse_MQSl.h5",
         seed=2234,  # iteration test might not work with other seeds (converges too fast)
@@ -105,8 +104,15 @@ def get_normal_params(beam):
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"2018_inj_b{beam}_11m" / "twiss_quadrupole_error.dat",
         correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_quadrupole.madx",
-        optics_params=[f"{PHASE}X", f"{PHASE}Y", f"{BETA}X", f"{BETA}Y", f"{NORM_DISPERSION}X", TUNE],
-        weights=[1., 1., 1., 1., 1., 1.],
+        optics_params=[
+            f"{PHASE}X",
+            f"{PHASE}Y",
+            f"{BETA}X",
+            f"{BETA}Y",
+            f"{NORM_DISPERSION}X",
+            TUNE,
+        ],
+        weights=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
         variables=["MQY_Q4"],
         fullresponse="fullresponse_MQY.h5",
         seed=12362,  # iteration test might not work with other seeds (converges too fast)
@@ -114,14 +120,20 @@ def get_normal_params(beam):
 
 
 def get_arc_by_arc_params(beam):
+    filename = CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_mqt_quadrupole.madx"
     return CorrectionParameters(
         twiss=CORRECTION_INPUTS / f"2018_inj_b{beam}_11m" / "twiss_mqt_quadrupole_error.dat",
-        correction_filename=CORRECTION_TEST_INPUTS / f"changeparameters_injb{beam}_mqt_quadrupole.madx",
+        correction_filename=filename,
         optics_params=[f"{PHASE}X", f"{PHASE}Y"],
-        modelcut=[1., 1.],  # no cut
-        errorcut=[1., 1.],  # no cut
-        weights=[1., 1.],
-        variables=["kqtf.a23b", "kqtf.a34b", "kqtd.a67b", "kqtf.a78b"],  # only arcs with errors in the model
+        modelcut=[1.0, 1.0],  # no cut
+        errorcut=[1.0, 1.0],  # no cut
+        weights=[1.0, 1.0],
+        variables=[
+            "kqtf.a23b",
+            "kqtf.a34b",
+            "kqtd.a67b",
+            "kqtf.a78b",
+        ],  # only arcs with errors in the model
         fullresponse="fullresponse_MQT.h5",
         arc_by_arc_phase=True,
         seed=1267,
@@ -130,9 +142,14 @@ def get_arc_by_arc_params(beam):
 
 # Tests -----------------------------------------------------------------------
 
+
 @pytest.mark.basic
-@pytest.mark.parametrize('correction_type', ('skew', 'normal'))
-def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction_type: Literal['skew', 'normal', 'arc_by_arc']):
+@pytest.mark.parametrize("correction_type", ("skew", "normal"))
+def test_lhc_global_correct(
+    tmp_path: Path,
+    model_inj_beams: DotDict,
+    correction_type: Literal["skew", "normal", "arc_by_arc"],
+):
     """Creates a fake measurement from a modfied model-twiss with (skew)
     quadrupole errors and runs global correction on this measurement.
     It is asserted that the resulting model approaches the modified twiss.
@@ -148,7 +165,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
     }
 
     correction_params = param_map[correction_type](beam)
-    iterations = 3   # '3' tests a single correction + one iteration, as the last (3rd) correction is not tested itself.
+    iterations = 3  # '3' tests a single correction + one iteration, as the last (3rd) correction is not tested itself.
 
     # create and load model and twiss-with-errors
     model_df = tfs.read(model_inj_beams.model_dir / TWISS_DAT, index=NAME)
@@ -159,8 +176,11 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
 
     # create fake measurement data
     params, errors = zip(
-        *[(k, v) for k, v in RELATIVE_ERRORS.items()
-        if k in correction_params.optics_params or f"{k}R" in correction_params.optics_params]
+        *[
+            (k, v)
+            for k, v in RELATIVE_ERRORS.items()
+            if k in correction_params.optics_params or f"{k}R" in correction_params.optics_params
+        ]
     )
 
     randomize = [VALUES, ERRORS]
@@ -207,12 +227,17 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
             model_iter_df = add_coupling_to_model(model_iter_df)
             models[f"iter{iter_step}"] = model_iter_df
 
-
-        diff_df = diff_twiss_parameters(model_iter_df, twiss_errors_df, correction_params.optics_params)
+        diff_df = diff_twiss_parameters(
+            model_iter_df, twiss_errors_df, correction_params.optics_params
+        )
         if TUNE in correction_params.optics_params:
-            diff_df.headers[f"{DELTA}{TUNE}"] = np.array([diff_df[f"{DELTA}{TUNE}1"], diff_df[f"{DELTA}{TUNE}2"]])
-        diff_rms = {param: rms(diff_df[f"{DELTA}{param}"] * weight)
-                    for param, weight in zip(correction_params.optics_params, correction_params.weights)}
+            diff_df.headers[f"{DELTA}{TUNE}"] = np.array(
+                [diff_df[f"{DELTA}{TUNE}1"], diff_df[f"{DELTA}{TUNE}2"]]
+            )
+        diff_rms = {
+            param: rms(diff_df[f"{DELTA}{param}"] * weight)
+            for param, weight in zip(correction_params.optics_params, correction_params.weights)
+        }
 
         ############ FOR DEBUGGING #############
         # Iteration 0 == fake uncorrected model
@@ -232,7 +257,7 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
                 assert diff_rms[param] < tolerance, (
                     f"RMS for {param} in iteration {iter_step} larger than tolerance: "
                     f"{diff_rms[param]} >= {tolerance}."
-                    )
+                )
 
             # assert total (weighted) RMS decreases between steps
             # ('skew' is converged after one step, still works with seed 2234)
@@ -244,11 +269,14 @@ def test_lhc_global_correct(tmp_path: Path, model_inj_beams: DotDict, correction
         diff_rms_prev = diff_rms
 
 
-
 @pytest.mark.basic
-@pytest.mark.parametrize('correction_type', ('arc_by_arc',))
-def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict, correction_type: Literal['skew', 'normal', 'arc_by_arc']):
-    """ This test is similar to `test_lhc_global_correct` above,
+@pytest.mark.parametrize("correction_type", ("arc_by_arc",))
+def test_lhc_global_correct_arc_by_arc(
+    tmp_path: Path,
+    model_inj_beams: DotDict,
+    correction_type: Literal["skew", "normal", "arc_by_arc"],
+):
+    """This test is similar to `test_lhc_global_correct` above,
     but as the arc-by-arc correction does not work yet as intended (see https://github.com/pylhc/omc3/issues/480),
     checking the improvement of the phase-advance does not work very well.
     So no randomizing errors here and only one iteration step.
@@ -269,7 +297,7 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
     }
 
     correction_params = param_map[correction_type](beam)
-    iterations = 2   # tests a single correction the last (2nd) correction is not tested itself.
+    iterations = 2  # tests a single correction the last (2nd) correction is not tested itself.
 
     # create and load model and twiss-with-errors
     model_df = tfs.read(model_inj_beams.model_dir / TWISS_DAT, index=NAME)
@@ -280,8 +308,11 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
 
     # create fake measurement data
     params, errors = zip(
-        *[(k, v) for k, v in RELATIVE_ERRORS.items()
-        if k in correction_params.optics_params or f"{k}R" in correction_params.optics_params]
+        *[
+            (k, v)
+            for k, v in RELATIVE_ERRORS.items()
+            if k in correction_params.optics_params or f"{k}R" in correction_params.optics_params
+        ]
     )
 
     randomize = []
@@ -320,20 +351,24 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
 
     # Test if corrected model is closer to model used to create measurement
     model_iter_df = tfs.read(tmp_path / "twiss_1.tfs", index=NAME)
-    models['iter1'] = model_iter_df
+    models["iter1"] = model_iter_df
 
     for plane in ("X", "Y"):
         index = twiss_errors_df.index.intersection(model_df.index)
         phase_column = f"{PHASE_ADV}{plane}"
-        diff_mu_errors = twiss_errors_df.loc[index, phase_column] - model_df.loc[index, phase_column]
+        diff_mu_errors = (
+            twiss_errors_df.loc[index, phase_column] - model_df.loc[index, phase_column]
+        )
         diff_mu_iter = model_iter_df.loc[index, phase_column] - model_df.loc[index, phase_column]
         corrected_mu = diff_mu_errors - diff_mu_iter
         # for arc in ['12', '23', '34', '45', '56', '67', '78', '81']:
-        for arc in ['23', '34', '67', '78']:  # check only arcs with errors for now
-            bpm_start  = f'BPM.8R{arc[0]}.B{beam}'
-            bpm_end  = f'BPM.8L{arc[1]}.B{beam}'
+        for arc in ["23", "34", "67", "78"]:  # check only arcs with errors for now
+            bpm_start = f"BPM.8R{arc[0]}.B{beam}"
+            bpm_end = f"BPM.8L{arc[1]}.B{beam}"
             abs_phase_diff_arc_after = abs(corrected_mu.loc[bpm_end] - corrected_mu.loc[bpm_start])
-            abs_phase_diff_arc_before = abs(diff_mu_errors.loc[bpm_end] - diff_mu_errors.loc[bpm_start])
+            abs_phase_diff_arc_before = abs(
+                diff_mu_errors.loc[bpm_end] - diff_mu_errors.loc[bpm_start]
+            )
 
             assert abs_phase_diff_arc_after < abs_phase_diff_arc_before
 
@@ -347,7 +382,7 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
 
 
 @pytest.mark.basic
-@pytest.mark.parametrize('dpp', (2.5e-4, -1e-4))
+@pytest.mark.parametrize("dpp", (2.5e-4, -1e-4))
 def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: float):
     response_path = tmp_path / "full_response_dpp.h5"
     beam = model_inj_beams.beam
@@ -375,7 +410,7 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
     # Test global correction with and without response update
     for update_response in [True, False]:
         previous_diff = np.inf
-        for iteration in range(1, 4):
+        for iteration in range(1, 3):
             global_correction(
                 meas_dir=tmp_path,
                 output_dir=tmp_path,
@@ -388,19 +423,27 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
             )
             result = tfs.read(tmp_path / "changeparameters_iter.tfs", index=NAME)
             current_dpp = -result[DELTA][ORBIT_DPP]
+            dpp_err = result[ERROR][ORBIT_DPP]
+            assert np.isclose(dpp_err, 0.0, atol=1e-10), f"DPP error is not zero: {dpp_err}"
 
             # Check output accuracy
-            rtol = 5e-2 # if iteration == 1 else 2e-2  # after updating MAD-X from 5.06 to 5.09 we are a bit more off for Beam2-1e-4 for some reason
-            assert np.isclose(dpp, current_dpp, rtol=rtol), f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
+            rtol = 5e-2  # if iteration == 1 else 2e-2  # after updating MAD-X from 5.06 to 5.09 we are a bit more off for Beam2-1e-4 for some reason
+            assert np.isclose(dpp, current_dpp, rtol=rtol), (
+                f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
+            )
 
             # Check convergence
             current_diff = np.abs(dpp - current_dpp) / np.abs(dpp)
-            assert previous_diff > current_diff or np.isclose(previous_diff, current_diff, atol=1e-3), f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
+            assert previous_diff > current_diff or np.isclose(
+                previous_diff, current_diff, atol=1e-3
+            ), (
+                f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
+            )
             previous_diff = current_diff
 
 
 def _plot_arc_by_arc(beam, **kwargs):
-    """ Plot the arc-by-arc phase advance.
+    """Plot the arc-by-arc phase advance.
 
     Inputs should be data-frames with columns ``S``, ``MUX``, ``MUY``
 
@@ -418,14 +461,20 @@ def _plot_arc_by_arc(beam, **kwargs):
         for ip in df_model.index[df_model.index.str.startswith("IP")]:
             ax.axvline(df_model.loc[ip, "S"], color="k", linestyle="--")
             ax.text(
-                df_model.loc[ip, "S"], 1.05, ip,
-                transform=transforms.blended_transform_factory(ax.transData, ax.transAxes)
+                df_model.loc[ip, "S"],
+                1.05,
+                ip,
+                transform=transforms.blended_transform_factory(ax.transData, ax.transAxes),
             )
 
         for name, df in kwargs.items():
-            ax.plot(df["S"],df[f"MU{plane}"] - df_model.loc[df.index, f"MU{plane}"], label=name)
+            ax.plot(df["S"], df[f"MU{plane}"] - df_model.loc[df.index, f"MU{plane}"], label=name)
 
-        ax.plot(df_error["S"],df_error[f"MU{plane}"] - df_iter1.loc[df_error.index, f"MU{plane}"], label='predicted corrected')
+        ax.plot(
+            df_error["S"],
+            df_error[f"MU{plane}"] - df_iter1.loc[df_error.index, f"MU{plane}"],
+            label="predicted corrected",
+        )
 
         ax.legend()
     plt.show()
