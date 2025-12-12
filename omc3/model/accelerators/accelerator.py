@@ -190,10 +190,7 @@ class Accelerator:
         except OSError:
             bpm_mask = self.elements.index.str.match(self.RE_DICT[AccElementTypes.BPMS])
             self.model = self.elements.loc[bpm_mask, :]
-        self.nat_tunes = [
-            float(self.model.headers["Q1"]) % 1,
-            float(self.model.headers["Q2"]) % 1,
-        ]
+        self.nat_tunes = [float(self.model.headers["Q1"]), float(self.model.headers["Q2"])]
 
         with contextlib.suppress(KeyError):
             # always 450GeV because we do not set it anywhere properly...
@@ -210,10 +207,7 @@ class Accelerator:
                 self.model_driven = tfs.read(driven_filenames[key], index=NAME)
 
         if self.excitation != AccExcitationMode.FREE:
-            self.drv_tunes = [
-                self.model_driven.headers["Q1"] % 1,
-                self.model_driven.headers["Q2"] % 1,
-            ]
+            self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
 
         # Best Knowledge #####################################
         best_knowledge_path = model_dir / TWISS_BEST_KNOWLEDGE_DAT
