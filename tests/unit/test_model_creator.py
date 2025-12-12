@@ -31,6 +31,7 @@ from omc3.model.model_creators.lhc_model_creator import (
 )
 from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import NAME
+from omc3.response_creator import ResponseCreatorType
 from omc3.response_creator import create_response_entrypoint as create_response
 from tests.conftest import assert_frame_equal
 
@@ -629,7 +630,7 @@ def test_model_job_file_reading(tmp_path, acc_models_lhc_2025):
         model_dir=tmp_path,
         beam=accel_opt["beam"],
         year=accel_opt["year"],
-        creator="madx",
+        creator=ResponseCreatorType.MADX,
         delta_k=2e-5,
         variable_categories=["orbit_dpp"],  # minimal variables to speed up test
     )
@@ -695,6 +696,21 @@ def check_accel_from_dir_vs_options(
             assert mod_dir == mod_opt_rel
     else:
         assert accel_from_opt.modifiers == accel_from_dir.modifiers
+
+    # Check that the job file uses relative paths when appropriate
+    if accel_from_opt.modifiers is not None:
+        job_file = model_dir / JOB_MODEL_MADX_NOMINAL
+        if job_file.exists():
+            job_content = job_file.read_text()
+            for mod in accel_from_opt.modifiers:
+                # Check if modifier is inside model_dir
+                try:
+                    rel_to_model = mod.relative_to(model_dir)
+                    # Should use relative path
+                    assert f"call, file = '{rel_to_model}" in job_content
+                except ValueError:
+                    # Outside model_dir, should use absolute path
+                    assert f"call, file = '{mod.absolute()}\n" in job_content
 
     assert accel_from_opt.excitation == accel_from_dir.excitation
     assert accel_from_opt.model_dir == accel_from_dir.model_dir
