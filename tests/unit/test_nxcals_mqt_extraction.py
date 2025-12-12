@@ -165,16 +165,16 @@ def test_main_with_delta_days(tmp_path, beam: int):
 
     output_path = tmp_path / f"test_delta_days_b{beam}.madx"
 
-    # Use a time 1 day ago with delta_days=1 to ensure we get data
+    # Use a time 2 hours ago with delta_days=2/12 (~4 hours) to ensure we get data
     past_time = datetime.now(timezone.utc) - timedelta(hours=2)
 
-    # This should work because we're looking back 1 day
+    # This should work because we're looking back 4 hours from 2 hours ago (covers now)
     result_df = mqt_extractor.main(
-        time=past_time.isoformat(), beam=beam, output=output_path, delta_days=1 / 12
+        time=past_time.isoformat(), beam=beam, output=output_path, delta_days=2 / 12
     )
 
     # Should succeed and return valid data
-    assert len(result_df) == 16, "Expected 16 MQT entries with delta_days=1"
+    assert len(result_df) == 16, "Expected 16 MQT entries with delta_days=2/12 (~4 hours)"
     assert result_df.headers["BEAM"] == beam
 
 
