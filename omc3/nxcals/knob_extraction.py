@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 pjlsa = cern_network_import("pjlsa")
 builders = cern_network_import("nxcals.api.extraction.data.builders")
 functions = cern_network_import("pyspark.sql.functions")
-Window = cern_network_import("pyspark.sql.window.Window")
+window = cern_network_import("pyspark.sql.window")
 
 LOGGER = logging.getLogger(__name__)
 
@@ -205,7 +205,7 @@ def get_raw_vars(
     LOGGER.info(f"Raw variables {var_name} retrieved successfully.")
 
     # Get the latest sample for each variable
-    window_spec = Window.partitionBy("nxcals_variable_name").orderBy(
+    window_spec = window.Window.partitionBy("nxcals_variable_name").orderBy(
         functions.col("nxcals_timestamp").desc()
     )
     latest_df = (
