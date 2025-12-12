@@ -142,7 +142,7 @@ def test_main_with_timedelta(tmp_path, beam: int):
 
     # Call with timedelta going back 1 day
     result_df = mqt_extractor.main(
-        time="now",
+        time="2025-11-07T07:00:00+00:00",
         timedelta="_1d",  # 1 day ago
         beam=beam,
         output=output_path,
@@ -150,7 +150,7 @@ def test_main_with_timedelta(tmp_path, beam: int):
 
     # Verify the extraction time is approximately 1 day ago
     extraction_time = result_df.headers["EXTRACTION_TIME"]
-    expected_time = datetime.now(timezone.utc) - timedelta(days=1)
+    expected_time = datetime(2025, 11, 6, 7, 0, 0, tzinfo=timezone.utc)
     time_diff = abs((extraction_time - expected_time).total_seconds())
 
     # Should be close to 1 day ago, allow 5 minute tolerance
@@ -161,14 +161,14 @@ def test_main_with_timedelta(tmp_path, beam: int):
 @pytest.mark.parametrize("beam", [1, 2], ids=["beam1", "beam2"])
 def test_main_with_delta_days(tmp_path, beam: int):
     """Test that delta_days parameter is properly passed through."""
-    from datetime import datetime, timedelta
+    from datetime import datetime
 
     output_path = tmp_path / f"test_delta_days_b{beam}.madx"
 
-    # Use a time 2 hours ago with delta_days=2/12 (~4 hours) to ensure we get data
-    past_time = datetime.now(timezone.utc) - timedelta(hours=2)
+    # Use a time 2 hours before 7am on 2025-11-07 with delta_days=2/12 (~4 hours) to ensure we get data
+    past_time = datetime(2025, 11, 7, 5, 0, 0, tzinfo=timezone.utc)
 
-    # This should work because we're looking back 4 hours from 2 hours ago (covers now)
+    # This should work because we're looking back 4 hours from 5am (covers 7am)
     result_df = mqt_extractor.main(
         time=past_time.isoformat(), beam=beam, output=output_path, delta_days=2 / 12
     )
