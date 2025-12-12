@@ -305,8 +305,8 @@ class LhcModelCreator(ModelCreator):
             deltap = f"{deltap:.15e}"
 
         madx_script = (
-            f"twiss, deltap={deltap};\n"
-            "correct, mode=svd;\n\n"
+            f"twiss, deltap={deltap}, table=offmom;\n"
+            "correct, mode=svd, target=orbit0, model=offmom, orbit=offmom;\n\n"
             "! The same as match_tunes, but include deltap in the matching\n"
             f"exec, find_complete_tunes({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.beam});\n"
             f"match, deltap={deltap};\n"

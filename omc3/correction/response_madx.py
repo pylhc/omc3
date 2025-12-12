@@ -116,6 +116,8 @@ def _generate_madx_jobs(
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
         madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n"  # Set deltap to 0
         deltap_twiss = f", deltap={ORBIT_DPP}"
+        # Run a twiss to find out what the original closed orbit is
+        madx_job += f"twiss, table=orbit0{deltap_twiss};\n\n"
 
     for proc_idx in range(num_proc):
         jobfile_path = _get_jobfiles(temp_dir, proc_idx)
