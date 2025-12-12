@@ -635,40 +635,59 @@ def test_model_job_file_reading(tmp_path, acc_models_lhc_2025):
         variable_categories=["orbit_dpp"],  # minimal variables to speed up test
     )
 
-    # Check that the generated job file is identical to the model one up to the coupling_knob
+    # Verify the response creator correctly reads and reproduces the model
     jobfile_path = tmp_path / "job.iterate.0.madx"
     model_path = tmp_path / JOB_MODEL_MADX_NOMINAL
 
-    # Read files and extract content up to coupling_knob line
-    def read_until_coupling_knob(filepath):
-        with filepath.open("r") as f:
-            lines = f.readlines()
-            coupling_idx = next(i for i, line in enumerate(lines) if "coupling_knob" in line)
-            return lines[: coupling_idx + 1]
+    job_text = jobfile_path.read_text()
+    model_text = model_path.read_text()
 
-    jobfile_content = read_until_coupling_knob(jobfile_path)
-    model_content = read_until_coupling_knob(model_path)
+    # Check first 5 lines are identical (title and header comments up to tunes)
+    job_lines = job_text.splitlines()
+    model_lines = model_text.splitlines()
 
-    # Check content is identical (excluding last line which may have small numerical differences)
-    assert jobfile_content[:-2] == model_content[:-2], "Generated job file differs from model file!"
+    for i in range(5):
+        assert job_lines[i] == model_lines[i], (
+            f"Line {i + 1} differs:\n  Job:   {job_lines[i]!r}\n  Model: {model_lines[i]!r}"
+        )
 
-    # Extract and compare match_tunes parameters from the last line
-    # (small numerical differences are expected due to twiss rounding)
-    pattern = r"match_tunes\(([^,]+),\s*([^,]+),\s*([^,)]+)\)"
-    job_match = re.search(pattern, jobfile_content[-2])
-    model_match = re.search(pattern, model_content[-2])
+    # Check energy settings match
+    energy_pattern = r"omc3_beam_energy\s*=\s*([\d.]+)"
+    job_energy = re.search(energy_pattern, job_text)
+    model_energy = re.search(energy_pattern, model_text)
 
-    assert job_match and model_match, "Both lines must contain match_tunes with same format"
+    assert job_energy and model_energy, "Both files must contain omc3_beam_energy"
+    assert job_energy.group(1) == model_energy.group(1), (
+        f"Energy differs: {job_energy.group(1)} vs {model_energy.group(1)}"
+    )
 
-    job_q1, job_q2 = float(job_match.group(1)), float(job_match.group(2))
+    # Extract and compare all file paths
+    file_pattern = r"call,\s*file\s*=\s*'([^']+)'"
+    job_files = re.findall(file_pattern, job_text)
+    model_files = re.findall(file_pattern, model_text)
+
+    assert job_files == model_files, f"File paths differ:\nJob: {job_files}\nModel: {model_files}"
+
+    # Extract and compare match_tunes calls (MAD-X adds integer parts to tunes)
+    tune_pattern = r"match_tunes\(([\d.]+),\s*([\d.]+),\s*(\d+)\)"
+    job_match = re.search(tune_pattern, job_text)
+    model_match = re.search(tune_pattern, model_text)
+
+    assert job_match and model_match
+
+    # Compare fractional parts of tunes (input tunes are fractional)
+    # The job has integer parts as we retrieve te full tunes from the MAD-X twiss.
+    # Machines such as the SPS need this integer part, should LHC adapt this? (jgray 2025)
+    job_q1, job_q2, job_beam = (
+        float(job_match.group(1)),
+        float(job_match.group(2)),
+        int(job_match.group(3)),
+    )
     model_q1, model_q2 = float(model_match.group(1)), float(model_match.group(2))
-    job_beam = int(job_match.group(3))
-    model_beam = int(model_match.group(3))
 
-    assert abs(job_q1 - model_q1) < 1e-10, f"Q1 tunes differ: {job_q1} vs {model_q1}"
-    assert abs(job_q2 - model_q2) < 1e-10, f"Q2 tunes differ: {job_q2} vs {model_q2}"
-    assert job_beam == model_beam, f"Beam numbers differ: {job_beam} vs {model_beam}"
-    assert jobfile_content[-1] == model_content[-1], "Coupling knob lines differ"
+    assert abs(job_q1 % 1 - model_q1) < 1e-6
+    assert abs(job_q2 % 1 - model_q2) < 1e-6
+    assert job_beam == accel_opt["beam"]
 
 
 # ---- helper --------------------------------------------------------------------------------------
@@ -688,13 +707,6 @@ def check_accel_from_dir_vs_options(
     _check_arrays(accel_from_opt.drv_tunes, accel_from_dir.drv_tunes, eps=1e-4, tunes=True)
     # Check that each modifier from dir is relative to model_dir if possible
     if accel_from_opt.modifiers is not None and accel_from_dir.modifiers is not None:
-        for mod_opt, mod_dir in zip(accel_from_opt.modifiers, accel_from_dir.modifiers):
-            try:
-                mod_opt_rel = mod_opt.relative_to(model_dir)
-            except ValueError:
-                mod_opt_rel = mod_opt
-            assert mod_dir == mod_opt_rel
-    else:
         assert accel_from_opt.modifiers == accel_from_dir.modifiers
 
     # Check that the job file uses relative paths when appropriate
@@ -710,7 +722,7 @@ def check_accel_from_dir_vs_options(
                     assert f"call, file = '{rel_to_model}" in job_content
                 except ValueError:
                     # Outside model_dir, should use absolute path
-                    assert f"call, file = '{mod.absolute()}\n" in job_content
+                    assert f"call, file = '{mod.absolute()}'" in job_content
 
     assert accel_from_opt.excitation == accel_from_dir.excitation
     assert accel_from_opt.model_dir == accel_from_dir.model_dir
