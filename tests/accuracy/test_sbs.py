@@ -15,9 +15,10 @@ from omc3.definitions.optics import OpticsMeasurement
 from omc3.model import manager
 from omc3.model.constants import OPTICS_SUBDIR, TWISS_DAT, TWISS_ELEMENTS_DAT, Fetcher
 from omc3.model.model_creators.lhc_model_creator import LhcSegmentCreator
-from omc3.optics_measurements.constants import AMPLITUDE, IMAG, NAME, PHASE, REAL
+from omc3.optics_measurements.constants import AMPLITUDE, BETA, IMAG, NAME, PHASE, REAL
 from omc3.sbs_propagation import segment_by_segment
-from omc3.segment_by_segment.constants import logfile
+from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
+from omc3.segment_by_segment.constants import BACKWARD, FORWARD, logfile
 from omc3.segment_by_segment.propagables import (
     ALL_PROPAGABLES,
     F1001,
@@ -292,6 +293,47 @@ class TestSbSLHC:
 
                         assert sbs_df[columns.error_forward_correction].iloc[1:].all()
                         assert sbs_df[columns.error_backward_correction].iloc[:-1].all()
+
+    @pytest.mark.basic
+    def test_sbs_no_phase_jump_on_wraparound(
+        self, tmp_path: Path, model_30cm_flat_beams: DotDict, acc_models_lhc_2025: dict
+    ):
+        """Test that no phase jump occurs in phase due to a model/measuerment wraparound in the SbS propagation.
+        The expected jump - if uncompensated - is the tune, so around 3e-1. This was a bug in omc3 <=0.25.0. """
+        beam = model_30cm_flat_beams.beam
+        irs = [1, 2, 5, 8]  # test all IRs to be safe
+        # irs = [2] if beam == 1 else [8] # problematic IRs are Beam 1 IR2, and Beam 2 IR8 (injection points)
+
+        # Create fake measurement (could use the one with errors in INPUTS, but then the tolerances in the IR1/5 are bigger) ---
+        fake_meas_dir = tmp_path / f"measurement_b{beam}"
+        fake_measurement(
+            twiss=model_30cm_flat_beams.model_dir / TWISS_DAT,
+            outputdir=fake_meas_dir,
+            parameters=[f"{PHASE}X" , f"{PHASE}Y", f"{BETA}X", f"{BETA}Y"],
+        )
+
+        # Run SbS ---
+        segment_by_segment(
+            measurement_dir=fake_meas_dir,
+            output_dir=tmp_path,
+            segments=[f'IR{ir},BPM.12L{ir}.B{beam},BPM.12R{ir}.B{beam}' for ir in irs],
+            accel="lhc",
+            model_dir=model_30cm_flat_beams.model_dir,
+            beam=beam,
+            year=str(YEAR),
+            fetch=Fetcher.PATH,
+            path=acc_models_lhc_2025,
+            modifiers=[OPTICS_30CM_FLAT],  # override modifiers from madx jobfile (which are the same but different path)
+        )
+
+        # Check for jumps ---
+        for ir in irs:
+            for plane in ['x', 'y']:
+                phase = tfs.read(tmp_path / f"sbs_phase_{plane}_IR{ir}.tfs", index=NAME)
+                for prop in [FORWARD, BACKWARD]:
+                    max_val = phase.loc[:, f"{prop}{PHASE}{plane.upper()}"].abs().max()
+                    # print(f"Max phase value for Beam {beam} IP {ip} {plane.upper()} {prop}: {max_val}")  # debugging
+                    assert max_val < 1e-8, f"Phase jump detected in SbS {prop} propagation Beam {beam} IR {ir} {plane.upper()}!"
 
 
 # Auxiliary Functions ----------------------------------------------------------
