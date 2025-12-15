@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2025-12-12 - v0.25.2 - _jgray_, _jdilly_, _fsoubelet_
+#### 2025-12-15 - v0.26.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
   - MQT extractor: New script to extract MQT (Quadrupole Trim) knob values from NXCALS at a given time.
