@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for omc3/model/accelerators/accelerator.py: 88%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_8432e98f.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_a5a05ca4.css" type="text/css">
     <script src="coverage_html_cb_bcae5fc4.js" defer></script>
 </head>
 <body class="pyfile">
@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_a7d131a2f24686be_esrf_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.12.0">coverage.py v7.12.0</a>,
-            created at 2025-12-12 09:38 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.13.0">coverage.py v7.13.0</a>,
+            created at 2025-12-15 13:10 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -457,7 +457,7 @@
     <p class="pln"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t">    <span class="str">"""Parse modifiers from job.create_model.madx or use modifiers.madx file."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t376" href="#t376">376</a></span><span class="t">    <span class="nam">job_file</span> <span class="op">=</span> <span class="nam">model_dir</span> <span class="op">/</span> <span class="nam">JOB_MODEL_MADX_NOMINAL</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t">    <span class="key">if</span> <span class="nam">job_file</span><span class="op">.</span><span class="nam">is_file</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">        <span class="key">return</span> <span class="nam">find_called_files_with_tag</span><span class="op">(</span><span class="nam">job_file</span><span class="op">,</span> <span class="nam">MODIFIER_TAG</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">        <span class="key">return</span> <span class="nam">find_called_files_with_tag</span><span class="op">(</span><span class="nam">job_file</span><span class="op">,</span> <span class="nam">model_dir</span><span class="op">,</span> <span class="nam">MODIFIER_TAG</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t379" href="#t379">379</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">    <span class="com"># Legacy</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t381" href="#t381">381</a></span><span class="t">    <span class="nam">modifiers_file</span> <span class="op">=</span> <span class="nam">model_dir</span> <span class="op">/</span> <span class="nam">MODIFIERS_MADX</span>&nbsp;</span><span class="r"></span></p>
@@ -467,7 +467,7 @@
     <p class="run"><span class="n"><a id="t385" href="#t385">385</a></span><span class="t">    <span class="key">return</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t386" href="#t386">386</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t387" href="#t387">387</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t388" href="#t388">388</a></span><span class="t"><span class="key">def</span> <span class="nam">find_called_files_with_tag</span><span class="op">(</span><span class="nam">madx_file</span><span class="op">:</span> <span class="nam">Path</span><span class="op">,</span> <span class="nam">tag</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">list</span><span class="op">[</span><span class="nam">Path</span><span class="op">]</span> <span class="op">|</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t388" href="#t388">388</a></span><span class="t"><span class="key">def</span> <span class="nam">find_called_files_with_tag</span><span class="op">(</span><span class="nam">madx_file</span><span class="op">:</span> <span class="nam">Path</span><span class="op">,</span> <span class="nam">model_dir</span><span class="op">:</span> <span class="nam">Path</span><span class="op">,</span> <span class="nam">tag</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">list</span><span class="op">[</span><span class="nam">Path</span><span class="op">]</span> <span class="op">|</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t389" href="#t389">389</a></span><span class="t">    <span class="str">"""Parse lines that call a file and are tagged with the given tag and return</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t390" href="#t390">390</a></span><span class="t"><span class="str">    a list of paths to these files.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t391" href="#t391">391</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -488,8 +488,10 @@
     <p class="run run2"><span class="n"><a id="t406" href="#t406">406</a></span><span class="t">        <span class="nam">job_madx</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t407" href="#t407">407</a></span><span class="t">        <span class="nam">flags</span><span class="op">=</span><span class="nam">re</span><span class="op">.</span><span class="nam">IGNORECASE</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t408" href="#t408">408</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t409" href="#t409">409</a></span><span class="t">    <span class="nam">called_files</span> <span class="op">=</span> <span class="op">[</span><span class="nam">Path</span><span class="op">(</span><span class="nam">m</span><span class="op">)</span> <span class="key">for</span> <span class="nam">m</span> <span class="key">in</span> <span class="nam">called_files</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t410" href="#t410">410</a></span><span class="t">    <span class="key">return</span> <span class="nam">called_files</span> <span class="key">or</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t409" href="#t409">409</a></span><span class="t">    <span class="com"># All modifiers are relative to model_dir or absolute paths</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t410" href="#t410">410</a></span><span class="t">    <span class="com"># If m is absolute, model_dir / m will just return m</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t411" href="#t411">411</a></span><span class="t">    <span class="nam">called_files</span> <span class="op">=</span> <span class="op">[</span><span class="nam">model_dir</span> <span class="op">/</span> <span class="nam">m</span> <span class="key">for</span> <span class="nam">m</span> <span class="key">in</span> <span class="nam">called_files</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t412" href="#t412">412</a></span><span class="t">    <span class="key">return</span> <span class="nam">called_files</span> <span class="key">or</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -498,8 +500,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_a7d131a2f24686be_esrf_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.12.0">coverage.py v7.12.0</a>,
-            created at 2025-12-12 09:38 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.13.0">coverage.py v7.13.0</a>,
+            created at 2025-12-15 13:10 +0000
         </p>
     </div>
 </footer>

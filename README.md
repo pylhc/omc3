@@ -16,9 +16,9 @@
 | omc3/correction/model\_appenders.py                     |       62 |        0 |    100% |           |
 | omc3/correction/model\_diff.py                          |       40 |        1 |     98% |        40 |
 | omc3/correction/response\_io.py                         |       63 |        2 |     97% |    58, 86 |
-| omc3/correction/response\_madx.py                       |      157 |       10 |     94% |82, 295-296, 301-307 |
+| omc3/correction/response\_madx.py                       |      154 |       10 |     94% |83, 316-317, 324-330 |
 | omc3/correction/response\_twiss.py                      |      396 |       55 |     86% |240, 244-246, 253, 288-290, 296-306, 401-402, 458-459, 493-535, 703, 707-715, 727, 739, 742, 745-747, 871 |
-| omc3/correction/sequence\_evaluation.py                 |      149 |       11 |     93% |67, 135, 197-198, 218-224, 303 |
+| omc3/correction/sequence\_evaluation.py                 |      149 |       11 |     93% |68, 137, 199-200, 220-226, 306 |
 | omc3/definitions/\_\_init\_\_.py                        |        1 |        0 |    100% |           |
 | omc3/definitions/constants.py                           |        9 |        0 |    100% |           |
 | omc3/definitions/formats.py                             |        8 |        0 |    100% |           |
@@ -32,7 +32,7 @@
 | omc3/harpy/kicker.py                                    |       27 |        0 |    100% |           |
 | omc3/hole\_in\_one.py                                   |      194 |       10 |     95% |332, 334, 372, 455, 481, 497, 499, 501, 503, 880 |
 | omc3/kmod\_importer.py                                  |       71 |        4 |     94% |287-293, 308 |
-| omc3/knob\_extractor.py                                 |      188 |       29 |     85% |76-79, 388-389, 393-394, 398-399, 499-508, 564, 599-610, 637, 641 |
+| omc3/knob\_extractor.py                                 |      160 |       20 |     88% |77-80, 390-391, 395-396, 400-401, 506-519, 577, 605, 609 |
 | omc3/madx\_wrapper.py                                   |      103 |       12 |     88% |28, 30, 71, 96-97, 208-209, 212, 216-217, 223, 229 |
 | omc3/model/\_\_init\_\_.py                              |        1 |        0 |    100% |           |
 | omc3/model/accelerators/\_\_init\_\_.py                 |        1 |        0 |    100% |           |
@@ -40,7 +40,7 @@
 | omc3/model/accelerators/esrf.py                         |       10 |        3 |     70% |     70-72 |
 | omc3/model/accelerators/generic.py                      |       10 |        0 |    100% |           |
 | omc3/model/accelerators/iota.py                         |       23 |        8 |     65% |83-91, 94-97, 101 |
-| omc3/model/accelerators/lhc.py                          |      166 |       23 |     86% |174, 191, 200, 233-236, 238, 240, 276-292, 311, 324, 330, 351-353 |
+| omc3/model/accelerators/lhc.py                          |      166 |       23 |     86% |176, 189, 198, 238-241, 243, 245, 281-296, 314, 327, 333, 353-357 |
 | omc3/model/accelerators/petra.py                        |       11 |        3 |     73% | 22-23, 27 |
 | omc3/model/accelerators/ps.py                           |       47 |        9 |     81% |112, 124, 129-135 |
 | omc3/model/accelerators/psbase.py                       |       20 |        0 |    100% |           |
@@ -50,14 +50,18 @@
 | omc3/model/constants.py                                 |       36 |        0 |    100% |           |
 | omc3/model/manager.py                                   |       23 |        2 |     91% |    52, 63 |
 | omc3/model/model\_creators/\_\_init\_\_.py              |        1 |        0 |    100% |           |
-| omc3/model/model\_creators/abstract\_model\_creator.py  |      190 |       22 |     88% |93, 125, 136, 144, 248-253, 358-360, 365, 368, 373, 380, 474-488, 493 |
-| omc3/model/model\_creators/lhc\_model\_creator.py       |      250 |       23 |     91% |82, 89, 165, 287, 339, 343-344, 352, 355, 368-369, 375-376, 383, 387, 408-414, 430, 435, 477, 548 |
+| omc3/model/model\_creators/abstract\_model\_creator.py  |      201 |       22 |     89% |96, 122, 130, 156, 262-267, 385-387, 392, 395, 400, 411, 524-537, 541 |
+| omc3/model/model\_creators/lhc\_model\_creator.py       |      272 |       23 |     92% |98, 103, 177, 305, 358-359, 363-364, 375, 388-389, 395-396, 403, 407, 428-434, 450, 455, 500, 590 |
 | omc3/model/model\_creators/manager.py                   |       27 |        4 |     85% |81-82, 86-87 |
 | omc3/model/model\_creators/ps\_base\_model\_creator.py  |       39 |       11 |     72% |34, 39-55, 83-86, 89, 95-96 |
-| omc3/model/model\_creators/ps\_model\_creator.py        |       33 |        3 |     91% | 57, 59-60 |
+| omc3/model/model\_creators/ps\_model\_creator.py        |       33 |        3 |     91% | 62, 69-70 |
 | omc3/model/model\_creators/psbooster\_model\_creator.py |       27 |        0 |    100% |           |
-| omc3/model/model\_creators/sps\_model\_creator.py       |       72 |       14 |     81% |48, 55, 69-81, 91, 96-112, 117, 252 |
+| omc3/model/model\_creators/sps\_model\_creator.py       |       78 |       14 |     82% |49, 56, 70-81, 91, 94-110, 115, 247 |
 | omc3/model\_creator.py                                  |       59 |       12 |     80% |136-148, 185 |
+| omc3/mqt\_extractor.py                                  |       38 |       18 |     53% |162-183, 188-191, 195 |
+| omc3/nxcals/\_\_init\_\_.py                             |        1 |        0 |    100% |           |
+| omc3/nxcals/knob\_extraction.py                         |      105 |       80 |     24% |101-152, 180-225, 242-246, 265-287, 303, 329-343 |
+| omc3/nxcals/mqt\_extraction.py                          |       25 |       17 |     32% |47-52, 78-84, 97-104 |
 | omc3/optics\_measurements/\_\_init\_\_.py               |        1 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_amplitude.py      |       63 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_phase.py          |      283 |        9 |     97% |129-132, 135, 246, 375, 397-398, 490, 595 |
@@ -136,7 +140,7 @@
 | omc3/utils/\_\_init\_\_.py                              |        1 |        0 |    100% |           |
 | omc3/utils/contexts.py                                  |       36 |        2 |     94% |     62-63 |
 | omc3/utils/debugging.py                                 |        8 |        0 |    100% |           |
-| omc3/utils/iotools.py                                   |      145 |       42 |     71% |31-38, 56-64, 78, 87-88, 97-105, 112-123, 129, 136, 145, 218, 237, 278-280 |
+| omc3/utils/iotools.py                                   |      145 |       42 |     71% |32-39, 57-65, 79, 89-90, 100-108, 116-127, 134, 142, 152, 225, 244, 287-290 |
 | omc3/utils/knob\_list\_manipulations.py                 |       26 |        2 |     92% |    28, 34 |
 | omc3/utils/logging\_tools.py                            |      213 |      105 |     51% |53, 56, 70-98, 101, 104-113, 127-128, 131, 134-140, 153-157, 165-171, 177-184, 196-202, 205-208, 211, 215, 263-300, 323-329, 340, 350, 388-414, 419 |
 | omc3/utils/math\_classes.py                             |       29 |       29 |      0% |      8-56 |
@@ -146,8 +150,8 @@
 | omc3/utils/parsertools.py                               |       34 |        6 |     82% |19-20, 66-67, 71-72 |
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
-| omc3/utils/time\_tools.py                               |      103 |       18 |     83% |60-61, 73, 95, 121, 136, 141, 145, 149, 153, 163, 166, 171, 176, 186, 191, 196, 201 |
-|                                               **TOTAL** | **11604** | **1543** | **87%** |           |
+| omc3/utils/time\_tools.py                               |      135 |       28 |     79% |66-67, 79, 99-110, 139, 156, 182, 197, 202, 206, 210, 214, 224, 227, 232, 237, 247, 252, 257, 262 |
+| **TOTAL**                                               | **11813** | **1659** | **86%** |           |
 
 
 ## Setup coverage badge
