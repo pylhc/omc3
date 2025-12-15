@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.25.1 documentation</title>
+  <title>Scripts &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=7ca58008"></script>
+      <script src="../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -77,6 +77,7 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -84,6 +85,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -134,8 +136,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -223,6 +227,7 @@
     <ul>
 <li><a class="reference internal" href="#">Scripts</a><ul>
 <li><a class="reference internal" href="#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li><a class="reference internal" href="#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li><a class="reference internal" href="#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li><a class="reference internal" href="#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -230,6 +235,7 @@
 <li><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li><a class="reference internal" href="#linfile-cleaning">Linfile Cleaning</a></li>
 <li><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li><a class="reference internal" href="#create-logbook-entry">Create Logbook Entry</a></li>
 <li><a class="reference internal" href="#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -457,6 +463,105 @@ compensation by equation, ‘_free2’ by model).</p>
 </div></blockquote>
 </li>
 </ul>
+</dd></dl>
+
+<section id="average-k-modulation-results">
+<h2>Average K-Modulation Results<a class="headerlink" href="#average-k-modulation-results" title="Link to this heading"></a></h2>
+<p>Average muliple K-Modulation results into a single file/dataframe.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>meas_paths</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Directories of K-modulation results to average.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Path to the directory where to write the output files.</p>
+</div></blockquote>
+</li>
+<li><p><strong>betastar</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Model beta-star values (x, y) of measurements. Only used for filename and plot.</p>
+</div></blockquote>
+</li>
+<li><p><strong>ip</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>IP this result is from. Only used for filename and plot.</p>
+</div></blockquote>
+</li>
+<li><p><strong>plot</strong>:</p>
+<blockquote>
+<div><p>Plot the averaged results.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>show_plots</strong>:</p>
+<blockquote>
+<div><p>Show the plots.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_average.</span></span><span class="sig-name descname"><span class="pre">average_kmod_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_average.html#average_kmod_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reads kmod results and averages over the different measurements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>meas_paths</strong> (<em>Sequence</em><em>[</em><em>Path</em><em>|</em><em>str</em><em>]</em>) -- Directories of K-modulation results to aver.</p></li>
+<li><p><strong>ip</strong> (<em>int</em>) -- The specific IP to average over.
+Only used for filename.</p></li>
+<li><p><strong>betastar</strong> (<em>float</em>) -- The model beta-star values (x, y) of the measurements.
+If a single value is given, beta-star_x == beta-star_y is assumed.
+Only used for filename.</p></li>
+<li><p><strong>output_dir</strong> (<em>Path</em><em>|</em><em>str</em>) -- Path to the output directory to write out the averaged results. Optional.</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) -- If True, plots the averaged results. Default: False.</p></li>
+<li><p><strong>show_plots</strong> (<em>bool</em>) -- If True, show the plots. Default: False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of averaged kmod-result DataFrames by beams for the
+bpm-data and with key <cite>0</cite> for the beta-star data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_average.</span></span><span class="sig-name descname"><span class="pre">get_average_betastar_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_average.html#get_average_betastar_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the average betastar results for the given measurements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>meas_paths</strong> -- The paths to the measurements.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The final results as a DataFrame; both beams merged.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.kmod_average.</span></span><span class="sig-name descname"><span class="pre">get_average_bpm_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/scripts/kmod_average.html#get_average_bpm_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the average results for BPMs/IPs for the given measurements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>meas_paths</strong> -- The paths to the measurements.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the average bpm betas results for each beam.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>final_results</p>
+</dd>
+</dl>
 </dd></dl>
 
 <section id="import-k-modulation-results">
@@ -1122,6 +1227,55 @@ which in turn contain which in turn have entries containing the bad-bpms files.<
 <dd class="field-odd"><p>tfs.TfsDataFrame</p>
 </dd>
 </dl>
+</dd></dl>
+
+<section id="create-logbook-entry">
+<h2>Create Logbook Entry<a class="headerlink" href="#create-logbook-entry" title="Link to this heading"></a></h2>
+<p>Simple wrapper around pylogbook to create logbook entries via python
+from commandline.</p>
+<p><strong>Arguments:</strong></p>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>text</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Text to be written into the new logbook entry.</p>
+<p>default: <a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">``</span></a></p>
+</div></blockquote>
+</li>
+<li><p><strong>files</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Files to attach to the new logbook entry.</p>
+</div></blockquote>
+</li>
+<li><p><strong>filenames</strong> <em>(OptionalStr)</em>:</p>
+<blockquote>
+<div><p>Filenames to be used with the given files. If omitted, the original
+filenames will be used.</p>
+</div></blockquote>
+</li>
+<li><p><strong>logbook</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Name of the logbook to create the entry in.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">LHC_OMC</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>pdf2png</strong>:</p>
+<blockquote>
+<div><p>Convert pdf files to png and also upload these.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>tags</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Tags to be added to the event.</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.create_logbook_entry.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/create_logbook_entry.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a new entry in the logbook and attach the given files.</p>
 </dd></dl>
 
 <section id="corrector-lists-check">

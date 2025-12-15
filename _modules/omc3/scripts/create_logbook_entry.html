@@ -1,0 +1,537 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.scripts.create_logbook_entry &mdash; omc3 0.26.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=4aa2dafa"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#optics">Optics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps">SPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#model-creator-manager">Model Creator Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.scripts.create_logbook_entry</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.scripts.create_logbook_entry</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Create Logbook Entry</span>
+<span class="sd">--------------------</span>
+
+<span class="sd">Simple wrapper around pylogbook to create logbook entries via python</span>
+<span class="sd">from commandline.</span>
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Optional--*</span>
+
+<span class="sd">- **text** *(str)*:</span>
+
+<span class="sd">    Text to be written into the new logbook entry.</span>
+
+<span class="sd">    default: ````</span>
+
+
+<span class="sd">- **files** *(PathOrStr)*:</span>
+
+<span class="sd">    Files to attach to the new logbook entry.</span>
+
+
+<span class="sd">- **filenames** *(OptionalStr)*:</span>
+
+<span class="sd">    Filenames to be used with the given files. If omitted, the original</span>
+<span class="sd">    filenames will be used.</span>
+
+
+<span class="sd">- **logbook** *(str)*:</span>
+
+<span class="sd">    Name of the logbook to create the entry in.</span>
+
+<span class="sd">    default: ``LHC_OMC``</span>
+
+
+<span class="sd">- **pdf2png**:</span>
+
+<span class="sd">    Convert pdf files to png and also upload these.</span>
+
+<span class="sd">    action: ``store_true``</span>
+
+
+<span class="sd">- **tags** *(str)*:</span>
+
+<span class="sd">    Tags to be added to the event.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mimetypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">requests.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">ConnectTimeout</span><span class="p">,</span> <span class="n">HTTPError</span>  <span class="c1"># noqa: A004</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionalStr</span><span class="p">,</span> <span class="n">PathOrStr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.logging_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.rbac</span><span class="w"> </span><span class="kn">import</span> <span class="n">RBAC</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+
+<span class="n">pylogbook</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pylogbook&quot;</span><span class="p">)</span>  <span class="c1"># raises ImportError if used</span>
+
+<span class="c1"># for typing:</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pylogbook._attachment_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttachmentBuilder</span><span class="p">,</span> <span class="n">AttachmentBuilderType</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pylogbook.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">AttachmentBuilderType</span><span class="p">,</span> <span class="n">Event</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">AttachmentBuilder</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># disables unverified HTTPS warning for cern-host</span>
+<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>
+
+<span class="c1"># Possible errors during RBAC connection</span>
+<span class="n">CONNECTION_ERRORS</span> <span class="o">=</span> <span class="p">(</span><span class="n">HTTPError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">ConnectTimeout</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span>
+
+<span class="n">OMC_LOGBOOK</span> <span class="o">=</span> <span class="s2">&quot;LHC_OMC&quot;</span>
+<span class="n">PNG_DPI</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># dpi for converted png (from pdf)</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
+        <span class="n">logbook</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Name of the logbook to create the entry in.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">OMC_LOGBOOK</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">text</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Text to be written into the new logbook entry.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">files</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Files to attach to the new logbook entry.&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">filenames</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">OptionalStr</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;Filenames to be used with the given files. &quot;</span>
+                <span class="s2">&quot;If omitted, the original filenames will be used.&quot;</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="n">tags</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Tags to be added to the event.&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">pdf2png</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Convert pdf files to png and also upload these.&quot;</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.create_logbook_entry.main">[docs]</a>
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a new entry in the logbook and attach the given files. &quot;&quot;&quot;</span>
+    <span class="c1"># do attachments first as it also tests if files are there etc.</span>
+    <span class="n">attachments</span> <span class="o">=</span> <span class="n">_get_attachments</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">pdf2png</span><span class="p">)</span>
+
+    <span class="c1"># initialize logbook client</span>
+    <span class="n">rbac_token</span> <span class="o">=</span> <span class="n">_get_rbac_token</span><span class="p">()</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">pylogbook</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">rbac_token</span><span class="o">=</span><span class="n">rbac_token</span><span class="p">)</span>
+    <span class="n">logbook</span> <span class="o">=</span> <span class="n">pylogbook</span><span class="o">.</span><span class="n">ActivitiesClient</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">logbook</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+
+    <span class="c1"># create event and upload attachments</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">logbook</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">tags</span> <span class="ow">or</span> <span class="p">())</span>
+    <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">attachments</span><span class="p">:</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">attach_content</span><span class="p">(</span>
+            <span class="n">contents</span><span class="o">=</span><span class="n">attachment</span><span class="o">.</span><span class="n">contents</span><span class="p">,</span>
+            <span class="n">mime_type</span><span class="o">=</span><span class="n">attachment</span><span class="o">.</span><span class="n">mime_type</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">attachment</span><span class="o">.</span><span class="n">short_name</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">event</span></div>
+
+
+
+<span class="c1"># Private Functions ------------------------------------------------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_rbac_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get an RBAC token, either by location or by Kerberos. &quot;&quot;&quot;</span>
+    <span class="n">rbac</span> <span class="o">=</span> <span class="n">RBAC</span><span class="p">(</span><span class="n">application</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;omc3.</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rbac</span><span class="o">.</span><span class="n">authenticate_location</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">CONNECTION_ERRORS</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Getting RBAC token from location failed. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logged in to RBAC via location as user </span><span class="si">{</span><span class="n">rbac</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rbac</span><span class="o">.</span><span class="n">token</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rbac</span><span class="o">.</span><span class="n">authenticate_kerberos</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">CONNECTION_ERRORS</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Getting RBAC token via Kerberos failed. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logged in to RBAC via Kerberos as user </span><span class="si">{</span><span class="n">rbac</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rbac</span><span class="o">.</span><span class="n">token</span>
+
+    <span class="c1"># DEBUG ONLY ---</span>
+    <span class="c1"># try:</span>
+    <span class="c1">#     rbac.authenticate_explicit(user=input(&quot;Username: &quot;), password=input(&quot;Password: &quot;))</span>
+    <span class="c1"># except CONNTECTION_ERRORS as e:</span>
+    <span class="c1">#     LOGGER.debug(</span>
+    <span class="c1">#         f&quot;Explicit RBAC failed. &quot;</span>
+    <span class="c1">#         f&quot;{e.__class__.__name__}: {str(e)}&quot;</span>
+    <span class="c1">#     )</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     LOGGER.info(f&quot;Logged in to RBAC as user {rbac.user}.&quot;)</span>
+    <span class="c1">#     return rbac.token</span>
+
+    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Could not get RBAC token.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_attachments</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
+                     <span class="n">filenames</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">pdf2png</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AttachmentBuilderType</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Read the file-attachments and assign their names. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">filenames</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;List of files (length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s2">) and &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;list of filenames (length: </span><span class="si">{</span><span class="n">filenames</span><span class="si">}</span><span class="s2">) &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;need to be of equal length.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">_add_mimetypes</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filenames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+    <span class="c1"># TODO: Return iterator, reading attachments only when needed?</span>
+    <span class="n">attachments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">filenames</span><span class="p">):</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">attachment</span> <span class="o">=</span> <span class="n">AttachmentBuilder</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">attachments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attachment</span><span class="p">)</span>
+
+        <span class="c1"># Convert pdf to png if desired</span>
+        <span class="n">png_attachment</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">pdf2png</span> <span class="ow">and</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+            <span class="n">png_attachment</span> <span class="o">=</span> <span class="n">_convert_pdf_to_png</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">png_attachment</span><span class="p">:</span>
+            <span class="n">attachments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">png_attachment</span><span class="p">)</span>
+
+        <span class="c1"># Assign new filenames</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">attachment</span><span class="o">.</span><span class="n">short_name</span> <span class="o">=</span> <span class="n">filename</span>
+            <span class="k">if</span> <span class="n">png_attachment</span><span class="p">:</span>
+                <span class="n">png_attachment</span><span class="o">.</span><span class="n">short_name</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.PDF&quot;</span><span class="p">,</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">attachments</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_mimetypes</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Adds all unknown suffixes as plain/text, which should suffice for our</span>
+<span class="sd">    purposes.</span>
+<span class="sd">    TODO: if it&#39;s a binary sdds file, it should be &#39;application/octet-stream&#39;</span>
+<span class="sd">          see https://stackoverflow.com/a/6783972/5609590</span>
+
+<span class="sd">    This is done, because the attachment builder uses the mimetypes package</span>
+<span class="sd">    to guess the mimetype and if it doesn&#39;t find it (e.g. `.tfs` or `.dat`)</span>
+<span class="sd">    raises an error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">f_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">mime</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">f_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mimetypes</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_pdf_to_png</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Convert the first page of a pdf file into a png image. &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">fitz</span>  <span class="c1"># PyMuPDF, imported as fitz for backward compatibility reasons</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Missing `pymupdf` package. PDF conversion not possible.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>  <span class="c1"># open document</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Big PDF-File with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="si">}</span><span class="s2"> pages found. &quot;</span>
+                       <span class="s2">&quot;Conversion only implemented for single-page files. &quot;</span>
+                       <span class="s2">&quot;Skipping conversion.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">pixmap</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_pixmap</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="n">PNG_DPI</span><span class="p">)</span>  <span class="c1"># only first page</span>
+    <span class="k">return</span> <span class="n">AttachmentBuilder</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span>
+        <span class="n">contents</span><span class="o">=</span><span class="n">pixmap</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(</span><span class="s2">&quot;png&quot;</span><span class="p">),</span>
+        <span class="n">mime_type</span><span class="o">=</span><span class="s2">&quot;image/png&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">filepath</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

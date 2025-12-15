@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.25.1 documentation</title>
+  <title>Model &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,13 +14,13 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=7ca58008"></script>
+      <script src="../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Optics Measurements" href="optics_measurements.html" />
+    <link rel="next" title="NXCALS" href="nxcals.html" />
     <link rel="prev" title="Harpy" href="harpy.html" /> 
 </head>
 
@@ -77,6 +77,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -84,6 +85,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -134,8 +136,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -238,6 +242,7 @@
 <li><a class="reference internal" href="#ps-model-creator">PS Model Creator</a></li>
 <li><a class="reference internal" href="#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li><a class="reference internal" href="#sps-model-creator">SPS Model Creator</a></li>
+<li><a class="reference internal" href="#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
 </ul>
@@ -385,7 +390,7 @@ should have been overwritten.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">find_called_files_with_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">madx_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#find_called_files_with_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.model.accelerators.accelerator.</span></span><span class="sig-name descname"><span class="pre">find_called_files_with_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">madx_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/accelerators/accelerator.html#find_called_files_with_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Parse lines that call a file and are tagged with the given tag and return
 a list of paths to these files.</p>
 <p>This is mainly used to find the modifier tag in lines and return called file in these lines.</p>
@@ -1155,7 +1160,7 @@ Override in subclass if you need to check a different set of files.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcSegmentCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/lhc_model_creator.html#LhcSegmentCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get madx script to create a LHC model.</p>
 </dd></dl>
 
@@ -1170,25 +1175,15 @@ Override in subclass if you need to check a different set of files.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.ps_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsModelCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acc_models_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
 as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to set-up the machine.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/ps_model_creator.html#PsModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model (directory).</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1218,25 +1213,15 @@ might run these easily with <cite>super()</cite> if desired.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.psbooster_model_creator.</span></span><span class="sig-name descname"><span class="pre">PsboosterModelCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acc_models_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
 as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to set-up the machine.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/psbooster_model_creator.html#PsboosterModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model (directory).</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1288,25 +1273,15 @@ might run these easily with <cite>super()</cite> if desired.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.sps_model_creator.</span></span><span class="sig-name descname"><span class="pre">SpsModelCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acc_models_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/sps_model_creator.html#SpsModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/sps_model_creator.html#SpsModelCreator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/sps_model_creator.html#SpsModelCreator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
 as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to set-up the machine.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/sps_model_creator.html#SpsModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/sps_model_creator.html#SpsModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The string of the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to used to create the model (directory).</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1322,6 +1297,231 @@ as some modifications to the accelerator may come afterwards (depending on which
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.sps_model_creator.</span></span><span class="sig-name descname"><span class="pre">SpsSegmentCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MADXInputType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/sps_model_creator.html#SpsSegmentCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
+<section id="abstract-model-creator-class">
+<h2>Abstract Model Creator Class<a class="headerlink" href="#abstract-model-creator-class" title="Link to this heading"></a></h2>
+<p>This module provides the template for all model creators.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.abstract_model_creator.</span></span><span class="sig-name descname"><span class="pre">CorrectionModelCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_dpp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#CorrectionModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">files_to_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Returns the list of files to check after model creation,
+should only be used in <cite>post_run</cite>.
+Override in subclass if you need to check a different set of files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#CorrectionModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get the madx script for the correction model creator, which updates the model after correcion.</p>
+<p>This is a basic implementation which does not update the dpp, but should work for generic accelerators.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.abstract_model_creator.</span></span><span class="sig-name descname"><span class="pre">ModelCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acc_models_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Abstract class for the implementation of a model creator.
+All mandatory methods and convenience functions are defined here.</p>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">files_to_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Returns the list of files to check after model creation,
+should only be used in <cite>post_run</cite>.
+Override in subclass if you need to check a different set of files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">full_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.full_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Does the full run: preparation, running madx, post_run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_base_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.get_base_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
+as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_update_deltap_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deltap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.get_update_deltap_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get the madx snippet that updates the dpp in the machine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deltap</strong> (<em>float</em><em> | </em><em>str</em>) -- The dpp to update the machine to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">post_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.post_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Checks that the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run was successful. It should check that the
+appropriate directories are created, and that macros and other files are in place.
+Also assigns the created model output to the accelerator instance (e.g. <cite>elements</cite>, <cite>model</cite>, …).</p>
+<dl class="simple">
+<dt>Hint: If you only need to check a different set of files, you can simply override the <cite>files_to_check</cite> property,</dt><dd><p>instead of this whole function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">prepare_modifiers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.prepare_modifiers"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Loop over the modifiers and make them full paths if found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.prepare_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Checks the options specific to the accelerator and
+applies them to the instance, if they are valid.
+If there are options missing or wrongly set, raise an AcceleratorDefinitionError.</p>
+<p>This function should different from the normal parsing of options,
+as it is used to print possible choices for the user.
+In particular it is used for the “fetcher” and sets up the paths to be
+used later by the model creator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>opt</strong> -- The remaining options (i.e. those not yet consumed by the model creator)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">prepare_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.prepare_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Prepares the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run. It should check that the appropriate directories
+are created, and that macros and other files are in place.
+Should also check that all necessary data for model creation is available in the accelerator
+instance.</p>
+<p>Here implemented are some usual defaults, so that an implementation of the model-creator
+might run these easily with <cite>super()</cite> if desired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>accel</strong> (<em>Accelerator</em>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">prepare_symlink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.prepare_symlink"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Prepare the acc-models-symlink.
+Create symlink if it does not yet exist or points the wrong way.
+Use the symlink from here on instead of the acc-model-path, also in the modifiers.</p>
+<p>This functions can be used by all model creators supporting the acc-models creation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">resolve_path_for_madx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.resolve_path_for_madx"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Converts a given path to a path relative to the model dir if possible, otherwise returns the absolute path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em><em> | </em><em>str</em>) -- The path to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted path for MAD-X usage.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>madx_path (Path)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.abstract_model_creator.</span></span><span class="sig-name descname"><span class="pre">SegmentCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MADXInputType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#SegmentCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Model creator for Segments, to be used in the Segment-by-Segment algorithm.
+These segments propagate the measured values from the beginning of the segment to the end.</p>
+<p>This only handles the MAD-X part of things.
+The input is determined by the passed measurables (Propagable objects),
+which provide the values via <cite>init_conditions_dict()</cite> method.</p>
+<p>The output is stored in the <cite>twiss_forward</cite> and <cite>twiss_backward</cite> files,
+which in turn can be used for further processing by the implemented Propagables.</p>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">files_to_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Returns the list of files to check after model creation,
+should only be used in <cite>post_run</cite>.
+Override in subclass if you need to check a different set of files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#SegmentCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">prepare_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#SegmentCreator.prepare_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Prepares the model creation <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> run. It should check that the appropriate directories
+are created, and that macros and other files are in place.
+Should also check that all necessary data for model creation is available in the accelerator
+instance.</p>
+<p>Here implemented are some usual defaults, so that an implementation of the model-creator
+might run these easily with <cite>super()</cite> if desired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>accel</strong> (<em>Accelerator</em>) -- Accelerator Instance used for the model creation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.abstract_model_creator.</span></span><span class="sig-name descname"><span class="pre">check_folder_choices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent:</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_choices:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicate=&lt;function</span> <span class="pre">always_true&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stem_only:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#check_folder_choices"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A helper function that scans a selected folder for children, which will then be displayed as possible choices.
+This funciton allows the model-creator to get only the file/folder names, check
+in the desired folder if the choice is present and return the full path to the selected folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>Path</em>) -- The folder to scan.</p></li>
+<li><p><strong>msg</strong> (<em>str</em>) -- The message to display, on failure.</p></li>
+<li><p><strong>selection</strong> (<em>str</em>) -- The current selection.</p></li>
+<li><p><strong>list_choices</strong> (<em>bool</em>) -- Whether to just list the choices.
+In that case <cite>None</cite> is returned, instead of an error</p></li>
+<li><p><strong>predicate</strong> (<em>callable</em>) -- A function that takes a path and returns True.
+if the path results in a valid choice.</p></li>
+<li><p><strong>stem_only</strong> (<em>bool</em>) -- If True, only the stem of the path is checked.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Full path of the selected choice in <cite>parent</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Let’s say we expect a choice for a sequence file in the folder <cite>model_root</cite>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">check_folder_choices(model_root,</span> <span class="pre">&quot;Expected</span> <span class="pre">sequence</span> <span class="pre">file&quot;,</span> <span class="pre">predicate=lambda</span> <span class="pre">p:</span> <span class="pre">p.suffix</span> <span class="pre">==</span> <span class="pre">&quot;.seq&quot;)</span>
+<span class="pre">`</span></code></p>
+<p>Or we want all subfolder of <cite>scenarios</cite></p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">check_folder_choices(scenarios,</span> <span class="pre">&quot;Expected</span> <span class="pre">scenario</span> <span class="pre">folder&quot;,</span> <span class="pre">predicate=lambda</span> <span class="pre">p:</span> <span class="pre">p.is_dir())</span>
+<span class="pre">`</span></code></p>
+</dd></dl>
+
 </section>
 
 
@@ -1330,7 +1530,7 @@ as some modifications to the accelerator may come afterwards (depending on which
 
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="harpy.html" class="btn btn-neutral float-left" title="Harpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="optics_measurements.html" class="btn btn-neutral float-right" title="Optics Measurements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="nxcals.html" class="btn btn-neutral float-right" title="NXCALS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

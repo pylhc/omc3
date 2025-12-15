@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.iotools &mdash; omc3 0.25.1 documentation</title>
+  <title>omc3.utils.iotools &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7ca58008"></script>
+      <script src="../../../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -81,6 +82,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -131,8 +133,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -225,6 +229,7 @@
 
 <span class="sd">Helper functions for input/output issues.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
@@ -297,7 +302,7 @@
 <div class="viewcode-block" id="glob_regex">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.glob_regex">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">glob_regex</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Do a glob on the given `path` based on the regular expression `pattern`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Do a glob on the given `path` based on the regular expression `pattern`.</span>
 <span class="sd">    Returns only the matching filenames (as strings).</span>
 
 <span class="sd">    Args:</span>
@@ -315,6 +320,7 @@
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.PathOrStr">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PathOrStr</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that behaves like a Path when possible, otherwise like a string.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -328,6 +334,7 @@
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.PathOrStrOrDataFrame">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PathOrStrOrDataFrame</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that behaves like a Path when possible, otherwise maybe a TfsDataFrame, otherwise like a string.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -349,6 +356,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">PathOrStrOrDict</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that tries to parse/behaves like a dict when possible,</span>
 <span class="sd">    otherwise either like a Path or like a string.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -369,6 +377,7 @@
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.UnionPathStr">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UnionPathStr</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that can be used as Path and string parser input, but does not convert to path.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
@@ -379,6 +388,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UnionPathStrInt</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that can be used as Path, string, int parser input, but does not convert.</span>
 <span class="sd">    Very special and used e.g. in the BBQ Input.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
@@ -389,6 +399,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">OptionalStr</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">get_instance_faker_meta</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that allows `str` or `None`.</span>
 <span class="sd">    Can be used in string-lists when individual entries can be `None`.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
@@ -422,7 +433,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\&#39;\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER</span>
     <span class="k">return</span> <span class="n">value</span></div>
 
 
@@ -455,7 +466,7 @@
 <div class="viewcode-block" id="replace_in_path">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.replace_in_path">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">replace_in_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Replace a part of a path with a new path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace a part of a path with a new path.</span>
 <span class="sd">    Useful for example to replace the original path with a path to a symlink or vice versa.</span>
 
 <span class="sd">    Args:</span>
@@ -484,7 +495,7 @@
 <div class="viewcode-block" id="maybe_add_command">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.maybe_add_command">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">maybe_add_command</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Add a comment &#39;;command&#39; to the opt-dict,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a comment &#39;;command&#39; to the opt-dict,</span>
 <span class="sd">    which is the command used to run the script gotten from sys.argv,</span>
 <span class="sd">    but only if the executed file (the file that run with the `python` command)</span>
 <span class="sd">    equals ``script``, i.e. the script for which you are saving the parameters</span>
@@ -499,15 +510,14 @@
 <span class="sd">        if the script names were different, just the original opt.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">script</span> <span class="o">==</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">opt</span><span class="p">[</span><span class="s2">&quot;;command&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">]</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>  <span class="c1"># will be sorted to the beginning below</span>
+        <span class="n">opt</span><span class="p">[</span><span class="s2">&quot;;command&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">]</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">opt</span></div>
 
 
 
 <div class="viewcode-block" id="save_config">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.save_config">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">save_config</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                <span class="n">unknown_opt</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_config</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unknown_opt</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Quick wrapper for ``save_options_to_config``.</span>
 
@@ -525,7 +535,7 @@
     <span class="n">save_options_to_config</span><span class="p">(</span>
         <span class="n">output_dir</span> <span class="o">/</span> <span class="n">formats</span><span class="o">.</span><span class="n">get_config_filename</span><span class="p">(</span><span class="n">script</span><span class="p">),</span>
         <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
-        <span class="n">unknown</span><span class="o">=</span><span class="n">unknown_opt</span>
+        <span class="n">unknown</span><span class="o">=</span><span class="n">unknown_opt</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -533,27 +543,31 @@
 <div class="viewcode-block" id="always_true">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.always_true">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">always_true</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A function that is always True. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that is always True.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
 
 <div class="viewcode-block" id="get_check_suffix_func">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_check_suffix_func">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_check_suffix_func</span><span class="p">(</span><span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span><span class="nb">bool</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a function that checks the suffix of a given path against the suffix. &quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_check_suffix_func</span><span class="p">(</span><span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a function that checks the suffix of a given path against the suffix.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">check_suffix</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="n">suffix</span>
+
     <span class="k">return</span> <span class="n">check_suffix</span></div>
 
 
 
 <div class="viewcode-block" id="get_check_by_regex_func">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.get_check_by_regex_func">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_check_by_regex_func</span><span class="p">(</span><span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span><span class="nb">bool</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns a function that checks the name of a given path against the pattern. &quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_check_by_regex_func</span><span class="p">(</span><span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a function that checks the name of a given path against the pattern.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
     <span class="k">return</span> <span class="n">check</span></div>
 
 
@@ -561,8 +575,8 @@
 <div class="viewcode-block" id="load_multiple_jsons">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.load_multiple_jsons">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_multiple_jsons</span><span class="p">(</span><span class="o">*</span><span class="n">files</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Load multiple json files into a single dict.</span>
-<span class="sd">    In case of duplicate keys, later files overwrite the earlier ones. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load multiple json files into a single dict.</span>
+<span class="sd">    In case of duplicate keys, later files overwrite the earlier ones.&quot;&quot;&quot;</span>
     <span class="n">full_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">json_file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">json_data</span><span class="p">:</span>
@@ -574,7 +588,7 @@
 <div class="viewcode-block" id="find_file">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.iotools.find_file">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dirs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Tries to find out if the given file exists, either on its own, or in the given directories.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tries to find out if the given file exists, either on its own, or in the given directories.</span>
 <span class="sd">    Returns then the full path of the found file. If not found, raises a ``FileNotFoundError``.</span>
 
 <span class="sd">    Args:</span>

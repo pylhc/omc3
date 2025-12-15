@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.model_creators.lhc_model_creator &mdash; omc3 0.25.1 documentation</title>
+  <title>omc3.model.model_creators.lhc_model_creator &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=7ca58008"></script>
+      <script src="../../../../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -81,6 +82,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -131,8 +133,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -225,6 +229,7 @@
 
 <span class="sd">This module provides convenience functions for model creation of the ``LHC``.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -280,17 +285,32 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_b2_columns</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="n">cols_outer</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KP</span><span class="si">}{</span><span class="n">num</span><span class="si">}{</span><span class="n">S</span><span class="si">}</span><span class="s2">L&quot;</span> <span class="k">for</span> <span class="n">KP</span> <span class="ow">in</span> <span class="p">(</span>
-        <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span> <span class="k">for</span> <span class="n">S</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">)]</span>
-    <span class="n">cols_middle</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DX&quot;</span><span class="p">,</span> <span class="s2">&quot;DY&quot;</span><span class="p">,</span> <span class="s2">&quot;DS&quot;</span><span class="p">,</span> <span class="s2">&quot;DPHI&quot;</span><span class="p">,</span> <span class="s2">&quot;DTHETA&quot;</span><span class="p">,</span> <span class="s2">&quot;DPSI&quot;</span><span class="p">,</span> <span class="s2">&quot;MREX&quot;</span><span class="p">,</span> <span class="s2">&quot;MREY&quot;</span><span class="p">,</span> <span class="s2">&quot;MREDX&quot;</span><span class="p">,</span> <span class="s2">&quot;MREDY&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;AREX&quot;</span><span class="p">,</span> <span class="s2">&quot;AREY&quot;</span><span class="p">,</span> <span class="s2">&quot;MSCALX&quot;</span><span class="p">,</span> <span class="s2">&quot;MSCALY&quot;</span><span class="p">,</span> <span class="s2">&quot;RFM_FREQ&quot;</span><span class="p">,</span> <span class="s2">&quot;RFM_HARMON&quot;</span><span class="p">,</span> <span class="s2">&quot;RFM_LAG&quot;</span><span class="p">]</span>
+    <span class="n">cols_outer</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KP</span><span class="si">}{</span><span class="n">num</span><span class="si">}{</span><span class="n">S</span><span class="si">}</span><span class="s2">L&quot;</span> <span class="k">for</span> <span class="n">KP</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span> <span class="k">for</span> <span class="n">S</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">)]</span>
+    <span class="n">cols_middle</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;DX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DPHI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DTHETA&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DPSI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MREX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MREY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MREDX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MREDY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;AREX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;AREY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MSCALX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MSCALY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;RFM_FREQ&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;RFM_HARMON&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;RFM_LAG&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
     <span class="k">return</span> <span class="n">cols_outer</span><span class="p">[:</span><span class="mi">42</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols_middle</span> <span class="o">+</span> <span class="n">cols_outer</span><span class="p">[</span><span class="mi">42</span><span class="p">:]</span>
 
 
 <div class="viewcode-block" id="LhcModelCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LhcModelCreator</span><span class="p">(</span><span class="n">ModelCreator</span><span class="p">):</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing LHC Model Creator&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -298,15 +318,13 @@
 <div class="viewcode-block" id="LhcModelCreator.prepare_options">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.prepare_options">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Use the fetcher to list choices if requested. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Use the fetcher to list choices if requested.&quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
 
         <span class="c1"># Set the fetcher paths ---</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">fetch</span> <span class="o">==</span> <span class="n">Fetcher</span><span class="o">.</span><span class="n">PATH</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
-                    <span class="s2">&quot;Path fetcher chosen, but no path provided.&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Path fetcher chosen, but no path provided.&quot;</span><span class="p">)</span>
             <span class="n">acc_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">fetch</span> <span class="o">==</span> <span class="n">Fetcher</span><span class="o">.</span><span class="n">AFS</span><span class="p">:</span>
@@ -316,7 +334,7 @@
                 <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No optics tag (flag --year) given&quot;</span><span class="p">,</span>
                 <span class="n">selection</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
                 <span class="n">list_choices</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">,</span>
-                <span class="n">predicate</span><span class="o">=</span><span class="n">Path</span><span class="o">.</span><span class="n">is_dir</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">Path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">,</span>
             <span class="p">)</span>  <span class="c1"># raises AcceleratorDefintionError if not valid choice</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -328,13 +346,14 @@
             <span class="k">return</span>
 
         <span class="c1"># list optics choices ---</span>
-        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>  <span class="c1"># assumes we only want to list optics. Invoked even if modifiers are given!</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>
+            <span class="c1"># assumes we only want to list optics. Invoked even if modifiers are given!</span>
             <span class="n">check_folder_choices</span><span class="p">(</span>
                 <span class="n">acc_model_path</span> <span class="o">/</span> <span class="n">OPTICS_SUBDIR</span><span class="p">,</span>
                 <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No modifier given&quot;</span><span class="p">,</span>
                 <span class="n">selection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># TODO: could check if user made valid choice</span>
                 <span class="n">list_choices</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">,</span>
-                <span class="n">predicate</span><span class="o">=</span><span class="n">get_check_suffix_func</span><span class="p">(</span><span class="s2">&quot;.madx&quot;</span><span class="p">)</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">get_check_suffix_func</span><span class="p">(</span><span class="s2">&quot;.madx&quot;</span><span class="p">),</span>
             <span class="p">)</span>  <span class="c1"># raises AcceleratorDefinitionError</span>
 
         <span class="c1"># Set acc model path to be used in model creator ---</span>
@@ -359,14 +378,12 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OMC3_MADX_MACROS_DIR</span> <span class="o">/</span> <span class="n">LHC_MACROS</span><span class="p">,</span> <span class="n">macros_path</span> <span class="o">/</span> <span class="n">LHC_MACROS</span><span class="p">)</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">OMC3_MADX_MACROS_DIR</span> <span class="o">/</span> <span class="n">LHC_MACROS_RUN3</span><span class="p">,</span> <span class="n">macros_path</span> <span class="o">/</span> <span class="n">LHC_MACROS_RUN3</span><span class="p">)</span>
 
-
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">core</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">&quot;</span>
 
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Copying error defs for analytical N-BPM method&quot;</span><span class="p">)</span>
             <span class="n">error_dir_path</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_lhc_error_dir</span><span class="p">()</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">error_dir_path</span> <span class="o">/</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">core</span><span class="si">}</span><span class="s2">GeV.tfs&quot;</span><span class="p">,</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">error_dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">core</span><span class="si">}</span><span class="s2">GeV.tfs&quot;</span><span class="p">,</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -388,8 +405,7 @@
 
         <span class="c1"># hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)</span>
         <span class="c1"># hint: modifiers were at this point probably already checked (and adapted) in `prepare_run()`.</span>
-        <span class="n">inexistent_modifiers</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span>
+        <span class="n">inexistent_modifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inexistent_modifiers</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
                 <span class="s2">&quot;The following modifier files do not exist: &quot;</span>
@@ -399,25 +415,29 @@
 <div class="viewcode-block" id="LhcModelCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_madx_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># nominal</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Get madx script to create a LHC model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get madx script to create a LHC model.&quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
 
         <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
+        <span class="n">twiss_dat_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="p">)</span>
+        <span class="n">twiss_elements_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_ELEMENTS_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">twiss_dat_path</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">twiss_elements_path</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span> <span class="ow">or</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># allow user to modify script and enable excitation, if driven tunes are given</span>
             <span class="n">use_acd</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span>
             <span class="n">use_adt</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ADT</span>
+            <span class="n">twiss_ac_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_AC_DAT</span><span class="p">)</span>
+            <span class="n">twiss_adt_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ADT_DAT</span><span class="p">)</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;use_acd=</span><span class="si">{</span><span class="n">use_acd</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;use_adt=</span><span class="si">{</span><span class="n">use_adt</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;if(use_acd == 1)</span><span class="se">{{\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;exec, twiss_ac_dipole(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_AC_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;exec, twiss_ac_dipole(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">twiss_ac_path</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}</span><span class="s2">else if(use_adt == 1)</span><span class="se">{{\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;exec, twiss_adt(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_ADT_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;exec, twiss_adt(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">twiss_adt_path</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
@@ -426,7 +446,7 @@
 <div class="viewcode-block" id="LhcModelCreator.get_base_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_base_madx_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the base LHC madx script.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the base LHC madx script.&quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
 
         <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sequence_initialize_script</span><span class="p">()</span>
@@ -438,51 +458,50 @@
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes_ats(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, coupling_knob_ats(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, match_tunes(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;exec, match_tunes(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;exec, coupling_knob(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_sequence_initialize_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the LHC sequence initialization script.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the LHC sequence initialization script.</span>
 
 <span class="sd">        This is split up here from the matching (in the base-script),</span>
 <span class="sd">        to accompany the needs of the Best Knowledge Model Creator,</span>
 <span class="sd">        see below.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
-
         <span class="n">madx_script</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_madx_script_info_comments</span><span class="p">()</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">MACROS_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">GENERAL_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">MACROS_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">LHC_MACROS</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">MACROS_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">GENERAL_MACROS</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">MACROS_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">LHC_MACROS</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MADX_ENERGY_VAR</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">energy</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;exec, define_nominal_beams();</span><span class="se">\n\n</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_run3_macros</span><span class="p">():</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;According to the optics year, Run 3 versions of the macros will be used&quot;</span>
-            <span class="p">)</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">MACROS_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">LHC_MACROS_RUN3</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;According to the optics year, Run 3 versions of the macros will be used&quot;</span><span class="p">)</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">MACROS_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">LHC_MACROS_RUN3</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Calling Sequence -----</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;option, -echo;  ! suppress output from base sequence loading to keep the log small</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="s2">&quot;option, -echo;  ! suppress output from base sequence loading to keep the log small</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_madx_main_sequence_loading</span><span class="p">()</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">option, echo;  ! re-enable output to see the optics settings</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ---- Call optics and other modifiers ----</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># if modifier is an absolute path, go there, otherwise use the path refers from model_dir</span>
+            <span class="c1"># if the modifier can be found in the model dir, use relative path</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">modifier</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;2012&#39;</span><span class="p">,</span> <span class="s1">&#39;2015&#39;</span><span class="p">,</span> <span class="s1">&#39;2016&#39;</span><span class="p">,</span> <span class="s1">&#39;2017&#39;</span><span class="p">,</span> <span class="s1">&#39;2018&#39;</span><span class="p">,</span> <span class="s1">&#39;2021&#39;</span><span class="p">,</span> <span class="s1">&#39;hllhc1.3&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;2012&quot;</span><span class="p">,</span> <span class="s2">&quot;2015&quot;</span><span class="p">,</span> <span class="s2">&quot;2016&quot;</span><span class="p">,</span> <span class="s2">&quot;2017&quot;</span><span class="p">,</span> <span class="s2">&quot;2018&quot;</span><span class="p">,</span> <span class="s2">&quot;2021&quot;</span><span class="p">,</span> <span class="s2">&quot;hllhc1.3&quot;</span><span class="p">]:</span>
             <span class="c1"># backwards compatibility with pre acc-models optics</span>
             <span class="c1"># WARNING: This might override values extracted via the knob-extractor.</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
@@ -496,12 +515,15 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">remove_symmetry_knob_madx</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="o">/</span> <span class="n">LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH</span>
-            <span class="k">if</span> <span class="n">remove_symmetry_knob_madx</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># alternatively check if year != 2018/2021</span>
+            <span class="n">remove_symmetry_knob_abs</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">remove_symmetry_knob_abs</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># alternatively check if year != 2018/2021</span>
+                <span class="n">remove_symmetry_knob_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">remove_symmetry_knob_abs</span><span class="p">)</span>
                 <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Remove IR symmetry definitions -----</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">call, file=</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">remove_symmetry_knob_madx</span><span class="si">!s}</span><span class="se">\&quot;</span><span class="s2">; &quot;</span>
-                <span class="s2">&quot;! removes &#39;ktqx.r1 := -ktqx.l1&#39;-type issues</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Remove IR symmetry definitions -----</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">call, file=&quot;</span><span class="si">{</span><span class="n">remove_symmetry_knob_path</span><span class="si">}</span><span class="s1">&quot;; &#39;</span>
+                    <span class="s2">&quot;! removes &#39;ktqx.r1 := -ktqx.l1&#39;-type issues</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
@@ -514,7 +536,7 @@
 <div class="viewcode-block" id="LhcModelCreator.get_update_deltap_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_update_deltap_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_update_deltap_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deltap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Update the dpp in the LHC.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the dpp in the LHC.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            deltap (float | str): The dpp to update the LHC to.</span>
@@ -526,11 +548,10 @@
         <span class="n">madx_script</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;twiss, deltap=</span><span class="si">{</span><span class="n">deltap</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;correct, mode=svd;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-
             <span class="s2">&quot;! The same as match_tunes, but include deltap in the matching</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;exec, find_complete_tunes(</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;match, deltap=</span><span class="si">{</span><span class="n">deltap</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="p">)</span> <span class="c1"># Works better when split up</span>
+        <span class="p">)</span>  <span class="c1"># Works better when split up</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;vary, name=</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">;&quot;</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tune_knobs</span><span class="p">()])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="s2">&quot;constraint, range=#E, mux=total_qx, muy=total_qy;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -543,23 +564,22 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_madx_script_info_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="n">info_comments</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;title, &quot;LHC Model created by omc3&quot;;</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s2">&quot;! Model directory        </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;title, &quot;LHC Model created by omc3&quot;;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Model directory        </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">info_comments</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;! Acc-Models             </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+            <span class="n">acc_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">)</span>
+            <span class="n">info_comments</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;! Acc-Models             </span><span class="si">{</span><span class="n">acc_model_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">acc_model_path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">():</span>
+                <span class="n">info_comments</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;! Acc-Models Origin      </span><span class="si">{</span><span class="n">acc_model_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">info_comments</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;! LHC year               </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;! Natural Tune X         </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;! Natural Tune Y         </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;! Best Knowledge         </span><span class="si">{</span><span class="s1">&#39;NO&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">accel</span><span class="o">.</span><span class="n">model_best_knowledge</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;YES&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! LHC year               </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Natural Tune X         </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Natural Tune Y         </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;! Best Knowledge         </span><span class="si">{</span><span class="s1">&#39;NO&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">accel</span><span class="o">.</span><span class="n">model_best_knowledge</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;YES&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
-            <span class="n">info_comments</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;! Excitation             </span><span class="si">{</span><span class="s1">&#39;NO&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+            <span class="n">info_comments</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;! Excitation             </span><span class="si">{</span><span class="s1">&#39;NO&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">info_comments</span> <span class="o">+=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;! Excitation             </span><span class="si">{</span><span class="s1">&#39;ACD&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;ADT&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -572,9 +592,13 @@
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
 
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">main_call</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;call, file = </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s2">&quot;lhc.seq&quot;</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1">;&#39;</span>
-            <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;hl&#39;</span><span class="p">):</span>
-                <span class="n">main_call</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">call, file = </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s2">&quot;hllhc_sequence.madx&quot;</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1">;&#39;</span>
+            <span class="n">acc_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">))</span>
+
+            <span class="n">main_seq_rel</span> <span class="o">=</span> <span class="n">acc_model_path</span> <span class="o">/</span> <span class="s2">&quot;lhc.seq&quot;</span>
+            <span class="n">main_call</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">main_seq_rel</span><span class="si">}</span><span class="s2">&#39;;&quot;</span>
+            <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;hl&quot;</span><span class="p">):</span>
+                <span class="n">hllhc_rel</span> <span class="o">=</span> <span class="n">acc_model_path</span> <span class="o">/</span> <span class="s2">&quot;hllhc_sequence.madx&quot;</span>
+                <span class="n">main_call</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">call, file = &#39;</span><span class="si">{</span><span class="n">hllhc_rel</span><span class="si">}</span><span class="s2">&#39;;&quot;</span>
             <span class="k">return</span> <span class="n">main_call</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_call_main</span><span class="p">()</span>
@@ -627,14 +651,14 @@
 
 
 
-
+<span class="c1"># ---------------------------------------------------------------------</span>
 <div class="viewcode-block" id="LhcBestKnowledgeCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">LhcBestKnowledgeCreator</span><span class="p">(</span><span class="n">LhcModelCreator</span><span class="p">):</span>  <span class="c1"># ---------------------------------------------------------------------</span>
-    <span class="n">EXTRACTED_MQTS_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;extracted_mqts.str&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LhcBestKnowledgeCreator</span><span class="p">(</span><span class="n">LhcModelCreator</span><span class="p">):</span>
     <span class="n">CORRECTIONS_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;corrections.madx&quot;</span>
     <span class="n">jobfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JOB_MODEL_MADX_BEST_KNOWLEDGE</span>
     <span class="n">files_to_check</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">,</span> <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="p">)</span>
+    <span class="n">EXTRACTED_MQTS_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;extracted_mqts.str&quot;</span>
 
 <div class="viewcode-block" id="LhcBestKnowledgeCreator.prepare_options">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.prepare_options">[docs]</a>
@@ -676,9 +700,7 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
-                <span class="s2">&quot;Don&#39;t set ACD or ADT for best knowledge model.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t set ACD or ADT for best knowledge model.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LhcBestKnowledgeCreator.prepare_run">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.prepare_run">[docs]</a>
@@ -690,7 +712,9 @@
 
         <span class="n">b2_stem_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">b2_errors</span><span class="si">!s}</span><span class="s2">.fakesuffix&quot;</span><span class="p">)</span>  <span class="c1"># makes `with_suffix`` work</span>
         <span class="c1"># hint: if b2_stem_path is absolute, the following AFS parts are ignored</span>
-        <span class="n">b2_error_path</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="n">b2_stem_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.errors&quot;</span><span class="p">)</span>
+        <span class="n">b2_error_path</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="n">b2_stem_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.errors&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">b2_madx_path</span> <span class="o">=</span> <span class="n">AFS_B2_ERRORS_ROOT</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Beam</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="n">b2_stem_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.madx&quot;</span><span class="p">)</span>
 
         <span class="c1"># copy madx ---</span>
@@ -701,7 +725,7 @@
         <span class="c1"># copy errors table ---</span>
         <span class="n">b2_table</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">b2_error_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
         <span class="n">gen_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="n">b2_table</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
             <span class="n">columns</span><span class="o">=</span><span class="n">_b2_columns</span><span class="p">(),</span>
         <span class="p">)</span>
@@ -723,12 +747,21 @@
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Load MQTs -----</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">mqts_file</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXTRACTED_MQTS_FILENAME</span>
         <span class="k">if</span> <span class="n">mqts_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">mqts_file</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">mqts_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">mqts_file</span><span class="p">)</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">mqts_path</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;MQT file for best knowledge model not found at </span><span class="si">{</span><span class="n">mqts_file</span><span class="si">!s}</span><span class="s2">, skipping.&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- Output Files -----</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">twiss_bk_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="p">)</span>
+        <span class="n">twiss_bk_elements_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span>
+            <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span>
+        <span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_BEST_KNOWLEDGE_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_ELEMENTS_BEST_KNOWLEDGE_DAT</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_monitors(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">twiss_bk_path</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &#39;</span><span class="si">{</span><span class="n">twiss_bk_elements_path</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">);</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
@@ -744,9 +777,9 @@
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">! ----- For Best Knowledge Model -----</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;readmytable, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">B2_ERRORS_TFS</span><span class="si">}</span><span class="s2">&#39;, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;readmytable, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">B2_ERRORS_TFS</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;seterr, table=errtab;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">B2_SETTINGS_MADX</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">B2_SETTINGS_MADX</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 </div>
@@ -755,13 +788,19 @@
 
 <div class="viewcode-block" id="LhcCorrectionModelCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCorrectionModelCreator">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">LhcCorrectionModelCreator</span><span class="p">(</span><span class="n">CorrectionModelCreator</span><span class="p">,</span> <span class="n">LhcModelCreator</span><span class="p">):</span>  <span class="c1"># -------------------------------------------</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LhcCorrectionModelCreator</span><span class="p">(</span><span class="n">CorrectionModelCreator</span><span class="p">,</span> <span class="n">LhcModelCreator</span><span class="p">):</span>  <span class="c1"># -----------------------</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates an updated model from multiple changeparameters inputs</span>
 <span class="sd">    (used in iterative correction).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">,</span> <span class="n">twiss_out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corr_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span> <span class="n">update_dpp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span><span class="p">,</span>
+        <span class="n">twiss_out</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">corr_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">update_dpp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Model creator for the corrected/matched model of the LHC.</span>
 
 <span class="sd">        Inheritance (i.e. __init__ calls) from here should be as follows:</span>
@@ -780,20 +819,27 @@
 <div class="viewcode-block" id="LhcCorrectionModelCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCorrectionModelCreator.get_madx_script">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Get the madx script for the correction model creator, which updates the model after correcion. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the madx script for the correction model creator, which updates the model after correcion.&quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
-        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>  <span class="c1"># do not super().get_madx_script as we don&#39;t need the uncorrected output.</span>
+
+        <span class="c1"># do not super().get_madx_script as we don&#39;t need the uncorrected output.</span>
+        <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
 
         <span class="c1"># First set the dpp to the value in the accelerator model</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">for</span> <span class="n">corr_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_files</span><span class="p">:</span>  <span class="c1"># Load the corrections, can also update ORBIT_DPP</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">corr_file</span><span class="si">!s}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="c1"># Should be the correct path already from the init</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">corr_file</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_dpp</span><span class="p">:</span> <span class="c1"># If we are doing orbit correction, we need to ensure that a correct and a match is done</span>
+        <span class="c1"># If we are doing orbit correction, we need to ensure that a correct and a match is done</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_dpp</span><span class="p">:</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_update_deltap_script</span><span class="p">(</span><span class="n">deltap</span><span class="o">=</span><span class="n">ORBIT_DPP</span><span class="p">)</span>
 
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s1">, &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_out</span><span class="si">!s}</span><span class="s1">&quot;, </span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s1">);</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">twiss_out_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">twiss_out</span><span class="p">)</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;exec, do_twiss_elements(LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s1">, &quot;</span><span class="si">{</span><span class="n">twiss_out_path</span><span class="si">}</span><span class="s1">&quot;, </span><span class="si">{</span><span class="n">ORBIT_DPP</span><span class="si">}</span><span class="s1">);</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
 
@@ -806,7 +852,9 @@
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Preparing model creation structure&quot;</span><span class="p">)</span>
         <span class="n">macros_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">MACROS_DIR</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">macros_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Folder for the macros does not exist at </span><span class="si">{</span><span class="n">macros_path</span><span class="si">!s}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Folder for the macros does not exist at </span><span class="si">{</span><span class="n">macros_path</span><span class="si">!s}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
@@ -817,64 +865,71 @@
 
 <span class="c1"># LHC Segment Creator ----------------------------------------------------------</span>
 
+
 <div class="viewcode-block" id="LhcSegmentCreator">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcSegmentCreator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LhcSegmentCreator</span><span class="p">(</span><span class="n">SegmentCreator</span><span class="p">,</span> <span class="n">LhcModelCreator</span><span class="p">):</span>
-
 <div class="viewcode-block" id="LhcSegmentCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcSegmentCreator.get_madx_script">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
+        <span class="n">measurement_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_madx</span><span class="p">)</span>
+        <span class="n">twiss_forward_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">twiss_forward</span><span class="p">)</span>
+        <span class="n">twiss_backward_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">twiss_backward</span><span class="p">)</span>
 
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;! ----- Segment-by-Segment propagation for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -----&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;! Cycle the sequence to avoid negative length.&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;seqedit, sequence=LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;flatten;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;cycle, start=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;endedit;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;use, period = LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;option, echo;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;twiss;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;exec, save_initial_and_final_values(&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">, &quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    </span><span class="se">\&quot;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">measurement_madx</span><span class="si">!s}</span><span class="se">\&quot;</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    biniLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    bendLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;);&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;exec, extract_segment_sequence(&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;);&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;beam, particle = proton, sequence=forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, energy = </span><span class="si">{</span><span class="n">MADX_ENERGY_VAR</span><span class="si">}</span><span class="s2">, bv=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam_direction</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;beam, particle = proton, sequence=backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, energy = </span><span class="si">{</span><span class="n">MADX_ENERGY_VAR</span><span class="si">}</span><span class="s2">, bv=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam_direction</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, twiss_segment(forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, </span><span class="se">\&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_forward</span><span class="si">!s}</span><span class="se">\&quot;</span><span class="s2">, biniLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;exec, twiss_segment(backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, </span><span class="se">\&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_backward</span><span class="si">!s}</span><span class="se">\&quot;</span><span class="s2">, bendLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="p">])</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">! ----- Segment-by-Segment propagation for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> -----</span>
+
+<span class="s2">! Cycle the sequence to avoid negative length.</span>
+<span class="s2">seqedit, sequence=LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">flatten;</span>
+<span class="s2">cycle, start=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">endedit;</span>
+
+<span class="s2">use, period = LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">option, echo;</span>
+
+<span class="s2">twiss;</span>
+<span class="s2">exec, save_initial_and_final_values(</span>
+<span class="s2">    LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    &quot;</span><span class="si">{</span><span class="n">measurement_path</span><span class="si">}</span><span class="s2">&quot;,</span>
+<span class="s2">    biniLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    bendLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span>
+<span class="s2">);</span>
+
+<span class="s2">exec, extract_segment_sequence(</span>
+<span class="s2">    LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">);</span>
+
+<span class="s2">beam, particle = proton, sequence=forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, energy = </span><span class="si">{</span><span class="n">MADX_ENERGY_VAR</span><span class="si">}</span><span class="s2">, bv=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam_direction</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">beam, particle = proton, sequence=backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, energy = </span><span class="si">{</span><span class="n">MADX_ENERGY_VAR</span><span class="si">}</span><span class="s2">, bv=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam_direction</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">;</span>
+
+<span class="s2">exec, twiss_segment(forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &quot;</span><span class="si">{</span><span class="n">twiss_forward_path</span><span class="si">}</span><span class="s2">&quot;, biniLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span>
+<span class="s2">exec, twiss_segment(backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &quot;</span><span class="si">{</span><span class="n">twiss_backward_path</span><span class="si">}</span><span class="s2">&quot;, bendLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrections</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                <span class="sa">f</span><span class="s2">&quot;call, file=</span><span class="se">\&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">corrections_madx</span><span class="si">!s}</span><span class="se">\&quot;</span><span class="s2">;&quot;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;exec, twiss_segment(forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_forward_corrected</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">, biniLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);&quot;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;exec, twiss_segment(backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">twiss_backward_corrected</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">, bendLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="p">])</span>
+            <span class="n">corrections_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrections_madx</span><span class="p">)</span>
+            <span class="n">twiss_forward_corr_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">twiss_forward_corrected</span>
+            <span class="p">)</span>
+            <span class="n">twiss_backward_corr_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">twiss_backward_corrected</span>
+            <span class="p">)</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">call, file = &quot;</span><span class="si">{</span><span class="n">corrections_path</span><span class="si">}</span><span class="s2">&quot;;</span>
+<span class="s2">exec, twiss_segment(forward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &quot;</span><span class="si">{</span><span class="n">twiss_forward_corr_path</span><span class="si">}</span><span class="s2">&quot;, biniLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span>
+<span class="s2">exec, twiss_segment(backward_LHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">, &quot;</span><span class="si">{</span><span class="n">twiss_backward_corr_path</span><span class="si">}</span><span class="s2">&quot;, bendLHCB</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">);</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">madx_script</span></div>
 

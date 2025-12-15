@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.utils.time_tools &mdash; omc3 0.25.1 documentation</title>
+  <title>omc3.utils.time_tools &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7ca58008"></script>
+      <script src="../../../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -81,6 +82,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -131,8 +133,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -228,11 +232,17 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dateutil.tz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tz</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span><span class="w"> </span><span class="kn">import</span> <span class="n">relativedelta</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">TIME</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">MINUS_CHARS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
 
 <span class="c1"># Datetime Conversions #########################################################</span>
 
@@ -327,6 +337,64 @@
             <span class="sa">f</span><span class="s2">&quot;Datetime Timezone should be &#39;</span><span class="si">{</span><span class="n">timezone</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;but was &#39;</span><span class="si">{</span><span class="n">localized_dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
         <span class="p">)</span></div>
+
+
+<span class="c1"># Knob extractor specific time tools #############################################</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_time_from_str</span><span class="p">(</span><span class="n">time_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse time from given string.&quot;&quot;&quot;</span>
+    <span class="c1"># Now? ---</span>
+    <span class="k">if</span> <span class="n">time_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;now&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+    <span class="c1"># ISOFormat? ---</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">time_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not parse time string as ISO format&quot;</span><span class="p">)</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Timestamp? ---</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time_str</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not parse time string as a timestamp&quot;</span><span class="p">)</span>
+        <span class="k">pass</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t read datetime &#39;</span><span class="si">{</span><span class="n">time_str</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_time_delta</span><span class="p">(</span><span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">delta_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse delta-string and add time-delta to time.&quot;&quot;&quot;</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">delta_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">MINUS_CHARS</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="n">all_deltas</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)(\w)&quot;</span><span class="p">,</span> <span class="n">delta_str</span><span class="p">)</span>  <span class="c1"># tuples (value, timeunit-char)</span>
+    <span class="c1"># mapping char to the time-unit as accepted by relativedelta,</span>
+    <span class="c1"># following ISO-8601 for time durations</span>
+    <span class="n">char2unit</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="s2">&quot;weeks&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="s2">&quot;months&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="c1"># add all deltas, which are tuples of (value, timeunit-char)</span>
+    <span class="n">time_parts</span> <span class="o">=</span> <span class="p">{</span><span class="n">char2unit</span><span class="p">[</span><span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span> <span class="n">sign</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">all_deltas</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="n">relativedelta</span><span class="p">(</span><span class="o">**</span><span class="n">time_parts</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="parse_time">
+<a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.time_tools.parse_time">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_time</span><span class="p">(</span><span class="n">time</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse time from given time-input from command line.&quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_parse_time_from_str</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">timedelta</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">_add_time_delta</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Datetime object must be timezone-aware&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span></div>
 
 
 

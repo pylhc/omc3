@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.model_creators.sps_model_creator &mdash; omc3 0.25.1 documentation</title>
+  <title>omc3.model.model_creators.sps_model_creator &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=7ca58008"></script>
+      <script src="../../../../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -81,6 +82,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -131,8 +133,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -223,6 +227,7 @@
 <span class="sd">SPS Model Creator</span>
 <span class="sd">-----------------</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
@@ -289,8 +294,7 @@
 
         <span class="c1"># hint: if modifiers are given as absolute paths: `path / abs_path` returns `abs_path`  (jdilly)</span>
         <span class="c1"># hint: modifiers were at this point probably already checked (and adapted) in `prepare_run()`.</span>
-        <span class="n">inexistent_modifiers</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span>
+        <span class="n">inexistent_modifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inexistent_modifiers</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
                 <span class="s2">&quot;The following modifier files do not exist: &quot;</span>
@@ -308,14 +312,12 @@
 <div class="viewcode-block" id="SpsModelCreator.prepare_options">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator.prepare_options">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Use the fetcher to list choices if requested. &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Use the fetcher to list choices if requested.&quot;&quot;&quot;</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Sps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
 
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">fetch</span> <span class="o">==</span> <span class="n">Fetcher</span><span class="o">.</span><span class="n">PATH</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
-                    <span class="s2">&quot;Path fetcher chosen, but no path proivided.&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Path fetcher chosen, but no path proivided.&quot;</span><span class="p">)</span>
             <span class="n">acc_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">fetch</span> <span class="o">==</span> <span class="n">Fetcher</span><span class="o">.</span><span class="n">AFS</span><span class="p">:</span>
@@ -325,7 +327,7 @@
                 <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No optics tag (flag --year) given&quot;</span><span class="p">,</span>
                 <span class="n">selection</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
                 <span class="n">list_choices</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">,</span>
-                <span class="n">predicate</span><span class="o">=</span><span class="n">Path</span><span class="o">.</span><span class="n">is_dir</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">Path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">,</span>
             <span class="p">)</span>  <span class="c1"># raises AcceleratorDefintionError if not valid choice</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -344,7 +346,7 @@
                 <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No/Unknown strength file (flag --str_file) selected&quot;</span><span class="p">,</span>
                 <span class="n">selection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">list_choices</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">list_choices</span><span class="p">,</span>
-                <span class="n">predicate</span><span class="o">=</span><span class="n">get_check_suffix_func</span><span class="p">(</span><span class="s2">&quot;.str&quot;</span><span class="p">)</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">get_check_suffix_func</span><span class="p">(</span><span class="s2">&quot;.str&quot;</span><span class="p">),</span>
             <span class="p">)</span>
 
         <span class="c1"># Set the found paths ---</span>
@@ -353,23 +355,26 @@
 
 <div class="viewcode-block" id="SpsModelCreator.get_base_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator.get_base_madx_script">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_base_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Sps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="n">use_excitation</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span>
+        <span class="n">seq_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="o">/</span> <span class="s2">&quot;sps.seq&quot;</span><span class="p">)</span>
 
         <span class="c1"># The very basics ---</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;! Load Base Sequence and Strengths/Modifiers ---</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;option, -echo;  ! suppress output from base sequence loading to keep the log small</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;sps.seq&#39;</span><span class="si">!s}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">seq_path</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># includes the strengths file</span>
             <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span><span class="p">:</span>
-                <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">modifier</span><span class="si">!s}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">modifier_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span>
+                <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">modifier_path</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
 
+        <span class="n">toolkit_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span> <span class="o">/</span> <span class="s2">&quot;toolkit&quot;</span> <span class="o">/</span> <span class="s2">&quot;macro.madx&quot;</span><span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;call, file =&#39;</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;toolkit&#39;</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">&#39;macro.madx&#39;</span><span class="si">!s}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;call, file =&#39;</span><span class="si">{</span><span class="n">toolkit_path</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;option, echo;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;! Create Beam ---</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;beam;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
@@ -382,8 +387,8 @@
         <span class="k">if</span> <span class="n">use_excitation</span> <span class="ow">or</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># allow user to modify script and enable excitation, if driven tunes are given</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;qxd=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">%</span><span class="mi">1</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;qyd=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">%</span><span class="mi">1</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;qxd=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;qyd=</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;! Prepare ACDipole Elements ---</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;use_acd=</span><span class="si">{</span><span class="n">use_excitation</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">; ! Switch the use of AC dipole</span><span class="se">\n\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;hacmap21 = 0;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -394,11 +399,7 @@
                 <span class="s2">&quot;ZKV_MARKER: marker;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="s2">&quot;! Cycle Sequence ---</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;seqedit, sequence=sps;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;    flatten;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;! Cycle Sequence ---</span><span class="se">\n</span><span class="s2">seqedit, sequence=sps;</span><span class="se">\n</span><span class="s2">    flatten;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="n">use_excitation</span> <span class="ow">or</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># allow user to modify script and enable excitation, if driven tunes are given</span>
@@ -422,19 +423,13 @@
             <span class="c1">#     f&quot;    install, element={marker_name}, at=-{self._start_bpm}-&gt;L, from={self._start_bpm};\n&quot;</span>
             <span class="c1">#     f&quot;    cycle, start = {marker_name};\n&quot;</span>
             <span class="c1"># )</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;    cycle, start = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    cycle, start = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-        <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-             <span class="s2">&quot;endedit;</span><span class="se">\n</span><span class="s2">&quot;</span>
-             <span class="s2">&quot;use, sequence=sps;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;endedit;</span><span class="se">\n</span><span class="s2">use, sequence=sps;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
         <span class="c1"># Match tunes ---</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-             <span class="s2">&quot;! Match Tunes ---</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;exec, sps_match_tunes(qx0,qy0);</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;! Match Tunes ---</span><span class="se">\n</span><span class="s2">exec, sps_match_tunes(qx0,qy0);</span><span class="se">\n\n</span><span class="s2">&quot;</span>
             <span class="c1"># &quot;twiss, file = &#39;sps.tfs&#39;;\n&quot;  # also not sure if needed</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
@@ -442,31 +437,34 @@
 
 <div class="viewcode-block" id="SpsModelCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator.get_madx_script">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Sps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="n">use_excitation</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">!=</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span>
 
         <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
+        <span class="n">twiss_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="n">TWISS_DAT</span><span class="p">)</span>
+        <span class="n">twiss_elements_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="n">TWISS_ELEMENTS_DAT</span><span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
-             <span class="s2">&quot;! Create twiss data files ---</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;! Create twiss data files ---</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_select_command</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">RE_DICT</span><span class="p">[</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;twiss, file = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_DAT</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;twiss, file = &#39;</span><span class="si">{</span><span class="n">twiss_path</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_select_command</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;twiss, file = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_ELEMENTS_DAT</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;twiss, file = &#39;</span><span class="si">{</span><span class="n">twiss_elements_path</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">use_excitation</span> <span class="ow">or</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># allow user to modify script and enable excitation, if driven tunes are given</span>
+            <span class="n">twiss_ac_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="n">TWISS_AC_DAT</span><span class="p">)</span>
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;if(use_acd == 1)</span><span class="se">{{\n</span><span class="s2">&quot;</span>
-                 <span class="s2">&quot;    betxac = table(twiss, hacmap, betx);</span><span class="se">\n</span><span class="s2">&quot;</span>
-                 <span class="s2">&quot;    betyac = table(twiss, vacmap, bety);</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;    betxac = table(twiss, hacmap, betx);</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;    betyac = table(twiss, vacmap, bety);</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;    hacmap21 := 2*(cos(2*pi*qxd)-cos(2*pi*qx0))/(betxac*sin(2*pi*qx0));</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;    vacmap43 := 2*(cos(2*pi*qyd)-cos(2*pi*qy0))/(betyac*sin(2*pi*qy0));</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_select_command</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">accel</span><span class="o">.</span><span class="n">RE_DICT</span><span class="p">[</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">],</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;    twiss, file = </span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">TWISS_AC_DAT</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;    twiss, file = &#39;</span><span class="si">{</span><span class="n">twiss_ac_path</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
@@ -481,6 +479,7 @@
 <span class="sd">    Creates an updated model from multiple changeparameters inputs</span>
 <span class="sd">    (used in iterative correction).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="SpsCorrectionModelCreator.prepare_run">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsCorrectionModelCreator.prepare_run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -488,6 +487,7 @@
         <span class="c1"># we do not need to prepare as much.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_accelerator_instance</span><span class="p">()</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="SpsSegmentCreator">

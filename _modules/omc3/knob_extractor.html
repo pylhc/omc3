@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.knob_extractor &mdash; omc3 0.25.1 documentation</title>
+  <title>omc3.knob_extractor &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7ca58008"></script>
+      <script src="../../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../entrypoints/scripts.html">Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
@@ -81,6 +82,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
 </ul>
 </li>
@@ -131,8 +133,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -265,8 +269,8 @@
 <span class="sd">- **time** *(str)*:</span>
 
 <span class="sd">    At what time to extract the knobs. Accepts ISO-format (YYYY-MM-</span>
-<span class="sd">    DDThh:mm:ss), timestamp or &#39;now&#39;. The default timezone for the ISO-</span>
-<span class="sd">    format is local time, but you can force e.g. UTC by adding +00:00.</span>
+<span class="sd">    DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. Timezone must be</span>
+<span class="sd">    specified for ISO-format (e.g. +00:00 for UTC).</span>
 
 <span class="sd">    default: ``now``</span>
 
@@ -282,6 +286,7 @@
 
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="c1">####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ##################################</span>
@@ -303,38 +308,38 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span><span class="w"> </span><span class="kn">import</span> <span class="n">relativedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">PathOrStrOrDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.logging_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.time_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_time</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-   <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="n">pytimber</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pytimber&quot;</span><span class="p">)</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/afs/cern.ch/eng/acc-models/lhc/current&quot;</span><span class="p">)</span>  <span class="c1"># make sure &#39;current&#39; linked correctly!</span>
+<span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+    <span class="s2">&quot;/afs/cern.ch/eng/acc-models/lhc/current&quot;</span>
+<span class="p">)</span>  <span class="c1"># make sure &#39;current&#39; linked correctly!</span>
 <span class="n">ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;acc-models-lhc&quot;</span><span class="p">)</span>
 <span class="n">KNOBS_FILE_ACC_MODELS</span> <span class="o">=</span> <span class="n">ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">&quot;operation&quot;</span> <span class="o">/</span> <span class="s2">&quot;knobs.txt&quot;</span>
 <span class="n">KNOBS_FILE_AFS</span> <span class="o">=</span> <span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">&quot;operation&quot;</span> <span class="o">/</span> <span class="s2">&quot;knobs.txt&quot;</span>
 
-<span class="n">MINUS_CHARS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
 <span class="n">STATE_VARIABLES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;opticName&#39;</span><span class="p">:</span> <span class="s1">&#39;Optics&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;beamProcess&#39;</span><span class="p">:</span> <span class="s1">&#39;Beam Process&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;opticId&#39;</span><span class="p">:</span> <span class="s1">&#39;Optics ID&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;hyperCycle&#39;</span><span class="p">:</span> <span class="s1">&#39;HyperCycle&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;opticName&quot;</span><span class="p">:</span> <span class="s2">&quot;Optics&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;beamProcess&quot;</span><span class="p">:</span> <span class="s2">&quot;Beam Process&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;opticId&quot;</span><span class="p">:</span> <span class="s2">&quot;Optics ID&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hyperCycle&quot;</span><span class="p">:</span> <span class="s2">&quot;HyperCycle&quot;</span><span class="p">,</span>
     <span class="c1"># &#39;secondsInBeamProcess &#39;: &#39;Beam Process running (s)&#39;,</span>
 <span class="p">}</span>
 
@@ -342,7 +347,8 @@
 <div class="viewcode-block" id="Col">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.Col">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Col</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; DataFrame Columns used in this script. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DataFrame Columns used in this script.&quot;&quot;&quot;</span>
+
     <span class="n">madx</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;madx&quot;</span>
     <span class="n">lsa</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lsa&quot;</span>
     <span class="n">scaling</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;scaling&quot;</span>
@@ -353,7 +359,8 @@
 <div class="viewcode-block" id="Head">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.Head">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Head</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; TFS Headers used in this script.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TFS Headers used in this script.&quot;&quot;&quot;</span>
+
     <span class="n">time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EXTRACTION_TIME&quot;</span></div>
 
 
@@ -408,24 +415,21 @@
     <span class="p">],</span>
     <span class="s2">&quot;mo&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM1:LANDAU_DAMPING&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:LANDAU_DAMPING&quot;</span>
+        <span class="s2">&quot;LHCBEAM2:LANDAU_DAMPING&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="s2">&quot;lumi_scan&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;LHCBEAM1:IP1_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM1:IP1_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP1_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP1_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-
         <span class="s2">&quot;LHCBEAM1:IP2_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM1:IP2_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP2_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP2_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-
         <span class="s2">&quot;LHCBEAM1:IP5_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM1:IP5_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP5_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP5_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-
         <span class="s2">&quot;LHCBEAM1:IP8_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM1:IP8_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
         <span class="s2">&quot;LHCBEAM2:IP8_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
@@ -439,7 +443,7 @@
 
 <span class="n">USAGE_EXAMPLES</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Usage Examples:</span>
 
-<span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00</span>
+<span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00+00:00</span>
 <span class="s2">    extracts the chromaticity and dispersion knobs at 14h on May 4th 2022</span>
 
 <span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time now _2h</span>
@@ -457,7 +461,7 @@
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">knobs</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span>
             <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;A list of knob names or categories to extract. &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Available categories are: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -468,9 +472,8 @@
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;At what time to extract the knobs. &quot;</span>
-                <span class="s2">&quot;Accepts ISO-format (YYYY-MM-DDThh:mm:ss), timestamp or &#39;now&#39;. &quot;</span>
-                <span class="s2">&quot;The default timezone for the ISO-format is local time, &quot;</span>
-                <span class="s2">&quot;but you can force e.g. UTC by adding +00:00.&quot;</span>
+                <span class="s2">&quot;Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. &quot;</span>
+                <span class="s2">&quot;Timezone must be specified for ISO-format (e.g. +00:00 for UTC).&quot;</span>
             <span class="p">),</span>
             <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;now&quot;</span><span class="p">,</span>
         <span class="p">},</span>
@@ -488,18 +491,12 @@
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="n">state</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Prints the state of the StateTracker. &quot;</span>
-                <span class="s2">&quot;Does not extract anything else.&quot;</span>
-            <span class="p">),</span>
+            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Prints the state of the StateTracker. Does not extract anything else.&quot;</span><span class="p">),</span>
         <span class="p">},</span>
         <span class="n">output</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Specify user-defined output path. &quot;</span>
-                <span class="s2">&quot;This should probably be `model_dir/knobs.madx`&quot;</span>
-            <span class="p">),</span>
+            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Specify user-defined output path. This should probably be `model_dir/knobs.madx`&quot;</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">knob_definitions</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
@@ -515,19 +512,22 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.main">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span>
-    <span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">get_params</span><span class="p">(),</span>
+    <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">argument_parser_args</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;epilog&quot;</span><span class="p">:</span> <span class="n">USAGE_EXAMPLES</span><span class="p">,</span>
         <span class="s2">&quot;formatter_class&quot;</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
-        <span class="s2">&quot;prog&quot;</span><span class="p">:</span> <span class="s2">&quot;Knob Extraction Tool.&quot;</span>
-    <span class="p">}</span>
+        <span class="s2">&quot;prog&quot;</span><span class="p">:</span> <span class="s2">&quot;Knob Extraction Tool.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Main knob extracting function. &quot;&quot;&quot;</span>
-    <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
-                             <span class="n">sparkprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spark.ui.showConsoleProgress&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main knob extracting function.&quot;&quot;&quot;</span>
+    <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">,</span>
+        <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+        <span class="n">sparkprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spark.ui.showConsoleProgress&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">_parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
         <span class="c1"># Only print the state of the machine.</span>
@@ -544,6 +544,7 @@
 
 
 <span class="c1"># State Extraction -------------------------------------------------------------</span>
+
 
 <div class="viewcode-block" id="get_state">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.get_state">[docs]</a>
@@ -581,9 +582,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.DataFrame: States packed into dataframe with readable index.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">state_df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">STATE_VARIABLES</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
-                                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">],</span>
-                                <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="n">Head</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">time</span><span class="p">})</span>
+    <span class="n">state_df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span>
+        <span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">STATE_VARIABLES</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">],</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="n">Head</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">time</span><span class="p">},</span>
+    <span class="p">)</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">state_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATE_VARIABLES</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">state_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATE_VARIABLES</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -591,6 +594,7 @@
 
 
 <span class="c1"># Knobs Extraction -------------------------------------------------------------</span>
+
 
 <div class="viewcode-block" id="extract">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.extract">[docs]</a>
@@ -618,7 +622,9 @@
             <span class="n">knobkey</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;LhcStateTracker:</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">:target&quot;</span>
             <span class="n">knobs_extracted</span><span class="p">[</span><span class="n">knob</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to log that this was tried to be extracted.</span>
 
-            <span class="n">knobvalue</span> <span class="o">=</span> <span class="n">ldb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">knobkey</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>  <span class="c1"># use timestamp to preserve timezone info</span>
+            <span class="n">knobvalue</span> <span class="o">=</span> <span class="n">ldb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">knobkey</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+            <span class="p">)</span>  <span class="c1"># use timestamp to preserve timezone info</span>
             <span class="k">if</span> <span class="n">knobkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">knobvalue</span><span class="p">:</span>
                 <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> not found in StateTracker&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
@@ -643,7 +649,7 @@
 <div class="viewcode-block" id="check_for_undefined_knobs">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.check_for_undefined_knobs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_for_undefined_knobs</span><span class="p">(</span><span class="n">knobs_definitions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">knob_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Check that all knobs are actually defined in the knobs-definitions.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that all knobs are actually defined in the knobs-definitions.</span>
 
 
 <span class="sd">    Args:</span>
@@ -654,7 +660,9 @@
 <span class="sd">        KeyError: If one or more of the knobs don&#39;t have a definition.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">knob_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">knob</span> <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">knob_categories</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[</span><span class="n">category</span><span class="p">])]</span>
+    <span class="n">knob_names</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">knob</span> <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">knob_categories</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[</span><span class="n">category</span><span class="p">])</span>
+    <span class="p">]</span>
     <span class="n">undefined_knobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">knob</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">knob_names</span> <span class="k">if</span> <span class="n">knob</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">knobs_definitions</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">undefined_knobs</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
@@ -664,9 +672,9 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_extract_and_gather</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">knobs_definitions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-                        <span class="n">knob_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                        <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_extract_and_gather</span><span class="p">(</span>
+    <span class="n">ldb</span><span class="p">,</span> <span class="n">knobs_definitions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">knob_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main function to gather data from the StateTracker and the knob-definitions.</span>
 <span class="sd">    All given knobs (either in categories or as knob names) to be extracted</span>
@@ -690,16 +698,18 @@
     <span class="n">extracted_knobs</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">knobs</span><span class="o">=</span><span class="n">knob_categories</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
 
     <span class="n">knob_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extracted_knobs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="n">knobs</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">knob_names</span><span class="p">,</span>
-                             <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
-                             <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="n">Head</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">time</span><span class="p">})</span>
+    <span class="n">knobs</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span>
+        <span class="n">index</span><span class="o">=</span><span class="n">knob_names</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="n">Head</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">time</span><span class="p">},</span>
+    <span class="p">)</span>
     <span class="n">knobs</span><span class="p">[[</span><span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">]]</span> <span class="o">=</span> <span class="n">knobs_definitions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">knob_names</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">knobs</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">extracted_knobs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">knobs</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_knobsfile</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">collected_knobs</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Takes the collected knobs and writes them out into a text-file. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes the collected knobs and writes them out into a text-file.&quot;&quot;&quot;</span>
     <span class="n">collected_knobs</span> <span class="o">=</span> <span class="n">collected_knobs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># to not modify the df</span>
 
     <span class="c1"># Sort the knobs by category</span>
@@ -729,19 +739,24 @@
 
 <span class="c1"># Knobs Definitions ------------------------------------------------------------</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_knobs_def_file</span><span class="p">(</span><span class="n">user_defined</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Check which knobs-definition file is appropriate to take. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check which knobs-definition file is appropriate to take.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">user_defined</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using user knobs-definition file: &#39;</span><span class="si">{</span><span class="n">user_defined</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">user_defined</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">KNOBS_FILE_ACC_MODELS</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using given acc-models folder&#39;s knobs.txt as knobsdefinition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_ACC_MODELS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Using given acc-models folder&#39;s knobs.txt as knobsdefinition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_ACC_MODELS</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">KNOBS_FILE_ACC_MODELS</span>
 
     <span class="k">if</span> <span class="n">KNOBS_FILE_AFS</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="c1"># if all fails, fall back to lhc acc-models</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using afs-fallback acc-models folder&#39;s knobs.txt as knobs-definition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_AFS</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Using afs-fallback acc-models folder&#39;s knobs.txt as knobs-definition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_AFS</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">KNOBS_FILE_AFS</span>
 
     <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;None of the knobs-definition files are available.&quot;</span><span class="p">)</span>
@@ -750,7 +765,7 @@
 <div class="viewcode-block" id="load_knobs_definitions">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.load_knobs_definitions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_knobs_definitions</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Load the knobs-definition file and convert into a DataFrame.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the knobs-definition file and convert into a DataFrame.</span>
 <span class="sd">    Each line in this file should consist of at least three comma separated</span>
 <span class="sd">    entries in the following order: madx-name, lsa-name, scaling factor.</span>
 <span class="sd">    Other columns are ignored.</span>
@@ -771,18 +786,20 @@
         <span class="n">converters</span> <span class="o">=</span> <span class="p">{</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">:</span> <span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">:</span> <span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">}</span>  <span class="c1"># strip whitespaces</span>
         <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span><span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">:</span> <span class="nb">float</span><span class="p">}</span>
         <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span>
-                         <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;#&quot;</span><span class="p">,</span>
-                         <span class="n">usecols</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))),</span>  <span class="c1"># only read the first columns</span>
-                         <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                         <span class="n">dtype</span><span class="o">=</span><span class="n">dtypes</span><span class="p">,</span>
-                         <span class="n">converters</span><span class="o">=</span><span class="n">converters</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">file_path</span><span class="p">,</span>
+            <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;#&quot;</span><span class="p">,</span>
+            <span class="n">usecols</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))),</span>  <span class="c1"># only read the first columns</span>
+            <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtypes</span><span class="p">,</span>
+            <span class="n">converters</span><span class="o">=</span><span class="n">converters</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">_to_knobs_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_to_knobs_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Adapts a DataFrame to the conventions used here:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adapts a DataFrame to the conventions used here:</span>
 <span class="sd">    StateTracker variable name as index, all columns lower-case.</span>
 
 <span class="sd">    Args:</span>
@@ -801,7 +818,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_knobs_defintions</span><span class="p">(</span><span class="n">knobs_def_input</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse the given knob-definitions either from a csv-file or from a DataFrame. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the given knob-definitions either from a csv-file or from a DataFrame.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">knobs_def_input</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_to_knobs_dataframe</span><span class="p">(</span><span class="n">knobs_def_input</span><span class="p">)</span>
 
@@ -812,62 +829,17 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_command</span><span class="p">(</span><span class="n">knob_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">Col</span><span class="o">.</span><span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">knob_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Value entry not found in extracted knob_data. &quot;</span>
-                       <span class="s2">&quot;Something went wrong as it should at least be NaN.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="s2">&quot;Value entry not found in extracted knob_data. &quot;</span>
+            <span class="s2">&quot;Something went wrong as it should at least be NaN.&quot;</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;! </span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">]</span><span class="si">}</span><span class="s2"> : No Value extracted&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">]</span><span class="si">}</span><span class="s2"> := </span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">]</span><span class="si">}</span><span class="s2">;&quot;</span>
 
 
-<span class="c1"># Time Tools -------------------------------------------------------------------</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_parse_time</span><span class="p">(</span><span class="n">time</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse time from given time-input. &quot;&quot;&quot;</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">_parse_time_from_str</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">timedelta</span><span class="p">:</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">_add_time_delta</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">t</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_parse_time_from_str</span><span class="p">(</span><span class="n">time_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse time from given string. &quot;&quot;&quot;</span>
-    <span class="c1"># Now? ---</span>
-    <span class="k">if</span> <span class="n">time_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;now&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-
-    <span class="c1"># ISOFormat? ---</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">time_str</span><span class="p">)</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not parse time string as ISO format&quot;</span><span class="p">)</span>
-        <span class="k">pass</span>
-
-    <span class="c1"># Timestamp? ---</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time_str</span><span class="p">))</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not parse time string as a timestamp&quot;</span><span class="p">)</span>
-        <span class="k">pass</span>
-
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t read datetime &#39;</span><span class="si">{</span><span class="n">time_str</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_add_time_delta</span><span class="p">(</span><span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">delta_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Parse delta-string and add time-delta to time. &quot;&quot;&quot;</span>
-    <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">delta_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">MINUS_CHARS</span> <span class="k">else</span> <span class="mi">1</span>
-    <span class="n">all_deltas</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)(\w)&quot;</span><span class="p">,</span> <span class="n">delta_str</span><span class="p">)</span>  <span class="c1"># tuples (value, timeunit-char)</span>
-    <span class="c1"># mapping char to the time-unit as accepted by relativedelta,</span>
-    <span class="c1"># following ISO-8601 for time durations</span>
-    <span class="n">char2unit</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s1">&#39;seconds&#39;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s1">&#39;hours&#39;</span><span class="p">,</span>
-        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s1">&#39;days&#39;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="s1">&#39;weeks&#39;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="s1">&#39;months&#39;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
-    <span class="p">}</span>
-    <span class="c1"># add all deltas, which are tuples of (value, timeunit-char)</span>
-    <span class="n">time_parts</span> <span class="o">=</span> <span class="p">{</span><span class="n">char2unit</span><span class="p">[</span><span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span> <span class="n">sign</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">all_deltas</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">time</span> <span class="o">+</span> <span class="n">relativedelta</span><span class="p">(</span><span class="o">**</span><span class="n">time_parts</span><span class="p">)</span>
-
-
 <span class="c1"># Other tools ------------------------------------------------------------------</span>
+
 
 <div class="viewcode-block" id="lsa2name">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.lsa2name">[docs]</a>
