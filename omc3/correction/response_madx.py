@@ -12,6 +12,7 @@ For now, the response matrix is stored in a hdf5 file.
 
 :author: Lukas Malina, Joschua Dilly, Jaime (...) Coello de Portugal
 """
+
 from __future__ import annotations
 
 import copy
@@ -59,17 +60,17 @@ def create_fullresponse(
     variable_categories: Sequence[str],
     delta_k: float = 2e-5,
     num_proc: int = multiprocessing.cpu_count(),
-    temp_dir: Path | None = None
+    temp_dir: Path | None = None,
 ) -> dict[str, pd.DataFrame]:
-    """ Generate a dictionary containing response matrices for
-        beta, phase, dispersion, tune and coupling and saves it to a file.
+    """Generate a dictionary containing response matrices for
+    beta, phase, dispersion, tune and coupling and saves it to a file.
 
-        Args:
-            accel_inst : Accelerator Instance.
-            variable_categories (list): Categories of the variables/knobs to use. (from .json)
-            delta_k (float): delta K1L to be applied to quads for sensitivity matrix
-            num_proc (int): Number of processes to use in parallel.
-            temp_dir (str): temporary directory. If ``None``, uses folder of original_jobfile.
+    Args:
+        accel_inst : Accelerator Instance.
+        variable_categories (list): Categories of the variables/knobs to use. (from .json)
+        delta_k (float): delta K1L to be applied to quads for sensitivity matrix
+        num_proc (int): Number of processes to use in parallel.
+        temp_dir (str): temporary directory. If ``None``, uses folder of original_jobfile.
     """
     LOG.debug("Generating Fullresponse via Mad-X.")
     with timeit(lambda t: LOG.debug(f"  Total time generating fullresponse: {t} s")):
@@ -96,26 +97,24 @@ def _generate_madx_jobs(
     variables: Sequence[str],
     delta_k: float,
     num_proc: int,
-    temp_dir: Path
+    temp_dir: Path,
 ) -> dict[str, float]:
-    """ Generates madx job-files """
+    """Generates madx job-files"""
     LOG.debug("Generating MAD-X jobfiles.")
-    incr_dict = {'0': 0.0}
+    incr_dict = {"0": 0.0}
     compute_deltap: bool = ORBIT_DPP in variables
     no_dpp_vars = [var for var in variables if var != ORBIT_DPP]
     vars_per_proc = int(np.ceil(len(no_dpp_vars) / num_proc))
     creator = _get_nominal_model_creator(accel_inst)
+    creator.prepare_run()
 
-    madx_job = _get_madx_job(accel_inst)
+    madx_job = _get_madx_job(creator)
     deltap_twiss = ""
     if compute_deltap:
         # This is here only for multiple iteration of the global correction
         # By including dpp here, it means that if deltap is in variables and dpp is not 0, the orbit and tune magnets change
         # We have to be very careful that DELTAP_NAME is not used ANYWHERE else in MAD-X
-        madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n" # Set deltap to 0
-
-        # get update deltap setup from model creator
-        madx_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
+        madx_job += f"{ORBIT_DPP} = {accel_inst.dpp};\n"  # Set deltap to 0
         deltap_twiss = f", deltap={ORBIT_DPP}"
 
     for proc_idx in range(num_proc):
@@ -127,44 +126,40 @@ def _generate_madx_jobs(
             if var_idx >= len(no_dpp_vars):
                 break
             var = no_dpp_vars[var_idx]
+
             incr_dict[var] = delta_k
             current_job += f"{var} = {var}{delta_k:+.15e};\n"
-            current_job += f"twiss, file='{str(temp_dir / f'twiss.{var}')}'{deltap_twiss};\n"
+            current_job += f"twiss, file='{creator.resolve_path_for_madx(temp_dir / f'twiss.{var}')}'{deltap_twiss};\n"
             current_job += f"{var} = {var}{-delta_k:+.15e};\n\n"
 
         if proc_idx == num_proc - 1:
-            current_job += f"twiss, file='{str(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
+            current_job += f"twiss, file='{creator.resolve_path_for_madx(temp_dir / 'twiss.0')}'{deltap_twiss};\n"
 
-            if compute_deltap: # If ORBIT_DPP is in variables, we run this in the last iteration
-                # Due to the match and correction of the orbit, this needs to be run at the end of the process
+            if compute_deltap:
+                # If ORBIT_DPP is in variables, we run this in the last iteration
+                # Due to the matching and correction of the orbit, this needs to be run at the end of the process
                 incr_dict[ORBIT_DPP] = delta_k
                 current_job += f"{ORBIT_DPP} = {ORBIT_DPP}{delta_k:+.15e};\n"
-                current_job += creator.get_update_deltap_script(deltap=ORBIT_DPP) # Do twiss, correct, match
-                current_job += f"twiss, deltap={ORBIT_DPP}, file='{str(temp_dir/f'twiss.{ORBIT_DPP}')}';\n"
+                # Do twiss, correct, match
+                current_job += creator.get_update_deltap_script(deltap=ORBIT_DPP)
+                current_job += f"twiss, deltap={ORBIT_DPP}, file='{creator.resolve_path_for_madx(temp_dir / f'twiss.{ORBIT_DPP}')}';\n"
         jobfile_path.write_text(current_job)
     return incr_dict
 
 
-def _get_madx_job(accel_inst: Accelerator) -> str:
-    # use relative paths as we use model_dir as cwd
-    model_dir_backup = accel_inst.model_dir
-    accel_inst.model_dir = Path()
-
-    # get nominal setup from creator
-    creator = _get_nominal_model_creator(accel_inst)
+def _get_madx_job(creator: ModelCreator) -> str:
     job_content = creator.get_base_madx_script()
     job_content += (
         "select, flag=twiss, clear;\n"
-        f"select, flag=twiss, pattern='{accel_inst.RE_DICT[AccElementTypes.BPMS]}', "
-        "column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;\n\n")
+        f"select, flag=twiss, pattern='{creator.accel.RE_DICT[AccElementTypes.BPMS]}', "
+        "column=NAME,S,BETX,ALFX,BETY,ALFY,DX,DY,DPX,DPY,X,Y,K1L,MUX,MUY,R11,R12,R21,R22;\n\n"
+    )
 
-    # restore model_dir
-    accel_inst.model_dir = model_dir_backup
     return job_content
 
 
 def _get_nominal_model_creator(accel_inst: Accelerator) -> ModelCreator:
-    """ Get the nominal model creator, to which we can add the change of parameters.
+    """Get the nominal model creator, to which we can add the change of parameters.
 
     This is always done on the nominal model, not the best knowledge model, to ensure
     that the response matrix is in the most linear regime and therefore most accurate
@@ -174,8 +169,8 @@ def _get_nominal_model_creator(accel_inst: Accelerator) -> ModelCreator:
     return creator_class(accel_inst)
 
 
-def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None: # type: ignore
-    """ Call madx in parallel """
+def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int) -> None:  # type: ignore
+    """Call madx in parallel"""
     LOG.debug(f"Starting {num_proc:d} MAD-X jobs...")
     madx_jobs = [_get_jobfiles(temp_dir, index) for index in range(num_proc)]
     process_pool.map(_launch_single_job, madx_jobs)
@@ -183,7 +178,7 @@ def _call_madx(process_pool: multiprocessing.Pool, temp_dir: str, num_proc: int)
 
 
 def _clean_up(temp_dir: Path, num_proc: int) -> None:
-    """ Merge Logfiles and clean temporary outputfiles """
+    """Merge Logfiles and clean temporary outputfiles"""
     LOG.debug("Cleaning output and building log...")
     full_log = ""
     for index in range(num_proc):
@@ -197,23 +192,19 @@ def _clean_up(temp_dir: Path, num_proc: int) -> None:
     # write compressed full log file
     full_log_name = "response_madx_full.log"
     zipfile.ZipFile(
-        temp_dir / f"{full_log_name}.zip",
-        mode="w",
-        compression=zipfile.ZIP_DEFLATED
+        temp_dir / f"{full_log_name}.zip", mode="w", compression=zipfile.ZIP_DEFLATED
     ).writestr(full_log_name, full_log)
 
 
 def _load_madx_results(
-    variables: list[str],
-    process_pool,
-    incr_dict: dict,
-    temp_dir: Path
+    variables: list[str], process_pool, incr_dict: dict, temp_dir: Path
 ) -> dict[str, tfs.TfsDataFrame]:
-    """ Load the madx results in parallel and return var-tfs dictionary """
+    """Load the madx results in parallel and return var-tfs dictionary"""
     LOG.debug("Loading Madx Results.")
     vars_and_paths = []
-    for value in variables + ['0']:
+    for value in variables + ["0"]:
         vars_and_paths.append((value, temp_dir))
+    LOG.debug(f"Retrieving Twiss files for variables: {vars_and_paths}")
     var_to_twiss = {}
     for var, tfs_data in process_pool.map(_load_and_remove_twiss, vars_and_paths):
         tfs_data[INCR] = incr_dict[var]
@@ -221,13 +212,28 @@ def _load_madx_results(
     return var_to_twiss
 
 
-def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) -> dict[str, pd.DataFrame]:
-    """ Convert var-tfs dictionary to fullresponse dictionary. """
+def _create_fullresponse_from_dict(
+    var_to_twiss: dict[str, tfs.TfsDataFrame],
+) -> dict[str, pd.DataFrame]:
+    """Convert var-tfs dictionary to fullresponse dictionary."""
     var_to_twiss = _add_coupling(var_to_twiss)
     keys = list(var_to_twiss.keys())
 
-    columns = [f"{PHASE_ADV}X", f"{PHASE_ADV}Y", f"{BETA}X", f"{BETA}Y", f"{DISPERSION}X", f"{DISPERSION}Y",
-               f"{F1001}R", f"{F1001}I", f"{F1010}R", f"{F1010}I", f"{TUNE}1", f"{TUNE}2", INCR]
+    columns = [
+        f"{PHASE_ADV}X",
+        f"{PHASE_ADV}Y",
+        f"{BETA}X",
+        f"{BETA}Y",
+        f"{DISPERSION}X",
+        f"{DISPERSION}Y",
+        f"{F1001}R",
+        f"{F1001}I",
+        f"{F1010}R",
+        f"{F1010}I",
+        f"{TUNE}1",
+        f"{TUNE}2",
+        INCR,
+    ]
 
     bpms = var_to_twiss["0"].index
     resp = np.empty((len(keys), bpms.size, len(columns)))
@@ -239,34 +245,48 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
     model_index = list(keys).index("0")
 
     # Create normalized dispersion and dividing BET by nominal model
-    NDX_arr = np.divide(resp[columns.index(f"{DISPERSION}X")], np.sqrt(resp[columns.index(f"{BETA}X")]))  # noqa: N806
-    NDY_arr = np.divide(resp[columns.index(f"{DISPERSION}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")]))  # noqa: N806
+    normalised_dispersion_x = np.divide(
+        resp[columns.index(f"{DISPERSION}X")], np.sqrt(resp[columns.index(f"{BETA}X")])
+    )
+    normalised_dispersion_y = np.divide(
+        resp[columns.index(f"{DISPERSION}Y")], np.sqrt(resp[columns.index(f"{BETA}Y")])
+    )
     resp[columns.index(f"{BETA}X")] = np.divide(
         resp[columns.index(f"{BETA}X")],
-        resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis]
+        resp[columns.index(f"{BETA}X"), :, model_index][:, np.newaxis],
     )
     resp[columns.index(f"{BETA}Y")] = np.divide(
         resp[columns.index(f"{BETA}Y")],
-        resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis]
+        resp[columns.index(f"{BETA}Y"), :, model_index][:, np.newaxis],
     )
 
     # Subtracting nominal model from data
     resp = np.subtract(resp, resp[:, :, model_index][:, :, np.newaxis])
-    NDX_arr = np.subtract(NDX_arr, NDX_arr[:, model_index][:, np.newaxis])  # noqa: N806
-    NDY_arr = np.subtract(NDY_arr, NDY_arr[:, model_index][:, np.newaxis])  # noqa: N806
+    normalised_dispersion_x = np.subtract(
+        normalised_dispersion_x, normalised_dispersion_x[:, model_index][:, np.newaxis]
+    )
+    normalised_dispersion_y = np.subtract(
+        normalised_dispersion_y, normalised_dispersion_y[:, model_index][:, np.newaxis]
+    )
 
     # Remove difference of nominal model with itself (bunch of zeros) and divide by increment
     resp = np.delete(resp, model_index, axis=2)
-    NDX_arr = np.delete(NDX_arr, model_index, axis=1)  # noqa: N806
-    NDY_arr = np.delete(NDY_arr, model_index, axis=1)  # noqa: N806
+    normalised_dispersion_x = np.delete(normalised_dispersion_x, model_index, axis=1)
+    normalised_dispersion_y = np.delete(normalised_dispersion_y, model_index, axis=1)
     keys.remove("0")
 
     # Divide by increment
-    NDX_arr = np.divide(NDX_arr, resp[columns.index(f"{INCR}")])  # noqa: N806
-    NDY_arr = np.divide(NDY_arr, resp[columns.index(f"{INCR}")])  # noqa: N806
+    normalised_dispersion_x = np.divide(normalised_dispersion_x, resp[columns.index(f"{INCR}")])
+    normalised_dispersion_y = np.divide(normalised_dispersion_y, resp[columns.index(f"{INCR}")])
     resp = np.divide(resp, resp[columns.index(f"{INCR}")])
-    Q_arr = np.column_stack((resp[columns.index(f"{TUNE}1"), 0, :], resp[columns.index(f"{TUNE}2"), 0, :])).T  # noqa: N806
+    tune_arr = np.column_stack(
+        (
+            resp[columns.index(f"{TUNE}1"), 0, :],
+            resp[columns.index(f"{TUNE}2"), 0, :],
+        )
+    ).T
 
+    # fmt: off
     with suppress_warnings(ComplexWarning):  # raised as everything is complex-type now
         return {
             f"{PHASE_ADV}X": pd.DataFrame(data=resp[columns.index(f"{PHASE_ADV}X")], index=bpms, columns=keys).astype(np.float64),
@@ -275,29 +295,32 @@ def _create_fullresponse_from_dict(var_to_twiss: dict[str, tfs.TfsDataFrame]) ->
             f"{BETA}Y": pd.DataFrame(data=resp[columns.index(f"{BETA}Y")], index=bpms, columns=keys).astype(np.float64),
             f"{DISPERSION}X": pd.DataFrame(data=resp[columns.index(f"{DISPERSION}X")], index=bpms, columns=keys).astype(np.float64),
             f"{DISPERSION}Y": pd.DataFrame(data=resp[columns.index(f"{DISPERSION}Y")], index=bpms, columns=keys).astype(np.float64),
-            f"{NORM_DISPERSION}X": pd.DataFrame(data=NDX_arr, index=bpms, columns=keys).astype(np.float64),
-            f"{NORM_DISPERSION}Y": pd.DataFrame(data=NDY_arr, index=bpms, columns=keys).astype(np.float64),
+            f"{NORM_DISPERSION}X": pd.DataFrame(data=normalised_dispersion_x, index=bpms, columns=keys).astype(np.float64),
+            f"{NORM_DISPERSION}Y": pd.DataFrame(data=normalised_dispersion_y, index=bpms, columns=keys).astype(np.float64),
             f"{F1001}R": pd.DataFrame(data=resp[columns.index(f"{F1001}R")], index=bpms, columns=keys).astype(np.float64),
             f"{F1001}I": pd.DataFrame(data=resp[columns.index(f"{F1001}I")], index=bpms, columns=keys).astype(np.float64),
             f"{F1010}R": pd.DataFrame(data=resp[columns.index(f"{F1010}R")], index=bpms, columns=keys).astype(np.float64),
             f"{F1010}I": pd.DataFrame(data=resp[columns.index(f"{F1010}I")], index=bpms, columns=keys).astype(np.float64),
-            f"{TUNE}": pd.DataFrame(data=Q_arr, index=[f"{TUNE}1", f"{TUNE}2"], columns=keys).astype(np.float64),
+            f"{TUNE}": pd.DataFrame(data=tune_arr, index=[f"{TUNE}1", f"{TUNE}2"], columns=keys).astype(np.float64),
         }
+    # fmt: on
 
 
 def _get_jobfiles(temp_dir: Path, index: int) -> Path:
-    """ Return names for jobfile and iterfile according to index """
+    """Return names for jobfile and iterfile according to index"""
     return temp_dir / f"job.iterate.{index:d}.madx"
 
 
 def _launch_single_job(inputfile_path: Path) -> None:
-    """ Function for pool to start a single madx job """
+    """Function for pool to start a single madx job"""
     log_file = inputfile_path.with_name(inputfile_path.name + ".log")
     madx_wrapper.run_file(inputfile_path, log_file=log_file, cwd=inputfile_path.parent)
 
 
-def _load_and_remove_twiss(var_and_path: tuple[str, Path]) -> tuple[str, tfs.TfsDataFrame]:
-    """ Function for pool to retrieve results """
+def _load_and_remove_twiss(
+    var_and_path: tuple[str, Path],
+) -> tuple[str, tfs.TfsDataFrame]:
+    """Function for pool to retrieve results"""
     (var, path) = var_and_path
     twissfile = path / f"twiss.{var}"
     tfs_data = tfs.read(twissfile, index=NAME)
@@ -307,7 +330,9 @@ def _load_and_remove_twiss(var_and_path: tuple[str, Path]) -> tuple[str, tfs.Tfs
     return var, tfs_data
 
 
-def _add_coupling(dict_of_tfs: dict[str, tfs.TfsDataFrame]) -> dict[str, tfs.TfsDataFrame]:
+def _add_coupling(
+    dict_of_tfs: dict[str, tfs.TfsDataFrame],
+) -> dict[str, tfs.TfsDataFrame]:
     """
     For each TfsDataFrame in the input dictionary, computes the coupling RDTs and adds a column for
     the real and imaginary parts of the computed coupling RDTs. Returns a copy of the input dictionary with
@@ -321,7 +346,7 @@ def _add_coupling(dict_of_tfs: dict[str, tfs.TfsDataFrame]) -> dict[str, tfs.Tfs
     """
     result_dict_of_tfs = copy.deepcopy(dict_of_tfs)
     with timeit(lambda elapsed: LOG.debug(f"  Time adding coupling: {elapsed} s")):
-        for var, tfs_dframe in result_dict_of_tfs.items():  # already copies, so it's safe to act on them
+        for tfs_dframe in result_dict_of_tfs.values():
             coupling_rdts_df = coupling_via_cmatrix(tfs_dframe)
             tfs_dframe[f"{F1001}R"] = np.real(coupling_rdts_df[f"{F1001}"]).astype(np.float64)
             tfs_dframe[f"{F1001}I"] = np.imag(coupling_rdts_df[f"{F1001}"]).astype(np.float64)

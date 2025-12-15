@@ -4,6 +4,7 @@ IO Tools
 
 Helper functions for input/output issues.
 """
+
 from __future__ import annotations
 
 import json
@@ -65,7 +66,7 @@ def copy_item(src_item: Path, dst_item: Path):
 
 
 def glob_regex(path: Path, pattern: str) -> Iterator[str]:
-    """ Do a glob on the given `path` based on the regular expression `pattern`.
+    """Do a glob on the given `path` based on the regular expression `pattern`.
     Returns only the matching filenames (as strings).
 
     Args:
@@ -80,6 +81,7 @@ def glob_regex(path: Path, pattern: str) -> Iterator[str]:
 
 class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
     """A class that behaves like a Path when possible, otherwise like a string."""
+
     def __new__(cls, value):
         value = strip_quotes(value)
         try:
@@ -90,6 +92,7 @@ class PathOrStr(metaclass=get_instance_faker_meta(Path, str)):
 
 class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path, str)):
     """A class that behaves like a Path when possible, otherwise maybe a TfsDataFrame, otherwise like a string."""
+
     def __new__(cls, value):
         value = strip_quotes(value)
         try:
@@ -108,6 +111,7 @@ class PathOrStrOrDataFrame(metaclass=get_instance_faker_meta(TfsDataFrame, Path,
 class PathOrStrOrDict(metaclass=get_instance_faker_meta(dict, Path, str)):
     """A class that tries to parse/behaves like a dict when possible,
     otherwise either like a Path or like a string."""
+
     def __new__(cls, value):
         value = strip_quotes(value)
         try:
@@ -125,6 +129,7 @@ class PathOrStrOrDict(metaclass=get_instance_faker_meta(dict, Path, str)):
 
 class UnionPathStr(metaclass=get_instance_faker_meta(Path, str)):
     """A class that can be used as Path and string parser input, but does not convert to path."""
+
     def __new__(cls, value):
         return strip_quotes(value)
 
@@ -132,6 +137,7 @@ class UnionPathStr(metaclass=get_instance_faker_meta(Path, str)):
 class UnionPathStrInt(metaclass=get_instance_faker_meta(Path, str, int)):
     """A class that can be used as Path, string, int parser input, but does not convert.
     Very special and used e.g. in the BBQ Input."""
+
     def __new__(cls, value):
         return strip_quotes(value)
 
@@ -139,6 +145,7 @@ class UnionPathStrInt(metaclass=get_instance_faker_meta(Path, str, int)):
 class OptionalStr(metaclass=get_instance_faker_meta(str, type(None))):
     """A class that allows `str` or `None`.
     Can be used in string-lists when individual entries can be `None`."""
+
     def __new__(cls, value):
         value = strip_quotes(value)
         if isinstance(value, str) and value.lower() == "none":
@@ -169,7 +176,7 @@ def strip_quotes(value: Any) -> Any:
 
     """
     if isinstance(value, str):
-        value = value.strip("\'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+        value = value.strip("'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
     return value
 
 
@@ -196,7 +203,7 @@ def convert_paths_in_dict_to_strings(dict_: dict) -> dict:
 
 
 def replace_in_path(path: Path, old: Path | str, new: Path | str) -> Path:
-    """ Replace a part of a path with a new path.
+    """Replace a part of a path with a new path.
     Useful for example to replace the original path with a path to a symlink or vice versa.
 
     Args:
@@ -219,7 +226,7 @@ def remove_none_dict_entries(dict_: dict) -> dict:
 
 
 def maybe_add_command(opt: dict, script: str) -> dict:
-    """ Add a comment ';command' to the opt-dict,
+    """Add a comment ';command' to the opt-dict,
     which is the command used to run the script gotten from sys.argv,
     but only if the executed file (the file that run with the `python` command)
     equals ``script``, i.e. the script for which you are saving the parameters
@@ -234,12 +241,11 @@ def maybe_add_command(opt: dict, script: str) -> dict:
         if the script names were different, just the original opt.
     """
     if script == sys.argv[0]:
-        opt[";command"] = " ".join([sys.executable] + sys.argv)  # will be sorted to the beginning below
+        opt[";command"] = " ".join([sys.executable] + sys.argv)
     return opt
 
 
-def save_config(output_dir: Path, opt: dict, script: str,
-                unknown_opt: dict | list = None):
+def save_config(output_dir: Path, opt: dict, script: str, unknown_opt: dict | list = None):
     """
     Quick wrapper for ``save_options_to_config``.
 
@@ -257,32 +263,36 @@ def save_config(output_dir: Path, opt: dict, script: str,
     save_options_to_config(
         output_dir / formats.get_config_filename(script),
         dict(sorted(opt.items())),
-        unknown=unknown_opt
+        unknown=unknown_opt,
     )
 
 
 def always_true(*args, **kwargs) -> bool:
-    """ A function that is always True. """
+    """A function that is always True."""
     return True
 
 
-def get_check_suffix_func(suffix: str) -> Callable[[Path],bool]:
-    """ Returns a function that checks the suffix of a given path against the suffix. """
+def get_check_suffix_func(suffix: str) -> Callable[[Path], bool]:
+    """Returns a function that checks the suffix of a given path against the suffix."""
+
     def check_suffix(path: Path) -> bool:
         return path.suffix == suffix
+
     return check_suffix
 
 
-def get_check_by_regex_func(pattern: str) -> Callable[[Path],bool]:
-    """ Returns a function that checks the name of a given path against the pattern. """
+def get_check_by_regex_func(pattern: str) -> Callable[[Path], bool]:
+    """Returns a function that checks the name of a given path against the pattern."""
+
     def check(path: Path) -> bool:
         return re.match(pattern, path.name) is not None
+
     return check
 
 
 def load_multiple_jsons(*files) -> dict:
-    """ Load multiple json files into a single dict.
-    In case of duplicate keys, later files overwrite the earlier ones. """
+    """Load multiple json files into a single dict.
+    In case of duplicate keys, later files overwrite the earlier ones."""
     full_dict = {}
     for json_file in files:
         with Path(json_file).open() as json_data:
@@ -291,7 +301,7 @@ def load_multiple_jsons(*files) -> dict:
 
 
 def find_file(file_name: Path | str, dirs: Iterable[Path | str]) -> Path:
-    """ Tries to find out if the given file exists, either on its own, or in the given directories.
+    """Tries to find out if the given file exists, either on its own, or in the given directories.
     Returns then the full path of the found file. If not found, raises a ``FileNotFoundError``.
 
     Args:

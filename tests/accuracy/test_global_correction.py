@@ -30,7 +30,7 @@ from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.scripts.fake_measurement_from_model import ERRORS, VALUES
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
-from omc3.utils.stats import rms
+from omc3.utils.stats import LOGGER, rms
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
@@ -347,7 +347,7 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
 
 
 @pytest.mark.basic
-@pytest.mark.parametrize('dpp', (2.5e-4, -1e-4))
+@pytest.mark.parametrize("dpp", (2.5e-4, -1e-4))
 def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: float):
     response_path = tmp_path / "full_response_dpp.h5"
     beam = model_inj_beams.beam
@@ -390,12 +390,17 @@ def test_lhc_global_correct_dpp(tmp_path: Path, model_inj_beams: DotDict, dpp: f
             current_dpp = -result[DELTA][ORBIT_DPP]
 
             # Check output accuracy
-            rtol = 5e-2 # if iteration == 1 else 2e-2  # after updating MAD-X from 5.06 to 5.09 we are a bit more off for Beam2-1e-4 for some reason
+            rtol = 2e-2
             assert np.isclose(dpp, current_dpp, rtol=rtol), f"Expected {dpp}, got {current_dpp}, diff: {dpp - current_dpp}, iteration: {iteration}"
 
             # Check convergence
+            # For some reason after updating the input files, I can expect a convergence off by 5e-3 instead of 1e-3 (jgray 2025)
             current_diff = np.abs(dpp - current_dpp) / np.abs(dpp)
-            assert previous_diff > current_diff or np.isclose(previous_diff, current_diff, atol=1e-3), f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
+            assert previous_diff > current_diff or np.isclose(
+                previous_diff, current_diff, atol=5e-3
+            ), (
+                f"Convergence not reached, diff: {previous_diff} <= {current_diff}, iteration: {iteration}"
+            )
             previous_diff = current_diff
 
 

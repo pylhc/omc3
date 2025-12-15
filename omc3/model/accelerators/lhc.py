@@ -77,6 +77,7 @@ Model Creation Keyword Args:
 
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -109,6 +110,7 @@ class Lhc(Accelerator):
     """
     Accelerator class for the Large Hadron Collider.
     """
+
     NAME: str = "lhc"
     LOCAL_REPO_NAME: str = "acc-models-lhc"
     RE_DICT: dict[str, str] = {
@@ -130,7 +132,7 @@ class Lhc(Accelerator):
             type=int,
             choices=(1, 2),
             required=True,
-            help="Beam to use."
+            help="Beam to use.",
         )
         params.add_parameter(
             name="year",
@@ -174,16 +176,12 @@ class Lhc(Accelerator):
             raise AcceleratorDefinitionError("Crossing on or off not set.")
 
         # TODO: write more output prints
-        LOGGER.debug(
-            "... verification passed. \nSome information about the accelerator:"
-        )
+        LOGGER.debug("... verification passed. \nSome information about the accelerator:")
         LOGGER.debug(f"Class name       {self.__class__.__name__}")
         LOGGER.debug(f"Beam             {self.beam}")
         LOGGER.debug(f"Beam direction   {self.beam_direction}")
         if self.modifiers:
-            LOGGER.debug(
-                f"Modifiers        {', '.join([str(m) for m in self.modifiers])}"
-            )
+            LOGGER.debug(f"Modifiers        {', '.join([str(m) for m in self.modifiers])}")
 
     @property
     def beam(self) -> int:
@@ -204,7 +202,12 @@ class Lhc(Accelerator):
     def get_lhc_error_dir() -> Path:
         return LHC_DIR / "systematic_errors"
 
-    def get_variables(self, frm: float | None = None, to: float | None = None, classes: Iterable[str] | None = None):
+    def get_variables(
+        self,
+        frm: float | None = None,
+        to: float | None = None,
+        classes: Iterable[str] | None = None,
+    ):
         corrector_beam_dir = Path(f"correctors_b{self.beam}")
         all_vars_by_class = load_multiple_jsons(
             *self._get_corrector_files(corrector_beam_dir / "beta_correctors.json"),
@@ -217,8 +220,10 @@ class Lhc(Accelerator):
         # Sort variables by S (nice for comparing different files)
         return self.sort_variables_by_location(variables, frm, to)
 
-    def sort_variables_by_location(self, variables: Iterable[str], frm: float | None = None, to: str | None = None) -> list[str]:
-        """ Sorts the variables by location and filters them between `frm` and `to`.
+    def sort_variables_by_location(
+        self, variables: Iterable[str], frm: float | None = None, to: str | None = None
+    ) -> list[str]:
+        """Sorts the variables by location and filters them between `frm` and `to`.
         If `frm` is larger than `to` it loops back around to the start the accelerator.
         This is a useful function for the LHC that's why it is "public"
         but it is not part of the Accelerator-Class Interface.
@@ -277,8 +282,7 @@ class Lhc(Accelerator):
         LOGGER.info(f"Natural Tune X      [{self.nat_tunes[0]:10.3f}]")
         LOGGER.info(f"Natural Tune Y      [{self.nat_tunes[1]:10.3f}]")
         LOGGER.info(
-            f"Best Knowledge Model     "
-            f"[{'NO' if self.model_best_knowledge is None else 'OK':>10s}]"
+            f"Best Knowledge Model:     [{'NO' if self.model_best_knowledge is None else 'OK':>10s}]"
         )
 
         if self.excitation == AccExcitationMode.FREE:
@@ -291,10 +295,9 @@ class Lhc(Accelerator):
         LOGGER.info(f"> Driven Tune X     [{self.drv_tunes[0]:10.3f}]")
         LOGGER.info(f"> Driven Tune Y     [{self.drv_tunes[1]:10.3f}]")
 
-
     def get_exciter_bpm(self, plane: str, commonbpms: list[str]) -> tuple[str, str]:
-        """ Returns the name of the BPM closest to the exciter (i.e. ADT or AC-Dipole)
-        as well as the name of the exciter element. """
+        """Returns the name of the BPM closest to the exciter (i.e. ADT or AC-Dipole)
+        as well as the name of the exciter element."""
         beam = self.beam
         adt = "H.C" if plane == "X" else "V.B"
         l_r = "L" if ((beam == 1) != (plane == "Y")) else "R"
@@ -330,17 +333,16 @@ class Lhc(Accelerator):
         return None
 
     def get_accel_file(self, filename: Path | str) -> Path:
-        return LHC_DIR / self.year / filename
-
+        return (LHC_DIR / self.year / filename).absolute()
 
     # Private Methods ##############################################################
     def _get_corrector_elems(self) -> Path:
-        """ Return the corrector elements file, either from the instance's specific directory,
-        if it exists, or the default directory. """
+        """Return the corrector elements file, either from the instance's specific directory,
+        if it exists, or the default directory."""
         return self._get_corrector_files(f"corrector_elems_b{self.beam}.tfs")[-1]
 
     def _get_corrector_files(self, file_name: Path | str) -> list[Path]:
-        """ Get the corrector files from the default directory AND
+        """Get the corrector files from the default directory AND
         the instance's specific directory if it exists AND the model directroy if it exists,
         in that order.
         See also discussion in https://github.com/pylhc/omc3/pull/458#discussion_r1764829247 .
@@ -348,13 +350,13 @@ class Lhc(Accelerator):
         # add file from the default directory (i.e. "model/accelerators/lhc/correctors")
         default_file = Lhc.DEFAULT_CORRECTORS_DIR / file_name
         if not default_file.exists():
-            msg = (f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
-                  "Something went wrong with the variables getting logic.")
+            msg = (
+                f"Could not find {file_name} in {Lhc.DEFAULT_CORRECTORS_DIR}."
+                "Something went wrong with the variables getting logic."
+            )
             raise FileNotFoundError(msg)
 
-        LOGGER.debug(
-            f"Default corrector file {file_name} found in {default_file.parent}."
-        )
+        LOGGER.debug(f"Default corrector file {file_name} found in {default_file.parent}.")
         corrector_files = [default_file]
 
         # add file from the accelerator directory (e.g. "model/accelerators/lhc/2024/correctors")
@@ -379,7 +381,7 @@ class Lhc(Accelerator):
         return corrector_files
 
     def find_modifier(self, modifier: Path | str):
-        """ Try to find a modifier file, which might be given only by its name.
+        """Try to find a modifier file, which might be given only by its name.
         This is looking for full-path, model-dir and in the acc-models-path's optics-dir.,
         """
         dirs = []
@@ -391,7 +393,9 @@ class Lhc(Accelerator):
 
         return find_file(modifier, dirs=dirs)
 
+
 # General functions ##########################################################
+
 
 def _flatten_list(my_list: Iterable) -> list:
     return [item for sublist in my_list for item in sublist]

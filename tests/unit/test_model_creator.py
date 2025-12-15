@@ -1,5 +1,6 @@
 import copy
 import os
+import re
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -30,6 +31,8 @@ from omc3.model.model_creators.lhc_model_creator import (
 )
 from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import NAME
+from omc3.response_creator import ResponseCreatorType
+from omc3.response_creator import create_response_entrypoint as create_response
 from tests.conftest import assert_frame_equal
 
 if TYPE_CHECKING:
@@ -41,6 +44,7 @@ LHC_2018_HIGH_BETA_MODIFIERS = [Path("R2018h_A90mC90mA10mL10m.madx")]
 UNAVAILABLE_FETCHER = "unavailable_fetcher"
 
 # ---- creation tests ------------------------------------------------------------------------------
+
 
 @pytest.mark.basic
 def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
@@ -70,7 +74,10 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
     accel_opt_duplicate["scenario"] = None
     with pytest.raises(AcceleratorDefinitionError) as e:
         create_instance_and_model(
-            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+            type="nominal",
+            outputdir=tmp_path,
+            logfile=tmp_path / "madx_log.txt",
+            **accel_opt_duplicate,
         )
     assert "flag --scenario" in str(e.value)
     assert "Selected: 'None'" in str(e.value)
@@ -79,7 +86,10 @@ def test_booster_creation_nominal_driven(tmp_path, acc_models_psb_2021):
     accel_opt_duplicate["str_file"] = None
     with pytest.raises(AcceleratorDefinitionError) as e:
         create_instance_and_model(
-            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+            type="nominal",
+            outputdir=tmp_path,
+            logfile=tmp_path / "madx_log.txt",
+            **accel_opt_duplicate,
         )
     assert "flag --str_file" in str(e.value)
     assert "Selected: 'None'" in str(e.value)
@@ -104,6 +114,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
         type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
+
 
 # ps tune matching fails for 2018 optics
 # The magnets used for the different tune matching methods in > 2018 were installed in LS2.
@@ -135,7 +146,7 @@ def test_booster_creation_nominal_free(tmp_path, acc_models_psb_2021):
 def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
     accel_opt = {
         "accel": "ps",
-        "nat_tunes": [0.21, 0.323], # from madx_job file in acc_models
+        "nat_tunes": [0.21, 0.323],  # from madx_job file in acc_models
         "dpp": 0.0,
         "energy": 1.4,
         "year": "2018",
@@ -158,7 +169,10 @@ def test_ps_creation_nominal_free_2018(tmp_path, acc_models_ps_2021):
 
     with pytest.raises(RuntimeError) as excinfo:
         create_instance_and_model(
-            type="nominal", outputdir=tmp_path, logfile=tmp_path / "madx_log.txt", **accel_opt_duplicate
+            type="nominal",
+            outputdir=tmp_path,
+            logfile=tmp_path / "madx_log.txt",
+            **accel_opt_duplicate,
         )
     assert "Please provide the --energy ENERGY flag" in str(excinfo.value)
 
@@ -220,7 +234,7 @@ def test_lhc_creation_nominal_free_high_beta(tmp_path, acc_models_lhc_2018):
         "energy": 6500.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2018,
-        "modifiers": LHC_2018_HIGH_BETA_MODIFIERS
+        "modifiers": LHC_2018_HIGH_BETA_MODIFIERS,
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -239,7 +253,7 @@ def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2025):
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2025,
-        "modifiers": LHC_2025_30CM_MODIFIERS
+        "modifiers": LHC_2025_30CM_MODIFIERS,
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -256,7 +270,7 @@ def test_lhc_creation_nominal_2016(tmp_path):
         "nat_tunes": [0.31, 0.32],
         "dpp": 0.0,
         "energy": 6500.0,
-        "modifiers": [INPUTS / "models" / "modifiers_2016" / "opt_400_10000_400_3000.madx"]
+        "modifiers": [INPUTS / "models" / "modifiers_2016" / "opt_400_10000_400_3000.madx"],
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
@@ -284,7 +298,7 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2025,
-        "modifiers": LHC_2025_30CM_MODIFIERS + [corrections]
+        "modifiers": LHC_2025_30CM_MODIFIERS + [corrections],
     }
 
     # like from the GUI, dump best knowledge on top of nominal
@@ -306,7 +320,12 @@ def test_lhc_creation_best_knowledge(tmp_path, acc_models_lhc_2025):
 
 
 @pytest.mark.basic
-def test_lhc_creation_absolute_modifier_path(tmp_path: Path, acc_models_lhc_2022: Path):
+def test_lhc_creation_absolute_modifier_inside_accmodels(tmp_path: Path, acc_models_lhc_2022: Path):
+    """Test that an absolute path to a modifier inside acc-models is converted to a relative path.
+
+    When a modifier is given as an absolute path but is inside the acc-models directory,
+    it should be replaced with a relative path in the model directory.
+    """
     rel_path = OPTICS_SUBDIR / "R2022a_A30cmC30cmA10mL200cm.madx"
     accel_opt = {
         "accel": "lhc",
@@ -318,16 +337,60 @@ def test_lhc_creation_absolute_modifier_path(tmp_path: Path, acc_models_lhc_2022
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2022,
-        "modifiers": [(acc_models_lhc_2022 / rel_path).absolute()]
+        "modifiers": [(acc_models_lhc_2022 / rel_path).absolute()],
     }
     accel = create_instance_and_model(
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
-    absolute_path = tmp_path / f"{ACC_MODELS_PREFIX}-{accel.NAME}" / rel_path  # replaced in model creation
-    madx_string = f"call, file = '{absolute_path!s}"
+
+    # The absolute path inside acc-models should be converted to a relative symlink path
+    madx_string = f"call, file = '{f'{ACC_MODELS_PREFIX}-lhc' / rel_path!s}'"
     assert madx_string in (tmp_path / JOB_MODEL_MADX_NOMINAL).read_text()
     assert madx_string in (tmp_path / "madx_log.txt").read_text()
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
+
+
+@pytest.mark.basic
+def test_lhc_creation_absolute_modifier_outside_accmodels(
+    tmp_path: Path, acc_models_lhc_2022: Path
+):
+    """Test that an absolute path to a modifier outside acc-models and model-dir remains absolute.
+
+    When a modifier is given as an absolute path outside both the model directory and
+    the acc-models directory, it should remain as an absolute path in the jobfile.
+    """
+    # Create a modifier file outside both acc-models and model directories
+    # We place it in a separate location to ensure it's truly external
+    external_modifier_dir = tmp_path / "external_modifiers"
+    external_modifier_dir.mkdir()
+    external_modifier_file = external_modifier_dir / "external_modifier.madx"
+    # Copy the content from real_modifier to external_modifier_file
+    external_modifier_file.write_text(
+        (acc_models_lhc_2022 / OPTICS_SUBDIR / "R2022a_A30cmC30cmA10mL200cm.madx").read_text()
+    )
+    model_dir = tmp_path / "model_dir"
+
+    accel_opt = {
+        "accel": "lhc",
+        "year": "2022",
+        "ats": True,
+        "beam": 1,
+        "nat_tunes": [0.31, 0.32],
+        "dpp": 0.0,
+        "energy": 6800.0,
+        "fetch": Fetcher.PATH,
+        "path": acc_models_lhc_2022,
+        "modifiers": [external_modifier_file.absolute()],
+    }
+    accel = create_instance_and_model(
+        outputdir=model_dir, type="nominal", logfile=model_dir / "madx_log.txt", **accel_opt
+    )
+
+    # The absolute path inside acc-models should be converted to a relative symlink path
+    madx_string = f"call, file = '{external_modifier_file.absolute()}'"
+    assert madx_string in (model_dir / JOB_MODEL_MADX_NOMINAL).read_text()
+    assert madx_string in (model_dir / "madx_log.txt").read_text()
+    check_accel_from_dir_vs_options(model_dir, accel_opt, accel)
 
 
 @pytest.mark.basic
@@ -343,7 +406,7 @@ def test_lhc_creation_modifier_nonexistent(tmp_path, acc_models_lhc_2018):
         "energy": 6800.0,
         "fetch": Fetcher.PATH,
         "path": acc_models_lhc_2018,
-        "modifiers": [non_existent]
+        "modifiers": [non_existent],
     }
     with pytest.raises(FileNotFoundError) as creation_error:
         create_instance_and_model(
@@ -363,7 +426,10 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path, acc_models_lhc_2
     model_dir_relpath.mkdir()
 
     optics_file_relpath = Path("R2022a_A30cmC30cmA10mL200cm.madx")
-    shutil.copy(acc_models_lhc_2022 / "operation/optics" / optics_file_relpath, model_dir_relpath / optics_file_relpath.name)
+    shutil.copy(
+        acc_models_lhc_2022 / "operation/optics" / optics_file_relpath,
+        model_dir_relpath / optics_file_relpath.name,
+    )
 
     accel_opt = {
         "accel": "lhc",
@@ -390,8 +456,8 @@ def test_lhc_creation_relative_modeldir_path(request, tmp_path, acc_models_lhc_2
 
 @pytest.mark.basic
 def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
-    """ Checks if the post_run() method succeeds on an already existing given model (dir),
-    and then checks that it failes when removing individual files from that model. """
+    """Checks if the post_run() method succeeds on an already existing given model (dir),
+    and then checks that it failes when removing individual files from that model."""
     accel = get_accelerator(**model_25cm_beam1)
     LhcModelCreator(accel).post_run()
 
@@ -411,11 +477,12 @@ def test_lhc_creation_nominal_driven_check_output(model_25cm_beam1):
         if file_path_moved.exists():
             shutil.move(file_path_moved, file_path)
 
+
 # ---- cli tests -----------------------------------------------------------------------------------
+
 
 @pytest.mark.basic
 def test_lhc_creator_cli(tmp_path, acc_models_lhc_2025, capsys):
-
     accel_opt = {
         "accel": "lhc",
         "year": "2025",
@@ -444,6 +511,7 @@ def test_lhc_creator_cli(tmp_path, acc_models_lhc_2025, capsys):
     for m in modifiers:
         assert m.endswith(".madx")
 
+
 @pytest.mark.basic
 def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
     accel_opt = {
@@ -469,14 +537,7 @@ def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
     scenarios = [c for c in scenarios if len(c) > 0]  # remove empty lines
     scenarios.sort()
 
-    assert scenarios == [
-        "ad",
-        "east",
-        "isolde",
-        "lhc",
-        "sftpro",
-        "tof"
-    ]
+    assert scenarios == ["ad", "east", "isolde", "lhc", "sftpro", "tof"]
 
     accel_opt["scenario"] = "lhc"
 
@@ -496,11 +557,12 @@ def test_booster_creator_cli(tmp_path, acc_models_psb_2021, capsys):
         "3_extraction",
     ]
 
+
 @pytest.mark.basic
 def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
     accel_opt = {
         "accel": "ps",
-        "nat_tunes": [0.21, 0.323], # from madx_job file in acc_models
+        "nat_tunes": [0.21, 0.323],  # from madx_job file in acc_models
         "dpp": 0.0,
         "energy": 1.4,
         "year": "2018",
@@ -527,14 +589,113 @@ def test_ps_creation_cli(tmp_path, acc_models_ps_2021, capsys):
         "4_flat_bottom_wo_QDN90",
     ]
 
+
+@pytest.mark.basic
+def test_model_job_file_reading(tmp_path, acc_models_lhc_2025):
+    """Test that the model reader correctly parses and reproduces job file structure.
+
+    This test creates a model, then uses the response creator to generate a new job file
+    by reading the model directory. The generated job file is compared with the original
+    nominal job file up to the coupling_knob line to ensure consistency.
+
+    This comprehensive test validates:
+    - Model directory reading and parsing
+    - Energy settings in twiss calculations
+    - Natural and driven tune configuration
+    - Path consistency and preservation
+    - Overall model reader/writer consistency
+    """
+
+    # Create a model first
+    accel_opt = {
+        "accel": "lhc",
+        "year": "2025",
+        "beam": 1,
+        "nat_tunes": [0.28, 0.31],
+        "drv_tunes": [0.27, 0.322],
+        "driven_excitation": "acd",
+        "dpp": 0.0,
+        "energy": 6800.0,
+        "fetch": Fetcher.PATH,
+        "path": acc_models_lhc_2025,
+        "modifiers": LHC_2025_30CM_MODIFIERS,
+    }
+    create_instance_and_model(
+        outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+
+    # Run response creator to generate job.iterate.0.madx
+    create_response(
+        accel=accel_opt["accel"],
+        model_dir=tmp_path,
+        beam=accel_opt["beam"],
+        year=accel_opt["year"],
+        creator=ResponseCreatorType.MADX,
+        delta_k=2e-5,
+        variable_categories=["orbit_dpp"],  # minimal variables to speed up test
+    )
+
+    # Verify the response creator correctly reads and reproduces the model
+    jobfile_path = tmp_path / "job.iterate.0.madx"
+    model_path = tmp_path / JOB_MODEL_MADX_NOMINAL
+
+    job_text = jobfile_path.read_text()
+    model_text = model_path.read_text()
+
+    # Check first 5 lines are identical (title and header comments up to tunes)
+    job_lines = job_text.splitlines()
+    model_lines = model_text.splitlines()
+
+    for i in range(5):
+        assert job_lines[i] == model_lines[i], (
+            f"Line {i + 1} differs:\n  Job:   {job_lines[i]!r}\n  Model: {model_lines[i]!r}"
+        )
+
+    # Check energy settings match
+    energy_pattern = r"omc3_beam_energy\s*=\s*([\d.]+)"
+    job_energy = re.search(energy_pattern, job_text)
+    model_energy = re.search(energy_pattern, model_text)
+
+    assert job_energy and model_energy, "Both files must contain omc3_beam_energy"
+    assert job_energy.group(1) == model_energy.group(1), (
+        f"Energy differs: {job_energy.group(1)} vs {model_energy.group(1)}"
+    )
+
+    # Extract and compare all file paths
+    file_pattern = r"call,\s*file\s*=\s*'([^']+)'"
+    job_files = re.findall(file_pattern, job_text)
+    model_files = re.findall(file_pattern, model_text)
+
+    assert job_files == model_files, f"File paths differ:\nJob: {job_files}\nModel: {model_files}"
+
+    # Extract and compare match_tunes calls (MAD-X adds integer parts to tunes)
+    tune_pattern = r"match_tunes\(([\d.]+),\s*([\d.]+),\s*(\d+)\)"
+    job_match = re.search(tune_pattern, job_text)
+    model_match = re.search(tune_pattern, model_text)
+
+    assert job_match and model_match
+
+    # Compare fractional parts of tunes (input tunes are fractional)
+    # The job has integer parts as we retrieve te full tunes from the MAD-X twiss.
+    # Machines such as the SPS need this integer part, should LHC adapt this? (jgray 2025)
+    job_q1, job_q2, job_beam = (
+        float(job_match.group(1)),
+        float(job_match.group(2)),
+        int(job_match.group(3)),
+    )
+    model_q1, model_q2 = float(model_match.group(1)), float(model_match.group(2))
+
+    assert abs(job_q1 % 1 - model_q1) < 1e-6
+    assert abs(job_q2 % 1 - model_q2) < 1e-6
+    assert job_beam == accel_opt["beam"]
+
+
 # ---- helper --------------------------------------------------------------------------------------
 
+
 def check_accel_from_dir_vs_options(
-    model_dir: Path,
-    accel_options: DotDict,
-    accel_from_opt: Accelerator,
-    best_knowledge=False
-    ):
+    model_dir: Path, accel_options: DotDict, accel_from_opt: Accelerator, best_knowledge=False
+):
     # creation via model_from_dir tests that all files are in place:
     accel_from_dir: Accelerator = get_accelerator(
         accel=accel_options["accel"],
@@ -544,7 +705,25 @@ def check_accel_from_dir_vs_options(
 
     _check_arrays(accel_from_opt.nat_tunes, accel_from_dir.nat_tunes, eps=1e-4, tunes=True)
     _check_arrays(accel_from_opt.drv_tunes, accel_from_dir.drv_tunes, eps=1e-4, tunes=True)
-    _check_arrays(accel_from_opt.modifiers, accel_from_dir.modifiers)
+    # Check that each modifier from dir is relative to model_dir if possible
+    if accel_from_opt.modifiers is not None and accel_from_dir.modifiers is not None:
+        assert accel_from_opt.modifiers == accel_from_dir.modifiers
+
+    # Check that the job file uses relative paths when appropriate
+    if accel_from_opt.modifiers is not None:
+        job_file = model_dir / JOB_MODEL_MADX_NOMINAL
+        if job_file.exists():
+            job_content = job_file.read_text()
+            for mod in accel_from_opt.modifiers:
+                # Check if modifier is inside model_dir
+                try:
+                    rel_to_model = mod.relative_to(model_dir)
+                    # Should use relative path
+                    assert f"call, file = '{rel_to_model}" in job_content
+                except ValueError:
+                    # Outside model_dir, should use absolute path
+                    assert f"call, file = '{mod.absolute()}'" in job_content
+
     assert accel_from_opt.excitation == accel_from_dir.excitation
     assert accel_from_opt.model_dir == accel_from_dir.model_dir
 

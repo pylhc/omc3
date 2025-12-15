@@ -63,6 +63,8 @@ dependencies = [
 [project.optional-dependencies]
 cern = [
   "jpype1 >= 1.3",
+  "nxcals >= 1.6.6",  # Direct NXCALS access
+  "pyspark >= 3.5", # Needed when extracting from NXCALS using Spark
   "pytimber >= 3.0",  # NXCALS support
   "pylogbook >= 3.4",
   "kerberos >= 1.3.1",  # requires having krb-5config installed on the system
