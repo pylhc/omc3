@@ -22,6 +22,7 @@ from omc3.optics_measurements.constants import (
     F1010_NAME,
     IMAG,
     MDL,
+    MODEL_DIRECTORY,
     NAME,
     NORM_DISP_NAME,
     NORM_DISPERSION,
@@ -35,6 +36,7 @@ from omc3.optics_measurements.constants import (
 )
 from omc3.scripts.fake_measurement_from_model import (
     ERRORS,
+    FAKED_HEADER,
     OUTPUTNAMES_MAP,
     VALUES,
     _get_data,
@@ -102,6 +104,10 @@ def test_run_and_output(tmp_path, both_beams_path):
         assert len(df.headers)
         assert f"{TUNE}1" in df.headers
         assert f"{TUNE}2" in df.headers
+        assert MODEL_DIRECTORY in df.headers
+        assert str(df.headers[MODEL_DIRECTORY]) == str(Path(both_beams_path).parent)
+        assert FAKED_HEADER in df.headers
+        assert str(df.headers[FAKED_HEADER]) == str(both_beams_path)
 
         if name.startswith(PHASE_NAME):
             assert df[S].equals(model.loc[df.index, S])

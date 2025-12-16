@@ -6,7 +6,7 @@ Scripts
     :noindex:
 
 
-.. automodule:: omc3.scripts.kmod_averages
+.. automodule:: omc3.scripts.kmod_average
     :members:
     :noindex:
 
@@ -42,6 +42,11 @@ Scripts
 
 
 .. automodule:: omc3.scripts.bad_bpms_summary
+    :members:
+    :noindex:
+
+
+.. automodule:: omc3.scripts.create_logbook_entry
     :members:
     :noindex:
 

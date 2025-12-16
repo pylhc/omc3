@@ -7,11 +7,17 @@ and UTC time.
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+import logging
+import re
+from datetime import datetime, timedelta, timezone
 
 import dateutil.tz as tz
+from dateutil.relativedelta import relativedelta
 
 from omc3.definitions.formats import TIME
+
+LOGGER = logging.getLogger(__name__)
+MINUS_CHARS: tuple[str, ...] = ("_", "-")
 
 # Datetime Conversions #########################################################
 
@@ -77,6 +83,61 @@ def check_tz(localized_dt, timezone):
             f"Datetime Timezone should be '{timezone}' "
             f"but was '{localized_dt.tzinfo}'"
         )
+
+# Knob extractor specific time tools #############################################
+
+
+def _parse_time_from_str(time_str: str) -> datetime:
+    """Parse time from given string."""
+    # Now? ---
+    if time_str.lower() == "now":
+        return datetime.now(timezone.utc)
+
+    # ISOFormat? ---
+    try:
+        return datetime.fromisoformat(time_str)
+    except (TypeError, ValueError):
+        LOGGER.debug("Could not parse time string as ISO format")
+        pass
+
+    # Timestamp? ---
+    try:
+        return datetime.fromtimestamp(int(time_str))
+    except (TypeError, ValueError):
+        LOGGER.debug("Could not parse time string as a timestamp")
+        pass
+
+    raise ValueError(f"Couldn't read datetime '{time_str}'")
+
+
+def _add_time_delta(time: datetime, delta_str: str) -> datetime:
+    """Parse delta-string and add time-delta to time."""
+    sign = -1 if delta_str[0] in MINUS_CHARS else 1
+    all_deltas = re.findall(r"(\d+)(\w)", delta_str)  # tuples (value, timeunit-char)
+    # mapping char to the time-unit as accepted by relativedelta,
+    # following ISO-8601 for time durations
+    char2unit = {
+        "s": "seconds",
+        "m": "minutes",
+        "h": "hours",
+        "d": "days",
+        "w": "weeks",
+        "M": "months",
+        "Y": "years",
+    }
+    # add all deltas, which are tuples of (value, timeunit-char)
+    time_parts = {char2unit[delta[1]]: sign * int(delta[0]) for delta in all_deltas}
+    return time + relativedelta(**time_parts)
+
+
+def parse_time(time: str, timedelta: str = None) -> datetime:
+    """Parse time from given time-input from command line."""
+    t = _parse_time_from_str(time)
+    if timedelta:
+        t = _add_time_delta(t, timedelta)
+    if t.tzinfo is None:
+        raise ValueError("Datetime object must be timezone-aware")
+    return t
 
 
 # AccDatetime Classes ##########################################################

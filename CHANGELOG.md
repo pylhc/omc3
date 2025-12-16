@@ -1,6 +1,28 @@
 # OMC3 Changelog
 
-#### 2025-11-TBD - v0.25.0 - _jgray_, _jdilly_, _fsoubelet_
+#### 2025-12-15 - v0.26.0 - _jgray_, _jdilly_, _fsoubelet_
+
+- Added:
+  - MQT extractor: New script to extract MQT (Quadrupole Trim) knob values from NXCALS at a given time.
+  - NXCALS module: New `nxcals` package with MQT extraction functionality.
+
+- Changed:
+  - Model creators: Refactored MAD-X path resolution to use `resolve_path_for_madx` for improved path handling.
+  - Model creators: MAD-X script methods now ensure paths are relative to `model_dir` if possible, otherwise absolute.
+  - Knob extraction: Improved docstrings, logging consistency, and time handling.
+  - Time tools: Consolidated time parsing functions for consistency across modules.
+
+- Fixed:
+  - Global correction: Removed bug where the orbit was always corrected to 0. New fix for orbit_dpp response coming in next release.
+  - Model creators: Fixed comparison of modifier paths in `check_accel_from_dir_vs_options` function.
+  - Tests: Updated deltap global correction tests to use MAD-X 5.09 with corrected tune tolerance (now 2% instead of 5%).
+
+#### 2025-12-11 - v0.25.1 - _jdilly_
+
+- Fixed:
+  - Fixing phase-jump issue in segment-by-segment due to model-wraparound.
+
+#### 2025-10-31 - v0.25.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
   - Tests for amplitude unit handling and backward compatibility.

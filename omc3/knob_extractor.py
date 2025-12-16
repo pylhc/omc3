@@ -44,8 +44,8 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 - **time** *(str)*:
 
     At what time to extract the knobs. Accepts ISO-format (YYYY-MM-
-    DDThh:mm:ss), timestamp or 'now'. The default timezone for the ISO-
-    format is local time, but you can force e.g. UTC by adding +00:00.
+    DDThh:mm:ss) with timezone, timestamp or 'now'. Timezone must be
+    specified for ISO-format (e.g. +00:00 for UTC).
 
     default: ``now``
 
@@ -61,6 +61,7 @@ The data is fetched from ``NXCALS`` through ``pytimber`` using the **StateTracke
 
 
 """
+
 from __future__ import annotations
 
 ####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ##################################
@@ -82,44 +83,45 @@ if "PATH" in os.environ and "/mcr/bin" in os.environ["PATH"]:
 import argparse
 import logging
 import math
-import re
-from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
 import tfs
-from dateutil.relativedelta import relativedelta
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.utils.iotools import PathOrStr, PathOrStrOrDataFrame
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
+from omc3.utils.time_tools import parse_time
 
 if TYPE_CHECKING:
-   from collections.abc import Sequence
+    from collections.abc import Sequence
+    from datetime import datetime
 
 pytimber = cern_network_import("pytimber")
 
 LOGGER = get_logger(__name__)
 
-AFS_ACC_MODELS_LHC = Path("/afs/cern.ch/eng/acc-models/lhc/current")  # make sure 'current' linked correctly!
+AFS_ACC_MODELS_LHC = Path(
+    "/afs/cern.ch/eng/acc-models/lhc/current"
+)  # make sure 'current' linked correctly!
 ACC_MODELS_LHC = Path("acc-models-lhc")
 KNOBS_FILE_ACC_MODELS = ACC_MODELS_LHC / "operation" / "knobs.txt"
 KNOBS_FILE_AFS = AFS_ACC_MODELS_LHC / "operation" / "knobs.txt"
 
-MINUS_CHARS: tuple[str, ...] = ("_", "-")
 STATE_VARIABLES: dict[str, str] = {
-    'opticName': 'Optics',
-    'beamProcess': 'Beam Process',
-    'opticId': 'Optics ID',
-    'hyperCycle': 'HyperCycle',
+    "opticName": "Optics",
+    "beamProcess": "Beam Process",
+    "opticId": "Optics ID",
+    "hyperCycle": "HyperCycle",
     # 'secondsInBeamProcess ': 'Beam Process running (s)',
 }
 
 
 class Col:
-    """ DataFrame Columns used in this script. """
+    """DataFrame Columns used in this script."""
+
     madx: str = "madx"
     lsa: str = "lsa"
     scaling: str = "scaling"
@@ -127,7 +129,8 @@ class Col:
 
 
 class Head:
-    """ TFS Headers used in this script."""
+    """TFS Headers used in this script."""
+
     time: str = "EXTRACTION_TIME"
 
 
@@ -181,24 +184,21 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
     ],
     "mo": [
         "LHCBEAM1:LANDAU_DAMPING",
-        "LHCBEAM2:LANDAU_DAMPING"
+        "LHCBEAM2:LANDAU_DAMPING",
     ],
     "lumi_scan": [
         "LHCBEAM1:IP1_SEPSCAN_X_MM",
         "LHCBEAM1:IP1_SEPSCAN_Y_MM",
         "LHCBEAM2:IP1_SEPSCAN_X_MM",
         "LHCBEAM2:IP1_SEPSCAN_Y_MM",
-
         "LHCBEAM1:IP2_SEPSCAN_X_MM",
         "LHCBEAM1:IP2_SEPSCAN_Y_MM",
         "LHCBEAM2:IP2_SEPSCAN_X_MM",
         "LHCBEAM2:IP2_SEPSCAN_Y_MM",
-
         "LHCBEAM1:IP5_SEPSCAN_X_MM",
         "LHCBEAM1:IP5_SEPSCAN_Y_MM",
         "LHCBEAM2:IP5_SEPSCAN_X_MM",
         "LHCBEAM2:IP5_SEPSCAN_Y_MM",
-
         "LHCBEAM1:IP8_SEPSCAN_X_MM",
         "LHCBEAM1:IP8_SEPSCAN_Y_MM",
         "LHCBEAM2:IP8_SEPSCAN_X_MM",
@@ -212,7 +212,7 @@ KNOB_CATEGORIES: dict[str, list[str]] = {
 
 USAGE_EXAMPLES = """Usage Examples:
 
-python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00
+python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00+00:00
     extracts the chromaticity and dispersion knobs at 14h on May 4th 2022
 
 python -m omc3.knob_extractor --knobs disp chroma --time now _2h
@@ -230,7 +230,7 @@ def get_params():
     return EntryPointParameters(
         knobs={
             "type": str,
-            "nargs": '*',
+            "nargs": "*",
             "help": (
                 "A list of knob names or categories to extract. "
                 f"Available categories are: {', '.join(KNOB_CATEGORIES.keys())}."
@@ -241,9 +241,8 @@ def get_params():
             "type": str,
             "help": (
                 "At what time to extract the knobs. "
-                "Accepts ISO-format (YYYY-MM-DDThh:mm:ss), timestamp or 'now'. "
-                "The default timezone for the ISO-format is local time, "
-                "but you can force e.g. UTC by adding +00:00."
+                "Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'. "
+                "Timezone must be specified for ISO-format (e.g. +00:00 for UTC)."
             ),
             "default": "now",
         },
@@ -261,18 +260,12 @@ def get_params():
             ),
         },
         state={
-            "action": 'store_true',
-            "help": (
-                "Prints the state of the StateTracker. "
-                "Does not extract anything else."
-            ),
+            "action": "store_true",
+            "help": ("Prints the state of the StateTracker. Does not extract anything else."),
         },
         output={
             "type": PathOrStr,
-            "help": (
-                "Specify user-defined output path. "
-                "This should probably be `model_dir/knobs.madx`"
-            ),
+            "help": "Specify user-defined output path. This should probably be `model_dir/knobs.madx`",
         },
         knob_definitions={
             "type": PathOrStrOrDataFrame,
@@ -286,19 +279,22 @@ def get_params():
 
 
 @entrypoint(
-    get_params(), strict=True,
+    get_params(),
+    strict=True,
     argument_parser_args={
         "epilog": USAGE_EXAMPLES,
         "formatter_class": argparse.RawDescriptionHelpFormatter,
-        "prog": "Knob Extraction Tool."
-    }
+        "prog": "Knob Extraction Tool.",
+    },
 )
 def main(opt) -> tfs.TfsDataFrame:
-    """ Main knob extracting function. """
-    ldb = pytimber.LoggingDB(source="nxcals", loglevel=logging.ERROR,
-                             sparkprops={"spark.ui.showConsoleProgress": "false"}
+    """Main knob extracting function."""
+    ldb = pytimber.LoggingDB(
+        source="nxcals",
+        loglevel=logging.ERROR,
+        sparkprops={"spark.ui.showConsoleProgress": "false"},
     )
-    time = _parse_time(opt.time, opt.timedelta)
+    time = parse_time(opt.time, opt.timedelta)
 
     if opt.state:
         # Only print the state of the machine.
@@ -314,6 +310,7 @@ def main(opt) -> tfs.TfsDataFrame:
 
 
 # State Extraction -------------------------------------------------------------
+
 
 def get_state(ldb, time: datetime) -> dict[str, str]:
     """
@@ -348,9 +345,11 @@ def _get_state_as_df(state_dict: dict[str, str], time: datetime) -> tfs.TfsDataF
     Returns:
         tfs.DataFrame: States packed into dataframe with readable index.
     """
-    state_df = tfs.TfsDataFrame(index=list(STATE_VARIABLES.values()),
-                                columns=[Col.value, Col.lsa],
-                                headers={Head.time: time})
+    state_df = tfs.TfsDataFrame(
+        index=list(STATE_VARIABLES.values()),
+        columns=[Col.value, Col.lsa],
+        headers={Head.time: time},
+    )
     for name, value in state_dict.items():
         state_df.loc[STATE_VARIABLES[name], Col.lsa] = name
         state_df.loc[STATE_VARIABLES[name], Col.value] = value
@@ -358,6 +357,7 @@ def _get_state_as_df(state_dict: dict[str, str], time: datetime) -> tfs.TfsDataF
 
 
 # Knobs Extraction -------------------------------------------------------------
+
 
 def extract(ldb, knobs: Sequence[str], time: datetime) -> dict[str, float]:
     """
@@ -383,7 +383,9 @@ def extract(ldb, knobs: Sequence[str], time: datetime) -> dict[str, float]:
             knobkey = f"LhcStateTracker:{knob}:target"
             knobs_extracted[knob] = None  # to log that this was tried to be extracted.
 
-            knobvalue = ldb.get(knobkey, time.timestamp())  # use timestamp to preserve timezone info
+            knobvalue = ldb.get(
+                knobkey, time.timestamp()
+            )  # use timestamp to preserve timezone info
             if knobkey not in knobvalue:
                 LOGGER.debug(f"{knob} not found in StateTracker")
                 continue
@@ -405,7 +407,7 @@ def extract(ldb, knobs: Sequence[str], time: datetime) -> dict[str, float]:
 
 
 def check_for_undefined_knobs(knobs_definitions: pd.DataFrame, knob_categories: Sequence[str]):
-    """ Check that all knobs are actually defined in the knobs-definitions.
+    """Check that all knobs are actually defined in the knobs-definitions.
 
 
     Args:
@@ -416,7 +418,9 @@ def check_for_undefined_knobs(knobs_definitions: pd.DataFrame, knob_categories: 
         KeyError: If one or more of the knobs don't have a definition.
 
     """
-    knob_names = [knob for category in knob_categories for knob in KNOB_CATEGORIES.get(category, [category])]
+    knob_names = [
+        knob for category in knob_categories for knob in KNOB_CATEGORIES.get(category, [category])
+    ]
     undefined_knobs = [knob for knob in knob_names if knob not in knobs_definitions.index]
     if undefined_knobs:
         raise KeyError(
@@ -425,9 +429,9 @@ def check_for_undefined_knobs(knobs_definitions: pd.DataFrame, knob_categories: 
         )
 
 
-def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
-                        knob_categories: Sequence[str],
-                        time: datetime) -> tfs.TfsDataFrame:
+def _extract_and_gather(
+    ldb, knobs_definitions: pd.DataFrame, knob_categories: Sequence[str], time: datetime
+) -> tfs.TfsDataFrame:
     """
     Main function to gather data from the StateTracker and the knob-definitions.
     All given knobs (either in categories or as knob names) to be extracted
@@ -451,16 +455,18 @@ def _extract_and_gather(ldb, knobs_definitions: pd.DataFrame,
     extracted_knobs = extract(ldb, knobs=knob_categories, time=time)
 
     knob_names = list(extracted_knobs.keys())
-    knobs = tfs.TfsDataFrame(index=knob_names,
-                             columns=[Col.lsa, Col.madx, Col.scaling, Col.value],
-                             headers={Head.time: time})
+    knobs = tfs.TfsDataFrame(
+        index=knob_names,
+        columns=[Col.lsa, Col.madx, Col.scaling, Col.value],
+        headers={Head.time: time},
+    )
     knobs[[Col.lsa, Col.madx, Col.scaling]] = knobs_definitions.loc[knob_names, :]
     knobs[Col.value] = pd.Series(extracted_knobs)
     return knobs
 
 
 def _write_knobsfile(output: Path | str, collected_knobs: tfs.TfsDataFrame):
-    """ Takes the collected knobs and writes them out into a text-file. """
+    """Takes the collected knobs and writes them out into a text-file."""
     collected_knobs = collected_knobs.copy()  # to not modify the df
 
     # Sort the knobs by category
@@ -490,26 +496,31 @@ def _write_knobsfile(output: Path | str, collected_knobs: tfs.TfsDataFrame):
 
 # Knobs Definitions ------------------------------------------------------------
 
+
 def _get_knobs_def_file(user_defined: Path | str | None = None) -> Path:
-    """ Check which knobs-definition file is appropriate to take. """
+    """Check which knobs-definition file is appropriate to take."""
     if user_defined is not None:
         LOGGER.info(f"Using user knobs-definition file: '{user_defined}")
         return Path(user_defined)
 
     if KNOBS_FILE_ACC_MODELS.is_file():
-        LOGGER.info(f"Using given acc-models folder's knobs.txt as knobsdefinition file: '{KNOBS_FILE_ACC_MODELS}")
+        LOGGER.info(
+            f"Using given acc-models folder's knobs.txt as knobsdefinition file: '{KNOBS_FILE_ACC_MODELS}"
+        )
         return KNOBS_FILE_ACC_MODELS
 
     if KNOBS_FILE_AFS.is_file():
         # if all fails, fall back to lhc acc-models
-        LOGGER.info(f"Using afs-fallback acc-models folder's knobs.txt as knobs-definition file: '{KNOBS_FILE_AFS}'")
+        LOGGER.info(
+            f"Using afs-fallback acc-models folder's knobs.txt as knobs-definition file: '{KNOBS_FILE_AFS}'"
+        )
         return KNOBS_FILE_AFS
 
     raise FileNotFoundError("None of the knobs-definition files are available.")
 
 
 def load_knobs_definitions(file_path: Path | str) -> pd.DataFrame:
-    """ Load the knobs-definition file and convert into a DataFrame.
+    """Load the knobs-definition file and convert into a DataFrame.
     Each line in this file should consist of at least three comma separated
     entries in the following order: madx-name, lsa-name, scaling factor.
     Other columns are ignored.
@@ -530,17 +541,19 @@ def load_knobs_definitions(file_path: Path | str) -> pd.DataFrame:
         converters = {Col.madx: str.strip, Col.lsa: str.strip}  # strip whitespaces
         dtypes = {Col.scaling: float}
         names = (Col.madx, Col.lsa, Col.scaling)
-        df = pd.read_csv(file_path,
-                         comment="#",
-                         usecols=list(range(len(names))),  # only read the first columns
-                         names=names,
-                         dtype=dtypes,
-                         converters=converters)
+        df = pd.read_csv(
+            file_path,
+            comment="#",
+            usecols=list(range(len(names))),  # only read the first columns
+            names=names,
+            dtype=dtypes,
+            converters=converters,
+        )
     return _to_knobs_dataframe(df)
 
 
 def _to_knobs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    """ Adapts a DataFrame to the conventions used here:
+    """Adapts a DataFrame to the conventions used here:
     StateTracker variable name as index, all columns lower-case.
 
     Args:
@@ -559,7 +572,7 @@ def _to_knobs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _parse_knobs_defintions(knobs_def_input: Path | str | pd.DataFrame | None) -> pd.DataFrame:
-    """ Parse the given knob-definitions either from a csv-file or from a DataFrame. """
+    """Parse the given knob-definitions either from a csv-file or from a DataFrame."""
     if isinstance(knobs_def_input, pd.DataFrame):
         return _to_knobs_dataframe(knobs_def_input)
 
@@ -570,62 +583,17 @@ def _parse_knobs_defintions(knobs_def_input: Path | str | pd.DataFrame | None) -
 
 def get_madx_command(knob_data: pd.Series) -> str:
     if Col.value not in knob_data.index:
-        raise KeyError("Value entry not found in extracted knob_data. "
-                       "Something went wrong as it should at least be NaN.")
+        raise KeyError(
+            "Value entry not found in extracted knob_data. "
+            "Something went wrong as it should at least be NaN."
+        )
     if knob_data[Col.value] is None or pd.isna(knob_data[Col.value]):
         return f"! {knob_data[Col.madx]} : No Value extracted"
     return f"{knob_data[Col.madx]} := {knob_data[Col.value] * knob_data[Col.scaling]};"
 
 
-# Time Tools -------------------------------------------------------------------
-
-def _parse_time(time: str, timedelta: str = None) -> datetime:
-    """ Parse time from given time-input. """
-    t = _parse_time_from_str(time)
-    if timedelta:
-        t = _add_time_delta(t, timedelta)
-    return t
-
-
-def _parse_time_from_str(time_str: str) -> datetime:
-    """ Parse time from given string. """
-    # Now? ---
-    if time_str.lower() == "now":
-        return datetime.now()
-
-    # ISOFormat? ---
-    try:
-        return datetime.fromisoformat(time_str)
-    except (TypeError, ValueError):
-        LOGGER.debug("Could not parse time string as ISO format")
-        pass
-
-    # Timestamp? ---
-    try:
-        return datetime.fromtimestamp(int(time_str))
-    except (TypeError, ValueError):
-        LOGGER.debug("Could not parse time string as a timestamp")
-        pass
-
-    raise ValueError(f"Couldn't read datetime '{time_str}'")
-
-
-def _add_time_delta(time: datetime, delta_str: str) -> datetime:
-    """ Parse delta-string and add time-delta to time. """
-    sign = -1 if delta_str[0] in MINUS_CHARS else 1
-    all_deltas = re.findall(r"(\d+)(\w)", delta_str)  # tuples (value, timeunit-char)
-    # mapping char to the time-unit as accepted by relativedelta,
-    # following ISO-8601 for time durations
-    char2unit = {
-        "s": 'seconds', "m": 'minutes', "h": 'hours',
-        "d": 'days', "w": 'weeks', "M": 'months', "Y": "years",
-    }
-    # add all deltas, which are tuples of (value, timeunit-char)
-    time_parts = {char2unit[delta[1]]: sign * int(delta[0]) for delta in all_deltas}
-    return time + relativedelta(**time_parts)
-
-
 # Other tools ------------------------------------------------------------------
+
 
 def lsa2name(lsa_name: str) -> str:
     """LSA name -> Variable in Timber/StateTracker conversion."""

@@ -16,8 +16,8 @@ def run_dpp(offset, beam):
     """
     output_file = current_dir / f"twiss_dpp_{offset:.1e}_B{beam}.dat"
 
-    Qx = 62.28001034  # noqa: N806
-    Qy = 60.31000965  # noqa: N806
+    Qx = 62.28  # noqa: N806
+    Qy = 60.31  # noqa: N806
     script = f"""
     option, -echo;
     call, file = '{omc3_dir}/omc3/model/madx_macros/general.macros.madx';
