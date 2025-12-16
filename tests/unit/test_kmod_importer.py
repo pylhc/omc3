@@ -50,12 +50,12 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
 
     # OUTPUT CHECKS --------------------------------------------
     # Check the basics, if anything looks weird ---
-    assert len(list(tmp_path.glob(f"*{EXT}"))) == 6  # beta_kmod x/y, betastar x/y B1/B2_kmod_sum 
-    assert len(list(tmp_path.glob("*.txt"))) == 2 # B1/B2_tables.txt 
+    assert len(list(tmp_path.glob(f"*{EXT}"))) == 6  # beta_kmod x/y, betastar x/y B1/B2_kmod_summary
+    assert len(list(tmp_path.glob("*.txt"))) == 2 # B1/B2_tables.txt
     average_dir = tmp_path / AVERAGE_DIR
 
     assert average_dir.is_dir()
-    assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP 
+    assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP
     assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] # AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map
 
     # Check the content ---
@@ -91,5 +91,3 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
             betas = get_betastar_values(beam=beam, ip=1)
             lumi_filename = _get_lumi_filename(betas, ip_a=ips[0], ip_b=ips[1])
             assert (average_dir / lumi_filename).exists()
-
-
