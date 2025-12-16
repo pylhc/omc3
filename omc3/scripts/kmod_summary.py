@@ -1,3 +1,45 @@
+"""
+Generate summary tables from K-modulation results.
+
+This function collects and summarizes K-modulation results from multiple measurement directories.
+For each beam, it generates:
+1. A DataFrame containing all imported K-modulation measurements.
+2. A text file with optinally the averaged results, which can be used to create a logbook entry.
+
+**Arguments:**
+
+*--Required--*
+
+- **meas_paths** *(Sequence[Path | str])*:
+
+    Directories of K-modulation results to import.
+    These need to be the paths to the root-folders containing B1 and B2 sub-dirs.
+
+*--Optional--*
+
+- **averaged_meas** *(dict[str, dict[int, tfs.TfsDataFrame]], default=None)*:
+        Precomputed averaged K-modulation results. If provided, these are introduced in the
+        summary table for the logbook.
+
+- **output_dir** *(Path | str, default=None)*:
+        Path to the directory where to write the output files.
+        If None, no files are written.
+
+- **logbook** *(str, default=None)*:
+        Name of the logbook to which formatted summary tables are added. If None,
+        no logbook entry is created.
+
+**Returns:**
+
+Tuple containing:
+
+1. **kmod_summaries** *(dict[str, list[tfs.TfsDataFrame]])*:
+        Mapping of beam names to lists of K-modulation summary DataFrames.
+
+2. **tables_logbook** *(dict[str, list[list[str]]])*:
+        Mapping of beam names to lists of formatted tables suitable for logbooks.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -6,10 +48,12 @@ from typing import TYPE_CHECKING
 import tfs
 
 from omc3.optics_measurements.constants import BEAM_DIR, BETASTAR, BETAWAIST, ERR, LABEL, WAIST
+from omc3.scripts.create_logbook_entry import main
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+from generic_parser import DotDict
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -17,7 +61,7 @@ def output_kmod_summary_tables(
         meas_paths: Sequence[Path | str],
         averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]] = None,
         output_dir: Path | str | None = None,
-        logbook: bool = False
+        logbook: str = None
         ) -> tuple[dict[str, list[tfs.TfsDataFrame]],dict[str, list[list[str]]]]:
 
     """
@@ -25,7 +69,7 @@ def output_kmod_summary_tables(
         meas_paths (Sequence[Path | str]): Paths to the K-modulation results.
         averaged_meas (dict[int, tfs.TfsDataFrame]): If not None, averaged K-modulation results over all measurements are included in the summary tables. Default: None.
         output_dir (Path | str | None): Path to the output directory. Defaults to None.
-        logbook (bool): If True, create a logbook entry containing the summary tables. Default: False.
+        logbook (str = None): If provided, create a logbook entry containing the .txt summary tables to the given logbook. Default: None.
 
     Returns:
         Tuple[dict[str, tfs.TfsDataFrame], dict[str, list[str]]]:
@@ -75,7 +119,7 @@ def output_kmod_summary_tables(
         """
         for beam_num in [1,2]:
             for av_ip, av_res in averaged_meas.items():
-                LOG.info(f"Reading averaged results: {av_ip}")
+                LOG.info(f"Reading averaged results: {BEAM_DIR}{beam_num}, {av_ip}")
                 av_tab = av_res[0] # 0: averaged results table, 1, 2: are betx, bety for IP closest elements
                 av_tab_beam = av_tab.loc[[beam_num]]
                 df_averaged = av_tab_beam[cols_x + cols_y]
@@ -108,25 +152,31 @@ def output_kmod_summary_tables(
 
     if output_dir is not None:
         for beam in beams:
-            _save_beam_outputs(beam=beam, save_output_dir=output_dir, table_logbook=tables_logbook[beam], summary_df=kmod_summaries[beam])
+            _save_outputs(beam=beam, save_output_dir=output_dir, table_logbook=tables_logbook[beam], summary_df=kmod_summaries[beam])
+            if logbook:
+                _logbook_entry(logbook=logbook, beam=beam, save_output_dir=output_dir)
+        if not logbook:
+            LOG.info("Logbook name not provided: logbook entry not created.")
     else:
         LOG.info("Output_dir not provided: skipping file output for all beams.")
 
-    # logbook_text = f"Kmod summary tables"
-    # if logbook:
-    #     event = main(logbook=OMC_LOGBOOK, text="Kmod summary tables for fill XXXX")
-    #     LOG.info(f"Creating logbook entry to OMC_LOGBOOK.")
-
     return kmod_summaries, tables_logbook
 
-def _save_beam_outputs(
+def _save_outputs(
     beam: str,
     table_logbook: list[str],
     summary_df: tfs.TfsDataFrame,
     save_output_dir: Path | str,
     ) -> None:
 
-    """Save logbook text output and .tfs summary for a given beam."""
+    """
+    Save logbook text output and .tfs summary for a given beam.
+    Args:
+        beam (str): beam, ex. B1, B2
+        table_logbook (list[str]): Single .txt file.
+        summary_df (tfs.TfsDataFrame): Single .tfs dataframe.
+        save_output_dir (Path | str ): Path to the saving output directory.
+    """
 
     logbook_table_path = save_output_dir / f"{beam}_tables_logbook.txt"
     summary_path = save_output_dir / f"{beam}_kmod_summary.tfs"
@@ -135,6 +185,34 @@ def _save_beam_outputs(
     tfs.write(summary_path, summary_df)
     LOG.info(f"Writing logbook summary output file {logbook_table_path}.")
     LOG.info(f"Writing .tfs summary output file {summary_path}.")
+    return
+
+def _logbook_entry(
+    logbook: str,
+    beam: str,
+    save_output_dir: Path | str,
+    ) -> None:
+
+    """
+    Create logbook entry with .txt generated table for a given beam.
+    Args:
+        logbook (str): logbook name, ex. 'LHC_OMC'
+        beam (str): beam. ex. B1, B2
+        save_output_dir (Path | str ): Path to the saving output directory.
+    """
+
+    logbook_file = save_output_dir / f"{beam}_tables_logbook.txt"
+    logbook_filename = f"{beam}_kmod_summary.txt"
+    with Path.open(logbook_file, "r") as f:
+        logbook_text = f.read()
+    logbook_event = DotDict({
+            "text": logbook_text,
+            "files": [logbook_file],
+            "filenames": [logbook_filename],
+            "logbook": f"{logbook}",
+        })
+    _ = main(logbook_event)
+    LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     return
 
 if __name__ == "__main__":

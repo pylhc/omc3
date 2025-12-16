@@ -194,7 +194,7 @@ def import_kmod_results(opt: DotDict) -> None:
         meas_paths=opt.meas_paths,
         averaged_meas=averaged_results,
         output_dir=opt.output_dir,
-        logbook=False)
+        logbook='LHC_OMC')
 
     import_kmod_data(
         model=df_model,
