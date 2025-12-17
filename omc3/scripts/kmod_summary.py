@@ -59,7 +59,7 @@ LOG = logging_tools.get_logger(__name__)
 
 def output_kmod_summary_tables(
         meas_paths: Sequence[Path | str],
-        averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]] = None,
+        averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]] | None = None,
         output_dir: Path | str | None = None,
         logbook: str = None
         ) -> tuple[dict[str, list[tfs.TfsDataFrame]],dict[str, list[list[str]]]]:
