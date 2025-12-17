@@ -17,7 +17,6 @@
       <script src="../_static/documentation_options.js?v=4aa2dafa"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -48,116 +47,262 @@
               <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#hole-in-one">Hole in One</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.hole_in_one.harpy_params"><code class="docutils literal notranslate"><span class="pre">harpy_params()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.hole_in_one.hole_in_one_entrypoint"><code class="docutils literal notranslate"><span class="pre">hole_in_one_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.hole_in_one.hole_in_one_params"><code class="docutils literal notranslate"><span class="pre">hole_in_one_params()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.hole_in_one.optics_params"><code class="docutils literal notranslate"><span class="pre">optics_params()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.amplitude_detuning_analysis.analyse_with_bbq_corrections"><code class="docutils literal notranslate"><span class="pre">analyse_with_bbq_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.amplitude_detuning_analysis.double_action_analysis"><code class="docutils literal notranslate"><span class="pre">double_action_analysis()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.amplitude_detuning_analysis.get_approx_bbq_interval"><code class="docutils literal notranslate"><span class="pre">get_approx_bbq_interval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.amplitude_detuning_analysis.get_kick_and_bbq_df"><code class="docutils literal notranslate"><span class="pre">get_kick_and_bbq_df()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#omc3.amplitude_detuning_analysis.single_action_analysis"><code class="docutils literal notranslate"><span class="pre">single_action_analysis()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Correction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#global-correction">Global Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#response-creator">Response Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#correction-test">Correction Test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.response_creator.ResponseCreatorType"><code class="docutils literal notranslate"><span class="pre">ResponseCreatorType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.sbs_propagation.create_segment"><code class="docutils literal notranslate"><span class="pre">create_segment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.sbs_propagation.extend_segment"><code class="docutils literal notranslate"><span class="pre">extend_segment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.sbs_propagation.get_differences"><code class="docutils literal notranslate"><span class="pre">get_differences()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#omc3.sbs_propagation.segment_by_segment"><code class="docutils literal notranslate"><span class="pre">segment_by_segment()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="other.html">Other</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="other.html#tbt-converter">TbT Converter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="other.html#model-creator">Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="other.html#knob-extractor">Knob Extractor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.tbt_converter.converter_entrypoint"><code class="docutils literal notranslate"><span class="pre">converter_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.model_creator.create_instance_and_model"><code class="docutils literal notranslate"><span class="pre">create_instance_and_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.Col"><code class="docutils literal notranslate"><span class="pre">Col</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.Head"><code class="docutils literal notranslate"><span class="pre">Head</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.check_for_undefined_knobs"><code class="docutils literal notranslate"><span class="pre">check_for_undefined_knobs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.extract"><code class="docutils literal notranslate"><span class="pre">extract()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.get_state"><code class="docutils literal notranslate"><span class="pre">get_state()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.load_knobs_definitions"><code class="docutils literal notranslate"><span class="pre">load_knobs_definitions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.lsa2name"><code class="docutils literal notranslate"><span class="pre">lsa2name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.knob_extractor.name2lsa"><code class="docutils literal notranslate"><span class="pre">name2lsa()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.madx_wrapper.MadxError"><code class="docutils literal notranslate"><span class="pre">MadxError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.madx_wrapper.run_file"><code class="docutils literal notranslate"><span class="pre">run_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#omc3.madx_wrapper.run_string"><code class="docutils literal notranslate"><span class="pre">run_string()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-tfs">Plot TFS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-spectrum">Plot Spectrum</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-correction-test">Plot Correction Test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#plot-bbq">Plot BBQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_optics_measurements.get_plottfs_style_params"><code class="docutils literal notranslate"><span class="pre">get_plottfs_style_params()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_optics_measurements.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_tfs.get_id"><code class="docutils literal notranslate"><span class="pre">get_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_tfs.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_tfs.sort_data"><code class="docutils literal notranslate"><span class="pre">sort_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_spectrum.get_reshuffled_tab20c"><code class="docutils literal notranslate"><span class="pre">get_reshuffled_tab20c()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.get_plotting_style_parameters"><code class="docutils literal notranslate"><span class="pre">get_plotting_style_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.plot_checked_corrections"><code class="docutils literal notranslate"><span class="pre">plot_checked_corrections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.save_plots"><code class="docutils literal notranslate"><span class="pre">save_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_checked_corrections.show_plots"><code class="docutils literal notranslate"><span class="pre">show_plots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_amplitude_detuning.FitFuncs"><code class="docutils literal notranslate"><span class="pre">FitFuncs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_amplitude_detuning.plot_cube"><code class="docutils literal notranslate"><span class="pre">plot_cube()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr"><code class="docutils literal notranslate"><span class="pre">plot_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_amplitude_detuning.plot_odr_3d"><code class="docutils literal notranslate"><span class="pre">plot_odr_3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_kmod_results.plot_kmod_results"><code class="docutils literal notranslate"><span class="pre">plot_kmod_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_kmod_results.plot_parameter"><code class="docutils literal notranslate"><span class="pre">plot_parameter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#omc3.plotting.plot_bbq.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_amplitude"><code class="docutils literal notranslate"><span class="pre">convert_old_beta_from_amplitude()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_beta_from_phase"><code class="docutils literal notranslate"><span class="pre">convert_old_beta_from_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_closed_orbit"><code class="docutils literal notranslate"><span class="pre">convert_old_closed_orbit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_coupling"><code class="docutils literal notranslate"><span class="pre">convert_old_coupling()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_directory_to_new"><code class="docutils literal notranslate"><span class="pre">convert_old_directory_to_new()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_dispersion"><code class="docutils literal notranslate"><span class="pre">convert_old_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_normalised_dispersion"><code class="docutils literal notranslate"><span class="pre">convert_old_normalised_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_phase"><code class="docutils literal notranslate"><span class="pre">convert_old_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.convert_old_total_phase"><code class="docutils literal notranslate"><span class="pre">convert_old_total_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.betabeatsrc_output_converter.converter_entrypoint"><code class="docutils literal notranslate"><span class="pre">converter_entrypoint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_average.average_kmod_results"><code class="docutils literal notranslate"><span class="pre">average_kmod_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_average.get_average_betastar_results"><code class="docutils literal notranslate"><span class="pre">get_average_betastar_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_average.get_average_bpm_results"><code class="docutils literal notranslate"><span class="pre">get_average_bpm_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_import.convert_betastar_results"><code class="docutils literal notranslate"><span class="pre">convert_betastar_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_import.convert_bpm_results"><code class="docutils literal notranslate"><span class="pre">convert_bpm_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_import.import_kmod_data"><code class="docutils literal notranslate"><span class="pre">import_kmod_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_import.read_model_df"><code class="docutils literal notranslate"><span class="pre">read_model_df()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_lumi_imbalance.calculate_lumi_imbalance"><code class="docutils literal notranslate"><span class="pre">calculate_lumi_imbalance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_lumi_imbalance.get_effective_beta_star_w_err"><code class="docutils literal notranslate"><span class="pre">get_effective_beta_star_w_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_lumi_imbalance.get_imbalance_w_err"><code class="docutils literal notranslate"><span class="pre">get_imbalance_w_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.kmod_lumi_imbalance.get_lumi_imbalance_df"><code class="docutils literal notranslate"><span class="pre">get_lumi_imbalance_df()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.append_model_param"><code class="docutils literal notranslate"><span class="pre">append_model_param()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.append_model_s_and_phaseadv"><code class="docutils literal notranslate"><span class="pre">append_model_s_and_phaseadv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_beta"><code class="docutils literal notranslate"><span class="pre">create_beta()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_coupling"><code class="docutils literal notranslate"><span class="pre">create_coupling()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_dispersion"><code class="docutils literal notranslate"><span class="pre">create_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_measurement"><code class="docutils literal notranslate"><span class="pre">create_measurement()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_normalized_dispersion"><code class="docutils literal notranslate"><span class="pre">create_normalized_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_phase"><code class="docutils literal notranslate"><span class="pre">create_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_phase_advance"><code class="docutils literal notranslate"><span class="pre">create_phase_advance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.create_total_phase"><code class="docutils literal notranslate"><span class="pre">create_total_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.fake_measurement_from_model.generate"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.linfile_clean.clean_columns"><code class="docutils literal notranslate"><span class="pre">clean_columns()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.linfile_clean.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.linfile_clean.restore_files"><code class="docutils literal notranslate"><span class="pre">restore_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.HarpyReasons"><code class="docutils literal notranslate"><span class="pre">HarpyReasons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpm_files_in_dir"><code class="docutils literal notranslate"><span class="pre">collect_bad_bpm_files_in_dir()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpms"><code class="docutils literal notranslate"><span class="pre">collect_bad_bpms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.collect_date"><code class="docutils literal notranslate"><span class="pre">collect_date()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.evaluate"><code class="docutils literal notranslate"><span class="pre">evaluate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.get_empty_df"><code class="docutils literal notranslate"><span class="pre">get_empty_df()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.merge_reasons"><code class="docutils literal notranslate"><span class="pre">merge_reasons()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.print_results"><code class="docutils literal notranslate"><span class="pre">print_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.read_harpy_bad_bpms_file"><code class="docutils literal notranslate"><span class="pre">read_harpy_bad_bpms_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.bad_bpms_summary.read_iforest_bad_bpms_file"><code class="docutils literal notranslate"><span class="pre">read_iforest_bad_bpms_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.create_logbook_entry.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.lhc_corrector_list_check.check_variables"><code class="docutils literal notranslate"><span class="pre">check_variables()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.lhc_corrector_list_check.example"><code class="docutils literal notranslate"><span class="pre">example()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.lhc_corrector_list_check.get_lhc_correctors"><code class="docutils literal notranslate"><span class="pre">get_lhc_correctors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.lhc_corrector_list_check.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#omc3.scripts.lhc_corrector_list_check.parse_lhc_sequence"><code class="docutils literal notranslate"><span class="pre">parse_lhc_sequence()</span></code></a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules/correction.html">Correction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#filters">Filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#handler">Handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-appenders">Model Appenders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#model-diff">Model Diff</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-mad-x">Response MAD-X</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-twiss">Response TWISS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.filters.filter_measurement"><code class="docutils literal notranslate"><span class="pre">filter_measurement()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.filters.filter_response_index"><code class="docutils literal notranslate"><span class="pre">filter_response_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.handler.correct"><code class="docutils literal notranslate"><span class="pre">correct()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.handler.create_corrected_model"><code class="docutils literal notranslate"><span class="pre">create_corrected_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.handler.get_measurement_data"><code class="docutils literal notranslate"><span class="pre">get_measurement_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.handler.write_knob"><code class="docutils literal notranslate"><span class="pre">write_knob()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.handler.writeparams"><code class="docutils literal notranslate"><span class="pre">writeparams()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.arc_by_arc.circular_sum_phase"><code class="docutils literal notranslate"><span class="pre">circular_sum_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.arc_by_arc.circular_sum_phase_error"><code class="docutils literal notranslate"><span class="pre">circular_sum_phase_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.arc_by_arc.get_arc_by_arc_bpm_pairs"><code class="docutils literal notranslate"><span class="pre">get_arc_by_arc_bpm_pairs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.arc_by_arc.get_bpm_pair_phases"><code class="docutils literal notranslate"><span class="pre">get_bpm_pair_phases()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.arc_by_arc.get_left_right_pair"><code class="docutils literal notranslate"><span class="pre">get_left_right_pair()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.arc_by_arc.identify_closest_arc_bpm_to_ip"><code class="docutils literal notranslate"><span class="pre">identify_closest_arc_bpm_to_ip()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.arc_by_arc.reduce_phase_measurements_to_arcs"><code class="docutils literal notranslate"><span class="pre">reduce_phase_measurements_to_arcs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.model_appenders.add_coupling_to_model"><code class="docutils literal notranslate"><span class="pre">add_coupling_to_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.model_appenders.add_differences_to_model_to_measurements"><code class="docutils literal notranslate"><span class="pre">add_differences_to_model_to_measurements()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.model_diff.diff_twiss_parameters"><code class="docutils literal notranslate"><span class="pre">diff_twiss_parameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_madx.create_fullresponse"><code class="docutils literal notranslate"><span class="pre">create_fullresponse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_twiss.TwissResponse"><code class="docutils literal notranslate"><span class="pre">TwissResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_twiss.create_response"><code class="docutils literal notranslate"><span class="pre">create_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_twiss.dphi"><code class="docutils literal notranslate"><span class="pre">dphi()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_twiss.get_phase_advances"><code class="docutils literal notranslate"><span class="pre">get_phase_advances()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_twiss.response_add"><code class="docutils literal notranslate"><span class="pre">response_add()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_twiss.tau"><code class="docutils literal notranslate"><span class="pre">tau()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_twiss.upper"><code class="docutils literal notranslate"><span class="pre">upper()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.sequence_evaluation.check_varmap_file"><code class="docutils literal notranslate"><span class="pre">check_varmap_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.sequence_evaluation.evaluate_for_variables"><code class="docutils literal notranslate"><span class="pre">evaluate_for_variables()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_io.ignore_natural_name_warning"><code class="docutils literal notranslate"><span class="pre">ignore_natural_name_warning()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_io.read_fullresponse"><code class="docutils literal notranslate"><span class="pre">read_fullresponse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_io.read_varmap"><code class="docutils literal notranslate"><span class="pre">read_varmap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_io.write_fullresponse"><code class="docutils literal notranslate"><span class="pre">write_fullresponse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/correction.html#omc3.correction.response_io.write_varmap"><code class="docutils literal notranslate"><span class="pre">write_varmap()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/definitions.html">Definitions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#formats">Formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#optics">Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.formats.get_config_filename"><code class="docutils literal notranslate"><span class="pre">get_config_filename()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels"><code class="docutils literal notranslate"><span class="pre">ColumnsAndLabels</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.FILE_COLUMN_MAPPING"><code class="docutils literal notranslate"><span class="pre">FILE_COLUMN_MAPPING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement"><code class="docutils literal notranslate"><span class="pre">OpticsMeasurement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.POSITION_COLUMN_MAPPING"><code class="docutils literal notranslate"><span class="pre">POSITION_COLUMN_MAPPING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.RDT_IMAG_COLUMN"><code class="docutils literal notranslate"><span class="pre">RDT_IMAG_COLUMN</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/harpy.html">Harpy</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#clean">Clean</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#frequency">Frequency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#handler">Handler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.clean.clean"><code class="docutils literal notranslate"><span class="pre">clean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.clean.svd_decomposition"><code class="docutils literal notranslate"><span class="pre">svd_decomposition()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.frequency.clean_by_tune"><code class="docutils literal notranslate"><span class="pre">clean_by_tune()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.frequency.estimate_tunes"><code class="docutils literal notranslate"><span class="pre">estimate_tunes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.frequency.find_resonances"><code class="docutils literal notranslate"><span class="pre">find_resonances()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.frequency.get_freq_mask"><code class="docutils literal notranslate"><span class="pre">get_freq_mask()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.frequency.harpy_per_plane"><code class="docutils literal notranslate"><span class="pre">harpy_per_plane()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.frequency.windowed_padded_rfft"><code class="docutils literal notranslate"><span class="pre">windowed_padded_rfft()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.frequency.windowing"><code class="docutils literal notranslate"><span class="pre">windowing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.handler.run_per_bunch"><code class="docutils literal notranslate"><span class="pre">run_per_bunch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#omc3.harpy.kicker.phase_correction"><code class="docutils literal notranslate"><span class="pre">phase_correction()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#manager">Manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#accelerator">Accelerator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#esrf">ESRF</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc">LHC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps">PS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster">PS Booster</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#superkekb">SuperKEKB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#sps">SPS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#iota">Iota</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#petra">PETRA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#model-creator-manager">Model Creator Manager</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-model-creator">PS Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.manager.get_accelerator"><code class="docutils literal notranslate"><span class="pre">get_accelerator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.manager.get_accelerator_class"><code class="docutils literal notranslate"><span class="pre">get_accelerator_class()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.manager.get_parsed_opt"><code class="docutils literal notranslate"><span class="pre">get_parsed_opt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.constants.Fetcher"><code class="docutils literal notranslate"><span class="pre">Fetcher</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.AccElementTypes"><code class="docutils literal notranslate"><span class="pre">AccElementTypes</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator"><code class="docutils literal notranslate"><span class="pre">Accelerator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.AcceleratorDefinitionError"><code class="docutils literal notranslate"><span class="pre">AcceleratorDefinitionError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.find_called_files_with_tag"><code class="docutils literal notranslate"><span class="pre">find_called_files_with_tag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.esrf.Esrf"><code class="docutils literal notranslate"><span class="pre">Esrf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.generic.Generic"><code class="docutils literal notranslate"><span class="pre">Generic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.lhc.Lhc"><code class="docutils literal notranslate"><span class="pre">Lhc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.ps.Ps"><code class="docutils literal notranslate"><span class="pre">Ps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.psbooster.Psbooster"><code class="docutils literal notranslate"><span class="pre">Psbooster</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.skekb.SKekB"><code class="docutils literal notranslate"><span class="pre">SKekB</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.sps.Sps"><code class="docutils literal notranslate"><span class="pre">Sps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.iota.Iota"><code class="docutils literal notranslate"><span class="pre">Iota</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.petra.Petra"><code class="docutils literal notranslate"><span class="pre">Petra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.manager.CreatorType"><code class="docutils literal notranslate"><span class="pre">CreatorType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.manager.get_model_creator_class"><code class="docutils literal notranslate"><span class="pre">get_model_creator_class()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator"><code class="docutils literal notranslate"><span class="pre">LhcBestKnowledgeCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcCorrectionModelCreator"><code class="docutils literal notranslate"><span class="pre">LhcCorrectionModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator"><code class="docutils literal notranslate"><span class="pre">LhcModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcSegmentCreator"><code class="docutils literal notranslate"><span class="pre">LhcSegmentCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.ps_model_creator.PsModelCreator"><code class="docutils literal notranslate"><span class="pre">PsModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.psbooster_model_creator.PsboosterModelCreator"><code class="docutils literal notranslate"><span class="pre">PsboosterModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsCorrectionModelCreator"><code class="docutils literal notranslate"><span class="pre">SpsCorrectionModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator"><code class="docutils literal notranslate"><span class="pre">SpsModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.sps_model_creator.SpsSegmentCreator"><code class="docutils literal notranslate"><span class="pre">SpsSegmentCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.abstract_model_creator.CorrectionModelCreator"><code class="docutils literal notranslate"><span class="pre">CorrectionModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator"><code class="docutils literal notranslate"><span class="pre">ModelCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.abstract_model_creator.SegmentCreator"><code class="docutils literal notranslate"><span class="pre">SegmentCreator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/model.html#omc3.model.model_creators.abstract_model_creator.check_folder_choices"><code class="docutils literal notranslate"><span class="pre">check_folder_choices()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#chromatic">Chromatic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#data-models">Data Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#dispersion">Dispersion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#dpp">Dpp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#kick">Kick</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#toolbox">Toolbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#tune">Tune</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.chromatic_beating"><code class="docutils literal notranslate"><span class="pre">chromatic_beating()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.measure_optics"><code class="docutils literal notranslate"><span class="pre">measure_optics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.beta_from_amplitude.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination"><code class="docutils literal notranslate"><span class="pre">calculate_beta_alpha_from_single_combination()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.n_bpm_method"><code class="docutils literal notranslate"><span class="pre">n_bpm_method()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.three_bpm_method"><code class="docutils literal notranslate"><span class="pre">three_bpm_method()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.crdt.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.crdt.generic_dataframe"><code class="docutils literal notranslate"><span class="pre">generic_dataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles"><code class="docutils literal notranslate"><span class="pre">InputFiles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.data_models.check_and_warn_about_offmomentum_data"><code class="docutils literal notranslate"><span class="pre">check_and_warn_about_offmomentum_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.data_models.filter_for_dpp"><code class="docutils literal notranslate"><span class="pre">filter_for_dpp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.dispersion.calculate_dispersion"><code class="docutils literal notranslate"><span class="pre">calculate_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.dispersion.calculate_normalised_dispersion"><code class="docutils literal notranslate"><span class="pre">calculate_normalised_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.dispersion.calculate_orbit"><code class="docutils literal notranslate"><span class="pre">calculate_orbit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.dpp.append_amp_dpp"><code class="docutils literal notranslate"><span class="pre">append_amp_dpp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.dpp.append_dpp"><code class="docutils literal notranslate"><span class="pre">append_dpp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.dpp.arrange_dpps"><code class="docutils literal notranslate"><span class="pre">arrange_dpps()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.betastar_from_phase"><code class="docutils literal notranslate"><span class="pre">betastar_from_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.phase_to_betastar"><code class="docutils literal notranslate"><span class="pre">phase_to_betastar()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.interaction_point.write"><code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.kick.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.phase.PhaseDict"><code class="docutils literal notranslate"><span class="pre">PhaseDict</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.phase.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.phase.write"><code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.phase.write_special"><code class="docutils literal notranslate"><span class="pre">write_special()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.rdt.calculate"><code class="docutils literal notranslate"><span class="pre">calculate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.rdt.complex_secondary_lines"><code class="docutils literal notranslate"><span class="pre">complex_secondary_lines()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.rdt.get_linearized_problem"><code class="docutils literal notranslate"><span class="pre">get_linearized_problem()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.ang_interval_check"><code class="docutils literal notranslate"><span class="pre">ang_interval_check()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.ang_sum"><code class="docutils literal notranslate"><span class="pre">ang_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ang_diff"><code class="docutils literal notranslate"><span class="pre">df_ang_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_diff"><code class="docutils literal notranslate"><span class="pre">df_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_diff_with_err"><code class="docutils literal notranslate"><span class="pre">df_diff_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_err_sum"><code class="docutils literal notranslate"><span class="pre">df_err_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_prod"><code class="docutils literal notranslate"><span class="pre">df_prod()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_prod_with_err"><code class="docutils literal notranslate"><span class="pre">df_prod_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio"><code class="docutils literal notranslate"><span class="pre">df_ratio()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_ratio_with_err"><code class="docutils literal notranslate"><span class="pre">df_ratio_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff"><code class="docutils literal notranslate"><span class="pre">df_rel_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff_with_err"><code class="docutils literal notranslate"><span class="pre">df_rel_diff_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_err_sum"><code class="docutils literal notranslate"><span class="pre">df_rel_err_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum"><code class="docutils literal notranslate"><span class="pre">df_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum_with_err"><code class="docutils literal notranslate"><span class="pre">df_sum_with_err()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict"><code class="docutils literal notranslate"><span class="pre">TuneDict</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
@@ -167,31 +312,160 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#definitions">Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#propagables">Propagables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#segments">Segments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.definitions.MadXBoundaryConditions"><code class="docutils literal notranslate"><span class="pre">MadXBoundaryConditions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.Measurement"><code class="docutils literal notranslate"><span class="pre">Measurement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.SegmentBoundaryConditions"><code class="docutils literal notranslate"><span class="pre">SegmentBoundaryConditions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.phase_diff"><code class="docutils literal notranslate"><span class="pre">phase_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_alpha"><code class="docutils literal notranslate"><span class="pre">propagate_error_alpha()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_beta"><code class="docutils literal notranslate"><span class="pre">propagate_error_beta()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_dispersion"><code class="docutils literal notranslate"><span class="pre">propagate_error_dispersion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1001_amp"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1001_amp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1001_imag"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1001_imag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1001_phase"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1001_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1001_real"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1001_real()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1010_amp"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1010_amp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1010_imag"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1010_imag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1010_phase"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1010_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_f1010_real"><code class="docutils literal notranslate"><span class="pre">propagate_error_f1010_real()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.propagate_error_phase"><code class="docutils literal notranslate"><span class="pre">propagate_error_phase()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.math.quadratic_add"><code class="docutils literal notranslate"><span class="pre">quadratic_add()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SbsDefinitionError"><code class="docutils literal notranslate"><span class="pre">SbsDefinitionError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment"><code class="docutils literal notranslate"><span class="pre">Segment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs"><code class="docutils literal notranslate"><span class="pre">SegmentDiffs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentModels"><code class="docutils literal notranslate"><span class="pre">SegmentModels</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/tune_analysis.html">Tune Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#constants">Constants</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.AmpDetData"><code class="docutils literal notranslate"><span class="pre">AmpDetData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.FakeOdrOutput"><code class="docutils literal notranslate"><span class="pre">FakeOdrOutput</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_col"><code class="docutils literal notranslate"><span class="pre">get_action_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_err_col"><code class="docutils literal notranslate"><span class="pre">get_action_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_label"><code class="docutils literal notranslate"><span class="pre">get_action_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_bbq_col"><code class="docutils literal notranslate"><span class="pre">get_bbq_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_corr_natq_err_col"><code class="docutils literal notranslate"><span class="pre">get_corr_natq_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_detuning_exponent_for_order"><code class="docutils literal notranslate"><span class="pre">get_detuning_exponent_for_order()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_fine_cut_header"><code class="docutils literal notranslate"><span class="pre">get_fine_cut_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_fine_window_header"><code class="docutils literal notranslate"><span class="pre">get_fine_window_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_mav_col"><code class="docutils literal notranslate"><span class="pre">get_mav_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_mav_err_col"><code class="docutils literal notranslate"><span class="pre">get_mav_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_mav_window_header"><code class="docutils literal notranslate"><span class="pre">get_mav_window_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_max_tune_header"><code class="docutils literal notranslate"><span class="pre">get_max_tune_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_min_tune_header"><code class="docutils literal notranslate"><span class="pre">get_min_tune_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_natq_col"><code class="docutils literal notranslate"><span class="pre">get_natq_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_natq_corr_col"><code class="docutils literal notranslate"><span class="pre">get_natq_corr_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_natq_err_col"><code class="docutils literal notranslate"><span class="pre">get_natq_err_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_coeff"><code class="docutils literal notranslate"><span class="pre">get_odr_header_coeff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_coeff_corrected"><code class="docutils literal notranslate"><span class="pre">get_odr_header_coeff_corrected()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_err_coeff"><code class="docutils literal notranslate"><span class="pre">get_odr_header_err_coeff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_err_coeff_corrected"><code class="docutils literal notranslate"><span class="pre">get_odr_header_err_coeff_corrected()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_outlier_limit_header"><code class="docutils literal notranslate"><span class="pre">get_outlier_limit_header()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_tend_head"><code class="docutils literal notranslate"><span class="pre">get_tend_head()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_timber_bbq_key"><code class="docutils literal notranslate"><span class="pre">get_timber_bbq_key()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_time_col"><code class="docutils literal notranslate"><span class="pre">get_time_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_tstart_head"><code class="docutils literal notranslate"><span class="pre">get_tstart_head()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_tune_label"><code class="docutils literal notranslate"><span class="pre">get_tune_label()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.constants.get_used_in_mav_col"><code class="docutils literal notranslate"><span class="pre">get_used_in_mav_col()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.MinMaxFilterOpt"><code class="docutils literal notranslate"><span class="pre">MinMaxFilterOpt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.OutlierFilterOpt"><code class="docutils literal notranslate"><span class="pre">OutlierFilterOpt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average"><code class="docutils literal notranslate"><span class="pre">clean_outliers_moving_average()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average"><code class="docutils literal notranslate"><span class="pre">get_moving_average()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.do_2d_kicks_odr"><code class="docutils literal notranslate"><span class="pre">do_2d_kicks_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.do_odr"><code class="docutils literal notranslate"><span class="pre">do_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.first_order_detuning_2d"><code class="docutils literal notranslate"><span class="pre">first_order_detuning_2d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jacobian"><code class="docutils literal notranslate"><span class="pre">first_order_detuning_2d_jacobian()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.get_poly_fun"><code class="docutils literal notranslate"><span class="pre">get_poly_fun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.map_odr_fit_to_planes"><code class="docutils literal notranslate"><span class="pre">map_odr_fit_to_planes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_bbq_data"><code class="docutils literal notranslate"><span class="pre">add_bbq_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes"><code class="docutils literal notranslate"><span class="pre">add_corrected_natural_tunes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_moving_average"><code class="docutils literal notranslate"><span class="pre">add_moving_average()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_odr"><code class="docutils literal notranslate"><span class="pre">add_odr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickdataframe"><code class="docutils literal notranslate"><span class="pre">convert_bbs_kickdataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickfile"><code class="docutils literal notranslate"><span class="pre">convert_bbs_kickfile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data"><code class="docutils literal notranslate"><span class="pre">get_ampdet_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_odr_data"><code class="docutils literal notranslate"><span class="pre">get_odr_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.extract_between_times"><code class="docutils literal notranslate"><span class="pre">extract_between_times()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_fill_times"><code class="docutils literal notranslate"><span class="pre">get_fill_times()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_tune_and_coupling_variables"><code class="docutils literal notranslate"><span class="pre">get_tune_and_coupling_variables()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/tune_analysis.html#omc3.tune_analysis.timber_extract.lhc_fill_to_tfs"><code class="docutils literal notranslate"><span class="pre">lhc_fill_to_tfs()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/utils.html">Utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#contexts">Contexts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#io-tools">IO Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#logging-tools">Logging Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#math-classes">Math Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#mock">Mock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#outliers">Outliers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#stats">Stats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#time-tools">Time Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.contexts.log_out"><code class="docutils literal notranslate"><span class="pre">log_out()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.contexts.silence"><code class="docutils literal notranslate"><span class="pre">silence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.contexts.suppress_warnings"><code class="docutils literal notranslate"><span class="pre">suppress_warnings()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.contexts.timeit"><code class="docutils literal notranslate"><span class="pre">timeit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.OptionalStr"><code class="docutils literal notranslate"><span class="pre">OptionalStr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.PathOrStr"><code class="docutils literal notranslate"><span class="pre">PathOrStr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.PathOrStrOrDataFrame"><code class="docutils literal notranslate"><span class="pre">PathOrStrOrDataFrame</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.PathOrStrOrDict"><code class="docutils literal notranslate"><span class="pre">PathOrStrOrDict</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.UnionPathStr"><code class="docutils literal notranslate"><span class="pre">UnionPathStr</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.UnionPathStrInt"><code class="docutils literal notranslate"><span class="pre">UnionPathStrInt</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.always_true"><code class="docutils literal notranslate"><span class="pre">always_true()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.convert_paths_in_dict_to_strings"><code class="docutils literal notranslate"><span class="pre">convert_paths_in_dict_to_strings()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.copy_content_of_dir"><code class="docutils literal notranslate"><span class="pre">copy_content_of_dir()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.copy_item"><code class="docutils literal notranslate"><span class="pre">copy_item()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.create_dirs"><code class="docutils literal notranslate"><span class="pre">create_dirs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.find_file"><code class="docutils literal notranslate"><span class="pre">find_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.get_check_by_regex_func"><code class="docutils literal notranslate"><span class="pre">get_check_by_regex_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.get_check_suffix_func"><code class="docutils literal notranslate"><span class="pre">get_check_suffix_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.glob_regex"><code class="docutils literal notranslate"><span class="pre">glob_regex()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.load_multiple_jsons"><code class="docutils literal notranslate"><span class="pre">load_multiple_jsons()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.maybe_add_command"><code class="docutils literal notranslate"><span class="pre">maybe_add_command()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.remove_none_dict_entries"><code class="docutils literal notranslate"><span class="pre">remove_none_dict_entries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.replace_in_path"><code class="docutils literal notranslate"><span class="pre">replace_in_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.save_config"><code class="docutils literal notranslate"><span class="pre">save_config()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.iotools.strip_quotes"><code class="docutils literal notranslate"><span class="pre">strip_quotes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.knob_list_manipulations.get_vars_by_classes"><code class="docutils literal notranslate"><span class="pre">get_vars_by_classes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.DebugMode"><code class="docutils literal notranslate"><span class="pre">DebugMode</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.MaxFilter"><code class="docutils literal notranslate"><span class="pre">MaxFilter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.TempFile"><code class="docutils literal notranslate"><span class="pre">TempFile</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.TempStringLogger"><code class="docutils literal notranslate"><span class="pre">TempStringLogger</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.add_module_handler"><code class="docutils literal notranslate"><span class="pre">add_module_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.add_root_handler"><code class="docutils literal notranslate"><span class="pre">add_root_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.file_handler"><code class="docutils literal notranslate"><span class="pre">file_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.getLogger"><code class="docutils literal notranslate"><span class="pre">getLogger()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.get_my_logger_name"><code class="docutils literal notranslate"><span class="pre">get_my_logger_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.list2str"><code class="docutils literal notranslate"><span class="pre">list2str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.log_pandas_settings_with_copy"><code class="docutils literal notranslate"><span class="pre">log_pandas_settings_with_copy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.logging_silence"><code class="docutils literal notranslate"><span class="pre">logging_silence()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.odr_pprint"><code class="docutils literal notranslate"><span class="pre">odr_pprint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.stream_handler"><code class="docutils literal notranslate"><span class="pre">stream_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.logging_tools.unformatted_console_logging"><code class="docutils literal notranslate"><span class="pre">unformatted_console_logging()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.math_classes.MathMixin"><code class="docutils literal notranslate"><span class="pre">MathMixin</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.misc.StrEnum"><code class="docutils literal notranslate"><span class="pre">StrEnum</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.mock.CERNNetworkMockPackage"><code class="docutils literal notranslate"><span class="pre">CERNNetworkMockPackage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.mock.cern_network_import"><code class="docutils literal notranslate"><span class="pre">cern_network_import()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.outliers.get_filter_mask"><code class="docutils literal notranslate"><span class="pre">get_filter_mask()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_error"><code class="docutils literal notranslate"><span class="pre">circular_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_mean"><code class="docutils literal notranslate"><span class="pre">circular_mean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_nanerror"><code class="docutils literal notranslate"><span class="pre">circular_nanerror()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_nanmean"><code class="docutils literal notranslate"><span class="pre">circular_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.circular_rms"><code class="docutils literal notranslate"><span class="pre">circular_rms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.effective_sample_size"><code class="docutils literal notranslate"><span class="pre">effective_sample_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.rms"><code class="docutils literal notranslate"><span class="pre">rms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.t_value_correction"><code class="docutils literal notranslate"><span class="pre">t_value_correction()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.unbias_variance"><code class="docutils literal notranslate"><span class="pre">unbias_variance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weighted_error"><code class="docutils literal notranslate"><span class="pre">weighted_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weighted_mean"><code class="docutils literal notranslate"><span class="pre">weighted_mean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weighted_nanmean"><code class="docutils literal notranslate"><span class="pre">weighted_nanmean()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weighted_nanrms"><code class="docutils literal notranslate"><span class="pre">weighted_nanrms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weighted_rms"><code class="docutils literal notranslate"><span class="pre">weighted_rms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.stats.weights_from_errors"><code class="docutils literal notranslate"><span class="pre">weights_from_errors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.AccDatetime"><code class="docutils literal notranslate"><span class="pre">AccDatetime</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.AcceleratorDatetime"><code class="docutils literal notranslate"><span class="pre">AcceleratorDatetime</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.CERNDatetime"><code class="docutils literal notranslate"><span class="pre">CERNDatetime</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.cern_utc_string_to_utc"><code class="docutils literal notranslate"><span class="pre">cern_utc_string_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.check_tz"><code class="docutils literal notranslate"><span class="pre">check_tz()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.get_cern_time_format"><code class="docutils literal notranslate"><span class="pre">get_cern_time_format()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.get_cern_timezone"><code class="docutils literal notranslate"><span class="pre">get_cern_timezone()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.get_readable_time_format"><code class="docutils literal notranslate"><span class="pre">get_readable_time_format()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.local_string_to_utc"><code class="docutils literal notranslate"><span class="pre">local_string_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.local_to_utc"><code class="docutils literal notranslate"><span class="pre">local_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.parse_time"><code class="docutils literal notranslate"><span class="pre">parse_time()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.utc_now"><code class="docutils literal notranslate"><span class="pre">utc_now()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.utc_string_to_utc"><code class="docutils literal notranslate"><span class="pre">utc_string_to_utc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.utc_to_local"><code class="docutils literal notranslate"><span class="pre">utc_to_local()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -227,10 +501,14 @@
     <h4 id="local-table-of-contents-title">On This Page</h4>
     <ul>
 <li><a class="reference internal" href="#">Correction</a><ul>
-<li><a class="reference internal" href="#global-correction">Global Correction</a></li>
-<li><a class="reference internal" href="#response-creator">Response Creator</a></li>
-<li><a class="reference internal" href="#correction-test">Correction Test</a></li>
-<li><a class="reference internal" href="#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+<li><a class="reference internal" href="#omc3.global_correction.global_correction_entrypoint"><code class="docutils literal notranslate"><span class="pre">global_correction_entrypoint()</span></code></a></li>
+<li><a class="reference internal" href="#omc3.response_creator.ResponseCreatorType"><code class="docutils literal notranslate"><span class="pre">ResponseCreatorType</span></code></a></li>
+<li><a class="reference internal" href="#omc3.response_creator.create_response_entrypoint"><code class="docutils literal notranslate"><span class="pre">create_response_entrypoint()</span></code></a></li>
+<li><a class="reference internal" href="#omc3.check_corrections.correction_test_entrypoint"><code class="docutils literal notranslate"><span class="pre">correction_test_entrypoint()</span></code></a></li>
+<li><a class="reference internal" href="#omc3.sbs_propagation.create_segment"><code class="docutils literal notranslate"><span class="pre">create_segment()</span></code></a></li>
+<li><a class="reference internal" href="#omc3.sbs_propagation.extend_segment"><code class="docutils literal notranslate"><span class="pre">extend_segment()</span></code></a></li>
+<li><a class="reference internal" href="#omc3.sbs_propagation.get_differences"><code class="docutils literal notranslate"><span class="pre">get_differences()</span></code></a></li>
+<li><a class="reference internal" href="#omc3.sbs_propagation.segment_by_segment"><code class="docutils literal notranslate"><span class="pre">segment_by_segment()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -242,431 +520,28 @@
              
   <section id="correction">
 <h1>Correction<a class="headerlink" href="#correction" title="Link to this heading"></a></h1>
-<section id="global-correction">
-<h2>Global Correction<a class="headerlink" href="#global-correction" title="Link to this heading"></a></h2>
-<p>Iterative Correction Scheme.</p>
-<p>The response matrices <span class="math notranslate nohighlight">\(R_{O}\)</span> for the observables <span class="math notranslate nohighlight">\(O\)</span> (e.g. BBX, PHASEX, …)
-are loaded from a file and then the equation</p>
-<div class="math notranslate nohighlight" id="equation-eq1">
-<span class="eqno">(1)<a class="headerlink" href="#equation-eq1" title="Link to this equation"></a></span>\[R_{O} \cdot \delta var = O_{meas} - O_{model}\]</div>
-<p>is being solved for <span class="math notranslate nohighlight">\(\delta var\)</span> via a chosen method (at the moment only numpys pinv,
-which creates a pseudo-inverse via svd is used).</p>
-<p>The response matrices are hereby merged into one matrix for all observables to solve for all
-<span class="math notranslate nohighlight">\(\delta var\)</span> at the same time.</p>
-<p>To normalize the observables to another <code class="docutils literal notranslate"><span class="pre">weights</span></code> (W) can be applied.</p>
-<p>Furthermore, an <code class="docutils literal notranslate"><span class="pre">errorcut</span></code>, specifying the maximum errorbar for a BPM to be used, and
-<code class="docutils literal notranslate"><span class="pre">modelcut</span></code>, specifying the maximum distance between measurement and model for a BPM to be used,
-can be defined. Data from BPMs outside of those cut-values will be discarded.
-These cuts are defined for each observable separately.</p>
-<p>After each iteration the model variables are changed by <span class="math notranslate nohighlight">\(-\delta var\)</span> and the
-observables are recalculated by Mad-X.
-<a class="reference internal" href="#equation-eq1">(1)</a> is then solved again.</p>
-<p>Input arguments are split into correction arguments and accelerator arguments.
-The former are listed below, the latter depend on the accelerator you want
-to use. Check <a class="reference internal" href="../modules/model.html#model"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
-<p><strong>Arguments:</strong></p>
-<p><em>--Required--</em></p>
-<ul>
-<li><p><strong>meas_dir</strong>:</p>
-<blockquote>
-<div><p>Path to the directory containing the measurement files.</p>
-</div></blockquote>
-</li>
-<li><p><strong>output_dir</strong>:</p>
-<blockquote>
-<div><p>Path to the directory where to write the output files.</p>
-</div></blockquote>
-</li>
-</ul>
-<p><em>--Optional--</em></p>
-<ul>
-<li><p><strong>beta_filename</strong>:</p>
-<blockquote>
-<div><p>Prefix of the beta file to use. E.g.: getkmodbeta</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">beta_phase_</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>errorcut</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Reject BPMs whose error bar is higher than the corresponding input.
-Input in order of optics_params.</p>
-</div></blockquote>
-</li>
-<li><p><strong>fullresponse_path</strong>:</p>
-<blockquote>
-<div><p>Path to the fullresponse binary file. If not given, calculates the
-response analytically.</p>
-</div></blockquote>
-</li>
-<li><p><strong>max_iter</strong> <em>(int)</em>:</p>
-<blockquote>
-<div><p>Maximum number of correction re-iterations to perform. A value of <cite>0</cite>
-means the correction is calculated once.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>method</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Optimization method to use.</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">('pinv',</span> <span class="pre">'omp')</span></code></p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">pinv</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>min_corrector_strength</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Minimum (absolute) strength of correctors.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>modelcut</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Reject BPMs whose deviation to the model is higher than the
-corresponding input. Input in order of optics_params.</p>
-</div></blockquote>
-</li>
-<li><p><strong>n_correctors</strong> <em>(int)</em>:</p>
-<blockquote>
-<div><p>Maximum number of correctors to use. (Method: ‘omp’)</p>
-</div></blockquote>
-</li>
-<li><p><strong>optics_params</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>List of parameters to correct upon (e.g. BETX BETY)</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'Q',</span> <span class="pre">'F1001R',</span> <span class="pre">'F1001I',</span> <span class="pre">'F1010R',</span> <span class="pre">'F1010I')</span></code></p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">['PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'NDX',</span> <span class="pre">'Q']</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>output_filename</strong>:</p>
-<blockquote>
-<div><p>Identifier of the output files.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">changeparameters_iter</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>svd_cut</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Cutoff for small singular values of the pseudo inverse. (Method:
-‘pinv’)Singular values smaller than rcond*largest_singular_value are
-set to zero</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>update_response</strong>:</p>
-<blockquote>
-<div><p>Update the (analytical) response per iteration.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>use_errorbars</strong>:</p>
-<blockquote>
-<div><p>Take into account the measured errorbars in the correction.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>variable_categories</strong>:</p>
-<blockquote>
-<div><p>List of names of the variables classes to use.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">['MQM',</span> <span class="pre">'MQT',</span> <span class="pre">'MQTL',</span> <span class="pre">'MQY']</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>weights</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Weight to apply to each measured quantity. Input in order of
-optics_params.</p>
-</div></blockquote>
-</li>
-</ul>
-<dl class="simple">
-<dt>Possible problems and notes (lmalina, 2020):</dt><dd><ul class="simple">
-<li><p>error-based weights default? likely - but be careful with low tune errors vs svd cut in pseudoinverse</p></li>
-<li><p>manual creation of pd.DataFrame varslist, deltas? maybe tunes in tfs_pandas single value or a column?</p></li>
-<li><p>There should be some summation/renaming for iterations</p></li>
-<li><p>For two beam correction</p></li>
-<li><p>The two beams can be treated separately until the calculation of correction</p></li>
-<li><p>Values missing in the response (i.e. correctors of the other beam) shall be treated as zeros</p></li>
-<li><p>Missing a part that treats the output from LSA</p></li>
-</ul>
-</dd>
-</dl>
-</section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.global_correction.global_correction_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.global_correction.global_correction_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Do the global correction. Iteratively.</p>
 </dd></dl>
 
-<section id="response-creator">
-<h2>Response Creator<a class="headerlink" href="#response-creator" title="Link to this heading"></a></h2>
-<p>Provides a response generation wrapper.
-The response matrices can be either created by <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_madx</span></code>
-or analytically via <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_twiss</span></code>.</p>
-<p>Input arguments are split into response creation arguments and accelerator arguments.
-The former are listed below, the latter depend on the accelerator you want
-to use. Check <a class="reference internal" href="../modules/model.html#model"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
-<p><strong>Arguments:</strong></p>
-<p><em>--Optional--</em></p>
-<ul>
-<li><p><strong>outfile_path</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Name of fullresponse file.</p>
-</div></blockquote>
-</li>
-<li><p><strong>creator</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Create either with madx or analytically from twiss file.</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">('madx',</span> <span class="pre">'twiss')</span></code></p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">madx</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>debug</strong>:</p>
-<blockquote>
-<div><p>Print debug information.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>delta_k</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Delta K1 to be applied to quads for sensitivity matrix (madx-only).</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">2e-05</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>optics_params</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>List of parameters to correct upon (e.g. BBX BBY; twiss-only).</p>
-</div></blockquote>
-</li>
-<li><p><strong>variable_categories</strong>:</p>
-<blockquote>
-<div><p>List of the variables classes to use.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">['MQM',</span> <span class="pre">'MQT',</span> <span class="pre">'MQTL',</span> <span class="pre">'MQY']</span></code></p>
-</div></blockquote>
-</li>
-</ul>
-</section>
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">ResponseCreatorType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#ResponseCreatorType"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.response_creator.ResponseCreatorType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">ResponseCreatorType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#ResponseCreatorType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.ResponseCreatorType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.response_creator.create_response_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.create_response_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Entry point for creating pandas-based response matrices.</p>
 <p>The response matrices can be either created by response_madx or TwissResponse.</p>
 <p>TODO: Add support to give fetcher? But for know we assume the acc-model path is still in the model_dir.</p>
 </dd></dl>
 
-<section id="correction-test">
-<h2>Correction Test<a class="headerlink" href="#correction-test" title="Link to this heading"></a></h2>
-<p>In a MAD-X simulation (pre-calculated) corrections are applied to the (nominal)
-model and the difference between this new matched model and the nominal model
-are evaluated. These are the changes in the optics parameters as
-expected from the corrections and are later subtracted from the original
-model-measurement DELTA (see below).
-In new folders, either the given output folder or sub-folders,
-based on the name of the correction applied, the measurement data will be
-written out into the standard optics tfs-files with three additional columns:</p>
-<dl class="simple">
-<dt>DIFF-column:</dt><dd><p>Difference between the corrected and uncorrected model,
-i.e. the expected correction influence (with inverted sign).
-The beta-diff is beta-beating.
-The difference normalized-dispersion is also properly calculated.</p>
-</dd>
-<dt>EXP-column :</dt><dd><p>This column is calculated by subtracting the DIFF-column
-from the original DELTA-column (i.e. the difference between
-measurement and model) and is therefore the
-expected difference of model and measurement (i.e.
-DELTA-Measurement) after correction.
-For beta-beating this might be only approximate
-as it assumes, that the model used to calculate
-the DELTA-columns in the measurement and the
-nominal model used for the corrections are identical
-(if e.g. best-knowledge model is used, the
-expectation is only approximate).</p>
-</dd>
-<dt>ERREXP-column:</dt><dd><p>This is the error on the EXP-column.
-This is the measurement error in most cases,
-apart from in beta and normalized dispersion,
-where we account for beating and normalization.</p>
-</dd>
-</dl>
-<p>There will also be the RMS values of the DIFF and EXP columns
-in the headers of the files.
-If error- and/or measurement cuts were given, additional RMS headers
-will be present, taking these cuts into account.
-This is the only use for the given cuts and optics parameters.</p>
-<p>If plotting is activated, also plots for each correction (DIFFerence and EXPected) as
-well as a plot for all corrections (only EXPected) will be saved into the output folder(s).</p>
-<p><strong>Arguments:</strong></p>
-<p><em>--Required--</em></p>
-<ul>
-<li><p><strong>corrections</strong> <em>(PathOrStr)</em>:</p>
-<blockquote>
-<div><p>Paths to the correction files/directories to use. If files are given,
-these will all be applied as corrections at the same time. If folders
-are given, these are assumed to individually containing the correction
-files. See then also <code class="docutils literal notranslate"><span class="pre">file_pattern</span></code>.</p>
-</div></blockquote>
-</li>
-<li><p><strong>meas_dir</strong> <em>(PathOrStr)</em>:</p>
-<blockquote>
-<div><p>Path to the directory containing the measurement files.</p>
-</div></blockquote>
-</li>
-<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
-<blockquote>
-<div><p>Path to the directory where to write the output files. If the
-<code class="docutils literal notranslate"><span class="pre">corrections</span></code> input consists of multiple folders, their name will be
-used to sort the output data into subfolders.</p>
-</div></blockquote>
-</li>
-</ul>
-<p><em>--Optional--</em></p>
-<ul>
-<li><p><strong>beta_filename</strong>:</p>
-<blockquote>
-<div><p>Prefix of the beta file to use. E.g.: <code class="docutils literal notranslate"><span class="pre">beta_phase_</span></code></p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">beta_phase_</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>change_marker</strong>:</p>
-<blockquote>
-<div><p>Changes marker for each line in the plot.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>combine_by</strong>:</p>
-<blockquote>
-<div><p>Combine plots into one. Either files, planes (not separated into two
-axes) or both.</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">['files',</span> <span class="pre">'planes']</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>errorbar_alpha</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Alpha value for error bars</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">0.6</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>errorcut</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Reject BPMs whose error bar is higher than the corresponding input.
-Input in order of optics_params.</p>
-</div></blockquote>
-</li>
-<li><p><strong>file_pattern</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Filepattern to use to find correction files in folders (as regex).</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">^changeparameters*?\.madx$</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>individual_to_input</strong>:</p>
-<blockquote>
-<div><p>Save plots for the individual corrections into the corrections input
-folders. Otherwise they go with suffix into the output_folders.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>ip_positions</strong>:</p>
-<blockquote>
-<div><p>Input to plot IP-Positions into the plots. Either ‘LHCB1’ or ‘LHCB2’
-for LHC defaults, a dictionary of labels and positions or path to TFS
-file of a model.</p>
-</div></blockquote>
-</li>
-<li><p><strong>ip_search_pattern</strong>:</p>
-<blockquote>
-<div><p>In case your IPs have a weird name. Specify regex pattern.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">IP\d$</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>lines_manual</strong> <em>(DictAsString)</em>:</p>
-<blockquote>
-<div><p>List of manual lines to plot. Need to contain arguments for axvline,
-and may contain the additional keys “text” and “loc” which is one of
-[‘bottom’, ‘top’, ‘line bottom’, ‘line top’] and places the text at
-the given location.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>manual_style</strong> <em>(DictAsString)</em>:</p>
-<blockquote>
-<div><p>Additional style rcParameters which update the set of predefined ones.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>modelcut</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Reject BPMs whose deviation to the model is higher than the
-corresponding input. Input in order of optics_params.</p>
-</div></blockquote>
-</li>
-<li><p><strong>ncol_legend</strong> <em>(int)</em>:</p>
-<blockquote>
-<div><p>Number of bpm legend-columns. If &lt; 1 no legend is shown.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>optics_params</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>List of parameters for which the cuts should be applied (e.g. BETX
-BETY)</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'NDX',</span> <span class="pre">'Q',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'F1001R',</span> <span class="pre">'F1001I',</span> <span class="pre">'F1010R',</span> <span class="pre">'F1010I')</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>plot</strong>:</p>
-<blockquote>
-<div><p>Activate plotting.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>plot_styles</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Which plotting styles to use, either from plotting.styles.*.mplstyles
-or default mpl.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">['standard',</span> <span class="pre">'correction_test']</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>share_xaxis</strong>:</p>
-<blockquote>
-<div><p>In case of multiple axes per figure, share x-axis.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>show</strong>:</p>
-<blockquote>
-<div><p>Shows plots.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>suppress_column_legend</strong>:</p>
-<blockquote>
-<div><p>Does not show column name in legend e.g. when combining by files (see
-also <cite>ncol_legend</cite>).</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>x_axis</strong>:</p>
-<blockquote>
-<div><p>Which parameter to use for the x axis.</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">['location',</span> <span class="pre">'phase-advance']</span></code></p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">location</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>x_lim</strong> <em>(MultiClass)</em>:</p>
-<blockquote>
-<div><p>Limits on the x axis (Tupel)</p>
-</div></blockquote>
-</li>
-<li><p><strong>y_lim</strong> <em>(MultiClass)</em>:</p>
-<blockquote>
-<div><p>Limits on the y axis (Tupel)</p>
-</div></blockquote>
-</li>
-</ul>
-</section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.check_corrections.</span></span><span class="sig-name descname"><span class="pre">correction_test_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/check_corrections.html#correction_test_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.check_corrections.correction_test_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.check_corrections.</span></span><span class="sig-name descname"><span class="pre">correction_test_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/check_corrections.html#correction_test_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.check_corrections.correction_test_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Entrypoint function to test the given corrections.</p>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
@@ -676,51 +551,9 @@ But I don’t see a usecase at the moment (jdilly 2023)</p>
 </div>
 </dd></dl>
 
-<section id="segment-by-segment-propagation">
-<h2>Segment-by-Segment Propagation<a class="headerlink" href="#segment-by-segment-propagation" title="Link to this heading"></a></h2>
-<p>Runs the Segment-by-Segment propagation,
-i.e. it uses the measured values at the beginning (or the end) of the segments as inputs
-to propagate via MAD-X through the given segments.
-It then compares the propagated values with the measured values in that segment.</p>
-<p><strong>Arguments:</strong></p>
-<p><em>--Required--</em></p>
-<ul>
-<li><p><strong>measurement_dir</strong> <em>(PathOrStr)</em>:</p>
-<blockquote>
-<div><p>Path to the measurement files.</p>
-</div></blockquote>
-</li>
-</ul>
-<p><em>--Optional--</em></p>
-<ul>
-<li><p><strong>corrections</strong> <em>(PathOrStrOrDict)</em>:</p>
-<blockquote>
-<div><p>Corrections to use. Can be a dict of knob-value pairs, a MAD-X string
-or a path to a file. Note: all segments will have these corrections.</p>
-</div></blockquote>
-</li>
-<li><p><strong>elements</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Element name list to run in element mode.</p>
-</div></blockquote>
-</li>
-<li><p><strong>segments</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Segments to run in segment mode with format:
-<code class="docutils literal notranslate"><span class="pre">segment_name,start,end</span></code>, where start and end must be existing BPM
-names.</p>
-</div></blockquote>
-</li>
-<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
-<blockquote>
-<div><p>Output directory. If not given, the model-directory is used.</p>
-</div></blockquote>
-</li>
-</ul>
-</section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">create_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MADXInputType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetcher_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#create_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.create_segment">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">create_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><span class="pre">Segment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement" title="omc3.definitions.optics.OpticsMeasurement"><span class="pre">OpticsMeasurement</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MADXInputType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetcher_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#create_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.create_segment" title="Link to this definition"></a></dt>
 <dd><p>Perform the computations on the segment.
 The segment is adapted fist, so that the given start and end bpms are in the measurement.
 Then madx is run to create the specified segments and the output files
@@ -729,9 +562,9 @@ are then returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>accel</strong> (<em>Accelerator</em>) -- Accelerator instance. Needs to be loaded from model directory</p></li>
-<li><p><strong>segment_in</strong> (<em>Segment</em>) -- Rough Segment specification. Might be refined later.</p></li>
-<li><p><strong>measurement</strong> (<em>OpticsMeasurement</em>) -- TfsCollection of the optics measurement files.</p></li>
+<li><p><strong>accel</strong> (<a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator instance. Needs to be loaded from model directory</p></li>
+<li><p><strong>segment_in</strong> (<a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><em>Segment</em></a>) -- Rough Segment specification. Might be refined later.</p></li>
+<li><p><strong>measurement</strong> (<a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement" title="omc3.definitions.optics.OpticsMeasurement"><em>OpticsMeasurement</em></a>) -- TfsCollection of the optics measurement files.</p></li>
 <li><p><strong>corrections</strong> (<em>MADXInputType</em>) -- Corrections to use. Can be a dict of knob-value pairs,
 a MAD-X string or a path to a file.</p></li>
 <li><p><strong>fetcher_opts</strong> (<em>DotDict</em>) -- Options for the fetcher, if needed.</p></li>
@@ -744,8 +577,8 @@ a MAD-X string or a path to a file.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">extend_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Segment</span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#extend_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.extend_segment">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">extend_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><span class="pre">Segment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement" title="omc3.definitions.optics.OpticsMeasurement"><span class="pre">OpticsMeasurement</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><span class="pre">Segment</span></a></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#extend_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.extend_segment" title="Link to this definition"></a></dt>
 <dd><p>Returns a new segment with elements that are contained in the measurement.</p>
 <p>This function takes a segment with start and end that might not
 be in the measurement and searches the next element that satisfies
@@ -753,7 +586,7 @@ it, returning a new segment with the new start and end elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>segment</strong> (<em>Segment</em>) -- The segment to be processed (see Segment class).</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><em>Segment</em></a>) -- The segment to be processed (see Segment class).</p></li>
 <li><p><strong>model</strong> (<em>pd.DataFrame</em>) -- The model where to take all the element names from. Both the
 start and end of the segment have to be present in this model
 NAME attribute.</p></li>
@@ -767,8 +600,8 @@ same name and element attributes.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">get_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propagables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SegmentDiffs</span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#get_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.get_differences">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">get_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propagables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs" title="omc3.segment_by_segment.segments.SegmentDiffs"><span class="pre">SegmentDiffs</span></a></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#get_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.get_differences" title="Link to this definition"></a></dt>
 <dd><p>Calculate the differences of the propagated model and the measurement and write
 them out into files (if <code class="docutils literal notranslate"><span class="pre">output</span></code> had been given).</p>
 <dl class="field-list simple">
@@ -783,14 +616,14 @@ them out into files (if <code class="docutils literal notranslate"><span class="
 <dd class="field-even"><p>TfsCollection of the differences per propagable.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>SegmentDiffs</p>
+<dd class="field-odd"><p><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs" title="omc3.segment_by_segment.segments.SegmentDiffs">SegmentDiffs</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">segment_by_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">SegmentDiffs</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#segment_by_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.segment_by_segment">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">segment_by_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs" title="omc3.segment_by_segment.segments.SegmentDiffs"><span class="pre">SegmentDiffs</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#segment_by_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.segment_by_segment" title="Link to this definition"></a></dt>
 <dd><p>Run the segment-by-segment propagation.</p>
 <dl class="simple">
 <dt>Note: The corrections are the same for each segment, which means we only need to create</dt><dd><p>them once, and for the remaining segments, we could just give the path to the output

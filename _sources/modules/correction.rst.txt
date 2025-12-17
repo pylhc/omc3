@@ -3,50 +3,50 @@ Correction
 
 .. automodule:: omc3.correction.constants
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.filters
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.handler
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.arc_by_arc
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.model_appenders
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.model_diff
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.response_madx
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.response_twiss
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.sequence_evaluation
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.correction.response_io
     :members:
-    :noindex:
+    :no-index-entry:
 

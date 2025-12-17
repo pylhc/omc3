@@ -6,12 +6,12 @@ Optics Measurements Plots
 
 .. automodule:: omc3.plotting.optics_measurements.constants
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.optics_measurements.utils
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 Spectrum Plots
@@ -19,17 +19,17 @@ Spectrum Plots
 
 .. automodule:: omc3.plotting.spectrum.stem
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.spectrum.waterfall
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.spectrum.utils
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 Common Plot Functionality
@@ -37,23 +37,23 @@ Common Plot Functionality
 
 .. automodule:: omc3.plotting.utils.annotations
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.utils.colors
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.utils.lines
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.utils.style
     :members:
-    :noindex:
+    :no-index-entry:
 
 .. automodule:: omc3.plotting.utils.windows
     :members:
-    :noindex:
+    :no-index-entry:

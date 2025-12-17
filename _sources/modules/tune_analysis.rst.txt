@@ -3,25 +3,25 @@ Tune Analysis
 
 .. automodule:: omc3.tune_analysis.constants
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.tune_analysis.bbq_tools
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.tune_analysis.fitting_tools
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.tune_analysis.kick_file_modifiers
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.tune_analysis.timber_extract
     :members:
-    :noindex:
+    :no-index-entry:
 
