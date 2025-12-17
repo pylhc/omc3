@@ -50,8 +50,8 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
 
     # OUTPUT CHECKS --------------------------------------------
     # Check the basics, if anything looks weird ---
-    assert len(list(tmp_path.glob(f"*{EXT}"))) == 6  # beta_kmod x/y, betastar x/y B1/B2_kmod_summary
-    assert len(list(tmp_path.glob("*.txt"))) == 2 # B1/B2_tables.txt
+    assert len(list(tmp_path.glob(f"*{EXT}"))) == 6  # beta_kmod x/y, betastar x/y B1/B2_kmod_summary.tfs
+    assert len(list(tmp_path.glob("*.txt"))) == 2 # B1/B2_tables_logbook.txt
     average_dir = tmp_path / AVERAGE_DIR
 
     assert average_dir.is_dir()

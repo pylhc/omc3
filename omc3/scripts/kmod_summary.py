@@ -215,5 +215,7 @@ def _logbook_entry(
     LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     return
 
+# Script Mode ------------------------------------------------------------------
+
 if __name__ == "__main__":
     output_kmod_summary_tables()

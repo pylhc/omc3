@@ -127,6 +127,12 @@ def _get_params():
         action="store_true",
         help="Show the plots."
     )
+    params.add_parameter(
+        name="logbook",
+        type=str,
+        default=None,
+        help="Name of the logbook to create an entry in. "
+    )
     return params
 
 
@@ -194,7 +200,7 @@ def import_kmod_results(opt: DotDict) -> None:
         meas_paths=opt.meas_paths,
         averaged_meas=averaged_results,
         output_dir=opt.output_dir,
-        logbook='LHC_OMC')
+        logbook=opt.logbook)
 
     import_kmod_data(
         model=df_model,
