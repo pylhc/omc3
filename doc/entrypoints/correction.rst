@@ -3,20 +3,20 @@ Correction
 
 .. automodule:: omc3.global_correction
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.response_creator
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.check_corrections
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.sbs_propagation
     :members:
-    :noindex:
+    :no-index-entry:
 
