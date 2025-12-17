@@ -3,25 +3,25 @@ Harpy
 
 .. automodule:: omc3.harpy.clean
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.harpy.constants
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.harpy.frequency
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.harpy.handler
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.harpy.kicker
     :members:
-    :noindex:
+    :no-index-entry:
 

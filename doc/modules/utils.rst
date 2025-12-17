@@ -3,50 +3,50 @@ Utils
 
 .. automodule:: omc3.utils.contexts
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.iotools
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.knob_list_manipulations
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.logging_tools
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.math_classes
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.misc
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.mock
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.outliers
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.stats
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.utils.time_tools
     :members:
-    :noindex:
+    :no-index-entry:
 

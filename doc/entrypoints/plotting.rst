@@ -3,35 +3,35 @@ Plotting
 
 .. automodule:: omc3.plotting.plot_optics_measurements
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.plot_tfs
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.plot_spectrum
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.plot_checked_corrections
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.plot_amplitude_detuning
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.plot_kmod_results
     :members:
-    :noindex:
+    :no-index-entry:
 
 
 .. automodule:: omc3.plotting.plot_bbq
     :members:
-    :noindex:
+    :no-index-entry:
 
