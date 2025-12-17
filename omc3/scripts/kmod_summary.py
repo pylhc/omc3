@@ -26,8 +26,8 @@ For each beam, it generates:
         If None, no files are written.
 
 - **logbook** *(str, default=None)*:
-        Name of the logbook to which formatted summary tables are added. If None,
-        no logbook entry is created.
+        Name of the logbook in which to publish the formatted summary tables.
+        If None, no logbook entry is created.
 
 **Returns:**
 
