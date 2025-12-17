@@ -61,7 +61,7 @@ def output_kmod_summary_tables(
         meas_paths: Sequence[Path | str],
         averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]] | None = None,
         output_dir: Path | str | None = None,
-        logbook: str = None
+        logbook: str | None = None,
         ) -> tuple[dict[str, list[tfs.TfsDataFrame]],dict[str, list[list[str]]]]:
 
     """
