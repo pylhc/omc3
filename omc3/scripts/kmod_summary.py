@@ -4,7 +4,7 @@ Generate summary tables from K-modulation results.
 This function collects and summarizes K-modulation results from multiple measurement directories.
 For each beam, it generates:
 1. A DataFrame containing all imported K-modulation measurement results.
-2. A text file with optinally the averaged results, which can be used to create a logbook entry.
+2. Optionally, a text file with the averaged results which can be used to create a logbook entry.
 
 **Arguments:**
 
