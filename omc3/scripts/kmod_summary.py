@@ -214,7 +214,6 @@ def _logbook_entry(
         })
     _ = main(logbook_event)
     LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
-    return
 
 # Script Mode ------------------------------------------------------------------
 
