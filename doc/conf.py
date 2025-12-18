@@ -61,10 +61,8 @@ autosectionlabel_maxdepth = 2
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = 'index'
@@ -117,8 +115,8 @@ html_theme = 'sphinx_rtd_theme'
 # documentation.
 html_theme_options = {
     'collapse_navigation': False,
-    'display_version': True,
-    'logo_only': True,
+    #'display_version': True,  # show version in the sidebar (currently not working: https://github.com/readthedocs/sphinx_rtd_theme/issues/1624)
+    'logo_only': True,        # if True, display only logo image, no project name
     'navigation_depth': 2,
 }
 
@@ -236,3 +234,12 @@ autodoc_mock_imports = ['PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets
 # See: https://stackoverflow.com/a/67483317
 # See: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_type_aliases
 autodoc_type_aliases = {"ArrayLike": "ArrayLike"}
+
+autodoc_default_options = {
+    "members": True,  # include members
+    "undoc-members": True,  # add all members, even if they have no docstring
+    "show-inheritance": True,  # e.g. ``class LHC(Accelerator)`` shows ``BaseClass: Accelerator``
+    # "no-index-entry": True,  # don't add an index entry (toc_object_entries below works better for our use case)
+}
+
+toc_object_entries = False  # do not create entries for domain objects (e.g. functions, classes, attributes, etc.).

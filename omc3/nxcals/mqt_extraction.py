@@ -16,7 +16,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-# import jpype
 from omc3.nxcals.knob_extraction import NXCALSResult, get_knob_vals
 
 if TYPE_CHECKING:

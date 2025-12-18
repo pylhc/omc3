@@ -16,7 +16,6 @@ Package Reference
 
    entrypoints/*
 
-
 .. toctree::
    :caption: Modules
    :maxdepth: 1
@@ -25,11 +24,10 @@ Package Reference
    modules/*
 
 .. toctree::
-   :caption: Bibliography 
+   :caption: Bibliography
    :maxdepth: 1
 
    bibliography
-
 
 Citing
 ======
