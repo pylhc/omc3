@@ -2,10 +2,7 @@ from pathlib import Path
 import pytest
 import tfs
 import sys
-sys.modules.pop("omc3.kmod_importer", None)
-sys.modules.pop("omc3", None)
-local_repo_path = Path("/afs/cern.ch/work/m/mstefane/public/pyLHC/OMC3_codes/omc3")
-sys.path.insert(0, str(local_repo_path.resolve()))
+
 from omc3.kmod_importer import AVERAGE_DIR, import_kmod_results
 from omc3.optics_measurements.constants import EXT
 from tests.conftest import assert_tfsdataframe_equal, ids_str
