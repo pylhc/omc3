@@ -27,7 +27,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-import jpype
 import pandas as pd
 
 from omc3.utils.mock import cern_network_import
@@ -35,6 +34,7 @@ from omc3.utils.mock import cern_network_import
 if TYPE_CHECKING:
     from pyspark.sql import SparkSession
 
+jpype = cern_network_import("jpype")
 pjlsa = cern_network_import("pjlsa")
 builders = cern_network_import("nxcals.api.extraction.data.builders")
 functions = cern_network_import("pyspark.sql.functions")
@@ -76,6 +76,7 @@ def get_knob_vals(
     5. Returns knob values with their timestamps
 
     The difference between patterns and knob names:
+
     - **patterns**: NXCALS variable patterns (e.g., "RPMBB.UA%.RQT%.A%B1:I_MEAS") used to query
       raw power converter current measurements. These follow CERN naming conventions and may
       include wildcards (%).

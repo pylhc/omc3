@@ -284,7 +284,7 @@ class Accelerator:
             commonbpms: list of common BPMs (e.g. intersection of input BPMs.
 
         Returns:
-            `((index, bpm_name), exciter_name): tuple(int, str), str)`
+            ((index, bpm_name), exciter_name): tuple(int, str), str)
         """
         raise NotImplementedError("A function should have been overwritten, check stack trace.")
 
