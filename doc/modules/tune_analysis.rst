@@ -10,5 +10,3 @@ Tune Analysis
 .. automodule:: omc3.tune_analysis.kick_file_modifiers
 
 .. automodule:: omc3.tune_analysis.timber_extract
-    :members:
-    :noindex:

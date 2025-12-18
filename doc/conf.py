@@ -62,7 +62,7 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 #
-source_suffix = {'.rst': 'restructuredtext'}
+source_suffix = {'.rst': 'reStructuredText'}
 
 # The master toctree document.
 master_doc = 'index'
@@ -115,7 +115,7 @@ html_theme = 'sphinx_rtd_theme'
 # documentation.
 html_theme_options = {
     'collapse_navigation': False,
-    'version_selector': True,  # show version selector in the sidebar
+    #'display_version': True,  # show version in the sidebar (currently not working: https://github.com/readthedocs/sphinx_rtd_theme/issues/1624)
     'logo_only': True,        # if True, display only logo image, no project name
     'navigation_depth': 2,
 }
