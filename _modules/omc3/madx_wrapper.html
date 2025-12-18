@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -267,6 +271,8 @@
 
 
 
+<div class="viewcode-block" id="madx_wrapper_params">
+<a class="viewcode-back" href="../../entrypoints/other.html#omc3.madx_wrapper.madx_wrapper_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">madx_wrapper_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
@@ -291,9 +297,12 @@
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cwd&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set current working directory&quot;</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">params</span>
+    <span class="k">return</span> <span class="n">params</span></div>
 
 
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../entrypoints/other.html#omc3.madx_wrapper.main">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">madx_wrapper_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="n">run_file</span><span class="p">(</span>
@@ -302,7 +311,8 @@
         <span class="n">log_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">log</span><span class="p">)</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">madx_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">madx_path</span><span class="p">),</span>
         <span class="n">cwd</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">cwd</span><span class="p">)</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">cwd</span> <span class="k">else</span> <span class="kc">None</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="run_file">

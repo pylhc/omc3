@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -301,6 +305,8 @@
 
 
 
+<div class="viewcode-block" id="PlotWidget">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.PlotWidget">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PlotWidget</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">figures</span><span class="p">:</span> <span class="n">Figure</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -326,9 +332,12 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">canvas</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_toolbar_handles</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">canvas</span><span class="p">,</span> <span class="n">toolbar</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_toolbar_handles</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">canvas</span><span class="p">,</span> <span class="n">toolbar</span><span class="p">))</span></div>
 
 
+
+<div class="viewcode-block" id="TabWidget">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.TabWidget">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TabWidget</span><span class="p">(</span><span class="n">QTabWidget</span><span class="p">):</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -344,11 +353,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">title</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
+<div class="viewcode-block" id="TabWidget.add_tab">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.TabWidget.add_tab">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">:</span> <span class="n">QWidget</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">title</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">title</span><span class="p">)</span></div>
+</div>
 
 
+
+<div class="viewcode-block" id="SimpleTabWindow">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.SimpleTabWindow">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimpleTabWindow</span><span class="p">:</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Simple Tab Window&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -373,18 +388,27 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
+<div class="viewcode-block" id="SimpleTabWindow.add_tab">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.SimpleTabWindow.add_tab">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">:</span> <span class="n">QWidget</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Add a new tab made from the given widget.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            widget (QWidget): Widget to add.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tabs_widget</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs_widget</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="SimpleTabWindow.show">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.SimpleTabWindow.show">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span></div>
+</div>
 
 
+
+<div class="viewcode-block" id="VerticalTabWindow">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.VerticalTabWindow">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VerticalTabWindow</span><span class="p">(</span><span class="n">SimpleTabWindow</span><span class="p">):</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Vertical Tab Window&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -400,6 +424,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tabs_widget</span><span class="o">.</span><span class="n">setTabPosition</span><span class="p">(</span><span class="n">QTabWidget</span><span class="o">.</span><span class="n">West</span><span class="p">)</span>
 
+<div class="viewcode-block" id="VerticalTabWindow.add_to_tab">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.VerticalTabWindow.add_to_tab">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_to_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">:</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">tab</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Add `widget` to the tab with the given</span>
 <span class="sd">        `tab` identifier.</span>
@@ -408,10 +434,15 @@
 <span class="sd">            widget (QWidget): Widget to add.</span>
 <span class="sd">            tab (str): Title/Name of the tab .</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tabs_widget</span><span class="o">.</span><span class="n">tabs</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tabs_widget</span><span class="o">.</span><span class="n">tabs</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="VerticalTabWindow.show">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.VerticalTabWindow.show">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="create_pyplot_window_from_fig">

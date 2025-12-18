@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -351,6 +355,8 @@
     <span class="n">DOROS_IR_BPMS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;LHC.BPM.1</span><span class="si">{side}{ip}</span><span class="s2">.B</span><span class="si">{beam}</span><span class="s2">_DOROS&quot;</span>
     <span class="n">DEFAULT_CORRECTORS_DIR</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">LHC_DIR</span> <span class="o">/</span> <span class="s2">&quot;correctors&quot;</span>
 
+<div class="viewcode-block" id="Lhc.get_parameters">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_parameters">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">():</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Lhc</span><span class="p">,</span> <span class="n">Lhc</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
@@ -376,7 +382,8 @@
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The B2 error table to load for the best knowledge model.&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">params</span>
+        <span class="k">return</span> <span class="n">params</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -428,9 +435,12 @@
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Beam parameter has to be one of (1, 2)&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_beam</span> <span class="o">=</span> <span class="n">value</span>
 
+<div class="viewcode-block" id="Lhc.get_lhc_error_dir">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_lhc_error_dir">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_lhc_error_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">LHC_DIR</span> <span class="o">/</span> <span class="s2">&quot;systematic_errors&quot;</span>
+        <span class="k">return</span> <span class="n">LHC_DIR</span> <span class="o">/</span> <span class="s2">&quot;systematic_errors&quot;</span></div>
+
 
 <div class="viewcode-block" id="Lhc.get_variables">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_variables">[docs]</a>
@@ -516,6 +526,8 @@
             <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Lhc.log_status">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.log_status">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  model dir = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Natural Tune X      [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
@@ -532,7 +544,8 @@
             <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="s1">&#39;ACD&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">excitation</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;ADT&#39;</span><span class="si">:</span><span class="s2">&gt;10s</span><span class="si">}</span><span class="s2">]&quot;</span>
         <span class="p">)</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt; Driven Tune X     [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt; Driven Tune Y     [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt; Driven Tune Y     [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Lhc.get_exciter_bpm">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_exciter_bpm">[docs]</a>
@@ -563,6 +576,8 @@
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
 
 
+<div class="viewcode-block" id="Lhc.important_phase_advances">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.important_phase_advances">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">important_phase_advances</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;hl&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
             <span class="c1"># skip if HiLumi, TODO: insert phase advances when they are finalised</span>
@@ -572,10 +587,14 @@
             <span class="k">return</span> <span class="p">[[</span><span class="s2">&quot;MKD.O5R6.B2&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4R1.B2&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MKD.O5R6.B2&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4R5.B2&quot;</span><span class="p">]]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[[</span><span class="s2">&quot;MKD.O5L6.B1&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4L1.B1&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MKD.O5L6.B1&quot;</span><span class="p">,</span> <span class="s2">&quot;TCTPH.4L5.B1&quot;</span><span class="p">]]</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
+
+<div class="viewcode-block" id="Lhc.get_accel_file">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.lhc.Lhc.get_accel_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_accel_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">LHC_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">LHC_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span></div>
+
 
     <span class="c1"># Private Methods ##############################################################</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_corrector_elems</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>

@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -397,6 +401,8 @@
     <span class="p">}</span>
 
 
+<div class="viewcode-block" id="copy_calibration_files">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.copy_calibration_files">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">copy_calibration_files</span><span class="p">(</span><span class="n">outputdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">calibrationdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">calibrationdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -408,7 +414,8 @@
         <span class="n">cal_file</span> <span class="o">=</span> <span class="n">CALIBRATION_FILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
         <span class="n">iotools</span><span class="o">.</span><span class="n">copy_item</span><span class="p">(</span><span class="n">calibrationdir</span> <span class="o">/</span> <span class="n">cal_file</span><span class="p">,</span> <span class="n">outputdir</span> <span class="o">/</span> <span class="n">cal_file</span><span class="p">)</span>
         <span class="n">calibs</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="n">cal_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">calibs</span>
+    <span class="k">return</span> <span class="n">calibs</span></div>
+
 </pre></div>
 
            </div>

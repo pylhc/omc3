@@ -139,7 +139,11 @@
 <li class="toctree-l2"><a class="reference internal" href="model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -160,9 +164,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Segment-by-Segment</a><ul>
@@ -240,60 +244,183 @@
   
            <div itemprop="articleBody">
              
-  <section id="segment-by-segment">
-<h1>Segment-by-Segment<a class="headerlink" href="#segment-by-segment" title="Link to this heading"></a></h1>
+  <section id="module-omc3.segment_by_segment.constants">
+<span id="segment-by-segment"></span><h1>Segment-by-Segment<a class="headerlink" href="#module-omc3.segment_by_segment.constants" title="Link to this heading"></a></h1>
 <section id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h2>
 <p>This module provides constants to be used with segment by segment</p>
 </section>
 <section id="definitions">
-<h2>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h2>
+<span id="module-omc3.segment_by_segment.definitions"></span><h2>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h2>
 <p>This module provides definitions to be used with segment by segment</p>
 </section>
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.definitions.</span></span><span class="sig-name descname"><span class="pre">MadXBoundaryConditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alfx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alfy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bety</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r11</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r12</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r21</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r22</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/definitions.html#MadXBoundaryConditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Store all boundary conditions for a Mad-X twiss.</p>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.definitions.</span></span><span class="sig-name descname"><span class="pre">MadXBoundaryConditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alfx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alfy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bety</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r11</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r12</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r21</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r22</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/definitions.html#MadXBoundaryConditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Store all boundary conditions for a Mad-X twiss.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.alfx">
+<span class="sig-name descname"><span class="pre">alfx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.alfx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.alfy">
+<span class="sig-name descname"><span class="pre">alfy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.alfy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.as_dict">
+<span class="sig-name descname"><span class="pre">as_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/definitions.html#MadXBoundaryConditions.as_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.as_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.betx">
+<span class="sig-name descname"><span class="pre">betx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.betx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.bety">
+<span class="sig-name descname"><span class="pre">bety</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.bety" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.dphix">
+<span class="sig-name descname"><span class="pre">dphix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.dphix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.dphiy">
+<span class="sig-name descname"><span class="pre">dphiy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.dphiy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.dpx">
+<span class="sig-name descname"><span class="pre">dpx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.dpx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.dpy">
+<span class="sig-name descname"><span class="pre">dpy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.dpy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.dx">
+<span class="sig-name descname"><span class="pre">dx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.dx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.dy">
+<span class="sig-name descname"><span class="pre">dy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.dy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.r11">
+<span class="sig-name descname"><span class="pre">r11</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.r11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.r12">
+<span class="sig-name descname"><span class="pre">r12</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.r12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.r21">
+<span class="sig-name descname"><span class="pre">r21</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.r21" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.r22">
+<span class="sig-name descname"><span class="pre">r22</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.r22" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.wx">
+<span class="sig-name descname"><span class="pre">wx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.wx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.definitions.MadXBoundaryConditions.wy">
+<span class="sig-name descname"><span class="pre">wy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.definitions.MadXBoundaryConditions.wy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <section id="maths-functions">
-<h2>Maths Functions<a class="headerlink" href="#maths-functions" title="Link to this heading"></a></h2>
+<span id="module-omc3.segment_by_segment.math"></span><h2>Maths Functions<a class="headerlink" href="#maths-functions" title="Link to this heading"></a></h2>
 <p>This module provides mathematical helper functions, e.g. to propagate errors.</p>
 </section>
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Very simple container for a value and its error.
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.Measurement">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.Measurement" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>Very simple container for a value and its error.
 Implements only negation and addition with another Measurement.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.Measurement.error">
+<span class="sig-name descname"><span class="pre">error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.Measurement.error" title="Link to this definition"></a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.Measurement.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.Measurement.value" title="Link to this definition"></a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">SegmentBoundaryConditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispersion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Measurement</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#SegmentBoundaryConditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Store boundary conditions with error as used by the error propagation functions.</p>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">SegmentBoundaryConditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispersion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1001_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1010_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#SegmentBoundaryConditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Store boundary conditions with error as used by the error propagation functions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions.alpha" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions.beta">
+<span class="sig-name descname"><span class="pre">beta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions.beta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions.dispersion">
+<span class="sig-name descname"><span class="pre">dispersion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions.dispersion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions.f1001_amplitude">
+<span class="sig-name descname"><span class="pre">f1001_amplitude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions.f1001_amplitude" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions.f1001_phase">
+<span class="sig-name descname"><span class="pre">f1001_phase</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions.f1001_phase" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions.f1010_amplitude">
+<span class="sig-name descname"><span class="pre">f1010_amplitude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions.f1010_amplitude" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.SegmentBoundaryConditions.f1010_phase">
+<span class="sig-name descname"><span class="pre">f1010_phase</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.segment_by_segment.math.Measurement" title="omc3.segment_by_segment.math.Measurement"><span class="pre">Measurement</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions.f1010_phase" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">phase_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#phase_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.phase_diff">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">phase_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#phase_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.phase_diff" title="Link to this definition"></a></dt>
 <dd><p>Returns the phase difference between phase_a and phase_b, mapped to [-0.5, 0.5].</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_alpha">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_alpha" title="Link to this definition"></a></dt>
 <dd><p>Propagates the alpha-error from alpha0 to alpha with dphi phaseadvance.
 See Eq. (4) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id1"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
 <dl class="field-list simple">
@@ -308,8 +435,8 @@ See Eq. (4) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_beta">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_beta" title="Link to this definition"></a></dt>
 <dd><p>Propagates the beta-error from beta0 to beta with dphi phase-advance.
 See Eq. (3) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id2"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
 <dl class="field-list simple">
@@ -324,8 +451,8 @@ See Eq. (3) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_dispersion">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_dispersion" title="Link to this definition"></a></dt>
 <dd><p>Propagates the dispersion error with dphi phase-advance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -339,8 +466,8 @@ See Eq. (3) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1001_amp">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1001_amp" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.</p>
 <p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
 <dl class="field-list simple">
@@ -355,8 +482,8 @@ See Eq. (3) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_imag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_imag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1001_imag">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_imag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_imag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1001_imag" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the imagary part of f1001 through dphix and dphiy phase-advance,
 based on the initial amplitude and phase error of f1001.
 See Eq. (6) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id3"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
@@ -372,8 +499,8 @@ See Eq. (6) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1001_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1001_phase" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.</p>
 <p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
 <dl class="field-list simple">
@@ -388,8 +515,8 @@ See Eq. (6) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_real</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_real"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1001_real">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1001_real</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1001_real"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1001_real" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the real part of f1001 through dphix and dphiy phase-advance,
 based on the initial amplitude and phase error of f1001.
 See Eq. (5) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id4"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .</p>
@@ -405,8 +532,8 @@ See Eq. (5) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1010_amp">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1010_amp" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the amplitude part of f1001 through dphix and dphiy phase-advance.</p>
 <p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
 <dl class="field-list simple">
@@ -421,8 +548,8 @@ See Eq. (5) in  <a class="reference internal" href="../bibliography.html#langner
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_imag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_imag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1010_imag">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_imag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_imag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1010_imag" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the imaginary part of f1010 through dphix and dphiy phase-advance,
 based on the initial amplitude and phase error of f1010.
 See Eq. (7) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id5"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> ,
@@ -439,8 +566,8 @@ yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1010_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1010_phase" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the phase part of f1001 through dphix and dphiy phase-advance.</p>
 <p>TODO: Probably do an actual propagation (this just using the inital value)? This was how it was in BBS. (jdilly, 2025)</p>
 <dl class="field-list simple">
@@ -455,8 +582,8 @@ yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_real</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_real"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_f1010_real">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_f1010_real</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dphiy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_f1010_real"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_f1010_real" title="Link to this definition"></a></dt>
 <dd><p>Propagates the error on the real part of f1010 through dphix and dphiy phase-advance,
 based on the initial amplitude and phase error of f1010.
 See Eq. (7) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id6"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> ,
@@ -473,8 +600,8 @@ yet the phases dphix and dphiy are subtracted from the initial rdt phase.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentBoundaryConditions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.propagate_error_phase">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">propagate_error_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dphi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.math.SegmentBoundaryConditions" title="omc3.segment_by_segment.math.SegmentBoundaryConditions"><span class="pre">SegmentBoundaryConditions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#propagate_error_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.propagate_error_phase" title="Link to this definition"></a></dt>
 <dd><p>Propagates the phase-error.
 See Eq. (2) in  <a class="reference internal" href="../bibliography.html#langnerdevelopmentssegmentbysegmenttechnique2015" id="id7"><span>[LangnerDevelopmentsSegmentbySegmentTechnique2015]</span></a> .
 This implementation has a minus-sign instead of the first plus-sign as in the reference,
@@ -491,15 +618,15 @@ as found e.g. in <a class="reference external" href="https://github.com/pylhc/ME
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">quadratic_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#quadratic_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.math.quadratic_add">
+<span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.math.</span></span><span class="sig-name descname"><span class="pre">quadratic_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/math.html#quadratic_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.math.quadratic_add" title="Link to this definition"></a></dt>
 <dd><p>Calculate the root-sum-squared of the given values.
 The individual “values” can be <code class="docutils literal notranslate"><span class="pre">pd.Series</span></code> and then their
 elements are summed by indices.</p>
 </dd></dl>
 
 <section id="propagables">
-<h2>Propagables<a class="headerlink" href="#propagables" title="Link to this heading"></a></h2>
+<span id="module-omc3.segment_by_segment.propagables"></span><h2>Propagables<a class="headerlink" href="#propagables" title="Link to this heading"></a></h2>
 <p>In the <code class="docutils literal notranslate"><span class="pre">propagables</span></code> module, the parameters that can be propagated
 through the segment, are defined.
 Each propagable has a corresponding class, which contains the functions that
@@ -508,51 +635,79 @@ describe the forward and backward propagation for the respective parameter.</p>
 imports so long and complicated.</p>
 </section>
 <section id="segments">
-<h2>Segments<a class="headerlink" href="#segments" title="Link to this heading"></a></h2>
+<span id="module-omc3.segment_by_segment.segments"></span><h2>Segments<a class="headerlink" href="#segments" title="Link to this heading"></a></h2>
 <p>Classes to hold the information of the segments in the sbs definition.</p>
 </section>
 <dl class="py exception">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">SbsDefinitionError</span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#SbsDefinitionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Exception to be raised when the sbs definition is invalid.</p>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SbsDefinitionError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">SbsDefinitionError</span></span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#SbsDefinitionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.SbsDefinitionError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception to be raised when the sbs definition is invalid.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">Segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_conds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_element_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.init_from_element_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">Segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_conds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.element">
+<span class="sig-name descname"><span class="pre">element</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.element" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.end">
+<span class="sig-name descname"><span class="pre">end</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.end" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.init_conds">
+<span class="sig-name descname"><span class="pre">init_conds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.init_conds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.init_from_element_name">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_element_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.init_from_element_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.init_from_element_name" title="Link to this definition"></a></dt>
 <dd><p>Initialize from the string representation for elements
 as used in inputs.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.init_from_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.init_from_input">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.init_from_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.init_from_input" title="Link to this definition"></a></dt>
 <dd><p>Initialize from the string representation for segments or elements
 as used in inputs.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_segment_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.init_from_segment_definition"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.init_from_segment_definition">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_segment_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.init_from_segment_definition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.init_from_segment_definition" title="Link to this definition"></a></dt>
 <dd><p>Initialize from the string representation for segments
 as used in inputs.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.start">
+<span class="sig-name descname"><span class="pre">start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.start" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_input_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.to_input_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.Segment.to_input_string">
+<span class="sig-name descname"><span class="pre">to_input_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#Segment.to_input_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.Segment.to_input_string" title="Link to this definition"></a></dt>
 <dd><p>String representation of the segment as used in inputs.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentDiffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#SegmentDiffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>TfsCollection of segment-by-segment outputfiles for the differences
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentDiffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#SegmentDiffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TfsCollection</span></code></p>
+<p>TfsCollection of segment-by-segment outputfiles for the differences
 between propagated model and measurements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -562,14 +717,110 @@ between propagated model and measurements.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.PREFIX">
+<span class="sig-name descname"><span class="pre">PREFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sbs_'</span></em><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.PREFIX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.alpha_phase_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha_phase_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.alpha_phase_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.alpha_phase_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha_phase_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.alpha_phase_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.beta_amp_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_amp_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.beta_amp_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.beta_amp_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_amp_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.beta_amp_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.beta_kmod_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_kmod_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.beta_kmod_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.beta_kmod_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_kmod_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.beta_kmod_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.beta_phase_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_phase_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.beta_phase_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.beta_phase_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_phase_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.beta_phase_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.dispersion_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dispersion_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.dispersion_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.dispersion_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dispersion_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.dispersion_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.f1001">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">f1001</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.f1001" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.f1010">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">f1010</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.f1010" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.momentum_dispersion_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">momentum_dispersion_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.momentum_dispersion_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.momentum_dispersion_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">momentum_dispersion_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.momentum_dispersion_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.norm_dispersion_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_dispersion_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.norm_dispersion_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.norm_dispersion_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_dispersion_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.norm_dispersion_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.phase_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_x</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.phase_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentDiffs.phase_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_y</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentDiffs.phase_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentModels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#SegmentModels"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Class to hold and load the models of the segments created by MAD-X.
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentModels">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.segment_by_segment.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentModels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><span class="pre">Segment</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/segment_by_segment/segments.html#SegmentModels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentModels" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TfsCollection</span></code></p>
+<p>Class to hold and load the models of the segments created by MAD-X.
 The filenames need to be the same as in
-<code class="xref py py-class docutils literal notranslate"><span class="pre">omc3.model.model_creators.abstract_model_creator.SegmentCreator</span></code>.</p>
+<a class="reference internal" href="model.html#omc3.model.model_creators.abstract_model_creator.SegmentCreator" title="omc3.model.model_creators.abstract_model_creator.SegmentCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">omc3.model.model_creators.abstract_model_creator.SegmentCreator</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -578,6 +829,26 @@ The filenames need to be the same as in
 </ul>
 </dd>
 </dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentModels.backward">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backward</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentModels.backward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentModels.backward_corrected">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backward_corrected</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentModels.backward_corrected" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentModels.forward">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentModels.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.segment_by_segment.segments.SegmentModels.forward_corrected">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward_corrected</span></span><a class="headerlink" href="#omc3.segment_by_segment.segments.SegmentModels.forward_corrected" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>

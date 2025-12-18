@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -363,27 +367,38 @@
 
 
 
+<div class="viewcode-block" id="add_line_and_freq_to_header">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.add_line_and_freq_to_header">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_line_and_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">crdt</span><span class="p">):</span>
     <span class="n">mod_header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">mod_header</span><span class="p">[</span><span class="s2">&quot;LINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;plane&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">]</span><span class="nd">@np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;Q1&#39;</span><span class="p">],</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;Q2&#39;</span><span class="p">]]),</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">mod_header</span><span class="p">[</span><span class="s2">&quot;FREQ&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq</span> <span class="k">if</span> <span class="n">freq</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">freq</span>
-    <span class="k">return</span> <span class="n">mod_header</span>
+    <span class="k">return</span> <span class="n">mod_header</span></div>
 
 
+
+<div class="viewcode-block" id="write">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.write">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">crdt</span><span class="p">):</span>
     <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="n">CRDT_FOLDER</span> <span class="o">/</span> <span class="n">order</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
-    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">outputdir</span><span class="o">/</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crdt</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">outputdir</span><span class="o">/</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crdt</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span></div>
 
 
+
+<div class="viewcode-block" id="get_column_names">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.get_column_names">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_column_names</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">CRDT_COLUMNS</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">COL_AMP</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]))</span>
+                                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_ERR</span><span class="si">}{</span><span class="n">COL_PHASE</span><span class="si">}{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]))</span></div>
 
 
+
+<div class="viewcode-block" id="get_crdt_invariant">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.get_crdt_invariant">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_crdt_invariant</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
     <span class="n">exp</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])}</span>
     <span class="n">exp</span><span class="p">[</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;plane&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">exp</span><span class="p">[</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;plane&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># to compensate for the normalization with tune line</span>
@@ -393,9 +408,12 @@
                                  <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
                                  <span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">crdt_invariant</span> <span class="o">/</span> <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span>
                                  <span class="n">invariants</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">crdt_invariant</span><span class="p">,</span> <span class="n">err_crdt_invariant</span>
+    <span class="k">return</span> <span class="n">crdt_invariant</span><span class="p">,</span> <span class="n">err_crdt_invariant</span></div>
 
 
+
+<div class="viewcode-block" id="get_crdt_amplitude">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.get_crdt_amplitude">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_crdt_amplitude</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">line_amps</span><span class="p">,</span> <span class="n">line_amp_errors</span><span class="p">):</span>
     <span class="n">crdt_invariants</span><span class="p">,</span> <span class="n">err_crdt_invariants</span> <span class="o">=</span> <span class="n">get_crdt_invariant</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
     <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_amps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_amps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -406,9 +424,12 @@
                                                  <span class="n">crdt_invariants</span><span class="p">,</span>
                                                  <span class="n">err_crdt_invariants</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span>
+    <span class="k">return</span> <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span></div>
 
 
+
+<div class="viewcode-block" id="fit_amplitude">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.fit_amplitude">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fit_amplitude</span><span class="p">(</span><span class="n">lineamplitudes</span><span class="p">,</span> <span class="n">err_lineamplitudes</span><span class="p">,</span> <span class="n">crdt_invariant</span><span class="p">,</span> <span class="n">err_crdt_invariant</span><span class="p">):</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">fun</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -423,7 +444,8 @@
     <span class="p">)</span>
     <span class="n">odr</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">odr</span><span class="o">.</span><span class="n">ODR</span><span class="p">(</span><span class="n">data_model</span><span class="p">,</span> <span class="n">fit_model</span><span class="p">,</span> <span class="n">beta0</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">lineamplitudes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">crdt_invariant</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
     <span class="n">odr_output</span> <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">odr_output</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">odr_output</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">odr_output</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">odr_output</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
 </pre></div>
 
            </div>

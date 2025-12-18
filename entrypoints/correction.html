@@ -140,7 +140,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -161,9 +165,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -240,8 +244,8 @@
   
            <div itemprop="articleBody">
              
-  <section id="correction">
-<h1>Correction<a class="headerlink" href="#correction" title="Link to this heading"></a></h1>
+  <section id="module-omc3.global_correction">
+<span id="correction"></span><h1>Correction<a class="headerlink" href="#module-omc3.global_correction" title="Link to this heading"></a></h1>
 <section id="global-correction">
 <h2>Global Correction<a class="headerlink" href="#global-correction" title="Link to this heading"></a></h2>
 <p>Iterative Correction Scheme.</p>
@@ -263,7 +267,7 @@ observables are recalculated by Mad-X.
 <a class="reference internal" href="#equation-eq1">(1)</a> is then solved again.</p>
 <p>Input arguments are split into correction arguments and accelerator arguments.
 The former are listed below, the latter depend on the accelerator you want
-to use. Check <a class="reference internal" href="../modules/model.html#model"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
+to use. Check <a class="reference internal" href="../modules/model.html#module-omc3.model.manager"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Required--</em></p>
 <ul>
@@ -389,19 +393,24 @@ optics_params.</p>
 </dl>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.global_correction.correction_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">correction_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/global_correction.html#correction_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.global_correction.correction_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.global_correction.global_correction_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.global_correction.global_correction_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Do the global correction. Iteratively.</p>
 </dd></dl>
 
 <section id="response-creator">
-<h2>Response Creator<a class="headerlink" href="#response-creator" title="Link to this heading"></a></h2>
+<span id="module-omc3.response_creator"></span><h2>Response Creator<a class="headerlink" href="#response-creator" title="Link to this heading"></a></h2>
 <p>Provides a response generation wrapper.
-The response matrices can be either created by <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_madx</span></code>
-or analytically via <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_twiss</span></code>.</p>
+The response matrices can be either created by <a class="reference internal" href="../modules/correction.html#module-omc3.correction.response_madx" title="omc3.correction.response_madx"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_madx</span></code></a>
+or analytically via <a class="reference internal" href="../modules/correction.html#module-omc3.correction.response_twiss" title="omc3.correction.response_twiss"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_twiss</span></code></a>.</p>
 <p>Input arguments are split into response creation arguments and accelerator arguments.
 The former are listed below, the latter depend on the accelerator you want
-to use. Check <a class="reference internal" href="../modules/model.html#model"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
+to use. Check <a class="reference internal" href="../modules/model.html#module-omc3.model.manager"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
 <p><strong>Arguments:</strong></p>
 <p><em>--Optional--</em></p>
 <ul>
@@ -443,20 +452,36 @@ to use. Check <a class="reference internal" href="../modules/model.html#model"><
 </ul>
 </section>
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">ResponseCreatorType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#ResponseCreatorType"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.response_creator.ResponseCreatorType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">ResponseCreatorType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#ResponseCreatorType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.ResponseCreatorType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../modules/utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.response_creator.ResponseCreatorType.MADX">
+<span class="sig-name descname"><span class="pre">MADX</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'madx'</span></em><a class="headerlink" href="#omc3.response_creator.ResponseCreatorType.MADX" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.response_creator.ResponseCreatorType.TWISS">
+<span class="sig-name descname"><span class="pre">TWISS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'twiss'</span></em><a class="headerlink" href="#omc3.response_creator.ResponseCreatorType.TWISS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.response_creator.create_response_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.create_response_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Entry point for creating pandas-based response matrices.</p>
 <p>The response matrices can be either created by response_madx or TwissResponse.</p>
 <p>TODO: Add support to give fetcher? But for know we assume the acc-model path is still in the model_dir.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.response_creator.response_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">response_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#response_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.response_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <section id="correction-test">
-<h2>Correction Test<a class="headerlink" href="#correction-test" title="Link to this heading"></a></h2>
+<span id="module-omc3.check_corrections"></span><h2>Correction Test<a class="headerlink" href="#correction-test" title="Link to this heading"></a></h2>
 <p>In a MAD-X simulation (pre-calculated) corrections are applied to the (nominal)
 model and the difference between this new matched model and the nominal model
 are evaluated. These are the changes in the optics parameters as
@@ -665,8 +690,8 @@ also <cite>ncol_legend</cite>).</p>
 </ul>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.check_corrections.</span></span><span class="sig-name descname"><span class="pre">correction_test_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/check_corrections.html#correction_test_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.check_corrections.correction_test_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.check_corrections.</span></span><span class="sig-name descname"><span class="pre">correction_test_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/check_corrections.html#correction_test_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.check_corrections.correction_test_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Entrypoint function to test the given corrections.</p>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
@@ -676,8 +701,13 @@ But I don’t see a usecase at the moment (jdilly 2023)</p>
 </div>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.check_corrections.get_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.check_corrections.</span></span><span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/check_corrections.html#get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.check_corrections.get_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <section id="segment-by-segment-propagation">
-<h2>Segment-by-Segment Propagation<a class="headerlink" href="#segment-by-segment-propagation" title="Link to this heading"></a></h2>
+<span id="module-omc3.sbs_propagation"></span><h2>Segment-by-Segment Propagation<a class="headerlink" href="#segment-by-segment-propagation" title="Link to this heading"></a></h2>
 <p>Runs the Segment-by-Segment propagation,
 i.e. it uses the measured values at the beginning (or the end) of the segments as inputs
 to propagate via MAD-X through the given segments.
@@ -719,8 +749,8 @@ names.</p>
 </ul>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">create_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Accelerator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MADXInputType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetcher_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#create_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.create_segment">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">create_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><span class="pre">Segment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement" title="omc3.definitions.optics.OpticsMeasurement"><span class="pre">OpticsMeasurement</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MADXInputType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetcher_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#create_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.create_segment" title="Link to this definition"></a></dt>
 <dd><p>Perform the computations on the segment.
 The segment is adapted fist, so that the given start and end bpms are in the measurement.
 Then madx is run to create the specified segments and the output files
@@ -729,9 +759,9 @@ are then returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>accel</strong> (<em>Accelerator</em>) -- Accelerator instance. Needs to be loaded from model directory</p></li>
-<li><p><strong>segment_in</strong> (<em>Segment</em>) -- Rough Segment specification. Might be refined later.</p></li>
-<li><p><strong>measurement</strong> (<em>OpticsMeasurement</em>) -- TfsCollection of the optics measurement files.</p></li>
+<li><p><strong>accel</strong> (<a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><em>Accelerator</em></a>) -- Accelerator instance. Needs to be loaded from model directory</p></li>
+<li><p><strong>segment_in</strong> (<a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><em>Segment</em></a>) -- Rough Segment specification. Might be refined later.</p></li>
+<li><p><strong>measurement</strong> (<a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement" title="omc3.definitions.optics.OpticsMeasurement"><em>OpticsMeasurement</em></a>) -- TfsCollection of the optics measurement files.</p></li>
 <li><p><strong>corrections</strong> (<em>MADXInputType</em>) -- Corrections to use. Can be a dict of knob-value pairs,
 a MAD-X string or a path to a file.</p></li>
 <li><p><strong>fetcher_opts</strong> (<em>DotDict</em>) -- Options for the fetcher, if needed.</p></li>
@@ -744,8 +774,8 @@ a MAD-X string or a path to a file.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">extend_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpticsMeasurement</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Segment</span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#extend_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.extend_segment">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">extend_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><span class="pre">Segment</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/definitions.html#omc3.definitions.optics.OpticsMeasurement" title="omc3.definitions.optics.OpticsMeasurement"><span class="pre">OpticsMeasurement</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><span class="pre">Segment</span></a></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#extend_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.extend_segment" title="Link to this definition"></a></dt>
 <dd><p>Returns a new segment with elements that are contained in the measurement.</p>
 <p>This function takes a segment with start and end that might not
 be in the measurement and searches the next element that satisfies
@@ -753,7 +783,7 @@ it, returning a new segment with the new start and end elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>segment</strong> (<em>Segment</em>) -- The segment to be processed (see Segment class).</p></li>
+<li><p><strong>segment</strong> (<a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment" title="omc3.segment_by_segment.segments.Segment"><em>Segment</em></a>) -- The segment to be processed (see Segment class).</p></li>
 <li><p><strong>model</strong> (<em>pd.DataFrame</em>) -- The model where to take all the element names from. Both the
 start and end of the segment have to be present in this model
 NAME attribute.</p></li>
@@ -767,8 +797,8 @@ same name and element attributes.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">get_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propagables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SegmentDiffs</span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#get_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.get_differences">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">get_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">propagables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Propagable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs" title="omc3.segment_by_segment.segments.SegmentDiffs"><span class="pre">SegmentDiffs</span></a></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#get_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.get_differences" title="Link to this definition"></a></dt>
 <dd><p>Calculate the differences of the propagated model and the measurement and write
 them out into files (if <code class="docutils literal notranslate"><span class="pre">output</span></code> had been given).</p>
 <dl class="field-list simple">
@@ -783,14 +813,19 @@ them out into files (if <code class="docutils literal notranslate"><span class="
 <dd class="field-even"><p>TfsCollection of the differences per propagable.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>SegmentDiffs</p>
+<dd class="field-odd"><p><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs" title="omc3.segment_by_segment.segments.SegmentDiffs">SegmentDiffs</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">segment_by_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">SegmentDiffs</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#segment_by_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.sbs_propagation.get_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.get_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.sbs_propagation.segment_by_segment">
+<span class="sig-prename descclassname"><span class="pre">omc3.sbs_propagation.</span></span><span class="sig-name descname"><span class="pre">segment_by_segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs" title="omc3.segment_by_segment.segments.SegmentDiffs"><span class="pre">SegmentDiffs</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/sbs_propagation.html#segment_by_segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.sbs_propagation.segment_by_segment" title="Link to this definition"></a></dt>
 <dd><p>Run the segment-by-segment propagation.</p>
 <dl class="simple">
 <dt>Note: The corrections are the same for each segment, which means we only need to create</dt><dd><p>them once, and for the remaining segments, we could just give the path to the output

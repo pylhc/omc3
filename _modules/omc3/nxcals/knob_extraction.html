@@ -1,0 +1,625 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.nxcals.knob_extraction &mdash; omc3 0.26.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=4aa2dafa"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#optics">Optics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps">SPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#model-creator-manager">Model Creator Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.nxcals.knob_extraction</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.nxcals.knob_extraction</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Knob Extraction</span>
+<span class="sd">---------------</span>
+
+<span class="sd">This module provides functionality to extract knob values from NXCALS for the LHC and</span>
+<span class="sd">convert them to MAD-X compatible format using LSA services.</span>
+
+<span class="sd">It handles retrieval of raw variable data from NXCALS, conversion of power converter</span>
+<span class="sd">currents to K-values, and mapping of power converter names to MAD-X naming</span>
+<span class="sd">conventions.</span>
+
+<span class="sd">This module requires the installation of `jpype`, `pyspark`, and access to the</span>
+<span class="sd">CERN network to connect to NXCALS and LSA services. You can install the required</span>
+<span class="sd">packages via pip:</span>
+<span class="sd">```</span>
+<span class="sd">python -m pip install omc3[cern]</span>
+<span class="sd">```</span>
+
+<span class="sd">See the [NXCALS documentation](https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/)</span>
+<span class="sd">for more information on getting access and using the Python API.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
+
+<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
+<span class="n">builders</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;nxcals.api.extraction.data.builders&quot;</span><span class="p">)</span>
+<span class="n">functions</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pyspark.sql.functions&quot;</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pyspark.sql.window&quot;</span><span class="p">)</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="NXCALSResult">
+<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.knob_extraction.NXCALSResult">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NXCALSResult</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span>
+    <span class="n">pc_name</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+
+<span class="c1"># High-level Knob Extraction ---------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="get_knob_vals">
+<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.knob_extraction.get_knob_vals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_knob_vals</span><span class="p">(</span>
+    <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+    <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">patterns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">expected_knobs</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">delta_days</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve knob values for a given beam and time using specified patterns for the LHC.</span>
+
+<span class="sd">    This is the main entry point for extracting magnet knob values from NXCALS. The function</span>
+<span class="sd">    performs a complete workflow:</span>
+
+<span class="sd">    1. Queries NXCALS for power converter current measurements (I_MEAS) using variable patterns</span>
+<span class="sd">    2. Retrieves the beam energy at the specified time</span>
+<span class="sd">    3. Converts currents to K-values (integrated quadrupole strengths) using LSA</span>
+<span class="sd">    4. Maps power converter names to MAD-X naming conventions</span>
+<span class="sd">    5. Returns knob values with their timestamps</span>
+
+<span class="sd">    The difference between patterns and knob names:</span>
+
+<span class="sd">    - **patterns**: NXCALS variable patterns (e.g., &quot;RPMBB.UA%.RQT%.A%B1:I_MEAS&quot;) used to query</span>
+<span class="sd">      raw power converter current measurements. These follow CERN naming conventions and may</span>
+<span class="sd">      include wildcards (%).</span>
+<span class="sd">    - **expected_knobs**: MAD-X element names (e.g., &quot;kqt12.a12b1&quot;) representing the final</span>
+<span class="sd">      knob names as used in MAD-X scripts. These are lowercase, simplified names.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        spark (SparkSession): Active Spark session for NXCALS queries.</span>
+<span class="sd">        time (datetime): Time to retrieve data for.</span>
+<span class="sd">        beam (int): Beam number (1 or 2).</span>
+<span class="sd">        patterns (list[str]): List of NXCALS variable patterns to query for power converter</span>
+<span class="sd">            currents. Patterns can include SQL-like wildcards (%). Example:</span>
+<span class="sd">            &quot;RPMBB.UA%.RQT%.A%B1:I_MEAS&quot; matches all MQT quadrupole trim magnets for beam 1.</span>
+<span class="sd">        expected_knobs (set[str] | None): Set of expected MAD-X knob names to validate and filter</span>
+<span class="sd">            results. If None, returns all found knobs without validation.</span>
+<span class="sd">        log_prefix (str): Prefix for logging messages to distinguish different extraction runs.</span>
+<span class="sd">        delta_days (float): Number of days to look back for data. Default is 0.25.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,</span>
+<span class="sd">            timestamps, and power converter names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Starting data retrieval for beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> at time </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Retrieve raw current measurements from NXCALS</span>
+    <span class="n">combined_vars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Getting currents for pattern </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">raw_vars</span> <span class="o">=</span> <span class="n">get_raw_vars</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">delta_days</span><span class="p">)</span>
+        <span class="n">combined_vars</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">raw_vars</span><span class="p">)</span>
+
+    <span class="c1"># Get beam energy for K-value calculations</span>
+    <span class="n">energy</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_energy</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+    <span class="c1"># Prepare currents dict for LSA</span>
+    <span class="n">currents</span> <span class="o">=</span> <span class="p">{</span><span class="n">strip_i_meas</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">):</span> <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">combined_vars</span><span class="p">}</span>
+
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Calculating K values for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">currents</span><span class="p">)</span><span class="si">}</span><span class="s2"> power converters with energy </span><span class="si">{</span><span class="n">energy</span><span class="si">}</span><span class="s2"> GeV&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Calculate K values using LSA</span>
+    <span class="n">lsa_client</span> <span class="o">=</span> <span class="n">pjlsa</span><span class="o">.</span><span class="n">LSAClient</span><span class="p">()</span>
+    <span class="n">k_values</span> <span class="o">=</span> <span class="n">calc_k_from_iref</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">,</span> <span class="n">currents</span><span class="p">,</span> <span class="n">energy</span><span class="p">)</span>
+
+    <span class="c1"># Transform K values keys to MAD-X format</span>
+    <span class="n">k_values_madx</span> <span class="o">=</span> <span class="p">{</span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">k_values</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">found_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">k_values_madx</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">expected_knobs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">expected_knobs</span> <span class="o">=</span> <span class="n">found_keys</span>
+
+    <span class="k">if</span> <span class="n">missing_keys</span> <span class="o">:=</span> <span class="n">expected_knobs</span> <span class="o">-</span> <span class="n">found_keys</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Missing K-values for knobs: </span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">unknown_keys</span> <span class="o">:=</span> <span class="n">found_keys</span> <span class="o">-</span> <span class="n">expected_knobs</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Unknown K-values found: </span><span class="si">{</span><span class="n">unknown_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build result list with timestamps</span>
+    <span class="n">timestamps</span> <span class="o">=</span> <span class="p">{</span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">):</span> <span class="n">var</span><span class="o">.</span><span class="n">timestamp</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">combined_vars</span><span class="p">}</span>
+    <span class="n">pc_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">):</span> <span class="n">var</span><span class="o">.</span><span class="n">pc_name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">combined_vars</span><span class="p">}</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">madx_name</span> <span class="ow">in</span> <span class="n">expected_knobs</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">k_values_madx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">madx_name</span><span class="p">)</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">madx_name</span><span class="p">)</span>
+        <span class="n">pc_name</span> <span class="o">=</span> <span class="n">pc_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">madx_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pc_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NXCALSResult</span><span class="p">(</span><span class="n">madx_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">pc_name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Missing data for </span><span class="si">{</span><span class="n">madx_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+
+<span class="c1"># NXCALS Data Retrieval --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="get_raw_vars">
+<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.knob_extraction.get_raw_vars">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_raw_vars</span><span class="p">(</span>
+    <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">delta_days</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve raw variable values from NXCALS.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        spark (SparkSession): Active Spark session.</span>
+<span class="sd">        time (datetime): Python datetime (timezone-aware recommended).</span>
+<span class="sd">        var_name (str): Name or pattern of the variable(s) to retrieve.</span>
+<span class="sd">        delta_days (float): Number of days to look back for data. Default is 0.25.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[NXCalResult]: List of NXCalResult containing variable name, value, timestamp,</span>
+<span class="sd">        and power converter name for the latest sample of each matching variable at the given time.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If no data is found for the variable in the given interval.</span>
+<span class="sd">        You may need to increase the delta_days if necessary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Ensure time is in UTC</span>
+    <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Datetime object must be timezone-aware&quot;</span><span class="p">)</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+    <span class="c1"># Look back delta_days, may need up to 1 day to find data</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">delta_days</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrieving raw variables </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">builders</span><span class="o">.</span><span class="n">DataQuery</span><span class="o">.</span><span class="n">builder</span><span class="p">(</span><span class="n">spark</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">variables</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;CMW&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">nameLike</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">timeWindow</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Avoid full count() – just check if we have at least one row</span>
+    <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No data found for </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;You may need to increase the delta_days from </span><span class="si">{</span><span class="n">delta_days</span><span class="si">}</span><span class="s2"> days if necessary.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw variables </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> retrieved successfully.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get the latest sample for each variable</span>
+    <span class="n">window_spec</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">Window</span><span class="o">.</span><span class="n">partitionBy</span><span class="p">(</span><span class="s2">&quot;nxcals_variable_name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">orderBy</span><span class="p">(</span>
+        <span class="n">functions</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;nxcals_timestamp&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">latest_df</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">&quot;row_num&quot;</span><span class="p">,</span> <span class="n">functions</span><span class="o">.</span><span class="n">row_number</span><span class="p">()</span><span class="o">.</span><span class="n">over</span><span class="p">(</span><span class="n">window_spec</span><span class="p">))</span>
+        <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">functions</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;row_num&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;nxcals_variable_name&quot;</span><span class="p">,</span> <span class="s2">&quot;nxcals_value&quot;</span><span class="p">,</span> <span class="s2">&quot;nxcals_timestamp&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">latest_df</span><span class="o">.</span><span class="n">collect</span><span class="p">():</span>
+        <span class="n">full_varname</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;nxcals_variable_name&quot;</span><span class="p">]</span>
+        <span class="n">raw_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;nxcals_value&quot;</span><span class="p">])</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;nxcals_timestamp&quot;</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ns&quot;</span><span class="p">,</span> <span class="n">utc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NXCALSResult</span><span class="p">(</span><span class="n">full_varname</span><span class="p">,</span> <span class="n">raw_val</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">strip_i_meas</span><span class="p">(</span><span class="n">full_varname</span><span class="p">)))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LHC value retrieved: </span><span class="si">{</span><span class="n">full_varname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">raw_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+
+<div class="viewcode-block" id="get_energy">
+<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.knob_extraction.get_energy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_energy</span><span class="p">(</span><span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the beam energy of the LHC from NXCALS.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        spark (SparkSession): Active Spark session.</span>
+<span class="sd">        time (datetime): Python datetime (timezone-aware recommended).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[float, pd.Timestamp]: Beam energy in GeV and its timestamp.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If no energy data is found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.120</span>
+    <span class="n">raw_vars</span> <span class="o">=</span> <span class="n">get_raw_vars</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="s2">&quot;HX:ENG&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_vars</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No energy data found.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">raw_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span> <span class="n">raw_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span></div>
+
+
+
+<span class="c1"># LSA K-value Calculation ------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="calc_k_from_iref">
+<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.knob_extraction.calc_k_from_iref">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_k_from_iref</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">,</span> <span class="n">currents</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate K values in the LHC from IREF using the LSA service.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lsa_client: The LSA client instance.</span>
+<span class="sd">        currents (dict[str, float]): Dictionary of current values keyed by variable name.</span>
+<span class="sd">        energy (float): The beam energy in GeV.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, float]: Dictionary of K values keyed by variable name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 1) Use the **instance** PJLSA already created</span>
+    <span class="n">lhc_service</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_lhcService</span>
+
+    <span class="c1"># 2) Build a java.util.HashMap&lt;String, Double&gt; (not a Python dict)</span>
+    <span class="n">j_hash_map</span> <span class="o">=</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JClass</span><span class="p">(</span><span class="s2">&quot;java.util.HashMap&quot;</span><span class="p">)</span>
+    <span class="n">j_double</span> <span class="o">=</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JClass</span><span class="p">(</span><span class="s2">&quot;java.lang.Double&quot;</span><span class="p">)</span>
+
+    <span class="n">jmap</span> <span class="o">=</span> <span class="n">j_hash_map</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">power_converter</span><span class="p">,</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">currents</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current for </span><span class="si">{</span><span class="n">power_converter</span><span class="si">}</span><span class="s2"> is None&quot;</span><span class="p">)</span>
+        <span class="c1"># ensure primitive-compatible double values</span>
+        <span class="n">jmap</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">power_converter</span><span class="p">,</span> <span class="n">j_double</span><span class="o">.</span><span class="n">valueOf</span><span class="p">(</span><span class="n">current</span><span class="p">))</span>  <span class="c1"># boxed; Java unboxes internally</span>
+
+    <span class="c1"># 3) Call: Map&lt;String, Double&gt; calculateKfromIREF(Map&lt;String, Double&gt;, double)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">lhc_service</span><span class="o">.</span><span class="n">calculateKfromIREF</span><span class="p">(</span><span class="n">jmap</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">energy</span><span class="p">))</span>
+
+    <span class="c1"># 4) Convert java.util.Map -&gt; Python dict</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">entrySet</span><span class="p">()</span><span class="o">.</span><span class="n">iterator</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">it</span><span class="o">.</span><span class="n">hasNext</span><span class="p">():</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="n">res</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">getKey</span><span class="p">())]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">getValue</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<span class="c1"># Utility Functions ------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="strip_i_meas">
+<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.knob_extraction.strip_i_meas">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">strip_i_meas</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove the I_MEAS suffix from a variable name.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The variable name possibly ending with &#39;:I_MEAS&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The variable name without the &#39;:I_MEAS&#39; suffix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">&quot;:I_MEAS&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Note: this will have to be updated if we ever want to support other magnet types</span>
+<span class="c1"># such as dipoles, sextupoles, octupoles, etc.</span>
+<div class="viewcode-block" id="map_pc_name_to_madx">
+<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.knob_extraction.map_pc_name_to_madx">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">map_pc_name_to_madx</span><span class="p">(</span><span class="n">pc_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert an LHC power converter name or circuit name to its corresponding MAD-X name.</span>
+
+<span class="sd">    This function processes the input name by removing the &#39;:I_MEAS&#39; suffix if present,</span>
+<span class="sd">    extracting the circuit name from full power converter names (starting with &#39;RPMBB&#39; or &#39;RPL&#39;),</span>
+<span class="sd">    applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pc_name (str): The power converter or circuit name to convert.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The converted MAD-X name.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; map_pc_name_to_madx(&quot;RPMBB.UJ33.RCBH10.L1B1:I_MEAS&quot;)</span>
+<span class="sd">        &#39;acb10.l1b1&#39;</span>
+<span class="sd">        &gt;&gt;&gt; map_pc_name_to_madx(&quot;RQT12.L5B1&quot;)</span>
+<span class="sd">        &#39;kqt12.l5b1&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Remove the &#39;:I_MEAS&#39; suffix if it exists</span>
+    <span class="n">pc_name</span> <span class="o">=</span> <span class="n">strip_i_meas</span><span class="p">(</span><span class="n">pc_name</span><span class="p">)</span>
+
+    <span class="c1"># Extract circuit name from full power converter names</span>
+    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">pc_name</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">pc_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="c1"># For full names like &#39;RPMBB.UJ33.RCBH10.L1B1&#39;, take from the third part onward, else use pc_name</span>
+        <span class="n">circuit_name</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">pc_name</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">circuit_name</span> <span class="o">=</span> <span class="n">pc_name</span>
+
+    <span class="c1"># Apply MAD-X specific replacements</span>
+    <span class="n">replacements</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;RQ&quot;</span><span class="p">:</span> <span class="s2">&quot;KQ&quot;</span><span class="p">,</span> <span class="s2">&quot;RCB&quot;</span><span class="p">:</span> <span class="s2">&quot;ACB&quot;</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="n">replacements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">circuit_name</span> <span class="o">=</span> <span class="n">circuit_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">circuit_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

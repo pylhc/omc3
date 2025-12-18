@@ -139,7 +139,11 @@
 <li class="toctree-l2"><a class="reference internal" href="model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">NXCALS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -160,9 +164,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -222,12 +226,309 @@
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <nav id="local-table-of-contents" role="navigation" aria-labelledby="local-table-of-contents-title">
+    <h4 id="local-table-of-contents-title">On This Page</h4>
+    <ul>
+<li><a class="reference internal" href="#">NXCALS</a><ul>
+<li><a class="reference internal" href="#knob-extraction">Knob Extraction</a></li>
+<li><a class="reference internal" href="#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav>
   
   
            <div itemprop="articleBody">
              
-  <section id="nxcals">
-<h1>NXCALS<a class="headerlink" href="#nxcals" title="Link to this heading"></a></h1>
+  <section id="module-omc3.nxcals.knob_extraction">
+<span id="nxcals"></span><h1>NXCALS<a class="headerlink" href="#module-omc3.nxcals.knob_extraction" title="Link to this heading"></a></h1>
+<section id="knob-extraction">
+<h2>Knob Extraction<a class="headerlink" href="#knob-extraction" title="Link to this heading"></a></h2>
+<p>This module provides functionality to extract knob values from NXCALS for the LHC and
+convert them to MAD-X compatible format using LSA services.</p>
+<p>It handles retrieval of raw variable data from NXCALS, conversion of power converter
+currents to K-values, and mapping of power converter names to MAD-X naming
+conventions.</p>
+<p>This module requires the installation of <cite>jpype</cite>, <cite>pyspark</cite>, and access to the
+CERN network to connect to NXCALS and LSA services. You can install the required
+packages via pip:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">omc3[cern]</span>
+<span class="pre">`</span></code></p>
+<p>See the [NXCALS documentation](<a class="reference external" href="https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/">https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/</a>)
+for more information on getting access and using the Python API.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.NXCALSResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.nxcals.knob_extraction.</span></span><span class="sig-name descname"><span class="pre">NXCALSResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'pd.Timestamp'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/nxcals/knob_extraction.html#NXCALSResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.knob_extraction.NXCALSResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.NXCALSResult.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#omc3.nxcals.knob_extraction.NXCALSResult.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.NXCALSResult.pc_name">
+<span class="sig-name descname"><span class="pre">pc_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#omc3.nxcals.knob_extraction.NXCALSResult.pc_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.NXCALSResult.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Timestamp</span></em><a class="headerlink" href="#omc3.nxcals.knob_extraction.NXCALSResult.timestamp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.NXCALSResult.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#omc3.nxcals.knob_extraction.NXCALSResult.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.calc_k_from_iref">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.knob_extraction.</span></span><span class="sig-name descname"><span class="pre">calc_k_from_iref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/knob_extraction.html#calc_k_from_iref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.knob_extraction.calc_k_from_iref" title="Link to this definition"></a></dt>
+<dd><p>Calculate K values in the LHC from IREF using the LSA service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> -- The LSA client instance.</p></li>
+<li><p><strong>currents</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) -- Dictionary of current values keyed by variable name.</p></li>
+<li><p><strong>energy</strong> (<em>float</em>) -- The beam energy in GeV.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of K values keyed by variable name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.get_energy">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.knob_extraction.</span></span><span class="sig-name descname"><span class="pre">get_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.Timestamp</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/knob_extraction.html#get_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.knob_extraction.get_energy" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the beam energy of the LHC from NXCALS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session.</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) -- Python datetime (timezone-aware recommended).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Beam energy in GeV and its timestamp.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[float, pd.Timestamp]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> -- If no energy data is found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.get_knob_vals">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.knob_extraction.</span></span><span class="sig-name descname"><span class="pre">get_knob_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.nxcals.knob_extraction.NXCALSResult" title="omc3.nxcals.knob_extraction.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/knob_extraction.html#get_knob_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.knob_extraction.get_knob_vals" title="Link to this definition"></a></dt>
+<dd><p>Retrieve knob values for a given beam and time using specified patterns for the LHC.</p>
+<p>This is the main entry point for extracting magnet knob values from NXCALS. The function
+performs a complete workflow:</p>
+<ol class="arabic simple">
+<li><p>Queries NXCALS for power converter current measurements (I_MEAS) using variable patterns</p></li>
+<li><p>Retrieves the beam energy at the specified time</p></li>
+<li><p>Converts currents to K-values (integrated quadrupole strengths) using LSA</p></li>
+<li><p>Maps power converter names to MAD-X naming conventions</p></li>
+<li><p>Returns knob values with their timestamps</p></li>
+</ol>
+<p>The difference between patterns and knob names:</p>
+<ul class="simple">
+<li><p><strong>patterns</strong>: NXCALS variable patterns (e.g., “RPMBB.UA%.RQT%.A%B1:I_MEAS”) used to query
+raw power converter current measurements. These follow CERN naming conventions and may
+include wildcards (%).</p></li>
+<li><p><strong>expected_knobs</strong>: MAD-X element names (e.g., “kqt12.a12b1”) representing the final
+knob names as used in MAD-X scripts. These are lowercase, simplified names.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session for NXCALS queries.</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) -- Time to retrieve data for.</p></li>
+<li><p><strong>beam</strong> (<em>int</em>) -- Beam number (1 or 2).</p></li>
+<li><p><strong>patterns</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) -- List of NXCALS variable patterns to query for power converter
+currents. Patterns can include SQL-like wildcards (%). Example:
+“RPMBB.UA%.RQT%.A%B1:I_MEAS” matches all MQT quadrupole trim magnets for beam 1.</p></li>
+<li><p><strong>expected_knobs</strong> (<em>set</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) -- Set of expected MAD-X knob names to validate and filter
+results. If None, returns all found knobs without validation.</p></li>
+<li><p><strong>log_prefix</strong> (<em>str</em>) -- Prefix for logging messages to distinguish different extraction runs.</p></li>
+<li><p><strong>delta_days</strong> (<em>float</em>) -- Number of days to look back for data. Default is 0.25.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List of NXCalResult objects containing MAD-X knob names, K-values,</dt><dd><p>timestamps, and power converter names.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[NXCalResult]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.get_raw_vars">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.knob_extraction.</span></span><span class="sig-name descname"><span class="pre">get_raw_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.nxcals.knob_extraction.NXCALSResult" title="omc3.nxcals.knob_extraction.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/knob_extraction.html#get_raw_vars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.knob_extraction.get_raw_vars" title="Link to this definition"></a></dt>
+<dd><p>Retrieve raw variable values from NXCALS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session.</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) -- Python datetime (timezone-aware recommended).</p></li>
+<li><p><strong>var_name</strong> (<em>str</em>) -- Name or pattern of the variable(s) to retrieve.</p></li>
+<li><p><strong>delta_days</strong> (<em>float</em>) -- Number of days to look back for data. Default is 0.25.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of NXCalResult containing variable name, value, timestamp,
+and power converter name for the latest sample of each matching variable at the given time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[NXCalResult]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> -- If no data is found for the variable in the given interval.</p></li>
+<li><p><strong>You may need to increase the delta_days if necessary.</strong> -- </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.map_pc_name_to_madx">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.knob_extraction.</span></span><span class="sig-name descname"><span class="pre">map_pc_name_to_madx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pc_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/knob_extraction.html#map_pc_name_to_madx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.knob_extraction.map_pc_name_to_madx" title="Link to this definition"></a></dt>
+<dd><p>Convert an LHC power converter name or circuit name to its corresponding MAD-X name.</p>
+<p>This function processes the input name by removing the ‘:I_MEAS’ suffix if present,
+extracting the circuit name from full power converter names (starting with ‘RPMBB’ or ‘RPL’),
+applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pc_name</strong> (<em>str</em>) -- The power converter or circuit name to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted MAD-X name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="s2">&quot;RPMBB.UJ33.RCBH10.L1B1:I_MEAS&quot;</span><span class="p">)</span>
+<span class="go">&#39;acb10.l1b1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="s2">&quot;RQT12.L5B1&quot;</span><span class="p">)</span>
+<span class="go">&#39;kqt12.l5b1&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.knob_extraction.strip_i_meas">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.knob_extraction.</span></span><span class="sig-name descname"><span class="pre">strip_i_meas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/knob_extraction.html#strip_i_meas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.knob_extraction.strip_i_meas" title="Link to this definition"></a></dt>
+<dd><p>Remove the I_MEAS suffix from a variable name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) -- The variable name possibly ending with ‘:I_MEAS’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The variable name without the ‘:I_MEAS’ suffix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="extraction-of-mqt-knobs-from-nxcals">
+<span id="module-omc3.nxcals.mqt_extraction"></span><h2>Extraction of MQT knobs from NXCALS.<a class="headerlink" href="#extraction-of-mqt-knobs-from-nxcals" title="Link to this heading"></a></h2>
+<p>This module provides functions to retrieve MQT (Quadrupole Trim) knob values for the LHC
+for a specified beam and time using NXCALS and LSA.</p>
+<p>There are two types per arc (focusing ‘f’ and defocusing ‘d’), resulting in 16 MQT circuits
+per beam (8 arcs * 2 planes).</p>
+<p>The extraction uses the underlying <cite>knob_extraction</cite> module with MQT-specific patterns.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.mqt_extraction.generate_mqt_names">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.mqt_extraction.</span></span><span class="sig-name descname"><span class="pre">generate_mqt_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/mqt_extraction.html#generate_mqt_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.mqt_extraction.generate_mqt_names" title="Link to this definition"></a></dt>
+<dd><p>Generate the set of MAD-X MQT (Quadrupole Trim) variable names for a given beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>beam</strong> (<em>int</em>) -- The beam number (1 or 2).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A set of MAD-X variable names for MQT magnets, e.g., ‘kqt12.a12b1’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set[str]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If beam is not 1 or 2.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_mqts</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">{&#39;kqt12.a12b1&#39;, &#39;kqt12.a23b1&#39;, ..., &#39;kqtd.a81b1&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.mqt_extraction.get_mqt_vals">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.mqt_extraction.</span></span><span class="sig-name descname"><span class="pre">get_mqt_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.nxcals.knob_extraction.NXCALSResult" title="omc3.nxcals.knob_extraction.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/mqt_extraction.html#get_mqt_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.mqt_extraction.get_mqt_vals" title="Link to this definition"></a></dt>
+<dd><p>Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.</p>
+<p>This function queries NXCALS for current measurements of MQT power converters,
+calculates the corresponding K-values (integrated quadrupole strengths) using LSA,
+and returns them in MAD-X format with timestamps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session for NXCALS queries.</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) -- The timestamp for which to retrieve the data (timezone-aware required).</p></li>
+<li><p><strong>beam</strong> (<em>int</em>) -- The beam number (1 or 2).</p></li>
+<li><p><strong>delta_days</strong> (<em>float</em>) -- Number of days to look back for data. Default is 0.25.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of NXCalResult objects containing the MAD-X knob names, K-values, and timestamps.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[NXCalResult]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> -- If beam is not 1 or 2 (propagated from get_mqts), or if time is not timezone-aware.</p></li>
+<li><p><strong>RuntimeError</strong> -- If no data is found in NXCALS or LSA calculations fail.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.nxcals.mqt_extraction.knobs_to_madx">
+<span class="sig-prename descclassname"><span class="pre">omc3.nxcals.mqt_extraction.</span></span><span class="sig-name descname"><span class="pre">knobs_to_madx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mqt_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.nxcals.knob_extraction.NXCALSResult" title="omc3.nxcals.knob_extraction.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/nxcals/mqt_extraction.html#knobs_to_madx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.nxcals.mqt_extraction.knobs_to_madx" title="Link to this definition"></a></dt>
+<dd><p>Convert a list of NXCalResult objects to a MAD-X script string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mqt_vals</strong> -- List of NXCalResult objects containing knob values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A string containing the MAD-X script with knob assignments.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -283,6 +287,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">minmax</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">PLANES</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
+<div class="viewcode-block" id="FigureContainer.add_data">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.utils.FigureContainer.add_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_data</span>
         <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
@@ -307,6 +313,7 @@
                 <span class="nb">min</span><span class="p">(</span><span class="n">mmin</span><span class="p">,</span> <span class="n">new_data</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">AMPS</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
                 <span class="nb">max</span><span class="p">(</span><span class="n">mmax</span><span class="p">,</span> <span class="n">new_data</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">AMPS</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
             <span class="p">)</span></div>
+</div>
 
 
 
@@ -347,6 +354,8 @@
 <span class="c1"># (Tune-) Line Plotting --------------------------------------------------------</span>
 
 
+<div class="viewcode-block" id="plot_lines">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.utils.plot_lines">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_lines</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">:</span> <span class="n">FigureContainer</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">label_size</span> <span class="o">=</span> <span class="n">get_fontsize_as_float</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.7</span>
     <span class="n">bottom_qlabel</span> <span class="o">=</span> <span class="mf">1.01</span>
@@ -367,7 +376,8 @@
             <span class="n">text</span> <span class="o">=</span> <span class="n">mline</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">plot_vertical_line</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">mline</span><span class="p">,</span>  <span class="n">text</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">label_size</span><span class="p">)</span>
             <span class="n">mline</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>  <span class="c1"># reset it for later axes/plots</span>
-            <span class="n">mline</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">text</span>
+            <span class="n">mline</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">text</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_plot_tune_lines</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">label_size</span><span class="p">,</span> <span class="n">q_string</span><span class="p">,</span> <span class="n">tunes</span><span class="p">,</span> <span class="n">resonances</span><span class="p">,</span> <span class="n">linestyle</span><span class="p">,</span> <span class="n">label_y</span><span class="p">):</span>
@@ -657,19 +667,25 @@
     <span class="k">return</span> <span class="n">found_bpms</span>
 
 
+<div class="viewcode-block" id="rescale_amp">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.utils.rescale_amp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rescale_amp</span><span class="p">(</span><span class="n">amp_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
     <span class="c1"># return amp_data.divide(amp_data.max(axis=0), axis=1)  # dataframe</span>
-    <span class="k">return</span> <span class="n">amp_data</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">amp_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>  <span class="c1"># series</span>
+    <span class="k">return</span> <span class="n">amp_data</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">amp_data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>  <span class="c1"># series</span></div>
+
 
 
 <span class="c1"># For Output ---</span>
 
 
+<div class="viewcode-block" id="output_plot">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.utils.output_plot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">output_plot</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">:</span> <span class="n">FigureContainer</span><span class="p">):</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">fig_cont</span><span class="o">.</span><span class="n">fig</span>
     <span class="k">if</span> <span class="n">fig_cont</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fig_cont</span><span class="o">.</span><span class="n">path</span> <span class="o">!=</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving Plot &#39;</span><span class="si">{</span><span class="n">fig_cont</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_cont</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fig_cont</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_figure_path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">figurename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
@@ -700,14 +716,20 @@
 
 
 
+<div class="viewcode-block" id="get_approx_size_in_axes_coordinates">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.utils.get_approx_size_in_axes_coordinates">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_approx_size_in_axes_coordinates</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">axes</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">label_size</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">transform</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">label_size_ax</span> <span class="o">=</span> <span class="n">transform</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">label_size</span><span class="p">))</span> <span class="o">-</span> <span class="n">transform</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">label_size_ax</span>
+    <span class="k">return</span> <span class="n">label_size_ax</span></div>
 
 
+
+<div class="viewcode-block" id="list2str">
+<a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.utils.list2str">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">list2str</span><span class="p">(</span><span class="n">list_</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
 
 
 <span class="c1"># Spectrum File Loading --------------------------------------------------------</span>

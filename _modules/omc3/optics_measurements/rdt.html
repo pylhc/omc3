@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -383,10 +387,13 @@
 
 
 
+<div class="viewcode-block" id="write">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.rdt.write">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
     <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="n">RDT_FOLDER</span> <span class="o">/</span> <span class="n">_rdt_to_order_and_type</span><span class="p">(</span><span class="n">rdt</span><span class="p">)</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
-    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;f</span><span class="si">{</span><span class="n">_rdt_to_str</span><span class="p">(</span><span class="n">rdt</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+    <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;f</span><span class="si">{</span><span class="n">_rdt_to_str</span><span class="p">(</span><span class="n">rdt</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span></div>
+
 
 
 <span class="nd">@contextmanager</span>
@@ -472,12 +479,15 @@
     <span class="k">return</span> <span class="n">lines</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
 
 
+<div class="viewcode-block" id="add_freq_to_header">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.rdt.add_freq_to_header">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rdt</span><span class="p">:</span> <span class="n">RDTTuple</span><span class="p">):</span>
     <span class="n">mod_header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">line</span> <span class="o">=</span> <span class="n">_determine_line</span><span class="p">(</span><span class="n">rdt</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">line</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;Q1&quot;</span><span class="p">],</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;Q2&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">mod_header</span><span class="p">[</span><span class="s2">&quot;FREQ&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq</span> <span class="k">if</span> <span class="n">freq</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">freq</span>
-    <span class="k">return</span> <span class="n">mod_header</span>
+    <span class="k">return</span> <span class="n">mod_header</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_process_rdt</span><span class="p">(</span>
@@ -603,6 +613,8 @@
 
 
 
+<div class="viewcode-block" id="get_line_sign_and_suffix">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.rdt.get_line_sign_and_suffix">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_line_sign_and_suffix</span><span class="p">(</span>
     <span class="n">line</span><span class="p">:</span> <span class="n">LineTuple</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -618,7 +630,8 @@
         <span class="sa">f</span><span class="s2">&quot;The column AMP</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2"> has not been found in the lin</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2"> file. &quot;</span>
         <span class="s2">&quot;Consider re-running the frequency analysis with a higher order resonance term&quot;</span>
     <span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="complex_secondary_lines">
@@ -656,6 +669,8 @@
 
 
 
+<div class="viewcode-block" id="to_complex">
+<a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.rdt.to_complex">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_complex</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">phases</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
         <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
@@ -663,7 +678,8 @@
     <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">phases</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">amplitudes</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">phases</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">amplitudes</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">phases</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

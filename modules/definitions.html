@@ -139,7 +139,11 @@
 <li class="toctree-l2"><a class="reference internal" href="model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -160,9 +164,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -238,86 +242,313 @@
   
            <div itemprop="articleBody">
              
-  <section id="definitions">
-<h1>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h1>
+  <section id="module-omc3.definitions.constants">
+<span id="definitions"></span><h1>Definitions<a class="headerlink" href="#module-omc3.definitions.constants" title="Link to this heading"></a></h1>
 <section id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h2>
 <p>General constants to use throughout <code class="docutils literal notranslate"><span class="pre">omc3</span></code>, so they don’t have to be redefined all the time.
 Also helps with consistency.</p>
 </section>
 <section id="formats">
-<h2>Formats<a class="headerlink" href="#formats" title="Link to this heading"></a></h2>
+<span id="module-omc3.definitions.formats"></span><h2>Formats<a class="headerlink" href="#formats" title="Link to this heading"></a></h2>
 <p>Recurring formats are defined here.</p>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.definitions.formats.</span></span><span class="sig-name descname"><span class="pre">get_config_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/formats.html#get_config_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.definitions.formats.get_config_filename">
+<span class="sig-prename descclassname"><span class="pre">omc3.definitions.formats.</span></span><span class="sig-name descname"><span class="pre">get_config_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/formats.html#get_config_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.definitions.formats.get_config_filename" title="Link to this definition"></a></dt>
 <dd><p>Default Filename for config-files. Call from script with <code class="docutils literal notranslate"><span class="pre">__file__</span></code>.</p>
 </dd></dl>
 
 <section id="optics">
-<h2>Optics<a class="headerlink" href="#optics" title="Link to this heading"></a></h2>
+<span id="module-omc3.definitions.optics"></span><h2>Optics<a class="headerlink" href="#optics" title="Link to this heading"></a></h2>
 <p>Definitions for the optics measurements.</p>
 </section>
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">ColumnsAndLabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_error_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_model_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_delta_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_error_delta_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_expected_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_error_expected_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_diff_correction_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_delta_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_text_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_delta_rms_header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_expected_rms_header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#ColumnsAndLabels"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Class to store information about derived columns from the main column.
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">ColumnsAndLabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_error_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_model_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_delta_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_error_delta_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_expected_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_error_expected_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_diff_correction_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_delta_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_text_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_delta_rms_header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_expected_rms_header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#ColumnsAndLabels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to store information about derived columns from the main column.
 For convenience, also labels (e.g. for plotting) related to that column
 are stored in this dataclass.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.delta_column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.delta_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.delta_label">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_label</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.delta_label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.delta_masked_rms_header">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_masked_rms_header</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.delta_masked_rms_header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.delta_rms_header">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_rms_header</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.delta_rms_header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.diff_correction_column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">diff_correction_column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.diff_correction_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.error_column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error_column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.error_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.error_delta_column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error_delta_column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.error_delta_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.error_expected_column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error_expected_column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.error_expected_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.expected_column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.expected_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.expected_masked_rms_header">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_masked_rms_header</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.expected_masked_rms_header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.expected_rms_header">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_rms_header</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.expected_rms_header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.label">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.model_column">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_column</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.model_column" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.needs_plane">
+<span class="sig-name descname"><span class="pre">needs_plane</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.needs_plane" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">set_label_formatted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ColumnsAndLabels</span></span></span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#ColumnsAndLabels.set_label_formatted"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.set_label_formatted">
+<span class="sig-name descname"><span class="pre">set_label_formatted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.definitions.optics.ColumnsAndLabels" title="omc3.definitions.optics.ColumnsAndLabels"><span class="pre">ColumnsAndLabels</span></a></span></span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#ColumnsAndLabels.set_label_formatted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.set_label_formatted" title="Link to this definition"></a></dt>
 <dd><p>Fixes the label in a new object (for RDTs).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">set_plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ColumnsAndLabels</span></span></span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#ColumnsAndLabels.set_plane"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.set_plane">
+<span class="sig-name descname"><span class="pre">set_plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.definitions.optics.ColumnsAndLabels" title="omc3.definitions.optics.ColumnsAndLabels"><span class="pre">ColumnsAndLabels</span></a></span></span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#ColumnsAndLabels.set_plane"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.set_plane" title="Link to this definition"></a></dt>
 <dd><p>Fixes the plane in a new object.</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.ColumnsAndLabels.text_label">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text_label</span></span><a class="headerlink" href="#omc3.definitions.optics.ColumnsAndLabels.text_label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">FILE_COLUMN_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'beta_amplitude_':</span> <span class="pre">ColumnsAndLabels(_column='BET',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\beta_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[m]$',</span> <span class="pre">_delta_label='$\\Delta</span> <span class="pre">\\beta_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\beta_{{{0}}}$',</span> <span class="pre">_text_label='beta',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'beta_kmod_':</span> <span class="pre">ColumnsAndLabels(_column='BET',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\beta_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[m]$',</span> <span class="pre">_delta_label='$\\Delta</span> <span class="pre">\\beta_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\beta_{{{0}}}$',</span> <span class="pre">_text_label='beta',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'beta_phase_':</span> <span class="pre">ColumnsAndLabels(_column='BET',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\beta_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[m]$',</span> <span class="pre">_delta_label='$\\Delta</span> <span class="pre">\\beta_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\beta_{{{0}}}$',</span> <span class="pre">_text_label='beta',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'dispersion_':</span> <span class="pre">ColumnsAndLabels(_column='D',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='D$_{{{0}}}$</span> <span class="pre">[m]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='dispersion',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'normalised_dispersion_':</span> <span class="pre">ColumnsAndLabels(_column='ND',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='D$_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\sqrt{{\\beta_{{{0}}}}}</span> <span class="pre">\\quad</span> <span class="pre">\\left[\\sqrt{{\\rm</span> <span class="pre">m}}\\right]$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='normalized</span> <span class="pre">dispersion',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'orbit_':</span> <span class="pre">ColumnsAndLabels(_column='',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='Orbit</span> <span class="pre">{0}</span> <span class="pre">[m]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='orbit',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'phase_':</span> <span class="pre">ColumnsAndLabels(_column='PHASE',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\phi_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[2\\pi]$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='phase',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'total_phase_':</span> <span class="pre">ColumnsAndLabels(_column='PHASE',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\phi_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[2\\pi]$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='total</span> <span class="pre">phase',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True)}</span></em></dt>
+<dt class="sig sig-object py" id="omc3.definitions.optics.FILE_COLUMN_MAPPING">
+<span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">FILE_COLUMN_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'beta_amplitude_':</span> <span class="pre">ColumnsAndLabels(_column='BET',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\beta_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[m]$',</span> <span class="pre">_delta_label='$\\Delta</span> <span class="pre">\\beta_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\beta_{{{0}}}$',</span> <span class="pre">_text_label='beta',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'beta_kmod_':</span> <span class="pre">ColumnsAndLabels(_column='BET',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\beta_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[m]$',</span> <span class="pre">_delta_label='$\\Delta</span> <span class="pre">\\beta_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\beta_{{{0}}}$',</span> <span class="pre">_text_label='beta',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'beta_phase_':</span> <span class="pre">ColumnsAndLabels(_column='BET',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\beta_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[m]$',</span> <span class="pre">_delta_label='$\\Delta</span> <span class="pre">\\beta_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\beta_{{{0}}}$',</span> <span class="pre">_text_label='beta',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'dispersion_':</span> <span class="pre">ColumnsAndLabels(_column='D',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='D$_{{{0}}}$</span> <span class="pre">[m]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='dispersion',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'normalised_dispersion_':</span> <span class="pre">ColumnsAndLabels(_column='ND',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='D$_{{{0}}}</span> <span class="pre">\\;</span> <span class="pre">/</span> <span class="pre">\\;</span> <span class="pre">\\sqrt{{\\beta_{{{0}}}}}</span> <span class="pre">\\quad</span> <span class="pre">\\left[\\sqrt{{\\rm</span> <span class="pre">m}}\\right]$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='normalized</span> <span class="pre">dispersion',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'orbit_':</span> <span class="pre">ColumnsAndLabels(_column='',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='Orbit</span> <span class="pre">{0}</span> <span class="pre">[m]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='orbit',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'phase_':</span> <span class="pre">ColumnsAndLabels(_column='PHASE',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\phi_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[2\\pi]$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='phase',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True),</span> <span class="pre">'total_phase_':</span> <span class="pre">ColumnsAndLabels(_column='PHASE',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\phi_{{{0}}}</span> <span class="pre">\\quad</span> <span class="pre">[2\\pi]$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='total</span> <span class="pre">phase',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True)}</span></em><a class="headerlink" href="#omc3.definitions.optics.FILE_COLUMN_MAPPING" title="Link to this definition"></a></dt>
 <dd><p>Find the Column Dataclass by column name for RDTs.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">OpticsMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_write</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#OpticsMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Class to hold and load the measurements from <cite>omc3.optics_measurements</cite>.</p>
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">OpticsMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_write</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#OpticsMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TfsCollection</span></code></p>
+<p>Class to hold and load the measurements from <cite>omc3.optics_measurements</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>directory</strong> -- The path to the measurement directory, usually the
 <cite>optics_measurements</cite> output directory.</p>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.INDEX">
+<span class="sig-name descname"><span class="pre">INDEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NAME'</span></em><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.INDEX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.beta_amplitude_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_amplitude_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.beta_amplitude_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.beta_amplitude_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_amplitude_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.beta_amplitude_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.beta_kmod_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_kmod_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.beta_kmod_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.beta_kmod_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_kmod_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.beta_kmod_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.beta_phase_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_phase_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.beta_phase_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.beta_phase_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_phase_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.beta_phase_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.dispersion_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dispersion_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.dispersion_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.dispersion_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dispersion_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.dispersion_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.f1001">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">f1001</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.f1001" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.f1010">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">f1010</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.f1010" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.ip_kmod_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ip_kmod_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.ip_kmod_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.ip_kmod_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ip_kmod_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.ip_kmod_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.ip_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ip_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.ip_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.ip_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ip_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.ip_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.kick_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kick_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.kick_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.kick_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kick_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.kick_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.norm_dispersion_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_dispersion_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.norm_dispersion_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.norm_dispersion_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">norm_dispersion_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.norm_dispersion_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.orbit_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orbit_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.orbit_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.orbit_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orbit_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.orbit_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.phase_driven_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_driven_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.phase_driven_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.phase_driven_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_driven_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.phase_driven_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.phase_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.phase_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.phase_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.phase_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">read_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#OpticsMeasurement.read_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.read_tfs">
+<span class="sig-name descname"><span class="pre">read_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#OpticsMeasurement.read_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.read_tfs" title="Link to this definition"></a></dt>
 <dd><p>Override for NAME convenience.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.total_phase_driven_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_phase_driven_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.total_phase_driven_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.total_phase_driven_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_phase_driven_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.total_phase_driven_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.total_phase_x">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_phase_x</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.total_phase_x" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.total_phase_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_phase_y</span></span><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.total_phase_y" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">write_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#OpticsMeasurement.write_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.definitions.optics.OpticsMeasurement.write_tfs">
+<span class="sig-name descname"><span class="pre">write_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TfsDataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/definitions/optics.html#OpticsMeasurement.write_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.definitions.optics.OpticsMeasurement.write_tfs" title="Link to this definition"></a></dt>
 <dd><p>Override for NAME convenience.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">POSITION_COLUMN_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'location':</span> <span class="pre">ColumnsAndLabels(_column='S',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='Location</span> <span class="pre">[m]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='longitudinal</span> <span class="pre">location',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=False),</span> <span class="pre">'phase-advance':</span> <span class="pre">ColumnsAndLabels(_column='MU{0}MDL',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='Phase</span> <span class="pre">Advance</span> <span class="pre">[$2</span> <span class="pre">\\pi$]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='phase</span> <span class="pre">advance',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True)}</span></em></dt>
+<dt class="sig sig-object py" id="omc3.definitions.optics.POSITION_COLUMN_MAPPING">
+<span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">POSITION_COLUMN_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'location':</span> <span class="pre">ColumnsAndLabels(_column='S',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='Location</span> <span class="pre">[m]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='longitudinal</span> <span class="pre">location',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=False),</span> <span class="pre">'phase-advance':</span> <span class="pre">ColumnsAndLabels(_column='MU{0}MDL',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='Phase</span> <span class="pre">Advance</span> <span class="pre">[$2</span> <span class="pre">\\pi$]',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='phase</span> <span class="pre">advance',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=True)}</span></em><a class="headerlink" href="#omc3.definitions.optics.POSITION_COLUMN_MAPPING" title="Link to this definition"></a></dt>
 <dd><p>Map the file name to it’s main columns and the respective label for a plot.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">RDT_IMAG_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColumnsAndLabels(_column='IMAG',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\Im({0})$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='imaginary',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=False)</span></em></dt>
+<dt class="sig sig-object py" id="omc3.definitions.optics.RDT_IMAG_COLUMN">
+<span class="sig-prename descclassname"><span class="pre">omc3.definitions.optics.</span></span><span class="sig-name descname"><span class="pre">RDT_IMAG_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColumnsAndLabels(_column='IMAG',</span> <span class="pre">_error_column=None,</span> <span class="pre">_model_column=None,</span> <span class="pre">_delta_column=None,</span> <span class="pre">_error_delta_column=None,</span> <span class="pre">_expected_column=None,</span> <span class="pre">_error_expected_column=None,</span> <span class="pre">_diff_correction_column=None,</span> <span class="pre">_label='$\\Im({0})$',</span> <span class="pre">_delta_label=None,</span> <span class="pre">_text_label='imaginary',</span> <span class="pre">_delta_rms_header=None,</span> <span class="pre">_expected_rms_header=None,</span> <span class="pre">needs_plane=False)</span></em><a class="headerlink" href="#omc3.definitions.optics.RDT_IMAG_COLUMN" title="Link to this definition"></a></dt>
 <dd><p>Map for the x-axis of plots.</p>
 </dd></dl>
 

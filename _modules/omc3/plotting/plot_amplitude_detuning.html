@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -378,6 +382,8 @@
 <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">PLANES</span>
 
 
+<div class="viewcode-block" id="get_params">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.get_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">kicks</span><span class="o">=</span><span class="p">{</span>
@@ -459,9 +465,12 @@
                  <span class="s2">&quot; ``None`` plots both in separate plots. Default: ``None``.&quot;</span><span class="p">,</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="p">}</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
 
 
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.main">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting Amplitude Detuning Results.&quot;</span><span class="p">)</span>
@@ -481,7 +490,8 @@
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">figs</span>
+    <span class="k">return</span> <span class="n">figs</span></div>
+
 
 
 <span class="c1"># Plotting --------------------------------------------------------------</span>
@@ -774,8 +784,11 @@
 
 
 
+<div class="viewcode-block" id="fit_fun_odr_1d">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.fit_fun_odr_1d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fit_fun_odr_1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="n">qdx</span><span class="p">,</span> <span class="n">qdy</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">q0</span> <span class="o">+</span> <span class="n">qdx</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">qdy</span> <span class="o">*</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">q0</span> <span class="o">+</span> <span class="n">qdx</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">qdy</span> <span class="o">*</span> <span class="n">y</span></div>
+
 
 
 <div class="viewcode-block" id="plot_odr_3d">
@@ -947,6 +960,8 @@
     <span class="k">return</span> <span class="n">significant_digits</span><span class="p">(</span><span class="n">scaled_vas</span><span class="p">,</span> <span class="n">scaled_std</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="get_labels_with_odr_labels">
+<a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.get_labels_with_odr_labels">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_labels_with_odr_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">):</span>
     <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">odr_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -960,7 +975,8 @@
         <span class="k">if</span> <span class="n">odr_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">h_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">empty</span><span class="p">)</span>
             <span class="n">l_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odr_label</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-    <span class="k">return</span> <span class="n">h_new</span><span class="p">,</span> <span class="n">l_new</span>
+    <span class="k">return</span> <span class="n">h_new</span><span class="p">,</span> <span class="n">l_new</span></div>
+
 
 
 <span class="c1"># Helper -----------------------------------------------------------------------</span>

@@ -136,7 +136,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -157,9 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -386,6 +390,8 @@
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">error_dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">core</span><span class="si">}</span><span class="s2">GeV.tfs&quot;</span><span class="p">,</span> <span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="LhcModelCreator.check_accelerator_instance">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.check_accelerator_instance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">accel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="n">accel</span><span class="o">.</span><span class="n">verify_object</span><span class="p">()</span>  <span class="c1"># should have been done anyway, but cannot hurt (jdilly)</span>
@@ -410,7 +416,8 @@
             <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span>
                 <span class="s2">&quot;The following modifier files do not exist: &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">inexistent_modifiers</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="LhcModelCreator.get_madx_script">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_madx_script">[docs]</a>
@@ -608,13 +615,16 @@
                 <span class="s2">&quot;has to be specified (--lhcmode option missing?).&quot;</span>
             <span class="p">)</span>
 
+<div class="viewcode-block" id="LhcModelCreator.get_tune_knobs">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.get_tune_knobs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_tune_knobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_run3_macros</span><span class="p">():</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;dQx.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">_op&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dQy.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">_op&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_ats_knobs</span><span class="p">():</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;dQx.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dQy.b</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;KQTD.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;KQTF.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;KQTD.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;KQTF.B</span><span class="si">{</span><span class="n">accel</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
 
     <span class="c1"># Private Methods ##########################################################</span>
 
@@ -690,6 +700,8 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare_options</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="LhcBestKnowledgeCreator.check_accelerator_instance">
+<a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.check_accelerator_instance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_accelerator_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">accel</span><span class="p">:</span> <span class="n">Lhc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_accelerator_instance</span><span class="p">()</span>
@@ -700,7 +712,8 @@
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">FREE</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t set ACD or ADT for best knowledge model.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Don&#39;t set ACD or ADT for best knowledge model.&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="LhcBestKnowledgeCreator.prepare_run">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.prepare_run">[docs]</a>

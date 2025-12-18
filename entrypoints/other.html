@@ -139,7 +139,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
@@ -160,9 +164,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/plotting.html">Plot-Subfunctions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#optics-measurements-plots">Optics Measurements Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#spectrum-plots">Spectrum Plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#common-plot-functionality">Common Plot Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
@@ -239,16 +243,16 @@
   
            <div itemprop="articleBody">
              
-  <section id="other">
-<h1>Other<a class="headerlink" href="#other" title="Link to this heading"></a></h1>
+  <section id="module-omc3.tbt_converter">
+<span id="other"></span><h1>Other<a class="headerlink" href="#module-omc3.tbt_converter" title="Link to this heading"></a></h1>
 <section id="tbt-converter">
 <h2>TbT Converter<a class="headerlink" href="#tbt-converter" title="Link to this heading"></a></h2>
 <p>Top-level script to convert turn-by-turn files from various formats to <code class="docutils literal notranslate"><span class="pre">LHC</span></code> binary SDDS files.
 Optionally, it can replicate files with added noise.</p>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.tbt_converter.</span></span><span class="sig-name descname"><span class="pre">converter_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt_converter.html#converter_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.tbt_converter.converter_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt_converter.</span></span><span class="sig-name descname"><span class="pre">converter_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt_converter.html#converter_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt_converter.converter_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Converts turn-by-turn files from various formats to <code class="docutils literal notranslate"><span class="pre">LHC</span></code> binary SDDS files.
 Optionally can replicate files with added noise.</p>
 <dl>
@@ -290,13 +294,18 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.tbt_converter.converter_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.tbt_converter.</span></span><span class="sig-name descname"><span class="pre">converter_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tbt_converter.html#converter_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tbt_converter.converter_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <section id="model-creator">
-<h2>Model Creator<a class="headerlink" href="#model-creator" title="Link to this heading"></a></h2>
+<span id="module-omc3.model_creator"></span><h2>Model Creator<a class="headerlink" href="#model-creator" title="Link to this heading"></a></h2>
 <p>Entrypoint to run the model creator for LHC, PSBooster and PS models.</p>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.model_creator.</span></span><span class="sig-name descname"><span class="pre">create_instance_and_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Accelerator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model_creator.html#create_instance_and_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.model_creator.create_instance_and_model">
+<span class="sig-prename descclassname"><span class="pre">omc3.model_creator.</span></span><span class="sig-name descname"><span class="pre">create_instance_and_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/model_creator.html#create_instance_and_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model_creator.create_instance_and_model" title="Link to this definition"></a></dt>
 <dd><dl>
 <dt>Manager Keyword Args:</dt><dd><p><em>--Required--</em></p>
 <ul>
@@ -332,20 +341,25 @@ provided it will be written to sys.stdout.</p>
 </li>
 </ul>
 </dd>
-<dt>Accelerator Keyword Args:</dt><dd><p>lhc: <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.lhc</span></code></p>
-<p>ps: <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.ps</span></code></p>
-<p>esrf: <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.esrf</span></code></p>
-<p>psbooster: <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.psbooster</span></code></p>
-<p>skekb: <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.skekb</span></code></p>
-<p>iota: <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.iota</span></code></p>
-<p>petra: <code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.petra</span></code> (not implemented)</p>
+<dt>Accelerator Keyword Args:</dt><dd><p>lhc: <a class="reference internal" href="../modules/model.html#module-omc3.model.accelerators.lhc" title="omc3.model.accelerators.lhc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.lhc</span></code></a></p>
+<p>ps: <a class="reference internal" href="../modules/model.html#module-omc3.model.accelerators.ps" title="omc3.model.accelerators.ps"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.ps</span></code></a></p>
+<p>esrf: <a class="reference internal" href="../modules/model.html#module-omc3.model.accelerators.esrf" title="omc3.model.accelerators.esrf"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.esrf</span></code></a></p>
+<p>psbooster: <a class="reference internal" href="../modules/model.html#module-omc3.model.accelerators.psbooster" title="omc3.model.accelerators.psbooster"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.psbooster</span></code></a></p>
+<p>skekb: <a class="reference internal" href="../modules/model.html#module-omc3.model.accelerators.skekb" title="omc3.model.accelerators.skekb"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.skekb</span></code></a></p>
+<p>iota: <a class="reference internal" href="../modules/model.html#module-omc3.model.accelerators.iota" title="omc3.model.accelerators.iota"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.iota</span></code></a></p>
+<p>petra: <a class="reference internal" href="../modules/model.html#module-omc3.model.accelerators.petra" title="omc3.model.accelerators.petra"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.model.accelerators.petra</span></code></a> (not implemented)</p>
 <p>JPARC: Not implemented</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.model_creator.get_fetcher_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.model_creator.</span></span><span class="sig-name descname"><span class="pre">get_fetcher_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/model_creator.html#get_fetcher_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model_creator.get_fetcher_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <section id="knob-extractor">
-<h2>Knob Extractor<a class="headerlink" href="#knob-extractor" title="Link to this heading"></a></h2>
+<span id="module-omc3.knob_extractor"></span><h2>Knob Extractor<a class="headerlink" href="#knob-extractor" title="Link to this heading"></a></h2>
 <p>Entrypoint to extract knobs from <code class="docutils literal notranslate"><span class="pre">NXCALS</span></code> at a given time, and eventually write them out to a file.
 This script can also be used to display information about the StateTracker State.
 The data is fetched from <code class="docutils literal notranslate"><span class="pre">NXCALS</span></code> through <code class="docutils literal notranslate"><span class="pre">pytimber</span></code> using the <strong>StateTracker</strong> fields.</p>
@@ -403,20 +417,47 @@ timedelta. This allows for easily getting the setting e.g. 2h ago:
 </ul>
 </section>
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">Col</span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#Col"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>DataFrame Columns used in this script.</p>
+<dt class="sig sig-object py" id="omc3.knob_extractor.Col">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">Col</span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#Col"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.Col" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DataFrame Columns used in this script.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.knob_extractor.Col.lsa">
+<span class="sig-name descname"><span class="pre">lsa</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lsa'</span></em><a class="headerlink" href="#omc3.knob_extractor.Col.lsa" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.knob_extractor.Col.madx">
+<span class="sig-name descname"><span class="pre">madx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'madx'</span></em><a class="headerlink" href="#omc3.knob_extractor.Col.madx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.knob_extractor.Col.scaling">
+<span class="sig-name descname"><span class="pre">scaling</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'scaling'</span></em><a class="headerlink" href="#omc3.knob_extractor.Col.scaling" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.knob_extractor.Col.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'value'</span></em><a class="headerlink" href="#omc3.knob_extractor.Col.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">Head</span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#Head"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>TFS Headers used in this script.</p>
+<dt class="sig sig-object py" id="omc3.knob_extractor.Head">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">Head</span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#Head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.Head" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TFS Headers used in this script.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.knob_extractor.Head.time">
+<span class="sig-name descname"><span class="pre">time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EXTRACTION_TIME'</span></em><a class="headerlink" href="#omc3.knob_extractor.Head.time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">check_for_undefined_knobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knobs_definitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knob_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#check_for_undefined_knobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.knob_extractor.check_for_undefined_knobs">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">check_for_undefined_knobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knobs_definitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knob_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#check_for_undefined_knobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.check_for_undefined_knobs" title="Link to this definition"></a></dt>
 <dd><p>Check that all knobs are actually defined in the knobs-definitions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -432,8 +473,8 @@ timedelta. This allows for easily getting the setting e.g. 2h ago:
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.knob_extractor.extract">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.extract" title="Link to this definition"></a></dt>
 <dd><p>Standalone function to gather data from  the StateTracker.
 Extracts data via pytimber’s LoggingDB for the knobs given
 (either by name or by category) in knobs.</p>
@@ -456,8 +497,18 @@ When extraction was not possible, the value is None.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.knob_extractor.get_madx_command">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_madx_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_madx_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.get_madx_command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.knob_extractor.get_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.get_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.knob_extractor.get_state">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.get_state" title="Link to this definition"></a></dt>
 <dd><p>Standalone function to gather and log state data from  the StateTracker.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -476,8 +527,8 @@ When extraction was not possible, the value is None.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">load_knobs_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#load_knobs_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.knob_extractor.load_knobs_definitions">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">load_knobs_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#load_knobs_definitions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.load_knobs_definitions" title="Link to this definition"></a></dt>
 <dd><p>Load the knobs-definition file and convert into a DataFrame.
 Each line in this file should consist of at least three comma separated
 entries in the following order: madx-name, lsa-name, scaling factor.
@@ -495,36 +546,47 @@ keys and KnobEntries (without values) as value.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">lsa2name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#lsa2name"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.knob_extractor.lsa2name">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">lsa2name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#lsa2name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.lsa2name" title="Link to this definition"></a></dt>
 <dd><p>LSA name -&gt; Variable in Timber/StateTracker conversion.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.knob_extractor.main">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.main" title="Link to this definition"></a></dt>
 <dd><p>Main knob extracting function.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">name2lsa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#name2lsa"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.knob_extractor.name2lsa">
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">name2lsa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#name2lsa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.name2lsa" title="Link to this definition"></a></dt>
 <dd><p>Variable in Timber/StateTracker -&gt; LSA name conversion.</p>
 </dd></dl>
 
 <section id="mad-x-wrapper">
-<h2>MAD-X Wrapper<a class="headerlink" href="#mad-x-wrapper" title="Link to this heading"></a></h2>
+<span id="module-omc3.madx_wrapper"></span><h2>MAD-X Wrapper<a class="headerlink" href="#mad-x-wrapper" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">madx_wrapper</span></code> is high-level wrapper for running <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> codes within <code class="docutils literal notranslate"><span class="pre">omc3</span></code>.</p>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">madx_wrapper.py</span> <span class="pre">--file</span> <span class="pre">your_madx_file.madx</span></code></p>
 </section>
 <dl class="py exception">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">MadxError</span></span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#MadxError"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.madx_wrapper.MadxError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">MadxError</span></span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#MadxError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.MadxError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.madx_wrapper.madx_wrapper_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">madx_wrapper_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#madx_wrapper_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.madx_wrapper_params" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">run_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">madx_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.madx_wrapper.main">
+<span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.madx_wrapper.run_file">
+<span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">run_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">madx_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.run_file" title="Link to this definition"></a></dt>
 <dd><p>Runs <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> on a given script in a subprocess.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -539,8 +601,8 @@ keys and KnobEntries (without values) as value.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">run_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">madx_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py" id="omc3.madx_wrapper.run_string">
+<span class="sig-prename descclassname"><span class="pre">omc3.madx_wrapper.</span></span><span class="sig-name descname"><span class="pre">run_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">madx_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/omc3/omc3/omc3/bin/madx-linux64-gnu')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/madx_wrapper.html#run_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.madx_wrapper.run_string" title="Link to this definition"></a></dt>
 <dd><p>Runs <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> on a given string in a subprocess.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
