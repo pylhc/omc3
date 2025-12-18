@@ -249,7 +249,7 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
 
         Flags: **--chromatic_beating**
         Action: ``store_true``
-      -  **compensation** *(str)*: Mode of compensation for the analysis after driven beam excitation.
+      - **compensation** *(str)*: Mode of compensation for the analysis after driven beam excitation.
 
         Flags: **-compensation**
         Choices: ``("model", "equation", "none")``
@@ -327,6 +327,7 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
 
       - For the rest, please see get_parameters() methods in child Accelerator classes,
         which are declared in ``omc3/model/accelerators/*.py``.
+
     """
     if not opt.harpy and not opt.optics:
         raise SystemError("No module has been chosen.")

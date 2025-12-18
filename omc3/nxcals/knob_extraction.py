@@ -76,6 +76,7 @@ def get_knob_vals(
     5. Returns knob values with their timestamps
 
     The difference between patterns and knob names:
+
     - **patterns**: NXCALS variable patterns (e.g., "RPMBB.UA%.RQT%.A%B1:I_MEAS") used to query
       raw power converter current measurements. These follow CERN naming conventions and may
       include wildcards (%).

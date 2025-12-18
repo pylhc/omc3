@@ -115,8 +115,8 @@ html_theme = 'sphinx_rtd_theme'
 # documentation.
 html_theme_options = {
     'collapse_navigation': False,
-    'display_version': True,
-    'logo_only': True,
+    'version_selector': True,  # show version selector in the sidebar
+    'logo_only': True,        # if True, display only logo image, no project name
     'navigation_depth': 2,
 }
 
