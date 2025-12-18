@@ -1,7 +1,11 @@
 from pathlib import Path
 import pytest
 import tfs
-
+import sys
+sys.modules.pop("omc3.kmod_importer", None)
+sys.modules.pop("omc3", None)
+local_repo_path = Path("/afs/cern.ch/work/m/mstefane/public/pyLHC/OMC3_codes/omc3")
+sys.path.insert(0, str(local_repo_path.resolve()))
 from omc3.kmod_importer import AVERAGE_DIR, import_kmod_results
 from omc3.optics_measurements.constants import EXT
 from tests.conftest import assert_tfsdataframe_equal, ids_str
@@ -50,13 +54,13 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
 
     # OUTPUT CHECKS --------------------------------------------
     # Check the basics, if anything looks weird ---
-    assert len(list(tmp_path.glob(f"*{EXT}"))) == 6  # beta_kmod x/y, betastar x/y B1/B2_kmod_summary.tfs
-    assert len(list(tmp_path.glob("*.txt"))) == 2 # B1/B2_tables_logbook.txt
+    assert len(list(tmp_path.glob(f"*{EXT}"))) == 4  # beta_kmod x/y, betastar x/y
     average_dir = tmp_path / AVERAGE_DIR
 
     assert average_dir.is_dir()
     assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP
-    assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] # AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map
+    assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] + 1# AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map, {beam}_kmod_summary.tfs
+    assert len(list(average_dir.glob("*.txt"))) == 1 # {beam}_kmod_summary.txt
 
     # Check the content ---
     # averages --

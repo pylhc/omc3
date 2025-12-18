@@ -198,8 +198,9 @@ def import_kmod_results(opt: DotDict) -> None:
 
     kmod_summaries, tables_logbook = output_kmod_summary_tables(
         meas_paths=opt.meas_paths,
+        beam=opt.beam,
         averaged_meas=averaged_results,
-        output_dir=opt.output_dir,
+        output_dir=average_output_dir,
         logbook=opt.logbook)
 
     import_kmod_data(
