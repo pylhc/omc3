@@ -9,6 +9,7 @@ defaults:
 # Runs on the following conditions:
 # - Any push to a branch which is not master (coverage workflows takes care of that)
 #   -> if the pushed commit changes files within our codebase (in omc3/ or tests/ directories)
+#   -> or if the pushed commit changes the pyproject.toml configuration file
 on:
   push:
     branches-ignore:

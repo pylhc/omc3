@@ -5,6 +5,7 @@ name: Coverage
 # - Any push to master branch (which requires merging a PR)
 # - Any push to a branch linked to a pull request
 #   -> if the pushed commit changes files within our codebase (in omc3/ or tests/ directories)
+#   -> or if the pushed commit changes the pyproject.toml configuration file
 on:
   push:
     branches:
