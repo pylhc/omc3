@@ -1,8 +1,7 @@
-# Runs all tests on master on Mondays at 3 am (UTC time)
+# Runs all tests from the master branch on Mondays at 3 am (UTC time)
 name: Cron Testing
 
-
-on: 
+on:
   schedule:
     - cron:  '* 3 * * mon'
 
