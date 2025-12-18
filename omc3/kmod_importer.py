@@ -200,6 +200,7 @@ def import_kmod_results(opt: DotDict) -> None:
         meas_paths=opt.meas_paths,
         beam=opt.beam,
         averaged_meas=averaged_results,
+        lumi_imbalance = True,
         output_dir=average_output_dir,
         logbook=opt.logbook)
 

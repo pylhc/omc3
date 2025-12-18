@@ -46,6 +46,7 @@ Tuple containing:
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -56,6 +57,7 @@ from omc3.optics_measurements.constants import (
     BEAM_DIR,
     BETASTAR,
     BETAWAIST,
+    EFFECTIVE_BETAS_FILENAME,
     ERR,
     EXT,
     LABEL,
@@ -80,6 +82,7 @@ def output_kmod_summary_tables(
         meas_paths: Sequence[Path | str],
         beam: int,
         averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]] | None = None,
+        lumi_imbalance: bool = False,
         output_dir: Path | str | None = None,
         logbook: str | None = None,
         ) -> tuple[dict[str, list[tfs.TfsDataFrame]],dict[str, list[list[str]]]]:
@@ -104,12 +107,17 @@ def output_kmod_summary_tables(
     if averaged_meas is not None:
         grouped_averaged = _collect_averaged_kmod_results(averaged_meas=averaged_meas, beam=beam)
 
+    if lumi_imbalance:
+        kmod_summary_lumiimb = _get_lumi_imbalance(output_dir=output_dir)
+    else:
+        LOG.info("Luminosity imbalance calculation skipped.")
+
     LOG.debug(f"Processing result for: {beam}")
     if grouped:
         kmod_summary = tfs.concat(grouped, ignore_index=True)
         if averaged_meas:
             kmod_summary_averaged = tfs.concat(grouped_averaged, ignore_index=True)
-        table_logbook = _prepare_logbook_table(beam=beam, kmod_summary = kmod_summary, kmod_summary_averaged = kmod_summary_averaged)
+        table_logbook = _prepare_logbook_table(beam=beam, kmod_summary = kmod_summary, kmod_summary_averaged = kmod_summary_averaged, kmod_summary_lumiimb=kmod_summary_lumiimb)
 
     if output_dir is not None:
         _save_outputs(beam=beam, save_output_dir=output_dir, table_logbook=table_logbook, summary_df=kmod_summary)
@@ -138,6 +146,8 @@ def _collect_kmod_results(
     Returns:
         list[tfs.TfsDataFrame]: List containing grouped kmod results.
     """
+
+    LOG.info("Grouping kmod results.")
 
     grouped = []
     for path in meas_paths:
@@ -180,6 +190,7 @@ def _collect_averaged_kmod_results(
     Returns:
         list[tfs.TfsDataFrame]: List containing grouped averaged kmod results.
     """
+    LOG.info("Grouping averaged kmod results.")
 
     grouped_averaged = []
     for av_ip, av_res in averaged_meas.items():
@@ -191,10 +202,43 @@ def _collect_averaged_kmod_results(
         grouped_averaged.append(df_averaged)
     return grouped_averaged
 
+def _get_lumi_imbalance(
+    output_dir:Path | str
+    ) -> str:
+
+    """
+    Gathers the various luminosity imbalance dataframes in a single str, one line for each file.
+
+    Args:
+        output_dir (Path | str ): Path to the lumi imbalance files.
+    Returns:
+        str: str containing grouped luminosity imbalance results.
+    """
+    LOG.info("Getting luminosity imbalance values.")
+    output_dir = Path(output_dir)
+    prefix = EFFECTIVE_BETAS_FILENAME.split("{")[0] # if the file name starts with EFFECTIVE_BETAS_FILENAME till {ip}
+
+    report_lines = []
+    for file_path in output_dir.iterdir():
+        if not file_path.is_file() or not file_path.name.startswith(prefix):
+            continue
+
+        df = tfs.read(file_path)
+        lumi_imbalance = float(df.headers.get("LUMIIMBALANCE", 0))
+        err_lumi_imbalance = float(df.headers.get("ERRLUMIIMBALANCE", 0))
+        names = df["NAME"].tolist()
+
+        # final check
+        if lumi_imbalance is not None and err_lumi_imbalance is not None and len(names) >= 2:
+            report_lines.append(f"Luminosity imbalance in between {names[0]} and {names[1]} is {lumi_imbalance} ± {err_lumi_imbalance}")
+
+    return "\n".join(report_lines)
+
 def _prepare_logbook_table(
     beam: int,
     kmod_summary: tfs.TfsDataFrame,
     kmod_summary_averaged: tfs.TfsDataFrame | None = None,
+    kmod_summary_lumiimb: str | None = None,
     ) -> list[str]:
 
     """
@@ -204,10 +248,12 @@ def _prepare_logbook_table(
         beam (int): Beam number to process.
         kmod_summary (tfs.TfsDataFrame): DataFrame containing collected Kmod results.
         kmod_summary_averaged (tfs.TfsDataFrame | None): Optional DataFrame containing averaged Kmod results.
+        kmod_summary_lumiimb (str | None): Optional txt file containing luminosity imbalance results.
 
     Returns:
         list[str]: List of formatted string tables. Includes separate sections for X-plane, Y-plane, and optionally averaged results.
     """
+    LOG.info("Creating .txt tables.")
 
     kmod_summary_x = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_X]
     kmod_summary_y = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_Y]
@@ -215,6 +261,8 @@ def _prepare_logbook_table(
     kmod_summary_y_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_Y]
 
     table_logbook = []
+    if kmod_summary_lumiimb:
+        table_logbook.append(f"============================================ Luminosity Imbalance ====================================================\n{kmod_summary_lumiimb}\n")
     for plane, df in [("X", kmod_summary_x), ("Y", kmod_summary_y)]:
         table_str = df.to_string()
         table_logbook.append(f"\n============================================ {BEAM_DIR}{beam} Results ({plane}-plane) ====================================================\n\n{table_str}\n")
