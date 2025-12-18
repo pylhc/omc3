@@ -1,7 +1,6 @@
 from pathlib import Path
 import pytest
 import tfs
-import sys
 
 from omc3.kmod_importer import AVERAGE_DIR, import_kmod_results
 from omc3.optics_measurements.constants import EXT
