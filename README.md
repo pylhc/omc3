@@ -30,7 +30,7 @@
 | omc3/harpy/frequency.py                                 |      196 |        7 |     96% |151, 238, 507, 524-526, 546 |
 | omc3/harpy/handler.py                                   |      126 |        1 |     99% |       301 |
 | omc3/harpy/kicker.py                                    |       27 |        0 |    100% |           |
-| omc3/hole\_in\_one.py                                   |      194 |       10 |     95% |332, 334, 372, 455, 481, 497, 499, 501, 503, 880 |
+| omc3/hole\_in\_one.py                                   |      194 |       10 |     95% |333, 335, 373, 456, 482, 498, 500, 502, 504, 881 |
 | omc3/kmod\_importer.py                                  |       71 |        4 |     94% |287-293, 308 |
 | omc3/knob\_extractor.py                                 |      160 |       20 |     88% |77-80, 390-391, 395-396, 400-401, 506-519, 577, 605, 609 |
 | omc3/madx\_wrapper.py                                   |      103 |       12 |     88% |28, 30, 71, 96-97, 208-209, 212, 216-217, 223, 229 |
@@ -60,8 +60,8 @@
 | omc3/model\_creator.py                                  |       59 |       12 |     80% |136-148, 185 |
 | omc3/mqt\_extractor.py                                  |       38 |       18 |     53% |162-183, 188-191, 195 |
 | omc3/nxcals/\_\_init\_\_.py                             |        1 |        0 |    100% |           |
-| omc3/nxcals/knob\_extraction.py                         |      105 |       80 |     24% |101-152, 180-225, 242-246, 265-287, 303, 329-343 |
-| omc3/nxcals/mqt\_extraction.py                          |       25 |       17 |     32% |47-52, 78-84, 97-104 |
+| omc3/nxcals/knob\_extraction.py                         |      105 |       80 |     24% |102-153, 181-226, 243-247, 266-288, 304, 330-344 |
+| omc3/nxcals/mqt\_extraction.py                          |       25 |       17 |     32% |46-51, 77-83, 96-103 |
 | omc3/optics\_measurements/\_\_init\_\_.py               |        1 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_amplitude.py      |       63 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_phase.py          |      283 |        9 |     97% |129-132, 135, 246, 375, 397-398, 490, 595 |
