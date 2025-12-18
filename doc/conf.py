@@ -237,9 +237,9 @@ autodoc_type_aliases = {"ArrayLike": "ArrayLike"}
 
 autodoc_default_options = {
     "members": True,  # include members
-    "undoc-members": True,  # add even if no docstring
-    "show-inheritance": True,  # show inheritance
-    # "no-index-entry": True,  # don't add an index entry
+    "undoc-members": True,  # add all members, even if they have no docstring
+    "show-inheritance": True,  # e.g. ``class LHC(Accelerator)`` shows ``BaseClass: Accelerator``
+    # "no-index-entry": True,  # don't add an index entry (toc_object_entries below works better for our use case)
 }
 
 toc_object_entries = False  # do not create entries for domain objects (e.g. functions, classes, attributes, etc.).
