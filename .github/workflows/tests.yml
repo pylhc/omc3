@@ -1,14 +1,21 @@
-# Runs all tests 
+# Runs all tests in two steps, first basic then extended (pytest marks)
+# Each of these steps deploys on the whole build matrix (Python versions, OSes)
 name: All Tests
 
 defaults:
   run:
     shell: bash
 
-on:  # Runs on any push event to any branch except master (the coverage workflow takes care of that)
+# Runs on the following conditions:
+# - Any push to a branch which is not master (coverage workflows takes care of that)
+#   -> if the pushed commit changes files within our codebase (in omc3/ or tests/ directories)
+on:
   push:
     branches-ignore:
       - 'master'
+    paths:
+      - 'omc3/**'
+      - 'tests/**'
 
 jobs:
   basic_tests:

@@ -1,11 +1,18 @@
-# Runs all tests and pushes coverage report to codeclimate
+# Runs all tests and pushes the coverage report to CodeClimate
 name: Coverage
 
-on:  # Runs on all push events to master branch and any push related to a pull request
+# Runs on the following conditions:
+# - Any push to master branch (which requires merging a PR)
+# - Any push to a branch linked to a pull request
+#   -> if the pushed commit changes files within our codebase (in omc3/ or tests/ directories)
+on:
   push:
     branches:
-      - master
-  pull_request:  # so that codeclimate gets coverage and reports on the diff
+      - 'master'
+  pull_request:  # so CodeClimate gets coverage and reports on the diff
+    paths:
+      - 'omc3/**'
+      - 'tests/**'
 
 jobs:
   coverage:
