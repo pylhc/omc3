@@ -250,7 +250,7 @@ def _prepare_logbook_table(
         kmod_summary_lumiimb (str | None): Optional txt file containing luminosity imbalance results.
 
     Returns:
-        list[str]: List of formatted string tables. Includes separate sections for X-plane, Y-plane, and optionally averaged results.
+        list[str]: List of formatted tables. Includes separate entries for X and Y planes, and optionally averaged results.
     """
     LOG.info("Creating .txt tables.")
 
