@@ -297,10 +297,10 @@ def _save_outputs(
     LOG.info(f"Writing {EXT} summary output file {summary_path}.")
     return
 
-def _logbook_entry(
+def _publish_summary_logbook_entry(
     beam: int,
     logbook: str,
-    logbook_file: str | list[str]
+    logbook_entry_text: str | list[str]
     ) -> None:
 
     """
@@ -309,15 +309,15 @@ def _logbook_entry(
     Args:
         beam (int): Beam number to process.
         logbook (str): logbook name, ex. 'LHC_OMC'
-        logbook_file (str | list[str]): .txt file to save..
+        logbook_entry_text (str | list[str]): text for logbook entry.
     """
 
-    if isinstance(logbook_file, list):
-        logbook_text = "\n".join(logbook_file)
-    elif isinstance(logbook_file, str):
-        logbook_text = logbook_file
+    if isinstance(logbook_entry_text, list):
+        logbook_text = "\n".join(logbook_entry_text)
+    elif isinstance(logbook_entry_text, str):
+        logbook_text = logbook_entry_text
     else:
-        raise TypeError(f"logbook_file must be str or list[str], got {type(logbook_file)}")
+        raise TypeError(f"logbook_file must be str or list[str], got {type(logbook_entry_text)}")
 
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
     logbook_event = DotDict({
