@@ -75,6 +75,7 @@ from omc3.optics_measurements.constants import (
 from omc3.scripts.kmod_average import average_kmod_results
 from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
+from omc3.scripts.kmod_summary import output_kmod_summary_tables
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 
@@ -125,6 +126,12 @@ def _get_params():
         name="show_plots",
         action="store_true",
         help="Show the plots."
+    )
+    params.add_parameter(
+        name="logbook",
+        type=str,
+        default=None,
+        help="Name of the logbook to create an entry in. "
     )
     return params
 
@@ -188,6 +195,15 @@ def import_kmod_results(opt: DotDict) -> None:
             averaged_results[ip][opt.beam],  # bpm results of the specific beam
         )
     ]
+
+    kmod_summaries, tables_logbook = output_kmod_summary_tables(
+        meas_paths=opt.meas_paths,
+        beam=opt.beam,
+        averaged_meas=averaged_results,
+        lumi_imbalance = True,
+        output_dir=average_output_dir,
+        logbook=opt.logbook)
+
     import_kmod_data(
         model=df_model,
         measurements=results_list,
@@ -300,7 +316,6 @@ def calculate_all_lumi_imbalances(
 def _get_betastar(df_model: tfs.TfsDataFrame, ip: str) -> list[float, float]:
     # return [round(bstar, 3) for bstar in df_model.loc[ip, [f"{BETA}X", f"{BETA}Y"]]]
     return df_model.loc[ip, [f"{BETA}X", f"{BETA}Y"]].tolist()
-
 
 # Script Mode ------------------------------------------------------------------
 

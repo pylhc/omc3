@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import pytest
 import tfs
 
@@ -56,7 +55,8 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
 
     assert average_dir.is_dir()
     assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP
-    assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] # AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map
+    assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] + 1# AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map, {beam}_kmod_summary.tfs
+    assert len(list(average_dir.glob("*.txt"))) == 1 # {beam}_kmod_summary.txt
 
     # Check the content ---
     # averages --
@@ -91,4 +91,3 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
             betas = get_betastar_values(beam=beam, ip=1)
             lumi_filename = _get_lumi_filename(betas, ip_a=ips[0], ip_b=ips[1])
             assert (average_dir / lumi_filename).exists()
-
