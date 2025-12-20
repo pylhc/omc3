@@ -125,7 +125,7 @@ def output_kmod_summary_tables(
 
     if logbook:
         _logbook_entry(beam=beam, logbook=logbook, logbook_file=table_logbook)
-    if not logbook:
+    else:
         LOG.info("Logbook name not provided: logbook entry not created.")
 
     return kmod_summary, table_logbook
