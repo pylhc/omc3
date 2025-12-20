@@ -324,7 +324,7 @@ def _logbook_entry(
             "text": logbook_text,
             # "files": [],
             # "filenames": [],
-            "logbook": f"{logbook}"
+            "logbook": logbook
         })
     LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     _ = create_logbook_entry(logbook_event)
