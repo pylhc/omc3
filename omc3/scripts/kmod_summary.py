@@ -90,9 +90,10 @@ def output_kmod_summary_tables(
     Args:
         meas_paths (Sequence[Path | str]): Paths to the K-modulation results.
         beam (int): Beam for which to average.
-        averaged_meas (dict[int, tfs.TfsDataFrame]): If not None, averaged K-modulation results over all measurements are included in the summary tables. Default: None.
-        output_dir (Path | str | None): Path to the output directory. Defaults to None.
-        logbook (str = None): If provided, create a logbook entry containing the .txt summary tables to the given logbook. Default: None.
+        averaged_meas (dict[str, dict[int, tfs.TfsDataFrame]]): If not None, averaged K-modulation results over all measurements are included in the summary tables. Default: None.
+        lumi_imbalance (bool): If True, luminosity imbalance results are included in the summary tables. Default: False.
+        output_dir (Path | str): Path to the output directory. Defaults to None.
+        logbook (str): If provided, create a logbook entry containing the .txt summary tables to the given logbook. Default: None.
 
     Returns:
         Tuple[dict[str, tfs.TfsDataFrame], dict[str, list[str]]]:
