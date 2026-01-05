@@ -36,12 +36,8 @@ For the given beam, it generates:
 **Returns:**
 
 Tuple containing:
-
-1. **kmod_summaries** *(dict[str, list[tfs.TfsDataFrame]])*:
-        Mapping of beam names to lists of K-modulation summary DataFrames.
-
-2. **tables_logbook** *(dict[str, list[list[str]]])*:
-        Mapping of beam names to lists of formatted tables suitable for logbooks.
+    1. **kmod_summary** *(tfs.TfsDataFrame)*: Combined K-modulation results for the given beam.
+    2. **table_logbook** *(list[str])*: Formatted text tables suitable for logbook entries.
 """
 
 from __future__ import annotations
@@ -51,6 +47,7 @@ from typing import TYPE_CHECKING
 
 import tfs
 from generic_parser import DotDict
+from generic_parser.entrypoint_parser import EntryPointParameters, entrypoint
 
 from omc3.optics_measurements.constants import (
     BEAM_DIR,
@@ -60,32 +57,85 @@ from omc3.optics_measurements.constants import (
     ERR,
     EXT,
     LABEL,
+    NAME,
     RESULTS_FILE_NAME,
     WAIST,
 )
 from omc3.scripts.create_logbook_entry import main as create_logbook_entry
 from omc3.utils import logging_tools
+from omc3.utils.iotools import PathOrStr
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
 LOG = logging_tools.get_logger(__name__)
 
+
+def _get_params() -> EntryPointParameters:
+    params = EntryPointParameters()
+
+    params.add_parameter(
+        name="meas_paths",
+        type=PathOrStr,
+        nargs="+",
+        required=True,
+        help="Directories of K-modulation results to import.",
+    )
+    params.add_parameter(
+        name="beam",
+        type=int,
+        required=True,
+        help="Beam for which to import.",
+    )
+    params.add_parameter(
+        name="averaged_meas",
+        default=None,
+        help="Optional precomputed averaged K-modulation results.",
+    )
+    params.add_parameter(
+        name="lumi_imbalance",
+        action="store_true",
+        help="Include luminosity imbalance in the summary tables.",
+    )
+    params.add_parameter(
+        name="output_dir",
+        type=PathOrStr,
+        default=None,
+        help="Path to the directory where to write the output files.",
+    )
+    params.add_parameter(
+        name="logbook",
+        type=str,
+        default=None,
+        help="Name of the logbook to publish the summary tables.",
+    )
+
+    return params
+
+
 # Constants definitions for K-modulation
-COLS_X = [f"{BETASTAR}X", f"{ERR}{BETASTAR}X", f"{BETAWAIST}X", f"{ERR}{BETAWAIST}X", f"{WAIST}X", f"{ERR}{WAIST}X"]
-COLS_Y = [f"{BETASTAR}Y", f"{ERR}{BETASTAR}Y", f"{BETAWAIST}Y", f"{ERR}{BETAWAIST}Y", f"{WAIST}Y", f"{ERR}{WAIST}Y"]
+COLS_X = [
+    f"{BETASTAR}X",
+    f"{ERR}{BETASTAR}X",
+    f"{BETAWAIST}X",
+    f"{ERR}{BETAWAIST}X",
+    f"{WAIST}X",
+    f"{ERR}{WAIST}X",
+]
+COLS_Y = [
+    f"{BETASTAR}Y",
+    f"{ERR}{BETASTAR}Y",
+    f"{BETAWAIST}Y",
+    f"{ERR}{BETAWAIST}Y",
+    f"{WAIST}Y",
+    f"{ERR}{WAIST}Y",
+]
 IP_COLUMN = "IP"
 NAME_COLUMN = "NAME"
 
-def output_kmod_summary_tables(
-        meas_paths: Sequence[Path | str],
-        beam: int,
-        averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]] | None = None,
-        lumi_imbalance: bool = False,
-        output_dir: Path | str | None = None,
-        logbook: str | None = None,
-        ) -> tuple[dict[str, list[tfs.TfsDataFrame]],dict[str, list[list[str]]]]:
 
+@entrypoint(_get_params(), strict=True)
+def output_kmod_summary_tables(opt: DotDict) -> tuple[tfs.TfsDataFrame, list[str]]:
     """
     Args:
         meas_paths (Sequence[Path | str]): Paths to the K-modulation results.
@@ -96,52 +146,65 @@ def output_kmod_summary_tables(
         logbook (str): If provided, create a logbook entry containing the .txt summary tables to the given logbook. Default: None.
 
     Returns:
-        Tuple[dict[str, tfs.TfsDataFrame], dict[str, list[str]]]:
-            - Dictionary mapping beam names to K-modulation summary DataFrames.
-            - Dictionary mapping beam names to lists of formatted text tables
+        Tuple[tfs.TfsDataFrame, list[str]]:
+            - Dataframe containing K-modulation summary.
+            - List of formatted text table containing K-modulation summary.
     """
+    kmod_summary_averaged = None
+    kmod_summary_lumiimb = None
 
-    LOG.info(f"Starting kmod summary importing for {BEAM_DIR}{beam}.")
-    grouped = _collect_kmod_results(meas_paths=meas_paths, beam=beam)
+    LOG.info(f"Starting kmod summary importing for {BEAM_DIR}{opt.beam}.")
+    grouped = _collect_kmod_results(beam=opt.beam, meas_paths=opt.meas_paths)
 
-    if averaged_meas is not None:
-        grouped_averaged = _collect_averaged_kmod_results(averaged_meas=averaged_meas, beam=beam)
+    if opt.averaged_meas is not None:
+        grouped_averaged = _collect_averaged_kmod_results(
+            beam=opt.beam, averaged_meas=opt.averaged_meas
+        )
 
-    if lumi_imbalance:
-        kmod_summary_lumiimb = _get_lumi_imbalance(output_dir=output_dir)
+    if opt.lumi_imbalance:
+        kmod_summary_lumiimb = _get_lumi_imbalance(output_dir=opt.output_dir)
     else:
         LOG.info("Luminosity imbalance calculation skipped.")
 
-    LOG.debug(f"Processing result for: {beam}")
+    LOG.debug(f"Processing result for: {opt.beam}")
     if grouped:
         kmod_summary = tfs.concat(grouped, ignore_index=True)
-        if averaged_meas:
+        if opt.averaged_meas is not None:
             kmod_summary_averaged = tfs.concat(grouped_averaged, ignore_index=True)
-        table_logbook = _prepare_logbook_table(beam=beam, kmod_summary = kmod_summary, kmod_summary_averaged = kmod_summary_averaged, kmod_summary_lumiimb=kmod_summary_lumiimb)
+        table_logbook = _prepare_logbook_table(
+            beam=opt.beam,
+            kmod_summary=kmod_summary,
+            kmod_summary_averaged=kmod_summary_averaged,
+            kmod_summary_lumiimb=kmod_summary_lumiimb,
+        )
 
-    if output_dir is not None:
-        _save_outputs(beam=beam, save_output_dir=output_dir, table_logbook=table_logbook, summary_df=kmod_summary)
-    else:
-        LOG.info("Output_dir not provided: skipping saving files for all beams.")
+        if opt.output_dir is not None:
+            _save_outputs(
+                beam=opt.beam,
+                save_output_dir=opt.output_dir,
+                txt_to_save="\n".join(table_logbook),
+                df_to_save=kmod_summary,
+            )
+        else:
+            LOG.info("Output_dir not provided: skipping saving files for all beams.")
 
-    if logbook:
-        _logbook_entry(beam=beam, logbook=logbook, logbook_file=table_logbook)
-    else:
-        LOG.info("Logbook name not provided: logbook entry not created.")
+        if opt.logbook:
+            _summary_logbook_entry(
+                beam=opt.beam, logbook=opt.logbook, logbook_entry_text="\n".join(table_logbook)
+            )
+        else:
+            LOG.info("Logbook name not provided: logbook entry not created.")
 
     return kmod_summary, table_logbook
 
-def _collect_kmod_results(
-    meas_paths: Sequence[Path | str],
-    beam: int,
-    ) -> list[tfs.TfsDataFrame]:
 
+def _collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tfs.TfsDataFrame]:
     """
     Gathers the various Kmod results.tfs dataframes, taking only cols_x and cols_y values.
 
     Args:
-        meas_paths (Sequence[Path | str]): List of measurement directories containing beam subfolders.
         beam (int): Beam number to process.
+        meas_paths (Sequence[Path | str]): List of kmod measurement directories containing beam subfolders.
 
     Returns:
         list[tfs.TfsDataFrame]: List containing grouped kmod results.
@@ -152,95 +215,111 @@ def _collect_kmod_results(
     grouped = []
     for path in meas_paths:
         path = Path(path)
-        LOG.info(f"Reading results: {path.absolute()}.")
+        LOG.info(f"Reading measurement results at '{path.absolute()}'.")
         file_path = path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
         if not file_path.exists():
             LOG.warning(f"Missing {RESULTS_FILE_NAME}{EXT}: {file_path}")
         else:
-            meas_name = file_path.parent.parent.name
-            data_file = tfs.read(file_path)
+            meas_name = path.name
+            result_df = tfs.read(file_path)
             try:
-                label = data_file[f"{LABEL}"].iloc[0] # takes magnet names from label. ex. [MQXA1.L5-MQXA1.R5] from [0  MQXA1.L5-MQXA1.R5 Name: LABEL, dtype: object]
+                label = result_df[LABEL].iloc[
+                    0
+                ]  # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
             except KeyError as e:
                 LOG.debug("Could not parse IP from LABEL. Skipping entry.", exc_info=e)
                 ip_name = "None"
             else:
-                second_magnet = label.split("-")[1] # takes right magnet from magnet names. ex. [MQXA1.R5] from [MQXA1.L5-MQXA1.R5]
-                relevant = second_magnet.split(".")[-1] # takes last part of the second magnet name. ex. [R5] from [MQXA1.R5]
-                ip_number = relevant[1:] # isolate IP number. ex. [5] from [R5]
+                second_magnet = label.split("-")[
+                    1
+                ]  # takes right magnet from magnet names. ex. [MQXA1.R5] from [MQXA1.L5-MQXA1.R5]
+                relevant = second_magnet.split(".")[
+                    -1
+                ]  # takes last part of the second magnet name. ex. [R5] from [MQXA1.R5]
+                ip_number = relevant[1:]  # isolate IP number. ex. [5] from [R5]
                 ip_name = f"{IP_COLUMN}{ip_number}"
-            df = data_file[COLS_X + COLS_Y].iloc[[0]] # returns a DataFrame with one row
+            df = result_df[COLS_X + COLS_Y].iloc[[0]]  # returns a DataFrame with one row
             df.insert(0, NAME_COLUMN, meas_name)
             df.insert(0, IP_COLUMN, ip_name)
             grouped.append(df)
     return grouped
 
-def _collect_averaged_kmod_results(
-    averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]],
-    beam: int
-    ) -> list[tfs.TfsDataFrame]:
 
+def _collect_averaged_kmod_results(
+    beam: int, averaged_meas: dict[str, dict[int, tfs.TfsDataFrame]]
+) -> list[tfs.TfsDataFrame]:
     """
     Gathers the various averaged Kmod results dataframes, taking only cols_x and cols_y values.
 
     Args:
-        meas_paths (Sequence[Path | str]): List of measurement directories containing beam subfolders.
         beam (int): Beam number to process.
+        averaged_meas (dict[str, dict[int, tfs.TfsDataFrame]]): Precomputed averaged K-modulation results.
 
     Returns:
-        list[tfs.TfsDataFrame]: List containing grouped averaged kmod results.
+        list[tfs.TfsDataFrame]: The gathered averaged kmod results, grouped and filtered for the relevant columns only.
     """
     LOG.info("Grouping averaged kmod results.")
 
     grouped_averaged = []
     for av_ip, av_res in averaged_meas.items():
         LOG.info(f"Reading averaged results: {BEAM_DIR}{beam}, {av_ip}")
-        av_tab = av_res[0] # 0: averaged results table, 1, 2: are betx, bety for IP closest elements
+        av_tab = av_res[
+            0
+        ]  # 0: averaged results table, 1, 2: are betx, bety for IP closest elements
+        if beam not in av_tab.index:
+            LOG.warning("Beam %s not found in averaged results for IP %s. Skipping.", beam, av_ip)
+            continue
         av_tab_beam = av_tab.loc[[beam]]
         df_averaged = av_tab_beam[COLS_X + COLS_Y]
         df_averaged.insert(0, IP_COLUMN, av_ip)
         grouped_averaged.append(df_averaged)
     return grouped_averaged
 
-def _get_lumi_imbalance(
-    output_dir:Path | str
-    ) -> str:
 
+def _get_lumi_imbalance(output_dir: Path | str) -> str:
     """
     Gathers the various luminosity imbalance dataframes in a single str, one line for each file.
 
     Args:
-        output_dir (Path | str ): Path to the lumi imbalance files.
+        output_dir (Path | str ): Path to the folder with lumi imbalance files. If None, luminosity imbalance is skipped.
     Returns:
-        str: str containing grouped luminosity imbalance results.
+        str: Formatted table showing grouped luminosity imbalance results, one line per file.
     """
-    LOG.info("Getting luminosity imbalance values.")
-    output_dir = Path(output_dir)
-    prefix = EFFECTIVE_BETAS_FILENAME.split("{")[0] # if the file name starts with EFFECTIVE_BETAS_FILENAME till {ip}
+    LOG.info("Gathering luminosity imbalance results.")
 
+    if output_dir is None:
+        LOG.info("No output_dir provided: skipping luminosity imbalance calculation.")
+        return ""
+
+    output_dir = Path(output_dir)
+    prefix = EFFECTIVE_BETAS_FILENAME.split("{")[
+        0
+    ]  # if the file name starts with EFFECTIVE_BETAS_FILENAME till {ip}
     report_lines = []
-    for file_path in output_dir.iterdir():
-        if not file_path.is_file() or not file_path.name.startswith(prefix):
+    for df_path in output_dir.iterdir():
+        if not df_path.is_file() or not df_path.name.startswith(prefix):
             continue
 
-        df = tfs.read(file_path)
+        df = tfs.read(df_path)
         lumi_imbalance = float(df.headers.get("LUMIIMBALANCE", 0))
         err_lumi_imbalance = float(df.headers.get("ERRLUMIIMBALANCE", 0))
-        names = df["NAME"].tolist()
+        ips = df[NAME].tolist()
 
         # final check
-        if lumi_imbalance is not None and err_lumi_imbalance is not None and len(names) >= 2:
-            report_lines.append(f"Luminosity imbalance in between {names[0]} and {names[1]} is {lumi_imbalance} ± {err_lumi_imbalance}")
+        if lumi_imbalance is not None and err_lumi_imbalance is not None and len(ips) >= 2:
+            report_lines.append(
+                f"Luminosity imbalance in between {ips[0]} and {ips[1]} is {lumi_imbalance} ± {err_lumi_imbalance}"
+            )
 
     return "\n".join(report_lines)
+
 
 def _prepare_logbook_table(
     beam: int,
     kmod_summary: tfs.TfsDataFrame,
     kmod_summary_averaged: tfs.TfsDataFrame | None = None,
     kmod_summary_lumiimb: str | None = None,
-    ) -> list[str]:
-
+) -> list[str]:
     """
     Prepare formatted logbook tables from K-modulation summary data.
 
@@ -248,87 +327,90 @@ def _prepare_logbook_table(
         beam (int): Beam number to process.
         kmod_summary (tfs.TfsDataFrame): DataFrame containing collected Kmod results.
         kmod_summary_averaged (tfs.TfsDataFrame | None): Optional DataFrame containing averaged Kmod results.
-        kmod_summary_lumiimb (str | None): Optional txt file containing luminosity imbalance results.
+        kmod_summary_lumiimb (str | None): Optional string containing formatted luminosity imbalance results.
 
     Returns:
         list[str]: List of formatted tables. Includes separate entries for X and Y planes, and optionally averaged results.
     """
-    LOG.info("Creating .txt tables.")
+    LOG.info("Formatting the tables to text.")
 
     kmod_summary_x = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_X]
     kmod_summary_y = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_Y]
-    kmod_summary_x_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_X]
-    kmod_summary_y_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_Y]
 
-    table_logbook = []
+    logbook_tables = []
     if kmod_summary_lumiimb:
-        table_logbook.append(f"============================================ Luminosity Imbalance ====================================================\n{kmod_summary_lumiimb}\n")
+        logbook_tables.append(
+            f"=============================== Luminosity Imbalance =======================================\n{kmod_summary_lumiimb}\n"
+        )
     for plane, df in [("X", kmod_summary_x), ("Y", kmod_summary_y)]:
         table_str = df.to_string()
-        table_logbook.append(f"\n============================================ {BEAM_DIR}{beam} Results ({plane}-plane) ====================================================\n\n{table_str}\n")
-    if kmod_summary_x_averaged is not None and kmod_summary_y_averaged is not None:
+        logbook_tables.append(
+            f"\n=============================== {BEAM_DIR}{beam} Results ({plane}-plane) =======================================\n\n{table_str}\n"
+        )
+    if kmod_summary_averaged is not None:
+        kmod_summary_x_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_X]
+        kmod_summary_y_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_Y]
         for plane, df_averaged in [("X", kmod_summary_x_averaged), ("Y", kmod_summary_y_averaged)]:
             table_str_averaged = df_averaged.to_string()
-            table_logbook.append(f"\n======================================== {BEAM_DIR}{beam} Averaged Results ({plane}-plane) ===============================================\n\n{table_str_averaged}\n")
-    return table_logbook
+            logbook_tables.append(
+                f"\n=========================== {BEAM_DIR}{beam} Averaged Results ({plane}-plane) ==================================\n\n{table_str_averaged}\n"
+            )
+    return logbook_tables
+
 
 def _save_outputs(
     beam: int,
-    table_logbook: list[str],
-    summary_df: tfs.TfsDataFrame,
+    txt_to_save: str,
+    df_to_save: tfs.TfsDataFrame,
     save_output_dir: Path | str,
-    ) -> None:
-
+) -> None:
     """
     Save logbook text output and .tfs summary for a given beam.
 
     Args:
         beam (int): Beam number to process.
-        table_logbook (list[str]): Single .txt file.
-        summary_df (tfs.TfsDataFrame): Single .tfs dataframe.
+        txt_to_save (str): .txt to be saved.
+        df_to_save (tfs.TfsDataFrame): .tfs dataframe to be saved.
         save_output_dir (Path | str ): Path to the saving output directory.
     """
 
+    save_output_dir = Path(save_output_dir)
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_kmod_summary.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_kmod_summary{EXT}"
-    with logbook_table_path.open("w") as f:
-        f.write("\n".join(table_logbook))
-    tfs.write(summary_path, summary_df)
     LOG.info(f"Writing .txt summary output file {logbook_table_path}.")
     LOG.info(f"Writing {EXT} summary output file {summary_path}.")
-    return
+    with logbook_table_path.open("w") as f:
+        f.write(txt_to_save)
+    tfs.write(summary_path, df_to_save)
 
-def _publish_summary_logbook_entry(
-    beam: int,
-    logbook: str,
-    logbook_entry_text: str | list[str]
-    ) -> None:
 
+def _summary_logbook_entry(beam: int, logbook: str, logbook_entry_text: str) -> None:
     """
     Create logbook entry with .txt generated table for a given beam.
 
     Args:
         beam (int): Beam number to process.
         logbook (str): logbook name, ex. 'LHC_OMC'
-        logbook_entry_text (str | list[str]): text for logbook entry.
+        logbook_entry_text (str): Text for logbook entry.
     """
 
-    if isinstance(logbook_entry_text, list):
-        logbook_text = "\n".join(logbook_entry_text)
-    elif isinstance(logbook_entry_text, str):
+    if isinstance(logbook_entry_text, str):
         logbook_text = logbook_entry_text
     else:
-        raise TypeError(f"logbook_file must be str or list[str], got {type(logbook_entry_text)}")
+        raise TypeError(f"entry_text must be str, got {type(logbook_entry_text)}.")
 
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
-    logbook_event = DotDict({
+    logbook_event = DotDict(
+        {
             "text": logbook_text,
             # "files": [],
             # "filenames": [],
-            "logbook": logbook
-        })
+            "logbook": logbook,
+        }
+    )
     LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     _ = create_logbook_entry(logbook_event)
+
 
 # Script Mode ------------------------------------------------------------------
 
