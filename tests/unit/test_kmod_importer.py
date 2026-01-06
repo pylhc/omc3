@@ -46,6 +46,7 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
         beam=beam,
         model=get_model_path(beam),
         output_dir=tmp_path,
+        saving_option=True
     )
 
     # OUTPUT CHECKS --------------------------------------------

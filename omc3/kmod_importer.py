@@ -50,7 +50,13 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 
     action: ``store_true``
 
+- **saving_option**:
 
+    If True, kmod summary tables are saved as a Dataframe and Text file.
+
+- **logbook**:
+
+    Name of the logbook to create an entry in.
 """
 from __future__ import annotations
 
@@ -75,7 +81,11 @@ from omc3.optics_measurements.constants import (
 from omc3.scripts.kmod_average import average_kmod_results
 from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
-from omc3.scripts.kmod_summary import output_kmod_summary_tables
+from omc3.scripts.kmod_summary import (
+    _prepare_logbook_table,
+    _save_outputs,
+    _summary_logbook_entry,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 
@@ -128,10 +138,16 @@ def _get_params():
         help="Show the plots."
     )
     params.add_parameter(
+        name="saving_option",
+        type=bool,
+        default=False,
+        help="If True, kmod summary tables are saved as a Dataframe and Text file."
+    )
+    params.add_parameter(
         name="logbook",
         type=str,
         default=None,
-        help="Name of the logbook to create an entry in. "
+        help="Name of the logbook to create an entry in."
     )
     return params
 
@@ -196,13 +212,21 @@ def import_kmod_results(opt: DotDict) -> None:
         )
     ]
 
-    kmod_summaries, tables_logbook = output_kmod_summary_tables(
-        meas_paths=opt.meas_paths,
-        beam=opt.beam,
-        averaged_meas=averaged_results,
-        lumi_imbalance = True,
-        output_dir=average_output_dir,
-        logbook=opt.logbook)
+    kmod_summary, logbook_tables = _prepare_logbook_table(beam=opt.beam, meas_paths=opt.meas_paths, kmod_averaged_output_dir=average_output_dir, lumi_imb_output_dir=average_output_dir)
+
+    if opt.saving_option:
+        _save_outputs(
+            beam=opt.beam,
+            save_output_dir=average_output_dir,
+            txt_to_save="\n".join(logbook_tables),
+            df_to_save=kmod_summary,
+        )
+
+    if opt.logbook:
+        _summary_logbook_entry(
+            beam=opt.beam, logbook=opt.logbook, logbook_entry_text="\n".join(logbook_tables)
+        )
+
 
     import_kmod_data(
         model=df_model,
