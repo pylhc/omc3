@@ -13,7 +13,7 @@ from commandline.
 
     Text to be written into the new logbook entry.
 
-    default: ````
+    default: ``""``
 
 
 - **files** *(PathOrStr)*:
