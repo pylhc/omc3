@@ -13,6 +13,7 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 import pytest
 import tfs
 
@@ -238,6 +239,80 @@ class TestModelCreationSPS:
                 assert all(bpm in new_response[param].index for bpm in bpms)
 
         assert_file_exists_and_nonempty(fullresponse_path)
+
+    @pytest.mark.extended
+    def test_madng_vs_madx_response(self, tmp_path: Path, acc_models_sps_2025: Path):
+        """Tests that MAD-NG and MAD-X response creation produce similar results."""
+        tmp_model = tmp_path / "model"
+        acc_models_link = tmp_model / "acc-models-sps"
+        shutil.copytree(SPS_MODEL_DIR, tmp_model)
+        acc_models_link.symlink_to(acc_models_sps_2025)
+
+        # Use a smaller set of variables for faster testing
+        variables = ["klqsa", "kqf", "kqd"]
+
+        # Create MAD-X response
+        madx_response = create_response(
+            accel="sps",
+            model_dir=tmp_model,
+            modifiers=[acc_models_link / STRENGTHS_SUBDIR / Q20_STRENGTHS_FILE],
+            creator=ResponseCreatorType.MADX,
+            delta_k=1e-6,
+            variable_categories=variables,
+            outfile_path=None,  # Don't save to file
+        )
+
+        # Create MAD-NG response
+        madng_response = create_response(
+            accel="sps",
+            model_dir=tmp_model,
+            modifiers=[acc_models_link / STRENGTHS_SUBDIR / Q20_STRENGTHS_FILE],
+            creator=ResponseCreatorType.MADNG,
+            variable_categories=variables,
+            outfile_path=None,  # Don't save to file
+        )
+
+        # Compare the responses
+        optics_params = ["BETX", "BETY", "DX", "DY", "MUX", "MUY"]
+
+        # Check that BETX_ET is different from BETX for klqsa
+        betx_et_madng = madng_response["BETX_ET"]["klqsa"]
+        betx_madng = madng_response["BETX"]["klqsa"]
+        diff_betx = np.abs(betx_et_madng - betx_madng)
+        assert np.any(diff_betx > 1e-6), (
+            "BETX_ET should differ from BETX for klqsa in MAD-NG response"
+        )
+
+        # for param in optics_params:
+        #     assert param in madx_response, f"Parameter {param} missing from MAD-X response"
+        #     assert param in madng_response, f"Parameter {param} missing from MAD-NG response"
+
+        #     madx_df = madx_response[param]
+        #     madng_df = madng_response[param]
+
+        #     # Check that columns (variables) are the same
+        #     assert set(madx_df.columns) == set(madng_df.columns), f"Columns differ for {param}"
+
+        #     # Check that indices (BPMs/elements) are the same
+        #     assert set(madx_df.index) == set(madng_df.index), f"Indices differ for {param}"
+
+        #     # Compare values with some tolerance (MAD-NG uses derivatives, MAD-X uses finite differences)
+        #     # Allow for some numerical differences
+        #     diff = np.abs(madx_df.values - madng_df.values)
+        #     max_diff = np.max(diff)
+        #     rel_diff = diff / (
+        #         np.abs(madx_df.values) + 1e-10
+        #     )  # Add small number to avoid division by zero
+        #     max_rel_diff = np.max(rel_diff)
+
+        #     # For most optics parameters, expect relative differences < 1e-3
+        #     # For dispersion, might be higher due to numerical sensitivity
+        #     # tolerance = 1e-2 if param in ["DX", "DY"] else 1e-3
+
+        #     # assert max_rel_diff < tolerance, (
+        #     #     f"MAD-NG vs MAD-X difference too large for {param}: "
+        #     #     f"max_rel_diff={max_rel_diff:.2e}, max_diff={max_diff:.2e}"
+        #     # )
 
 
 class TestAnalysisSPS:

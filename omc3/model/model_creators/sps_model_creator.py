@@ -185,13 +185,13 @@ class SpsModelCreator(ModelCreator, ABC):
         if self._start_bpm is not None:
             # I thought cycling to markers has less side-effects, but it seems it doesn't matter.
             # If this is anyway useful, we can add it. (jdilly, 2025)
-            # marker_name = f"OMC_MARKER_{self._start_bpm}"
-            # madx_script += (
-            #     f"    {marker_name}: marker;\n"
-            #     f"    install, element={marker_name}, at=-{self._start_bpm}->L, from={self._start_bpm};\n"
-            #     f"    cycle, start = {marker_name};\n"
-            # )
-            madx_script += f"    cycle, start = {self._start_bpm};\n"
+            marker_name = f"OMC_MARKER_{self._start_bpm}"
+            madx_script += (
+                f"    {marker_name}: marker;\n"
+                f"    install, element={marker_name}, at=-{self._start_bpm}->L/2, from={self._start_bpm};\n"
+                f"    cycle, start = {marker_name};\n"
+            )
+            # madx_script += f"    cycle, start = OMC_MARKER_{self._start_bpm};\n"
 
         madx_script += "endedit;\nuse, sequence=sps;\n\n"
 
@@ -233,6 +233,18 @@ class SpsModelCreator(ModelCreator, ABC):
                 f"}}\n"
             )
         return madx_script
+
+    @property
+    def sequence_name(self) -> str:
+        """Returns the sequence name for SPS."""
+        return "sps"
+
+    def get_save_sequence_script(self) -> str:
+        """Returns madx script to save the SPS sequence."""
+        return (
+            f"set, format='-16.16e';\n"
+            f"save, sequence={self.sequence_name}, file='{self.save_sequence_filename}', noexpr=false;\n"
+        )
 
 
 class SpsCorrectionModelCreator(CorrectionModelCreator, SpsModelCreator):

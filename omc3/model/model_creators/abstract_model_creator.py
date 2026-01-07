@@ -63,6 +63,7 @@ class ModelCreator(ABC):
     """
 
     jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
+    save_sequence_filename: str = "saved_madx.seq"
 
     def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
         """
@@ -127,6 +128,17 @@ class ModelCreator(ABC):
         Returns the ``MAD-X`` script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
         as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).
         """
+        pass
+
+    @property
+    @abstractmethod
+    def sequence_name(self) -> str:
+        """Returns the sequence name to be used."""
+        pass
+
+    @abstractmethod
+    def get_save_sequence_script(self) -> str:
+        """Returns madx script to save the sequence."""
         pass
 
     def resolve_path_for_madx(self, path: Path | str) -> Path:
