@@ -108,7 +108,7 @@ class ModelCreator(ABC):
         run_string(
             madx_script,
             output_file=self.accel.model_dir / self.jobfile,
-            log_file=self.logfile,
+            log_file=self.accel.model_dir / self.logfile,
             cwd=self.accel.model_dir,
         )
 

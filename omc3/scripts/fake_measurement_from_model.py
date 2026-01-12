@@ -52,7 +52,7 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
 - **relative_errors** *(float)*:
 
-    Relative errors. Either single value for all paramters orlist of
+    Relative errors. Either single value for all parameters or list of
     values in order of parameters.
 
     default: ``[0.0]``
@@ -167,9 +167,11 @@ def get_params():
     )
     params.add_parameter(
         name="relative_errors",
-        help=("Relative errors. Either single value for all paramters or"
-              "list of values in order of parameters."),
-        default=[0.,],
+        help=(
+            "Relative errors. Either single value for all parameters or"
+            "list of values in order of parameters."
+        ),
+        default=[0.0],
         type=float,
         nargs="+",
     )
