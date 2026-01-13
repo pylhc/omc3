@@ -445,8 +445,8 @@ def get_trim_history(
     Args:
         beamprocess (str): Name of the beamprocess.
         knobs (list): List of strings of the knobs to check.
-        start_time (AccDatetime): Accelerator datetime object.
-        end_time (AccDatetime): Accelerator datetime object.
+        start_time (datetime): Earliest time to extract trims from.
+        end_time (datetime): Latest time to extract trims to.
         accelerator (str): Name of the accelerator.
 
     Returns:
@@ -460,16 +460,13 @@ def get_trim_history(
         if not knobs:
             raise ValueError("None of the given knobs exist!")
 
-    start_time = start_time.timestamp() if start_time is not None else None  # avoid timezone issues
-    end_time = end_time.timestamp() if end_time is not None else None  # avoid timezone issues
-
     LOGGER.debug(f"Getting trims for {len(knobs)} knobs.")
     try:
         trims = lsa_client.getTrims(
             parameter=knobs,
             beamprocess=beamprocess,
-            start=start_time,
-            end=end_time
+            start=start_time.timestamp() if start_time is not None else None,  # avoid timezone issues
+            end=end_time.timestamp() if end_time is not None else None,        # avoid timezone issues
         )
     except jpype.java.lang.NullPointerException as e:
         # In the past this happened, when a knob was not defined, but
@@ -590,6 +587,6 @@ def get_knob_definition(lsa_client: LSAClient, knob: str, optics: str) -> KnobDe
             factor=knob_setting.getFactor(),
             madx_name=madx_name
         )
-        LOGGER.debug(f"Found component {KnobPart}")
+        LOGGER.debug(f"Found component {part}")
         knob_def.parts.append(part)
     return knob_def
