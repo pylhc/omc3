@@ -185,6 +185,7 @@ class SpsModelCreator(ModelCreator, ABC):
         if self._start_bpm is not None:
             # I thought cycling to markers has less side-effects, but it seems it doesn't matter.
             # If this is anyway useful, we can add it. (jdilly, 2025)
+            # This is very useful if we would like to use MAD-NG with this. MAD-NG won't cycle otherwise. (jgray 2026)
             marker_name = f"OMC_MARKER_{self._start_bpm}"
             madx_script += (
                 f"    {marker_name}: marker;\n"
@@ -238,13 +239,6 @@ class SpsModelCreator(ModelCreator, ABC):
     def sequence_name(self) -> str:
         """Returns the sequence name for SPS."""
         return "sps"
-
-    def get_save_sequence_script(self) -> str:
-        """Returns madx script to save the SPS sequence."""
-        return (
-            f"set, format='-16.16e';\n"
-            f"save, sequence={self.sequence_name}, file='{self.save_sequence_filename}', noexpr=false;\n"
-        )
 
 
 class SpsCorrectionModelCreator(CorrectionModelCreator, SpsModelCreator):

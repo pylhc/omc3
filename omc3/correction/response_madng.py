@@ -396,7 +396,7 @@ tws_coupling, _ = twiss {
 
     if accel_inst.beam_direction == -1:
         # Change the sign of the coupling responses for reverse beam direction
-        # In all honesty, I don't know why this has to be done, but it works... (jgray 2025)
+        # In all honesty, I don't know why this has to be done, but it works... (jgray 2026)
         for coupling_param in COUPLING_VARMAP.values():
             response_dict[f"{coupling_param}R"] *= -1
             response_dict[f"{coupling_param}I"] *= -1

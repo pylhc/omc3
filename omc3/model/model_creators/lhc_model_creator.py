@@ -232,13 +232,6 @@ class LhcModelCreator(ModelCreator):
         """Returns the sequence name for LHC."""
         return f"LHCB{self.accel.beam}"
 
-    def get_save_sequence_script(self) -> str:
-        """Returns madx script to save the LHC sequence."""
-        return (
-            f"set, format='-16.16e';\n"
-            f"save, sequence={self.sequence_name}, file='{self.save_sequence_filename}', noexpr=false;\n"
-        )
-
     def _get_sequence_initialize_script(self) -> str:
         """Returns the LHC sequence initialization script.
 

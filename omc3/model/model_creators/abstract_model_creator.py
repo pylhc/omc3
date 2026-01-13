@@ -136,10 +136,12 @@ class ModelCreator(ABC):
         """Returns the sequence name to be used."""
         pass
 
-    @abstractmethod
     def get_save_sequence_script(self) -> str:
-        """Returns madx script to save the sequence."""
-        pass
+        """Returns madx script to save a generic sequence."""
+        return (
+            f"set, format='-16.16e';\n"
+            f"save, sequence={self.sequence_name}, file='{self.save_sequence_filename}', noexpr=false;\n"
+        )
 
     def resolve_path_for_madx(self, path: Path | str) -> Path:
         """Converts a given path to a path relative to the model dir if possible, otherwise returns the absolute path.
