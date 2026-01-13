@@ -91,6 +91,7 @@ LOGGER = logging_tools.get_logger(__name__)
 class MachineSettingsInfo:
     """Dataclass for Machine Settings Info."""
     time: datetime
+    accelerator: str
     fill: FillInfo | None = None
     beamprocess: BeamProcessInfo | None = None
     optics: OpticsInfo | None = None
@@ -165,9 +166,9 @@ def get_info(opt) -> MachineSettingsInfo:
     spark, lsa_client = _get_clients()
     time = parse_time(opt.time, opt.timedelta)
 
-    machine_info = MachineSettingsInfo(time=time)
+    machine_info = MachineSettingsInfo(time=time, accelerator=opt.accel)
 
-    # BeamProcess ---
+    # BeamProcess and Fill ---
     fill, beamprocess = get_beamprocess_with_fill_at_time(
         lsa_client=lsa_client,
         spark=spark,
@@ -185,14 +186,16 @@ def get_info(opt) -> MachineSettingsInfo:
     )
 
     # Knobs ---
-    machine_info.trim_histories = _get_trim_history(
-        lsa_client=lsa_client,
-        knobs=opt.knobs,
-        time=time,
-        delta_days=opt.delta_days,
-        beamprocess_info=machine_info.beamprocess,
-    )
-    machine_info.trims = get_last_trim(machine_info.trim_histories) if machine_info.trim_histories else None
+    if opt.knobs is not None:
+        machine_info.trim_histories = _get_trim_history(
+            lsa_client=lsa_client,
+            knobs=opt.knobs,
+            time=time,
+            delta_days=opt.delta_days,
+            beamprocess_info=machine_info.beamprocess,
+        )
+        if machine_info.trim_histories:
+            machine_info.trims = get_last_trim(machine_info.trim_histories)
 
     if opt.knob_definitions:
         machine_info.knob_definitions = _get_knob_definitions(
@@ -202,58 +205,31 @@ def get_info(opt) -> MachineSettingsInfo:
 
     # Output ---
     if opt.log:
-        log_info(machine_info)
+        _log_info(machine_info)
 
+    if opt.output_dir is not None:
+        _write_output(opt.output_dir, machine_info)
 
     return machine_info
 
-    # if opt.log:
-    #     log_summary(acc_time, beamprocess_info, optics_info, trims)
 
-    # if opt.output_dir is not None:
-    #     out_path = Path(opt.output_dir)
-    #     out_path.mkdir(parents=True, exist_ok=True)
-    #     write_summary(out_path, opt.accel, acc_time, beamprocess_info, optics_info, trims)
 
-    #     if trim_histories and acc_start_time:
-    #         write_trim_histories(
-    #             out_path,
-    #             trim_histories,
-    #             opt.accel,
-    #             acc_time,
-    #             acc_start_time,
-    #             beamprocess_info,
-    #             optics_info,
-    #         )
 
-    #     if knob_definitions:
-    #         write_knob_defitions(out_path, knob_definitions)
 
-    # return {
-    #     "time": acc_time,
-    #     "start_time": acc_start_time,
-    #     "beamprocess": beamprocess_info,
-    #     "optics": optics_info,
-    #     "trim_histories": trim_histories,
-    #     "trims": trims,
-    #     "knob_definitions": knob_definitions,
-    # }
 
 
 # Output #######################################################################
 
 
-def log_info(machine_info: MachineSettingsInfo) -> None:
-    """Log the summary.
+def _log_info(machine_info: MachineSettingsInfo) -> None:
+    """Log a summary of the extracted info to console (Info-Level).
 
     Args:
-        acc_time (AccDatetime): User given Time
-        bp_info (DotDict): BeamProcess Info Dictionary
-        optics_info (DotDict): Optics Info Dictionary
-        trims (dict): Trims key-value dictionary
+        machine_info (MachineSettingsInfo): Extracted Machine Settings Info
     """
     summary = (
         "\n----------- Summary ---------------------\n"
+        f"Accelerator:  {machine_info.accelerator}\n"
         f"Given Time:   {machine_info.time.isoformat()}\n"
         f"Fill:         {machine_info.fill.no:d}\n"
         f"Beamprocess:  {machine_info.beamprocess.name}\n"
@@ -275,6 +251,20 @@ def log_info(machine_info: MachineSettingsInfo) -> None:
 
     summary += "-----------------------------------------\n\n"
     LOGGER.info(summary)
+
+
+def _write_output(output_dir: Path | str, machine_info: MachineSettingsInfo) -> None:
+    """Write all extracted info into files.
+
+    Args:
+        output_dir (Path | str): Output Directory
+        machine_info (MachineSettingsInfo): Machine Settings Info
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # TODO: Re-Implement output writing functions
+
 
 
 # def write_summary(
@@ -400,14 +390,18 @@ def log_info(machine_info: MachineSettingsInfo) -> None:
 
 def _get_clients() -> tuple[SparkSession, LSAClient]:
     """Initialize and return SparkSession and LSAClient."""
-    with logging_tools.change_log_level(logging_tools.WARNING):  # avoid spark/lsa polluting the logs
+
+    # Set log level to WARNING to avoid too much logging from Spark/LSA ---
+    log_level = logging_tools.WARNING
+    log_level_str = "WARN"
+
+    with logging_tools.change_log_level(log_level):
         spark: SparkSession = spark_session_builder.get_or_create(
-            conf={"spark.ui.showConsoleProgress": "false"
-            }
+            conf={"spark.ui.showConsoleProgress": "false"}
         )
-        spark.sparkContext.setLogLevel("WARN")
+        spark.sparkContext.setLogLevel(log_level_str)
         lsa_client: LSAClient = pjlsa.LSAClient()
-        logging_tools.getLogger("py4j").setLevel(logging_tools.WARNING)
+        logging_tools.getLogger("py4j").setLevel(log_level)
 
     return spark, lsa_client
 
@@ -448,9 +442,7 @@ def _get_trim_history(
     delta_days: float,
     beamprocess_info: BeamProcessInfo,
     ) -> dict[str, TrimTuple]:
-    if knobs is None:
-        return {}
-
+    """Get Trim Histories for given knobs."""
     if len(knobs) == 1:
         match knobs[0].lower():
             case "all":
