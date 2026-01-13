@@ -81,23 +81,3 @@ def get_mqt_vals(
     pattern = f"RPMBB.UA%.RQT%.A%B{beam}:I_MEAS"
     patterns = [pattern]
     return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", delta_days)
-
-
-def knobs_to_madx(mqt_vals: list[NXCALSResult]) -> str:
-    """
-    Convert a list of NXCalResult objects to a MAD-X script string.
-
-    Args:
-        mqt_vals: List of NXCalResult objects containing knob values.
-
-    Returns:
-        A string containing the MAD-X script with knob assignments.
-    """
-    lines = []
-    for result in mqt_vals:
-        timestamp_str = f"{result.timestamp:%Y-%m-%d %H:%M:%S%z}"
-        value_str = f"{result.value:.10E}".replace("E+", "E")
-        lines.append(
-            f"{result.name:<15}= {value_str}; ! powerconverter: {result.pc_name} at {timestamp_str}\n"
-        )
-    return "".join(lines)

@@ -63,7 +63,7 @@ def test_get_mqts_matches_sample(beam: int, sample_file: Path):
 def test_main_reproduces_reference_output(tmp_path, beam: int, sample_file: Path):
     sample_results = _load_results_from_file(sample_file)
 
-    latest_sample_time = max(result.timestamp for result in sample_results)
+    latest_sample_time = max(result.datetime for result in sample_results)
     query_time = latest_sample_time.to_pydatetime()
 
     output_dir = tmp_path / f"beam{beam}"
@@ -77,7 +77,7 @@ def test_main_reproduces_reference_output(tmp_path, beam: int, sample_file: Path
             name=r.name,
             value=r.value,
             pc_name=r.pc_name,
-            timestamp=r.timestamp.tz_convert("UTC"),
+            timestamp=r.datetime.tz_convert("UTC"),
         )
         for r in sample_results
     ]
@@ -105,7 +105,7 @@ def test_get_mqts_invalid_beam():
 def test_main_returns_tfs_dataframe(tmp_path, beam: int, sample_file: Path):
     """Test that main returns a TfsDataFrame with correct structure."""
     sample_results = _load_results_from_file(sample_file)
-    latest_sample_time = max(result.timestamp for result in sample_results)
+    latest_sample_time = max(result.datetime for result in sample_results)
     query_time = latest_sample_time.to_pydatetime()
 
     output_path = tmp_path / f"test_output_b{beam}.madx"

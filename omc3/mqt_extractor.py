@@ -71,7 +71,8 @@ from typing import TYPE_CHECKING
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
-from omc3.nxcals.mqt_extraction import get_mqt_vals, knobs_to_madx
+from omc3.nxcals.madx_conversion import knobs_to_madx
+from omc3.nxcals.mqt_extraction import get_mqt_vals
 from omc3.utils.iotools import PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
@@ -174,7 +175,7 @@ def main(opt) -> tfs.TfsDataFrame:
     for result in mqt_vals:
         mqt_df.loc[result.name, "madx"] = result.name
         mqt_df.loc[result.name, "value"] = result.value
-        mqt_df.loc[result.name, "timestamp"] = result.timestamp
+        mqt_df.loc[result.name, "timestamp"] = result.datetime
         mqt_df.loc[result.name, "pc_name"] = result.pc_name
 
     if opt.output:

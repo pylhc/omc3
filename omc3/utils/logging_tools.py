@@ -166,9 +166,10 @@ def logging_silence():
     handlers = list(root_logger.handlers)
     root_logger.handlers = []
 
-    yield
-
-    root_logger.handlers = handlers
+    try:
+        yield
+    finally:
+        root_logger.handlers = handlers
 
 
 @contextmanager
@@ -182,6 +183,18 @@ def unformatted_console_logging():
         yield
 
         rl.removeHandler(handler)
+
+
+@contextmanager
+def change_log_level(level):
+    """Change the logging level of the root logger."""
+    root_logger = getLogger("")
+    old_level = root_logger.level
+    root_logger.setLevel(level)
+    try:
+        yield
+    finally:
+        root_logger.setLevel(old_level)
 
 
 class TempStringLogger:
