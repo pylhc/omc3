@@ -46,9 +46,8 @@ All gathered data is returned, if this function is called from python.
 
 """
 from __future__ import annotations
-from attr import dataclass
 
-from collections.abc import Iterable
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -59,13 +58,14 @@ from generic_parser import EntryPointParameters, entrypoint
 from omc3.knob_extractor import KNOB_CATEGORIES, name2lsa
 from omc3.nxcals.lsa_utils import (
     BeamProcessInfo,
+    FillInfo,
     KnobDefinition,
     OpticsInfo,
     get_beamprocess_with_fill_at_time,
     get_knob_definition,
     get_last_trim,
     get_optics_for_beamprocess_at_time,
-    get_trim_history, FillInfo,
+    get_trim_history,
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
@@ -86,19 +86,6 @@ LOGGER = logging_tools.get_logger(__name__)
 
 
 # Main #########################################################################
-
-@dataclass
-class MachineSettingsInfo:
-    """Dataclass for Machine Settings Info."""
-    time: datetime
-    accelerator: str
-    fill: FillInfo | None = None
-    beamprocess: BeamProcessInfo | None = None
-    optics: OpticsInfo | None = None
-    trim_histories: dict[str, TrimTuple] | None = None
-    trims: dict[str, float] | None = None
-    knob_definitions: dict[str, KnobDefinition] | None = None
-
 
 def _get_params() -> dict:
     """Parse Commandline Arguments and return them as options."""
@@ -150,18 +137,26 @@ def _get_params() -> dict:
     )
 
 
+@dataclass
+class MachineSettingsInfo:
+    """Dataclass to hold the extracted Machine Settings Info."""
+    time: datetime
+    accelerator: str
+    fill: FillInfo | None = None
+    beamprocess: BeamProcessInfo | None = None
+    optics: OpticsInfo | None = None
+    trim_histories: dict[str, TrimTuple] | None = None
+    trims: dict[str, float] | None = None
+    knob_definitions: dict[str, KnobDefinition] | None = None
+
+
 @entrypoint(_get_params(), strict=True)
 def get_info(opt) -> MachineSettingsInfo:
     """
      Get info about **Beamprocess**, **Optics** and **Knobs** at given time.
 
-
      Returns:
-         dict: Dictionary containing the given ``time`` and ``start_time``,
-         the extracted ``beamprocess``-info and ``optics``-info, the
-         ``trim_histories`` and current (i.e. at given ``time``) ``trims``
-         and the ``knob_definitions``, if extracted.
-
+        MachineSettingsInfo: Extracted Machine Settings Info.
     """
     spark, lsa_client = _get_clients()
     time = parse_time(opt.time, opt.timedelta)
@@ -211,11 +206,6 @@ def get_info(opt) -> MachineSettingsInfo:
         _write_output(opt.output_dir, machine_info)
 
     return machine_info
-
-
-
-
-
 
 
 # Output #######################################################################
