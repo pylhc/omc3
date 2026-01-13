@@ -152,9 +152,7 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFram
         )
 
     elif opt.creator.lower() == ResponseCreatorType.MADNG:
-        fullresponse = response_madng.create_fullresponse(
-            accel_inst, opt.variable_categories, delta_k=opt.delta_k
-        )
+        fullresponse = response_madng.create_fullresponse(accel_inst, opt.variable_categories)
 
     if opt.outfile_path is not None:
         write_fullresponse(opt.outfile_path, fullresponse)

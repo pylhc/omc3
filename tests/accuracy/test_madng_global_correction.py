@@ -27,7 +27,6 @@ from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import (
     BETA,
     DISPERSION,
-    # DISPERSION,
     F1001,
     F1010,
     NAME,
@@ -59,11 +58,7 @@ TUNE_PARAMS = [f"{TUNE}1", f"{TUNE}2"]
 
 
 def _check_rms_cols(
-    col_with_errors: Series,
-    model_col: Series,
-    corrected_col: Series,
-    param: str,
-    tol: float | None = None,
+    col_with_errors: Series, model_col: Series, corrected_col: Series, param: str
 ) -> None:
     """
     Check RMS differences for a parameter and assert improvement.
@@ -73,22 +68,14 @@ def _check_rms_cols(
         model_col: Nominal model series.
         corrected_col: Corrected series.
         param: Parameter name for logging.
-        tol: Optional tolerance for allowable RMS change when improvement is not achieved.
     """
     original_rms = rms(col_with_errors - model_col)
     LOG.info(f"Original RMS for {param}: {original_rms}")
     new_rms_diff = rms(corrected_col - model_col)
     LOG.info(f"New RMS for {param}: {new_rms_diff}")
-    try:
-        assert new_rms_diff < original_rms, (
-            f"RMS of {param} went from {original_rms} to {new_rms_diff} after correction. Not improved."
-        )
-    except AssertionError as e:
-        if tol is None:
-            raise e
-        assert abs(new_rms_diff - original_rms) < tol, (
-            f"RMS of {param} changed too much: {abs(new_rms_diff - original_rms)}"
-        )
+    assert new_rms_diff < original_rms, (
+        f"RMS of {param} went from {original_rms} to {new_rms_diff} after correction. Not improved."
+    )
 
 
 def make_check_func(params: list[str]) -> Callable[[DataFrame, DataFrame, DataFrame], None]:
@@ -100,22 +87,6 @@ def make_check_func(params: list[str]) -> Callable[[DataFrame, DataFrame, DataFr
 
     return check
 
-
-def check_coupling_rms(twiss_errors: DataFrame, model: DataFrame, corrected: DataFrame) -> None:
-    """
-    Check RMS improvement for coupling RDTs F1001 and F1010.
-
-    Args:
-        twiss_errors: DataFrame with errors at common indices.
-        model: Nominal model DataFrame at common indices.
-        corrected: Corrected DataFrame at common indices.
-    """
-    for rdt in [F1001, F1010]:
-        param_abs = f"{rdt}A"
-        tol = 2e-8 if rdt == F1010 else None
-        _check_rms_cols(
-            twiss_errors[param_abs], model[param_abs], corrected[param_abs], param_abs, tol=tol
-        )
 
 def check_normalised_dispersion_rms(
     twiss_errors: DataFrame, model: DataFrame, corrected: DataFrame
@@ -133,22 +104,20 @@ def check_normalised_dispersion_rms(
     nd_errors = twiss_errors[f"{DISPERSION}{plane}"] / np.sqrt(twiss_errors[f"{BETA}{plane}"])
     nd_model = model[f"{DISPERSION}{plane}"] / np.sqrt(model[f"{BETA}{plane}"])
     nd_corrected = corrected[f"{DISPERSION}{plane}"] / np.sqrt(corrected[f"{BETA}{plane}"])
-    _check_rms_cols(
-        nd_errors, nd_model, nd_corrected, f"{NORM_DISPERSION}{plane}"
-    ) # Beam 1 not changed at all by correction
+    _check_rms_cols(nd_errors, nd_model, nd_corrected, f"{NORM_DISPERSION}{plane}")
 
 
 param_configs = {
-    # "betas": BETA_PARAMS,
-    # "dispersion": DISPERSION_PARAMS,
-    # "phase": PHASE_ADV_PARAMS,
-    # "tune": TUNE_PARAMS,
-    # "coupling": COUPLING_PARAMS,
+    "betas": BETA_PARAMS,
+    "dispersion": DISPERSION_PARAMS,
+    "phase": PHASE_ADV_PARAMS,
+    "tune": TUNE_PARAMS,
+    "coupling": COUPLING_PARAMS,
     "normalised_dispersion": NORMALISED_DISPERSION_PARAMS,
 }
 
 check_funcs = {k: make_check_func(v) for k, v in param_configs.items()}
-# check_funcs["coupling"] = check_coupling_rms # Override for coupling check
+check_funcs["coupling"] = make_check_func([f"{F1001}A", f"{F1010}A"])
 check_funcs["normalised_dispersion"] = check_normalised_dispersion_rms
 
 
@@ -226,7 +195,6 @@ DKNR = {0, 1e-4},
             TUNE,
         ],
         variable_categories=normal_vars + ["coupling_knobs"],
-        delta_k=2e-5,
         outfile_path=fullresponse_path,
     )
 
@@ -238,9 +206,10 @@ DKNR = {0, 1e-4},
         outputdir=measurement_dir,
     )
 
+    # We use PHASE for the response but PHASE_ADV to check correction
     correction_configs = {
         "coupling": (["coupling_knobs"], COUPLING_PARAMS),
-        "phase": (normal_vars, PHASE_PARAMS), # We use PHASE for the response but PHASE_ADV to check correction
+        "phase": (normal_vars, PHASE_PARAMS),
         "tune": (normal_vars, [TUNE]),
     }
 
@@ -296,16 +265,6 @@ DKNR = {0, 1e-4},
         assert not common_indices.empty, (
             "No common indices between model and corrected twiss dataframes."
         )
-
-        if beam == 2 and correction_type == "coupling":
-            from matplotlib import pyplot as plt
-            diff_before = twiss_errors_df_common[f"{F1001}A"] - model_df_common[f"{F1001}A"]
-            diff_after = corrected_df_common[f"{F1001}A"] - model_df_common[f"{F1001}A"]
-            plt.figure()
-            plt.plot(twiss_errors_df_common["S"], diff_before, label="Before Correction")
-            plt.plot(twiss_errors_df_common["S"], diff_after, label="After Correction")
-            plt.legend()
-            plt.show()
 
         # Check RMS for corrected parameters
         check_funcs[correction_type](twiss_errors_df_common, model_df_common, corrected_df_common)

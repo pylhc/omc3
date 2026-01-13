@@ -1,6 +1,6 @@
 """
 Response MAD-NG
----------------
+===============
 
 Provides a function to create the responses of beta, phase, dispersion, tune and coupling via MAD-NG derivatives.
 
@@ -9,7 +9,23 @@ class).
 
 For now, the response matrix is stored in a hdf5 file.
 
-:author: [Your Name]
+Differences to the MAD-X implementation
+---------------------------------------
+
+Differential Algebra (DA) is used to compute the derivatives of the optics parameters with respect to the
+variables (knobs). For most optics parameters (beta, phase, dispersion), a single twiss calculation is performed
+with DA enabled, allowing the extraction of derivatives directly from the twiss output.
+
+Coupling derivatives are computed in a separate twiss calculation after perturbing the variables slightly.
+This is necessary because the coupling calculation is unstable when there is no coupling present.
+By applying a small perturbation to the variables, we ensure that the coupling derivatives can be computed reliably.
+This perturbation is a constant value added to all variables during the coupling twiss calculation, and has been tested
+for the LHC to provide the most stable results.
+
+By only performing two twiss calculations (one for standard optics and one for coupling),
+this approach is significantly more efficient than performing separate calculations for each variable.
+
+:author: Joshua Gray
 """
 
 from __future__ import annotations
@@ -28,7 +44,6 @@ from omc3.optics_measurements.constants import (
     DISPERSION,
     F1001,
     F1010,
-    # NAME,
     NORM_DISPERSION,
     PHASE_ADV,
     TUNE,
@@ -62,6 +77,13 @@ MADNG_OPTICS = {
     "disp1": "dx",
     "disp3": "dy",
 }
+
+# From testing, this value gives enough stability for the coupling derivatives
+# We have to have a delta k as the calculation of the coupling rdts are unstable
+# when we don't have coupling.
+# But since all knobs are changed at the same time, it is ideal to perturb them
+# by as small a value as possible to avoid large changes in the optics.
+NG_DELTA_K = 1e-6
 
 
 class LoggingStream:
@@ -139,7 +161,6 @@ def _setup_beam(mad: MAD, beam_energy: float, particle: str = "proton"):
 def create_fullresponse(
     accel_inst: Accelerator,
     variable_categories: Sequence[str],
-    delta_k: float = 2e-5,
 ) -> dict[str, pd.DataFrame]:
     """Generate a dictionary containing response matrices for
     beta, phase, dispersion, tune and coupling using MAD-NG derivatives.
@@ -147,6 +168,9 @@ def create_fullresponse(
     Args:
         accel_inst : Accelerator Instance.
         variable_categories (list): Categories of the variables/knobs to use.
+
+    Returns:
+        dict: Dictionary of response DataFrames keyed by optics type (e.g., 'BETAX', 'PHASEX', etc.)
     """
     LOG.info("Creating fullresponse via MAD-NG")
 
@@ -182,7 +206,7 @@ def create_fullresponse(
 
     try:
         # Compute twiss with derivatives
-        response_dict = _compute_response_with_derivatives(mad, variables, accel_inst, delta_k)
+        response_dict = _compute_response_with_derivatives(mad, variables, accel_inst)
     except Exception as e:
         LOG.error("Error while computing response with MAD-NG derivatives.")
         _log_madng_output(log_path)
@@ -196,7 +220,7 @@ def create_fullresponse(
 
 
 def _compute_response_with_derivatives(
-    mad: MAD, variables: list[str], accel_inst: Accelerator, delta_k: float = 2e-5
+    mad: MAD, variables: list[str], accel_inst: Accelerator
 ) -> dict[str, pd.DataFrame]:
     """
     Compute response matrices using MAD-NG derivatives.
@@ -210,7 +234,6 @@ def _compute_response_with_derivatives(
         mad: MAD-NG instance
         variables: List of variable names (knobs) for which to compute responses
         accel_inst: Accelerator instance providing BPM patterns and other info
-        delta_k: Small perturbation size for coupling derivative calculation (default 2e-5)
 
     Returns:
         Dictionary of response DataFrames keyed by optics type (e.g., 'BETAX', 'PHASEX', etc.)
@@ -227,7 +250,7 @@ def _compute_response_with_derivatives(
     coupling_kopt_dict = _create_kopt_dict(coupling_params, n_vars)
     coupling_optics_list = [item for sublist in coupling_kopt_dict.values() for item in sublist]
 
-    dk = dict.fromkeys(variables, delta_k)
+    dk = dict.fromkeys(variables, NG_DELTA_K)
 
     # Set up Differential Algebra for derivatives
     mad.send("""
@@ -295,6 +318,8 @@ tws_coupling, _ = twiss {
     twiss_df_coupling = mad.tws_coupling.to_df(columns=["name"] + coupling_optics_list)
     twiss_df_coupling.set_index("name", inplace=True)
     LOG.debug(f"Coupling twiss extracted with shape {twiss_df_coupling.shape}")
+
+    del mad  # close the MAD-NG instance now we're done with it
 
     # Extract response matrices
     response_dict = {}
@@ -371,7 +396,7 @@ tws_coupling, _ = twiss {
 
     if accel_inst.beam_direction == -1:
         # Change the sign of the coupling responses for reverse beam direction
-        # TODO: Ask Laurent why? (jgray 2025)
+        # In all honesty, I don't know why this has to be done, but it works... (jgray 2025)
         for coupling_param in COUPLING_VARMAP.values():
             response_dict[f"{coupling_param}R"] *= -1
             response_dict[f"{coupling_param}I"] *= -1
