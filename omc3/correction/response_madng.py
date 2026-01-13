@@ -65,7 +65,7 @@ MADNG_VARMAP = {
     "betx": f"{BETA}X",
     "bety": f"{BETA}Y",
     "disp1": f"{DISPERSION}X",
-    "disp3": f"{DISPERSION}Y",  # check if d2 = dpx?
+    "disp3": f"{DISPERSION}Y",  # disp3 corresponds to vertical dispersion (dy) in MAD-NG
 }
 
 COUPLING_VARMAP = {
