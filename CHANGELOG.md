@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2025-01-XX - v0.26.0 - _jgray_, _jdilly_, _fsoubelet_
+#### 2025-01-XX - v0.26.1 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
   - MAD-NG response matrix calculation: New `response_madng` module to compute response matrices using MAD-NG derivatives.
