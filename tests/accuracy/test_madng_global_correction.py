@@ -43,8 +43,6 @@ from tests.accuracy.test_global_correction import (
     get_normal_params,
 )
 
-# from tests.conftest import INPUTS
-
 LOG = logging_tools.get_logger(__name__)
 LHC_2025_30CM_MODIFIERS = [Path("R2025aRP_A30cmC30cmA10mL200cm_Flat.madx")]
 
