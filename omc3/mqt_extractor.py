@@ -175,7 +175,7 @@ def main(opt) -> tfs.TfsDataFrame:
     for result in mqt_vals:
         mqt_df.loc[result.name, "madx"] = result.name
         mqt_df.loc[result.name, "value"] = result.value
-        mqt_df.loc[result.name, "timestamp"] = result.datetime
+        mqt_df.loc[result.name, "timestamp"] = result.datetime.timestamp()
         mqt_df.loc[result.name, "pc_name"] = result.pc_name
 
     if opt.output:

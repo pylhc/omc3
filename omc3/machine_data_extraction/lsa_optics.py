@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING
 
 import dateutil.tz as tz
 
+from omc3.machine_data_extraction.data_classes import OpticsInfo
 from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
 
@@ -19,16 +19,6 @@ if TYPE_CHECKING:
 
 
 LOGGER = logging_tools.get_logger(__name__)
-
-
-@dataclass
-class OpticsInfo:
-    """Dataclass to hold Optics information."""
-    name: str
-    id: str
-    start_time: datetime
-    accelerator: str | None = None
-    beamprocess: BeamProcessInfo | None = None
 
 
 def get_optics_for_beamprocess_at_time(

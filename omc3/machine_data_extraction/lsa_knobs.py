@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from omc3.machine_data_extraction.data_classes import KnobDefinition, KnobPart, TrimHistories
 from omc3.machine_data_extraction.madx_conversion import map_lsa_name_to_madx
 from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
@@ -86,7 +86,7 @@ def get_trim_history(
     start_time: datetime | None = None,
     end_time: datetime | None = None,
     accelerator: str = "lhc",
-) -> dict[str, TrimTuple]:
+) -> TrimHistories:
     """
     Get trim history for knobs between specified times.
     If any of the times are not given, all available data in that time-direction
@@ -100,7 +100,9 @@ def get_trim_history(
         accelerator (str): Name of the accelerator.
 
     Returns:
-        Dictionary of trims and their data (as TrimTuples, i.e. NamedTuple of lists of time and data).
+        TrimHistory object containing trim extraction and history information.
+        The actual trims are in the 'trims' attribute as a dictionary
+        of knob names and their data (as TrimTuples, i.e. NamedTuple of lists of time and data).
     """
     LOGGER.debug("Extracting Trim history.")
     if not knobs:
@@ -132,7 +134,14 @@ def get_trim_history(
             f"The following knobs were not found in '{beamprocess}' "
             f"or had no trims during the given time: {trims_not_found}"
         )
-    return trims
+
+    return TrimHistories(
+        beamprocess=beamprocess,
+        start_time=start_time,
+        end_time=end_time,
+        accelerator=accelerator,
+        trims=trims
+    )
 
 
 def get_last_trim(trims: dict[str, TrimTuple]) -> dict[str, float]:
@@ -154,45 +163,6 @@ def get_last_trim(trims: dict[str, TrimTuple]) -> dict[str, float]:
         else:
             LOGGER.warning(f"Trim {trim} hat multiple data entries {value}, taking only the last one.")
     return trim_dict
-
-
-@dataclass
-class KnobPart:
-    """Dataclass to hold Knob Part information."""
-    circuit: str
-    type: str
-    factor: float
-    madx_name: str | None
-
-    def __str__(self) -> str:
-        return f"{self.circuit}<{self.madx_name}, factor={self.factor}, type={self.type}>"
-
-
-@dataclass
-class KnobDefinition:
-    """Dataclass to hold Knob Definition information."""
-    name: str
-    optics: str
-    parts: list[KnobPart] = field(default_factory=list)
-
-    def to_madx(self, value: float = 0.0) -> str:
-        """Converts the knob definition to madx code."""
-        if not self.parts:
-            raise ValueError(f"Knob {self.name} has no parts defined!")
-
-        knob_name = self.name.replace("/", "_").replace("-", "_")
-
-        string_parts = [
-            f"{part.madx_name} = {part.madx_name} + {part.factor:.7e} * {knob_name};"
-            if part.madx_name else
-            f"! WARNING: No MAD-X name for circuit {part.circuit} (factor={part.factor}) in knob {self.name}"
-            for part in self.parts
-        ]
-
-        return "\n".join([
-            "! Knob Definition: {self.name} for optics {self.optics}",
-            f"{knob_name} = {value};",
-            ] + string_parts)
 
 
 def get_knob_definition(lsa_client: LSAClient, knob: str, optics: str) -> KnobDefinition:

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
 import dateutil.tz as tz
 import numpy as np
 
+from omc3.machine_data_extraction.data_classes import BeamProcessInfo, FillInfo
 from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult, get_raw_vars
 from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
@@ -30,42 +30,6 @@ BP_CONTEXT_FAMILY: str = "beamprocess"
 
 FILL_VARIABLE = "HX:FILLN"
 
-
-@dataclass
-class BeamProcessInfo:
-    """Dataclass to hold BeamProcess information.
-
-    This contains only the relevant fields for OMC,
-    extracted from the Java BeamProcess object.
-    Add more fields if needed.
-    """
-    name: str
-    accelerator: str
-    context_category: str
-    start_time: datetime
-    category: str
-    description: str
-
-    @classmethod
-    def from_java_beamprocess(
-        cls, bp: StandAloneBeamProcessImpl
-    ) -> BeamProcessInfo:
-        """Create a BeamProcessInfo from a StandAloneBeamProcessImpl object.
-
-        Args:
-            bp (StandAloneBeamProcessImpl): The BeamProcess object (Java).
-
-        Returns:
-            BeamProcessInfo: The corresponding BeamProcessInfo dataclass instance.
-        """
-        return cls(
-            name=bp.getName(),
-            accelerator=bp.getAccelerator().getName(),
-            context_category=bp.getContextCategory().toString(),
-            category=bp.getCategory().toString(),
-            start_time=datetime.fromtimestamp(bp.getStartTime() / 1000, tz=tz.UTC),  # Note: might be wrong, better to get from Fill info
-            description=bp.getDescription(),
-        )
 
 def get_active_beamprocess_at_time(
     lsa_client: LSAClient,
@@ -180,23 +144,6 @@ def beamprocess_to_dict(bp: StandAloneBeamProcessImpl) -> dict:
 
 
 # By Fills --------------------------
-
-@dataclass
-class FillInfo:
-    """Dataclass to hold Fill information.
-
-    This contains only the relevant fields for OMC,
-    extracted from the Java Fill object.
-    Add more fields if needed.
-    """
-    no: int
-    accelerator: str
-    start_time: datetime
-    beamprocesses: list[tuple[datetime, str]] | None = None
-
-    def __hash__(self) -> int:
-        return hash((self.no, self.accelerator, self.start_time))
-
 
 def get_beamprocesses_for_fills(
     lsa_client: LSAClient,

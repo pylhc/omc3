@@ -1,6 +1,6 @@
 """
-Machine Settings Overview
--------------------------
+Machine Settings Information
+----------------------------
 
 Prints an overview over the machine settings at a provided given time, or the current settings if
 no time is given.
@@ -12,7 +12,7 @@ For brevity reasons, this data is not logged into the summary in the console.
 If a start time is given, the trim history for the given knobs can be written out as well.
 This data is also not logged.
 
-Can be run from command line, parameters as given in :meth:`pylhc.machine_settings_info.get_info`.
+Can be run from command line, parameters as given in :meth:`omc3.machine_settings_info.get_info`.
 All gathered data is returned, if this function is called from python.
 
 .. code-block:: none
@@ -47,7 +47,6 @@ All gathered data is returned, if this function is called from python.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -56,9 +55,25 @@ import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.knob_extractor import KNOB_CATEGORIES, name2lsa
+from omc3.machine_data_extraction.constants import (
+    KNOB_DEFINITION_MADX,
+    KNOB_DEFINITION_TFS,
+    MSI_SUMMARY_FILENAME,
+    TRIM_HISTORY_TFS,
+)
+from omc3.machine_data_extraction.constants import (
+    MSISummaryColumn as Column,
+)
+from omc3.machine_data_extraction.constants import (
+    MSISummaryHeader as Header,
+)
+from omc3.machine_data_extraction.data_classes import (
+    MachineSettingsInfo,
+    TrimHistories,
+    TrimHistoryHeader,
+)
 from omc3.machine_data_extraction.lsa_beamprocesses import (
     BeamProcessInfo,
-    FillInfo,
     get_beamprocess_with_fill_at_time,
 )
 from omc3.machine_data_extraction.lsa_knobs import (
@@ -79,7 +94,6 @@ pjlsa: object = cern_network_import("pjlsa")
 
 if TYPE_CHECKING:
     from pjlsa import LSAClient
-    from pjlsa._pjlsa import TrimTuple
     from pyspark.sql import SparkSession
 
 
@@ -128,27 +142,25 @@ def _get_params() -> dict:
             "all knobs will be extracted (can be slow). "
             "Use the string ``'default'`` for pre-defined knobs of interest.",
         },
-        accel={"default": "lhc", "type": str, "help": "Accelerator name."},
-        output_dir={"default": None, "type": PathOrStr, "help": "Output directory."},
-        knob_definitions={"action": "store_true", "help": "Set to extract knob definitions."},
+        accel={
+            "default": "lhc",
+            "type": str,
+            "help": "Accelerator name."
+        },
+        output_dir={
+            "default": None,
+            "type": PathOrStr,
+            "help": "Output directory."
+        },
+        knob_definitions={
+            "action": "store_true",
+            "help": "Set to extract knob definitions."
+        },
         log={
             "action": "store_true",
             "help": "Write summary into log (automatically done if no output path is given).",
         },
     )
-
-
-@dataclass
-class MachineSettingsInfo:
-    """Dataclass to hold the extracted Machine Settings Info."""
-    time: datetime
-    accelerator: str
-    fill: FillInfo | None = None
-    beamprocess: BeamProcessInfo | None = None
-    optics: OpticsInfo | None = None
-    trim_histories: dict[str, TrimTuple] | None = None
-    trims: dict[str, float] | None = None
-    knob_definitions: dict[str, KnobDefinition] | None = None
 
 
 @entrypoint(_get_params(), strict=True)
@@ -191,7 +203,7 @@ def get_info(opt) -> MachineSettingsInfo:
             beamprocess_info=machine_info.beamprocess,
         )
         if machine_info.trim_histories:
-            machine_info.trims = get_last_trim(machine_info.trim_histories)
+            machine_info.trims = get_last_trim(machine_info.trim_histories.trims)
 
     if opt.knob_definitions:
         machine_info.knob_definitions = _get_knob_definitions(
@@ -254,127 +266,62 @@ def _write_output(output_dir: Path | str, machine_info: MachineSettingsInfo) -> 
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # TODO: Re-Implement output writing functions
+    # Summary ---
+    summary_df = _summary_df(machine_info)
+    tfs.write(output_dir / MSI_SUMMARY_FILENAME, summary_df)
+
+    # Knob Definitions ---
+    if machine_info.knob_definitions is not None:
+        for definition in machine_info.knob_definitions.values():
+            value = 0.0 if machine_info.trims is None else machine_info.trims.get(definition.name, 0.0)
+
+            madx = definition.to_madx(value=value)
+            df = definition.to_tfs()
+
+            (output_dir / f"{definition.output_name}{KNOB_DEFINITION_MADX}").write_text(madx)
+            tfs.write(output_dir / f"{definition.output_name}{KNOB_DEFINITION_TFS}", df)
+
+    # Trim Histories ---
+    if machine_info.trim_histories is not None:
+        if machine_info.optics is not None:
+            machine_info.trim_histories.headers[TrimHistoryHeader.OPTICS] = machine_info.optics.name
+
+        if machine_info.fill is not None:
+            machine_info.trim_histories.headers[TrimHistoryHeader.FILL] = machine_info.fill.no
+
+        for knob, trim_df in machine_info.trim_histories.to_tfs_dict().items():
+            tfs.write(output_dir / f"{knob}{TRIM_HISTORY_TFS}", trim_df)
 
 
+def _summary_df(machine_info: MachineSettingsInfo) -> tfs.TfsDataFrame:
+    """Convert MachineSettingsInfo into a ``TfsDataFrame``.
 
-# def write_summary(
-#     output_path: Path,
-#     accel: str,
-#     acc_time: AccDatetime,
-#     bp_info: DotDict,
-#     optics_info: DotDict = None,
-#     trims: dict[str, float] = None,
-# ):
-#     """Write summary into a ``tfs`` file.
+    Args:
+        machine_info (MachineSettingsInfo): Machine Settings Info.
 
-#     Args:
-#         output_path (Path): Folder to write output file into
-#         accel (str): Name of the accelerator
-#         acc_time (AccDatetime): User given Time
-#         bp_info (DotDict): BeamProcess Info Dictionary
-#         optics_info (DotDict): Optics Info Dictionary
-#         trims (dict): Trims key-value dictionary
-#     """
-#     if trims is not None:
-#         trims = trims.items()
+    Returns:
+        tfs.TfsDataFrame: Summary as TfsDataFrame.
+    """
+    trims = machine_info.trims.items() if machine_info.trims is not None else []
 
-#     info_tfs = tfs.TfsDataFrame(trims, columns=[const.column_knob, const.column_value])
-#     info_tfs.headers = OrderedDict(
-#         [
-#             ("Hint:", "All times given in UTC."),
-#             (const.head_accel, accel),
-#             (const.head_time, acc_time.cern_utc_string()),
-#             (const.head_beamprocess, bp_info.Name),
-#             (const.head_fill, bp_info.Fill),
-#             (const.head_beamprocess_start, bp_info.StartTime.cern_utc_string()),
-#             (const.head_context_category, bp_info.ContextCategory),
-#             (const.head_beamprcess_description, bp_info.Description),
-#         ]
-#     )
-#     if optics_info is not None:
-#         info_tfs.headers.update(
-#             OrderedDict(
-#                 [
-#                     (const.head_optics, optics_info.Name),
-#                     (const.head_optics_start, optics_info.StartTime.cern_utc_string()),
-#                 ]
-#             )
-#         )
-#     tfs.write(output_path / const.info_name, info_tfs)
+    info_tfs = tfs.TfsDataFrame(trims, columns=[Column.KNOB, Column.VALUE])
+    info_tfs.headers =         {
+            Header.ACCEL: machine_info.accelerator,
+            Header.TIME: machine_info.time.isoformat(),
+            Header.BEAMPROCESS: machine_info.beamprocess.name,
+            Header.FILL: machine_info.fill.no,
+            Header.BEAMPROCESS_START: machine_info.beamprocess.start_time.isoformat(),
+            Header.CONTEXT_CATEGORY: machine_info.beamprocess.context_category,
+            Header.BEAMPROCESS_DESCRIPTION: machine_info.beamprocess.description,
+        }
 
+    if machine_info.optics is not None:
+        info_tfs.headers.update({
+            Header.OPTICS: machine_info.optics.name,
+            Header.OPTICS_START: machine_info.optics.start_time.isoformat(),
+        })
 
-# def write_knob_defitions(output_path: Path, definitions: dict):
-#     """Write Knob definitions into a **tfs** file."""
-#     for knob, definition in definitions.items():
-#         path = output_path / f"{knob.replace('/', '_')}{const.knobdef_suffix}"
-#         tfs.write(path, definition, save_index=LSA_COLUMN_NAME)
-
-
-# def write_trim_histories(
-#     output_path: Path,
-#     trim_histories: dict[str, TrimTuple],
-#     accel: str,
-#     acc_time: AccDatetime = None,
-#     acc_start_time: AccDatetime = None,
-#     bp_info: DotDict = None,
-#     optics_info: DotDict = None,
-# ):
-#     """Write the trim histories into tfs files.
-#     There are two time columns, one with timestamps as they are usually easier to handle
-#     and one with the UTC-string, as they are more human-readable.
-
-#     Args:
-#         output_path (Path): Folder to write output file into
-#         trim_histories (dict): trims histories as extracted via LSA.get_trim_history()
-#         accel (str): Name of the accelerator
-#         acc_time (AccDatetime): User given (End)Time
-#         acc_start_time (AccDatetime): User given Start Time
-#         bp_info (DotDict): BeamProcess Info Dictionary
-#         optics_info (DotDict): Optics Info Dictionary
-#     """
-#     AccDT = AcceleratorDatetime[accel]  # noqa: N806
-
-#     # Create headers with basic info ---
-#     headers = OrderedDict([("Hint:", "All times are given in UTC."), (const.head_accel, accel)])
-
-#     if acc_start_time:
-#         headers.update({const.head_start_time: acc_start_time.cern_utc_string()})
-
-#     if acc_time:
-#         headers.update({const.head_end_time: acc_time.cern_utc_string()})
-
-#     if bp_info:
-#         headers.update(
-#             {
-#                 const.head_beamprocess: bp_info.Name,
-#                 const.head_fill: bp_info.Fill,
-#             }
-#         )
-
-#     if optics_info:
-#         headers.update({const.head_optics: optics_info.Name})
-
-#     # Write trim history per knob ----
-#     for knob, trim_history in trim_histories.items():
-#         trims_tfs = tfs.TfsDataFrame(
-#             headers=headers, columns=[const.column_time, const.column_timestamp, const.column_value]
-#         )
-#         for timestamp, value in zip(trim_history.time, trim_history.data):
-#             time = AccDT.from_timestamp(timestamp).cern_utc_string()
-#             try:
-#                 len(value)
-#             except TypeError:
-#                 # single value (as it should be)
-#                 trims_tfs.loc[len(trims_tfs), :] = (time, timestamp, value)
-#             else:
-#                 # multiple values (probably weird)
-#                 LOGGER.debug("Multiple values in trim for {knob} at {time}.")
-#                 for item in value:
-#                     trims_tfs.loc[len(trims_tfs), :] = (time, timestamp, item)
-
-#         path = output_path / f"{knob.replace('/', '_')}{const.trimhistory_suffix}"
-#         tfs.write(path, trims_tfs)
+    return info_tfs
 
 
 # Clients #####################################################################
@@ -432,7 +379,7 @@ def _get_trim_history(
     time: datetime,
     delta_days: float,
     beamprocess_info: BeamProcessInfo,
-    ) -> dict[str, TrimTuple]:
+    ) -> TrimHistories:
     """Get Trim Histories for given knobs."""
     if len(knobs) == 1:
         match knobs[0].lower():
@@ -466,7 +413,7 @@ def _get_knob_definitions(lsa_client: LSAClient, machine_info: MachineSettingsIn
     LOGGER.debug("Extracting knob definitions.")
     optics = machine_info.optics.name
     defs = {}
-    for knob in machine_info.trim_histories:
+    for knob in machine_info.trim_histories.trims:
         try:
             defs[knob] = get_knob_definition(lsa_client, knob, optics)
         except ValueError as e:

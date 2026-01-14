@@ -55,7 +55,8 @@ def map_pc_name_to_madx(pc_name: str) -> str:
     applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.
 
     ..note::
-        This function currently supports only quadrupole power converters.
+        This function currently supports only some of the LHC power converters:
+        Corrector bends (RCB), Sextupoles (RS), Quadrupoles (RQ), and Bends (RB).
         Additional logic may be required to handle other magnet types.
 
     Args:
@@ -81,11 +82,17 @@ def map_pc_name_to_madx(pc_name: str) -> str:
     else:
         circuit_name = pc_name
 
+    # Convert to lowercase
+    circuit_name = circuit_name.lower()
+
     # Apply MAD-X specific replacements
-    replacements = {"RQ": "KQ", "RCB": "ACB"}
-    for old, new in replacements.items():
-        circuit_name = circuit_name.replace(old, new)
-    return circuit_name.lower()
+    if circuit_name.startswith("rcb"):
+        return f"a{circuit_name[1:]}"
+    if circuit_name.startswith("r"):
+        return f"k{circuit_name[1:]}"
+
+    LOGGER.warning(f"Power converter name {pc_name} does not start with an 'R'.")
+    return circuit_name
 
 
 def map_lsa_name_to_madx(lsa_client: LSAClient, name: str):

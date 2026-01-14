@@ -1,4 +1,7 @@
 from collections.abc import Callable
+from datetime import datetime
+
+from dateutil import tz
 
 from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
@@ -6,6 +9,20 @@ from omc3.utils.mock import cern_network_import
 jpype: object = cern_network_import("jpype")
 
 LOGGER = logging_tools.get_logger(__name__)
+
+
+def knob_to_output_name(knob_name: str) -> str:
+    """
+    Convert a knob name to an output-friendly name for file names.
+
+    Args:
+        knob_name (str): The original knob name.
+
+    Returns:
+        str: The modified knob name suitable for output.
+    """
+    return knob_name.replace(":", "_").replace("/", "_").replace("-", "_")
+
 
 def strip_i_meas(text: str) -> str:
     """
@@ -44,3 +61,8 @@ def try_to_acquire_data(function: Callable, *args, **kwargs):
                 continue  # will go to the next iteratoin of the loop, so retry
             raise OSError("Could not acquire data!") from e
     raise RuntimeError(f"Could not acquire data after {retries:d} retries.")
+
+
+def timestamp_to_utciso(timestamp: float) -> str:
+    """Convert a timestamp to an ISO format string."""
+    return datetime.fromtimestamp(timestamp, tz=tz.UTC).isoformat()
