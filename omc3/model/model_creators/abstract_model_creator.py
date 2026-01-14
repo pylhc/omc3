@@ -131,11 +131,16 @@ class ModelCreator(ABC):
         pass
 
     @property
-    @abstractmethod
     def sequence_name(self) -> str:
-        """Returns the sequence name to be used."""
-        pass
+        """Returns the sequence name to be used. This is necessary if you would like to use MAD-NG with your sequence. (Currently only MAD-NG Response).
 
+        Subclasses that use :meth:`get_save_sequence_script` must override this
+        property to return the appropriate sequence name for the accelerator.
+        """
+        raise AcceleratorDefinitionError(
+            f"{type(self).__name__} must define `sequence_name` when using "
+            f"`get_save_sequence_script` or other features depending on it."
+        )
     def get_save_sequence_script(self) -> str:
         """Returns madx script to save a generic sequence."""
         return (

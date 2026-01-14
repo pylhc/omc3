@@ -192,7 +192,6 @@ class SpsModelCreator(ModelCreator, ABC):
                 f"    install, element={marker_name}, at=-{self._start_bpm}->L/2, from={self._start_bpm};\n"
                 f"    cycle, start = {marker_name};\n"
             )
-            # madx_script += f"    cycle, start = OMC_MARKER_{self._start_bpm};\n"
 
         madx_script += "endedit;\nuse, sequence=sps;\n\n"
 
