@@ -7,6 +7,7 @@ Creates response with MAD-NG, applies errors to model, corrects betas, dispersio
 and verifies corrections.
 """
 
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -120,6 +121,7 @@ check_funcs["normalised_dispersion"] = check_normalised_dispersion_rms
 
 
 @pytest.mark.extended
+@pytest.mark.skipif(sys.platform == "win32", reason="MAD-NG does not support Windows")
 def test_madng_global_correction(
     tmp_path: Path, acc_models_lhc_2025: Path, model_30cm_flat_beams: dict[str, Any]
 ) -> None:
