@@ -71,8 +71,8 @@ from typing import TYPE_CHECKING
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
-from omc3.nxcals.madx_conversion import knobs_to_madx
-from omc3.nxcals.mqt_extraction import get_mqt_vals
+from omc3.machine_data_extraction.madx_conversion import knobs_to_madx
+from omc3.machine_data_extraction.mqt_extraction import get_mqt_vals
 from omc3.utils.iotools import PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import

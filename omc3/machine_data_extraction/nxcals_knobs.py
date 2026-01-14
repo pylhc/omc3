@@ -29,9 +29,9 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 
-from omc3.nxcals import lsa_utils
-from omc3.nxcals.madx_conversion import map_pc_name_to_madx
-from omc3.nxcals.utils import strip_i_meas
+from omc3.machine_data_extraction import lsa_utils
+from omc3.machine_data_extraction.madx_conversion import map_pc_name_to_madx
+from omc3.machine_data_extraction.utils import strip_i_meas
 from omc3.utils.mock import cern_network_import
 
 if TYPE_CHECKING:

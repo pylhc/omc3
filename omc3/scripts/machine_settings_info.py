@@ -56,17 +56,18 @@ import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.knob_extractor import KNOB_CATEGORIES, name2lsa
-from omc3.nxcals.lsa_utils import (
+from omc3.machine_data_extraction.lsa_beamprocesses import (
     BeamProcessInfo,
     FillInfo,
-    KnobDefinition,
-    OpticsInfo,
     get_beamprocess_with_fill_at_time,
+)
+from omc3.machine_data_extraction.lsa_knobs import (
+    KnobDefinition,
     get_knob_definition,
     get_last_trim,
-    get_optics_for_beamprocess_at_time,
     get_trim_history,
 )
+from omc3.machine_data_extraction.lsa_optics import OpticsInfo, get_optics_for_beamprocess_at_time
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 from omc3.utils.mock import cern_network_import

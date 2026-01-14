@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from omc3.nxcals.utils import strip_i_meas
+from omc3.machine_data_extraction.utils import strip_i_meas
 from omc3.utils.mock import cern_network_import
 
 jpype = cern_network_import("jpype")
@@ -21,7 +21,7 @@ pjlsa = cern_network_import("pjlsa")
 if TYPE_CHECKING:
     from pjlsa import LSAClient
 
-    from omc3.nxcals.knob_extraction import NXCALSResult
+    from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
 
 LOGGER = logging.getLogger(__name__)
 

@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from omc3.nxcals.knob_extraction import NXCALSResult, get_knob_vals
+from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult, get_knob_vals
 
 if TYPE_CHECKING:
     from datetime import datetime
