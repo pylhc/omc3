@@ -1,5 +1,5 @@
 """
-NXCALS Knob Extraction
+NXCals Knob Extraction
 ----------------------
 
 This module provides functionality to extract knob values from NXCALS for the LHC and

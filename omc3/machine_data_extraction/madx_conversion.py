@@ -1,6 +1,6 @@
 """
-Conversion of NXCals Results to MAD-X
--------------------------------------
+NXCals Results to MAD-X Conversion
+----------------------------------
 
 This module provides functions to convert NXCALS knob extraction results into
 a MAD-X script format for further processing.

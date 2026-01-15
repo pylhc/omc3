@@ -1,6 +1,6 @@
 """
-Extraction of MQT knobs from NXCALS.
-------------------------------------
+MQT knobs extraction
+--------------------
 
 This module provides functions to retrieve MQT (Quadrupole Trim) knob values for the LHC
 for a specified beam and time using NXCALS and LSA.
