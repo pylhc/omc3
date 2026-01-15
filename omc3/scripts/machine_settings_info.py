@@ -27,7 +27,7 @@ All gathered data is returned, if this function is called from python.
                           Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'.
                           Timezone must be specified for ISO-format (e.g. +00:00 for UTC).
     --timedelta TIMEDELTA
-                            Add this timedelta to the given time. The format of timedelta is '((\d+)(\w))+' with the
+                            Add this timedelta to the given time. The format of timedelta is '((\\d+)(\\w))+' with the
                             second token being one of s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months)
                             e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs.
                             A prefix '_' specifies a negative timedelta.
@@ -231,7 +231,7 @@ def get_info(opt) -> MachineSettingsInfo:
     - **timedelta** *(str)*:
 
         Add this timedelta to the given time. The format of timedelta is
-        '((\d+)(\w))+' with the second token being one of s(seconds),
+        '((\\d+)(\\w))+' with the second token being one of s(seconds),
         m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,
         1d = 1day, 7m30s = 7 min 30 secs. A prefix '_' specifies a negative
         timedelta. This allows for easily getting the setting e.g. 2h ago:
