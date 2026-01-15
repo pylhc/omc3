@@ -1,3 +1,11 @@
+"""
+LSA Beamprocesses
+-----------------
+
+This module contains functions to extract beamprocess - and related - information
+from LSA.
+"""
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta

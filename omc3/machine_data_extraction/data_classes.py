@@ -1,3 +1,14 @@
+"""
+DataClasses for Machine Data
+----------------------------
+
+This module contains the dataclasses that are used to hold
+and pass on the extracted machine data.
+
+Most of them are purely to hold the data in a structured way,
+some have minor functionality to convert the data into different formats
+such as TFS and MADX.
+"""
 
 from __future__ import annotations
 

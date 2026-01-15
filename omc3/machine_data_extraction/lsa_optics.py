@@ -1,3 +1,10 @@
+"""
+LSA Optics
+----------
+
+This module contains functions to extract the used optics from LSA.
+"""
+
 from __future__ import annotations
 
 from datetime import datetime

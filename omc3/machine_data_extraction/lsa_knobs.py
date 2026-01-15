@@ -1,3 +1,10 @@
+"""
+LSA Knobs
+---------
+
+This module contains functions to extract knob information from LSA.
+"""
+
 from __future__ import annotations
 
 import re

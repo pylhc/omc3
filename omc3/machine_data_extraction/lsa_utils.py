@@ -1,3 +1,10 @@
+"""
+LSA Utilities
+-------------
+
+This module contains utility functions for working with LSA and data extracted from it.
+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

@@ -1,6 +1,6 @@
 """
-Knob Extraction
----------------
+NXCALS Knob Extraction
+----------------------
 
 This module provides functionality to extract knob values from NXCALS for the LHC and
 convert them to MAD-X compatible format using LSA services.
@@ -12,6 +12,7 @@ conventions.
 This module requires the installation of `jpype`, `pyspark`, and access to the
 CERN network to connect to NXCALS and LSA services. You can install the required
 packages via pip:
+
 ```
 python -m pip install omc3[cern]
 ```

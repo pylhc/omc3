@@ -1,10 +1,22 @@
-from collections.abc import Callable
+"""
+Utils
+-----
+
+Utilities to help with machine data extraction.
+"""
+
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from dateutil import tz
 
 from omc3.utils import logging_tools
 from omc3.utils.mock import cern_network_import
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 jpype: object = cern_network_import("jpype")
 

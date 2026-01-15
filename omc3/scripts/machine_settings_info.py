@@ -17,32 +17,33 @@ All gathered data is returned, if this function is called from python.
 
 .. code-block:: none
 
-   usage: machine_settings_info.py [-h] [--time TIME] [--start_time START_TIME]
-                                   [--knobs KNOBS [KNOBS ...]] [--accel ACCEL]
-                                   [--beamprocess BEAMPROCESS] [--output_dir OUTPUT_DIR]
-                                   [--knob_definitions] [--source SOURCE] [--log]
+    usage: machine_settings_info.py [-h] [--time TIME] [--timedelta TIMEDELTA] [--delta_days DELTA_DAYS]
+                                    [--knobs KNOBS [KNOBS ...]] [--accel ACCEL] [--output_dir OUTPUT_DIR]
+                                    [--knob_definitions] [--log]
 
-  optional arguments:
-  -h, --help            show this help message and exit
-  --time TIME           UTC Time as 'Y-m-d H:M:S.f' or ISO format or AccDatetime object.
-                        Acts as point in time or end time (if ``start_time`` is given).
-  --start_time START_TIME
-                        UTC Time as 'Y-m-d H:M:S.f' or ISO format or AccDatetime object.
-                        Defines the beginning of the time-range.
-  --knobs KNOBS [KNOBS ...]
-                        List of knobnames. If `None` (or omitted) no knobs will be extracted.
-                        If it is just the string ``'all'``, all knobs will be extracted
-                        (can be slow). Use the string ``'default'`` for pre-defined knobs
-                        of interest.
-  --accel ACCEL         Accelerator name.
-  --beamprocess BEAMPROCESS
-                        Manual override for the Beamprocess
-                        (otherwise taken at the given ``time``)
-  --output_dir OUTPUT_DIR
-                        Output directory.
-  --knob_definitions    Set to extract knob definitions.
-  --source SOURCE       Source to extract data from.
-  --log                 Write summary into log (automatically done if no output path is given).
+    options:
+    -h, --help            show this help message and exit
+    --time TIME           At what time to extract the data.
+                          Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'.
+                          Timezone must be specified for ISO-format (e.g. +00:00 for UTC).
+    --timedelta TIMEDELTA
+                            Add this timedelta to the given time. The format of timedelta is '((\d+)(\w))+' with the
+                            second token being one of s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months)
+                            e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs.
+                            A prefix '_' specifies a negative timedelta.
+                            This allows for easily getting the setting
+                            e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default).
+    --delta_days DELTA_DAYS
+                            Number of days to look back for data in NXCALS.
+    --knobs KNOBS [KNOBS ...]
+                            List of knobnames. If `None` (or omitted) no knobs will be extracted.
+                            If it is just the string ``'all'``, all knobs will be extracted (can be slow).
+                            Use the string ``'default'`` for pre-defined knobs of interest.
+    --accel ACCEL         Accelerator name.
+    --output_dir OUTPUT_DIR
+                            Output directory.
+    --knob_definitions    Set to extract knob definitions.
+    --log                 Write summary into log (automatically done if no output path is given).
 
 """
 from __future__ import annotations
@@ -168,7 +169,75 @@ def get_info(opt) -> MachineSettingsInfo:
     """
      Get info about **Beamprocess**, **Optics** and **Knobs** at given time.
 
-     Returns:
+    **Arguments:**
+
+    *--Optional--*
+
+    - **accel** *(str)*:
+
+        Accelerator name.
+
+        default: ``lhc``
+
+
+    - **delta_days** *(float)*:
+
+        Number of days to look back for data in NXCALS.
+
+        default: ``0.25``
+
+
+    - **knob_definitions**:
+
+        Set to extract knob definitions.
+
+        action: ``store_true``
+
+
+    - **knobs** *(str)*:
+
+        List of knobnames. If `None` (or omitted) no knobs will be extracted.
+        If it is just the string ``'all'``, all knobs will be extracted (can
+        be slow). Use the string ``'default'`` for pre-defined knobs of
+        interest.
+
+        default: ``None``
+
+
+    - **log**:
+
+        Write summary into log (automatically done if no output path is
+        given).
+
+        action: ``store_true``
+
+
+    - **output_dir** *(PathOrStr)*:
+
+        Output directory.
+
+        default: ``None``
+
+
+    - **time** *(str)*:
+
+        At what time to extract the data. Accepts ISO-format (YYYY-MM-
+        DDThh:mm:ss) with timezone, timestamp or 'now'. Timezone must be
+        specified for ISO-format (e.g. +00:00 for UTC).
+
+        default: ``now``
+
+
+    - **timedelta** *(str)*:
+
+        Add this timedelta to the given time. The format of timedelta is
+        '((\d+)(\w))+' with the second token being one of s(seconds),
+        m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,
+        1d = 1day, 7m30s = 7 min 30 secs. A prefix '_' specifies a negative
+        timedelta. This allows for easily getting the setting e.g. 2h ago:
+        '_2h' while setting the `time` argument to 'now' (default).
+
+    Returns:
         MachineSettingsInfo: Extracted Machine Settings Info.
     """
     spark, lsa_client = _get_clients()
