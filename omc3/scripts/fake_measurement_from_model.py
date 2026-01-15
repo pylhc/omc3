@@ -34,9 +34,9 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
     Optics parameters to use
 
-    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'F1010', 'F1001')``
+    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'X', 'Y', 'F1010', 'F1001')``
 
-    default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'F1010', 'F1001']``
+    default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'X', 'Y', 'F1010', 'F1001']``
 
 
 - **randomize** *(str)*:
@@ -429,7 +429,7 @@ CREATOR_MAP = {
     PHASE: create_phase,
     F1010[:-1]: create_coupling,  # normally the plane is removed but here is no plane
     F1001[:-1]: create_coupling,
-    ORBIT: create_orbit,  # orbit has no suffix
+    ORBIT: create_orbit,
 }
 
 
