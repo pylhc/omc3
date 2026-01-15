@@ -109,7 +109,7 @@
 | omc3/scripts/bad\_bpms\_summary.py                      |      185 |       13 |     93% |215-216, 220-221, 250, 258, 287, 327-329, 459-460, 470 |
 | omc3/scripts/betabeatsrc\_output\_converter.py          |      141 |       19 |     87% |165-166, 204-205, 213-214, 249-250, 291-292, 331-332, 366-367, 400-401, 440-441, 471 |
 | omc3/scripts/create\_logbook\_entry.py                  |       89 |       24 |     73% |72, 154-155, 163-186, 197, 217, 220, 226, 242, 253-268, 278 |
-| omc3/scripts/fake\_measurement\_from\_model.py          |      248 |        3 |     99% |528, 551, 568 |
+| omc3/scripts/fake\_measurement\_from\_model.py          |      256 |        3 |     99% |545, 568, 585 |
 | omc3/scripts/kmod\_average.py                           |      104 |        7 |     93% |162, 165, 179, 290-291, 305, 321 |
 | omc3/scripts/kmod\_import.py                            |      144 |        9 |     94% |248, 261-262, 308-312, 329, 351-352, 404 |
 | omc3/scripts/kmod\_lumi\_imbalance.py                   |       97 |       11 |     89% |125, 127, 154-160, 163, 167-172, 177-181, 270 |
@@ -151,7 +151,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      135 |       28 |     79% |66-67, 79, 99-110, 139, 156, 182, 197, 202, 206, 210, 214, 224, 227, 232, 237, 247, 252, 257, 262 |
-| **TOTAL**                                               | **11813** | **1659** | **86%** |           |
+| **TOTAL**                                               | **11821** | **1659** | **86%** |           |
 
 
 ## Setup coverage badge
