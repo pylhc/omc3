@@ -8,15 +8,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scripts &mdash; omc3 0.26.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=4aa2dafa"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -883,8 +883,8 @@ will be used.</p>
 <li><p><strong>parameters</strong> <em>(str)</em>:</p>
 <blockquote>
 <div><p>Optics parameters to use</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'F1010',</span> <span class="pre">'F1001')</span></code></p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">['PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'F1010',</span> <span class="pre">'F1001']</span></code></p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'X',</span> <span class="pre">'Y',</span> <span class="pre">'F1010',</span> <span class="pre">'F1001')</span></code></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">['PHASEX',</span> <span class="pre">'PHASEY',</span> <span class="pre">'BETX',</span> <span class="pre">'BETY',</span> <span class="pre">'DX',</span> <span class="pre">'DY',</span> <span class="pre">'NDX',</span> <span class="pre">'X',</span> <span class="pre">'Y',</span> <span class="pre">'F1010',</span> <span class="pre">'F1001']</span></code></p>
 </div></blockquote>
 </li>
 <li><p><strong>randomize</strong> <em>(str)</em>:</p>
@@ -950,6 +950,12 @@ values in order of parameters.</p>
 <dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_normalized_dispersion">
 <span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_normalized_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_disp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_normalized_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_normalized_dispersion" title="Link to this definition"></a></dt>
 <dd><p>Creates normalized dispersion from pre-created dispersion and beta dataframes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.fake_measurement_from_model.create_orbit">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.fake_measurement_from_model.</span></span><span class="sig-name descname"><span class="pre">create_orbit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_twiss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/fake_measurement_from_model.html#create_orbit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.fake_measurement_from_model.create_orbit" title="Link to this definition"></a></dt>
+<dd><p>Creates orbit measurement.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1132,52 +1138,52 @@ measurements.</p>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">HarpyReasons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#HarpyReasons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.scripts.bad_bpms_summary.</span></span><span class="sig-name descname"><span class="pre">HarpyReasons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/bad_bpms_summary.html#HarpyReasons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
 <p>Reasons for bad BPMs in the Harpy clean step.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.EXACT_ZERO">
-<span class="sig-name descname"><span class="pre">EXACT_ZERO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'exact</span> <span class="pre">zero'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.EXACT_ZERO" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">EXACT_ZERO</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'exact</span> <span class="pre">zero'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.EXACT_ZERO" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.FLAT">
-<span class="sig-name descname"><span class="pre">FLAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'flat</span> <span class="pre">bpm'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.FLAT" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">FLAT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'flat</span> <span class="pre">bpm'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.FLAT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.KNOWN">
-<span class="sig-name descname"><span class="pre">KNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'known</span> <span class="pre">bad</span> <span class="pre">bpm'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.KNOWN" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">KNOWN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'known</span> <span class="pre">bad</span> <span class="pre">bpm'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.KNOWN" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.NANS">
-<span class="sig-name descname"><span class="pre">NANS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'found</span> <span class="pre">nan'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.NANS" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NANS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'found</span> <span class="pre">nan'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.NANS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.NOT_IN_MODEL">
-<span class="sig-name descname"><span class="pre">NOT_IN_MODEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'not</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">model'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.NOT_IN_MODEL" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NOT_IN_MODEL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'not</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">model'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.NOT_IN_MODEL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.NO_TUNE">
-<span class="sig-name descname"><span class="pre">NO_TUNE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'main</span> <span class="pre">resonance</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">been</span> <span class="pre">found'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.NO_TUNE" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NO_TUNE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'main</span> <span class="pre">resonance</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">been</span> <span class="pre">found'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.NO_TUNE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.SPIKY">
-<span class="sig-name descname"><span class="pre">SPIKY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'spiky</span> <span class="pre">bpm'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.SPIKY" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SPIKY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'spiky</span> <span class="pre">bpm'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.SPIKY" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.SVD_PEAK">
-<span class="sig-name descname"><span class="pre">SVD_PEAK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'svd'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.SVD_PEAK" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SVD_PEAK</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'svd'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.SVD_PEAK" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.scripts.bad_bpms_summary.HarpyReasons.TUNE_CLEAN">
-<span class="sig-name descname"><span class="pre">TUNE_CLEAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'too</span> <span class="pre">far</span> <span class="pre">from</span> <span class="pre">average'</span></em><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.TUNE_CLEAN" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">TUNE_CLEAN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'too</span> <span class="pre">far</span> <span class="pre">from</span> <span class="pre">average'</span></span><a class="headerlink" href="#omc3.scripts.bad_bpms_summary.HarpyReasons.TUNE_CLEAN" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
