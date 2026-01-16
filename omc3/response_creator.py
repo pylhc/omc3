@@ -3,8 +3,8 @@ Response Creator
 ----------------
 
 Provides a response generation wrapper.
-The response matrices can be either created by :mod:`omc3.correction.response_madx`
-or analytically via :mod:`omc3.correction.response_twiss`.
+The response matrices can be either created by :mod:`omc3.correction.response_madx`,
+:mod:`omc3.correction.response_madng`, or analytically via :mod:`omc3.correction.response_twiss`.
 
 Input arguments are split into response creation arguments and accelerator arguments.
 The former are listed below, the latter depend on the accelerator you want
@@ -23,9 +23,9 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 - **creator** *(str)*:
 
-    Create either with madx or analytically from twiss file.
+    Create either with madx, madng, or analytically from twiss file.
 
-    choices: ``('madx', 'twiss')``
+    choices: ``('madx', 'madng', 'twiss')``
 
     default: ``madx``
 
@@ -57,6 +57,7 @@ to use. Check :ref:`modules/model:Model` to see which ones are needed.
 
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -64,7 +65,7 @@ from typing import TYPE_CHECKING
 
 from generic_parser.entrypoint_parser import DotDict, EntryPointParameters, entrypoint
 
-from omc3.correction import response_madx, response_twiss
+from omc3.correction import response_madng, response_madx, response_twiss
 from omc3.correction.response_io import write_fullresponse
 from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
@@ -78,9 +79,11 @@ if TYPE_CHECKING:
 
 LOG = logging_tools.get_logger(__name__)
 
+
 class ResponseCreatorType(StrEnum):
     TWISS: str = "twiss"
     MADX: str = "madx"
+    MADNG: str = "madng"
 
 
 def response_params():
@@ -90,7 +93,7 @@ def response_params():
         type=str,
         choices=tuple(rct.value for rct in ResponseCreatorType),
         default=ResponseCreatorType.MADX.value,
-        help="Create either with madx or analytically from twiss file.",
+        help="Create either with madx, madng, or analytically from twiss file.",
     )
     params.add_parameter(
         name="variable_categories",
@@ -147,6 +150,9 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFram
         fullresponse = response_twiss.create_response(
             accel_inst, opt.variable_categories, opt.optics_params
         )
+
+    elif opt.creator.lower() == ResponseCreatorType.MADNG:
+        fullresponse = response_madng.create_fullresponse(accel_inst, opt.variable_categories)
 
     if opt.outfile_path is not None:
         write_fullresponse(opt.outfile_path, fullresponse)
