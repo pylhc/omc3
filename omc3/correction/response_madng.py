@@ -30,13 +30,14 @@ this approach is significantly more efficient than performing separate calculati
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-from cpymad.madx import Madx
 from pymadng import MAD
 
+from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import AccElementTypes
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.optics_measurements.constants import (
@@ -50,16 +51,15 @@ from omc3.optics_measurements.constants import (
 )
 from omc3.utils.logging_tools import MADX, get_logger
 
-LOG = get_logger(__name__)
+LOGGER = get_logger(__name__)
 
 if TYPE_CHECKING:
-    import logging
     from collections.abc import Sequence
     from pathlib import Path
 
     from omc3.model.accelerators.accelerator import Accelerator
 
-MADNG_VARMAP = {
+MADNG_VARMAP: dict[str, str] = {
     "mu1": f"{PHASE_ADV}X",
     "mu2": f"{PHASE_ADV}Y",
     "betx": f"{BETA}X",
@@ -68,12 +68,12 @@ MADNG_VARMAP = {
     "disp3": f"{DISPERSION}Y",  # disp3 corresponds to vertical dispersion (dy) in MAD-NG
 }
 
-COUPLING_VARMAP = {
+COUPLING_VARMAP: dict[str, str] = {
     "f1001": F1001,
     "f1010": F1010,
 }
 
-MADNG_OPTICS = {
+MADNG_OPTICS: dict[str, str] = {
     "disp1": "dx",
     "disp3": "dy",
 }
@@ -85,31 +85,17 @@ MADNG_OPTICS = {
 # by as small a value as possible to avoid large changes in the optics.
 NG_DELTA_K = 1e-6
 
+@contextmanager
+def _initialise_madng_with_logging(accel_inst: Accelerator):
+    """Initialise MAD-NG, sending the stdout of the MAD-NG instance to a log file.
 
-class LoggingStream:
-    """A stream that logs written data to the logger at MADX level."""
-
-    def __init__(self, logger: logging.Logger, level: int = MADX):
-        self.logger = logger
-        self.level = level
-        self.buffer = []
-
-    def write(self, text: str):
-        if text.strip():  # Only log non-empty lines
-            self.logger.log(self.level, text.rstrip())
-
-    def flush(self):
-        pass
-
-
-def _initialise_madng_with_logging(
-    madx_seq_path: Path, seq_name: str, accel_inst: Accelerator
-) -> tuple[MAD, Path]:
-    """Initialize MAD-NG with stdout logging to a file in the model directory.
+    This function does the very basics;
+    - Creates a MAD-NG instance with logging to a file
+    - Loads the sequence
+    - Adds the beam to the sequence
+    This is a minimal setup that allows the MAD-NG instance to be used for this sequence.
 
     Args:
-        madx_seq_path: Path to the MAD-X sequence file
-        seq_name: Name of the sequence
         accel_inst: Accelerator instance
 
     Returns:
@@ -117,38 +103,66 @@ def _initialise_madng_with_logging(
     """
     # Create log file in the model directory
     log_path = accel_inst.model_dir / "madng_response.log"
-    LOG.info(f"MAD-NG output will be logged to: {log_path}")
+    LOGGER.info(f"MAD-NG output will be logged to: {log_path}")
 
     # Initialize MAD-NG with stdout redirected to log file
-    mad = MAD(stdout=str(log_path), redirect_stderr=True, debug=True)
-    _load_sequence(mad, str(madx_seq_path.absolute()), seq_name, accel_inst.beam_direction)
-    _setup_beam(mad, accel_inst.energy)
+    with MAD(stdout=str(log_path), redirect_stderr=True, debug=True) as mad:
+        _load_sequence(mad, accel_inst)
+        _setup_beam(mad, accel_inst.energy)
 
-    return mad, log_path
+        yield mad, log_path
 
 
 def _log_madng_output(log_path: Path):
-    """Log MAD-NG output from the log file.
+    """Once MAD-NG has written to a log file, read and log its contents.
 
     Args:
         log_path: Path to the log file
     """
     if log_path.exists():
-        with log_path.open() as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    LOG.log(MADX, line)
+        for line in log_path.read_text().splitlines():
+            if line := line.strip():
+                LOGGER.log(MADX, line)
+    else:
+        LOGGER.warning(f"MAD-NG log file {log_path} does not exist!")
 
 
-def _load_sequence(mad: MAD, sequence_file: str, seq_name: str, beam_direction: int):
-    """Load a sequence file into MAD-NG (copied from BaseMadInterface)."""
-    mad.send(f'MADX:load("{sequence_file}")')
+def _load_sequence(mad: MAD, accel_inst: Accelerator):
+    """Load a sequence into MAD-NG, handling all path creation, file generation, and cleanup internally."""
+    # Create the model creator and prepare
+    creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
+    creator = creator_class(accel_inst)
+    creator.prepare_run()
+
+    # Construct paths
+    madx_seq_path = accel_inst.model_dir / creator.save_sequence_filename
+    seq_name = creator.sequence_name
+    log_file = accel_inst.model_dir / "madng_sequence_creation.log"
+
+    if madx_seq_path.exists():
+        raise FileExistsError(f"Saved sequence file {madx_seq_path} already exists!")
+
+    # Generate the MAD-X sequence file
+    madx_string = creator.get_base_madx_script() + "\n" + creator.get_save_sequence_script()
+    run_string(madx_string, log_file=log_file)
+
+    if not madx_seq_path.exists():
+        raise FileNotFoundError(
+            f"Saved sequence file {madx_seq_path} was not created! Check {log_file}"
+        )
+
+    # Load into MAD-NG
+    mad.send(f'MADX:load("{str(madx_seq_path.absolute())}")')
     if mad.MADX[seq_name] == 0:
-        raise ValueError(f"Sequence '{seq_name}' not found in MAD file '{sequence_file}'")
+        raise ValueError(
+            f"Sequence '{seq_name}' not found in MAD file '{str(madx_seq_path.absolute())}'"
+        )
     mad.send(f"loaded_sequence = MADX.{seq_name}")
     mad["SEQ_NAME"] = seq_name
-    mad.loaded_sequence.dir = beam_direction
+    mad.loaded_sequence.dir = accel_inst.beam_direction
+
+    # Clean up the temporary file
+    madx_seq_path.unlink(missing_ok=True)
 
 
 def _setup_beam(mad: MAD, beam_energy: float, particle: str = "proton"):
@@ -172,49 +186,25 @@ def create_fullresponse(
     Returns:
         dict: Dictionary of response DataFrames keyed by optics type (e.g., 'BETAX', 'PHASEX', etc.)
     """
-    LOG.info("Creating fullresponse via MAD-NG")
+    LOGGER.info("Creating fullresponse via MAD-NG")
 
-    LOG.debug("Creating MAD-X Sequence to be used in MAD-NG")
-    creator_class = get_model_creator_class(accel_inst, CreatorType.NOMINAL)
-    creator = creator_class(accel_inst)
-    creator.prepare_run()
+    # Initialise MAD-NG with logging
+    with _initialise_madng_with_logging(accel_inst) as (mad, log_path):
+        # Get variables
+        variables = accel_inst.get_variables(classes=variable_categories)
+        if len(variables) == 0:
+            raise ValueError("No variables found! Make sure your categories are valid!")
 
-    # Used by MAD-NG to load the sequence
-    madx_seq_path = accel_inst.model_dir / creator.save_sequence_filename
-    seq_name = creator.sequence_name
+        LOGGER.info(f"Computing response for {len(variables)} variables")
 
-    if madx_seq_path.exists():
-        raise FileExistsError(f"Saved sequence file {madx_seq_path} already exists!")
-
-    with Madx(stdout=LoggingStream(LOG)) as madx:
-        madx.chdir(str(accel_inst.model_dir.absolute()))
-        madx.input(creator.get_base_madx_script())
-        madx.input(creator.get_save_sequence_script())
-
-    if not madx_seq_path.exists():
-        raise FileNotFoundError(f"Saved sequence file {madx_seq_path} was not created!")
-
-    # Initialize MAD-NG with logging
-    mad, log_path = _initialise_madng_with_logging(madx_seq_path, seq_name, accel_inst)
-
-    # Get variables
-    variables = accel_inst.get_variables(classes=variable_categories)
-    if len(variables) == 0:
-        raise ValueError("No variables found! Make sure your categories are valid!")
-
-    LOG.info(f"Computing response for {len(variables)} variables")
-
-    try:
-        # Compute derivatives with twiss
-        response_dict = _compute_response_with_derivatives(mad, variables, accel_inst)
-    except Exception as e:
-        LOG.error("Error while computing response with MAD-NG derivatives.")
+        try:
+            # Compute derivatives with twiss
+            response_dict = _compute_response_with_derivatives(mad, variables, accel_inst)
+        except RuntimeError as e:
+            LOGGER.error("Error while computing response with MAD-NG derivatives.")
+            _log_madng_output(log_path)
+            raise e
         _log_madng_output(log_path)
-        raise e
-    _log_madng_output(log_path)
-
-    # Delete the saved sequence file to clean up
-    madx_seq_path.unlink(missing_ok=True)
 
     return response_dict
 
@@ -244,15 +234,26 @@ def _compute_response_with_derivatives(
     optics_list = list(MADNG_VARMAP.keys())
     coupling_params = list(COUPLING_VARMAP.keys())
 
+    # Create mapping from optics parameters to derivative column names, e.g., 'betx' -> ['betx_100', 'betx_010', ...]
     kopt_dict = _create_kopt_dict(optics_list, n_vars)
     flat_opt_list = [item for sublist in kopt_dict.values() for item in sublist]
 
+    # Create mapping for coupling parameters e.g., 'f1001' -> ['f1001_100', 'f1001_010', ...]
     coupling_kopt_dict = _create_kopt_dict(coupling_params, n_vars)
     coupling_optics_list = [item for sublist in coupling_kopt_dict.values() for item in sublist]
 
     dk = dict.fromkeys(variables, NG_DELTA_K)
 
     # Set up Differential Algebra for derivatives
+    # This MAD-NG script performs the following workflow:
+    # 1. Receive lists of knobs, optics parameters, and BPM pattern from Python.
+    # 2. Create a differential algebra map (damap) for containing the variables and initial conditions.
+    # 3. Convert knobs to DA variables by adding their damap components.
+    # 4. Select BPMs and END element for observation.
+    # 5. Run twiss calculation with derivatives enabled for standard optics.
+    # 6. Receive delta k values and coupling optics list.
+    # 7. Perturb knobs with delta k for stable coupling derivative computation.
+    # 8. Run second twiss calculation for coupling derivatives.
     mad.send("""
 --start-mad
 local knob_list = py:recv()
@@ -271,7 +272,7 @@ local observed in MAD.element.flags
 local drift_element in MAD.element
 loaded_sequence:deselect(observed)
 loaded_sequence:select(observed, {pattern=bpm_pattern})  ! Observe all BPMs
-loaded_sequence:select(observed, {pattern="$end"}) ! Also observe END for tunes
+loaded_sequence:select(observed, {pattern="$end"}) ! Also observe END marker for tunes
 
 -- Compute twiss with derivatives
 tws, _ = twiss {
@@ -299,27 +300,27 @@ tws_coupling, _ = twiss {
 --end-mad
 """)
 
-    mad.send(variables)
-    mad.send(flat_opt_list)
-    mad.send(accel_inst.RE_DICT[AccElementTypes.BPMS])
-    mad.send(dk)
-    mad.send(coupling_optics_list)
+    # Send the required data to MAD-NG script
+    mad.send(variables)  # List of knob names
+    mad.send(flat_opt_list)  # Flattened list of derivative column names for standard optics
+    mad.send(accel_inst.RE_DICT[AccElementTypes.BPMS])  # BPM pattern for observation
+    mad.send(dk)  # Dictionary of delta k values for perturbation
+    mad.send(coupling_optics_list)  # Flattened list of derivative column names for coupling
 
+    # Extract and process twiss data from MAD-NG
     optics_columns = [MADNG_OPTICS.get(optic, optic) for optic in optics_list]
     all_cols = ["name"] + optics_columns + flat_opt_list
 
     # Get twiss data with all columns
-    LOG.debug(f"Extracting {all_cols} from MAD-NG twiss output")
+    LOGGER.debug(f"Extracting {all_cols} from MAD-NG twiss output")
     twiss_df = mad.tws.to_df(columns=all_cols)
-    twiss_df = twiss_df.set_index("name")
-    LOG.debug(f"Twiss extracted with shape {twiss_df.shape}")
+    twiss_df.set_index("name", inplace=True)
+    LOGGER.debug(f"Twiss extracted with shape {twiss_df.shape}")
 
-    LOG.debug(f"Extracting {coupling_optics_list} from MAD-NG twiss output")
+    LOGGER.debug(f"Extracting {coupling_optics_list} from MAD-NG twiss output")
     twiss_df_coupling = mad.tws_coupling.to_df(columns=["name"] + coupling_optics_list)
-    twiss_df_coupling = twiss_df_coupling.set_index("name")
-    LOG.debug(f"Coupling twiss extracted with shape {twiss_df_coupling.shape}")
-
-    del mad  # close the MAD-NG instance now we're done with it
+    twiss_df_coupling.set_index("name", inplace=True)
+    LOGGER.debug(f"Coupling twiss extracted with shape {twiss_df_coupling.shape}")
 
     # Extract response matrices
     response_dict = {}
@@ -357,14 +358,13 @@ tws_coupling, _ = twiss {
     # d/dx (D/sqrt(beta)) = (2 beta * dD/dx - D * dbeta/dx) / (2 beta^(3/2))
     # Normalised Y dispersion can't even be used, see global correction OPTICS_PARAMS_CHOICES, so we skip it
     for plane in ["X"]:
-        disp_col = f"d{plane.lower()}"
-        beta_col = f"bet{plane.lower()}"
-
+        disp_col = f"{DISPERSION}{plane}"
+        beta_col = f"{BETA}{plane}"
         # Convert to numpy arrays for computation and avoid NaNs (pandas may introduce NaNs)
-        disp = twiss_df[disp_col].values
-        beta = twiss_df[beta_col].values
-        disp_resp = response_dict[f"{DISPERSION}{plane}"].values
-        beta_resp = response_dict[f"{BETA}{plane}"].values
+        disp = twiss_df[disp_col.lower()].to_numpy()
+        beta = twiss_df[beta_col.lower()].to_numpy()
+        disp_resp = response_dict[disp_col].to_numpy()
+        beta_resp = response_dict[beta_col].to_numpy()
 
         numerator = 2 * beta[:, np.newaxis] * disp_resp - disp[:, np.newaxis] * beta_resp
         denominator = 2 * beta[:, np.newaxis] ** 1.5
@@ -376,9 +376,9 @@ tws_coupling, _ = twiss {
 
     # Normalise beta response
     for plane in ["X", "Y"]:
-        beta_col = f"bet{plane.lower()}"
-        beta = twiss_df[beta_col].values
-        response_dict[f"{BETA}{plane}"] = response_dict[f"{BETA}{plane}"] / beta[:, np.newaxis]
+        beta_col = f"{BETA}{plane}"
+        beta = twiss_df[beta_col.lower()].to_numpy()
+        response_dict[beta_col] = response_dict[beta_col] / beta[:, np.newaxis]
 
     for coupling_param, response_key in COUPLING_VARMAP.items():
         deriv_cols = coupling_kopt_dict[coupling_param]
@@ -404,25 +404,35 @@ tws_coupling, _ = twiss {
     # Check for any NaNs in the response matrices
     for key, df in response_dict.items():
         if df.isna().any().any():
-            LOG.warning(f"NaNs found in response matrix {key}: {df.isna().sum().sum()} NaNs")
+            LOGGER.warning(f"NaNs found in response matrix for {key}: {df.isna().sum().sum()} NaNs")
 
     return response_dict
 
 
 def _create_kopt_dict(params: list[str], n_vars: int) -> dict[str, list[str]]:
     """
-    Create dictionary of derivative column names for given parameters.
+    Create a dictionary mapping each optics parameter to its list of derivative column names.
 
-    For each parameter (e.g., 'betx'), generates a list of column names for the derivatives
-    with respect to each variable, using binary masks to identify which variable the derivative
-    is for. This is used to extract the correct columns from the MAD-NG twiss output.
+    For each parameter (e.g., 'betx'), this generates a list of column names corresponding to
+    the derivatives of that parameter with respect to each variable (knob). Each column name
+    uses a binary mask string to indicate which variable the derivative is taken with respect to.
+
+    The binary mask is a string of length n_vars, consisting of '0's and '1's, where a '1' at
+    position j indicates that the derivative is with respect to the j-th variable in the list
+    provided to MAD-NG. All other positions are '0'.
+
+    For example, with 3 variables ['var1', 'var2', 'var3'] and parameter 'betx', the output would be:
+    {
+        'betx': ['betx_100', 'betx_010', 'betx_001']
+    }
+    Here, 'betx_100' is the derivative of betx w.r.t. var1, 'betx_010' w.r.t. var2, etc.
 
     Args:
         params: List of parameter names (e.g., ['mu1', 'betx', ...])
         n_vars: Number of variables (knobs) for which derivatives are computed
 
     Returns:
-        Dictionary mapping parameter names to lists of derivative column names
+        Dictionary mapping each parameter name to its list of derivative column names
     """
     return {
         param: [f"{param}_{_make_binary_mask(j, n_vars)}" for j in range(n_vars)]
