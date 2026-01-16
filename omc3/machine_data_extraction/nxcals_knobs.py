@@ -61,7 +61,7 @@ class NXCALSResult:
     pc_name: str
 
     def to_madx(self) -> str:
-        return f"{self.name:<15} = {self.value:.10e}; ! powerconverter: {self.pc_name} at {self.datetime.isoformat()}"
+        return f"{self.name:<15} = {self.value: .10e}; ! powerconverter: {self.pc_name} at {self.datetime.isoformat()}"
 
     def to_series(self) -> pd.Series:
         return pd.Series({
