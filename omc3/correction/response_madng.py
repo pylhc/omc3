@@ -205,7 +205,7 @@ def create_fullresponse(
     LOG.info(f"Computing response for {len(variables)} variables")
 
     try:
-        # Compute twiss with derivatives
+        # Compute derivatives with twiss
         response_dict = _compute_response_with_derivatives(mad, variables, accel_inst)
     except Exception as e:
         LOG.error("Error while computing response with MAD-NG derivatives.")
@@ -311,12 +311,12 @@ tws_coupling, _ = twiss {
     # Get twiss data with all columns
     LOG.debug(f"Extracting {all_cols} from MAD-NG twiss output")
     twiss_df = mad.tws.to_df(columns=all_cols)
-    twiss_df.set_index("name", inplace=True)
+    twiss_df = twiss_df.set_index("name")
     LOG.debug(f"Twiss extracted with shape {twiss_df.shape}")
 
     LOG.debug(f"Extracting {coupling_optics_list} from MAD-NG twiss output")
     twiss_df_coupling = mad.tws_coupling.to_df(columns=["name"] + coupling_optics_list)
-    twiss_df_coupling.set_index("name", inplace=True)
+    twiss_df_coupling = twiss_df_coupling.set_index("name")
     LOG.debug(f"Coupling twiss extracted with shape {twiss_df_coupling.shape}")
 
     del mad  # close the MAD-NG instance now we're done with it
