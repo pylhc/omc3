@@ -81,7 +81,7 @@ def get_knob_vals(
     2. Retrieves the beam energy at the specified time
     3. Converts currents to K-values (integrated quadrupole strengths) using LSA
     4. Maps power converter names to MAD-X naming conventions
-    5. Returns knob values with their timestamps
+    5. Returns knob values with their datetimnes
 
     The difference between patterns and knob names:
 
@@ -105,7 +105,7 @@ def get_knob_vals(
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,
-            timestamps, and power converter names.
+            times, and power converter names.
     """
     LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
 
@@ -144,17 +144,17 @@ def get_knob_vals(
     if unknown_keys := found_keys - expected_knobs:
         LOGGER.warning(f"{log_prefix}Unknown K-values found: {unknown_keys}")
 
-    # Build result list with timestamps
-    timestamps = {map_pc_name_to_madx(var.name): var.datetime for var in combined_vars}
+    # Build result list with times
+    times = {map_pc_name_to_madx(var.name): var.datetime for var in combined_vars}
     pc_names = {map_pc_name_to_madx(var.name): var.pc_name for var in combined_vars}
     results = []
     for madx_name in expected_knobs:
         value = k_values_madx.get(madx_name)
-        timestamp = timestamps.get(madx_name)
+        dtime = times.get(madx_name)
         pc_name = pc_names.get(madx_name)
 
-        if value is not None and timestamp is not None and pc_name is not None:
-            results.append(NXCALSResult(madx_name, value, timestamp, pc_name))
+        if value is not None and time is not None and pc_name is not None:
+            results.append(NXCALSResult(madx_name, value, dtime, pc_name))
         else:
             LOGGER.warning(f"{log_prefix}Missing data for {madx_name}")
 
@@ -178,7 +178,7 @@ def get_raw_vars(
         latest_only (bool): If True, only the latest sample for each variable is returned. Default is True.
 
     Returns:
-        list[NXCalResult]: List of NXCalResult containing variable name, value, timestamp,
+        list[NXCalResult]: List of NXCalResult containing variable name, value, times,
         and power converter name for the latest sample of each matching variable at the given time,
         or all samples if so required.
 
@@ -230,9 +230,9 @@ def get_raw_vars(
     for row in df.select(VARIABLE_NAME, VALUE, TIMESTAMP).collect():
         full_varname = row[VARIABLE_NAME]
         raw_val = float(row[VALUE])
-        ts = pd.to_datetime(row[TIMESTAMP], unit="ns", utc=True)
-        results.append(NXCALSResult(full_varname, raw_val, ts, strip_i_meas(full_varname)))
-        LOGGER.info(f"LHC value retrieved: {full_varname} = {raw_val:.2f} at {ts}")
+        dtime = pd.to_datetime(row[TIMESTAMP], unit="ns", utc=True)
+        results.append(NXCALSResult(full_varname, raw_val, dtime, strip_i_meas(full_varname)))
+        LOGGER.info(f"LHC value retrieved: {full_varname} = {raw_val:.2f} at {dtime}")
 
     return results
 
@@ -246,13 +246,13 @@ def get_energy(spark: SparkSession, time: datetime) -> tuple[float, pd.Timestamp
         time (datetime): Python datetime (timezone-aware recommended).
 
     Returns:
-        tuple[float, pd.Timestamp]: Beam energy in GeV and its timestamp.
+        tuple[float, pd.Timestamp]: Beam energy in GeV and its times.
 
     Raises:
         RuntimeError: If no energy data is found.
     """
     scale = 0.120
-    raw_vars = get_raw_vars(spark, time, "HX:ENG")
+    raw_vars: list[NXCALSResult] = get_raw_vars(spark, time, "HX:ENG")
     if not raw_vars:
         raise RuntimeError("No energy data found.")
-    return raw_vars[0].value * scale, raw_vars[0].timestamp
+    return raw_vars[0].value * scale, raw_vars[0].datetime
