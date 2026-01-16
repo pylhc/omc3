@@ -5,7 +5,7 @@ Machine Settings Information
 Prints an overview over the machine settings at a provided given time, or the current settings if
 no time is given.
 If an output path is given, all info will be written into tfs files,
-otherwise a summary is logged into console.
+a summary can also be logged into console.
 
 Knob values can be extracted and the knob definition gathered.
 For brevity reasons, this data is not logged into the summary in the console.
@@ -43,7 +43,7 @@ All gathered data is returned, if this function is called from python.
     --output_dir OUTPUT_DIR
                             Output directory.
     --knob_definitions    Set to extract knob definitions.
-    --log                 Write summary into log (automatically done if no output path is given).
+    --log                 Write summary into log.
 
 """
 from __future__ import annotations
@@ -159,7 +159,7 @@ def _get_params() -> dict:
         },
         log={
             "action": "store_true",
-            "help": "Write summary into log (automatically done if no output path is given).",
+            "help": "Write summary into log.",
         },
     )
 
@@ -281,7 +281,7 @@ def get_info(opt) -> MachineSettingsInfo:
         )
 
     # Output ---
-    if opt.log or opt.output_dir is None:
+    if opt.log:
         _log_info(machine_info)
 
     if opt.output_dir is not None:
