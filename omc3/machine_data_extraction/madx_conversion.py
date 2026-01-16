@@ -21,29 +21,7 @@ pjlsa = cern_network_import("pjlsa")
 if TYPE_CHECKING:
     from pjlsa import LSAClient
 
-    from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
-
 LOGGER = logging.getLogger(__name__)
-
-
-def knobs_to_madx(nxcals_results: list[NXCALSResult]) -> str:
-    """
-    Convert a list of NXCalResult objects to a MAD-X script string.
-
-    Args:
-        nxcals_results: List of NXCalResult objects containing knob values.
-
-    Returns:
-        A string containing the MAD-X script with knob assignments.
-    """
-    lines = []
-    for result in nxcals_results:
-        timestamp_str = f"{result.datetime:%Y-%m-%d %H:%M:%S%z}"
-        value_str = f"{result.value:.10E}".replace("E+", "E")
-        lines.append(
-            f"{result.name:<15}= {value_str}; ! powerconverter: {result.pc_name} at {timestamp_str}\n"
-        )
-    return "".join(lines)
 
 
 def map_pc_name_to_madx(pc_name: str) -> str:

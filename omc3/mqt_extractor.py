@@ -71,7 +71,6 @@ from typing import TYPE_CHECKING
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
-from omc3.machine_data_extraction.madx_conversion import knobs_to_madx
 from omc3.machine_data_extraction.mqt_extraction import get_mqt_vals
 from omc3.utils.iotools import PathOrStr
 from omc3.utils.logging_tools import get_logger
@@ -80,6 +79,9 @@ from omc3.utils.time_tools import parse_time
 
 if TYPE_CHECKING:
     from datetime import datetime
+
+    from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
+
 
 spark_session_builder = cern_network_import("nxcals.spark_session_builder")
 
@@ -184,12 +186,13 @@ def main(opt) -> tfs.TfsDataFrame:
     return mqt_df
 
 
-def _write_mqt_file(output: Path | str, mqt_vals, time: datetime, beam: int):
+def _write_mqt_file(output: Path | str, mqt_vals: list[NXCALSResult], time: datetime, beam: int):
     """Write MQT knobs to a MAD-X file."""
     with Path(output).open("w") as outfile:
         outfile.write("!! --- MQT knobs extracted by mqt_extractor\n")
         outfile.write(f"!! --- extracted MQT knobs for time {time}, beam {beam}\n\n")
-        outfile.write(knobs_to_madx(mqt_vals))
+        outfile.write("\n".join([res.to_madx() for res in mqt_vals]))
+        outfile.write("\n")
 
 
 if __name__ == "__main__":

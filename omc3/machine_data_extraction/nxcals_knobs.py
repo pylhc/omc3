@@ -58,9 +58,11 @@ class NXCALSResult:
     datetime: pd.Timestamp | datetime  # pd.Timestamp inherits from datetime
     pc_name: str
 
+    def to_madx(self) -> str:
+        return f"{self.name:<15} = {self.value:.10e}; ! powerconverter: {self.pc_name} at {self.datetime.isoformat()}"
+
 
 # High-level Knob Extraction ---------------------------------------------------
-
 
 def get_knob_vals(
     spark: SparkSession,
