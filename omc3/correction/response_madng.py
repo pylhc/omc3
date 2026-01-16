@@ -144,7 +144,7 @@ def _load_sequence(mad: MAD, accel_inst: Accelerator):
 
     # Generate the MAD-X sequence file
     madx_string = creator.get_base_madx_script() + "\n" + creator.get_save_sequence_script()
-    run_string(madx_string, log_file=log_file)
+    run_string(madx_string, log_file=log_file, cwd=accel_inst.model_dir)
 
     if not madx_seq_path.exists():
         raise FileNotFoundError(
