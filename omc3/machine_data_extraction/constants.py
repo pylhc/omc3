@@ -34,6 +34,25 @@ class MSISummaryHeader(StrEnum):
     OPTICS = "OPTICS"
     OPTICS_START = "OPTICS_START"
 
+class NXCalsTfsColumn(StrEnum):
+    """
+    TFS columns for MQT information.
+    """
+    MADX = "MADX"
+    VALUE = "VALUE"
+    TIMESTAMP = "TIMESTAMP"
+    TIME = "TIME"
+    PC_NAME = "PC_NAME"
+
+
+class NXCalsTfsHeader(StrEnum):
+    """
+    TFS headers for MQT information.
+    """
+    EXTRACTION_TIME = "EXTRACTION_TIME"
+    BEAM = "BEAM"
+
+
 # Filenames
 MADX_SUFFIX = ".madx"
 MSI_SUMMARY_FILENAME: str = f"machine_settings{TFS_SUFFIX}"

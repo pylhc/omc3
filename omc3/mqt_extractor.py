@@ -68,10 +68,10 @@ import argparse
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
 from omc3.machine_data_extraction.mqt_extraction import get_mqt_vals
+from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
 from omc3.utils.iotools import PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
@@ -80,7 +80,7 @@ from omc3.utils.time_tools import parse_time
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
+    import tfs
 
 
 spark_session_builder = cern_network_import("nxcals.spark_session_builder")
@@ -168,22 +168,10 @@ def main(opt) -> tfs.TfsDataFrame:
     LOGGER.info(f"---- EXTRACTING MQT KNOBS @ {time} for Beam {opt.beam} ----")
     mqt_vals = get_mqt_vals(spark, time, opt.beam, delta_days=opt.delta_days)
 
-    # Convert to TfsDataFrame for consistency with knob_extractor
-    mqt_df = tfs.TfsDataFrame(
-        index=[result.name for result in mqt_vals],
-        columns=["madx", "value", "timestamp", "pc_name"],
-        headers={"EXTRACTION_TIME": time, "BEAM": opt.beam},
-    )
-    for result in mqt_vals:
-        mqt_df.loc[result.name, "madx"] = result.name
-        mqt_df.loc[result.name, "value"] = result.value
-        mqt_df.loc[result.name, "timestamp"] = result.datetime.timestamp()
-        mqt_df.loc[result.name, "pc_name"] = result.pc_name
-
     if opt.output:
         _write_mqt_file(opt.output, mqt_vals, time, opt.beam)
 
-    return mqt_df
+    return NXCALSResult.to_tfs(mqt_vals, time, opt.beam)
 
 
 def _write_mqt_file(output: Path | str, mqt_vals: list[NXCALSResult], time: datetime, beam: int):

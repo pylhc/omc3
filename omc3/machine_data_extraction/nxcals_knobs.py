@@ -29,8 +29,10 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
 import pandas as pd
+import tfs
 
 from omc3.machine_data_extraction import lsa_utils
+from omc3.machine_data_extraction.constants import NXCalsTfsColumn, NXCalsTfsHeader
 from omc3.machine_data_extraction.madx_conversion import map_pc_name_to_madx
 from omc3.machine_data_extraction.utils import strip_i_meas
 from omc3.utils.mock import cern_network_import
@@ -60,6 +62,25 @@ class NXCALSResult:
 
     def to_madx(self) -> str:
         return f"{self.name:<15} = {self.value:.10e}; ! powerconverter: {self.pc_name} at {self.datetime.isoformat()}"
+
+    def to_series(self) -> pd.Series:
+        return pd.Series({
+            NXCalsTfsColumn.MADX: self.name,
+            NXCalsTfsColumn.VALUE: self.value,
+            NXCalsTfsColumn.TIME: self.datetime.isoformat(),
+            NXCalsTfsColumn.TIMESTAMP: self.datetime.timestamp(),
+            NXCalsTfsColumn.PC_NAME: self.pc_name
+        })
+
+    @classmethod
+    def to_tfs(cls, results: list[NXCALSResult], time: datetime, beam: int) -> tfs.TfsDataFrame:
+        return tfs.TfsDataFrame(
+            [result.to_series() for result in results],
+            headers={
+                NXCalsTfsHeader.EXTRACTION_TIME: time,
+                NXCalsTfsHeader.BEAM: beam
+            },
+        )
 
 
 # High-level Knob Extraction ---------------------------------------------------
