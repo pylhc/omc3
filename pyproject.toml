@@ -124,7 +124,7 @@ default = true  # default = lowest priority -> try if packages not found in othe
 # Since we make AccPy default index, we need to also provide the PyPI index or
 # it would be ignored (https://docs.astral.sh/uv/concepts/indexes/#defining-an-index)
 [[tool.uv.index]]
-bname = "pypi"
+name = "pypi"
 url = "https://pypi.org/simple"
 
 # ----- Testing ----- #
