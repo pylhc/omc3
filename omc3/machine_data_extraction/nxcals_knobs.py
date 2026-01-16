@@ -1,6 +1,6 @@
 """
-Knob Extraction
----------------
+NXCals Knob Extraction
+----------------------
 
 This module provides functionality to extract knob values from NXCALS for the LHC and
 convert them to MAD-X compatible format using LSA services.
@@ -12,6 +12,7 @@ conventions.
 This module requires the installation of `jpype`, `pyspark`, and access to the
 CERN network to connect to NXCALS and LSA services. You can install the required
 packages via pip:
+
 ```
 python -m pip install omc3[cern]
 ```
@@ -28,13 +29,17 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
 import pandas as pd
+import tfs
 
+from omc3.machine_data_extraction import lsa_utils
+from omc3.machine_data_extraction.constants import NXCalsTfsColumn, NXCalsTfsHeader
+from omc3.machine_data_extraction.madx_conversion import map_pc_name_to_madx
+from omc3.machine_data_extraction.utils import strip_i_meas
 from omc3.utils.mock import cern_network_import
 
 if TYPE_CHECKING:
     from pyspark.sql import SparkSession
 
-jpype = cern_network_import("jpype")
 pjlsa = cern_network_import("pjlsa")
 builders = cern_network_import("nxcals.api.extraction.data.builders")
 functions = cern_network_import("pyspark.sql.functions")
@@ -42,17 +47,43 @@ window = cern_network_import("pyspark.sql.window")
 
 LOGGER = logging.getLogger(__name__)
 
+# Constants --------------------------------------------------------------------
+
+VARIABLE_NAME: str = "nxcals_variable_name"
+VALUE: str = "nxcals_value"
+TIMESTAMP: str = "nxcals_timestamp"
 
 @dataclass
 class NXCALSResult:
     name: str
     value: float
-    timestamp: pd.Timestamp
+    datetime: pd.Timestamp | datetime  # pd.Timestamp inherits from datetime
     pc_name: str
+
+    def to_madx(self) -> str:
+        return f"{self.name:<15} = {self.value: .10e}; ! powerconverter: {self.pc_name} at {self.datetime.isoformat()}"
+
+    def to_series(self) -> pd.Series:
+        return pd.Series({
+            NXCalsTfsColumn.MADX: self.name,
+            NXCalsTfsColumn.VALUE: self.value,
+            NXCalsTfsColumn.TIME: self.datetime.isoformat(),
+            NXCalsTfsColumn.TIMESTAMP: self.datetime.timestamp(),
+            NXCalsTfsColumn.PC_NAME: self.pc_name
+        })
+
+    @classmethod
+    def to_tfs(cls, results: list[NXCALSResult], time: datetime, beam: int) -> tfs.TfsDataFrame:
+        return tfs.TfsDataFrame(
+            [result.to_series() for result in results],
+            headers={
+                NXCalsTfsHeader.EXTRACTION_TIME: time,
+                NXCalsTfsHeader.BEAM: beam
+            },
+        )
 
 
 # High-level Knob Extraction ---------------------------------------------------
-
 
 def get_knob_vals(
     spark: SparkSession,
@@ -73,7 +104,7 @@ def get_knob_vals(
     2. Retrieves the beam energy at the specified time
     3. Converts currents to K-values (integrated quadrupole strengths) using LSA
     4. Maps power converter names to MAD-X naming conventions
-    5. Returns knob values with their timestamps
+    5. Returns knob values with their datetimnes
 
     The difference between patterns and knob names:
 
@@ -97,7 +128,7 @@ def get_knob_vals(
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,
-            timestamps, and power converter names.
+            times, and power converter names.
     """
     LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
 
@@ -120,7 +151,7 @@ def get_knob_vals(
 
     # Calculate K values using LSA
     lsa_client = pjlsa.LSAClient()
-    k_values = calc_k_from_iref(lsa_client, currents, energy)
+    k_values = lsa_utils.calc_k_from_iref(lsa_client, currents, energy)
 
     # Transform K values keys to MAD-X format
     k_values_madx = {map_pc_name_to_madx(key): value for key, value in k_values.items()}
@@ -136,17 +167,17 @@ def get_knob_vals(
     if unknown_keys := found_keys - expected_knobs:
         LOGGER.warning(f"{log_prefix}Unknown K-values found: {unknown_keys}")
 
-    # Build result list with timestamps
-    timestamps = {map_pc_name_to_madx(var.name): var.timestamp for var in combined_vars}
+    # Build result list with times
+    times = {map_pc_name_to_madx(var.name): var.datetime for var in combined_vars}
     pc_names = {map_pc_name_to_madx(var.name): var.pc_name for var in combined_vars}
     results = []
     for madx_name in expected_knobs:
         value = k_values_madx.get(madx_name)
-        timestamp = timestamps.get(madx_name)
+        dtime = times.get(madx_name)
         pc_name = pc_names.get(madx_name)
 
-        if value is not None and timestamp is not None and pc_name is not None:
-            results.append(NXCALSResult(madx_name, value, timestamp, pc_name))
+        if value is not None and time is not None and pc_name is not None:
+            results.append(NXCALSResult(madx_name, value, dtime, pc_name))
         else:
             LOGGER.warning(f"{log_prefix}Missing data for {madx_name}")
 
@@ -157,7 +188,7 @@ def get_knob_vals(
 
 
 def get_raw_vars(
-    spark: SparkSession, time: datetime, var_name: str, delta_days: float = 0.25
+    spark: SparkSession, time: datetime, var_name: str, delta_days: float = 0.25, latest_only: bool = True,
 ) -> list[NXCALSResult]:
     """
     Retrieve raw variable values from NXCALS.
@@ -167,10 +198,12 @@ def get_raw_vars(
         time (datetime): Python datetime (timezone-aware recommended).
         var_name (str): Name or pattern of the variable(s) to retrieve.
         delta_days (float): Number of days to look back for data. Default is 0.25.
+        latest_only (bool): If True, only the latest sample for each variable is returned. Default is True.
 
     Returns:
-        list[NXCalResult]: List of NXCalResult containing variable name, value, timestamp,
-        and power converter name for the latest sample of each matching variable at the given time.
+        list[NXCalResult]: List of NXCalResult containing variable name, value, times,
+        and power converter name for the latest sample of each matching variable at the given time,
+        or all samples if so required.
 
     Raises:
         RuntimeError: If no data is found for the variable in the given interval.
@@ -205,23 +238,24 @@ def get_raw_vars(
 
     LOGGER.info(f"Raw variables {var_name} retrieved successfully.")
 
-    # Get the latest sample for each variable
-    window_spec = window.Window.partitionBy("nxcals_variable_name").orderBy(
-        functions.col("nxcals_timestamp").desc()
-    )
-    latest_df = (
-        df.withColumn("row_num", functions.row_number().over(window_spec))
-        .filter(functions.col("row_num") == 1)
-        .select("nxcals_variable_name", "nxcals_value", "nxcals_timestamp")
-    )
+
+    if latest_only:
+        # Get the latest sample for each variable
+        window_spec = window.Window.partitionBy(VARIABLE_NAME).orderBy(
+            functions.col(TIMESTAMP).desc()
+        )
+        df = (
+            df.withColumn("row_num", functions.row_number().over(window_spec))
+            .filter(functions.col("row_num") == 1)
+        )
 
     results = []
-    for row in latest_df.collect():
-        full_varname = row["nxcals_variable_name"]
-        raw_val = float(row["nxcals_value"])
-        ts = pd.to_datetime(row["nxcals_timestamp"], unit="ns", utc=True)
-        results.append(NXCALSResult(full_varname, raw_val, ts, strip_i_meas(full_varname)))
-        LOGGER.info(f"LHC value retrieved: {full_varname} = {raw_val:.2f} at {ts}")
+    for row in df.select(VARIABLE_NAME, VALUE, TIMESTAMP).collect():
+        full_varname = row[VARIABLE_NAME]
+        raw_val = float(row[VALUE])
+        dtime = pd.to_datetime(row[TIMESTAMP], unit="ns", utc=True)
+        results.append(NXCALSResult(full_varname, raw_val, dtime, strip_i_meas(full_varname)))
+        LOGGER.info(f"LHC value retrieved: {full_varname} = {raw_val:.2f} at {dtime}")
 
     return results
 
@@ -235,110 +269,13 @@ def get_energy(spark: SparkSession, time: datetime) -> tuple[float, pd.Timestamp
         time (datetime): Python datetime (timezone-aware recommended).
 
     Returns:
-        tuple[float, pd.Timestamp]: Beam energy in GeV and its timestamp.
+        tuple[float, pd.Timestamp]: Beam energy in GeV and its times.
 
     Raises:
         RuntimeError: If no energy data is found.
     """
     scale = 0.120
-    raw_vars = get_raw_vars(spark, time, "HX:ENG")
+    raw_vars: list[NXCALSResult] = get_raw_vars(spark, time, "HX:ENG")
     if not raw_vars:
         raise RuntimeError("No energy data found.")
-    return raw_vars[0].value * scale, raw_vars[0].timestamp
-
-
-# LSA K-value Calculation ------------------------------------------------------
-
-
-def calc_k_from_iref(lsa_client, currents: dict[str, float], energy: float) -> dict[str, float]:
-    """
-    Calculate K values in the LHC from IREF using the LSA service.
-
-    Args:
-        lsa_client: The LSA client instance.
-        currents (dict[str, float]): Dictionary of current values keyed by variable name.
-        energy (float): The beam energy in GeV.
-
-    Returns:
-        dict[str, float]: Dictionary of K values keyed by variable name.
-    """
-    # 1) Use the **instance** PJLSA already created
-    lhc_service = lsa_client._lhcService
-
-    # 2) Build a java.util.HashMap<String, Double> (not a Python dict)
-    j_hash_map = jpype.JClass("java.util.HashMap")
-    j_double = jpype.JClass("java.lang.Double")
-
-    jmap = j_hash_map()
-    for power_converter, current in currents.items():
-        if current is None:
-            raise ValueError(f"Current for {power_converter} is None")
-        # ensure primitive-compatible double values
-        jmap.put(power_converter, j_double.valueOf(current))  # boxed; Java unboxes internally
-
-    # 3) Call: Map<String, Double> calculateKfromIREF(Map<String, Double>, double)
-    out = lhc_service.calculateKfromIREF(jmap, float(energy))
-
-    # 4) Convert java.util.Map -> Python dict
-    res = {}
-    it = out.entrySet().iterator()
-    while it.hasNext():
-        e = it.next()
-        res[str(e.getKey())] = float(e.getValue())
-    return res
-
-
-# Utility Functions ------------------------------------------------------------
-
-
-def strip_i_meas(text: str) -> str:
-    """
-    Remove the I_MEAS suffix from a variable name.
-
-    Args:
-        text (str): The variable name possibly ending with ':I_MEAS'.
-
-    Returns:
-        str: The variable name without the ':I_MEAS' suffix.
-    """
-    return text.removesuffix(":I_MEAS")
-
-
-# Note: this will have to be updated if we ever want to support other magnet types
-# such as dipoles, sextupoles, octupoles, etc.
-def map_pc_name_to_madx(pc_name: str) -> str:
-    """
-    Convert an LHC power converter name or circuit name to its corresponding MAD-X name.
-
-    This function processes the input name by removing the ':I_MEAS' suffix if present,
-    extracting the circuit name from full power converter names (starting with 'RPMBB' or 'RPL'),
-    applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.
-
-    Args:
-        pc_name (str): The power converter or circuit name to convert.
-
-    Returns:
-        str: The converted MAD-X name.
-
-    Examples:
-        >>> map_pc_name_to_madx("RPMBB.UJ33.RCBH10.L1B1:I_MEAS")
-        'acb10.l1b1'
-        >>> map_pc_name_to_madx("RQT12.L5B1")
-        'kqt12.l5b1'
-    """
-    # Remove the ':I_MEAS' suffix if it exists
-    pc_name = strip_i_meas(pc_name)
-
-    # Extract circuit name from full power converter names
-    if "." in pc_name:
-        parts = pc_name.split(".")
-        # For full names like 'RPMBB.UJ33.RCBH10.L1B1', take from the third part onward, else use pc_name
-        circuit_name = ".".join(parts[2:]) if len(parts) > 2 else pc_name
-    else:
-        circuit_name = pc_name
-
-    # Apply MAD-X specific replacements
-    replacements = {"RQ": "KQ", "RCB": "ACB"}
-    for old, new in replacements.items():
-        circuit_name = circuit_name.replace(old, new)
-    return circuit_name.lower()
+    return raw_vars[0].value * scale, raw_vars[0].datetime
