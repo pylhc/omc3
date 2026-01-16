@@ -281,7 +281,7 @@ def get_info(opt) -> MachineSettingsInfo:
         )
 
     # Output ---
-    if opt.log:
+    if opt.log or opt.output_dir is None:
         _log_info(machine_info)
 
     if opt.output_dir is not None:
