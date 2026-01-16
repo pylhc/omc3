@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import re
-from datetime import timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from omc3 import mqt_extractor
+from omc3.machine_data_extraction import mqt_extraction
+from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
 from omc3.model.model_creators.lhc_model_creator import LhcBestKnowledgeCreator
-from omc3.nxcals import mqt_extraction
-from omc3.nxcals.knob_extraction import NXCALSResult
+from omc3.utils.time_tools import parse_time
 
 SAMPLE_DIR = Path(__file__).parent.parent / "inputs" / "knob_extractor"
 TEST_CASES = (
@@ -43,7 +44,7 @@ def _load_results_from_file(file_path: Path, tz: str = "Europe/Zurich") -> list[
             NXCALSResult(
                 name=name,
                 value=value,
-                timestamp=timestamp,
+                datetime=timestamp,
                 pc_name=pc_name,
             )
         )
@@ -77,7 +78,7 @@ def test_main_reproduces_reference_output(tmp_path, beam: int, sample_file: Path
             name=r.name,
             value=r.value,
             pc_name=r.pc_name,
-            timestamp=r.datetime.tz_convert("UTC"),
+            datetime=r.datetime.tz_convert("UTC"),
         )
         for r in sample_results
     ]
@@ -136,8 +137,6 @@ def test_main_returns_tfs_dataframe(tmp_path, beam: int, sample_file: Path):
 @pytest.mark.parametrize("beam", [1, 2], ids=["beam1", "beam2"])
 def test_main_with_timedelta(tmp_path, beam: int):
     """Test that timedelta parameter works correctly."""
-    from datetime import datetime, timedelta
-
     output_path = tmp_path / f"test_timedelta_b{beam}.madx"
 
     # Call with timedelta going back 1 day
@@ -161,8 +160,6 @@ def test_main_with_timedelta(tmp_path, beam: int):
 @pytest.mark.parametrize("beam", [1, 2], ids=["beam1", "beam2"])
 def test_main_with_delta_days(tmp_path, beam: int):
     """Test that delta_days parameter is properly passed through."""
-    from datetime import datetime
-
     output_path = tmp_path / f"test_delta_days_b{beam}.madx"
 
     # Use a time 2 hours before 7am on 2025-11-07 with delta_days=2/12 (~4 hours) to ensure we get data
@@ -180,10 +177,6 @@ def test_main_with_delta_days(tmp_path, beam: int):
 
 def test_parse_time_now():
     """Test that _parse_time correctly handles 'now'."""
-    from datetime import datetime
-
-    from omc3.utils.time_tools import parse_time
-
     result = parse_time("now")
     now = datetime.now(timezone.utc)
 
@@ -194,10 +187,6 @@ def test_parse_time_now():
 
 def test_parse_time_with_timedelta():
     """Test that _parse_time correctly applies timedelta."""
-    from datetime import datetime
-
-    from omc3.utils.time_tools import parse_time
-
     now_str = datetime.now(timezone.utc).isoformat()
 
     # Test positive timedelta
