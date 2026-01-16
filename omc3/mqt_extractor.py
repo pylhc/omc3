@@ -165,7 +165,7 @@ def main(opt) -> tfs.TfsDataFrame:
     spark = spark_session_builder.get_or_create(conf={"spark.ui.showConsoleProgress": "false"})
     time = parse_time(opt.time, opt.timedelta)
 
-    LOGGER.info(f"---- EXTRACTING MQT KNOBS @ {time} for Beam {opt.beam} ----")
+    LOGGER.info(f"---- EXTRACTING MQT KNOBS @ {time.isoformat()} for Beam {opt.beam} ----")
     mqt_vals = get_mqt_vals(spark, time, opt.beam, delta_days=opt.delta_days)
 
     if opt.output:
