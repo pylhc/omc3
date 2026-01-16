@@ -158,7 +158,6 @@ def _load_sequence(mad: MAD, accel_inst: Accelerator):
             f"Sequence '{seq_name}' not found in MAD file '{str(madx_seq_path.absolute())}'"
         )
     mad.send(f"loaded_sequence = MADX.{seq_name}")
-    mad["SEQ_NAME"] = seq_name
     mad.loaded_sequence.dir = accel_inst.beam_direction
 
     # Clean up the temporary file
