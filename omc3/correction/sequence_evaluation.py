@@ -195,9 +195,9 @@ def _load_madx_results(
 def _get_orders(order: int) -> Sequence[str]:
     """Returns a list of strings with K-values to be used"""
     try:
-        return [f"K{i:d}{s:s}" for i in range(3) for s in ["", "S"]]
+        return [f"K{i:d}{s:s}" for i in range(3) for s in ["", S]]
     except TypeError:
-        return [f"K{i:d}{s:s}" for i in range(*order) for s in ["", "S"]]
+        return [f"K{i:d}{s:s}" for i in range(*order) for s in ["", S]]
 
 
 def _get_jobfile(folder: Path, index: int) -> Path:
