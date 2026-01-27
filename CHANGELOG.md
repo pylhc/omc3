@@ -1,5 +1,13 @@
 # OMC3 Changelog
 
+#### 2026-01-?? - v0.26.1 - _fsoubelet_
+
+This is a patch release for compatibility with `pandas 3.x`.
+
+- Changed:
+  - Complied with the new copy-on-write default behavior of `pandas` and the read-only views.
+  - Transitioned `CRDT` fitting from the now deprecated `scipy.odr` to its recommended replacement, `odrpack`.
+
 #### 2025-12-15 - v0.26.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
