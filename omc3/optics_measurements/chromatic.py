@@ -10,7 +10,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from omc3.optics_measurements.constants import DELTA, ERR, MDL, S
+from omc3.optics_measurements.constants import DELTA, ERR, MDL, PHASE_ADV, S
 from omc3.optics_measurements.toolbox import df_prod, df_ratio
 
 
@@ -46,13 +46,13 @@ def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):
     joined[f"{ERR}PHI{plane}"] = 1 / (1 + np.square(a / b)) * np.sqrt(
         np.square(aerr / b) + np.square(berr * a / np.square(b))) / (2 * np.pi)
     output_df = pd.merge(measure_input.accelerator.model.loc[:,
-                         ["S", f"MU{plane}", f"BET{plane}", f"ALF{plane}", f"W{plane}",
+                         [S, f"{PHASE_ADV}{plane}", f"BET{plane}", f"ALF{plane}", f"W{plane}",
                           f"PHI{plane}"]],
                          joined.loc[:,
                          [f"{pref}{col}{plane}" for pref in ("", ERR) for col in ("W", "PHI")]],
                          how="inner", left_index=True,
                          right_index=True, suffixes=(MDL, ''))
-    output_df.rename(columns={"SMDL": "S"}, inplace=True)
+    output_df.rename(columns={"SMDL": S}, inplace=True)
     return output_df
 
 

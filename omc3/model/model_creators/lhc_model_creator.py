@@ -48,7 +48,7 @@ from omc3.model.model_creators.abstract_model_creator import (
     SegmentCreator,
     check_folder_choices,
 )
-from omc3.optics_measurements.constants import NAME
+from omc3.optics_measurements.constants import NAME, S
 from omc3.utils.iotools import create_dirs, get_check_by_regex_func, get_check_suffix_func
 
 if TYPE_CHECKING:
@@ -60,7 +60,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _b2_columns() -> list[str]:
-    cols_outer = [f"{KP}{num}{S}L" for KP in ("K", "P") for num in range(21) for S in ("", "S")]
+    cols_outer = [f"{KP}{num}{S}L" for KP in ("K", "P") for num in range(21) for S in ("", S)]
     cols_middle = [
         "DX",
         "DY",
