@@ -58,6 +58,7 @@ dependencies = [
   "h5py >= 2.9",
   "tables >= 3.10.1",
   "requests >= 2.27",
+  "odrpack >= 0.4.0",
 ]
 
 [project.optional-dependencies]
