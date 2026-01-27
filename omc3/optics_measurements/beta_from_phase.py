@@ -561,6 +561,10 @@ def _tilt_slice_matrix(matrix, slice_shift, slice_width, tune=0):
     ...             ...
     y y y y y       y z a b
     z z z z z       z a b c
+
+    Careful this mutates the provided data. Be sure to provide a mutable
+    array, ideally a copy, and not a view. In pandas 3.x passing a view
+    will error.
     """
     invrange = matrix.shape[0] - 1 - np.arange(matrix.shape[0])
     matrix[matrix.shape[0] - slice_shift:, :slice_shift] += tune
