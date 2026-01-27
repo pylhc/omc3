@@ -16,7 +16,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 import odrpack
 import pandas as pd
-import scipy.odr
 import tfs
 
 from omc3.definitions.constants import PI2, PLANES
@@ -72,7 +71,12 @@ CRDTS = [
 ]
 
 
-def calculate(measure_input: DotDict, input_files: InputFiles, invariants: dict[str, tfs.TfsDataFrame], header: dict[str, Any]):
+def calculate(
+    measure_input: DotDict,
+    input_files: InputFiles,
+    invariants: dict[str, tfs.TfsDataFrame],
+    header: dict[str, Any],
+):
     """Calculate the CRDT values."""
     LOGGER.info("Start of CRDT analysis")
 
@@ -179,11 +183,10 @@ def get_column_names(line):
     return dict(
         zip(
             CRDT_COLUMNS,
-            [
-                f"{COL_AMP}{line}",
-                f"{COL_ERR}{COL_AMP}{line}",
-                f"{COL_PHASE}{line}",
-                f"{COL_ERR}{COL_PHASE}{line}",
+            [f"{COL_AMP}{line}",
+             f"{COL_ERR}{COL_AMP}{line}",
+             f"{COL_PHASE}{line}",
+             f"{COL_ERR}{COL_PHASE}{line}",
             ],
         )
     )
@@ -221,8 +224,8 @@ def fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariant, err_crdt_i
     See https://docs.scipy.org/doc/scipy/reference/odr.html for explanations.
     """
     # In odrpack we need to compute the weights from stdev and provide them
-    weight_x = 1.0 / (err_crdt_invariant ** 2)
-    weight_y = None if np.all(err_lineamplitudes) else 1.0 / (err_lineamplitudes ** 2)
+    weight_x = 1.0 / (err_crdt_invariant**2)
+    weight_y = None if np.all(err_lineamplitudes) else 1.0 / (err_lineamplitudes**2)
 
     # A function for our fitted model: y = 2 * p * x
     def func_odr(x, p):  # x first since moving to odrpack (changes order from scipy.odr)
