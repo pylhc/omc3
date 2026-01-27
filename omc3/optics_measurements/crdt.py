@@ -20,7 +20,7 @@ import scipy.odr
 import tfs
 
 from omc3.definitions.constants import PI2, PLANES
-from omc3.harpy.constants import COL_AMP, COL_ERR, COL_MU, COL_PHASE
+from omc3.harpy.constants import COL_AMP, COL_ERR, COL_MU, COL_PHASE, COL_S
 from omc3.optics_measurements.constants import (
     AMPLITUDE,
     CRDT_FOLDER,
@@ -30,6 +30,7 @@ from omc3.optics_measurements.constants import (
     MDL,
     NAME,
     PHASE,
+    PHASE_ADV,
     REAL,
 )
 from omc3.optics_measurements.data_models import (
@@ -43,6 +44,7 @@ from omc3.utils.stats import circular_nanerror, circular_nanmean
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from typing import Any
 
     from generic_parser import DotDict
 
@@ -70,9 +72,10 @@ CRDTS = [
 ]
 
 
-def calculate(measure_input: DotDict, input_files: InputFiles, invariants, header):
+def calculate(measure_input: DotDict, input_files: InputFiles, invariants: dict[str, tfs.TfsDataFrame], header: dict[str, Any]):
     """Calculate the CRDT values."""
     LOGGER.info("Start of CRDT analysis")
+
     dpp_value = measure_input.analyse_dpp
     if dpp_value is None:
         for plane in PLANES:
@@ -81,6 +84,7 @@ def calculate(measure_input: DotDict, input_files: InputFiles, invariants, heade
         invariants = filter_for_dpp(invariants, input_files, dpp_value)
 
     assert len(input_files["X"]) == len(input_files["Y"])
+
     bpm_names = input_files.bpms(dpp_value=0)
     for crdt in CRDTS:
         LOGGER.debug(f"Processing CRDT {crdt['term']}")
@@ -129,10 +133,8 @@ def calculate(measure_input: DotDict, input_files: InputFiles, invariants, heade
             np.sin(PI2 * result_df[PHASE].to_numpy()) * result_df[AMPLITUDE].to_numpy()
         )
 
-        write(
-            result_df.loc[
-                :, ["S", AMPLITUDE, f"{ERR}{AMPLITUDE}", PHASE, f"{ERR}{PHASE}", REAL, IMAG]
-            ],
+        write_to_crdt_folder(
+            result_df.loc[:, [COL_S, AMPLITUDE, f"{ERR}{AMPLITUDE}", PHASE, f"{ERR}{PHASE}", REAL, IMAG]],
             add_line_and_freq_to_header(header, crdt),
             measure_input,
             crdt["order"],
@@ -144,14 +146,14 @@ def generic_dataframe(
     input_files: InputFiles, measure_input: DotDict, bpm_names: Sequence[str], dpp_value: int = 0
 ):
     """Generate a dataframe based on the MU-MDL columns from each measuement."""
-    result_df = pd.DataFrame(measure_input.accelerator.model).loc[bpm_names, ["S", "MUX", "MUY"]]
+    result_df = pd.DataFrame(measure_input.accelerator.model).loc[bpm_names, [COL_S, "MUX", "MUY"]]
     result_df.rename(
         columns={f"{COL_MU}X": f"{COL_MU}X{MDL}", f"{COL_MU}Y": f"{COL_MU}Y{MDL}"}, inplace=True
     )
     for plane in PLANES:
         result_df = pd.merge(
             result_df,
-            input_files.joined_frame(plane, [f"MU{plane}", f"{ERR}MU{plane}"], dpp_value=dpp_value),
+            input_files.joined_frame(plane, [f"{PHASE_ADV}{plane}", f"{ERR}{PHASE_ADV}{plane}"], dpp_value=dpp_value),
             how="inner",
             left_index=True,
             right_index=True,
@@ -167,7 +169,7 @@ def add_line_and_freq_to_header(header, crdt):
     return mod_header
 
 
-def write(df, header, meas_input, order, crdt):
+def write_to_crdt_folder(df, header, meas_input, order, crdt):
     outputdir = Path(meas_input.outputdir) / CRDT_FOLDER / order
     iotools.create_dirs(outputdir)
     tfs.write(str(outputdir / f"{crdt}{EXT}"), df, header, save_index=NAME)
@@ -214,16 +216,50 @@ def get_crdt_amplitude(crdt, invariants, line_amps, line_amp_errors):
 
 
 def fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariant, err_crdt_invariant):
-    def fun(p, x):
-        return p * x * 2  # factor 2 to get to complex amplitudes again
+    """
+    Was translated from using scipy.odr to using odrpack as they recommended.
+    See https://docs.scipy.org/doc/scipy/reference/odr.html for explanations.
+    """
+    # In odrpack we need to compute the weights from stdev and provide them
+    weight_x = 1.0 / (err_crdt_invariant ** 2)
+    weight_y = None if np.all(err_lineamplitudes) else 1.0 / (err_lineamplitudes ** 2)
 
-    fit_model = scipy.odr.Model(fun)
-    data_model = scipy.odr.RealData(
-        x=crdt_invariant,
-        y=lineamplitudes,
-        sx=err_crdt_invariant,
-        sy=None if all(err == 0.0 for err in err_lineamplitudes) else err_lineamplitudes,
+    # A function for our fitted model: y = 2 * p * x
+    def func_odr(x, p):  # x first since moving to odrpack (changes order from scipy.odr)
+        """
+        Note in ODRPACK that x and p are always considered arrays whereas scipy was
+        making use of numpy broadcasting. Here we explicitely take p[0] as p is an
+        array and our model has a scalar parameter.
+        """
+        return 2 * p[0] * x  # factor 2 to get to complex amplitudes again
+
+    # Initial parameter guess
+    beta0 = np.array([0.5 * lineamplitudes[0] / crdt_invariant[0]])
+
+    # Run ODRPACK routine
+    result = odrpack.odr_fit(
+        f=func_odr,
+        xdata=crdt_invariant,
+        ydata=lineamplitudes,
+        beta0=beta0,
+        weight_x=weight_x,
+        weight_y=weight_y,
     )
-    odr = scipy.odr.ODR(data_model, fit_model, beta0=[0.5 * lineamplitudes[0] / crdt_invariant[0]])
-    odr_output = odr.run()
-    return odr_output.beta[0], odr_output.sd_beta[0]
+
+    # Match scipy return values
+    return result.beta[0], result.sd_beta[0]
+
+    # ---- OLD version using scipy.odr below
+    # def fun(p, x):
+    #     return p * x * 2  # factor 2 to get to complex amplitudes again
+
+    # fit_model = scipy.odr.Model(fun)
+    # data_model = scipy.odr.RealData(
+    #     x=crdt_invariant,
+    #     y=lineamplitudes,
+    #     sx=err_crdt_invariant,
+    #     sy=None if all(err == 0. for err in err_lineamplitudes) else err_lineamplitudes,
+    # )
+    # odr = scipy.odr.ODR(data_model, fit_model, beta0=[0.5 * lineamplitudes[0] / crdt_invariant[0]])
+    # odr_output = odr.run()
+    # return odr_output.beta[0], odr_output.sd_beta[0]

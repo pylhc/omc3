@@ -254,7 +254,7 @@ def _get_signed_dispersion(input_files, df_orbit, scaled_amps, mask):
 
 
 def _get_output_columns(plane, df):
-    cols = ([COL_S, "COUNT", f"MU{plane}MDL"] +           # common columns
+    cols = ([S, "COUNT", f"MU{plane}MDL"] +           # common columns
             _single_column_set_list(plane) +            # orbit columns
             _single_column_set_list(f"ND{plane}") +     # normalized dispersion columns
             _single_column_set_list(f"D{plane}") +      # dispersion columns
