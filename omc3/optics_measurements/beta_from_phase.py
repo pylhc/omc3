@@ -493,9 +493,9 @@ def three_bpm_method(
     tune, mdltune = meas_and_mdl_tunes
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     # tilt phase advances in order to have the phase advances in a neighbourhood
-    tilted_meas = _tilt_slice_matrix(phase[MEASUREMENT].to_numpy(), 2, 5, tune) * PI2
-    tilted_model = _tilt_slice_matrix(phase[MODEL].to_numpy(), 2, 5, mdltune) * PI2
-    tilted_errmeas = _tilt_slice_matrix(phase[f"{ERR}{MEASUREMENT}"].to_numpy(), 2, 5, 0) * PI2
+    tilted_meas = _tilt_slice_matrix(phase[MEASUREMENT].to_numpy(copy=True), 2, 5, tune) * PI2
+    tilted_model = _tilt_slice_matrix(phase[MODEL].to_numpy(copy=True), 2, 5, mdltune) * PI2
+    tilted_errmeas = _tilt_slice_matrix(phase[f"{ERR}{MEASUREMENT}"].to_numpy(copy=True), 2, 5, 0) * PI2
     betmdl = beta_df.loc[:, f"{BETA}{plane}{MDL}"].to_numpy()
     alfmdl = beta_df.loc[:, f"{ALPHA}{plane}{MDL}"].to_numpy()
     with np.errstate(divide='ignore'):
