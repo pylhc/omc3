@@ -6,15 +6,15 @@ Tests the accuracy of global correction using MAD-NG created response matrices.
 Creates response with MAD-NG, applies errors to model, corrects betas, dispersion, and coupling separately,
 and verifies corrections.
 """
+from __future__ import annotations
+
 import sys
-from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
 import tfs
-from generic_parser import DotDict
-from pandas import DataFrame, Series
 
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.global_correction import global_correction_entrypoint as global_correction
@@ -42,6 +42,12 @@ from omc3.utils.stats import rms
 from tests.accuracy.test_global_correction import (
     get_normal_params,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from generic_parser import DotDict
+    from pandas import DataFrame, Series
 
 LOG = logging_tools.get_logger(__name__)
 LHC_2025_30CM_MODIFIERS = [Path("R2025aRP_A30cmC30cmA10mL200cm_Flat.madx")]
