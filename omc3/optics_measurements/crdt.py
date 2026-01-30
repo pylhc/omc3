@@ -5,7 +5,7 @@ Combined RDTs
 This module contains combined resonance driving terms calculations functionality of
 ``optics_measurements``.
 It provides functions to compute combined resonance driving terms following the derivations in
-https://arxiv.org/pdf/1402.1461.
+https://arxiv.org/pdf/1402.1461.pdf.
 """
 
 from __future__ import annotations
