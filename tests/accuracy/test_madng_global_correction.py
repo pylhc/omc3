@@ -7,6 +7,7 @@ Creates response with MAD-NG, applies errors to model, corrects betas, dispersio
 and verifies corrections.
 """
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 import numpy as np
