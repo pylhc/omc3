@@ -99,7 +99,7 @@ def calculate(
     return beta_df, header
 
 
-def write(beta_df: pd.DataFrame, header: dict[str, Any], outputdir: str|Path, plane: str):
+def write(beta_df: pd.DataFrame, header: dict[str, Any], outputdir: str|Path, plane: str) -> None:
     output_path = Path(outputdir) / f"{BETA_NAME}{plane.lower()}{EXT}"
     tfs.write(output_path, beta_df, header, save_index=NAME)
 
@@ -109,7 +109,7 @@ def n_bpm_method(
     phase: pd.DataFrame,
     plane: str,
     meas_and_mdl_tunes: tuple[float, float]
-    ) -> tuple[tfs.TfsDataFrame, str]:
+) -> tuple[tfs.TfsDataFrame, str]:
     """
     Calculates betas and alphas from using all BPM combination within **range_of_bpms**. It also
     accounts for systematic errors
@@ -433,7 +433,7 @@ def three_bpm_method(
     phase: pd.DataFrame,
     plane: str,
     meas_and_mdl_tunes: tuple[float, float],
-    ) -> pd.DataFrame:
+) -> pd.DataFrame:
     """
     Calculates betas and alphas from using adjacent BPMs (3 combination).
     ``phase["MEAS"]``, ``phase["MODEL"]``, ``phase["ERRMEAS"]`` (from ``get_phases``) are of the
@@ -550,7 +550,9 @@ def _calc_and_add_delta_columns(beta_df: pd.DataFrame, plane: str) -> pd.DataFra
     return beta_df
 
 
-def _tilt_slice_matrix(matrix, slice_shift, slice_width, tune=0):
+def _tilt_slice_matrix(
+    matrix: np.ndarray, slice_shift: int, slice_width: int, tune: float = 0
+) -> np.ndarray:
     """
     Tilts and slices the ``matrix``.
     Tilting means shifting each column upwards one step more than the previous columnns, i.e.
