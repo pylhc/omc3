@@ -60,7 +60,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _b2_columns() -> list[str]:
-    cols_outer = [f"{KP}{num}{S}L" for KP in ("K", "P") for num in range(21) for S in ("", S)]
+    cols_outer = [f"{KP}{num}{S}L" for KP in ("K", "P") for num in range(21) for S in ("", "S")]
     cols_middle = [
         "DX",
         "DY",
