@@ -313,12 +313,12 @@ tws_coupling, _ = twiss {
     # Get twiss data with all columns
     LOGGER.debug(f"Extracting {all_cols} from MAD-NG twiss output")
     twiss_df = mad.tws.to_df(columns=all_cols)
-    twiss_df.set_index("name", inplace=True)
+    twiss_df = twiss_df.set_index("name")
     LOGGER.debug(f"Twiss extracted with shape {twiss_df.shape}")
 
     LOGGER.debug(f"Extracting {coupling_optics_list} from MAD-NG twiss output")
     twiss_df_coupling = mad.tws_coupling.to_df(columns=["name"] + coupling_optics_list)
-    twiss_df_coupling.set_index("name", inplace=True)
+    twiss_df_coupling = twiss_df_coupling.set_index("name")
     LOGGER.debug(f"Coupling twiss extracted with shape {twiss_df_coupling.shape}")
 
     # Extract response matrices

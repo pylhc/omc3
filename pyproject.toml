@@ -71,7 +71,6 @@ cern = [
 ]
 madng = [
   "pymadng >= 0.8.3",
-  "cpymad >= 1.19.0",
 ]
 optional = [
   "pymupdf >= 1.22",  # logbook for conversion from pdf to png

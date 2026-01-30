@@ -6,20 +6,18 @@ Tests the accuracy of global correction using MAD-NG created response matrices.
 Creates response with MAD-NG, applies errors to model, corrects betas, dispersion, and coupling separately,
 and verifies corrections.
 """
-
 import sys
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 import pytest
 import tfs
-from cpymad.madx import Madx
+from generic_parser import DotDict
 from pandas import DataFrame, Series
 
 from omc3.correction.model_appenders import add_coupling_to_model
 from omc3.global_correction import global_correction_entrypoint as global_correction
+from omc3.madx_wrapper import run_string
 from omc3.model.constants import (
     TWISS_DAT,
     Fetcher,
@@ -123,7 +121,7 @@ check_funcs["normalised_dispersion"] = check_normalised_dispersion_rms
 @pytest.mark.extended
 @pytest.mark.skipif(sys.platform == "win32", reason="MAD-NG does not support Windows")
 def test_madng_global_correction(
-    tmp_path: Path, acc_models_lhc_2025: Path, model_30cm_flat_beams: dict[str, Any]
+    tmp_path: Path, acc_models_lhc_2025: Path, model_30cm_flat_beams: DotDict
 ) -> None:
     """
     Test global correction using MAD-NG response for betas, dispersion, and coupling separately.
@@ -157,17 +155,16 @@ def test_madng_global_correction(
     )
 
     # Apply errors to the model
-    madx_filepath = tmp_path / "job.create_model_nominal.madx"
-    madx = Madx(stdout=False)
-    madx.chdir(str(tmp_path.absolute()))
-    madx.call(str(madx_filepath))
-    madx.input("SELECT, FLAG=ERROR, CLASS=quadrupole;")
-    madx.input("""
+    madx_string_with_errors = (tmp_path / "job.create_model_nominal.madx").read_text()
+    madx_string_with_errors += """
+SELECT, FLAG=ERROR, CLASS=quadrupole;
 EFCOMP, ORDER=1, RADIUS=1,
 DKNR = {0, 1e-4},
-;""")
-    madx.globals[f"cmrs.b{beam}"] = 1e-4
-    madx.input(f"exec, do_twiss_monitors(LHCB{beam}, 'twiss_errs.dat', 0.0);")
+    ;\n"""
+    madx_string_with_errors += f"cmrs.b{beam} = 1e-4;\n"
+    madx_string_with_errors += f"exec, do_twiss_monitors(LHCB{beam}, 'twiss_errs.dat', 0.0);\n"
+    log_file = tmp_path / "madx_errors_init.txt"
+    run_string(madx_string_with_errors, log_file=log_file, cwd=tmp_path)
 
     # Load nominal model
     model_df = tfs.read(tmp_path / TWISS_DAT, index=NAME)
@@ -243,13 +240,15 @@ DKNR = {0, 1e-4},
         )
 
         correction_file = correction_dir / "changeparameters_iter_correct.madx"
-        uncorrection_file = correction_dir / "changeparameters_iter.madx"
         corrected_twiss_path = tmp_path / f"twiss_corrected_{correction_type}.dat"
 
-        # Apply correction in MAD-X, run twiss, unapply correction
-        madx.input(f"call, file='{correction_file}';")
-        madx.input(f"exec, do_twiss_monitors(LHCB{beam}, '{corrected_twiss_path.name}', 0.0);")
-        madx.input(f"call, file='{uncorrection_file}';")
+        # First take the madx string that creates the model with errors
+        # Then apply correction in MAD-X, run twiss
+        corr_string = madx_string_with_errors
+        corr_string += f"call, file='{correction_file}';"
+        corr_string += f"exec, do_twiss_monitors(LHCB{beam}, '{corrected_twiss_path.name}', 0.0);"
+        log_file = correction_dir / f"madx_apply_correction_{correction_type}.txt"
+        run_string(corr_string, log_file=log_file, cwd=tmp_path)
 
         # Load corrected twiss
         corrected_df = tfs.read(corrected_twiss_path, index=NAME)
