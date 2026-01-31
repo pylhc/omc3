@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2026-01-?? - v0.26.1 - _fsoubelet_
+#### 2026-01-31 - v0.26.1 - _fsoubelet_
 
 This is a patch release for compatibility with `pandas 3.x`.
 
