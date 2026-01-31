@@ -16,7 +16,8 @@
 | omc3/correction/model\_appenders.py                     |       62 |        0 |    100% |           |
 | omc3/correction/model\_diff.py                          |       40 |        1 |     98% |        40 |
 | omc3/correction/response\_io.py                         |       63 |        2 |     97% |    58, 86 |
-| omc3/correction/response\_madx.py                       |      154 |       10 |     94% |83, 316-317, 324-330 |
+| omc3/correction/response\_madng.py                      |      134 |       10 |     93% |127, 143, 150, 157, 195, 202-205, 406 |
+| omc3/correction/response\_madx.py                       |      154 |       10 |     94% |86, 319-320, 327-333 |
 | omc3/correction/response\_twiss.py                      |      396 |       55 |     86% |240, 244-246, 253, 288-290, 296-306, 401-402, 458-459, 493-535, 703, 707-715, 727, 739, 742, 745-747, 871 |
 | omc3/correction/sequence\_evaluation.py                 |      149 |       11 |     93% |68, 137, 199-200, 220-226, 306 |
 | omc3/definitions/\_\_init\_\_.py                        |        1 |        0 |    100% |           |
@@ -50,13 +51,13 @@
 | omc3/model/constants.py                                 |       36 |        0 |    100% |           |
 | omc3/model/manager.py                                   |       23 |        2 |     91% |    52, 63 |
 | omc3/model/model\_creators/\_\_init\_\_.py              |        1 |        0 |    100% |           |
-| omc3/model/model\_creators/abstract\_model\_creator.py  |      201 |       22 |     89% |96, 122, 130, 156, 262-267, 385-387, 392, 395, 400, 411, 524-537, 541 |
-| omc3/model/model\_creators/lhc\_model\_creator.py       |      272 |       23 |     92% |98, 103, 177, 305, 358-359, 363-364, 375, 388-389, 395-396, 403, 407, 428-434, 450, 455, 500, 590 |
+| omc3/model/model\_creators/abstract\_model\_creator.py  |      207 |       23 |     89% |97, 123, 131, 140, 175, 281-286, 404-406, 411, 414, 419, 430, 543-556, 560 |
+| omc3/model/model\_creators/lhc\_model\_creator.py       |      275 |       23 |     92% |98, 103, 177, 310, 363-364, 368-369, 380, 393-394, 400-401, 408, 412, 433-439, 455, 460, 505, 595 |
 | omc3/model/model\_creators/manager.py                   |       27 |        4 |     85% |81-82, 86-87 |
 | omc3/model/model\_creators/ps\_base\_model\_creator.py  |       39 |       11 |     72% |34, 39-55, 83-86, 89, 95-96 |
 | omc3/model/model\_creators/ps\_model\_creator.py        |       33 |        3 |     91% | 62, 69-70 |
 | omc3/model/model\_creators/psbooster\_model\_creator.py |       27 |        0 |    100% |           |
-| omc3/model/model\_creators/sps\_model\_creator.py       |       78 |       14 |     82% |49, 56, 70-81, 91, 94-110, 115, 247 |
+| omc3/model/model\_creators/sps\_model\_creator.py       |       82 |       15 |     82% |49, 56, 70-81, 91, 94-110, 115, 240, 252 |
 | omc3/model\_creator.py                                  |       59 |       12 |     80% |136-148, 185 |
 | omc3/mqt\_extractor.py                                  |       38 |       18 |     53% |162-183, 188-191, 195 |
 | omc3/nxcals/\_\_init\_\_.py                             |        1 |        0 |    100% |           |
@@ -102,14 +103,14 @@
 | omc3/plotting/utils/lines.py                            |       44 |       14 |     68% |31, 44-46, 62-73, 86-87, 117 |
 | omc3/plotting/utils/style.py                            |       21 |        2 |     90% |    43, 51 |
 | omc3/plotting/utils/windows.py                          |       83 |       20 |     76% |46-53, 60, 139-140, 180, 197-205 |
-| omc3/response\_creator.py                               |       39 |        1 |     97% |       160 |
+| omc3/response\_creator.py                               |       42 |        1 |     98% |       166 |
 | omc3/sbs\_propagation.py                                |      156 |       32 |     79% |172-175, 215, 218, 233-236, 266, 303, 309, 327, 332, 336-337, 340, 359-361, 384-389, 399, 431-432, 435, 450 |
 | omc3/scripts/\_\_init\_\_.py                            |        0 |        0 |    100% |           |
 | omc3/scripts/\_\_main\_\_.py                            |        8 |        8 |      0% |      1-12 |
 | omc3/scripts/bad\_bpms\_summary.py                      |      185 |       13 |     93% |215-216, 220-221, 250, 258, 287, 327-329, 459-460, 470 |
 | omc3/scripts/betabeatsrc\_output\_converter.py          |      141 |       19 |     87% |165-166, 204-205, 213-214, 249-250, 291-292, 331-332, 366-367, 400-401, 440-441, 471 |
 | omc3/scripts/create\_logbook\_entry.py                  |       89 |       24 |     73% |72, 154-155, 163-186, 197, 217, 220, 226, 242, 253-268, 278 |
-| omc3/scripts/fake\_measurement\_from\_model.py          |      256 |        3 |     99% |545, 568, 585 |
+| omc3/scripts/fake\_measurement\_from\_model.py          |      256 |        3 |     99% |547, 570, 587 |
 | omc3/scripts/kmod\_average.py                           |      104 |        7 |     93% |162, 165, 179, 290-291, 305, 321 |
 | omc3/scripts/kmod\_import.py                            |      144 |        9 |     94% |248, 261-262, 308-312, 329, 351-352, 404 |
 | omc3/scripts/kmod\_lumi\_imbalance.py                   |       97 |       11 |     89% |125, 127, 154-160, 163, 167-172, 177-181, 270 |
@@ -151,7 +152,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      135 |       28 |     79% |66-67, 79, 99-110, 139, 156, 182, 197, 202, 206, 210, 214, 224, 227, 232, 237, 247, 252, 257, 262 |
-| **TOTAL**                                               | **11823** | **1659** | **86%** |           |
+| **TOTAL**                                               | **11973** | **1671** | **86%** |           |
 
 
 ## Setup coverage badge
