@@ -40,7 +40,7 @@
 | omc3/model/accelerators/esrf.py                         |       10 |        3 |     70% |     70-72 |
 | omc3/model/accelerators/generic.py                      |       10 |        0 |    100% |           |
 | omc3/model/accelerators/iota.py                         |       23 |        8 |     65% |83-91, 94-97, 101 |
-| omc3/model/accelerators/lhc.py                          |      166 |       23 |     86% |176, 189, 198, 238-241, 243, 245, 281-296, 314, 327, 333, 353-357 |
+| omc3/model/accelerators/lhc.py                          |      167 |       23 |     86% |177, 190, 199, 239-242, 244, 246, 282-297, 315, 328, 334, 354-358 |
 | omc3/model/accelerators/petra.py                        |       11 |        3 |     73% | 22-23, 27 |
 | omc3/model/accelerators/ps.py                           |       47 |        9 |     81% |112, 124, 129-135 |
 | omc3/model/accelerators/psbase.py                       |       20 |        0 |    100% |           |
@@ -64,20 +64,20 @@
 | omc3/nxcals/mqt\_extraction.py                          |       25 |       17 |     32% |46-51, 77-83, 96-103 |
 | omc3/optics\_measurements/\_\_init\_\_.py               |        1 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_amplitude.py      |       63 |        0 |    100% |           |
-| omc3/optics\_measurements/beta\_from\_phase.py          |      283 |        9 |     97% |129-132, 135, 246, 375, 397-398, 490, 595 |
+| omc3/optics\_measurements/beta\_from\_phase.py          |      283 |        9 |     97% |129-132, 135, 246, 375, 397-398, 490, 601 |
 | omc3/optics\_measurements/chromatic.py                  |       44 |       14 |     68% |     61-79 |
 | omc3/optics\_measurements/constants.py                  |       90 |        0 |    100% |           |
 | omc3/optics\_measurements/coupling.py                   |      160 |        4 |     98% |225, 241, 254-255 |
 | omc3/optics\_measurements/crdt.py                       |       83 |        0 |    100% |           |
 | omc3/optics\_measurements/data\_models.py               |      115 |       15 |     87% |58, 65, 86, 113, 119, 164, 169, 172, 205-219 |
-| omc3/optics\_measurements/dispersion.py                 |      158 |       47 |     70% |78, 96, 111-112, 128-143, 161, 168-169, 175-176, 190-209, 243-252, 290-291 |
+| omc3/optics\_measurements/dispersion.py                 |      158 |       47 |     70% |79, 97, 112-113, 129-144, 162, 169-170, 176-177, 191-210, 244-253, 291-292 |
 | omc3/optics\_measurements/dpp.py                        |       74 |       14 |     81% |102, 105, 118-130 |
 | omc3/optics\_measurements/iforest.py                    |       67 |       46 |     31% |35-40, 44-47, 52-58, 62-63, 67-77, 81-90, 94-100, 104, 108-112 |
 | omc3/optics\_measurements/interaction\_point.py         |       45 |        0 |    100% |           |
 | omc3/optics\_measurements/kick.py                       |       72 |        4 |     94% |63-64, 130-131 |
-| omc3/optics\_measurements/measure\_optics.py            |       86 |       14 |     84% |70, 107-111, 142, 172-180 |
+| omc3/optics\_measurements/measure\_optics.py            |       86 |       14 |     84% |73, 110-114, 145, 175-183 |
 | omc3/optics\_measurements/phase.py                      |      157 |       11 |     93% |95, 127, 217-220, 223-226, 228, 234 |
-| omc3/optics\_measurements/rdt.py                        |      187 |        9 |     95% |172-179, 357, 386-390 |
+| omc3/optics\_measurements/rdt.py                        |      188 |        9 |     95% |172-179, 360, 389-393 |
 | omc3/optics\_measurements/toolbox.py                    |       36 |        0 |    100% |           |
 | omc3/optics\_measurements/tune.py                       |       38 |        0 |    100% |           |
 | omc3/plotting/\_\_init\_\_.py                           |        0 |        0 |    100% |           |
@@ -151,7 +151,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      135 |       28 |     79% |66-67, 79, 99-110, 139, 156, 182, 197, 202, 206, 210, 214, 224, 227, 232, 237, 247, 252, 257, 262 |
-| **TOTAL**                                               | **11821** | **1659** | **86%** |           |
+| **TOTAL**                                               | **11823** | **1659** | **86%** |           |
 
 
 ## Setup coverage badge

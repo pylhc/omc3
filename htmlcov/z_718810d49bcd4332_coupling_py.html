@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_718810d49bcd4332_crdt_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
-            created at 2026-01-16 16:26 +0000
+            created at 2026-01-31 13:03 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -348,7 +348,7 @@
     <p class="pln"><span class="n"><a id="t266" href="#t266">266</a></span><span class="t"><span class="str">    Returns:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t267" href="#t267">267</a></span><span class="t"><span class="str">        The indices of best candidates, and the corresponding phase advances between these indices.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t268" href="#t268">268</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t269" href="#t269">269</a></span><span class="t">    <span class="nam">slice_</span> <span class="op">=</span> <span class="nam">_tilt_slice_matrix</span><span class="op">(</span><span class="nam">phases</span><span class="op">.</span><span class="nam">to_numpy</span><span class="op">(</span><span class="op">)</span><span class="op">,</span> <span class="num">0</span><span class="op">,</span> <span class="num">2</span> <span class="op">*</span> <span class="nam">CUTOFF</span><span class="op">)</span> <span class="op">-</span> <span class="num">0.25</span>  <span class="com"># do not overwrite built-in 'slice'</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t269" href="#t269">269</a></span><span class="t">    <span class="nam">slice_</span> <span class="op">=</span> <span class="nam">_tilt_slice_matrix</span><span class="op">(</span><span class="nam">phases</span><span class="op">.</span><span class="nam">to_numpy</span><span class="op">(</span><span class="nam">copy</span><span class="op">=</span><span class="key">True</span><span class="op">)</span><span class="op">,</span> <span class="num">0</span><span class="op">,</span> <span class="num">2</span> <span class="op">*</span> <span class="nam">CUTOFF</span><span class="op">)</span> <span class="op">-</span> <span class="num">0.25</span>  <span class="com"># do not overwrite built-in 'slice'</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t270" href="#t270">270</a></span><span class="t">    <span class="nam">indices</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">argmin</span><span class="op">(</span><span class="nam">abs</span><span class="op">(</span><span class="nam">slice_</span><span class="op">)</span><span class="op">,</span> <span class="nam">axis</span><span class="op">=</span><span class="num">0</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t271" href="#t271">271</a></span><span class="t">    <span class="nam">deltas</span> <span class="op">=</span> <span class="nam">slice_</span><span class="op">[</span><span class="nam">indices</span><span class="op">,</span> <span class="nam">range</span><span class="op">(</span><span class="nam">len</span><span class="op">(</span><span class="nam">indices</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t272" href="#t272">272</a></span><span class="t">    <span class="nam">indices</span> <span class="op">=</span> <span class="op">(</span><span class="nam">indices</span> <span class="op">+</span> <span class="nam">np</span><span class="op">.</span><span class="nam">arange</span><span class="op">(</span><span class="nam">len</span><span class="op">(</span><span class="nam">indices</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%</span> <span class="nam">len</span><span class="op">(</span><span class="nam">indices</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -520,7 +520,7 @@
             <a class="nav" href="z_718810d49bcd4332_crdt_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
-            created at 2026-01-16 16:26 +0000
+            created at 2026-01-31 13:03 +0000
         </p>
     </div>
 </footer>
