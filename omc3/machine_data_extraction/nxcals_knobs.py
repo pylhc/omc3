@@ -93,6 +93,7 @@ def get_knob_vals(
     expected_knobs: set[str] | None = None,
     log_prefix: str = "",
     delta_days: float = 0.25,
+    energy: float | None = None,
 ) -> list[NXCALSResult]:
     """
     Retrieve knob values for a given beam and time using specified patterns for the LHC.
@@ -125,6 +126,7 @@ def get_knob_vals(
             results. If None, returns all found knobs without validation.
         log_prefix (str): Prefix for logging messages to distinguish different extraction runs.
         delta_days (float): Number of days to look back for data. Default is 0.25.
+        energy (float | None): Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,
@@ -140,7 +142,8 @@ def get_knob_vals(
         combined_vars.extend(raw_vars)
 
     # Get beam energy for K-value calculations
-    energy, _ = get_energy(spark, time)
+    if energy is None:
+        energy, _ = get_energy(spark, time)
 
     # Prepare currents dict for LSA
     currents = {strip_i_meas(var.name): var.value for var in combined_vars}
@@ -176,7 +179,7 @@ def get_knob_vals(
         dtime = times.get(madx_name)
         pc_name = pc_names.get(madx_name)
 
-        if value is not None and time is not None and pc_name is not None:
+        if value is not None and dtime is not None and pc_name is not None:
             results.append(NXCALSResult(madx_name, value, dtime, pc_name))
         else:
             LOGGER.warning(f"{log_prefix}Missing data for {madx_name}")

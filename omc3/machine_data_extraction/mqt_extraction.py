@@ -52,7 +52,11 @@ def generate_mqt_names(beam: int) -> set[str]:
 
 
 def get_mqt_vals(
-    spark: SparkSession, time: datetime, beam: int, delta_days: float = 0.25
+    spark: SparkSession,
+    time: datetime,
+    beam: int,
+    delta_days: float = 0.25,
+    energy: float | None = None,
 ) -> list[NXCALSResult]:
     """
     Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.
@@ -66,6 +70,7 @@ def get_mqt_vals(
         time (datetime): The timestamp for which to retrieve the data (timezone-aware required).
         beam (int): The beam number (1 or 2).
         delta_days (float): Number of days to look back for data. Default is 0.25.
+        energy (float | None): Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing the MAD-X knob names, K-values, and timestamps.
