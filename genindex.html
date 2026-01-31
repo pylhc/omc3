@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; omc3 0.26.1 documentation</title>
+  <title>Index &mdash; omc3 0.27.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=eeda5ee3"></script>
+      <script src="_static/documentation_options.js?v=3b7790a3"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -50,7 +50,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#global-correction">Global Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -661,8 +660,6 @@
       <li><a href="modules/plotting.html#omc3.plotting.utils.windows.create_pyplot_window_from_fig">create_pyplot_window_from_fig() (in module omc3.plotting.utils.windows)</a>
 </li>
       <li><a href="modules/correction.html#omc3.correction.response_twiss.create_response">create_response() (in module omc3.correction.response_twiss)</a>
-</li>
-      <li><a href="entrypoints/correction.html#omc3.response_creator.create_response_entrypoint">create_response_entrypoint() (in module omc3.response_creator)</a>
 </li>
       <li><a href="entrypoints/correction.html#omc3.sbs_propagation.create_segment">create_segment() (in module omc3.sbs_propagation)</a>
 </li>
@@ -1288,6 +1285,8 @@
 </li>
       <li><a href="modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_response_for">get_response_for() (omc3.correction.response_twiss.TwissResponse method)</a>
 </li>
+      <li><a href="modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator.get_save_sequence_script">get_save_sequence_script() (omc3.model.model_creators.abstract_model_creator.ModelCreator method)</a>
+</li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.iforest.get_significant_features">get_significant_features() (in module omc3.optics_measurements.iforest)</a>
 </li>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.get_state">get_state() (in module omc3.knob_extractor)</a>
@@ -1554,8 +1553,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.Col.madx">madx (omc3.knob_extractor.Col attribute)</a>
 </li>
-      <li><a href="entrypoints/correction.html#omc3.response_creator.ResponseCreatorType.MADX">MADX (omc3.response_creator.ResponseCreatorType attribute)</a>
-</li>
       <li><a href="entrypoints/other.html#omc3.madx_wrapper.madx_wrapper_params">madx_wrapper_params() (in module omc3.madx_wrapper)</a>
 </li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.definitions.MadXBoundaryConditions">MadXBoundaryConditions (class in omc3.segment_by_segment.definitions)</a>
@@ -1789,8 +1786,6 @@
         <li><a href="modules/plotting.html#module-omc3.plotting.utils.style">omc3.plotting.utils.style</a>
 </li>
         <li><a href="modules/plotting.html#module-omc3.plotting.utils.windows">omc3.plotting.utils.windows</a>
-</li>
-        <li><a href="entrypoints/correction.html#module-omc3.response_creator">omc3.response_creator</a>
 </li>
         <li><a href="entrypoints/correction.html#module-omc3.sbs_propagation">omc3.sbs_propagation</a>
 </li>
@@ -2498,13 +2493,6 @@
 </li>
       </ul></li>
       <li>
-    omc3.response_creator
-
-      <ul>
-        <li><a href="entrypoints/correction.html#module-omc3.response_creator">module</a>
-</li>
-      </ul></li>
-      <li>
     omc3.sbs_propagation
 
       <ul>
@@ -2961,10 +2949,10 @@
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.OpticsMeasurement.read_tfs">read_tfs() (omc3.definitions.optics.OpticsMeasurement method)</a>
 </li>
-      <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.read_timed_dataframe">read_timed_dataframe() (in module omc3.tune_analysis.kick_file_modifiers)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.read_timed_dataframe">read_timed_dataframe() (in module omc3.tune_analysis.kick_file_modifiers)</a>
+</li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.write_madx_macros.read_twiss_and_return_obs">read_twiss_and_return_obs() (in module omc3.scripts.write_madx_macros)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.read_two_kick_files_from_folder">read_two_kick_files_from_folder() (in module omc3.tune_analysis.kick_file_modifiers)</a>
@@ -2986,10 +2974,6 @@
       <li><a href="modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator.resolve_path_for_madx">resolve_path_for_madx() (omc3.model.model_creators.abstract_model_creator.ModelCreator method)</a>
 </li>
       <li><a href="modules/correction.html#omc3.correction.response_twiss.response_add">response_add() (in module omc3.correction.response_twiss)</a>
-</li>
-      <li><a href="entrypoints/correction.html#omc3.response_creator.response_params">response_params() (in module omc3.response_creator)</a>
-</li>
-      <li><a href="entrypoints/correction.html#omc3.response_creator.ResponseCreatorType">ResponseCreatorType (class in omc3.response_creator)</a>
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.linfile_clean.restore_files">restore_files() (in module omc3.scripts.linfile_clean)</a>
 </li>
@@ -3023,6 +3007,8 @@
 </li>
       <li><a href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.save_plots">save_plots() (in module omc3.plotting.plot_checked_corrections)</a>
 </li>
+      <li><a href="modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator.save_sequence_filename">save_sequence_filename (omc3.model.model_creators.abstract_model_creator.ModelCreator attribute)</a>
+</li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.SbsDefinitionError">SbsDefinitionError</a>
 </li>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.Col.scaling">scaling (omc3.knob_extractor.Col attribute)</a>
@@ -3043,6 +3029,14 @@
 </li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentModels">SegmentModels (class in omc3.segment_by_segment.segments)</a>
 </li>
+      <li><a href="modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator.sequence_name">sequence_name (omc3.model.model_creators.abstract_model_creator.ModelCreator property)</a>
+
+      <ul>
+        <li><a href="modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.sequence_name">(omc3.model.model_creators.lhc_model_creator.LhcModelCreator property)</a>
+</li>
+        <li><a href="modules/model.html#omc3.model.model_creators.sps_model_creator.SpsModelCreator.sequence_name">(omc3.model.model_creators.sps_model_creator.SpsModelCreator property)</a>
+</li>
+      </ul></li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.set_annotation">set_annotation() (in module omc3.plotting.utils.annotations)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.set_label_formatted">set_label_formatted() (omc3.definitions.optics.ColumnsAndLabels method)</a>
@@ -3059,14 +3053,14 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.set_yaxis_label">set_yaxis_label() (in module omc3.plotting.utils.annotations)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/plotting.html#omc3.plotting.utils.windows.SimpleTabWindow.show">show() (omc3.plotting.utils.windows.SimpleTabWindow method)</a>
 
       <ul>
         <li><a href="modules/plotting.html#omc3.plotting.utils.windows.VerticalTabWindow.show">(omc3.plotting.utils.windows.VerticalTabWindow method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.show_ir">show_ir() (in module omc3.plotting.utils.annotations)</a>
 </li>
       <li><a href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots">show_plots() (in module omc3.plotting.plot_checked_corrections)</a>
@@ -3170,8 +3164,6 @@
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.AmpDetData.tune_plane">tune_plane (omc3.tune_analysis.constants.AmpDetData attribute)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict">TuneDict (class in omc3.optics_measurements.tune)</a>
-</li>
-      <li><a href="entrypoints/correction.html#omc3.response_creator.ResponseCreatorType.TWISS">TWISS (omc3.response_creator.ResponseCreatorType attribute)</a>
 </li>
       <li><a href="modules/correction.html#omc3.correction.response_twiss.TwissResponse">TwissResponse (class in omc3.correction.response_twiss)</a>
 </li>

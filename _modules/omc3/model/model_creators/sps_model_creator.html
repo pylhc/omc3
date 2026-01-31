@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.model.model_creators.sps_model_creator &mdash; omc3 0.26.1 documentation</title>
+  <title>omc3.model.model_creators.sps_model_creator &mdash; omc3 0.27.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=eeda5ee3"></script>
+      <script src="../../../../_static/documentation_options.js?v=3b7790a3"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -50,7 +50,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -424,13 +423,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># I thought cycling to markers has less side-effects, but it seems it doesn&#39;t matter.</span>
             <span class="c1"># If this is anyway useful, we can add it. (jdilly, 2025)</span>
-            <span class="c1"># marker_name = f&quot;OMC_MARKER_{self._start_bpm}&quot;</span>
-            <span class="c1"># madx_script += (</span>
-            <span class="c1">#     f&quot;    {marker_name}: marker;\n&quot;</span>
-            <span class="c1">#     f&quot;    install, element={marker_name}, at=-{self._start_bpm}-&gt;L, from={self._start_bpm};\n&quot;</span>
-            <span class="c1">#     f&quot;    cycle, start = {marker_name};\n&quot;</span>
-            <span class="c1"># )</span>
-            <span class="n">madx_script</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    cycle, start = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="c1"># This is very useful if we would like to use MAD-NG with this. MAD-NG won&#39;t cycle otherwise. (jgray 2026)</span>
+            <span class="n">marker_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;OMC_MARKER_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">madx_script</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="n">marker_name</span><span class="si">}</span><span class="s2">: marker;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;    install, element=</span><span class="si">{</span><span class="n">marker_name</span><span class="si">}</span><span class="s2">, at=-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span><span class="si">}</span><span class="s2">-&gt;L/2, from=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_bpm</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;    cycle, start = </span><span class="si">{</span><span class="n">marker_name</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;endedit;</span><span class="se">\n</span><span class="s2">use, sequence=sps;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
 
@@ -475,7 +474,12 @@
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="se">}}\n</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
-</div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sequence_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the sequence name for SPS.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;sps&quot;</span></div>
 
 
 

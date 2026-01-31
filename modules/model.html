@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model &mdash; omc3 0.26.1 documentation</title>
+  <title>Model &mdash; omc3 0.27.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=eeda5ee3"></script>
+      <script src="../_static/documentation_options.js?v=3b7790a3"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -53,7 +53,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -1522,6 +1521,12 @@ might run these easily with <cite>super()</cite> if desired.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.model.model_creators.lhc_model_creator.LhcModelCreator.sequence_name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sequence_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.model.model_creators.lhc_model_creator.LhcModelCreator.sequence_name" title="Link to this definition"></a></dt>
+<dd><p>Returns the sequence name for LHC.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1692,6 +1697,12 @@ as some modifications to the accelerator may come afterwards (depending on which
 <dd><p>Use the fetcher to list choices if requested.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.model.model_creators.sps_model_creator.SpsModelCreator.sequence_name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sequence_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.model.model_creators.sps_model_creator.SpsModelCreator.sequence_name" title="Link to this definition"></a></dt>
+<dd><p>Returns the sequence name for SPS.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1771,6 +1782,12 @@ as some modifications to the accelerator may come afterwards (depending on which
 <dt class="sig sig-object py" id="omc3.model.model_creators.abstract_model_creator.ModelCreator.get_madx_script">
 <span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_madx_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.get_madx_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.abstract_model_creator.ModelCreator.get_madx_script" title="Link to this definition"></a></dt>
 <dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> script used to create the model (directory).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.model.model_creators.abstract_model_creator.ModelCreator.get_save_sequence_script">
+<span class="sig-name descname"><span class="pre">get_save_sequence_script</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/abstract_model_creator.html#ModelCreator.get_save_sequence_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.abstract_model_creator.ModelCreator.get_save_sequence_script" title="Link to this definition"></a></dt>
+<dd><p>Returns madx script to save a generic sequence.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1874,6 +1891,19 @@ Use the symlink from here on instead of the acc-model-path, also in the modifier
 <dd class="field-odd"><p>madx_path (Path)</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.model.model_creators.abstract_model_creator.ModelCreator.save_sequence_filename">
+<span class="sig-name descname"><span class="pre">save_sequence_filename</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'saved_madx.seq'</span></span><a class="headerlink" href="#omc3.model.model_creators.abstract_model_creator.ModelCreator.save_sequence_filename" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.model.model_creators.abstract_model_creator.ModelCreator.sequence_name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sequence_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.model.model_creators.abstract_model_creator.ModelCreator.sequence_name" title="Link to this definition"></a></dt>
+<dd><p>Returns the sequence name to be used. This is necessary if you would like to use MAD-NG with your sequence. (Currently only MAD-NG Response).</p>
+<p>Subclasses that use <a class="reference internal" href="#omc3.model.model_creators.abstract_model_creator.ModelCreator.get_save_sequence_script" title="omc3.model.model_creators.abstract_model_creator.ModelCreator.get_save_sequence_script"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_save_sequence_script()</span></code></a> must override this
+property to return the appropriate sequence name for the accelerator.</p>
 </dd></dl>
 
 </dd></dl>

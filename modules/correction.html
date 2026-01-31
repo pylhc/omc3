@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.26.1 documentation</title>
+  <title>Correction &mdash; omc3 0.27.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=eeda5ee3"></script>
+      <script src="../_static/documentation_options.js?v=3b7790a3"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
@@ -54,7 +54,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -562,6 +561,12 @@ beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 <li><p><strong>num_proc</strong> (<em>int</em>) -- Number of processes to use in parallel.</p></li>
 <li><p><strong>temp_dir</strong> (<em>str</em>) -- temporary directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses folder of original_jobfile.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of response DataFrames keyed by optics type (e.g., ‘BETAX’, ‘PHASEX’, etc.)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>

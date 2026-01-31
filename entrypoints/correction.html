@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Correction &mdash; omc3 0.26.1 documentation</title>
+  <title>Correction &mdash; omc3 0.27.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=eeda5ee3"></script>
+      <script src="../_static/documentation_options.js?v=3b7790a3"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
@@ -54,7 +54,6 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#global-correction">Global Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -232,7 +231,6 @@
     <ul>
 <li><a class="reference internal" href="#">Correction</a><ul>
 <li><a class="reference internal" href="#global-correction">Global Correction</a></li>
-<li><a class="reference internal" href="#response-creator">Response Creator</a></li>
 <li><a class="reference internal" href="#correction-test">Correction Test</a></li>
 <li><a class="reference internal" href="#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -402,83 +400,6 @@ optics_params.</p>
 <span class="sig-prename descclassname"><span class="pre">omc3.global_correction.</span></span><span class="sig-name descname"><span class="pre">global_correction_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/omc3/global_correction.html#global_correction_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.global_correction.global_correction_entrypoint" title="Link to this definition"></a></dt>
 <dd><p>Do the global correction. Iteratively.</p>
 </dd></dl>
-
-<section id="response-creator">
-<span id="module-omc3.response_creator"></span><h2>Response Creator<a class="headerlink" href="#response-creator" title="Link to this heading"></a></h2>
-<p>Provides a response generation wrapper.
-The response matrices can be either created by <a class="reference internal" href="../modules/correction.html#module-omc3.correction.response_madx" title="omc3.correction.response_madx"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_madx</span></code></a>
-or analytically via <a class="reference internal" href="../modules/correction.html#module-omc3.correction.response_twiss" title="omc3.correction.response_twiss"><code class="xref py py-mod docutils literal notranslate"><span class="pre">omc3.correction.response_twiss</span></code></a>.</p>
-<p>Input arguments are split into response creation arguments and accelerator arguments.
-The former are listed below, the latter depend on the accelerator you want
-to use. Check <a class="reference internal" href="../modules/model.html#module-omc3.model.manager"><span class="std std-ref">Model</span></a> to see which ones are needed.</p>
-<p><strong>Arguments:</strong></p>
-<p><em>--Optional--</em></p>
-<ul>
-<li><p><strong>outfile_path</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Name of fullresponse file.</p>
-</div></blockquote>
-</li>
-<li><p><strong>creator</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>Create either with madx or analytically from twiss file.</p>
-<p>choices: <code class="docutils literal notranslate"><span class="pre">('madx',</span> <span class="pre">'twiss')</span></code></p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">madx</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>debug</strong>:</p>
-<blockquote>
-<div><p>Print debug information.</p>
-<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>delta_k</strong> <em>(float)</em>:</p>
-<blockquote>
-<div><p>Delta K1 to be applied to quads for sensitivity matrix (madx-only).</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">2e-05</span></code></p>
-</div></blockquote>
-</li>
-<li><p><strong>optics_params</strong> <em>(str)</em>:</p>
-<blockquote>
-<div><p>List of parameters to correct upon (e.g. BBX BBY; twiss-only).</p>
-</div></blockquote>
-</li>
-<li><p><strong>variable_categories</strong>:</p>
-<blockquote>
-<div><p>List of the variables classes to use.</p>
-<p>default: <code class="docutils literal notranslate"><span class="pre">['MQM',</span> <span class="pre">'MQT',</span> <span class="pre">'MQTL',</span> <span class="pre">'MQY']</span></code></p>
-</div></blockquote>
-</li>
-</ul>
-</section>
-<dl class="py class">
-<dt class="sig sig-object py" id="omc3.response_creator.ResponseCreatorType">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">ResponseCreatorType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#ResponseCreatorType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.ResponseCreatorType" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../modules/utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="omc3.response_creator.ResponseCreatorType.MADX">
-<span class="sig-name descname"><span class="pre">MADX</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'madx'</span></span><a class="headerlink" href="#omc3.response_creator.ResponseCreatorType.MADX" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="omc3.response_creator.ResponseCreatorType.TWISS">
-<span class="sig-name descname"><span class="pre">TWISS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'twiss'</span></span><a class="headerlink" href="#omc3.response_creator.ResponseCreatorType.TWISS" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="omc3.response_creator.create_response_entrypoint">
-<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">create_response_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/response_creator.html#create_response_entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.create_response_entrypoint" title="Link to this definition"></a></dt>
-<dd><p>Entry point for creating pandas-based response matrices.</p>
-<p>The response matrices can be either created by response_madx or TwissResponse.</p>
-<p>TODO: Add support to give fetcher? But for know we assume the acc-model path is still in the model_dir.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="omc3.response_creator.response_params">
-<span class="sig-prename descclassname"><span class="pre">omc3.response_creator.</span></span><span class="sig-name descname"><span class="pre">response_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/response_creator.html#response_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.response_creator.response_params" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 <section id="correction-test">
 <span id="module-omc3.check_corrections"></span><h2>Correction Test<a class="headerlink" href="#correction-test" title="Link to this heading"></a></h2>
