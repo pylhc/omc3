@@ -15,6 +15,8 @@ Correction
 
 .. automodule:: omc3.correction.response_madx
 
+.. automodule:: omc3.correction.response_madng
+
 .. automodule:: omc3.correction.response_twiss
 
 .. automodule:: omc3.correction.sequence_evaluation
