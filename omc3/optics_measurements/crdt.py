@@ -194,9 +194,8 @@ def get_column_names(line):
 
 def get_crdt_invariant(crdt, invariants):
     exp = {"X": np.abs(crdt["line"][0]), "Y": np.abs(crdt["line"][1])}
-    exp[crdt["plane"]] = (
-        exp[crdt["plane"]] - 1
-    )  # to compensate for the normalization with tune line
+    # compensate for the normalization with tune line
+    exp[crdt["plane"]] = (exp[crdt["plane"]] - 1)
 
     crdt_invariant = invariants["X"].T[0] ** exp["X"] * invariants["Y"].T[0] ** exp["Y"]
     err_crdt_invariant = np.sqrt(

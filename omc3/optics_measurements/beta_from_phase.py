@@ -551,7 +551,7 @@ def _calc_and_add_delta_columns(beta_df: pd.DataFrame, plane: str) -> pd.DataFra
 
 
 def _tilt_slice_matrix(
-    matrix: np.ndarray, slice_shift: int, slice_width: int, tune: float = 0
+    matrix: np.ndarray, slice_shift: int, slice_width: int, tune: float = 0.0
 ) -> np.ndarray:
     """
     Tilts and slices the ``matrix``.
