@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.measure_optics &mdash; omc3 0.26.0 documentation</title>
+  <title>omc3.optics_measurements.measure_optics &mdash; omc3 0.26.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=4aa2dafa"></script>
+      <script src="../../../_static/documentation_options.js?v=eeda5ee3"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -270,7 +270,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.data_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputFiles</span>
 
@@ -305,8 +308,8 @@
     <span class="n">common_header</span> <span class="o">=</span> <span class="n">_get_header</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">)</span>
 
     <span class="c1"># Linear Optics ---</span>
-    <span class="n">invariants</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">phase_results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">invariants</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">phase_results</span><span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
         <span class="c1"># Phases -</span>
         <span class="n">phase_results</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">out_dfs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
@@ -388,7 +391,7 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_header</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">:</span> <span class="n">tune</span><span class="o">.</span><span class="n">TuneDict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_header</span><span class="p">(</span><span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">:</span> <span class="n">tune</span><span class="o">.</span><span class="n">TuneDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;Measure_optics:version&quot;</span><span class="p">:</span> <span class="n">VERSION</span><span class="p">,</span>
         <span class="s2">&quot;Command&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>

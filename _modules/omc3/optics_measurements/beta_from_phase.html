@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.optics_measurements.beta_from_phase &mdash; omc3 0.26.0 documentation</title>
+  <title>omc3.optics_measurements.beta_from_phase &mdash; omc3 0.26.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=4aa2dafa"></script>
+      <script src="../../../_static/documentation_options.js?v=eeda5ee3"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -336,7 +336,7 @@
 
 <div class="viewcode-block" id="write">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.write">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">beta_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">outputdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">beta_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">outputdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA_NAME</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">beta_df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span></div>
 
@@ -349,7 +349,7 @@
     <span class="n">phase</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">meas_and_mdl_tunes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates betas and alphas from using all BPM combination within **range_of_bpms**. It also</span>
 <span class="sd">    accounts for systematic errors</span>
@@ -682,7 +682,7 @@
     <span class="n">phase</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">meas_and_mdl_tunes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates betas and alphas from using adjacent BPMs (3 combination).</span>
 <span class="sd">    ``phase[&quot;MEAS&quot;]``, ``phase[&quot;MODEL&quot;]``, ``phase[&quot;ERRMEAS&quot;]`` (from ``get_phases``) are of the</span>
@@ -742,9 +742,9 @@
     <span class="n">tune</span><span class="p">,</span> <span class="n">mdltune</span> <span class="o">=</span> <span class="n">meas_and_mdl_tunes</span>
     <span class="n">beta_df</span> <span class="o">=</span> <span class="n">_get_filtered_model_df</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="c1"># tilt phase advances in order to have the phase advances in a neighbourhood</span>
-    <span class="n">tilted_meas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">MEASUREMENT</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">tune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
-    <span class="n">tilted_model</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">MODEL</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">mdltune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
-    <span class="n">tilted_errmeas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">MEASUREMENT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">tilted_meas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">MEASUREMENT</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">tune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">tilted_model</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">MODEL</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">mdltune</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
+    <span class="n">tilted_errmeas</span> <span class="o">=</span> <span class="n">_tilt_slice_matrix</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">MEASUREMENT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">PI2</span>
     <span class="n">betmdl</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="n">alfmdl</span> <span class="o">=</span> <span class="n">beta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ALPHA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
@@ -800,7 +800,9 @@
     <span class="k">return</span> <span class="n">beta_df</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_tilt_slice_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">slice_shift</span><span class="p">,</span> <span class="n">slice_width</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_tilt_slice_matrix</span><span class="p">(</span>
+    <span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">slice_shift</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">slice_width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tune</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tilts and slices the ``matrix``.</span>
 <span class="sd">    Tilting means shifting each column upwards one step more than the previous columnns, i.e.</span>
@@ -811,6 +813,10 @@
 <span class="sd">    ...             ...</span>
 <span class="sd">    y y y y y       y z a b</span>
 <span class="sd">    z z z z z       z a b c</span>
+
+<span class="sd">    Careful this mutates the provided data. Be sure to provide a mutable</span>
+<span class="sd">    array, ideally a copy, and not a view. In pandas 3.x passing a view</span>
+<span class="sd">    will error.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">invrange</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">matrix</span><span class="p">[</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">slice_shift</span><span class="p">:,</span> <span class="p">:</span><span class="n">slice_shift</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tune</span>
