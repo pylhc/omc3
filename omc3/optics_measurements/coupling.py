@@ -266,7 +266,7 @@ def _find_candidate(phases: tfs.TfsDataFrame) -> tuple[np.ndarray, np.ndarray]:
     Returns:
         The indices of best candidates, and the corresponding phase advances between these indices.
     """
-    slice_ = _tilt_slice_matrix(phases.to_numpy(), 0, 2 * CUTOFF) - 0.25  # do not overwrite built-in 'slice'
+    slice_ = _tilt_slice_matrix(phases.to_numpy(copy=True), 0, 2 * CUTOFF) - 0.25  # do not overwrite built-in 'slice'
     indices = np.argmin(abs(slice_), axis=0)
     deltas = slice_[indices, range(len(indices))]
     indices = (indices + np.arange(len(indices))) % len(indices)

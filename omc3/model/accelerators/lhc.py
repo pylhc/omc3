@@ -93,6 +93,7 @@ from omc3.model.accelerators.accelerator import (
     AccExcitationMode,
 )
 from omc3.model.constants import OPTICS_SUBDIR
+from omc3.optics_measurements.constants import S
 from omc3.utils import logging_tools
 from omc3.utils.iotools import find_file, load_multiple_jsons
 from omc3.utils.knob_list_manipulations import get_vars_by_classes
@@ -233,7 +234,7 @@ class Lhc(Accelerator):
             frm (float): S-position to filter from
             to (float): S-position to filter to
         """
-        elems_matrix = tfs.read(self._get_corrector_elems()).sort_values("S")
+        elems_matrix = tfs.read(self._get_corrector_elems()).sort_values(S)
         if frm is not None and to is not None:
             if frm > to:
                 elems_matrix = elems_matrix[(frm <= elems_matrix.S) | (to >= elems_matrix.S)]
