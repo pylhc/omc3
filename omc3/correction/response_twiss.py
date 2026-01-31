@@ -550,7 +550,7 @@ class TwissResponse:
             if len(k1_el) > 0:
                 dmu = dict.fromkeys(PLANES)
 
-                pi = pd.DataFrame(tw["S"].to_numpy()[:, None] < tw["S"].to_numpy()[None, :],  # pi(i,j) = s(i) < s(j)
+                pi = pd.DataFrame(tw[S].to_numpy()[:, None] < tw[S].to_numpy()[None, :],  # pi(i,j) = s(i) < s(j)
                                       index=tw.index, columns=tw.index, dtype=int)
 
                 pi_term = pi.loc[k1_el, el_out].to_numpy()
