@@ -1,5 +1,11 @@
 # OMC3 Changelog
 
+#### 2025-01-XX - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
+
+- Added:
+    - MAD-NG response matrix calculation: New `response_madng` module to compute response matrices using MAD-NG derivatives.
+    - The fake measurement from model script now outputs the orbit files as well.
+
 #### 2026-01-31 - v0.26.1 - _fsoubelet_
 
 This is a patch release for compatibility with `pandas 3.x`.
