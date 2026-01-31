@@ -1,5 +1,12 @@
 # OMC3 Changelog
 
+#### 2026-01-XX - v0.27.0 - _jgray_, _jdilly_
+
+- Added:
+  - `Orbit` parameter for `fake_measurement_from_model` script.
+  - `machine_settings_info` script for extracting machine settings from NXCALS and LSA.
+
+
 #### 2025-12-15 - v0.26.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:

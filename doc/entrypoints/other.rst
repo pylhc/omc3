@@ -7,4 +7,6 @@ Other
 
 .. automodule:: omc3.knob_extractor
 
+.. automodule:: omc3.mqt_extractor
+
 .. automodule:: omc3.madx_wrapper
