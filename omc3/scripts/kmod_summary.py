@@ -63,8 +63,7 @@ def _collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[t
     LOG.info("Gathering kmod results.")
 
     grouped: list[tfs.TfsDataFrame] = []
-    for path in meas_paths:
-        path = Path(path)
+    meas_path in map(Path, meas_paths):
         LOG.info(f"Reading measurement results at '{path.absolute()}'.")
         file_path = path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
         if not file_path.exists():
