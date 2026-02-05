@@ -9,6 +9,8 @@ Scripts
 
 .. automodule:: omc3.scripts.kmod_lumi_imbalance
 
+.. automodule:: omc3.scripts.machine_settings_info
+
 .. automodule:: omc3.scripts.update_nattune_in_linfile
 
 .. automodule:: omc3.scripts.write_madx_macros

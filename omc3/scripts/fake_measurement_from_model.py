@@ -70,6 +70,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
+import numpy.typing as npt
 import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
@@ -563,7 +564,7 @@ def _get_loop_parameters(parameters: Sequence[str], errors: Sequence[float] | No
     return zip(parameters, errors)
 
 
-def _get_random_errors(errors: np.array, values: np.array) -> np.array:
+def _get_random_errors(errors: npt.NDArray, values: npt.NDArray) -> npt.NDArray:
     """ Creates normal distributed error-values that will not be lower than EPSILON. """
     LOG.debug("Calculating normal distributed random errors.")
     if any(errors == 0):

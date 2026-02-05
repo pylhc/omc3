@@ -1,6 +1,13 @@
 # OMC3 Changelog
 
-#### 2025-01-XX - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
+#### 2026-02-XX - v0.28.0 - _jgray_, _jdilly_
+
+- Added:
+  - `Orbit` parameter for `fake_measurement_from_model` script.
+  - `machine_settings_info` script for extracting machine settings from NXCALS and LSA.
+
+
+#### 2025-01-31 - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
     - MAD-NG response matrix calculation: New `response_madng` module to compute response matrices using MAD-NG derivatives.

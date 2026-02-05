@@ -4,6 +4,8 @@ Timber Extraction
 
 Tools to extract data from ``Timber``. It is a bit heavy on the LHC side at the moment.
 
+TODO: Use the new NXCALS extraction module when possible.
+
 **Please note**: this module requires the ``pytimber`` package to access ``Timber`` functionality,
 both of which are only possible from inside the CERN network.
 
