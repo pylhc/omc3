@@ -68,7 +68,8 @@ def _collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[t
         file_path = path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
         if not file_path.exists():
             LOG.warning(f"Missing results file: {file_path})
-        else:
+            continue
+
             meas_name = path.name
             result_df = tfs.read(file_path)
             try:
