@@ -62,7 +62,7 @@ def _collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[t
 
     LOG.info("Gathering kmod results.")
 
-    grouped = []
+    grouped: list[tfs.TfsDataFrame] = []
     for path in meas_paths:
         path = Path(path)
         LOG.info(f"Reading measurement results at '{path.absolute()}'.")
