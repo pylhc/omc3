@@ -242,9 +242,9 @@ def _save_outputs(
 
     Args:
         beam (int): Beam number to process.
-        save_output_dir (Path | str ): Path to the saving output directory.
-        txt_to_save (str): .txt to be saved.
-        df_to_save (tfs.TfsDataFrame): .tfs dataframe to be saved.
+        df (tfs.TfsDataFrame): A kmod summary TfsDataFrame to save to disk.
+                logbook_text (str): Logbook entry text to save to a .txt file.
+        output_dir (Path | str): Path to the directory in which to save both dataframe and logbook text.
 
     """
 
