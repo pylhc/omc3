@@ -41,7 +41,10 @@ from omc3.optics_measurements.constants import (
 from omc3.utils import iotools, logging_tools
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from generic_parser import DotDict
+    from tfs import TfsDataFrame
 
     from omc3.optics_measurements.data_models import InputFiles
 
@@ -74,8 +77,8 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
     common_header = _get_header(measure_input, tune_dict)
 
     # Linear Optics ---
-    invariants = {}
-    phase_results = {}
+    invariants: dict[str, TfsDataFrame] = {}
+    phase_results= {}
     for plane in PLANES:
         # Phases -
         phase_results[plane], out_dfs = phase.calculate(measure_input, input_files, tune_dict, plane)
@@ -153,7 +156,7 @@ def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict
         tfs.write(output_path, output_df, save_index=NAME)
 
 
-def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict):
+def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict) -> dict[str, Any]:
     return {
         "Measure_optics:version": VERSION,
         "Command": f"{sys.executable} {' '.join(sys.argv)}",

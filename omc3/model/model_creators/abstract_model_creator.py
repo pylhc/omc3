@@ -63,6 +63,7 @@ class ModelCreator(ABC):
     """
 
     jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
+    save_sequence_filename: str = "saved_madx.seq"
 
     def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
         """
@@ -107,7 +108,7 @@ class ModelCreator(ABC):
         run_string(
             madx_script,
             output_file=self.accel.model_dir / self.jobfile,
-            log_file=self.logfile,
+            log_file=self.accel.model_dir / self.logfile,
             cwd=self.accel.model_dir,
         )
 
@@ -128,6 +129,24 @@ class ModelCreator(ABC):
         as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).
         """
         pass
+
+    @property
+    def sequence_name(self) -> str:
+        """Returns the sequence name to be used. This is necessary if you would like to use MAD-NG with your sequence. (Currently only MAD-NG Response).
+
+        Subclasses that use :meth:`get_save_sequence_script` must override this
+        property to return the appropriate sequence name for the accelerator.
+        """
+        raise AcceleratorDefinitionError(
+            f"{type(self).__name__} must define `sequence_name` when using "
+            f"`get_save_sequence_script` or other features depending on it."
+        )
+    def get_save_sequence_script(self) -> str:
+        """Returns madx script to save a generic sequence."""
+        return (
+            f"set, format='-16.16e';\n"
+            f"save, sequence={self.sequence_name}, file='{self.save_sequence_filename}', noexpr=false;\n"
+        )
 
     def resolve_path_for_madx(self, path: Path | str) -> Path:
         """Converts a given path to a path relative to the model dir if possible, otherwise returns the absolute path.

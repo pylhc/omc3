@@ -301,6 +301,9 @@ def _process_rdt(
 def _add_tunes_if_in_second_turn(
     df: pd.DataFrame, input_files: InputFiles, line, phase2, dpp_value
 ):
+    # With pandas 3.x phase2 might be passed as a read-only view so we ensure
+    # a copy is made here since we intend to mutate before returning
+    phase2 = np.array(phase2, copy=True)
     mask = df_diff(df, S, S2) > 0  # Get all the S2 positions that are less than S
     tunes = np.empty((2, len(input_files.dpp_frames("X", dpp_value))))
     for i, plane in enumerate(PLANES):

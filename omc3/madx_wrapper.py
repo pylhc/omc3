@@ -100,7 +100,7 @@ def run_file(
 def run_string(
     input_string: str,
     output_file: Path | None = None,
-    log_file: Path = None,
+    log_file: Path | None = None,
     madx_path: Path | str = MADX_PATH,
     cwd: Path | None = None,
 ):
