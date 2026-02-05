@@ -161,6 +161,8 @@ class Lhc(Accelerator):
         self.beam = opt.beam
         beam_to_beam_direction = {1: 1, 2: -1}
         self.beam_direction = beam_to_beam_direction[self.beam]
+        if self.energy is None:
+            self.energy = 450  # default energy in GeV
 
     def verify_object(self) -> None:  # TODO: Maybe more checks?
         """
