@@ -233,9 +233,9 @@ def _prepare_logbook_table(
 
 def _save_outputs(
     beam: int,
-    txt_to_save: str,
-    df_to_save: tfs.TfsDataFrame,
-    save_output_dir: Path | str,
+    df: tfs.TfsDataFrame,
+    logbook_text: str,
+    output_dir: Path | str,
 ) -> None:
     """
     Save logbook text output and .tfs summary for a given beam.
