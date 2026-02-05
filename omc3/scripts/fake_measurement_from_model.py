@@ -34,9 +34,9 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
     Optics parameters to use
 
-    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'F1010', 'F1001')``
+    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'X', 'Y', 'F1010', 'F1001')``
 
-    default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'F1010', 'F1001']``
+    default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'X', 'Y', 'F1010', 'F1001']``
 
 
 - **randomize** *(str)*:
@@ -52,7 +52,7 @@ from the `twiss` given, e.g. if the `twiss` incorporates errors.
 
 - **relative_errors** *(float)*:
 
-    Relative errors. Either single value for all paramters orlist of
+    Relative errors. Either single value for all parameters or list of
     values in order of parameters.
 
     default: ``[0.0]``
@@ -98,6 +98,8 @@ from omc3.optics_measurements.constants import (
     NAME2,
     NORM_DISP_NAME,
     NORM_DISPERSION,
+    ORBIT,
+    ORBIT_NAME,
     PHASE,
     PHASE_ADV,
     PHASE_NAME,
@@ -135,6 +137,8 @@ OUTPUTNAMES_MAP = {
     F1010: (F1010_NAME,),
     F1001: (F1001_NAME,),
     f'{NORM_DISPERSION}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
+    f"{ORBIT}X": (f"{ORBIT_NAME}x",),
+    f"{ORBIT}Y": (f"{ORBIT_NAME}y",),
 }
 FAKED_HEADER: str = "FAKED_FROM"
 VALUES: str = 'values'
@@ -167,9 +171,11 @@ def get_params():
     )
     params.add_parameter(
         name="relative_errors",
-        help=("Relative errors. Either single value for all paramters or"
-              "list of values in order of parameters."),
-        default=[0.,],
+        help=(
+            "Relative errors. Either single value for all parameters or"
+            "list of values in order of parameters."
+        ),
+        default=[0.0],
         type=float,
         nargs="+",
     )
@@ -407,12 +413,25 @@ def create_coupling(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: s
     return {parameter.lower(): df}
 
 
+def create_orbit(df_twiss: pd.DataFrame, df_model: pd.DataFrame, parameter: str,
+                 relative_error: float, randomize: Sequence[str], headers: dict):
+    """ Creates orbit measurement. """
+    LOG.info(f"Creating fake orbit for {parameter}.")
+    plane = parameter[-1]
+    df = create_measurement(df_twiss, parameter, relative_error, randomize)
+    df = append_model_param(df, df_model, parameter)
+    df = append_model_s_and_phaseadv(df, df_model, planes=plane)
+    df.headers = headers.copy()
+    return {f'{ORBIT_NAME}{plane.lower()}': df}
+
+
 CREATOR_MAP = {
     BETA: create_beta,
     DISPERSION: create_dispersion,
     PHASE: create_phase,
     F1010[:-1]: create_coupling,  # normally the plane is removed but here is no plane
     F1001[:-1]: create_coupling,
+    ORBIT: create_orbit,
 }
 
 

@@ -71,6 +71,9 @@ def create_fullresponse(
         delta_k (float): delta K1L to be applied to quads for sensitivity matrix
         num_proc (int): Number of processes to use in parallel.
         temp_dir (str): temporary directory. If ``None``, uses folder of original_jobfile.
+
+    Returns:
+        dict: Dictionary of response DataFrames keyed by optics type (e.g., 'BETAX', 'PHASEX', etc.)
     """
     LOG.debug("Generating Fullresponse via Mad-X.")
     with timeit(lambda t: LOG.debug(f"  Total time generating fullresponse: {t} s")):

@@ -25,6 +25,7 @@ from omc3.optics_measurements.constants import (
     MDL,
     NORM_DISP_NAME,
     ORBIT_NAME,
+    S,
 )
 from omc3.utils import stats
 
@@ -228,7 +229,7 @@ def _calculate_dp(model, disp, plane):
 
 def _get_merged_df(meas_input, input_files, plane, meas_columns):
     model = meas_input.accelerator.model
-    df = pd.DataFrame(model).reindex(columns=["S", plane, f"D{plane}", f"DP{plane}", f"MU{plane}",
+    df = pd.DataFrame(model).reindex(columns=[S, plane, f"D{plane}", f"DP{plane}", f"MU{plane}",
                                               f"BET{plane}", f"DD{plane}"], fill_value=np.nan)
     df.rename(columns={plane: f"{plane}{MDL}", f"D{plane}": f"D{plane}{MDL}", f"DP{plane}": f"DP{plane}{MDL}",
                        f"MU{plane}": f"MU{plane}{MDL}", f"BET{plane}": f"BET{plane}{MDL}", f"DD{plane}": f"D2{plane}{MDL}"}, inplace=True)
@@ -253,7 +254,7 @@ def _get_signed_dispersion(input_files, df_orbit, scaled_amps, mask):
 
 
 def _get_output_columns(plane, df):
-    cols = (["S", "COUNT", f"MU{plane}MDL"] +           # common columns
+    cols = ([S, "COUNT", f"MU{plane}MDL"] +           # common columns
             _single_column_set_list(plane) +            # orbit columns
             _single_column_set_list(f"ND{plane}") +     # normalized dispersion columns
             _single_column_set_list(f"D{plane}") +      # dispersion columns

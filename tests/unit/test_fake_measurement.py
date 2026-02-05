@@ -26,6 +26,8 @@ from omc3.optics_measurements.constants import (
     NAME,
     NORM_DISP_NAME,
     NORM_DISPERSION,
+    ORBIT,
+    ORBIT_NAME,
     PHASE,
     PHASE_ADV,
     PHASE_NAME,
@@ -257,6 +259,7 @@ def test_parameter(beam, parameter):
         NORM_DISP_NAME: _test_norm_disp,
         F1010_NAME[:-1]: _test_coupling,
         F1001_NAME[:-1]: _test_coupling,
+        ORBIT_NAME: _test_orbit,
     }
 
     for name, df in results.items():
@@ -357,6 +360,23 @@ def _test_coupling(df, plane, relative_error):
                 df[f"{param}{plane}{MDL}"],
                 df[f"{ERR}{param}{plane}"],
             )
+
+
+def _test_orbit(df, plane, relative_error):
+    assert _all_columns_present(df, ORBIT, plane)
+
+    assert all(
+        df[f"{ERR}{ORBIT}{plane}"] <= 5 * relative_error * np.abs(df[f"{ORBIT}{plane}{MDL}"])
+    )  # rough estimate
+    assert all(
+        np.abs(df[f"{DELTA}{ORBIT}{plane}"] - df[f"{ORBIT}{plane}"] + df[f"{ORBIT}{plane}{MDL}"])
+        < EPS
+    )
+    assert all(np.abs(df[f"{ERR}{DELTA}{ORBIT}{plane}"] - df[f"{ERR}{ORBIT}{plane}"]) < EPS)
+    if any(df[f"{ORBIT}{plane}{MDL}"]):
+        assert _gaussian_distribution_test(
+            df[f"{ORBIT}{plane}"], df[f"{ORBIT}{plane}{MDL}"], df[f"{ERR}{ORBIT}{plane}"]
+        )
 
 
 def _all_columns_present(df, param, plane):

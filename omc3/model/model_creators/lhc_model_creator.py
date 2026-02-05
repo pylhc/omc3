@@ -187,8 +187,8 @@ class LhcModelCreator(ModelCreator):
         twiss_dat_path = self.resolve_path_for_madx(accel.model_dir / TWISS_DAT)
         twiss_elements_path = self.resolve_path_for_madx(accel.model_dir / TWISS_ELEMENTS_DAT)
         madx_script += (
-            f"exec, do_twiss_monitors(LHCB{accel.beam}, '{twiss_dat_path}', {accel.dpp});\n"
-            f"exec, do_twiss_elements(LHCB{accel.beam}, '{twiss_elements_path}', {accel.dpp});\n"
+            f"exec, do_twiss_monitors({self.sequence_name}, '{twiss_dat_path}', {accel.dpp});\n"
+            f"exec, do_twiss_elements({self.sequence_name}, '{twiss_elements_path}', {accel.dpp});\n"
         )
         if accel.excitation != AccExcitationMode.FREE or accel.drv_tunes is not None:
             # allow user to modify script and enable excitation, if driven tunes are given
@@ -226,6 +226,11 @@ class LhcModelCreator(ModelCreator):
             madx_script += f"exec, coupling_knob({accel.beam});\n"
 
         return madx_script
+
+    @property
+    def sequence_name(self) -> str:
+        """Returns the sequence name for LHC."""
+        return f"LHCB{self.accel.beam}"
 
     def _get_sequence_initialize_script(self) -> str:
         """Returns the LHC sequence initialization script.
