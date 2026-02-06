@@ -201,7 +201,7 @@ def prepare_summary_table(
 
     if kmod_averaged_output_dir is not None:
         grouped_kmod_averaged = collect_averaged_kmod_results(
-            beam=beam, output_dir=kmod_averaged_output_dir
+            beam=beam, kmod_averaged_output_dir=kmod_averaged_output_dir
         )
 
         if grouped_kmod_averaged:
@@ -234,7 +234,6 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[Tf
     Returns:
         list[tfs.TfsDataFrame]: A list with all the gathered dataframes.
     """
-
     LOG.info("Gathering kmod results.")
     result: list[TfsDataFrame] = []
 
@@ -258,39 +257,49 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[Tf
     return result
 
 
-def collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> list[TfsDataFrame]:
+def collect_averaged_kmod_results(
+    beam: int, kmod_averaged_output_dir: Path | str | None
+) -> list[TfsDataFrame]:
     """
-    Gathers the averaged kmod results dataframes, taking only cols_x and cols_y values for the given beam.
+    Gathers the averaged kmod results dataframes, taking only relevant column values for the given beam.
 
     Args:
         beam (int): Beam number to process.
-        output_dir (Path | str ): Path to the folder with averaged kmod dataframes. If None, averaged kmod results are not collected.
+        kmod_averaged_output_dir (Path | str | None): Path to the directory containing averaged kmod TFS results files.
+
     Returns:
-        list[tfs.TfsDataFrame]: List containing grouped averaged kmod results.
+        list[tfs.TfsDataFrame]: A list with all the gathered dataframes. Empty if no path was provided.
     """
     LOG.info("Gathering averaged kmod results.")
+    result: list[tfs.TfsDataFrame] = []
 
-    if output_dir is None:
+    if kmod_averaged_output_dir is None:
         LOG.info("No output_dir provided, skipping.")
-        return []
+        return result
 
-    output_dir = Path(output_dir)
-    # if the file name starts with AVERAGED_BETASTAR_FILENAME till {ip}
+    kmod_averaged_output_dir = Path(kmod_averaged_output_dir)
+
+    # The expected file name is based on the AVERAGED_BETASTAR_FILENAME
+    # constant. We check the starting part, up to the IP number
     prefix = AVERAGED_BETASTAR_FILENAME.split("{")[0]
-    grouped_averaged: list[tfs.TfsDataFrame] = []
-    for df_path in output_dir.glob(f"{prefix}*"):
+
+    for df_path in kmod_averaged_output_dir.glob(f"{prefix}*"):
         if not df_path.is_file():
             continue
-        df = tfs.read(df_path)
-        beam_row = df[df["BEAM"] == beam]
+
+        avg_df = tfs.read(df_path)
+        beam_row = avg_df[avg_df["BEAM"] == beam]
+
         if beam_row.empty:
             LOG.warning(f"Beam {beam} not found in averaged results, skipping.")
             continue
-        res = beam_row[COLS_X + COLS_Y]
+
+        df = beam_row[COLS_X + COLS_Y]
         ip_name = beam_row[NAME].iloc[0]
-        res.insert(0, IP_COLUMN, ip_name)
-        grouped_averaged.append(res)
-    return grouped_averaged
+        df.insert(0, IP_COLUMN, ip_name)
+        result.append(df)
+
+    return result
 
 
 def collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
