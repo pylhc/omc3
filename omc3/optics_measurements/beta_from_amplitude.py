@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import tfs
 
-from omc3.optics_measurements.constants import AMP_BETA_NAME, DELTA, ERR, EXT, MDL, RES
+from omc3.optics_measurements.constants import AMP_BETA_NAME, DELTA, ERR, EXT, MDL, RES, S
 from omc3.optics_measurements.toolbox import df_ratio, df_rel_diff
 
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ def add_rescaled_beta_columns(df, ratio, plane):
 
 
 def beta_from_amplitude(meas_input, input_files, plane, tunes):
-    df = pd.DataFrame(meas_input.accelerator.model).loc[:, ["S", f"MU{plane}", f"BET{plane}"]]
+    df = pd.DataFrame(meas_input.accelerator.model).loc[:, [S, f"MU{plane}", f"BET{plane}"]]
     df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
                        f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
     df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=meas_input.analyse_dpp),

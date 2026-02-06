@@ -1,7 +1,8 @@
-# Publishes to PyPI upon creation of a release
+# Builds the package and publishes to PyPI upon creation of a release
 name: Upload Package to PyPI
 
-on:  # Runs everytime a release is added to the repository
+# Runs everytime a release is added to the repository
+on:
   release:
     types: [created]
 

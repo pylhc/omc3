@@ -1,13 +1,16 @@
 # Build documentation
-# The build is uploaded as artifact if the triggering event is a push for a pull request
-# The build is published to github pages if the triggering event is a push to the master branch (PR merge)
+# The build is uploaded as artifact if triggered from a pull request
+# The build is published to GitHub pages if triggered by a push to the master branch (which requires merging a PR)
 name: Build and upload documentation
 
-on:  # Runs on any push event in a PR or any push event to master
-  pull_request:
+# Runs on the following conditions:
+# - Any push to master branch (which requires merging a PR)
+# - Any push to a branch linked to a pull request
+on:
   push:
     branches:
       - 'master'
+  pull_request:
 
 jobs:
   documentation:
