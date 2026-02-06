@@ -27,6 +27,8 @@ from omc3.utils.iotools import PathOrStr
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from tfs import TfsDataFrame
+
 LOG = logging_tools.get_logger(__name__)
 
 # Constants definitions for K-modulation
@@ -48,6 +50,8 @@ COLS_Y: list[str] = [
 ]
 IP_COLUMN: str = "IP"
 KMOD_FILENAME: str = "kmod_summary"
+
+# ----- Script Mode ----- #
 
 
 def _get_params() -> EntryPointParameters:
@@ -93,7 +97,7 @@ def _get_params() -> EntryPointParameters:
 
 
 @entrypoint(_get_params(), strict=True)
-def generate_kmod_summary(opt: DotDict) -> tfs.TfsDataFrame:
+def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
     output_dir = Path(opt.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -125,12 +129,15 @@ def generate_kmod_summary(opt: DotDict) -> tfs.TfsDataFrame:
     return df
 
 
+# ----- Separate Functionality ----- #
+
+
 def _prepare_logbook_table(
     beam: int,
     meas_paths: Sequence[Path | str],
     kmod_averaged_output_dir: Path | str | None = None,
     lumi_imb_output_dir: Path | str | None = None,
-) -> tuple[tfs.TfsDataFrame, str]:
+) -> tuple[TfsDataFrame, str]:
     """
     Prepare formatted logbook tables from K-modulation summary data.
 
@@ -189,7 +196,7 @@ def _prepare_logbook_table(
     return kmod_summary, logbook_table
 
 
-def _extract_ip_name(result_df: tfs.TfsDataFrame) -> str:
+def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
     """
     Extract IP name from magnet in LABEL column.
 
@@ -221,7 +228,7 @@ def _extract_ip_name(result_df: tfs.TfsDataFrame) -> str:
         return None
 
 
-def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tfs.TfsDataFrame]:
+def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[TfsDataFrame]:
     """
     Gathers the kmod results.tfs dataframes, taking only cols_x and cols_y values for the given beam.
 
@@ -233,8 +240,8 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tf
     """
 
     LOG.info("Gathering kmod results.")
+    grouped: list[TfsDataFrame] = []
 
-    grouped: list[tfs.TfsDataFrame] = []
     for path in map(Path, meas_paths):
         LOG.info(f"Reading measurement results at '{path.absolute()}'.")
         file_path = path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
@@ -251,9 +258,7 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tf
     return grouped
 
 
-def _collect_averaged_kmod_results(
-    beam: int, output_dir: Path | str | None
-) -> list[tfs.TfsDataFrame]:
+def _collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> list[TfsDataFrame]:
     """
     Gathers the averaged kmod results dataframes, taking only cols_x and cols_y values for the given beam.
 
@@ -325,7 +330,7 @@ def _collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
     return "\n".join(report_lines)
 
 
-def _format_header(title: str, df: tfs.TfsDataFrame | str) -> str:
+def _format_header(title: str, df: TfsDataFrame | str) -> str:
     """
     Format a section with a dynamic header based on dataframe width.
 
@@ -351,7 +356,7 @@ def _format_header(title: str, df: tfs.TfsDataFrame | str) -> str:
 def save_summary_outputs(
     beam: int,
     logbook_text: str,
-    df: tfs.TfsDataFrame,
+    df: TfsDataFrame,
     output_dir: Path | str,
 ) -> None:
     """
@@ -362,9 +367,7 @@ def save_summary_outputs(
         logbook_text (str): Logbook entry text to save to a .txt file.
         df (tfs.TfsDataFrame): A kmod summary TfsDataFrame to save to disk.
         output_dir (Path | str): Path to the directory in which to save both dataframe and logbook text.
-
     """
-
     save_output_dir = Path(output_dir)
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}{EXT}"
@@ -389,7 +392,6 @@ def _summary_logbook_entry(
         logbook_entry_text (str): Text for logbook entry.
         logbook_entry_file (str | Path): File to attach at the logbook entry. Defaults to None.
     """
-
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
     logbook_event = DotDict(
         {
@@ -405,7 +407,7 @@ def _summary_logbook_entry(
     _ = create_logbook_entry(logbook_event)
 
 
-# Commandline Entry Point ------------------------------------------------------
+# ----- Commandline Entry Point ----- #
 
 if __name__ == "__main__":
     generate_kmod_summary()
