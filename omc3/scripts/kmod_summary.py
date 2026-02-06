@@ -427,17 +427,15 @@ def _format_summary(title: str, df: TfsDataFrame) -> str:
     Returns:
         str: Formatted section text.
     """
-    df_str = df if isinstance(df, str) else df.to_string(index=False)
-    if not df_str.strip():
-        LOG.warning("No Luminosity Imbalance results found, skipping.")
+    df_text = df.to_string(index=False)
+
+    if not df_text.strip():
+        LOG.warning("No summary data results found, skipping")
         return ""
-    header_len = max(len(df_str.splitlines()[0]), 40)
-    header_line = (
-        "=" * ((header_len - len(title) - 2) // 2)
-        + f" {title} "
-        + "=" * ((header_len - len(title) - 2 + 1) // 2)
-    )
-    return f"{header_line}\n{df_str}\n"
+
+    width = len(df_text.splitlines()[0])
+    header = f" {title} ".center(width, "=")
+    return f"{header}\n{df_text}\n"
 
 
 # ----- Commandline Entry Point ----- #
