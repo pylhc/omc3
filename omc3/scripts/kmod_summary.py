@@ -47,8 +47,38 @@ COLS_Y = [
 IP_COLUMN = "IP"
 NAME_COLUMN = "NAME"
 
+def _extract_ip_name(result_df: tfs.TfsDataFrame) -> str:
+    """
+    Extract IP name from magnet in LABEL column.
 
-def _collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tfs.TfsDataFrame]:
+    Args:
+        result_df (tfs.TfsDataFrame): TfsDataFrame containing the kmod measurement.
+    Returns:
+        str: IP name in the form 'IP{number}.
+    """
+
+    LOG.debug("Extracting IP name from dataframe")
+    try:
+        # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
+        magnets_label = result_df[LABEL].iloc[0]
+    except KeyError as exc:
+        LOG.debug(f"Missing '{LABEL}' column, cannot extract IP.", exc_info=exc)
+        return None
+
+    try:
+        # Take right magnet name from label e.g. "MQXA1.R5" from "MQXA1.L5-MQXA1.R5"
+        second_magnet = magnets_label.split("-")[1]
+        # Take right part of the magnet's name e.g. "R5" from "MQXA.R5"
+        ip_and_side = second_magnet.split(".")[-1]
+        # isolate IP number e.g. "5" from "R5"
+        ip_number = ip_and_side[1:]
+
+        return f"{IP_COLUMN}{ip_number}"
+    except (IndexError, ValueError) as exc:
+        LOG.debug(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
+        return None
+
+def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tfs.TfsDataFrame]:
     """
     Gathers the kmod results.tfs dataframes, taking only cols_x and cols_y values for the given beam.
 
@@ -62,40 +92,24 @@ def _collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[t
 
     LOG.info("Gathering kmod results.")
 
-    grouped = []
-    for path in meas_paths:
-        path = Path(path)
+    grouped: list[tfs.TfsDataFrame] = []
+    for path in map(Path, meas_paths):
         LOG.info(f"Reading measurement results at '{path.absolute()}'.")
         file_path = path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
         if not file_path.exists():
-            LOG.warning(f"Missing {RESULTS_FILE_NAME}{EXT}: {file_path}")
-        else:
-            meas_name = path.name
-            result_df = tfs.read(file_path)
-            try:
-                label = result_df[LABEL].iloc[
-                    0
-                ]  # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
-            except KeyError as e:
-                LOG.debug("Could not parse IP from LABEL. Skipping entry.", exc_info=e)
-                ip_name = "None"
-            else:
-                second_magnet = label.split("-")[
-                    1
-                ]  # takes right magnet from magnet names. ex. [MQXA1.R5] from [MQXA1.L5-MQXA1.R5]
-                relevant = second_magnet.split(".")[
-                    -1
-                ]  # takes last part of the second magnet name. ex. [R5] from [MQXA1.R5]
-                ip_number = relevant[1:]  # isolate IP number. ex. [5] from [R5]
-                ip_name = f"{IP_COLUMN}{ip_number}"
-            df = result_df[COLS_X + COLS_Y].iloc[[0]]  # returns a DataFrame with one row
-            df.insert(0, NAME_COLUMN, meas_name)
-            df.insert(0, IP_COLUMN, ip_name)
-            grouped.append(df)
+            LOG.warning(f"Missing results file: {file_path}")
+            continue
+        meas_name = path.name
+        result_df = tfs.read(file_path)
+        ip_name = _extract_ip_name(result_df)
+        df = result_df[COLS_X + COLS_Y].iloc[[0]]  # returns a DataFrame with one row
+        df.insert(0, NAME_COLUMN, meas_name)
+        df.insert(0, IP_COLUMN, ip_name)
+        grouped.append(df)
     return grouped
 
 
-def _collect_averaged_kmod_results(beam: int, output_dir: Path | str) -> list[tfs.TfsDataFrame]:
+def _collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> list[tfs.TfsDataFrame]:
     """
     Gathers the averaged kmod results dataframes, taking only cols_x and cols_y values for the given beam.
 
@@ -109,32 +123,32 @@ def _collect_averaged_kmod_results(beam: int, output_dir: Path | str) -> list[tf
     LOG.info("Gathering averaged kmod results.")
 
     if output_dir is None:
-        LOG.info("No output_dir provided: skipping averaged kmod results gathering.")
+        LOG.info("No output_dir provided, skipping.")
         return []
 
     output_dir = Path(output_dir)
-    prefix = AVERAGED_BETASTAR_FILENAME.split("{")[
-        0
-    ]  # if the file name starts with AVERAGED_BETASTAR_FILENAME till {ip}
-    grouped_averaged = []
-    for df_path in output_dir.iterdir():
-        if not df_path.is_file() or not df_path.name.startswith(prefix):
+    # if the file name starts with AVERAGED_BETASTAR_FILENAME till {ip}
+    prefix = AVERAGED_BETASTAR_FILENAME.split("{")[0]
+    grouped_averaged: list[tfs.TfsDataFrame] = []
+    for df_path in output_dir.glob(f"{prefix}*"):
+        if not df_path.is_file():
             continue
         df = tfs.read(df_path)
-        if beam not in df.index:
-            LOG.warning("Beam %s not found in averaged results. Skipping.", beam)
+        beam_row = df[df["BEAM"] == beam]
+        if beam_row.empty:
+            LOG.warning(f"Beam {beam} not found in averaged results, skipping.")
             continue
-        df_beam_row = df.loc[[beam]]
-        df_beam_row_col = df_beam_row[COLS_X + COLS_Y]
-        ip_name = df_beam_row[NAME]
-        df_beam_row_col.insert(0, IP_COLUMN, ip_name)
-        grouped_averaged.append(df_beam_row_col)
+        res = beam_row[COLS_X + COLS_Y]
+        ip_name = beam_row[NAME].iloc[0]
+        res.insert(0, IP_COLUMN, ip_name)
+        grouped_averaged.append(res)
     return grouped_averaged
 
 
-def _collect_lumi_imbalance_results(output_dir: Path | str) -> str:
+def _collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
     """
-    Gathers the luminosity imbalance results.
+    Gathers the luminosity imbalance results from effective betas files.
+    Returns a formatted multi-line string, one line per valid file.
 
     Args:
         output_dir (Path | str ): Path to the folder with luminosity imbalance dataframes. If None, luminosity imbalance results are not collected.
@@ -144,30 +158,45 @@ def _collect_lumi_imbalance_results(output_dir: Path | str) -> str:
     LOG.info("Gathering luminosity imbalance results.")
 
     if output_dir is None:
-        LOG.info("No output_dir provided: skipping luminosity imbalance gathering.")
+        LOG.info("No output_dir provided, skipping.")
         return ""
 
     output_dir = Path(output_dir)
-    prefix = EFFECTIVE_BETAS_FILENAME.split("{")[
-        0
-    ]  # if the file name starts with EFFECTIVE_BETAS_FILENAME till {ip}
-    report_lines = []
-    for df_path in output_dir.iterdir():
-        if not df_path.is_file() or not df_path.name.startswith(prefix):
+    # if the file name starts with EFFECTIVE_BETAS_FILENAME till {ip}
+    prefix = EFFECTIVE_BETAS_FILENAME.split("{")[0]
+    report_lines: list[str] = []
+    for df_path in output_dir.glob(f"{prefix}*"):
+        if not df_path.is_file():
             continue
-
         df = tfs.read(df_path)
-        lumi_imbalance = float(df.headers.get("LUMIIMBALANCE", 0))
-        err_lumi_imbalance = float(df.headers.get("ERRLUMIIMBALANCE", 0))
+        lumi_imbalance = df.headers.get("LUMIIMBALANCE")
+        lumi_imbalance = float(lumi_imbalance) if lumi_imbalance is not None else None
+        err_lumi_imbalance = df.headers.get("ERRLUMIIMBALANCE")
+        err_lumi_imbalance = float(err_lumi_imbalance) if err_lumi_imbalance is not None else None
         ips = df[NAME].tolist()
-
         # final check
         if lumi_imbalance is not None and err_lumi_imbalance is not None and len(ips) >= 2:
-            report_lines.append(
-                f"Luminosity imbalance in between {ips[0]} and {ips[1]} is {lumi_imbalance} ± {err_lumi_imbalance}"
-            )
-
+            report_lines.append(f"Luminosity imbalance in between {ips[0]} and {ips[1]} is {lumi_imbalance} ± {err_lumi_imbalance}")
     return "\n".join(report_lines)
+
+
+def _format_header(title: str, df: tfs.TfsDataFrame | str) -> str:
+    """
+    Format a section with a dynamic header based on dataframe width.
+    Args:
+        title (str): The section title.
+        df (tfs.TfsDataFrame): The dataframe to include.
+
+    Returns:
+        str: Formatted section string.
+    """
+    df_str = df if isinstance(df, str) else df.to_string(index=False)
+    if not df_str.strip():
+        LOG.warning("No Luminosity Imbalance results found, skipping.")
+        return ""
+    header_len = max(len(df_str.splitlines()[0]), 40)
+    header_line = "=" * ((header_len - len(title) - 2) // 2) + f" {title} " + "=" * ((header_len - len(title) - 2 + 1) // 2)
+    return f"{header_line}\n{df_str}\n"
 
 
 def _prepare_logbook_table(
@@ -175,7 +204,7 @@ def _prepare_logbook_table(
     meas_paths: Sequence[Path | str],
     kmod_averaged_output_dir: Path | str | None = None,
     lumi_imb_output_dir: Path | str | None = None,
-) -> tuple[tfs.TfsDataFrame, list[str]]:
+    ) -> tuple[tfs.TfsDataFrame, str]:
     """
     Prepare formatted logbook tables from K-modulation summary data.
 
@@ -192,26 +221,24 @@ def _prepare_logbook_table(
     """
     LOG.info("Formatting the tables to text.")
 
-    grouped_kmod = _collect_kmod_results(beam=beam, meas_paths=meas_paths)
+    grouped_kmod = collect_kmod_results(beam=beam, meas_paths=meas_paths)
     if grouped_kmod:
         kmod_summary = tfs.concat(grouped_kmod, ignore_index=True)
-        kmod_summary_x = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_X]
-        kmod_summary_y = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_Y]
+    else:
+        LOG.warning(f"No K-mod results found for beam {beam}, skipping.")
+        kmod_summary = tfs.TfsDataFrame(columns=[IP_COLUMN, NAME_COLUMN] + COLS_X + COLS_Y)
+    kmod_summary_x = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_X]
+    kmod_summary_y = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_Y]
 
-    logbook_tables = []
+    logbook_table: list[str] = []
     if lumi_imb_output_dir is not None:
         kmod_summary_lumiimb = _collect_lumi_imbalance_results(output_dir=lumi_imb_output_dir)
-        logbook_tables.append(
-            f"=============================== Luminosity Imbalance =======================================\n{kmod_summary_lumiimb}\n"
-        )
+        logbook_table.append(_format_header("Luminosity Imbalance", kmod_summary_lumiimb))
     else:
         LOG.info("Luminosity imbalance results not included in the text table.")
 
     for plane, df in [("X", kmod_summary_x), ("Y", kmod_summary_y)]:
-        table_str = df.to_string()
-        logbook_tables.append(
-            f"\n=============================== {BEAM_DIR}{beam} Results ({plane}-plane) =======================================\n\n{table_str}\n"
-        )
+        logbook_table.append(_format_header(f"{BEAM_DIR}{beam} Results ({plane}-plane)", df))
 
     if kmod_averaged_output_dir is not None:
         grouped_kmod_averaged = _collect_averaged_kmod_results(
@@ -222,43 +249,45 @@ def _prepare_logbook_table(
             kmod_summary_x_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_X]
             kmod_summary_y_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_Y]
             for plane, df_averaged in [("X", kmod_summary_x_averaged), ("Y", kmod_summary_y_averaged)]:
-                table_str_averaged = df_averaged.to_string()
-                logbook_tables.append(
-                    f"\n=========================== {BEAM_DIR}{beam} Averaged Results ({plane}-plane) ==================================\n\n{table_str_averaged}\n"
-                )
+                logbook_table.append(_format_header(f"{BEAM_DIR}{beam} Averaged Results ({plane}-plane)", df_averaged))
     else:
         LOG.info("Averaged kmod results not included in the text table.")
 
-    return kmod_summary, logbook_tables
+    return kmod_summary, logbook_table
 
 
-def _save_outputs(
+def save_summary_outputs(
     beam: int,
-    txt_to_save: str,
-    df_to_save: tfs.TfsDataFrame,
-    save_output_dir: Path | str,
-) -> None:
+    logbook_text: str,
+    df: tfs.TfsDataFrame,
+    output_dir: Path | str,
+    ) -> None:
     """
     Save logbook text output and .tfs summary for a given beam.
 
     Args:
         beam (int): Beam number to process.
-        save_output_dir (Path | str ): Path to the saving output directory.
-        txt_to_save (str): .txt to be saved.
-        df_to_save (tfs.TfsDataFrame): .tfs dataframe to be saved.
+        logbook_text (str): Logbook entry text to save to a .txt file.
+        df (tfs.TfsDataFrame): A kmod summary TfsDataFrame to save to disk.
+        output_dir (Path | str): Path to the directory in which to save both dataframe and logbook text.
 
     """
 
-    save_output_dir = Path(save_output_dir)
+    save_output_dir = Path(output_dir)
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_kmod_summary.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_kmod_summary{EXT}"
     LOG.info(f"Writing .txt summary output file {logbook_table_path}.")
-    logbook_table_path.write_text(txt_to_save)
+    logbook_table_path.write_text(logbook_text)
     LOG.info(f"Writing {EXT} summary output file {summary_path}.")
-    tfs.write(summary_path, df_to_save)
+    tfs.write(summary_path, df)
 
 
-def _summary_logbook_entry(beam: int, logbook: str, logbook_entry_text: str) -> None:
+def _summary_logbook_entry(
+    beam: int,
+    logbook: str,
+    logbook_entry_text: str,
+    logbook_entry_file: str | Path | None = None,
+    ) -> None:
     """
     Create logbook entry with .txt generated table for a given beam.
 
@@ -268,19 +297,28 @@ def _summary_logbook_entry(beam: int, logbook: str, logbook_entry_text: str) -> 
         logbook_entry_text (str): Text for logbook entry.
     """
 
-    if isinstance(logbook_entry_text, str):
-        logbook_text = logbook_entry_text
-    else:
-        raise TypeError(f"entry_text must be str, got {type(logbook_entry_text)}.")
+    # logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
+    # logbook_event = DotDict(
+    #     {
+    #         "text": logbook_entry_text,
+    #         # "files": [],
+    #         # "filenames": [],
+    #         "logbook": logbook,
+    #     }
+    # )
+    # LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
+    # _ = create_logbook_entry(logbook_event)
 
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
     logbook_event = DotDict(
         {
-            "text": logbook_text,
-            # "files": [],
-            # "filenames": [],
+            "text": logbook_entry_text,
             "logbook": logbook,
         }
     )
+
+    if logbook_entry_file is not None:
+        logbook_event["files"] = [logbook_entry_file]
+
     LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     _ = create_logbook_entry(logbook_event)

@@ -50,7 +50,7 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 
     action: ``store_true``
 
-- **saving_option**:
+- **save_summary**:
 
     If True, kmod summary tables are saved as a Dataframe and Text file.
 
@@ -83,7 +83,7 @@ from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
 from omc3.scripts.kmod_summary import (
     _prepare_logbook_table,
-    _save_outputs,
+    save_summary_outputs,
     _summary_logbook_entry,
 )
 from omc3.utils import logging_tools
@@ -138,7 +138,7 @@ def _get_params():
         help="Show the plots."
     )
     params.add_parameter(
-        name="saving_option",
+        name="save_summary",
         type=bool,
         default=False,
         help="If True, kmod summary tables are saved as a Dataframe and Text file."
@@ -214,8 +214,8 @@ def import_kmod_results(opt: DotDict) -> None:
 
     kmod_summary, logbook_tables = _prepare_logbook_table(beam=opt.beam, meas_paths=opt.meas_paths, kmod_averaged_output_dir=average_output_dir, lumi_imb_output_dir=average_output_dir)
 
-    if opt.saving_option:
-        _save_outputs(
+    if opt.save_summary:
+        save_summary_outputs(
             beam=opt.beam,
             save_output_dir=average_output_dir,
             txt_to_save="\n".join(logbook_tables),
