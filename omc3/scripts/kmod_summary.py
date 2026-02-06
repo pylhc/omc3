@@ -85,19 +85,42 @@ def _get_params() -> EntryPointParameters:
     params.add_parameter(
         name="output_dir",
         type=PathOrStr,
-        help="Directory where summary files will be written.",
+        help="Directory to write summary files in.",
     )
     params.add_parameter(
         name="logbook",
         type=str,
         default=None,
-        help="Logbook name (e.g. LHC_OMC). If given, a logbook entry is created.",
+        help="Logbook name (e.g. LHC_OMC) to publish the summary to.",
     )
     return params
 
 
 @entrypoint(_get_params(), strict=True)
 def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
+    """
+    Reads kmod results, potentially including averaged results and
+    luminosity imbalance, and generates a summary dataframe then
+    saves the dataframe and a text summary to disk. If provided with
+    a logbook name, post that summary to the logbook.
+
+    Args:
+        beam (int):
+            Beam number to process results for.
+        meas_paths (Sequence[Path|str]):
+            Directories of imported K-modulation results.
+        kmod_averaged_output_dir (PathOrStr):
+            Directory containing averaged K-modulation results. Optional.
+        lumi_imb_output_dir (PathOrStr):
+            Directory containing luminosity imbalance results. Optional.
+        output_dir (Path|str):
+            Directory to write summary files in.
+        logbook (str):
+            Logbook name to publish the summary to. Optional.
+
+    Returns:
+        A TfsDataFrame with all gathered results summarised.
+    """
     output_dir = Path(opt.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -108,21 +131,16 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
         lumi_imb_output_dir=opt.lumi_imb_output_dir,
     )
 
-    logbook_text = "\n".join(filter(None, tables))
+    logbook_entry = "\n".join(filter(None, tables))
 
-    save_summary(
-        beam=opt.beam,
-        logbook_text=logbook_text,
-        df=df,
-        output_dir=output_dir,
-    )
+    save_summary(beam=opt.beam, df=df, summary=logbook_entry, output_dir=output_dir)
 
     if opt.logbook is not None:
         logbook_file = output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
         post_summary_to_logbook(
             beam=opt.beam,
             logbook=opt.logbook,
-            logbook_entry_text=logbook_text,
+            logbook_entry_text=logbook_entry,
             logbook_entry_file=logbook_file,
         )
 
@@ -355,8 +373,8 @@ def _format_header(title: str, df: TfsDataFrame | str) -> str:
 
 def save_summary(
     beam: int,
-    logbook_text: str,
     df: TfsDataFrame,
+    summary: str,
     output_dir: Path | str,
 ) -> None:
     """
@@ -364,15 +382,16 @@ def save_summary(
 
     Args:
         beam (int): Beam number to process.
-        logbook_text (str): Logbook entry text to save to a .txt file.
         df (tfs.TfsDataFrame): A kmod summary TfsDataFrame to save to disk.
+        summary (str): The summary as a string, as potentially sent to the logbook,
+            to be saved to a .txt file.
         output_dir (Path | str): Path to the directory in which to save both dataframe and logbook text.
     """
     save_output_dir = Path(output_dir)
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}{EXT}"
     LOG.info(f"Writing .txt summary output file {logbook_table_path}.")
-    logbook_table_path.write_text(logbook_text)
+    logbook_table_path.write_text(summary)
     LOG.info(f"Writing {EXT} summary output file {summary_path}.")
     tfs.write(summary_path, df)
 
