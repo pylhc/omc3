@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 LOG = logging_tools.get_logger(__name__)
 
 # Constants definitions for K-modulation
-COLS_X = [
+COLS_X: list[str] = [
     f"{BETASTAR}X",
     f"{ERR}{BETASTAR}X",
     f"{BETAWAIST}X",
@@ -38,7 +38,7 @@ COLS_X = [
     f"{WAIST}X",
     f"{ERR}{WAIST}X",
 ]
-COLS_Y = [
+COLS_Y: list[str] = [
     f"{BETASTAR}Y",
     f"{ERR}{BETASTAR}Y",
     f"{BETAWAIST}Y",
@@ -46,11 +46,13 @@ COLS_Y = [
     f"{WAIST}Y",
     f"{ERR}{WAIST}Y",
 ]
-IP_COLUMN = "IP"
-NAME_COLUMN = "NAME"
-KMOD_FILENAME = "kmod_summary"
+IP_COLUMN: str = "IP"
+KMOD_FILENAME: str = "kmod_summary"
 
 def _get_params() -> EntryPointParameters:
+    """
+    Creates and returns the parameters for the Kmodulation summary.
+    """
     params = EntryPointParameters()
     params.add_parameter(
         name="beam",
@@ -146,9 +148,9 @@ def _prepare_logbook_table(
         kmod_summary = tfs.concat(grouped_kmod, ignore_index=True)
     else:
         LOG.warning(f"No K-mod results found for beam {beam}, skipping.")
-        kmod_summary = tfs.TfsDataFrame(columns=[IP_COLUMN, NAME_COLUMN] + COLS_X + COLS_Y)
-    kmod_summary_x = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_X]
-    kmod_summary_y = kmod_summary[[IP_COLUMN, NAME_COLUMN] + COLS_Y]
+        kmod_summary = tfs.TfsDataFrame(columns=[IP_COLUMN, NAME] + COLS_X + COLS_Y)
+    kmod_summary_x = kmod_summary[[IP_COLUMN, NAME] + COLS_X]
+    kmod_summary_y = kmod_summary[[IP_COLUMN, NAME] + COLS_Y]
 
     logbook_table: list[str] = []
     if lumi_imb_output_dir is not None:
@@ -231,7 +233,7 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tf
         result_df = tfs.read(file_path)
         ip_name = _extract_ip_name(result_df)
         df = result_df[COLS_X + COLS_Y].iloc[[0]]  # returns a DataFrame with one row
-        df.insert(0, NAME_COLUMN, meas_name)
+        df.insert(0, NAME, meas_name)
         df.insert(0, IP_COLUMN, ip_name)
         grouped.append(df)
     return grouped
