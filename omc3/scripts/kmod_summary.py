@@ -192,12 +192,12 @@ def prepare_summary_table(
     logbook_table: list[str] = []
     if lumi_imb_output_dir is not None:
         kmod_summary_lumiimb = collect_lumi_imbalance_results(output_dir=lumi_imb_output_dir)
-        logbook_table.append(_format_header("Luminosity Imbalance", kmod_summary_lumiimb))
+        logbook_table.append(_format_summary("Luminosity Imbalance", kmod_summary_lumiimb))
     else:
         LOG.info("Luminosity imbalance results not included in the text table.")
 
     for plane, df in [("X", kmod_summary_x), ("Y", kmod_summary_y)]:
-        logbook_table.append(_format_header(f"{BEAM_DIR}{beam} Results ({plane}-plane)", df))
+        logbook_table.append(_format_summary(f"{BEAM_DIR}{beam} Results ({plane}-plane)", df))
 
     if kmod_averaged_output_dir is not None:
         grouped_kmod_averaged = collect_averaged_kmod_results(
@@ -213,7 +213,7 @@ def prepare_summary_table(
                 ("Y", kmod_summary_y_averaged),
             ):
                 logbook_table.append(
-                    _format_header(
+                    _format_summary(
                         f"{BEAM_DIR}{beam} Averaged Results ({plane}-plane)", df_averaged
                     )
                 )
@@ -221,38 +221,6 @@ def prepare_summary_table(
         LOG.info("Averaged kmod results not included in the text table.")
 
     return kmod_summary, logbook_table
-
-
-def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
-    """
-    Extract IP name from magnet in LABEL column.
-
-    Args:
-        result_df (tfs.TfsDataFrame): TfsDataFrame containing the kmod measurement.
-    Returns:
-        str: IP name in the form 'IP{number}.
-    """
-
-    LOG.debug("Extracting IP name from dataframe")
-    try:
-        # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
-        magnets_label = result_df[LABEL].iloc[0]
-    except KeyError as exc:
-        LOG.debug(f"Missing '{LABEL}' column, cannot extract IP.", exc_info=exc)
-        return None
-
-    try:
-        # Take right magnet name from label e.g. "MQXA1.R5" from "MQXA1.L5-MQXA1.R5"
-        second_magnet = magnets_label.split("-")[1]
-        # Take right part of the magnet's name e.g. "R5" from "MQXA.R5"
-        ip_and_side = second_magnet.split(".")[-1]
-        # isolate IP number e.g. "5" from "R5"
-        ip_number = ip_and_side[1:]
-
-        return f"{IP_COLUMN}{ip_number}"
-    except (IndexError, ValueError) as exc:
-        LOG.debug(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
-        return None
 
 
 def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[TfsDataFrame]:
@@ -357,29 +325,6 @@ def collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
     return "\n".join(report_lines)
 
 
-def _format_header(title: str, df: TfsDataFrame | str) -> str:
-    """
-    Format a section with a dynamic header based on dataframe width.
-
-    Args:
-        title (str): The section title.
-        df (tfs.TfsDataFrame): The dataframe to include.
-    Returns:
-        str: Formatted section string.
-    """
-    df_str = df if isinstance(df, str) else df.to_string(index=False)
-    if not df_str.strip():
-        LOG.warning("No Luminosity Imbalance results found, skipping.")
-        return ""
-    header_len = max(len(df_str.splitlines()[0]), 40)
-    header_line = (
-        "=" * ((header_len - len(title) - 2) // 2)
-        + f" {title} "
-        + "=" * ((header_len - len(title) - 2 + 1) // 2)
-    )
-    return f"{header_line}\n{df_str}\n"
-
-
 def save_summary(
     beam: int,
     df: TfsDataFrame,
@@ -433,6 +378,66 @@ def post_summary_to_logbook(
 
     LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     _ = create_logbook_entry(logbook_event)
+
+
+# ----- Helpers ----- #
+
+
+def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
+    """
+    Extract IP name from magnet in LABEL column.
+
+    Args:
+        result_df (tfs.TfsDataFrame): TfsDataFrame containing the kmod measurement.
+    Returns:
+        str: IP name in the form 'IP{number}.
+    """
+
+    LOG.debug("Extracting IP name from dataframe")
+    try:
+        # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
+        magnets_label = result_df[LABEL].iloc[0]
+    except KeyError as exc:
+        LOG.debug(f"Missing '{LABEL}' column, cannot extract IP.", exc_info=exc)
+        return None
+
+    try:
+        # Take right magnet name from label e.g. "MQXA1.R5" from "MQXA1.L5-MQXA1.R5"
+        second_magnet = magnets_label.split("-")[1]
+        # Take right part of the magnet's name e.g. "R5" from "MQXA.R5"
+        ip_and_side = second_magnet.split(".")[-1]
+        # isolate IP number e.g. "5" from "R5"
+        ip_number = ip_and_side[1:]
+
+        return f"{IP_COLUMN}{ip_number}"
+    except (IndexError, ValueError) as exc:
+        LOG.debug(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
+        return None
+
+
+def _format_summary(title: str, df: TfsDataFrame) -> str:
+    """
+    Format a summary text from the dataframe's data prefixed with a
+    header including the title, based on the dataframe's text width.
+
+    Args:
+        title (str): The header title.
+        df (tfs.TfsDataFrame): The dataframe to include.
+
+    Returns:
+        str: Formatted section text.
+    """
+    df_str = df if isinstance(df, str) else df.to_string(index=False)
+    if not df_str.strip():
+        LOG.warning("No Luminosity Imbalance results found, skipping.")
+        return ""
+    header_len = max(len(df_str.splitlines()[0]), 40)
+    header_line = (
+        "=" * ((header_len - len(title) - 2) // 2)
+        + f" {title} "
+        + "=" * ((header_len - len(title) - 2 + 1) // 2)
+    )
+    return f"{header_line}\n{df_str}\n"
 
 
 # ----- Commandline Entry Point ----- #
