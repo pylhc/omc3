@@ -225,32 +225,37 @@ def prepare_summary_table(
 
 def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[TfsDataFrame]:
     """
-    Gathers the kmod results.tfs dataframes, taking only cols_x and cols_y values for the given beam.
+    Gathers the kmod results.tfs dataframes, taking only relevant column values for the given beam.
 
     Args:
         beam (int): Beam number to process.
-        meas_paths (Sequence[Path | str]): List of kmod measurement directories containing beam subfolders.
+        meas_paths (Sequence[Path | str]): Directories of imported K-modulation results containing beam subfolders.
+
     Returns:
-        list[tfs.TfsDataFrame]: List containing grouped kmod results.
+        list[tfs.TfsDataFrame]: A list with all the gathered dataframes.
     """
 
     LOG.info("Gathering kmod results.")
-    grouped: list[TfsDataFrame] = []
+    result: list[TfsDataFrame] = []
 
-    for path in map(Path, meas_paths):
-        LOG.info(f"Reading measurement results at '{path.absolute()}'.")
-        file_path = path / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
+    for dirpath in map(Path, meas_paths):
+        LOG.info(f"Reading measurement results from '{dirpath.absolute()}' directory.")
+        file_path = dirpath / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
+
         if not file_path.exists():
             LOG.warning(f"Missing results file: {file_path}")
             continue
-        meas_name = path.name
-        result_df = tfs.read(file_path)
-        ip_name = _extract_ip_name(result_df)
-        df = result_df[COLS_X + COLS_Y].iloc[[0]]  # returns a DataFrame with one row
+
+        meas_name = dirpath.name
+        kmod_df = tfs.read(file_path)
+        ip_name = _extract_ip_name(kmod_df)
+
+        df = kmod_df[COLS_X + COLS_Y].iloc[[0]]  # returns a DataFrame with one row
         df.insert(0, NAME, meas_name)
         df.insert(0, IP_COLUMN, ip_name)
-        grouped.append(df)
-    return grouped
+        result.append(df)
+
+    return result
 
 
 def collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> list[TfsDataFrame]:
