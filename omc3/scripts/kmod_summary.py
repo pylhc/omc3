@@ -119,11 +119,15 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
             Logbook name to publish the summary to. Optional.
 
     Returns:
-        A TfsDataFrame with all gathered results summarised.
+        A TfsDataFrame with all gathered results summarized.
     """
+    # Create the output directory - do not overwrite if called
+    # by kmod_imported and provided exisiting kmod results dir
     output_dir = Path(opt.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=False)
 
+    # Generate a summary dataframe and the various text summaries
+    # (there is one per beam per IP + lumi imbalance)
     df, tables = _prepare_logbook_table(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
@@ -131,10 +135,11 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
         lumi_imb_output_dir=opt.lumi_imb_output_dir,
     )
 
+    # Join all these summaries and export to disk
     logbook_entry = "\n".join(filter(None, tables))
-
     save_summary(beam=opt.beam, df=df, summary=logbook_entry, output_dir=output_dir)
 
+    # Potentially send this to logbook as well
     if opt.logbook is not None:
         logbook_file = output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
         post_summary_to_logbook(
