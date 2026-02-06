@@ -85,7 +85,6 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tf
     Args:
         beam (int): Beam number to process.
         meas_paths (Sequence[Path | str]): List of kmod measurement directories containing beam subfolders.
-
     Returns:
         list[tfs.TfsDataFrame]: List containing grouped kmod results.
     """
@@ -116,7 +115,6 @@ def _collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> 
     Args:
         beam (int): Beam number to process.
         output_dir (Path | str ): Path to the folder with averaged kmod dataframes. If None, averaged kmod results are not collected.
-
     Returns:
         list[tfs.TfsDataFrame]: List containing grouped averaged kmod results.
     """
@@ -183,10 +181,10 @@ def _collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
 def _format_header(title: str, df: tfs.TfsDataFrame | str) -> str:
     """
     Format a section with a dynamic header based on dataframe width.
+
     Args:
         title (str): The section title.
         df (tfs.TfsDataFrame): The dataframe to include.
-
     Returns:
         str: Formatted section string.
     """
@@ -213,7 +211,6 @@ def _prepare_logbook_table(
         meas_paths (Sequence[Path | str]): List of kmod measurement directories containing beam subfolders.
         kmod_averaged_output_dir (Path | str): Path to the directory containing averaged kmod tfs results files. Defaults to None.
         lumi_imb_output_dir (Path | str): Path to the output directory containing luminosity imbalance tfs results files. Defaults to None.
-
     Returns:
         Tuple[tfs.TfsDataFrame, list[str]]:
             - Dataframe containing K-modulation summary.
@@ -295,19 +292,8 @@ def _summary_logbook_entry(
         beam (int): Beam number to process.
         logbook (str): logbook name, ex. 'LHC_OMC'
         logbook_entry_text (str): Text for logbook entry.
+        logbook_entry_file (str | Path): File to attach at the logbook entry. Defaults to None.
     """
-
-    # logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
-    # logbook_event = DotDict(
-    #     {
-    #         "text": logbook_entry_text,
-    #         # "files": [],
-    #         # "filenames": [],
-    #         "logbook": logbook,
-    #     }
-    # )
-    # LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
-    # _ = create_logbook_entry(logbook_event)
 
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
     logbook_event = DotDict(

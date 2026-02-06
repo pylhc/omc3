@@ -217,9 +217,9 @@ def import_kmod_results(opt: DotDict) -> None:
     if opt.save_summary:
         save_summary_outputs(
             beam=opt.beam,
-            save_output_dir=average_output_dir,
-            txt_to_save="\n".join(logbook_tables),
-            df_to_save=kmod_summary,
+            logbook_text="\n".join(logbook_tables),
+            df=kmod_summary,
+            output_dir=average_output_dir
         )
 
     if opt.logbook:
