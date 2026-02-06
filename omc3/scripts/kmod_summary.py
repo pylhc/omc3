@@ -110,7 +110,7 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     logbook_text = "\n".join(filter(None, tables))
 
-    save_summary_outputs(
+    save_summary(
         beam=opt.beam,
         logbook_text=logbook_text,
         df=df,
@@ -119,7 +119,7 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     if opt.logbook is not None:
         logbook_file = output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
-        _summary_logbook_entry(
+        post_summary_to_logbook(
             beam=opt.beam,
             logbook=opt.logbook,
             logbook_entry_text=logbook_text,
@@ -164,7 +164,7 @@ def _prepare_logbook_table(
 
     logbook_table: list[str] = []
     if lumi_imb_output_dir is not None:
-        kmod_summary_lumiimb = _collect_lumi_imbalance_results(output_dir=lumi_imb_output_dir)
+        kmod_summary_lumiimb = collect_lumi_imbalance_results(output_dir=lumi_imb_output_dir)
         logbook_table.append(_format_header("Luminosity Imbalance", kmod_summary_lumiimb))
     else:
         LOG.info("Luminosity imbalance results not included in the text table.")
@@ -173,7 +173,7 @@ def _prepare_logbook_table(
         logbook_table.append(_format_header(f"{BEAM_DIR}{beam} Results ({plane}-plane)", df))
 
     if kmod_averaged_output_dir is not None:
-        grouped_kmod_averaged = _collect_averaged_kmod_results(
+        grouped_kmod_averaged = collect_averaged_kmod_results(
             beam=beam, output_dir=kmod_averaged_output_dir
         )
 
@@ -258,7 +258,7 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[Tf
     return grouped
 
 
-def _collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> list[TfsDataFrame]:
+def collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> list[TfsDataFrame]:
     """
     Gathers the averaged kmod results dataframes, taking only cols_x and cols_y values for the given beam.
 
@@ -293,7 +293,7 @@ def _collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> 
     return grouped_averaged
 
 
-def _collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
+def collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
     """
     Gathers the luminosity imbalance results from effective betas files.
     Returns a formatted multi-line string, one line per valid file.
@@ -353,7 +353,7 @@ def _format_header(title: str, df: TfsDataFrame | str) -> str:
     return f"{header_line}\n{df_str}\n"
 
 
-def save_summary_outputs(
+def save_summary(
     beam: int,
     logbook_text: str,
     df: TfsDataFrame,
@@ -377,7 +377,7 @@ def save_summary_outputs(
     tfs.write(summary_path, df)
 
 
-def _summary_logbook_entry(
+def post_summary_to_logbook(
     beam: int,
     logbook: str,
     logbook_entry_text: str,
