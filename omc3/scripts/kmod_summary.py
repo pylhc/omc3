@@ -128,7 +128,7 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     # Generate a summary dataframe and the various text summaries
     # (there is one per beam per IP + lumi imbalance)
-    df, tables = _prepare_logbook_table(
+    df, tables = prepare_summary_table(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
         kmod_averaged_output_dir=opt.kmod_averaged_output_dir,
@@ -155,24 +155,28 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 # ----- Separate Functionality ----- #
 
 
-def _prepare_logbook_table(
+def prepare_summary_table(
     beam: int,
     meas_paths: Sequence[Path | str],
     kmod_averaged_output_dir: Path | str | None = None,
     lumi_imb_output_dir: Path | str | None = None,
 ) -> tuple[TfsDataFrame, str]:
     """
-    Prepare formatted logbook tables from K-modulation summary data.
+    Prepare K-modulation summary dataframe as well as formatted logbook tables.
+    There is a single complete summary dataframe, and one summary text per scenario
+    (per beam, including averaged etc).
+
 
     Args:
         beam (int): Beam number to process.
-        meas_paths (Sequence[Path | str]): List of kmod measurement directories containing beam subfolders.
-        kmod_averaged_output_dir (Path | str): Path to the directory containing averaged kmod tfs results files. Defaults to None.
-        lumi_imb_output_dir (Path | str): Path to the output directory containing luminosity imbalance tfs results files. Defaults to None.
+        meas_paths (Sequence[Path|str]): Directories of imported K-modulation results containing beam subfolders.
+        kmod_averaged_output_dir (Path | str): Path to the directory containing averaged kmod TFS results files. Optional.
+        lumi_imb_output_dir (Path | str): Path to the output directory containing luminosity imbalance TFS results files. Optional.
+
     Returns:
         Tuple[tfs.TfsDataFrame, list[str]]:
             - Dataframe containing K-modulation summary.
-            - List of formatted text table containing K-modulation summary.
+            - List of formatted text tables containing K-modulation (intermediate) summaries.
     """
     LOG.info("Formatting the tables to text.")
 
