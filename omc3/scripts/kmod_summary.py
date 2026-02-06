@@ -389,11 +389,12 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
 
     Args:
         result_df (tfs.TfsDataFrame): TfsDataFrame containing the kmod measurement.
-    Returns:
-        str: IP name in the form 'IP{number}.
-    """
 
+    Returns:
+        str: IP name in the form 'IP{number}'.
+    """
     LOG.debug("Extracting IP name from dataframe")
+
     try:
         # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
         magnets_label = result_df[LABEL].iloc[0]
@@ -408,7 +409,6 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
         ip_and_side = second_magnet.split(".")[-1]
         # isolate IP number e.g. "5" from "R5"
         ip_number = ip_and_side[1:]
-
         return f"{IP_COLUMN}{ip_number}"
     except (IndexError, ValueError) as exc:
         LOG.debug(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
