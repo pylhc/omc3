@@ -49,9 +49,10 @@ COLS_Y: list[str] = [
 IP_COLUMN: str = "IP"
 KMOD_FILENAME: str = "kmod_summary"
 
+
 def _get_params() -> EntryPointParameters:
     """
-    Creates and returns the parameters for the Kmodulation summary.
+    Creates and returns the parameters for the Kmodulation summary functionality.
     """
     params = EntryPointParameters()
     params.add_parameter(
@@ -90,8 +91,9 @@ def _get_params() -> EntryPointParameters:
     )
     return params
 
+
 @entrypoint(_get_params(), strict=True)
-def kmod_summary(opt: DotDict) -> tfs.TfsDataFrame:
+def generate_kmod_summary(opt: DotDict) -> tfs.TfsDataFrame:
     output_dir = Path(opt.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -122,12 +124,13 @@ def kmod_summary(opt: DotDict) -> tfs.TfsDataFrame:
 
     return df
 
+
 def _prepare_logbook_table(
     beam: int,
     meas_paths: Sequence[Path | str],
     kmod_averaged_output_dir: Path | str | None = None,
     lumi_imb_output_dir: Path | str | None = None,
-    ) -> tuple[tfs.TfsDataFrame, str]:
+) -> tuple[tfs.TfsDataFrame, str]:
     """
     Prepare formatted logbook tables from K-modulation summary data.
 
@@ -166,16 +169,25 @@ def _prepare_logbook_table(
         grouped_kmod_averaged = _collect_averaged_kmod_results(
             beam=beam, output_dir=kmod_averaged_output_dir
         )
+
         if grouped_kmod_averaged:
             kmod_summary_averaged = tfs.concat(grouped_kmod_averaged, ignore_index=True)
             kmod_summary_x_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_X]
             kmod_summary_y_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_Y]
-            for plane, df_averaged in [("X", kmod_summary_x_averaged), ("Y", kmod_summary_y_averaged)]:
-                logbook_table.append(_format_header(f"{BEAM_DIR}{beam} Averaged Results ({plane}-plane)", df_averaged))
+            for plane, df_averaged in (
+                ("X", kmod_summary_x_averaged),
+                ("Y", kmod_summary_y_averaged),
+            ):
+                logbook_table.append(
+                    _format_header(
+                        f"{BEAM_DIR}{beam} Averaged Results ({plane}-plane)", df_averaged
+                    )
+                )
     else:
         LOG.info("Averaged kmod results not included in the text table.")
 
     return kmod_summary, logbook_table
+
 
 def _extract_ip_name(result_df: tfs.TfsDataFrame) -> str:
     """
@@ -239,7 +251,9 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[tf
     return grouped
 
 
-def _collect_averaged_kmod_results(beam: int, output_dir: Path | str | None) -> list[tfs.TfsDataFrame]:
+def _collect_averaged_kmod_results(
+    beam: int, output_dir: Path | str | None
+) -> list[tfs.TfsDataFrame]:
     """
     Gathers the averaged kmod results dataframes, taking only cols_x and cols_y values for the given beam.
 
@@ -305,7 +319,9 @@ def _collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
         ips = df[NAME].tolist()
         # final check
         if lumi_imbalance is not None and err_lumi_imbalance is not None and len(ips) >= 2:
-            report_lines.append(f"Luminosity imbalance in between {ips[0]} and {ips[1]} is {lumi_imbalance} ± {err_lumi_imbalance}")
+            report_lines.append(
+                f"Luminosity imbalance in between {ips[0]} and {ips[1]} is {lumi_imbalance} ± {err_lumi_imbalance}"
+            )
     return "\n".join(report_lines)
 
 
@@ -324,7 +340,11 @@ def _format_header(title: str, df: tfs.TfsDataFrame | str) -> str:
         LOG.warning("No Luminosity Imbalance results found, skipping.")
         return ""
     header_len = max(len(df_str.splitlines()[0]), 40)
-    header_line = "=" * ((header_len - len(title) - 2) // 2) + f" {title} " + "=" * ((header_len - len(title) - 2 + 1) // 2)
+    header_line = (
+        "=" * ((header_len - len(title) - 2) // 2)
+        + f" {title} "
+        + "=" * ((header_len - len(title) - 2 + 1) // 2)
+    )
     return f"{header_line}\n{df_str}\n"
 
 
@@ -333,7 +353,7 @@ def save_summary_outputs(
     logbook_text: str,
     df: tfs.TfsDataFrame,
     output_dir: Path | str,
-    ) -> None:
+) -> None:
     """
     Save logbook text output and .tfs summary for a given beam.
 
@@ -359,7 +379,7 @@ def _summary_logbook_entry(
     logbook: str,
     logbook_entry_text: str,
     logbook_entry_file: str | Path | None = None,
-    ) -> None:
+) -> None:
     """
     Create logbook entry with .txt generated table for a given beam.
 
@@ -384,7 +404,8 @@ def _summary_logbook_entry(
     LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     _ = create_logbook_entry(logbook_event)
 
+
 # Commandline Entry Point ------------------------------------------------------
 
 if __name__ == "__main__":
-    kmod_summary()
+    generate_kmod_summary()
