@@ -1,3 +1,4 @@
+# TODO: update the info and conditional for summary here
 """
 Full Import of K-Modulation Results
 -----------------------------------
@@ -217,8 +218,8 @@ def import_kmod_results(opt: DotDict) -> None:
     if opt.save_summary:
         save_summary(
             beam=opt.beam,
-            logbook_text="\n".join(logbook_tables),
             df=kmod_summary,
+            summary="\n".join(logbook_tables),
             output_dir=average_output_dir
         )
 
