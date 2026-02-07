@@ -83,8 +83,8 @@ from omc3.scripts.kmod_average import average_kmod_results
 from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
 from omc3.scripts.kmod_summary import (
+    gather_results_and_summaries,
     post_summary_to_logbook,
-    prepare_summary_table,
     save_summary,
 )
 from omc3.utils import logging_tools
@@ -213,8 +213,11 @@ def import_kmod_results(opt: DotDict) -> None:
         )
     ]
 
-    kmod_summary, logbook_tables = prepare_summary_table(
-        beam=opt.beam, meas_paths=opt.meas_paths, kmod_averaged_output_dir=average_output_dir, lumi_imb_output_dir=average_output_dir
+    kmod_summary, logbook_tables = gather_results_and_summaries(
+        beam=opt.beam,
+        meas_paths=opt.meas_paths,
+        kmod_averaged_output_dir=average_output_dir,
+        lumi_imb_output_dir=average_output_dir,
     )
 
     if opt.save_summary:

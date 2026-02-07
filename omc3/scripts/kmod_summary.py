@@ -128,7 +128,7 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     # Generate a summary dataframe and the various text summaries
     # (there is one per beam per IP + lumi imbalance)
-    df, tables = prepare_summary_table(
+    df, tables = gather_results_and_summaries(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
         kmod_averaged_output_dir=opt.kmod_averaged_output_dir,
@@ -155,7 +155,7 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 # ----- Separate Functionality ----- #
 
 
-def prepare_summary_table(
+def gather_results_and_summaries(
     beam: int,
     meas_paths: Sequence[Path | str],
     kmod_averaged_output_dir: Path | str | None = None,
