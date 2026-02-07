@@ -213,11 +213,13 @@ def import_kmod_results(opt: DotDict) -> None:
         )
     ]
 
+    # Generate summaries and potentially send to logbook
+    # TODO: could call generate_kmod_summary directly?
     kmod_summary, logbook_tables = gather_results_and_summaries(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
-        kmod_averaged_output_dir=average_output_dir,
-        lumi_imb_output_dir=average_output_dir,
+        kmod_averaged_dir=average_output_dir,
+        lumi_imbalance_dir=average_output_dir,
     )
 
     if opt.save_summary:
