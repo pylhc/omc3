@@ -230,7 +230,7 @@ def import_kmod_results(opt: DotDict) -> None:
 
     if opt.logbook:
         post_summary_to_logbook(
-            beam=opt.beam, logbook=opt.logbook, logbook_entry_text="\n".join(logbook_tables)
+            beam=opt.beam, logbook_name=opt.logbook, entry="\n".join(logbook_tables)
         )
 
 

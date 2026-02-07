@@ -128,7 +128,7 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     # Generate a summary dataframe and the various text summaries
     # (there is one per beam per IP + lumi imbalance)
-    df, tables = gather_results_and_summaries(
+    df, summaries = gather_results_and_summaries(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
         kmod_averaged_output_dir=opt.kmod_averaged_output_dir,
@@ -136,7 +136,7 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
     )
 
     # Join all these summaries and export to disk
-    logbook_entry = "\n".join(filter(None, tables))
+    logbook_entry = "\n".join(filter(None, summaries))
     save_summary(beam=opt.beam, df=df, summary=logbook_entry, output_dir=output_dir)
 
     # Potentially send this to logbook as well
@@ -144,9 +144,9 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
         logbook_file = output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
         post_summary_to_logbook(
             beam=opt.beam,
-            logbook=opt.logbook,
-            logbook_entry_text=logbook_entry,
-            logbook_entry_file=logbook_file,
+            logbook_name=opt.logbook,
+            entry=logbook_entry,
+            attachment=logbook_file,
         )
 
     return df
@@ -349,12 +349,7 @@ def collect_lumi_imbalance_results(lumi_imbalance_dir: Path | str | None) -> str
     return "\n".join(report_lines)
 
 
-def save_summary(
-    beam: int,
-    df: TfsDataFrame,
-    summary: str,
-    output_dir: Path | str,
-) -> None:
+def save_summary(beam: int, df: TfsDataFrame, summary: str, output_dir: Path | str) -> None:
     """
     Save logbook text output and .tfs summary for a given beam.
 
@@ -363,44 +358,46 @@ def save_summary(
         df (tfs.TfsDataFrame): A kmod summary TfsDataFrame to save to disk.
         summary (str): The summary as a string, as potentially sent to the logbook,
             to be saved to a .txt file.
-        output_dir (Path | str): Path to the directory in which to save both dataframe and logbook text.
+        output_dir (Path | str): Path to the directory in which to save both dataframe
+            and logbook text.
     """
     save_output_dir = Path(output_dir)
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}{EXT}"
+
     LOG.info(f"Writing .txt summary output file {logbook_table_path}.")
     logbook_table_path.write_text(summary)
+
     LOG.info(f"Writing {EXT} summary output file {summary_path}.")
     tfs.write(summary_path, df)
 
 
 def post_summary_to_logbook(
-    beam: int,
-    logbook: str,
-    logbook_entry_text: str,
-    logbook_entry_file: str | Path | None = None,
+    beam: int, logbook_name: str, entry: str, attachment: str | Path | None = None
 ) -> None:
     """
-    Create logbook entry with .txt generated table for a given beam.
+    Create logbook entry with summary for a given beam, in the provided
+    logbook. Potentially attach a file if provided.
 
     Args:
-        beam (int): Beam number to process.
-        logbook (str): logbook name, ex. 'LHC_OMC'
-        logbook_entry_text (str): Text for logbook entry.
-        logbook_entry_file (str | Path): File to attach at the logbook entry. Defaults to None.
+        beam (int): Beam the summary was processed for.
+        logbook_name (str): Logbook to post to, e.g. 'LHC_OMC'.
+        entry (str): Text for logbook entry.
+        attachment (str | Path): File to attach at the logbook entry. Optional.
     """
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
+    LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook_name}.")
+
     logbook_event = DotDict(
         {
-            "text": logbook_entry_text,
-            "logbook": logbook,
+            "text": entry,
+            "logbook": logbook_name,
         }
     )
 
-    if logbook_entry_file is not None:
-        logbook_event["files"] = [logbook_entry_file]
+    if attachment is not None:
+        logbook_event["files"] = [attachment]
 
-    LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook}.")
     _ = create_logbook_entry(logbook_event)
 
 
