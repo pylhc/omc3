@@ -131,8 +131,8 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
     df, summaries = gather_results_and_summaries(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
-        kmod_averaged_output_dir=opt.kmod_averaged_output_dir,
-        lumi_imb_output_dir=opt.lumi_imb_output_dir,
+        kmod_averaged_dir=opt.kmod_averaged_output_dir,
+        lumi_imbalance_dir=opt.lumi_imb_output_dir,
     )
 
     # Join all these summaries and export to disk
@@ -158,8 +158,8 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 def gather_results_and_summaries(
     beam: int,
     meas_paths: Sequence[Path | str],
-    kmod_averaged_output_dir: Path | str | None = None,
-    lumi_imb_output_dir: Path | str | None = None,
+    kmod_averaged_dir: Path | str | None = None,
+    lumi_imbalance_dir: Path | str | None = None,
 ) -> tuple[TfsDataFrame, str]:
     """
     Prepare K-modulation summary dataframe as well as formatted logbook tables.
@@ -169,60 +169,59 @@ def gather_results_and_summaries(
 
     Args:
         beam (int): Beam number to process.
-        meas_paths (Sequence[Path|str]): Directories of imported K-modulation results containing beam subfolders.
-        kmod_averaged_output_dir (Path | str): Path to the directory containing averaged kmod TFS results files. Optional.
-        lumi_imb_output_dir (Path | str): Path to the output directory containing luminosity imbalance TFS results files. Optional.
+        meas_paths (Sequence[Path|str]): Directories of imported K-modulation results
+            containing beam subfolders.
+        kmod_averaged_dir (Path | str): Path to the directory containing averaged K-modulation
+            TFS results files. Optional.
+        lumi_imbalance_dir (Path | str): Path to the output directory containing luminosity
+            imbalance TFS results files (effective betas files). Optional.
 
     Returns:
         Tuple[tfs.TfsDataFrame, list[str]]:
             - Dataframe containing K-modulation summary.
             - List of formatted text tables containing K-modulation (intermediate) summaries.
     """
-    LOG.info("Formatting the tables to text.")
+    LOG.info("Gathering Kmod results and generating summaries.")
+    summaries: list[str] = []
 
-    grouped_kmod = collect_kmod_results(beam=beam, meas_paths=meas_paths)
-    if grouped_kmod:
-        kmod_summary = tfs.concat(grouped_kmod, ignore_index=True)
+    # ----- Gathering and summaries for kmod results ----- #
+    kmod_results: list[TfsDataFrame] = collect_kmod_results(beam=beam, meas_paths=meas_paths)
+    if kmod_results:
+        kmod_summary: TfsDataFrame = tfs.concat(kmod_results, ignore_index=True)
     else:
         LOG.warning(f"No K-mod results found for beam {beam}, skipping.")
         kmod_summary = tfs.TfsDataFrame(columns=[IP_COLUMN, NAME] + COLS_X + COLS_Y)
-    kmod_summary_x = kmod_summary[[IP_COLUMN, NAME] + COLS_X]
-    kmod_summary_y = kmod_summary[[IP_COLUMN, NAME] + COLS_Y]
 
-    logbook_table: list[str] = []
-    if lumi_imb_output_dir is not None:
-        kmod_summary_lumiimb = collect_lumi_imbalance_results(
-            lumi_imbalance_dir=lumi_imb_output_dir
-        )
-        logbook_table.append(_format_summary("Luminosity Imbalance", kmod_summary_lumiimb))
-    else:
-        LOG.info("Luminosity imbalance results not included in the text table.")
+    kmod_summary_x: TfsDataFrame = kmod_summary[[IP_COLUMN, NAME] + COLS_X]
+    kmod_summary_y: TfsDataFrame = kmod_summary[[IP_COLUMN, NAME] + COLS_Y]
 
+    # ----- Gathering summaries for lumi imbalance results ----- #
+    if lumi_imbalance_dir is not None:
+        kmod_summary_lumiimb = collect_lumi_imbalance_results(lumi_imbalance_dir=lumi_imbalance_dir)
+        summaries.append(_format_summary("Luminosity Imbalance", kmod_summary_lumiimb))  # TODO: fix this call
+
+    # ----- Adding K-mod summaries (after lumi imbalance if present) ----- #
     for plane, df in [("X", kmod_summary_x), ("Y", kmod_summary_y)]:
-        logbook_table.append(_format_summary(f"{BEAM_DIR}{beam} Results ({plane}-plane)", df))
+        summaries.append(_format_summary(f"{BEAM_DIR}{beam} Results ({plane}-plane)", df))
 
-    if kmod_averaged_output_dir is not None:
-        grouped_kmod_averaged = collect_averaged_kmod_results(
-            beam=beam, kmod_averaged_output_dir=kmod_averaged_output_dir
+    # ----- Gethering and summaries for averaged kmod results ----- #
+    if kmod_averaged_dir is not None:
+        kmod_avg_results = collect_averaged_kmod_results(
+            beam=beam, kmod_averaged_output_dir=kmod_averaged_dir
         )
 
-        if grouped_kmod_averaged:
-            kmod_summary_averaged = tfs.concat(grouped_kmod_averaged, ignore_index=True)
-            kmod_summary_x_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_X]
-            kmod_summary_y_averaged = kmod_summary_averaged[[IP_COLUMN] + COLS_Y]
-            for plane, df_averaged in (
-                ("X", kmod_summary_x_averaged),
-                ("Y", kmod_summary_y_averaged),
-            ):
-                logbook_table.append(
+        if len(kmod_avg_results):  # could return []
+            kmod_summary_averaged: TfsDataFrame = tfs.concat(kmod_avg_results, ignore_index=True)
+            kmod_averaged_x: TfsDataFrame = kmod_summary_averaged[[IP_COLUMN] + COLS_X]
+            kmod_averaged_y: TfsDataFrame = kmod_summary_averaged[[IP_COLUMN] + COLS_Y]
+            for plane, df_averaged in (("X", kmod_averaged_x), ("Y", kmod_averaged_y)):
+                summaries.append(
                     _format_summary(
                         f"{BEAM_DIR}{beam} Averaged Results ({plane}-plane)", df_averaged
                     )
                 )
-    else:
-        LOG.info("Averaged kmod results not included in the text table.")
 
-    return kmod_summary, logbook_table
+    return kmod_summary, summaries
 
 
 def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[TfsDataFrame]:
@@ -436,6 +435,7 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
         return None
 
 
+# TODO: fix that it can be given as str
 def _format_summary(title: str, df: TfsDataFrame) -> str:
     """
     Format a summary text from the dataframe's data prefixed with a
