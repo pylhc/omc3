@@ -191,7 +191,7 @@ def gather_results_and_summaries(
 
     logbook_table: list[str] = []
     if lumi_imb_output_dir is not None:
-        kmod_summary_lumiimb = collect_lumi_imbalance_results(output_dir=lumi_imb_output_dir)
+        kmod_summary_lumiimb = collect_lumi_imbalance_results(lumi_imbalance_dir=lumi_imb_output_dir)
         logbook_table.append(_format_summary("Luminosity Imbalance", kmod_summary_lumiimb))
     else:
         LOG.info("Luminosity imbalance results not included in the text table.")
@@ -274,7 +274,7 @@ def collect_averaged_kmod_results(
     result: list[tfs.TfsDataFrame] = []
 
     if kmod_averaged_output_dir is None:
-        LOG.info("No output_dir provided, skipping.")
+        LOG.info("No directory provided for averaged kmod, skipping.")
         return result
 
     kmod_averaged_output_dir = Path(kmod_averaged_output_dir)
@@ -302,29 +302,35 @@ def collect_averaged_kmod_results(
     return result
 
 
-def collect_lumi_imbalance_results(output_dir: Path | str | None) -> str:
+def collect_lumi_imbalance_results(lumi_imbalance_dir: Path | str | None) -> str:
     """
     Gathers the luminosity imbalance results from effective betas files.
-    Returns a formatted multi-line string, one line per valid file.
+    Returns a formatted multi-line summary string, one line per valid file.
 
     Args:
-        output_dir (Path | str ): Path to the folder with luminosity imbalance dataframes. If None, luminosity imbalance results are not collected.
+        lumi_imbalance_dir (Path | str | None): Path to the output directory containing
+            luminosity imbalance TFS results files.
+
     Returns:
         str: Formatted table showing grouped luminosity imbalance results, one line per file.
     """
     LOG.info("Gathering luminosity imbalance results.")
+    report_lines: list[str] = []
 
-    if output_dir is None:
-        LOG.info("No output_dir provided, skipping.")
+    if lumi_imbalance_dir is None:
+        LOG.info("No directory provided for lumi imbalance, skipping.")
         return ""
 
-    output_dir = Path(output_dir)
-    # if the file name starts with EFFECTIVE_BETAS_FILENAME till {ip}
+    lumi_imbalance_dir = Path(lumi_imbalance_dir)
+
+    # The expected file name is based on the EFFECTIVE_BETAS_FILENAME
+    # constant. We check the starting part, up to the IP number
     prefix = EFFECTIVE_BETAS_FILENAME.split("{")[0]
-    report_lines: list[str] = []
-    for df_path in output_dir.glob(f"{prefix}*"):
+
+    for df_path in lumi_imbalance_dir.glob(f"{prefix}*"):
         if not df_path.is_file():
             continue
+
         df = tfs.read(df_path)
         lumi_imbalance = df.headers.get("LUMIIMBALANCE")
         lumi_imbalance = float(lumi_imbalance) if lumi_imbalance is not None else None
