@@ -191,7 +191,9 @@ def gather_results_and_summaries(
 
     logbook_table: list[str] = []
     if lumi_imb_output_dir is not None:
-        kmod_summary_lumiimb = collect_lumi_imbalance_results(lumi_imbalance_dir=lumi_imb_output_dir)
+        kmod_summary_lumiimb = collect_lumi_imbalance_results(
+            lumi_imbalance_dir=lumi_imb_output_dir
+        )
         logbook_table.append(_format_summary("Luminosity Imbalance", kmod_summary_lumiimb))
     else:
         LOG.info("Luminosity imbalance results not included in the text table.")
@@ -331,17 +333,19 @@ def collect_lumi_imbalance_results(lumi_imbalance_dir: Path | str | None) -> str
         if not df_path.is_file():
             continue
 
+        # Load dataframe and get lumi imbalance from headers
         df = tfs.read(df_path)
-        lumi_imbalance = df.headers.get("LUMIIMBALANCE")
-        lumi_imbalance = float(lumi_imbalance) if lumi_imbalance is not None else None
-        err_lumi_imbalance = df.headers.get("ERRLUMIIMBALANCE")
-        err_lumi_imbalance = float(err_lumi_imbalance) if err_lumi_imbalance is not None else None
-        ips = df[NAME].tolist()
-        # final check
+        lumi_imbalance: float | None = df.headers.get("LUMIIMBALANCE", None)
+        err_lumi_imbalance: float | None = df.headers.get("ERRLUMIIMBALANCE", None)
+
+        # Get the IPs. There should be two in this file and the lumi
+        # (error) from the headers imbalance is from first to second IP
+        ips: list[str] = df[NAME].tolist()
         if lumi_imbalance is not None and err_lumi_imbalance is not None and len(ips) >= 2:
             report_lines.append(
-                f"Luminosity imbalance in between {ips[0]} and {ips[1]} is {lumi_imbalance} ± {err_lumi_imbalance}"
+                f"Luminosity imbalance between {ips[0]} and {ips[1]}: {lumi_imbalance} ± {err_lumi_imbalance}"
             )
+
     return "\n".join(report_lines)
 
 
