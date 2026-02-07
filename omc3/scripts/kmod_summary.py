@@ -22,7 +22,7 @@ from omc3.optics_measurements.constants import (
 )
 from omc3.scripts.create_logbook_entry import main as create_logbook_entry
 from omc3.utils import logging_tools
-from omc3.utils.iotools import PathOrStr
+from omc3.utils.iotools import PathOrStr, save_config
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -123,8 +123,10 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
     """
     # Create the output directory - do not overwrite if called
     # by kmod_imported and provided exisiting kmod results dir
-    output_dir = Path(opt.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=False)
+    opt.output_dir = Path(opt.output_dir)
+    if not opt.output_dir.exists():
+        opt.output_dir.mkdir(parents=True, exist_ok=True)
+    save_config(opt.output_dir, opt, __file__)
 
     # Generate a summary dataframe and the various text summaries
     # (there is one per beam per IP + lumi imbalance)
@@ -137,11 +139,11 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     # Join all these summaries and export to disk
     logbook_entry = "\n".join(filter(None, summaries))
-    save_summary(beam=opt.beam, df=df, summary=logbook_entry, output_dir=output_dir)
+    save_summary(beam=opt.beam, df=df, summary=logbook_entry, output_dir=opt.output_dir)
 
     # Potentially send this to logbook as well
     if opt.logbook is not None:
-        logbook_file = output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
+        logbook_file = opt.output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
         post_summary_to_logbook(
             beam=opt.beam,
             logbook_name=opt.logbook,
