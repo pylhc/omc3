@@ -189,7 +189,7 @@ def gather_results_and_summaries(
     if kmod_results:
         kmod_summary: TfsDataFrame = tfs.concat(kmod_results, ignore_index=True)
     else:
-        LOG.warning(f"No K-mod results found for beam {beam}, skipping.")
+        LOG.warning(f"No K-mod results found for beam {beam}.")
         kmod_summary = tfs.TfsDataFrame(columns=[IP_COLUMN, NAME] + COLS_X + COLS_Y)
 
     kmod_summary_x: TfsDataFrame = kmod_summary[[IP_COLUMN, NAME] + COLS_X]
@@ -198,7 +198,7 @@ def gather_results_and_summaries(
     # ----- Gathering summaries for lumi imbalance results ----- #
     if lumi_imbalance_dir is not None:
         kmod_summary_lumiimb = collect_lumi_imbalance_results(lumi_imbalance_dir=lumi_imbalance_dir)
-        summaries.append(_format_summary("Luminosity Imbalance", kmod_summary_lumiimb))  # TODO: fix this call
+        summaries.append(_format_summary("Luminosity Imbalance", kmod_summary_lumiimb))
 
     # ----- Adding K-mod summaries (after lumi imbalance if present) ----- #
     for plane, df in [("X", kmod_summary_x), ("Y", kmod_summary_y)]:
@@ -435,28 +435,29 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
         return None
 
 
-# TODO: fix that it can be given as str
-def _format_summary(title: str, df: TfsDataFrame) -> str:
+def _format_summary(title: str, content: TfsDataFrame | str) -> str:
     """
     Format a summary text from the dataframe's data prefixed with a
     header including the title, based on the dataframe's text width.
 
     Args:
         title (str): The header title.
-        df (tfs.TfsDataFrame): The dataframe to include.
+        content (tfs.TfsDataFrame | str): The summary data to format, which
+            can be a TfsDataFrame with compiled results or a directly a
+            text with summary info (in the case of lumi imbalance).
 
     Returns:
-        str: Formatted section text.
+        str: Formatted section text with included header title.
     """
-    df_text = df.to_string(index=False)
+    text = content if isinstance(content, str) else content.to_string(index=False)
 
-    if not df_text.strip():
+    if not text.strip():
         LOG.warning("No summary data results found, skipping")
         return ""
 
-    width = len(df_text.splitlines()[0])
+    width = len(text.splitlines()[0])
     header = f" {title} ".center(width, "=")
-    return f"{header}\n{df_text}\n"
+    return f"{header}\n{text}\n"
 
 
 # ----- Commandline Entry Point ----- #
