@@ -1,4 +1,3 @@
-# TODO: update the info and conditional for summary here
 """
 Full Import of K-Modulation Results
 -----------------------------------
@@ -13,6 +12,10 @@ written into a sub-folder of the given `output_dir`.
 If data for both beams is present, these averages are then used to calculate the
 luminosity imbalance between each combination of IPs.
 These results are again written out into the same sub-folder of the given `output_dir`.
+
+A summary table and text is generated to be potentially saved to disk as well
+as posted to a provided logbook, in which case it would upload attachments as
+well.
 
 Finally, the averaged results for the given `beam` are then written out into
 the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
@@ -84,7 +87,6 @@ from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
 from omc3.scripts.kmod_summary import (
     gather_results_and_summaries,
-    generate_kmod_summary,
     post_summary_to_logbook,
     save_summary,
 )
