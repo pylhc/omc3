@@ -183,7 +183,7 @@ def gather_results_and_summaries(
             - Dataframe containing K-modulation summary.
             - List of formatted text tables containing K-modulation (intermediate) summaries.
     """
-    LOG.info("Gathering Kmod results and generating summaries.")
+    LOG.debug("Gathering Kmod results and generating summaries.")
     summaries: list[str] = []
 
     # ----- Gathering and summaries for kmod results ----- #
@@ -237,7 +237,7 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[Tf
     Returns:
         list[tfs.TfsDataFrame]: A list with all the gathered dataframes.
     """
-    LOG.info("Gathering kmod results.")
+    LOG.debug("Gathering kmod results.")
     result: list[TfsDataFrame] = []
 
     for dirpath in map(Path, meas_paths):
@@ -273,7 +273,7 @@ def collect_averaged_kmod_results(
     Returns:
         list[tfs.TfsDataFrame]: A list with all the gathered dataframes. Empty if no path was provided.
     """
-    LOG.info("Gathering averaged kmod results.")
+    LOG.debug("Gathering averaged kmod results.")
     result: list[tfs.TfsDataFrame] = []
 
     if kmod_averaged_output_dir is None:
@@ -317,7 +317,7 @@ def collect_lumi_imbalance_results(lumi_imbalance_dir: Path | str | None) -> str
     Returns:
         str: Formatted table showing grouped luminosity imbalance results, one line per file.
     """
-    LOG.info("Gathering luminosity imbalance results.")
+    LOG.debug("Gathering luminosity imbalance results.")
     report_lines: list[str] = []
 
     if lumi_imbalance_dir is None:
@@ -366,10 +366,10 @@ def save_summary(beam: int, df: TfsDataFrame, summary: str, output_dir: Path | s
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}{EXT}"
 
-    LOG.info(f"Writing .txt summary output file {logbook_table_path}.")
+    LOG.debug(f"Writing .txt summary output file {logbook_table_path}.")
     logbook_table_path.write_text(summary)
 
-    LOG.info(f"Writing {EXT} summary output file {summary_path}.")
+    LOG.debug(f"Writing {EXT} summary output file {summary_path}.")
     tfs.write(summary_path, df)
 
 
@@ -421,7 +421,7 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
         # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
         magnets_label = result_df[LABEL].iloc[0]
     except KeyError as exc:
-        LOG.debug(f"Missing '{LABEL}' column, cannot extract IP.", exc_info=exc)
+        LOG.warning(f"Missing '{LABEL}' column, cannot extract IP.", exc_info=exc)
         return None
 
     try:
@@ -433,7 +433,7 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
         ip_number = ip_and_side[1:]
         return f"{IP_COLUMN}{ip_number}"
     except (IndexError, ValueError) as exc:
-        LOG.debug(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
+        LOG.warning(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
         return None
 
 
