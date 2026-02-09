@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import pytest
 import tfs
 from generic_parser import DotDict
+from tfs.testing import assert_frame_equal
 
 from omc3.model.accelerators.accelerator import (
     Accelerator,
@@ -33,7 +34,6 @@ from omc3.model_creator import create_instance_and_model
 from omc3.optics_measurements.constants import NAME
 from omc3.response_creator import ResponseCreatorType
 from omc3.response_creator import create_response_entrypoint as create_response
-from tests.conftest import assert_frame_equal
 
 if TYPE_CHECKING:
     from omc3.model.accelerators.lhc import Lhc
