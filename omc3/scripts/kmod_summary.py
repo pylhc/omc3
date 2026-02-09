@@ -1,3 +1,60 @@
+"""
+Summary Generation of K-Modulation Results
+------------------------------------------
+
+This scripts goes over the provided K-modulation results folders
+and aggregates relevant information: kmod results for each provided
+measurement folder (betastar, error, waist), the averaged values across
+multiple measurements for a given IP, and luminosity imbalances from
+effective betastars. The latter two only happen if provided with the
+location of the averaged results and the averaged lumi directories,
+respectively.
+
+The aggregated quantities are compiled in a small summary dataframe,
+but also used to generate a succinct text with all this information,
+in the order: lumi imbalances, results from all provided measurements
+and finally averaged results across measurements. These are saved to
+disk in the provided `output_dir`.
+
+If a logbook name is provided, an entry with the summary is created in
+said logbook and the generated files are attached.
+
+
+**Arguments:**
+
+*--Required--*
+
+- **beam** *(int)*:
+
+    Beam number to process.
+
+
+- **meas_paths** *(PathOrStr)*:
+
+    Directory containing averaged K-modulation results.
+
+
+- **output_dir** *(PathOrStr)*:
+
+    Directory to write summary files in.
+
+
+*--Optional--*
+
+- **kmod_averaged_output_dir** *(PathOrStr)*:
+
+    Directory containing averaged K-modulation results.
+
+
+- **lumi_imb_output_dir** *(PathOrStr)*:
+
+    Directory containing luminosity imbalance results.
+
+
+- **logbook** *(str)*:
+
+    Logbook name (e.g. LHC_OMC) to publish the summary to.
+"""
 from __future__ import annotations
 
 from pathlib import Path
