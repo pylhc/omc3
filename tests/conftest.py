@@ -17,8 +17,6 @@ from typing import TYPE_CHECKING, Any
 import git
 import pytest
 from generic_parser import DotDict
-from pandas._testing import assert_dict_equal
-from pandas.testing import assert_frame_equal
 from pytest import TempPathFactory
 
 import omc3
@@ -27,7 +25,6 @@ from omc3 import model
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from tfs import TfsDataFrame
 
 INPUTS: Path = Path(__file__).parent / 'inputs'
 MODELS: Path = INPUTS / "models"
