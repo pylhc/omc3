@@ -2,10 +2,11 @@ from pathlib import Path
 
 import pytest
 import tfs
+from tfs.testing import assert_tfs_frame_equal
 
 from omc3.kmod_importer import AVERAGE_DIR, import_kmod_results
 from omc3.optics_measurements.constants import EXT
-from tests.conftest import assert_tfsdataframe_equal, ids_str
+from tests.conftest import ids_str
 from tests.unit.test_kmod_averaging import (
     get_all_tfs_filenames as _get_averaged_filenames,
 )
@@ -66,7 +67,7 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
         for out_name in _get_averaged_filenames(ip, betas=betas):
             out_file = tfs.read(average_dir / out_name)
             ref_file = tfs.read(get_reference_dir(ip, n_files=n_files) / out_name)
-            assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
+            assert_tfs_frame_equal(out_file, ref_file, check_like=True)
 
     # Look at luminosity if we have IP1 and IP5 only.
     if len(ips) == 2 and (8 not in ips):
@@ -75,14 +76,14 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
         lumi_filename = _get_lumi_filename(betas, ip_a=ips[0], ip_b=ips[1])
         eff_betas = tfs.read(average_dir / lumi_filename)
         eff_betas_ref = tfs.read(REFERENCE_DIR / lumi_filename)
-        assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)
+        assert_tfs_frame_equal(eff_betas_ref, eff_betas, check_like=True)
 
         # import (reference created with IP1 and IP5) --
         for plane in "xy":
             for ref_path in (_get_bpm_reference_path(beam, plane), _get_betastar_reference_path(beam, plane)):
                 ref_file = tfs.read(ref_path)
                 out_file = tfs.read(tmp_path / ref_path.name)
-                assert_tfsdataframe_equal(ref_file, out_file, check_like=True)
+                assert_tfs_frame_equal(ref_file, out_file, check_like=True)
 
     # Check all the combinations are created
     if ips == "158":  # just some quick tests
@@ -91,4 +92,3 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
             betas = get_betastar_values(beam=beam, ip=1)
             lumi_filename = _get_lumi_filename(betas, ip_a=ips[0], ip_b=ips[1])
             assert (average_dir / lumi_filename).exists()
-

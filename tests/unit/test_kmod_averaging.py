@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 import tfs
+from tfs.testing import assert_tfs_frame_equal
 
 from omc3.optics_measurements.constants import BEAM, BEAM_DIR, BETA, NAME
 from omc3.plotting.plot_kmod_results import PARAM_BETA, PARAM_BETABEAT, PARAM_WAIST
@@ -14,7 +15,7 @@ from omc3.scripts.kmod_average import (
     EXT,
     average_kmod_results,
 )
-from tests.conftest import INPUTS, assert_tfsdataframe_equal, ids_str
+from tests.conftest import INPUTS, ids_str
 
 KMOD_INPUT_DIR = INPUTS / "kmod"
 REFERENCE_DIR = KMOD_INPUT_DIR / "references"
@@ -42,7 +43,7 @@ def test_kmod_averaging(tmp_path, ip, n_files):
     for out_name in get_all_tfs_filenames(ip, betas):
         out_file = tfs.read(tmp_path / out_name)
         ref_file = tfs.read(ref_output_dir / out_name)
-        assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
+        assert_tfs_frame_equal(out_file, ref_file, check_like=True)
 
 
 @pytest.mark.extended
@@ -79,7 +80,7 @@ def test_kmod_averaging_single_beam(tmp_path, beam, caplog):
         ref_file = tfs.read(ref_output_dir / out_name)
         if BEAM in ref_file.columns:
             ref_file = ref_file.loc[ref_file[BEAM] == beam, :].reset_index(drop=True)
-        assert_tfsdataframe_equal(out_file, ref_file, check_like=True)
+        assert_tfs_frame_equal(out_file, ref_file, check_like=True)
 
 
 # Helper ---
