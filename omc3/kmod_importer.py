@@ -13,6 +13,10 @@ If data for both beams is present, these averages are then used to calculate the
 luminosity imbalance between each combination of IPs.
 These results are again written out into the same sub-folder of the given `output_dir`.
 
+A summary table and text is generated then saved saved to disk. Optionally, this
+summary is posted to a provided logbook, in which case it would upload attachments as
+well.
+
 Finally, the averaged results for the given `beam` are then written out into
 the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 
@@ -51,6 +55,9 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
     action: ``store_true``
 
 
+- **logbook** *(str)*:
+
+    Name of the logbook to create an entry in.
 """
 from __future__ import annotations
 
@@ -75,6 +82,7 @@ from omc3.optics_measurements.constants import (
 from omc3.scripts.kmod_average import average_kmod_results
 from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
+from omc3.scripts.kmod_summary import generate_kmod_summary
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 
@@ -125,6 +133,12 @@ def _get_params():
         name="show_plots",
         action="store_true",
         help="Show the plots."
+    )
+    params.add_parameter(
+        name="logbook",
+        type=str,
+        default=None,
+        help="Name of the logbook to create an entry in."
     )
     return params
 
@@ -188,6 +202,18 @@ def import_kmod_results(opt: DotDict) -> None:
             averaged_results[ip][opt.beam],  # bpm results of the specific beam
         )
     ]
+
+    # Summaries and potentially logbook entry ---
+    generate_kmod_summary(
+        beam=opt.beam,
+        meas_paths=opt.meas_paths,
+        kmod_averaged_output_dir=average_output_dir,
+        lumi_imb_output_dir=average_output_dir,
+        output_dir=average_output_dir,
+        logbook=opt.logbook,
+    )
+
+    # Import kmod data into optics ---
     import_kmod_data(
         model=df_model,
         measurements=results_list,
@@ -300,7 +326,6 @@ def calculate_all_lumi_imbalances(
 def _get_betastar(df_model: tfs.TfsDataFrame, ip: str) -> list[float, float]:
     # return [round(bstar, 3) for bstar in df_model.loc[ip, [f"{BETA}X", f"{BETA}Y"]]]
     return df_model.loc[ip, [f"{BETA}X", f"{BETA}Y"]].tolist()
-
 
 # Script Mode ------------------------------------------------------------------
 

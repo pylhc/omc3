@@ -1,6 +1,11 @@
 # OMC3 Changelog
 
-#### 2025-01-XX - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
+#### 2025-02-XX - v0.27.1 - _mattiastefanelli_, _fsoubelet_
+
+- Added:
+    - A smaller scoped script to generate summaries from kmod measurements and optionally post it to logbook. The main `kmod_importer` exposes this new functionality as well.
+
+#### 2025-01-31 - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
     - MAD-NG response matrix calculation: New `response_madng` module to compute response matrices using MAD-NG derivatives.
