@@ -86,9 +86,10 @@ from omc3.scripts.kmod_average import average_kmod_results
 from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
 from omc3.scripts.kmod_summary import (
-    gather_results_and_summaries,
-    post_summary_to_logbook,
-    save_summary,
+    # gather_results_and_summaries,
+    generate_kmod_summary,
+    # post_summary_to_logbook,
+    # save_summary,
 )
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
@@ -140,12 +141,6 @@ def _get_params():
         name="show_plots",
         action="store_true",
         help="Show the plots."
-    )
-    params.add_parameter(
-        name="save_summary",
-        type=bool,
-        default=False,
-        help="If True, kmod summary tables are saved as a Dataframe and Text file."
     )
     params.add_parameter(
         name="logbook",
@@ -217,23 +212,31 @@ def import_kmod_results(opt: DotDict) -> None:
     ]
 
     # Summaries and potentially logbook entry ---
-    kmod_summary, logbook_tables = gather_results_and_summaries(
+    generate_kmod_summary(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
         kmod_averaged_dir=average_output_dir,
         lumi_imbalance_dir=average_output_dir,
+        output_dir=average_output_dir,
+        logbook=opt.logbook,
     )
-    if opt.save_summary:
-        save_summary(
-            beam=opt.beam,
-            df=kmod_summary,
-            summary="\n".join(logbook_tables),
-            output_dir=average_output_dir
-        )
-    if opt.logbook:
-        post_summary_to_logbook(
-            beam=opt.beam, logbook_name=opt.logbook, entry="\n".join(logbook_tables)
-        )
+    # kmod_summary, logbook_tables = gather_results_and_summaries(
+    #     beam=opt.beam,
+    #     meas_paths=opt.meas_paths,
+    #     kmod_averaged_dir=average_output_dir,
+    #     lumi_imbalance_dir=average_output_dir,
+    # )
+    # if opt.save_summary:
+    #     save_summary(
+    #         beam=opt.beam,
+    #         df=kmod_summary,
+    #         summary="\n".join(logbook_tables),
+    #         output_dir=average_output_dir
+    #     )
+    # if opt.logbook:
+    #     post_summary_to_logbook(
+    #         beam=opt.beam, logbook_name=opt.logbook, entry="\n".join(logbook_tables)
+    #     )
 
 
     import_kmod_data(
