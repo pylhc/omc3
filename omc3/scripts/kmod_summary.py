@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
     from tfs import TfsDataFrame
 
-LOG = logging_tools.get_logger(__name__)
+LOGGER = logging_tools.get_logger(__name__)
 
 # Constants definitions for K-modulation
 COLS_X: list[str] = [
@@ -183,7 +183,7 @@ def gather_results_and_summaries(
             - Dataframe containing K-modulation summary.
             - List of formatted text tables containing K-modulation (intermediate) summaries.
     """
-    LOG.debug("Gathering Kmod results and generating summaries.")
+    LOGGER.debug("Gathering Kmod results and generating summaries.")
     summaries: list[str] = []
 
     # ----- Gathering and summaries for kmod results ----- #
@@ -191,7 +191,7 @@ def gather_results_and_summaries(
     if kmod_results:
         kmod_summary: TfsDataFrame = tfs.concat(kmod_results, ignore_index=True)
     else:
-        LOG.warning(f"No K-mod results found for beam {beam}.")
+        LOGGER.warning(f"No K-mod results found for beam {beam}.")
         kmod_summary = tfs.TfsDataFrame(columns=[IP_COLUMN, NAME] + COLS_X + COLS_Y)
 
     kmod_summary_x: TfsDataFrame = kmod_summary[[IP_COLUMN, NAME] + COLS_X]
@@ -237,15 +237,15 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[Tf
     Returns:
         list[tfs.TfsDataFrame]: A list with all the gathered dataframes.
     """
-    LOG.debug("Gathering kmod results.")
+    LOGGER.debug("Gathering kmod results.")
     result: list[TfsDataFrame] = []
 
     for dirpath in map(Path, meas_paths):
-        LOG.info(f"Reading measurement results from '{dirpath.absolute()}' directory.")
+        LOGGER.info(f"Reading measurement results from '{dirpath.absolute()}' directory.")
         file_path = dirpath / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
 
         if not file_path.exists():
-            LOG.warning(f"Missing results file: {file_path}")
+            LOGGER.warning(f"Missing results file: {file_path}")
             continue
 
         meas_name = dirpath.name
@@ -273,11 +273,11 @@ def collect_averaged_kmod_results(
     Returns:
         list[tfs.TfsDataFrame]: A list with all the gathered dataframes. Empty if no path was provided.
     """
-    LOG.debug("Gathering averaged kmod results.")
+    LOGGER.debug("Gathering averaged kmod results.")
     result: list[tfs.TfsDataFrame] = []
 
     if kmod_averaged_output_dir is None:
-        LOG.info("No directory provided for averaged kmod, skipping.")
+        LOGGER.info("No directory provided for averaged kmod, skipping.")
         return result
 
     kmod_averaged_output_dir = Path(kmod_averaged_output_dir)
@@ -294,7 +294,7 @@ def collect_averaged_kmod_results(
         beam_row = avg_df[avg_df["BEAM"] == beam]
 
         if beam_row.empty:
-            LOG.warning(f"Beam {beam} not found in averaged results, skipping.")
+            LOGGER.warning(f"Beam {beam} not found in averaged results, skipping.")
             continue
 
         df = beam_row[COLS_X + COLS_Y]
@@ -317,11 +317,11 @@ def collect_lumi_imbalance_results(lumi_imbalance_dir: Path | str | None) -> str
     Returns:
         str: Formatted table showing grouped luminosity imbalance results, one line per file.
     """
-    LOG.debug("Gathering luminosity imbalance results.")
+    LOGGER.debug("Gathering luminosity imbalance results.")
     report_lines: list[str] = []
 
     if lumi_imbalance_dir is None:
-        LOG.info("No directory provided for lumi imbalance, skipping.")
+        LOGGER.info("No directory provided for lumi imbalance, skipping.")
         return ""
 
     lumi_imbalance_dir = Path(lumi_imbalance_dir)
@@ -366,10 +366,10 @@ def save_summary(beam: int, df: TfsDataFrame, summary: str, output_dir: Path | s
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}{EXT}"
 
-    LOG.debug(f"Writing .txt summary output file {logbook_table_path}.")
+    LOGGER.debug(f"Writing .txt summary output file {logbook_table_path}.")
     logbook_table_path.write_text(summary)
 
-    LOG.debug(f"Writing {EXT} summary output file {summary_path}.")
+    LOGGER.debug(f"Writing {EXT} summary output file {summary_path}.")
     tfs.write(summary_path, df)
 
 
@@ -387,7 +387,7 @@ def post_summary_to_logbook(
         attachment (str | Path): File to attach at the logbook entry. Optional.
     """
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
-    LOG.info(f"Creating logbook entry for {logbook_filename} to {logbook_name}.")
+    LOGGER.info(f"Creating logbook entry for {logbook_filename} to {logbook_name}.")
 
     logbook_event = DotDict(
         {
@@ -415,13 +415,13 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
     Returns:
         str: IP name in the form 'IP{number}'.
     """
-    LOG.debug("Extracting IP name from dataframe")
+    LOGGER.debug("Extracting IP name from dataframe")
 
     try:
         # takes magnet names from label, e.g. MQXA1.L5-MQXA1.R5
         magnets_label = result_df[LABEL].iloc[0]
     except KeyError as exc:
-        LOG.warning(f"Missing '{LABEL}' column, cannot extract IP.", exc_info=exc)
+        LOGGER.warning(f"Missing '{LABEL}' column, cannot extract IP.", exc_info=exc)
         return None
 
     try:
@@ -433,7 +433,7 @@ def _extract_ip_name(result_df: TfsDataFrame) -> str | None:
         ip_number = ip_and_side[1:]
         return f"{IP_COLUMN}{ip_number}"
     except (IndexError, ValueError) as exc:
-        LOG.warning(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
+        LOGGER.warning(f"Malformed magnets label value: {magnets_label}", exc_info=exc)
         return None
 
 
@@ -454,7 +454,7 @@ def _format_summary(title: str, content: TfsDataFrame | str) -> str:
     text = content if isinstance(content, str) else content.to_string(index=False)
 
     if not text.strip():
-        LOG.warning("No summary data results found, skipping")
+        LOGGER.warning("No summary data results found, skipping")
         return ""
 
     width = len(text.splitlines()[0])
