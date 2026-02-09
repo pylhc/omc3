@@ -143,12 +143,12 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     # Potentially send this to logbook as well
     if opt.logbook is not None:
-        logbook_file = opt.output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
+        summary_df = opt.output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.tfs"
         post_summary_to_logbook(
             beam=opt.beam,
             logbook_name=opt.logbook,
             entry=logbook_entry,
-            attachment=logbook_file,
+            attachment=summary_df,
         )
 
     return df
