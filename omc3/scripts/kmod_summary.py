@@ -241,7 +241,7 @@ def gather_results_and_summaries(
             - Dataframe containing K-modulation summary.
             - List of formatted text tables containing K-modulation (intermediate) summaries.
     """
-    LOGGER.debug("Gathering Kmod results and generating summaries.")
+    LOGGER.info("Gathering Kmod results and generating summaries.")
     summaries: list[str] = []
 
     # ----- Gathering and summaries for kmod results ----- #
@@ -295,11 +295,11 @@ def collect_kmod_results(beam: int, meas_paths: Sequence[Path | str]) -> list[Tf
     Returns:
         list[tfs.TfsDataFrame]: A list with all the gathered dataframes.
     """
-    LOGGER.debug("Gathering kmod results.")
+    LOGGER.info("Gathering kmod results.")
     result: list[TfsDataFrame] = []
 
     for dirpath in map(Path, meas_paths):
-        LOGGER.info(f"Reading measurement results from '{dirpath.absolute()}' directory.")
+        LOGGER.debug(f"Reading measurement results from '{dirpath.absolute()}' directory.")
         file_path = dirpath / f"{BEAM_DIR}{beam}" / f"{RESULTS_FILE_NAME}{EXT}"
 
         if not file_path.exists():
@@ -331,7 +331,7 @@ def collect_averaged_kmod_results(
     Returns:
         list[tfs.TfsDataFrame]: A list with all the gathered dataframes. Empty if no path was provided.
     """
-    LOGGER.debug("Gathering averaged kmod results.")
+    LOGGER.info("Gathering averaged kmod results.")
     result: list[tfs.TfsDataFrame] = []
 
     if kmod_averaged_output_dir is None:
@@ -375,7 +375,7 @@ def collect_lumi_imbalance_results(lumi_imbalance_dir: Path | str | None) -> str
     Returns:
         str: Formatted table showing grouped luminosity imbalance results, one line per file.
     """
-    LOGGER.debug("Gathering luminosity imbalance results.")
+    LOGGER.info("Gathering luminosity imbalance results.")
     report_lines: list[str] = []
 
     if lumi_imbalance_dir is None:
@@ -446,7 +446,7 @@ def post_summary_to_logbook(
             entry. Optional.
     """
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
-    LOGGER.info(f"Creating logbook entry for {logbook_filename} to {logbook_name}.")
+    LOGGER.info(f"Creating logbook entry for {logbook_filename} to logbook '{logbook_name}'.")
 
     logbook_event = DotDict(
         {
@@ -456,6 +456,7 @@ def post_summary_to_logbook(
     )
 
     if attachments is not None:
+        LOGGER.debug("Joining attachment files to logbook entry.")
         logbook_event["files"] = attachments
 
     _ = create_logbook_entry(logbook_event)
