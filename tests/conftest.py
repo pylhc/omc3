@@ -100,18 +100,6 @@ def ids_str(template: str) -> Callable[[Any], str]:
         return template.format(val)
     return to_string
 
-
-# TODO: Replace this with tfs.testing.assert_tfs_frame_equal
-def assert_tfsdataframe_equal(df1: TfsDataFrame, df2: TfsDataFrame, compare_keys=True, **kwargs):
-    """ Wrapper to compare two TfsDataFrames with
-    `assert_frame_equal` for the data and `assert_dict_equal` for the headers.
-
-    The `kwargs` are passed to `assert_frame_equal`.
-    """
-    assert_dict_equal(df1.headers, df2.headers, compare_keys=compare_keys)
-    assert_frame_equal(df1, df2, **kwargs)
-
-
 # Model fixtures from /inputs/models -------------------------------------------
 
 @pytest.fixture(scope="module", params=[1, 2], ids=ids_str("beam{}"))
