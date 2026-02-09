@@ -36,7 +36,7 @@ N_EFFECTIVE_FILES = {  # number of effective beta files given number of IPs
 @pytest.mark.parametrize('beam', [1, 2], ids=ids_str("b{}"))
 @pytest.mark.parametrize('ips', ["1", "15", "28", "158"], ids=ids_str("ip{}"))
 def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
-    ips = [int(ip) for ip in ips]
+    ips: list[int] = [int(ip) for ip in ips]
 
     # We have only 1 for IP2 and IP8, but 2 files for IP1 and IP5
     n_files = 1 if (8 in ips) else 2
@@ -47,7 +47,6 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
         beam=beam,
         model=get_model_path(beam),
         output_dir=tmp_path,
-        save_summary=True
     )
 
     # OUTPUT CHECKS --------------------------------------------
