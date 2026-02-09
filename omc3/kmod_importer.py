@@ -215,8 +215,8 @@ def import_kmod_results(opt: DotDict) -> None:
     generate_kmod_summary(
         beam=opt.beam,
         meas_paths=opt.meas_paths,
-        kmod_averaged_dir=average_output_dir,
-        lumi_imbalance_dir=average_output_dir,
+        kmod_averaged_output_dir=average_output_dir,
+        lumi_imb_output_dir=average_output_dir,
         output_dir=average_output_dir,
         logbook=opt.logbook,
     )
