@@ -82,12 +82,7 @@ from omc3.optics_measurements.constants import (
 from omc3.scripts.kmod_average import average_kmod_results
 from omc3.scripts.kmod_import import import_kmod_data, read_model_df
 from omc3.scripts.kmod_lumi_imbalance import IPS, calculate_lumi_imbalance
-from omc3.scripts.kmod_summary import (
-    # gather_results_and_summaries,
-    generate_kmod_summary,
-    # post_summary_to_logbook,
-    # save_summary,
-)
+from omc3.scripts.kmod_summary import generate_kmod_summary
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, save_config
 
