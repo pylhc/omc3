@@ -54,9 +54,6 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
 
     action: ``store_true``
 
-- **save_summary**:
-
-    If True, kmod summary tables are saved as a Dataframe and Text file.
 
 - **logbook**:
 
