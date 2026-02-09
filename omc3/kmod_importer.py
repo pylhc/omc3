@@ -13,8 +13,8 @@ If data for both beams is present, these averages are then used to calculate the
 luminosity imbalance between each combination of IPs.
 These results are again written out into the same sub-folder of the given `output_dir`.
 
-A summary table and text is generated to be potentially saved to disk as well
-as posted to a provided logbook, in which case it would upload attachments as
+A summary table and text is generated then saved saved to disk. Optionally, this
+summary is posted to a provided logbook, in which case it would upload attachments as
 well.
 
 Finally, the averaged results for the given `beam` are then written out into

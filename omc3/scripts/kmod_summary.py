@@ -143,12 +143,13 @@ def generate_kmod_summary(opt: DotDict) -> TfsDataFrame:
 
     # Potentially send this to logbook as well
     if opt.logbook is not None:
+        summary_txt = opt.output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.txt"
         summary_df = opt.output_dir / f"{BEAM_DIR}{opt.beam}_{KMOD_FILENAME}.tfs"
         post_summary_to_logbook(
             beam=opt.beam,
             logbook_name=opt.logbook,
             entry=logbook_entry,
-            attachment=summary_df,
+            attachments=[summary_df, summary_txt],
         )
 
     return df
@@ -374,7 +375,7 @@ def save_summary(beam: int, df: TfsDataFrame, summary: str, output_dir: Path | s
 
 
 def post_summary_to_logbook(
-    beam: int, logbook_name: str, entry: str, attachment: str | Path | None = None
+    beam: int, logbook_name: str, entry: str, attachments: Sequence[str | Path] | None = None
 ) -> None:
     """
     Create logbook entry with summary for a given beam, in the provided
@@ -384,7 +385,8 @@ def post_summary_to_logbook(
         beam (int): Beam the summary was processed for.
         logbook_name (str): Logbook to post to, e.g. 'LHC_OMC'.
         entry (str): Text for logbook entry.
-        attachment (str | Path): File to attach at the logbook entry. Optional.
+        attachments (Sequence[str | Path]): Files to attach to the logbook
+            entry. Optional.
     """
     logbook_filename = f"{BEAM_DIR}{beam}_kmod_summary"
     LOGGER.info(f"Creating logbook entry for {logbook_filename} to {logbook_name}.")
@@ -396,8 +398,8 @@ def post_summary_to_logbook(
         }
     )
 
-    if attachment is not None:
-        logbook_event["files"] = [attachment]
+    if attachments is not None:
+        logbook_event["files"] = attachments
 
     _ = create_logbook_entry(logbook_event)
 
