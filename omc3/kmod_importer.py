@@ -220,25 +220,8 @@ def import_kmod_results(opt: DotDict) -> None:
         output_dir=average_output_dir,
         logbook=opt.logbook,
     )
-    # kmod_summary, logbook_tables = gather_results_and_summaries(
-    #     beam=opt.beam,
-    #     meas_paths=opt.meas_paths,
-    #     kmod_averaged_dir=average_output_dir,
-    #     lumi_imbalance_dir=average_output_dir,
-    # )
-    # if opt.save_summary:
-    #     save_summary(
-    #         beam=opt.beam,
-    #         df=kmod_summary,
-    #         summary="\n".join(logbook_tables),
-    #         output_dir=average_output_dir
-    #     )
-    # if opt.logbook:
-    #     post_summary_to_logbook(
-    #         beam=opt.beam, logbook_name=opt.logbook, entry="\n".join(logbook_tables)
-    #     )
 
-
+    # Import kmod data into optics ---
     import_kmod_data(
         model=df_model,
         measurements=results_list,
