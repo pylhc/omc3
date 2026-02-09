@@ -55,7 +55,7 @@ the `beta_kmod` and `betastar` tfs-files in the `output_dir`.
     action: ``store_true``
 
 
-- **logbook**:
+- **logbook** *(str)*:
 
     Name of the logbook to create an entry in.
 """
