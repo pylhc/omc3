@@ -366,10 +366,10 @@ def save_summary(beam: int, df: TfsDataFrame, summary: str, output_dir: Path | s
     logbook_table_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}.txt"
     summary_path = save_output_dir / f"{BEAM_DIR}{beam}_{KMOD_FILENAME}{EXT}"
 
-    LOGGER.debug(f"Writing .txt summary output file {logbook_table_path}.")
+    LOGGER.debug(f"Writing summary to: '{logbook_table_path}'")
     logbook_table_path.write_text(summary)
 
-    LOGGER.debug(f"Writing {EXT} summary output file {summary_path}.")
+    LOGGER.debug(f"Writing summary dataframe to: '{summary_path}'")
     tfs.write(summary_path, df)
 
 
