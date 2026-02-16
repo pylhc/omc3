@@ -242,7 +242,7 @@ def list2str(list_: list) -> str:
 # Public Methods ###############################################################
 
 
-def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, color=None):
+def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, color=None) -> logging.Logger:
     """
     Sets up logger if name is **__main__**. Returns logger based on module name.
 

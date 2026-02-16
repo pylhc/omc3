@@ -37,7 +37,7 @@ N_EFFECTIVE_FILES = {  # number of effective beta files given number of IPs
 @pytest.mark.parametrize('beam', [1, 2], ids=ids_str("b{}"))
 @pytest.mark.parametrize('ips', ["1", "15", "28", "158"], ids=ids_str("ip{}"))
 def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
-    ips = [int(ip) for ip in ips]
+    ips: list[int] = [int(ip) for ip in ips]
 
     # We have only 1 for IP2 and IP8, but 2 files for IP1 and IP5
     n_files = 1 if (8 in ips) else 2
@@ -57,7 +57,8 @@ def test_full_kmod_import(tmp_path: Path, beam: int, ips: str):
 
     assert average_dir.is_dir()
     assert len(list(average_dir.glob("*.pdf"))) == 3 * len(ips)  # beta, beat and waist per IP
-    assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] # AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map
+    assert len(list(average_dir.glob(f"*{EXT}"))) == 3 * len(ips) + N_EFFECTIVE_FILES[len(ips)] + 1# AV_BPM: N_BEAM*N_IP, AV_BETASTAR: N_IPs, Effective: see map, {beam}_kmod_summary.tfs
+    assert len(list(average_dir.glob("*.txt"))) == 1 # {beam}_kmod_summary.txt
 
     # Check the content ---
     # averages --
