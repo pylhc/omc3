@@ -67,10 +67,9 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
-from typing import Final, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
 import numpy as np
-import pandas as pd
 import tfs
 import turn_by_turn as tbt
 from generic_parser import EntryPointParameters, entrypoint
@@ -79,6 +78,9 @@ from generic_parser.dict_parser import ArgumentError
 from omc3.optics_measurements.constants import DELTA, EXT, NAME, PHASE, TOTAL_PHASE_NAME, TUNE
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
+
+if TYPE_CHECKING:
+    from pandas import Series
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -164,14 +166,14 @@ def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtD
         phase_df = tfs.read(optics_dir / PHASE_FILE.format(plane=plane))
         qx = phase_df.headers[f"{TUNE}1"]
         qy = phase_df.headers[f"{TUNE}2"]
-        bpms: pd.Series = phase_df[NAME]  # using omc3 constants
-        dphase: pd.Series = phase_df[f"{DELTA}{PHASE}{plane.upper()}"]
+        bpms: Series = phase_df[NAME]  # using omc3 constants
+        dphase: Series = phase_df[f"{DELTA}{PHASE}{plane.upper()}"]
 
         tune = (1 - qx) if plane == "x" else (1 - qy)
 
         # The phase advance divided by the tune will tell us how off the BPM is
-        ntune: pd.Series = dphase / tune
-        abs_ntune: pd.Series = ntune.abs()
+        ntune: Series = dphase / tune
+        abs_ntune: Series = ntune.abs()
 
         # If the ratio ntune is close to 1, that's one turn, otherwise, it's likely -2 turns
         mag: np.ndarray = np.select([abs_ntune >= 0.8, abs_ntune >= 0.1], [1, -2], default=0)
