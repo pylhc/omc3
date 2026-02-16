@@ -3,6 +3,7 @@ from typing import Any
 
 import pytest
 import tfs
+from tfs.testing import assert_tfs_frame_equal
 
 from omc3.optics_measurements.constants import (
     AVERAGED_BETASTAR_FILENAME,
@@ -10,7 +11,6 @@ from omc3.optics_measurements.constants import (
     EXT,
 )
 from omc3.scripts.kmod_lumi_imbalance import calculate_lumi_imbalance
-from tests.conftest import assert_tfsdataframe_equal
 from tests.unit.test_kmod_averaging import REFERENCE_DIR, get_reference_dir
 
 # Tests ---
@@ -25,7 +25,7 @@ def test_kmod_lumi_imbalance(tmp_path):
 
     eff_betas = tfs.read(tmp_path / _get_effbetas_filename(betas, 1, 5))
     eff_betas_ref = tfs.read(REFERENCE_DIR / _get_effbetas_filename(betas, 1, 5))
-    assert_tfsdataframe_equal(eff_betas_ref, eff_betas, check_like=True)
+    assert_tfs_frame_equal(eff_betas_ref, eff_betas, check_like=True)
 
 
 # Helper ---

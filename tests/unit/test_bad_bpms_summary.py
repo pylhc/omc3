@@ -2,6 +2,7 @@ import logging
 
 import pytest
 import tfs
+from tfs.testing import assert_tfs_frame_equal
 
 from omc3.scripts.bad_bpms_summary import (
     HARPY,
@@ -11,7 +12,7 @@ from omc3.scripts.bad_bpms_summary import (
     bad_bpms_summary,
     merge_reasons,
 )
-from tests.conftest import INPUTS, assert_tfsdataframe_equal
+from tests.conftest import INPUTS
 
 
 @pytest.mark.extended
@@ -33,7 +34,7 @@ def test_bad_bpms_summary(tmp_path, caplog):
     # Test Data has been written
     df_eval = merge_reasons(df_eval).reset_index(drop=True)
     df_eval["REASONS"] = df_eval["REASONS"].astype("str")
-    assert_tfsdataframe_equal(df_eval, tfs.read(outfile))
+    assert_tfs_frame_equal(df_eval, tfs.read(outfile))
 
     # Test some random BPMs
     not_in_model = ["BPMSI.A4R6.B1", ]
