@@ -3,7 +3,7 @@
 #### 2025-02-XX - v0.28.0 - _mlegarre_, _fsoubelet_
 
 - Added:
-    - Script to perform the BPM re-synchronisation for SuperKEK-B BPMs after a first optics analysis.
+    - Script to perform the BPM re-synchronisation for SuperKEKB BPMs after a first optics analysis.
 
 #### 2025-01-31 - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
 

@@ -78,7 +78,7 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 - `kmod_import.py` to import a K-modulation measurement into an optics-measurement directory.
 - `kmod_lumi_imbalace.py` to calculate the luminosity imbalance between two IPs from averaged K-modulation files.
 - `bad_bpms_summary.py` to collect and summarize the bad BPMs from GUI runs.
-- `resync_bpms.py` to perform re-synchronisation of SuperKEK-B BPMs data after a first optics analysis.
+- `resync_bpms.py` to perform re-synchronisation of SuperKEKB BPMs data after a first optics analysis.
 
 Example use for these scripts can be found in the [`tests`](tests) files.
 Documentation including relevant flags and parameters can be found at <https://pylhc.github.io/omc3/>.
