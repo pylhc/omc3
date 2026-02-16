@@ -1,6 +1,6 @@
 """
-BPM Synchronization
--------------------
+SuperKEKB BPM Synchronization
+-----------------------------
 
 This script resyncs the BPMs from the `LER` and `HER` rings of `SuperKEKB`.
 Those BPMs are often not aligned time-wise and the values can be off by a few turns.
