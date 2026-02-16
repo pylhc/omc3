@@ -63,6 +63,7 @@ Arguments:
 
     default: ``False``
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -86,8 +87,8 @@ LOGGER = logging_tools.get_logger(__name__)
 
 # ----- Some very specific constants -----
 
-#Available rings
-RINGS: Final[set[Literal['LER', 'HER']]] = {'LER', 'HER'}
+# Available rings
+RINGS: Final[set[Literal["LER", "HER"]]] = {"LER", "HER"}
 
 # Phase file containing the phase advance of the BPMs
 PHASE_FILE: Final[str] = f"{TOTAL_PHASE_NAME}" + "{plane}" + f"{EXT}"  # to be formatted by 'plane'
@@ -95,6 +96,7 @@ DEFAULT_DATATYPE: Final[Literal["lhc"]] = "lhc"
 
 
 # ----- Entrypoint parsing ----- #
+
 
 def _get_params() -> dict:
     """
@@ -144,6 +146,7 @@ def _get_params() -> dict:
 
 
 # ----- Resync Functionality ----- #
+
 
 def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtData:
     """Resynchronize the BPMS in the the turn by turn data based on the phase advance.
@@ -200,7 +203,9 @@ def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtD
 
     return synced_tbt
 
+
 # ----- CLI Mode ----- #
+
 
 @entrypoint(_get_params(), strict=True)
 def main(opt):
