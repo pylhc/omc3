@@ -1,9 +1,10 @@
 # OMC3 Changelog
 
-#### 2025-02-XX - v0.28.0 - _mlegarre_, _fsoubelet_
+#### 2025-02-XX - v0.28.0 - _mattiastefanelli_, _mlegarre_,  _fsoubelet_
 
 - Added:
-    - Script to perform the BPM re-synchronisation for SuperKEKB BPMs after a first optics analysis.
+    - A script to generate summaries from kmod measurements and optionally post it to logbook. The main `kmod_importer` exposes this new functionality as well.
+    - A script to perform the BPM re-synchronisation for SuperKEKB BPMs after a first optics analysis.
 
 #### 2025-01-31 - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
 
