@@ -1,6 +1,11 @@
 # OMC3 Changelog
 
-#### 2025-01-XX - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
+#### 2025-02-XX - v0.28.0 - _mlegarre_, _fsoubelet_
+
+- Added:
+    - Script to perform the BPM re-synchronisation for SuperKEK-B BPMs after a first optics analysis.
+
+#### 2025-01-31 - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
 
 - Added:
     - MAD-NG response matrix calculation: New `response_madng` module to compute response matrices using MAD-NG derivatives.
