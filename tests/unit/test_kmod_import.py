@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 import tfs
+from tfs.testing import assert_tfs_frame_equal
 
 from omc3.optics_measurements.constants import (
     AVERAGED_BETASTAR_FILENAME,
@@ -11,7 +12,7 @@ from omc3.optics_measurements.constants import (
     EXT,
 )
 from omc3.scripts.kmod_import import import_kmod_data
-from tests.conftest import assert_tfsdataframe_equal, ids_str
+from tests.conftest import ids_str
 from tests.unit.test_kmod_averaging import (
     KMOD_INPUT_DIR,
     get_betastar_values,
@@ -51,7 +52,7 @@ def test_kmod_import_averaged_folder_beam(tmp_path, beam):
             beta_out = tfs.read(tmp_path / ref_path.name)
 
             # column order might have changed, but that's okay -> check_like=True
-            assert_tfsdataframe_equal(beta_ref, beta_out, check_like=True)
+            assert_tfs_frame_equal(beta_ref, beta_out, check_like=True)
 
 
 @pytest.mark.extended
@@ -93,7 +94,7 @@ def test_kmod_import_files_beam(tmp_path, beam, files, read):
             beta_out = tfs.read(tmp_path / ref_path.name)
 
             # column order might have changed, but that's okay -> check_like=True
-            assert_tfsdataframe_equal(beta_ref, beta_out, check_like=True)
+            assert_tfs_frame_equal(beta_ref, beta_out, check_like=True)
 
 
 # Helper ---
