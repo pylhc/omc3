@@ -1,10 +1,7 @@
-import pathlib
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pytest
-import tfs
 import turn_by_turn as tbt
 from generic_parser.dict_parser import ArgumentError
 
@@ -16,46 +13,44 @@ OPTICS_DIR = Path(__file__).parent.parent / "inputs" / "bpm_resync"
 
 def test_bad_arg_optics_type():
     with pytest.raises(ArgumentError) as e:
-        resync.main(input=Path("yeah ok"),
-                    optics_dir=42,
-                    output_file="yay",
-                    ring="HER")  # type: ignore
+        resync.main(input=Path("yeah ok"), optics_dir=42, output_file="yay", ring="HER")
     assert "optics_dir' is not of type Path" in str(e.value)
 
 
 def test_bad_arg_output_file_type():
     with pytest.raises(ArgumentError) as e:
-        resync.main(input=Path("yeah ok"),
-                    optics_dir=Path("yay"),
-                    output_file=42,
-                    ring="HER")  # type: ignore
+        resync.main(input=Path("yeah ok"), optics_dir=Path("yay"), output_file=42, ring="HER")
     assert "output_file' is not of type Path" in str(e.value)
 
 
 def test_bad_arg_ring():
     with pytest.raises(ArgumentError) as e:
-        resync.main(input="yeah ok",
-                    optics_dir=Path("yay"),
-                    output_file=Path("wat"),
-                    ring="MOON_COLLIDER")  # type: ignore
+        resync.main(
+            input="yeah ok", optics_dir=Path("yay"), output_file=Path("wat"), ring="MOON_COLLIDER"
+        )
     assert "ring' needs to be one of" in str(e.value)
+
 
 def test_bad_arg_tbt_datatype():
     with pytest.raises(ArgumentError) as e:
-        resync.main(input="yeah ok",
-                    optics_dir=Path("yay"),
-                    output_file=Path("wat"),
-                    ring="HER",
-                    tbt_datatype="quantum_sdds")  # type: ignore
+        resync.main(
+            input="yeah ok",
+            optics_dir=Path("yay"),
+            output_file=Path("wat"),
+            ring="HER",
+            tbt_datatype="quantum_sdds",
+        )
     assert "tbt_datatype' needs to be one of" in str(e.value)
 
 
 def test_resync(tmp_path):
     # Synchronize the BPMs and check against the control
-    resync.main(input=INPUTS_DIR / "unsynced.sdds",
-                optics_dir=OPTICS_DIR,
-                output_file=tmp_path / "output.sdds",
-                ring="HER")  # type: ignore
+    resync.main(
+        input=INPUTS_DIR / "unsynced.sdds",
+        optics_dir=OPTICS_DIR,
+        output_file=tmp_path / "output.sdds",
+        ring="HER",
+    )
 
     assert Path(tmp_path / "output.sdds").exists()
 
@@ -71,11 +66,13 @@ def test_overwrite_ok(tmp_path):
     (tmp_path / "output.sdds").write_text("This file already exists.")
 
     # Synchronize the BPMs and check against the control
-    resync.main(input=INPUTS_DIR / "unsynced.sdds",
-                optics_dir=OPTICS_DIR,
-                output_file=tmp_path / "output.sdds",
-                ring="HER",
-                overwrite=True)  # type: ignore
+    resync.main(
+        input=INPUTS_DIR / "unsynced.sdds",
+        optics_dir=OPTICS_DIR,
+        output_file=tmp_path / "output.sdds",
+        ring="HER",
+        overwrite=True,
+    )
 
     assert Path(tmp_path / "output.sdds").exists()
 
@@ -92,10 +89,12 @@ def test_overwrite_raise(tmp_path):
 
     # Synchronize the BPMs and check against the control
     with pytest.raises(FileExistsError) as e:
-        resync.main(input=INPUTS_DIR / "unsynced.sdds",
-                    optics_dir=OPTICS_DIR,
-                    output_file=tmp_path / "output.sdds",
-                    ring="HER",
-                    overwrite=False)  # type: ignore
+        resync.main(
+            input=INPUTS_DIR / "unsynced.sdds",
+            optics_dir=OPTICS_DIR,
+            output_file=tmp_path / "output.sdds",
+            ring="HER",
+            overwrite=False,
+        )
 
     assert "output.sdds already exists, aborting." in str(e.value)
