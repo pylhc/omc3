@@ -17,8 +17,6 @@ from typing import TYPE_CHECKING, Any
 import git
 import pytest
 from generic_parser import DotDict
-from pandas._testing import assert_dict_equal
-from pandas.testing import assert_frame_equal
 from pytest import TempPathFactory
 
 import omc3
@@ -27,7 +25,6 @@ from omc3 import model
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from tfs import TfsDataFrame
 
 INPUTS: Path = Path(__file__).parent / 'inputs'
 MODELS: Path = INPUTS / "models"
@@ -99,18 +96,6 @@ def ids_str(template: str) -> Callable[[Any], str]:
     def to_string(val: Any):
         return template.format(val)
     return to_string
-
-
-# TODO: Replace this with tfs.testing.assert_tfs_frame_equal
-def assert_tfsdataframe_equal(df1: TfsDataFrame, df2: TfsDataFrame, compare_keys=True, **kwargs):
-    """ Wrapper to compare two TfsDataFrames with
-    `assert_frame_equal` for the data and `assert_dict_equal` for the headers.
-
-    The `kwargs` are passed to `assert_frame_equal`.
-    """
-    assert_dict_equal(df1.headers, df2.headers, compare_keys=compare_keys)
-    assert_frame_equal(df1, df2, **kwargs)
-
 
 # Model fixtures from /inputs/models -------------------------------------------
 
