@@ -220,18 +220,20 @@ def main(opt):
     opt.optics_dir = Path(opt.optics_dir)
     opt.output_file = Path(opt.output_file)
 
-    # Synchronise TbT
-    LOGGER.info(f"Resynchronizing {opt.optics_dir.name}...")
-    synced_tbt = sync_tbt(original_tbt, opt.optics_dir, opt.ring)  # type: ignore
-
-    # Save the resynced turn by turn data
+    # Check the overwrite flag
     if (opt.output_file).exists() and not opt.overwrite:
         LOGGER.warning(f"File {opt.output_file} already exists, aborting.")
         raise FileExistsError(f"File {opt.output_file} already exists, aborting.")
     if (opt.output_file).exists() and opt.overwrite:
         LOGGER.warning(f"Overwriting file {opt.output_file}.")
 
-    opt.output_file.parent.mkdir(exist_ok=True)
+    # Synchronise TbT
+    LOGGER.info(f"Resynchronizing {opt.optics_dir.name}...")
+    synced_tbt = sync_tbt(original_tbt, opt.optics_dir, opt.ring)  # type: ignore
+
+
+    # Save the resynced turn by turn data
+    opt.output_file.parent.mkdir(exist_ok=True, parents=True)
     tbt.write(opt.output_file, synced_tbt)
 
 
