@@ -24,3 +24,5 @@ Scripts
 .. automodule:: omc3.scripts.create_logbook_entry
 
 .. automodule:: omc3.scripts.lhc_corrector_list_check
+
+.. automodule:: omc3.scripts.resync_bpms
