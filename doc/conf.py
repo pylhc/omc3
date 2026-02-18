@@ -44,36 +44,37 @@ with ABOUT_FILE.open("r") as f:
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.doctest',
-              'sphinx.ext.todo',
-              'sphinx.ext.coverage',
-              'sphinx.ext.mathjax',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.githubpages',
-              'sphinx.ext.napoleon',
-              'sphinx.ext.autosectionlabel',
-              ]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
+    "sphinx.ext.todo",
+    "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",
+]
 autosectionlabel_prefix_document = True
 autosectionlabel_maxdepth = 2
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 #
-source_suffix = {'.rst': 'restructuredtext'}
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
 project = ABOUT_OMC3["__title__"]
-copyright_ = '2019-2020, pyLHC/OMC-TEAM'
+copyright_ = "2019-2020, pyLHC/OMC-TEAM"
 author = ABOUT_OMC3["__author__"]
 
 rst_prolog = f"""
-:github_url: {ABOUT_OMC3['__url__']}
+:github_url: {ABOUT_OMC3["__url__"]}
 """
 
 # The version info for the project you're documenting, acts as replacement for
@@ -98,7 +99,7 @@ language = "en"
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
@@ -108,16 +109,16 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'collapse_navigation': False,
-    #'display_version': True,  # show version in the sidebar (currently not working: https://github.com/readthedocs/sphinx_rtd_theme/issues/1624)
-    'logo_only': True,        # if True, display only logo image, no project name
-    'navigation_depth': 2,
+    "collapse_navigation": False,
+    # "display_version": True,  # show version in the sidebar (currently not working: https://github.com/readthedocs/sphinx_rtd_theme/issues/1624)
+    "logo_only": True,  # if True, display only logo image, no project name
+    "navigation_depth": 2,
 }
 
 
@@ -125,23 +126,23 @@ html_theme_options = {
 # that is the logo of the docs, or URL that points an image file for the logo.
 # It is placed at the top of the sidebar;
 # its width should therefore not exceed 200 pixels.
-html_logo = '_static/img/omc_logo.svg'
+html_logo = "_static/img/omc_logo.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 #
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # A dictionary of values to pass into the template engine’s context for all
 # pages. Single values can also be put in this dictionary using the
 # -A command-line option of sphinx-build.
 html_context = {
-    'display_github': True,
+    "display_github": True,
     # the following are only needed if :github_url: is not set
-    'github_user': author,
-    'github_repo': project,
-    'github_version': 'master/doc/',
+    "github_user": author,
+    "github_repo": project,
+    "github_version": "master/doc/",
 }
 
 # A list of CSS files. The entry must be a filename string or a tuple
@@ -161,16 +162,16 @@ smartquotes_action = "qe"  # renders only quotes and ellipses (...) but not dash
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
+    "**": [
+        "relations.html",  # needs 'show_related': True theme option to display
+        "searchbox.html",
     ]
 }
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'omc3doc'
+htmlhelp_basename = "omc3doc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -178,15 +179,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -196,18 +194,14 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'omc3.tex', 'omc3 Documentation',
-     'OMC-TEAM', 'manual'),
+    (master_doc, "omc3.tex", "omc3 Documentation", "OMC-TEAM", "manual"),
 ]
 
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'omc3', 'omc3 Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "omc3", "omc3 Documentation", [author], 1)]
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -215,18 +209,28 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'omc3', 'omc3 Documentation',
-     author, 'omc3', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "omc3",
+        "omc3 Documentation",
+        author,
+        "omc3",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 # -- Autodoc Configuration ---------------------------------------------------
 
 # Add here all modules to be mocked up. When the dependencies are not met
 # at building time. Here used to have PyQT mocked.
-autodoc_mock_imports = ['PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets',
-                        "matplotlib.backends.backend_qt5agg",
-                        ]
+autodoc_mock_imports = [
+    "PyQt5",
+    "PyQt5.QtGui",
+    "PyQt5.QtCore",
+    "PyQt5.QtWidgets",
+    "matplotlib.backends.backend_qt5agg",
+]
 
 # -- Type Aliases --------------------------------------------------------------
 
@@ -242,4 +246,5 @@ autodoc_default_options = {
     # "no-index-entry": True,  # don't add an index entry (toc_object_entries below works better for our use case)
 }
 
-toc_object_entries = False  # do not create entries for domain objects (e.g. functions, classes, attributes, etc.).
+# Do not create entries for domain objects (e.g. functions, classes, attributes, etc.).
+toc_object_entries = False
