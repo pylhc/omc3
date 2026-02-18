@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2026-02-XX - v0.28.0 - mattiastefanelli_, _mlegarre_,  _fsoubelet_, _jgray_, _jdilly_
+#### 2026-02-XX - v0.28.0 - _mattiastefanelli_, _mlegarre_,  _fsoubelet_, _jgray_, _jdilly_
 
 - Added:
     - A script to generate summaries from kmod measurements and optionally post it to logbook. The main `kmod_importer` exposes this new functionality as well.
