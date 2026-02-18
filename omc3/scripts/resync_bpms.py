@@ -76,8 +76,8 @@ import turn_by_turn as tbt
 from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.dict_parser import ArgumentError
 
-from omc3.optics_measurements.constants import DELTA, EXT, NAME, PHASE, TOTAL_PHASE_NAME, TUNE
 from omc3.definitions.constants import PLANES
+from omc3.optics_measurements.constants import DELTA, EXT, NAME, PHASE, TOTAL_PHASE_NAME, TUNE
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 
