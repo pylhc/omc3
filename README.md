@@ -117,6 +117,7 @@
 | omc3/scripts/kmod\_summary.py                           |      159 |       30 |     81% |185, 203-205, 252-253, 306-307, 338-339, 349, 355-356, 382-383, 393, 448-462, 483-485, 495-497, 528 |
 | omc3/scripts/lhc\_corrector\_list\_check.py             |       41 |       41 |      0% |    10-124 |
 | omc3/scripts/linfile\_clean.py                          |      103 |        5 |     95% |164, 184, 228, 259, 301 |
+| omc3/scripts/resync\_bpms.py                            |       66 |        4 |     94% |217-220, 242 |
 | omc3/scripts/update\_nattune\_in\_linfile.py            |       70 |        1 |     99% |       195 |
 | omc3/scripts/write\_madx\_macros.py                     |       30 |       30 |      0% |    19-104 |
 | omc3/segment\_by\_segment/\_\_init\_\_.py               |        0 |        0 |    100% |           |
@@ -153,7 +154,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      135 |       28 |     79% |66-67, 79, 99-110, 139, 156, 182, 197, 202, 206, 210, 214, 224, 227, 232, 237, 247, 252, 257, 262 |
-| **TOTAL**                                               | **12135** | **1701** | **86%** |           |
+| **TOTAL**                                               | **12201** | **1705** | **86%** |           |
 
 
 ## Setup coverage badge
