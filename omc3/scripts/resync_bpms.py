@@ -77,6 +77,7 @@ from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.dict_parser import ArgumentError
 
 from omc3.optics_measurements.constants import DELTA, EXT, NAME, PHASE, TOTAL_PHASE_NAME, TUNE
+from omc3.definitions.constants import PLANES
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 
@@ -165,14 +166,14 @@ def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtD
 
     # Some BPMs can exist in a plane but not the other, we need to check both planes to be sure
     already_processed = set()
-    for plane in ("x", "y"):
-        phase_df = tfs.read(optics_dir / PHASE_FILE.format(plane=plane))
+    for plane in PLANES:
+        phase_df = tfs.read(optics_dir / PHASE_FILE.format(plane=plane.lower()))
         qx = phase_df.headers[f"{TUNE}1"]
         qy = phase_df.headers[f"{TUNE}2"]
         bpms: Series = phase_df[NAME]  # using omc3 constants
         dphase: Series = phase_df[f"{DELTA}{PHASE}{plane.upper()}"]
 
-        tune = (1 - qx) if plane == "x" else (1 - qy)
+        tune = (1 - qx) if plane == "X" else (1 - qy)
 
         # The phase advance divided by the tune will tell us how off the BPM is
         ntune: Series = dphase / tune
@@ -197,7 +198,7 @@ def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtD
             LOGGER.info(
                 f"  {bpm:15s} -> turn correction of {bpm_correction} (ntune={ntune[idx]:.2f})"
             )
-            for plane in ("X", "Y"):
+            for plane in PLANES:
                 matrix = synced_tbt.matrices[0][plane]
                 orig_row = original_tbt.matrices[0][plane].loc[bpm]
                 matrix.loc[bpm] = orig_row.shift(bpm_correction, fill_value=0)
