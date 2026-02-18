@@ -20,7 +20,7 @@ Arguments:
 - **input** *(Path,str,TbtData)*:
 
     Input turn by turn data to be resynchronized.
-    Can take the form of a `Path` to a file or directly a `TbtData` object.
+    Can take the form of a `Path` or `str` to a file or directly a `TbtData` object.
 
     flags: **['--input']**
 
