@@ -48,7 +48,7 @@ Arguments:
 *--Optional--*
 
 - **tbt_datatype** *(str)*:
-    Datatype of the TurnByTurn data provided as input.
+    Datatype of the `turn_by_turn` data provided as input.
 
     flags: **['--tbt_datatype']**
 
