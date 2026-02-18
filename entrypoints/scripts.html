@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scripts &mdash; omc3 0.27.1 documentation</title>
+  <title>Scripts &mdash; omc3 0.28.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=9f0f14ba"></script>
+      <script src="../_static/documentation_options.js?v=8d643f27"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -86,6 +86,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-logbook-entry">Create Logbook Entry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#corrector-lists-check">Corrector Lists Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#superkekb-bpm-synchronization">SuperKEKB BPM Synchronization</a></li>
 </ul>
 </li>
 </ul>
@@ -240,6 +241,7 @@
 <li><a class="reference internal" href="#bad-bpms-summary">Bad BPMs Summary</a></li>
 <li><a class="reference internal" href="#create-logbook-entry">Create Logbook Entry</a></li>
 <li><a class="reference internal" href="#corrector-lists-check">Corrector Lists Check</a></li>
+<li><a class="reference internal" href="#superkekb-bpm-synchronization">SuperKEKB BPM Synchronization</a></li>
 </ul>
 </li>
 </ul>
@@ -1457,6 +1459,91 @@ depending on their ending ‘b1’ or ‘b2’.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict[int, set[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="superkekb-bpm-synchronization">
+<span id="module-omc3.scripts.resync_bpms"></span><h2>SuperKEKB BPM Synchronization<a class="headerlink" href="#superkekb-bpm-synchronization" title="Link to this heading"></a></h2>
+<p>This script resyncs the BPMs from the <cite>LER</cite> and <cite>HER</cite> rings of <cite>SuperKEKB</cite>.
+Those BPMs are often not aligned time-wise and the values can be off by a few turns.
+The resynchronization is done by looking up the phase advance of each BPM to retrieve the turn
+offset.
+This requires a frequency and an optics analysis of the unsynchronized turn by turn data.</p>
+<p>The script takes as input the original turn by turn data, the optics directory containing the
+results of the optics analysis, as well as the output filename where the turn by turn data will be
+written, in ASCII SDDS format.</p>
+<p>Arguments:</p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>input</strong> <em>(Path,str,TbtData)</em>:</p>
+<blockquote>
+<div><p>Input turn by turn data to be resynchronized.
+Can take the form of a <cite>Path</cite> or <cite>str</cite> to a file or directly a <cite>TbtData</cite> object.</p>
+<p>flags: <strong>[‘--input’]</strong></p>
+</div></blockquote>
+</li>
+<li><p><strong>optics_dir</strong> <em>(Path,str)</em>:</p>
+<blockquote>
+<div><p>Optics analysis path of the unsynchronized data, must contain the <cite>total_phase_{x,y}.tfs</cite> files.</p>
+<p>flags: <strong>[‘--optics_dir’]</strong></p>
+</div></blockquote>
+</li>
+<li><p><strong>output_file</strong> <em>(Path,str)</em>:</p>
+<blockquote>
+<div><p>Output file path where to write the synchronized turn by turn data.
+The directory will be created if necessary.</p>
+<p>flags: <strong>[‘--output_file’]</strong></p>
+</div></blockquote>
+</li>
+<li><p><strong>ring</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Ring name, either <cite>LER</cite> or <cite>HER</cite>.</p>
+<p>flags: <strong>[‘--ring’]</strong></p>
+<p>choices: <code class="docutils literal notranslate"><span class="pre">('LER',</span> <span class="pre">'HER')</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><dl>
+<dt><strong>tbt_datatype</strong> <em>(str)</em>:</dt><dd><p>Datatype of the <cite>turn_by_turn</cite> data provided as input.</p>
+<p>flags: <strong>[‘--tbt_datatype’]</strong></p>
+<p>choices: list of datatypes supported by <cite>turn_by_turn</cite>, in <cite>turn_by_turn.io.TBT_MODULES</cite></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">lhc</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>** overwrite** <em>(bool)</em>:</dt><dd><p>Whether to overwrite the output file if it already exists.</p>
+<p>flags: <strong>[‘--overwrite’]</strong></p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.resync_bpms.main">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.resync_bpms.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/scripts/resync_bpms.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.resync_bpms.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.resync_bpms.sync_tbt">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.resync_bpms.</span></span><span class="sig-name descname"><span class="pre">sync_tbt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_tbt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TbtData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TbtData</span></span></span><a class="reference internal" href="../_modules/omc3/scripts/resync_bpms.html#sync_tbt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.resync_bpms.sync_tbt" title="Link to this definition"></a></dt>
+<dd><p>Resynchronize the BPMS in the the turn by turn data based on the phase advance.
+:param original_tbt: Original turn by turn data to be synchronized.
+:type original_tbt: tbt.TbtData
+:param optics_dir: Original optics directory containing the phase advance files.
+:type optics_dir: Path
+:param ring: Ring name, either <cite>LER</cite> or <cite>HER</cite>.
+:type ring: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resynchronized turn by turn data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tbt.TbtData</p>
 </dd>
 </dl>
 </dd></dl>
