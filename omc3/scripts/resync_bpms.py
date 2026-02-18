@@ -190,12 +190,13 @@ def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtD
                 continue
             already_processed.add(bpm)
 
-            if (bpm_correction := final_correction[idx]) != 0:
-                LOGGER.info(
-                    f"  {bpm:15s} -> turn correction of {bpm_correction} (ntune={ntune[idx]:.2f})"
-                )
+            if (bpm_correction := final_correction[idx]) == 0:
+                continue
 
             # Shift the data
+            LOGGER.info(
+                f"  {bpm:15s} -> turn correction of {bpm_correction} (ntune={ntune[idx]:.2f})"
+            )
             for plane in ("X", "Y"):
                 matrix = synced_tbt.matrices[0][plane]
                 orig_row = original_tbt.matrices[0][plane].loc[bpm]
@@ -230,7 +231,6 @@ def main(opt):
     # Synchronise TbT
     LOGGER.info(f"Resynchronizing {opt.optics_dir.name}...")
     synced_tbt = sync_tbt(original_tbt, opt.optics_dir, opt.ring)  # type: ignore
-
 
     # Save the resynced turn by turn data
     opt.output_file.parent.mkdir(exist_ok=True, parents=True)
