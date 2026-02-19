@@ -57,7 +57,7 @@ TIMESTAMP: str = "nxcals_timestamp"
 class NXCALSResult:
     name: str
     value: float
-    datetime: pd.Timestamp | datetime  # pd.Timestamp inherits from datetime
+    datetime: datetime  # pd.Timestamp inherits from datetime
     pc_name: str
 
     def to_madx(self) -> str:
@@ -73,7 +73,7 @@ class NXCALSResult:
         })
 
     @classmethod
-    def to_tfs(cls, results: list[NXCALSResult], time: datetime, beam: int) -> tfs.TfsDataFrame:
+    def to_tfs(cls, results: list[NXCALSResult], time: datetime, beam: int) -> pd.DataFrame:
         return tfs.TfsDataFrame(
             [result.to_series() for result in results],
             headers={
@@ -92,7 +92,7 @@ def get_knob_vals(
     patterns: list[str],
     expected_knobs: set[str] | None = None,
     log_prefix: str = "",
-    delta_days: float = 0.25,
+    data_retrieval_days: float = 0.25,
     energy: float | None = None,
 ) -> list[NXCALSResult]:
     """
@@ -125,7 +125,7 @@ def get_knob_vals(
         expected_knobs (set[str] | None): Set of expected MAD-X knob names to validate and filter
             results. If None, returns all found knobs without validation.
         log_prefix (str): Prefix for logging messages to distinguish different extraction runs.
-        delta_days (float): Number of days to look back for data. Default is 0.25.
+        data_retrieval_days (float): Number of days to look back for data. Default is 0.25.
         energy (float | None): Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.
 
     Returns:
@@ -138,7 +138,7 @@ def get_knob_vals(
     combined_vars: list[NXCALSResult] = []
     for pattern in patterns:
         LOGGER.info(f"{log_prefix}Getting currents for pattern {pattern} at {time}")
-        raw_vars = get_raw_vars(spark, time, pattern, delta_days)
+        raw_vars = get_raw_vars(spark, time, pattern, data_retrieval_days)
         combined_vars.extend(raw_vars)
 
     # Get beam energy for K-value calculations
@@ -191,7 +191,7 @@ def get_knob_vals(
 
 
 def get_raw_vars(
-    spark: SparkSession, time: datetime, var_name: str, delta_days: float = 0.25, latest_only: bool = True,
+    spark: SparkSession, time: datetime, var_name: str, data_retrieval_days: float = 0.25, latest_only: bool = True,
 ) -> list[NXCALSResult]:
     """
     Retrieve raw variable values from NXCALS.
@@ -200,7 +200,7 @@ def get_raw_vars(
         spark (SparkSession): Active Spark session.
         time (datetime): Python datetime (timezone-aware recommended).
         var_name (str): Name or pattern of the variable(s) to retrieve.
-        delta_days (float): Number of days to look back for data. Default is 0.25.
+        data_retrieval_days (float): Number of days to look back for data. Default is 0.25.
         latest_only (bool): If True, only the latest sample for each variable is returned. Default is True.
 
     Returns:
@@ -210,7 +210,7 @@ def get_raw_vars(
 
     Raises:
         RuntimeError: If no data is found for the variable in the given interval.
-        You may need to increase the delta_days if necessary.
+        You may need to increase the data_retrieval_days if necessary.
     """
 
     # Ensure time is in UTC
@@ -218,8 +218,8 @@ def get_raw_vars(
         raise ValueError("Datetime object must be timezone-aware")
     time = time.astimezone(timezone.utc)
 
-    # Look back delta_days, may need up to 1 day to find data
-    start_time = time - timedelta(days=delta_days)
+    # Look back data_retrieval_days, may need up to 1 day to find data
+    start_time = time - timedelta(days=data_retrieval_days)
     end_time = time
     LOGGER.info(f"Retrieving raw variables {var_name} from {start_time} to {end_time}")
 
@@ -236,7 +236,7 @@ def get_raw_vars(
     if df is None or not df.take(1):
         raise RuntimeError(
             f"No data found for {var_name} in {start_time} to {end_time}. "
-            f"You may need to increase the delta_days from {delta_days} days if necessary."
+            f"You may need to increase the data_retrieval_days from {data_retrieval_days} days if necessary."
         )
 
     LOGGER.info(f"Raw variables {var_name} retrieved successfully.")

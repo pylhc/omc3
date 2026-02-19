@@ -17,7 +17,7 @@ All gathered data is returned, if this function is called from python.
 
 .. code-block:: none
 
-    usage: machine_settings_info.py [-h] [--time TIME] [--timedelta TIMEDELTA] [--delta_days DELTA_DAYS]
+    usage: machine_settings_info.py [-h] [--time TIME] [--timedelta TIMEDELTA] [--data_retrieval_days DELTA_DAYS]
                                     [--knobs KNOBS [KNOBS ...]] [--accel ACCEL] [--output_dir OUTPUT_DIR]
                                     [--knob_definitions] [--log]
 
@@ -33,7 +33,7 @@ All gathered data is returned, if this function is called from python.
                             A prefix '_' specifies a negative timedelta.
                             This allows for easily getting the setting
                             e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default).
-    --delta_days DELTA_DAYS
+    --data_retrieval_days DELTA_DAYS
                             Number of days to look back for data in NXCALS.
     --knobs KNOBS [KNOBS ...]
                             List of knobnames. If `None` (or omitted) no knobs will be extracted.
@@ -46,6 +46,7 @@ All gathered data is returned, if this function is called from python.
     --log                 Write summary into log.
 
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timedelta
@@ -90,7 +91,7 @@ from omc3.utils.mock import cern_network_import
 from omc3.utils.time_tools import parse_time
 
 spark_session_builder = cern_network_import("nxcals.spark_session_builder")
-pjlsa: object = cern_network_import("pjlsa")
+pjlsa = cern_network_import("pjlsa")
 
 
 if TYPE_CHECKING:
@@ -102,6 +103,7 @@ LOGGER = logging_tools.get_logger(__name__)
 
 
 # Main #########################################################################
+
 
 def _get_params() -> dict:
     """Parse Commandline Arguments and return them as options."""
@@ -128,7 +130,7 @@ def _get_params() -> dict:
                 "e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default)."
             ),
         },
-        delta_days={
+        data_retrieval_days={
             "type": float,
             "help": "Number of days to look back for data in NXCALS.",
             "default": 0.25,
@@ -146,16 +148,16 @@ def _get_params() -> dict:
         accel={
             "default": "lhc",
             "type": str,
-            "help": "Accelerator name."
+            "help": "Accelerator name.",
         },
         output_dir={
             "default": None,
             "type": PathOrStr,
-            "help": "Output directory."
+            "help": "Output directory.",
         },
         knob_definitions={
             "action": "store_true",
-            "help": "Set to extract knob definitions."
+            "help": "Set to extract knob definitions.",
         },
         log={
             "action": "store_true",
@@ -180,7 +182,7 @@ def get_info(opt) -> MachineSettingsInfo:
         default: ``lhc``
 
 
-    - **delta_days** *(float)*:
+    - **data_retrieval_days** *(float)*:
 
         Number of days to look back for data in NXCALS.
 
@@ -268,7 +270,7 @@ def get_info(opt) -> MachineSettingsInfo:
             lsa_client=lsa_client,
             knobs=opt.knobs,
             time=time,
-            delta_days=opt.delta_days,
+            data_retrieval_days=opt.data_retrieval_days,
             beamprocess_info=machine_info.beamprocess,
         )
         if machine_info.trim_histories:
@@ -299,16 +301,21 @@ def _log_info(machine_info: MachineSettingsInfo) -> None:
     Args:
         machine_info (MachineSettingsInfo): Extracted Machine Settings Info
     """
+
     summary = (
         "\n----------- Summary ---------------------\n"
         f"Accelerator:  {machine_info.accelerator}\n"
         f"Given Time:   {machine_info.time.isoformat()}\n"
-        f"Fill:         {machine_info.fill.no:d}\n"
-        f"Beamprocess:  {machine_info.beamprocess.name}\n"
-        f"  Start:      {machine_info.beamprocess.start_time.isoformat()}\n"
-        f"  Context:    {machine_info.beamprocess.context_category}\n"
-        f"  Descr.:     {machine_info.beamprocess.description}\n"
     )
+    if machine_info.fill is not None:  # For ty.
+        summary += f"Fill:         {machine_info.fill.no:d}\n"
+    if machine_info.beamprocess is not None:
+        summary += (
+            f"Beamprocess:  {machine_info.beamprocess.name}\n"
+            f"  Start:      {machine_info.beamprocess.start_time.isoformat()}\n"
+            f"  Context:    {machine_info.beamprocess.context_category}\n"
+            f"  Descr.:     {machine_info.beamprocess.description}\n"
+        )
 
     if machine_info.optics is not None:
         summary += (
@@ -342,7 +349,9 @@ def _write_output(output_dir: Path | str, machine_info: MachineSettingsInfo) -> 
     # Knob Definitions ---
     if machine_info.knob_definitions is not None:
         for definition in machine_info.knob_definitions.values():
-            value = 0.0 if machine_info.trims is None else machine_info.trims.get(definition.name, 0.0)
+            value = (
+                0.0 if machine_info.trims is None else machine_info.trims.get(definition.name, 0.0)
+            )
 
             madx = definition.to_madx(value=value)
             df = definition.to_tfs()
@@ -374,26 +383,36 @@ def _summary_df(machine_info: MachineSettingsInfo) -> tfs.TfsDataFrame:
     trims = machine_info.trims.items() if machine_info.trims is not None else []
 
     info_tfs = tfs.TfsDataFrame(trims, columns=[Column.KNOB, Column.VALUE])
-    info_tfs.headers =         {
-            Header.ACCEL: machine_info.accelerator,
-            Header.TIME: machine_info.time.isoformat(),
-            Header.BEAMPROCESS: machine_info.beamprocess.name,
-            Header.FILL: machine_info.fill.no,
-            Header.BEAMPROCESS_START: machine_info.beamprocess.start_time.isoformat(),
-            Header.CONTEXT_CATEGORY: machine_info.beamprocess.context_category,
-            Header.BEAMPROCESS_DESCRIPTION: machine_info.beamprocess.description,
-        }
+    info_tfs.headers = {
+        Header.ACCEL: machine_info.accelerator,
+        Header.TIME: machine_info.time.isoformat(),
+    }
+    if machine_info.fill is not None:
+        info_tfs.headers[Header.FILL] = machine_info.fill.no
+
+    if machine_info.beamprocess is not None:
+        info_tfs.headers.update(
+            {
+                Header.BEAMPROCESS: machine_info.beamprocess.name,
+                Header.BEAMPROCESS_START: machine_info.beamprocess.start_time.isoformat(),
+                Header.CONTEXT_CATEGORY: machine_info.beamprocess.context_category,
+                Header.BEAMPROCESS_DESCRIPTION: machine_info.beamprocess.description,
+            }
+        )
 
     if machine_info.optics is not None:
-        info_tfs.headers.update({
-            Header.OPTICS: machine_info.optics.name,
-            Header.OPTICS_START: machine_info.optics.start_time.isoformat(),
-        })
+        info_tfs.headers.update(
+            {
+                Header.OPTICS: machine_info.optics.name,
+                Header.OPTICS_START: machine_info.optics.start_time.isoformat(),
+            }
+        )
 
     return info_tfs
 
 
 # Clients #####################################################################
+
 
 def _get_clients() -> tuple[SparkSession, LSAClient]:
     """Initialize and return SparkSession and LSAClient."""
@@ -412,13 +431,15 @@ def _get_clients() -> tuple[SparkSession, LSAClient]:
 
     return spark, lsa_client
 
+
 # Optics #######################################################################
+
 
 def _get_optics(
     lsa_client: LSAClient,
     time: datetime,
     beamprocess: BeamProcessInfo,
-    ) -> OpticsInfo | None:
+) -> OpticsInfo | None:
     """Get Optics Info at given time.
 
     Args:
@@ -439,6 +460,7 @@ def _get_optics(
         LOGGER.error(str(e))
         return None
 
+
 # Knobs ########################################################################
 
 
@@ -446,16 +468,18 @@ def _get_trim_history(
     lsa_client: LSAClient,
     knobs: list[str],
     time: datetime,
-    delta_days: float,
+    data_retrieval_days: float,
     beamprocess_info: BeamProcessInfo,
-    ) -> TrimHistories:
+) -> TrimHistories:
     """Get Trim Histories for given knobs."""
     if len(knobs) == 1:
         match knobs[0].lower():
             case "all":
                 knobs = []  # will extract all knobs in get_trim_history
             case "default":
-                knobs  = [name2lsa(knob) for category in KNOB_CATEGORIES.values() for knob in category]
+                knobs = [
+                    name2lsa(knob) for category in KNOB_CATEGORIES.values() for knob in category
+                ]
             case _:
                 pass  # use given knob as is
 
@@ -463,13 +487,15 @@ def _get_trim_history(
         lsa_client=lsa_client,
         beamprocess=beamprocess_info.name,
         knobs=knobs,
-        start_time=time - timedelta(days=delta_days),
+        start_time=time - timedelta(days=data_retrieval_days),
         end_time=time,
         accelerator=beamprocess_info.accelerator,
     )
 
 
-def _get_knob_definitions(lsa_client: LSAClient, machine_info: MachineSettingsInfo) -> dict[str, KnobDefinition] | None:
+def _get_knob_definitions(
+    lsa_client: LSAClient, machine_info: MachineSettingsInfo
+) -> dict[str, KnobDefinition] | None:
     """Get knob definitions."""
     if not machine_info.optics:
         LOGGER.error("Knob defintions requested, but no optics found.")

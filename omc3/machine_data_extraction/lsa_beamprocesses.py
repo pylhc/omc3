@@ -99,7 +99,7 @@ def get_beamprocess_with_fill_at_time(
     lsa_client: LSAClient,
     spark: SparkSession,
     time: datetime,
-    delta_days: float = 1,  # assumes fills are not longer than 1 day
+    data_retrieval_days: float = 1,  # assumes fills are not longer than 1 day
     accelerator: str = "lhc",
 ) -> tuple[FillInfo, BeamProcessInfo]:
     """Get the info about the active beamprocess at ``time``."""
@@ -109,7 +109,11 @@ def get_beamprocess_with_fill_at_time(
 
     # Fill -
     fills = get_beamprocesses_for_fills(
-        lsa_client, spark, time=time, delta_days=delta_days, accelerator=accelerator
+        lsa_client,
+        spark,
+        time=time,
+        data_retrieval_days=data_retrieval_days,
+        accelerator=accelerator,
     )
     fill_info = fills[-1]  # last fill before time
 
@@ -157,7 +161,7 @@ def get_beamprocesses_for_fills(
     lsa_client: LSAClient,
     spark: SparkSession,
     time: datetime,
-    delta_days: float,
+    data_retrieval_days: float,
     accelerator: str = "lhc",
 ) -> list[FillInfo]:
     """
@@ -171,12 +175,12 @@ def get_beamprocesses_for_fills(
         They are sorted by fill number.
     """
     # get fill numbers from nxcals
-    fills_results: list[NXCALSResult]  = get_raw_vars(
+    fills_results: list[NXCALSResult] = get_raw_vars(
         spark,
         time=time,
         var_name=FILL_VARIABLE,
-        delta_days=delta_days,
-        latest_only=False
+        data_retrieval_days=data_retrieval_days,
+        latest_only=False,
     )
     LOGGER.debug(f"{len(fills_results)} fills aqcuired.")
     map_fill_times = {fr.datetime: fr.value for fr in fills_results}
@@ -184,8 +188,9 @@ def get_beamprocesses_for_fills(
 
     # retrieve beamprocess history from LSA
     beamprocess_history = lsa_client.findUserContextMappingHistory(
-        t1=(time-timedelta(days=delta_days)).timestamp(),  # timestamp as pjlsa ignores timezone
-        t2=time.timestamp(),                               # timestamp as pjlsa ignores timezone
+        # use timestamp below as pjlsa ignores timezone
+        t1=(time - timedelta(days=data_retrieval_days)).timestamp(),
+        t2=time.timestamp(),
         accelerator=accelerator,
         contextFamily=BP_CONTEXT_FAMILY,
     )

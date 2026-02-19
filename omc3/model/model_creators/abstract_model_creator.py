@@ -104,12 +104,26 @@ class ModelCreator(ABC):
         # get madx-script with paths relative to model-dir if possible, otherwise absolute
         madx_script = self.get_madx_script()
 
+        # Determine cwd, log-path and job-path, if model-dir is set (ty was complaining)
+        cwd = None
+        log_path = None
+        job_path = None
+        if self.accel.model_dir is not None:
+            cwd = self.accel.model_dir
+            if self.logfile is not None:
+                log_path = cwd / self.logfile
+            if self.jobfile is not None:
+                job_path = cwd / self.jobfile
+        else:
+            LOGGER.warning(
+                "No model directory set for accelerator. Running MAD-X without setting cwd or log/job paths. "
+            )
         # Run madx to create model
         run_string(
             madx_script,
-            output_file=self.accel.model_dir / self.jobfile,
-            log_file=self.accel.model_dir / self.logfile,
-            cwd=self.accel.model_dir,
+            output_file=job_path,
+            log_file=log_path,
+            cwd=cwd,
         )
 
         # Check output and return accelerator instance

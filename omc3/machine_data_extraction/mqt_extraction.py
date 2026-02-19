@@ -55,7 +55,7 @@ def get_mqt_vals(
     spark: SparkSession,
     time: datetime,
     beam: int,
-    delta_days: float = 0.25,
+    data_retrieval_days: float = 0.25,
     energy: float | None = None,
 ) -> list[NXCALSResult]:
     """
@@ -69,7 +69,8 @@ def get_mqt_vals(
         spark (SparkSession): Active Spark session for NXCALS queries.
         time (datetime): The timestamp for which to retrieve the data (timezone-aware required).
         beam (int): The beam number (1 or 2).
-        delta_days (float): Number of days to look back for data. Default is 0.25.
+        data_retrieval_days (float): Number of days to look back for data in NXCALS. Will always take the latest available data within this window.
+            default: ``0.25`` (e.g. 6 hours)
         energy (float | None): Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.
 
     Returns:
@@ -85,4 +86,4 @@ def get_mqt_vals(
     madx_mqts = generate_mqt_names(beam)
     pattern = f"RPMBB.UA%.RQT%.A%B{beam}:I_MEAS"
     patterns = [pattern]
-    return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", delta_days)
+    return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", data_retrieval_days)

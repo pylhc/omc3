@@ -54,9 +54,9 @@ per beam (8 arcs x 2 types).
     default: ``None``
 
 
-- **delta_days** *(float)*:
+- **data_retrieval_days** *(float)*:
 
-    Number of days to look back for data in NXCALS.
+    Number of days to look back for data in NXCALS. Will always take the latest available data within this window.
 
     default: ``0.25`` (e.g. 6 hours)
 
@@ -80,7 +80,7 @@ from omc3.utils.time_tools import parse_time
 if TYPE_CHECKING:
     from datetime import datetime
 
-    import tfs
+    import pandas as pd
 
 
 spark_session_builder = cern_network_import("nxcals.spark_session_builder")
@@ -134,7 +134,7 @@ def get_params():
                 "Specify user-defined output path. This should probably be `model_dir/mqts.madx`"
             ),
         },
-        delta_days={
+        data_retrieval_days={
             "type": float,
             "help": "Number of days to look back for data in NXCALS.",
             "default": 0.25,
@@ -151,7 +151,7 @@ def get_params():
         "prog": "MQT Extraction Tool.",
     },
 )
-def main(opt) -> tfs.TfsDataFrame:
+def main(opt) -> pd.DataFrame:
     """
     Main MQT extracting function.
 
@@ -166,7 +166,7 @@ def main(opt) -> tfs.TfsDataFrame:
     time = parse_time(opt.time, opt.timedelta)
 
     LOGGER.info(f"---- EXTRACTING MQT KNOBS @ {time.isoformat()} for Beam {opt.beam} ----")
-    mqt_vals = get_mqt_vals(spark, time, opt.beam, delta_days=opt.delta_days)
+    mqt_vals = get_mqt_vals(spark, time, opt.beam, data_retrieval_days=opt.data_retrieval_days)
 
     if opt.output:
         _write_mqt_file(opt.output, mqt_vals, time, opt.beam)

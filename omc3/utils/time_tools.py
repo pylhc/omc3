@@ -29,7 +29,7 @@ def parse_time(time: str, timedelta: str | None = None) -> datetime:
         t = _add_time_delta(t, timedelta)
     if t.tzinfo is None:
         raise ValueError("Datetime object must be timezone-aware")
-    return t
+    return t.astimezone(tz.UTC)  # ensure returning UTC time always
 
 
 def _parse_time_from_str(time_str: str) -> datetime:
