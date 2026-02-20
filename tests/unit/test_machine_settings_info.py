@@ -7,6 +7,7 @@ Includes tests for BeamProcess, Optics, and Knob extraction functions.
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
@@ -362,6 +363,89 @@ class TestMachineSettingsInfoFunctions:
                 assert result.fill.no == 12345
                 assert result.beamprocess.name == "RAMP"
 
+    def test_get_trim_history_all_keyword(self):
+        from omc3.scripts.machine_settings_info import _get_trim_history
+
+        now = datetime.now(timezone.utc)
+        bp = BeamProcessInfo(
+            name="RAMP",
+            accelerator="lhc",
+            context_category="PHYSICS",
+            start_time=now,
+            category="CYCLE",
+            description="Ramp cycle",
+        )
+
+        with patch("omc3.scripts.machine_settings_info.get_trim_history") as mock_get_trim:
+            _get_trim_history(MagicMock(), ["all"], now, 0.25, bp)
+
+        assert mock_get_trim.call_args.kwargs["knobs"] == []
+
+    def test_get_knob_definitions_returns_none_without_optics(self):
+        from omc3.scripts.machine_settings_info import _get_knob_definitions
+
+        info = MachineSettingsInfo(time=datetime.now(timezone.utc), accelerator="lhc")
+        result = _get_knob_definitions(MagicMock(), info)
+        assert result is None
+
+    def test_get_knob_definitions_returns_none_without_trims(self):
+        from omc3.scripts.machine_settings_info import _get_knob_definitions
+
+        now = datetime.now(timezone.utc)
+        info = MachineSettingsInfo(
+            time=now,
+            accelerator="lhc",
+            optics=OpticsInfo(name="OPTICSYEAR1", id="001", start_time=now),
+            trim_histories=None,
+        )
+        result = _get_knob_definitions(MagicMock(), info)
+        assert result is None
+
+    def test_get_clients_initializes_spark_and_lsa(self, monkeypatch):
+        from omc3.scripts import machine_settings_info
+
+        mock_spark = MagicMock()
+        mock_builder = MagicMock()
+        mock_builder.get_or_create.return_value = mock_spark
+        mock_pjlsa = MagicMock()
+        mock_lsa_client = MagicMock()
+        mock_pjlsa.LSAClient.return_value = mock_lsa_client
+
+        monkeypatch.setattr(machine_settings_info, "spark_session_builder", mock_builder)
+        monkeypatch.setattr(machine_settings_info, "pjlsa", mock_pjlsa)
+
+        spark, lsa = machine_settings_info._get_clients()
+
+        assert spark is mock_spark
+        assert lsa is mock_lsa_client
+        mock_spark.sparkContext.setLogLevel.assert_called_once_with("WARN")
+
+
+class TestMachineSettingsInfoMoreOutput:
+    """Additional output branch tests."""
+
+    def test_write_output_with_trim_histories_sets_headers(self, tmp_path):
+        from omc3.scripts.machine_settings_info import _write_output
+
+        now = datetime.now(timezone.utc)
+        trim_histories = MagicMock(spec=TrimHistories)
+        trim_histories.headers = {}
+        trim_histories.to_tfs_dict.return_value = {"knob1": tfs.TfsDataFrame()}
+
+        info = MachineSettingsInfo(
+            time=now,
+            accelerator="lhc",
+            fill=FillInfo(no=12345, accelerator="lhc", start_time=now),
+            optics=OpticsInfo(name="OPTICSYEAR1", id="001", start_time=now),
+            trim_histories=trim_histories,
+            trims={"knob1": 0.5},
+        )
+
+        _write_output(tmp_path, info)
+
+        assert trim_histories.headers[TrimHistoryHeader.OPTICS] == "OPTICSYEAR1"
+        assert trim_histories.headers[TrimHistoryHeader.FILL] == 12345
+
 
 class TestLoggingAndOutput:
     """Tests for logging and file output functionality."""
@@ -369,6 +453,8 @@ class TestLoggingAndOutput:
     def test_log_info_output(self, caplog):
         """Test that machine info is logged correctly."""
         from omc3.scripts.machine_settings_info import _log_info
+
+        caplog.set_level(logging.INFO, logger="omc3.scripts.machine_settings_info")
 
         now = datetime.now(timezone.utc)
         fill = FillInfo(no=12345, accelerator="lhc", start_time=now)

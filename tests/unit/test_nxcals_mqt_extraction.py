@@ -319,11 +319,10 @@ class TestMQTExtractorMain:
         output_path = tmp_path / "mqts.madx"
 
         with pytest.MonkeyPatch.context() as mpatch:
-            mpatch.setattr(
-                "omc3.mqt_extractor.spark_session_builder.get_or_create",
-                lambda conf=None: MagicMock(),
-            )
-            mpatch.setattr("omc3.mqt_extractor.get_mqt_vals", lambda *_args, **_kw: results)
+            mock_spark_builder = MagicMock()
+            mock_spark_builder.get_or_create.return_value = MagicMock()
+            mpatch.setattr(mqt_extractor, "spark_session_builder", mock_spark_builder)
+            mpatch.setattr(mqt_extractor, "get_mqt_vals", lambda *_args, **_kw: results)
 
             df = mqt_extractor.main(time=now.isoformat(), beam=1, output=output_path)
 

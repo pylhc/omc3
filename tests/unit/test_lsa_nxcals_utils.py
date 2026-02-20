@@ -8,6 +8,7 @@ using mocks to avoid network dependencies.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -136,8 +137,7 @@ class TestLSAUtilsCalcK:
 class TestLSAKnobsFunctions:
     """Tests for LSA knob extraction functions."""
 
-    @patch('omc3.machine_data_extraction.lsa_knobs.pjlsa')
-    def test_find_knob_names_basic(self, mock_pjlsa):
+    def test_find_knob_names_basic(self):
         """Test finding knob names from LSA."""
         from omc3.machine_data_extraction.lsa_knobs import find_knob_names
 
@@ -163,8 +163,7 @@ class TestLSAKnobsFunctions:
         assert "KNOB2" in result
         assert result == sorted(result)  # Should be sorted
 
-    @patch('omc3.machine_data_extraction.lsa_knobs.pjlsa')
-    def test_find_knob_names_with_regexp_filter(self, mock_pjlsa):
+    def test_find_knob_names_with_regexp_filter(self):
         """Test finding knob names with regexp filtering."""
         from omc3.machine_data_extraction.lsa_knobs import find_knob_names
 
@@ -190,8 +189,7 @@ class TestLSAKnobsFunctions:
         assert "KNOB_Y" in result
         assert "OTHER" not in result
 
-    @patch('omc3.machine_data_extraction.lsa_knobs.pjlsa')
-    def test_filter_non_existing_knobs(self, mock_pjlsa):
+    def test_filter_non_existing_knobs(self):
         """Test filtering non-existing knobs."""
         from omc3.machine_data_extraction.lsa_knobs import filter_non_existing_knobs
 
@@ -211,9 +209,8 @@ class TestLSAKnobsFunctions:
         assert "KNOB_EXISTS" in result
         assert "KNOB_NOT_EXISTS" not in result
 
-    @patch('omc3.machine_data_extraction.lsa_knobs.pjlsa')
     @patch('omc3.machine_data_extraction.lsa_knobs.find_knob_names')
-    def test_get_trim_history(self, mock_find_knobs, mock_pjlsa):
+    def test_get_trim_history(self, mock_find_knobs):
         """Test trim history retrieval."""
         from omc3.machine_data_extraction.lsa_knobs import get_trim_history
 
@@ -248,8 +245,7 @@ class TestLSAKnobsFunctions:
 class TestLSABeamprocessFunctions:
     """Tests for LSA beamprocess extraction functions."""
 
-    @patch('omc3.machine_data_extraction.lsa_beamprocesses.pjlsa')
-    def test_get_beamprocess_with_fill_at_time(self, mock_pjlsa):
+    def test_get_beamprocess_with_fill_at_time(self):
         """Test retrieving beamprocess and fill information."""
         from omc3.machine_data_extraction.data_classes import BeamProcessInfo, FillInfo
         from omc3.machine_data_extraction.lsa_beamprocesses import get_beamprocess_with_fill_at_time
@@ -293,8 +289,7 @@ class TestLSABeamprocessFunctions:
             assert result_bp.accelerator == "lhc"
             assert result_fill.no == 12345
 
-    @patch('omc3.machine_data_extraction.lsa_beamprocesses.pjlsa')
-    def test_get_beamprocess_with_fill_at_time_missing_bp(self, mock_pjlsa):
+    def test_get_beamprocess_with_fill_at_time_missing_bp(self):
         """Test that missing beamprocess in fill raises ValueError."""
         from omc3.machine_data_extraction.data_classes import BeamProcessInfo, FillInfo
         from omc3.machine_data_extraction.lsa_beamprocesses import get_beamprocess_with_fill_at_time
@@ -339,8 +334,7 @@ class TestLSABeamprocessFunctions:
 class TestLSAOpticsFunctions:
     """Tests for LSA optics extraction functions."""
 
-    @patch('omc3.machine_data_extraction.lsa_optics.pjlsa')
-    def test_get_optics_for_beamprocess_at_time(self, mock_pjlsa):
+    def test_get_optics_for_beamprocess_at_time(self):
         """Test retrieving optics information for a beamprocess."""
         from omc3.machine_data_extraction.lsa_optics import get_optics_for_beamprocess_at_time
 
@@ -371,8 +365,7 @@ class TestLSAOpticsFunctions:
         assert result.name == "OPTICSYEAR1"
         assert result.id == "001"
 
-    @patch('omc3.machine_data_extraction.lsa_optics.pjlsa')
-    def test_get_optics_for_beamprocess_at_time_no_match(self, mock_pjlsa):
+    def test_get_optics_for_beamprocess_at_time_no_match(self):
         """Test that missing optics entry raises ValueError."""
         from omc3.machine_data_extraction.lsa_optics import get_optics_for_beamprocess_at_time
 
@@ -404,8 +397,7 @@ class TestLSAOpticsFunctions:
 class TestKnobDefinitions:
     """Tests for knob definition extraction."""
 
-    @patch('omc3.machine_data_extraction.lsa_knobs.pjlsa')
-    def test_get_knob_definition(self, mock_pjlsa):
+    def test_get_knob_definition(self):
         """Test retrieving knob definition."""
         from omc3.machine_data_extraction.lsa_knobs import get_knob_definition
 
@@ -452,3 +444,99 @@ class TestLastTrimExtraction:
         assert "KNOB2" in result
         assert result["KNOB1"] == 0.3  # Last data value for KNOB1
         assert result["KNOB2"] == 3.0  # Last data value for KNOB2
+
+
+@pytest.mark.usefixtures("mock_pjlsa")
+class TestLSABeamprocessHelpers:
+    """Tests for lower-level beamprocess helper branches."""
+
+    def test_get_active_beamprocess_not_implemented_for_non_lhc(self):
+        from omc3.machine_data_extraction.lsa_beamprocesses import get_active_beamprocess_at_time
+
+        with pytest.raises(NotImplementedError, match="only implemented for LHC"):
+            get_active_beamprocess_at_time(
+                MagicMock(), datetime.now(timezone.utc), accelerator="sps"
+            )
+
+    def test_get_active_beamprocess_raises_when_group_missing(self):
+        from omc3.machine_data_extraction.lsa_beamprocesses import get_active_beamprocess_at_time
+
+        mock_lsa_client = MagicMock()
+        mock_map = MagicMock()
+        mock_map.get.return_value = None
+        mock_lsa_client._lhcService.findResidentStandAloneBeamProcessesByTime.return_value = (
+            mock_map
+        )
+
+        with pytest.raises(ValueError, match="No active BeamProcess found"):
+            get_active_beamprocess_at_time(mock_lsa_client, datetime.now(timezone.utc))
+
+    def test_get_beamprocesses_for_fills_maps_history(self):
+        from omc3.machine_data_extraction.lsa_beamprocesses import get_beamprocesses_for_fills
+        from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
+
+        now = datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc)
+        fill_time = now - timedelta(hours=2)
+        raw_fills = [NXCALSResult("HX:FILLN", 12345.0, fill_time, "HX:FILLN")]
+
+        mock_lsa_client = MagicMock()
+        history = SimpleNamespace(
+            timestamp=[(now - timedelta(minutes=30)).timestamp()],
+            name=["RAMP"],
+        )
+        mock_lsa_client.findUserContextMappingHistory.return_value = history
+
+        with patch(
+            "omc3.machine_data_extraction.lsa_beamprocesses.get_raw_vars",
+            return_value=raw_fills,
+        ):
+            fills = get_beamprocesses_for_fills(
+                mock_lsa_client,
+                MagicMock(),
+                time=now,
+                data_retrieval_days=1,
+                accelerator="lhc",
+            )
+
+        assert len(fills) == 1
+        assert fills[0].no == 12345
+        assert fills[0].beamprocesses[0][1] == "RAMP"
+
+
+@pytest.mark.usefixtures("mock_pjlsa")
+class TestLSAKnobBranches:
+    """Tests for additional lsa_knobs branches."""
+
+    def test_get_trim_history_raises_if_all_knobs_filtered_out(self):
+        from omc3.machine_data_extraction.lsa_knobs import get_trim_history
+
+        mock_lsa_client = MagicMock()
+        mock_lsa_client._getParameter.return_value = None
+
+        with pytest.raises(ValueError, match="None of the given knobs exist"):
+            get_trim_history(mock_lsa_client, beamprocess="RAMP", knobs=["MISSING"])
+
+    def test_get_knob_definition_raises_if_knob_missing(self):
+        from omc3.machine_data_extraction.lsa_knobs import get_knob_definition
+
+        mock_lsa_client = MagicMock()
+        mock_lsa_client._knobService.findKnob.return_value = None
+
+        with pytest.raises(ValueError, match="does not exist"):
+            get_knob_definition(mock_lsa_client, "NO_KNOB", "OPTICS")
+
+    def test_get_knob_definition_raises_if_optics_missing(self):
+        from omc3.machine_data_extraction import lsa_knobs
+
+        mock_illegal_arg = type("MockIllegalArgument", (Exception,), {})
+        lsa_knobs.jpype = SimpleNamespace(
+            java=SimpleNamespace(lang=SimpleNamespace(IllegalArgumentException=mock_illegal_arg))
+        )
+
+        mock_lsa_client = MagicMock()
+        mock_knob = MagicMock()
+        mock_lsa_client._knobService.findKnob.return_value = mock_knob
+        mock_knob.getKnobFactors.return_value.getFactorsForOptic.side_effect = mock_illegal_arg()
+
+        with pytest.raises(ValueError, match="not available for optics"):
+            lsa_knobs.get_knob_definition(mock_lsa_client, "KNOB1", "OPTICS")

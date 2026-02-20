@@ -10,12 +10,35 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timezone
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
 
 from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult, get_knob_vals, get_raw_vars
+
+
+@pytest.fixture
+def mock_nxcals_knobs_deps(monkeypatch):
+    from omc3.machine_data_extraction import nxcals_knobs
+
+    builders = MagicMock()
+    functions = MagicMock()
+    window = MagicMock()
+    pjlsa = SimpleNamespace(LSAClient=MagicMock())
+
+    monkeypatch.setattr(nxcals_knobs, "builders", builders)
+    monkeypatch.setattr(nxcals_knobs, "functions", functions)
+    monkeypatch.setattr(nxcals_knobs, "window", window)
+    monkeypatch.setattr(nxcals_knobs, "pjlsa", pjlsa)
+
+    return {
+        "builders": builders,
+        "functions": functions,
+        "window": window,
+        "pjlsa": pjlsa,
+    }
 
 
 class TestNXCALSResult:
@@ -86,9 +109,9 @@ class TestNXCALSResult:
 class TestGetRawVars:
     """Tests for get_raw_vars function."""
 
-    @patch('omc3.machine_data_extraction.nxcals_knobs.builders')
-    def test_get_raw_vars_success(self, mock_builders):
+    def test_get_raw_vars_success(self, mock_nxcals_knobs_deps):
         """Test successful retrieval of raw variables from NXCALS."""
+        mock_builders = mock_nxcals_knobs_deps["builders"]
         # Setup mock Spark and NXCALS data
         mock_df = MagicMock()
         mock_row = MagicMock()
@@ -123,8 +146,7 @@ class TestGetRawVars:
         assert results[0].name == "RPMBB.UA12.RQT12.A12B1:I_MEAS"
         assert results[0].value == 123.45
 
-    @patch('omc3.machine_data_extraction.nxcals_knobs.builders')
-    def test_get_raw_vars_no_timezone_raises_error(self, mock_builders):
+    def test_get_raw_vars_no_timezone_raises_error(self, mock_nxcals_knobs_deps):
         """Test that get_raw_vars raises error for naive datetime."""
         spark = MagicMock()
         time = datetime(2024, 1, 1, 12, 0, 0)  # No timezone
@@ -132,9 +154,9 @@ class TestGetRawVars:
         with pytest.raises(ValueError, match="timezone-aware"):
             get_raw_vars(spark, time, "RPMBB.UA%.RQT%.A%B1:I_MEAS")
 
-    @patch('omc3.machine_data_extraction.nxcals_knobs.builders')
-    def test_get_raw_vars_no_data_raises_error(self, mock_builders):
+    def test_get_raw_vars_no_data_raises_error(self, mock_nxcals_knobs_deps):
         """Test that get_raw_vars raises RuntimeError when no data found."""
+        mock_builders = mock_nxcals_knobs_deps["builders"]
         mock_df = MagicMock()
         mock_df.take.return_value = []  # No data
 
@@ -153,11 +175,11 @@ class TestGetRawVars:
         with pytest.raises(RuntimeError, match="No data found"):
             get_raw_vars(spark, time, "RPMBB.UA%.RQT%.A%B1:I_MEAS")
 
-    @patch('omc3.machine_data_extraction.nxcals_knobs.window')
-    @patch('omc3.machine_data_extraction.nxcals_knobs.functions')
-    @patch('omc3.machine_data_extraction.nxcals_knobs.builders')
-    def test_get_raw_vars_latest_only(self, mock_builders, mock_functions, mock_window):
+    def test_get_raw_vars_latest_only(self, mock_nxcals_knobs_deps):
         """Test latest_only path uses windowing without Spark context."""
+        mock_builders = mock_nxcals_knobs_deps["builders"]
+        mock_functions = mock_nxcals_knobs_deps["functions"]
+        mock_window = mock_nxcals_knobs_deps["window"]
         mock_df = MagicMock()
         mock_row = MagicMock()
         mock_row.__getitem__ = MagicMock(side_effect=lambda i: {
@@ -198,10 +220,9 @@ class TestGetRawVars:
 class TestGetKnobVals:
     """Tests for get_knob_vals function."""
 
-    @patch('omc3.machine_data_extraction.nxcals_knobs.pjlsa')
     @patch('omc3.machine_data_extraction.nxcals_knobs.get_raw_vars')
     @patch('omc3.machine_data_extraction.nxcals_knobs.get_energy')
-    def test_get_knob_vals_basic(self, mock_get_energy, mock_get_raw_vars, mock_pjlsa):
+    def test_get_knob_vals_basic(self, mock_get_energy, mock_get_raw_vars, mock_nxcals_knobs_deps):
         """Test basic knob value retrieval."""
         # Setup mocks
         now = pd.Timestamp("2025-01-01 12:00:00", tz="UTC")
@@ -216,7 +237,7 @@ class TestGetKnobVals:
 
         # Mock LSA client and K-value calculation
         mock_lsa_client = MagicMock()
-        mock_pjlsa.LSAClient.return_value = mock_lsa_client
+        mock_nxcals_knobs_deps["pjlsa"].LSAClient.return_value = mock_lsa_client
 
         with patch('omc3.machine_data_extraction.nxcals_knobs.lsa_utils.calc_k_from_iref') as mock_calc_k:
             mock_calc_k.return_value = {"RPMBB.UA12.RQT12.A12B1": 0.5}
@@ -238,10 +259,9 @@ class TestGetKnobVals:
                 assert results[0].name == "kqt12.a12b1"
                 assert results[0].value == 0.5
 
-    @patch('omc3.machine_data_extraction.nxcals_knobs.pjlsa')
     @patch('omc3.machine_data_extraction.nxcals_knobs.get_raw_vars')
     @patch('omc3.machine_data_extraction.nxcals_knobs.get_energy')
-    def test_get_knob_vals_multiple_patterns(self, mock_get_energy, mock_get_raw_vars, mock_pjlsa):
+    def test_get_knob_vals_multiple_patterns(self, mock_get_energy, mock_get_raw_vars, mock_nxcals_knobs_deps):
         """Test knob retrieval with multiple patterns."""
         now = pd.Timestamp("2025-01-01 12:00:00", tz="UTC")
 
@@ -253,7 +273,7 @@ class TestGetKnobVals:
         mock_get_energy.return_value = (7000.0, now)
 
         mock_lsa_client = MagicMock()
-        mock_pjlsa.LSAClient.return_value = mock_lsa_client
+        mock_nxcals_knobs_deps["pjlsa"].LSAClient.return_value = mock_lsa_client
 
         with patch('omc3.machine_data_extraction.nxcals_knobs.lsa_utils.calc_k_from_iref') as mock_calc_k:
             mock_calc_k.return_value = {
@@ -288,10 +308,9 @@ class TestGetKnobVals:
                 result_names = {r.name for r in results}
                 assert result_names == expected_knobs
 
-    @patch('omc3.machine_data_extraction.nxcals_knobs.pjlsa')
     @patch('omc3.machine_data_extraction.nxcals_knobs.get_raw_vars')
     @patch('omc3.machine_data_extraction.nxcals_knobs.get_energy')
-    def test_get_knob_vals_missing_knobs_warning(self, mock_get_energy, mock_get_raw_vars, mock_pjlsa):
+    def test_get_knob_vals_missing_knobs_warning(self, mock_get_energy, mock_get_raw_vars, mock_nxcals_knobs_deps):
         """Test that missing knobs generate warnings."""
         now = pd.Timestamp("2025-01-01 12:00:00", tz="UTC")
         raw_var = NXCALSResult(
@@ -304,7 +323,7 @@ class TestGetKnobVals:
         mock_get_energy.return_value = (7000.0, now)
 
         mock_lsa_client = MagicMock()
-        mock_pjlsa.LSAClient.return_value = mock_lsa_client
+        mock_nxcals_knobs_deps["pjlsa"].LSAClient.return_value = mock_lsa_client
 
         with patch('omc3.machine_data_extraction.nxcals_knobs.lsa_utils.calc_k_from_iref') as mock_calc_k:
             mock_calc_k.return_value = {"RPMBB.UA12.RQT12.A12B1": 0.5}
