@@ -86,4 +86,13 @@ def get_mqt_vals(
     madx_mqts = generate_mqt_names(beam)
     pattern = f"RPMBB.UA%.RQT%.A%B{beam}:I_MEAS"
     patterns = [pattern]
-    return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", data_retrieval_days)
+    return get_knob_vals(
+        spark,
+        time,
+        beam,
+        patterns,
+        madx_mqts,
+        "MQT: ",
+        data_retrieval_days,
+        energy,
+    )

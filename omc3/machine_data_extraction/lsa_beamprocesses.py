@@ -169,6 +169,11 @@ def get_beamprocesses_for_fills(
     Adapted from pjlsa's FindBeamProcessHistory.
 
     Args:
+        lsa_client (LSAClient): The LSA client instance used to query beamprocess history.
+        spark (SparkSession): Spark session used to query NXCALS fill-number data.
+        time (datetime): End time of the retrieval window.
+        data_retrieval_days (float): Number of days to look back from ``time``.
+        accelerator (str): Name of the accelerator.
 
     Returns:
         List of FillInfo objects, each containing the fill number, accelerator, start time, and beam processes.

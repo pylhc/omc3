@@ -29,10 +29,8 @@ LOGGER = logging_tools.get_logger(__name__)
 
 
 def get_optics_for_beamprocess_at_time(
-    lsa_client: LSAClient,
-    time: datetime,
-    beamprocess: BeamProcessInfo
-    ) -> OpticsInfo:
+    lsa_client: LSAClient, time: datetime, beamprocess: BeamProcessInfo
+) -> OpticsInfo:
     """Get the optics information for the given beamprocess at the specified time.
 
     Note:
@@ -59,14 +57,18 @@ def get_optics_for_beamprocess_at_time(
         if item.time <= time_rel:
             break
     else:
-        raise ValueError(f"No optics found for beamprocess {beamprocess.name} at time {time.isoformat()}.")
+        raise ValueError(
+            f"No optics found for beamprocess {beamprocess.name} at time {time.isoformat()}."
+        )
 
     optics_info = OpticsInfo(
         name=item.name,
         id=item.id,
         accelerator=beamprocess.accelerator,
-        start_time=datetime.fromtimestamp(item.time + beamprocess.start_time.timestamp(), tz=tz.UTC),
-        beamprocess=beamprocess
+        start_time=datetime.fromtimestamp(
+            item.time + beamprocess.start_time.timestamp(), tz=tz.UTC
+        ),
+        beamprocess=beamprocess,
     )
 
     LOGGER.debug(f"Optics {optics_info.name} extracted.")

@@ -22,9 +22,8 @@ LOGGER = logging_tools.get_logger(__name__)
 
 
 def calc_k_from_iref(
-    lsa_client: LSAClient,
-    currents: dict[str, float],
-    energy: float) -> dict[str, float]:
+    lsa_client: LSAClient, currents: dict[str, float], energy: float
+) -> dict[str, float]:
     """
     Calculate K values in the LHC from IREF using the LSA service.
 

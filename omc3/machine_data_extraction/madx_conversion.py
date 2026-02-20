@@ -76,12 +76,11 @@ def map_pc_name_to_madx(pc_name: str) -> str:
 def map_lsa_name_to_madx(lsa_client: LSAClient, name: str):
     """Returns the ``MAD-X`` name (Circuit/Knob) from the given circuit name in LSA."""
     logical_name = name.split("/")[0]
-    slist = jpype.java.util.Collections.singletonList(  # python lists did not work (jdilly)
-        logical_name
-    )
-    madx_name_map = lsa_client._deviceService.findMadStrengthNamesByLogicalNames(
-        slist
-    )  # returns a map
+    # python lists did not work (jdilly) -->
+    slist = jpype.java.util.Collections.singletonList(logical_name)
+
+    # returns a map -->
+    madx_name_map = lsa_client._deviceService.findMadStrengthNamesByLogicalNames(slist)
     madx_name = madx_name_map[logical_name]
     LOGGER.debug(f"Name conversion: {name} -> {logical_name} -> {madx_name}")
     return madx_name
