@@ -194,6 +194,7 @@ class TestGetRawVars:
         mock_df.withColumn.return_value.filter.assert_called_once()
 
 
+@pytest.mark.usefixtures("mock_pjlsa")
 class TestGetKnobVals:
     """Tests for get_knob_vals function."""
 

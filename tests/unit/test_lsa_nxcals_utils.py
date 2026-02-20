@@ -132,6 +132,7 @@ class TestLSAUtilsCalcK:
             calc_k_from_iref(mock_lsa_client, currents, energy)  # ty:ignore[invalid-argument-type]
 
 
+@pytest.mark.usefixtures("mock_pjlsa")
 class TestLSAKnobsFunctions:
     """Tests for LSA knob extraction functions."""
 
@@ -243,6 +244,7 @@ class TestLSAKnobsFunctions:
         assert len(result.trims) == 2
 
 
+@pytest.mark.usefixtures("mock_pjlsa")
 class TestLSABeamprocessFunctions:
     """Tests for LSA beamprocess extraction functions."""
 
@@ -333,6 +335,7 @@ class TestLSABeamprocessFunctions:
             )
 
 
+@pytest.mark.usefixtures("mock_pjlsa")
 class TestLSAOpticsFunctions:
     """Tests for LSA optics extraction functions."""
 
@@ -397,6 +400,7 @@ class TestLSAOpticsFunctions:
             )
 
 
+@pytest.mark.usefixtures("mock_pjlsa")
 class TestKnobDefinitions:
     """Tests for knob definition extraction."""
 
