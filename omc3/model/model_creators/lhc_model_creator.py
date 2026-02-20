@@ -309,8 +309,10 @@ class LhcModelCreator(ModelCreator):
         if not isinstance(deltap, str):
             deltap = f"{deltap:.15e}"
 
-        # tune_knobs = self.get_tune_knobs()
-        tune_knobs = [f"dQx.b{accel.beam}", f"dQy.b{accel.beam}"]
+        tune_knobs = self.get_tune_knobs()
+        # Below should be used when comparing with DP_TRIM_PERMIL, see presentation 16/02/2026:
+        # https://indico.cern.ch/event/1647452/#2-superior-response-matrices-w
+        # tune_knobs = [f"dQx.b{accel.beam}", f"dQy.b{accel.beam}"]
 
         madx_script = (
             f"twiss, table=nominal;\n"
