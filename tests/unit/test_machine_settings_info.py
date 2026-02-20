@@ -7,7 +7,6 @@ Includes tests for BeamProcess, Optics, and Knob extraction functions.
 
 from __future__ import annotations
 
-import logging
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
@@ -450,11 +449,10 @@ class TestMachineSettingsInfoMoreOutput:
 class TestLoggingAndOutput:
     """Tests for logging and file output functionality."""
 
-    def test_log_info_output(self, caplog):
+    @patch("omc3.scripts.machine_settings_info.LOGGER.info")
+    def test_log_info_output(self, mock_log_info):
         """Test that machine info is logged correctly."""
         from omc3.scripts.machine_settings_info import _log_info
-
-        caplog.set_level(logging.INFO, logger="omc3.scripts.machine_settings_info")
 
         now = datetime.now(timezone.utc)
         fill = FillInfo(no=12345, accelerator="lhc", start_time=now)
@@ -476,8 +474,10 @@ class TestLoggingAndOutput:
 
         _log_info(info)
 
-        # Check log contains expected information
-        assert "Summary" in caplog.text or "RAMP" in caplog.text
+        mock_log_info.assert_called_once()
+        logged_text = mock_log_info.call_args.args[0]
+        assert "Summary" in logged_text
+        assert "RAMP" in logged_text
 
     def test_write_output_creates_files(self, tmp_path):
         """Test that _write_output creates expected output files."""
