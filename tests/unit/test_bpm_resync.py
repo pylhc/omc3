@@ -98,3 +98,47 @@ def test_overwrite_raise(tmp_path):
         )
 
     assert "output.sdds already exists, aborting." in str(e.value)
+
+
+def test_wrong_plane(tmp_path):
+    with pytest.raises(ArgumentError) as e:
+        resync.main(
+            input=INPUTS_DIR / "unsynced.sdds",
+            optics_dir=OPTICS_DIR,
+            output_file=tmp_path / "output.sdds",
+            ring="HER",
+            first_plane="W",
+        )
+
+    assert "first_plane' needs to be one of '('X', 'Y')" in str(e.value)
+
+
+def test_resync_planes(tmp_path):
+    # Resync via both planes
+    resync.main(
+        input=INPUTS_DIR / "unsynced.sdds",
+        optics_dir=OPTICS_DIR,
+        output_file=tmp_path / "output_X.sdds",
+        ring="HER",
+        first_plane="X",
+    )
+
+    resync.main(
+        input=INPUTS_DIR / "unsynced.sdds",
+        optics_dir=OPTICS_DIR,
+        output_file=tmp_path / "output_Y.sdds",
+        ring="HER",
+        first_plane="Y",
+    )
+
+    synced_tbt = tbt.read(INPUTS_DIR / "synced.sdds")
+    output_x_tbt = tbt.read(tmp_path / "output_X.sdds")
+    output_y_tbt = tbt.read(tmp_path / "output_Y.sdds")
+
+    # Some BPMs are not going to be resynced the same way depending on which plane we start with
+    assert np.any(output_x_tbt.matrices[0].X != output_y_tbt.matrices[0].X)
+    assert np.any(output_x_tbt.matrices[0].Y != output_y_tbt.matrices[0].Y)
+
+    # The control has been synced with the X plane
+    assert np.all(synced_tbt.matrices[0].X == output_x_tbt.matrices[0].X)
+    assert np.all(synced_tbt.matrices[0].Y == output_x_tbt.matrices[0].Y)
