@@ -30,7 +30,7 @@ from omc3.response_creator import create_response_entrypoint as create_response
 from omc3.scripts.fake_measurement_from_model import ERRORS, VALUES
 from omc3.scripts.fake_measurement_from_model import generate as fake_measurement
 from omc3.utils import logging_tools
-from omc3.utils.stats import LOGGER, rms
+from omc3.utils.stats import rms
 
 LOG = logging_tools.get_logger(__name__)
 # LOG = logging_tools.get_logger('__main__', level_console=logging_tools.MADX)
