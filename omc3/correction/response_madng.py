@@ -35,7 +35,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-from pymadng import MAD
 
 from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import AccElementTypes
@@ -50,6 +49,12 @@ from omc3.optics_measurements.constants import (
     TUNE,
 )
 from omc3.utils.logging_tools import MADX, get_logger
+
+try:
+    from pymadng import MAD
+except ImportError:
+    # Don't raise the error immediately, as the user may not intend to use MAD-NG functionality
+    MAD = None
 
 LOGGER = get_logger(__name__)
 
@@ -186,6 +191,10 @@ def create_fullresponse(
         dict: Dictionary of response DataFrames keyed by optics type (e.g., 'BETAX', 'PHASEX', etc.)
     """
     LOGGER.info("Creating fullresponse via MAD-NG")
+    if MAD is None:
+        raise ImportError(
+            "pymadng is not installed. Please install pymadng to use MAD-NG response creation."
+        )
 
     # Initialise MAD-NG with logging
     with _initialise_madng_with_logging(accel_inst) as (mad, log_path):
