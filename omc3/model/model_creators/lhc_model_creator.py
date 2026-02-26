@@ -309,14 +309,20 @@ class LhcModelCreator(ModelCreator):
         if not isinstance(deltap, str):
             deltap = f"{deltap:.15e}"
 
+        tune_knobs = self.get_tune_knobs()
+        # Below should be used when comparing with DP_TRIM_PERMIL, see presentation 16/02/2026:
+        # https://indico.cern.ch/event/1647452/#2-superior-response-matrices-w
+        # tune_knobs = [f"dQx.b{accel.beam}", f"dQy.b{accel.beam}"]
+
         madx_script = (
-            f"twiss, deltap={deltap};\n"
-            "correct, mode=svd;\n\n"
+            f"twiss, table=nominal;\n"
+            f"twiss, deltap={deltap}, table=offdp;\n"
+            "correct, mode=svd, target=nominal, model=nominal, orbit=offdp;\n\n"
             "! The same as match_tunes, but include deltap in the matching\n"
             f"exec, find_complete_tunes({accel.nat_tunes[0]}, {accel.nat_tunes[1]}, {accel.beam});\n"
             f"match, deltap={deltap};\n"
         )  # Works better when split up
-        madx_script += "\n".join([f"vary, name={knob};" for knob in self.get_tune_knobs()]) + "\n"
+        madx_script += "\n".join([f"vary, name={knob};" for knob in tune_knobs]) + "\n"
         madx_script += (
             "constraint, range=#E, mux=total_qx, muy=total_qy;\n"
             "lmdif, tolerance=1e-10;\n"

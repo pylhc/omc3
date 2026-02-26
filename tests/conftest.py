@@ -5,13 +5,16 @@ See also https://stackoverflow.com/a/34520971.
 """
 from __future__ import annotations
 
+import importlib.util
 import random
 import shutil
 import string
 import sys
+from collections import namedtuple
 from collections.abc import Callable
 from contextlib import contextmanager
 from pathlib import Path
+from types import ModuleType
 from typing import TYPE_CHECKING, Any
 
 import git
@@ -32,6 +35,33 @@ OMC3_DIR: Path = Path(omc3.__file__).parent
 MADX_MACROS: Path = Path(model.__file__).parent / "madx_macros"
 GITLAB_REPO_ACC_MODELS: str = "https://gitlab.cern.ch/acc-models/acc-models-{}.git"
 INPUTS_MODEL_DIR_FORMAT: str = "{year}_{tunes}_b{beam}_{beta}{suffix}"
+
+
+@pytest.fixture(scope="function")
+def mock_pjlsa(monkeypatch):
+    """Install a minimal pjlsa stub only for tests that request it."""
+    if importlib.util.find_spec("pjlsa") is not None:
+        yield
+        return
+
+    pjlsa_module = ModuleType("pjlsa")
+    pjlsa_internal_module = ModuleType("pjlsa._pjlsa")
+
+    class LSAClient:
+        pass
+
+    class TrimTuple(namedtuple("TrimTupleBase", ["time", "data"])):
+        @property
+        def times(self):
+            return self.time
+
+    pjlsa_module.LSAClient = LSAClient
+    pjlsa_module._pjlsa = pjlsa_internal_module
+    pjlsa_internal_module.TrimTuple = TrimTuple
+
+    monkeypatch.setitem(sys.modules, "pjlsa", pjlsa_module)
+    monkeypatch.setitem(sys.modules, "pjlsa._pjlsa", pjlsa_internal_module)
+    yield
 
 
 @contextmanager
