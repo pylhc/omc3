@@ -26,21 +26,6 @@ from omc3.scripts.machine_settings_info import get_info
 class TestBeamProcessInfo:
     """Tests for BeamProcessInfo dataclass."""
 
-    def test_create_beamprocess_info(self):
-        """Test creating a BeamProcessInfo object."""
-        now = datetime.now(timezone.utc)
-        bp = BeamProcessInfo(
-            name="RAMP",
-            accelerator="lhc",
-            context_category="PHYSICS",
-            start_time=now,
-            category="CYCLE",
-            description="LHC ramp cycle",
-        )
-        assert bp.name == "RAMP"
-        assert bp.accelerator == "lhc"
-        assert bp.context_category == "PHYSICS"
-
     def test_beamprocess_info_from_java_mock(self):
         """Test creating BeamProcessInfo from mocked Java object."""
         # Create a mock Java object

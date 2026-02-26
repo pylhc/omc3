@@ -51,7 +51,6 @@ def strip_i_meas(text: str) -> str:
 
 def try_to_acquire_data(function: Callable, *args, **kwargs):
     """Tries to get data from function multiple times.
-    TODO: Move to omc3 as is also used there in BBQ extraction.
 
      Args:
          function (Callable): function to be called, e.g. db.get

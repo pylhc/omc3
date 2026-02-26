@@ -208,36 +208,25 @@ def test_parse_time_with_timedelta():
 class TestMQTGeneration:
     """Unit tests for MQT generation logic."""
 
-    def test_generate_mqt_names_beam1(self):
-        """Test MQT name generation for beam 1."""
+    @pytest.mark.parametrize("beam", [1, 2])
+    def test_generate_mqt_names(self, beam):
+        """Test MQT name generation for given beam."""
 
-        names = generate_mqt_names(beam=1)
+        names = generate_mqt_names(beam=beam)
 
         # Should have 16 names (8 arcs * 2 types)
         assert len(names) == 16
 
-        # All should end with b1
-        assert all(name.endswith("b1") for name in names)
+        # All should end with b{beam}
+        assert all(name.endswith(f"b{beam}") for name in names)
 
         # Should have both f and d types
         assert any("kqtf" in name for name in names)
         assert any("kqtd" in name for name in names)
 
         # Check specific expected names
-        assert "kqtf.a12b1" in names
-        assert "kqtd.a81b1" in names
-
-    def test_generate_mqt_names_beam2(self):
-        """Test MQT name generation for beam 2."""
-
-        names = generate_mqt_names(beam=2)
-
-        assert len(names) == 16
-        assert all(name.endswith("b2") for name in names)
-
-        # Check specific expected names
-        assert "kqtf.a12b2" in names
-        assert "kqtd.a81b2" in names
+        assert f"kqtf.a12b{beam}" in names
+        assert f"kqtd.a81b{beam}" in names
 
     def test_generate_mqt_names_invalid_beam(self):
         """Test that invalid beam raises ValueError."""

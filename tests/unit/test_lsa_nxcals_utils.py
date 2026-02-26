@@ -271,12 +271,15 @@ class TestLSABeamprocessFunctions:
             beamprocesses=[(bp_start, "RAMP")],
         )
 
-        with patch(
-            'omc3.machine_data_extraction.lsa_beamprocesses.get_active_beamprocess_at_time',
-            return_value=bp_info,
-        ), patch(
-            'omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocesses_for_fills',
-            return_value=[fill_info],
+        with (
+            patch(
+                "omc3.machine_data_extraction.lsa_beamprocesses.get_active_beamprocess_at_time",
+                return_value=bp_info,
+            ),
+            patch(
+                "omc3.machine_data_extraction.lsa_beamprocesses.get_fills_with_beamprocesses",
+                return_value=[fill_info],
+            ),
         ):
             result_fill, result_bp = get_beamprocess_with_fill_at_time(
                 mock_lsa_client,
@@ -315,13 +318,17 @@ class TestLSABeamprocessFunctions:
             beamprocesses=[(bp_start, "OTHER")],
         )
 
-        with patch(
-            'omc3.machine_data_extraction.lsa_beamprocesses.get_active_beamprocess_at_time',
-            return_value=bp_info,
-        ), patch(
-            'omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocesses_for_fills',
-            return_value=[fill_info],
-        ), pytest.raises(ValueError, match="Beamprocess 'RAMP' was not found"):
+        with (
+            patch(
+                "omc3.machine_data_extraction.lsa_beamprocesses.get_active_beamprocess_at_time",
+                return_value=bp_info,
+            ),
+            patch(
+                "omc3.machine_data_extraction.lsa_beamprocesses.get_fills_with_beamprocesses",
+                return_value=[fill_info],
+            ),
+            pytest.raises(ValueError, match="Beamprocess 'RAMP' was not found"),
+        ):
             get_beamprocess_with_fill_at_time(
                 mock_lsa_client,
                 mock_spark,
@@ -471,8 +478,8 @@ class TestLSABeamprocessHelpers:
         with pytest.raises(ValueError, match="No active BeamProcess found"):
             get_active_beamprocess_at_time(mock_lsa_client, datetime.now(timezone.utc))
 
-    def test_get_beamprocesses_for_fills_maps_history(self):
-        from omc3.machine_data_extraction.lsa_beamprocesses import get_beamprocesses_for_fills
+    def test_get_fills_with_beamprocesses_maps_history(self):
+        from omc3.machine_data_extraction.lsa_beamprocesses import get_fills_with_beamprocesses
         from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
 
         now = datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc)
@@ -490,7 +497,7 @@ class TestLSABeamprocessHelpers:
             "omc3.machine_data_extraction.lsa_beamprocesses.get_raw_vars",
             return_value=raw_fills,
         ):
-            fills = get_beamprocesses_for_fills(
+            fills = get_fills_with_beamprocesses(
                 mock_lsa_client,
                 MagicMock(),
                 time=now,

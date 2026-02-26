@@ -108,7 +108,7 @@ def get_beamprocess_with_fill_at_time(
     bp_info = get_active_beamprocess_at_time(lsa_client, time, accelerator=accelerator)
 
     # Fill -
-    fills = get_beamprocesses_for_fills(
+    fills = get_fills_with_beamprocesses(
         lsa_client,
         spark,
         time=time,
@@ -157,7 +157,7 @@ def beamprocess_to_dict(bp: StandAloneBeamProcessImpl) -> dict:
 
 # By Fills --------------------------
 
-def get_beamprocesses_for_fills(
+def get_fills_with_beamprocesses(
     lsa_client: LSAClient,
     spark: SparkSession,
     time: datetime,
@@ -165,7 +165,7 @@ def get_beamprocesses_for_fills(
     accelerator: str = "lhc",
 ) -> list[FillInfo]:
     """
-    Finds the BeamProcesses between t_start and t_end and sorts then by fills.
+    Retrieves fills with their associated beamprocesses between the specified time window.
     Adapted from pjlsa's FindBeamProcessHistory.
 
     Args:

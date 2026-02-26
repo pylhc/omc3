@@ -12,6 +12,7 @@ such as TFS and MADX.
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -30,6 +31,7 @@ if TYPE_CHECKING:
     from cern.lsa.domain.settings.spi import StandAloneBeamProcessImpl
     from pjlsa._pjlsa import TrimTuple
 
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class MachineSettingsInfo:
@@ -141,9 +143,10 @@ class TrimHistories:
     end_time: datetime | None
     accelerator: str
     trims: dict[str, TrimTuple]
+    headers: dict[str, str | float | int] = field(init=False)
 
     def __post_init__(self):
-        self.headers: dict[str, str | float | int] = self._create_tfs_header()
+        self.headers = self._create_tfs_header()
 
     def _create_tfs_header(self) -> dict[str, str]:
         """Generate common TFS headers for TrimHistory."""
@@ -229,16 +232,21 @@ class KnobDefinition:
             "defer": "{var} := {value:e} * {knob};",
         }[template]
 
-        string_parts = [
-            line_template.format(
-                var=part.madx_name,
-                value=part.factor,
-                knob=self.output_name
-            )
-            if part.madx_name else
-            f"! WARNING: No MAD-X name for circuit {part.circuit} (factor={part.factor}) in knob {self.name}"
-            for part in self.parts
-        ]
+        string_parts = []
+        for part in self.parts:
+            if part.madx_name:
+                string_parts.append(
+                    line_template.format(
+                        var=part.madx_name, value=part.factor, knob=self.output_name
+                    )
+                )
+            else:
+                LOGGER.warning(
+                    f"No MAD-X name for circuit {part.circuit} (factor={part.factor}) in knob {self.name}"
+                )
+                string_parts.append(
+                    f"! WARNING: No MAD-X name for circuit {part.circuit} (factor={part.factor}) in knob {self.name}"
+                )
 
         return "\n".join([
             f"! Knob Definition: {self.name} for optics {self.optics}",

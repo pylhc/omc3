@@ -15,6 +15,10 @@ This data is also not logged.
 Can be run from command line, parameters as given in :meth:`omc3.machine_settings_info.get_info`.
 All gathered data is returned, if this function is called from python.
 
+.. note::
+    This functionality is only available from within the CERN network and requires installing omc3
+    with the cern extra: ``pip install omc3[cern]``.
+
 .. code-block:: none
 
     usage: machine_settings_info.py [-h] [--time TIME] [--timedelta TIMEDELTA] [--data_retrieval_days DELTA_DAYS]
@@ -266,6 +270,11 @@ def get_info(opt) -> MachineSettingsInfo:
 
     # Knobs ---
     if opt.knobs is not None:
+        if opt.knobs == "all":
+            LOGGER.warning(
+                "Extracting all knobs can be very slow and unstable!"
+                " Please consider using a smaller selection of knobs if you experience issues."
+            )
         machine_info.trim_histories = _get_trim_history(
             lsa_client=lsa_client,
             knobs=opt.knobs,

@@ -79,11 +79,19 @@ def filter_non_existing_knobs(lsa_client: LSAClient, knobs: list[str]) -> list[s
         A list of the knob names that actually exist.
     """
     LOGGER.debug(f"Checking if the following knobs exist: {knobs}")
-    dont_exist = [k for k in knobs if lsa_client._getParameter(k) is None]
-    if len(dont_exist):
-        LOGGER.warning(f"The following knobs do not exist and will be filtered: {dont_exist}.")
-        knobs = [k for k in knobs if k not in dont_exist]
-    return knobs
+    existing = []
+    missing = []
+
+    for k in knobs:
+        if lsa_client._getParameter(k) is None:
+            missing.append(k)
+        else:
+            existing.append(k)
+
+    if missing:
+        LOGGER.warning(f"The following knobs do not exist and will be filtered: {missing}")
+
+    return existing
 
 
 def get_trim_history(
@@ -97,7 +105,7 @@ def get_trim_history(
     """
     Get trim history for knobs between specified times.
     If any of the times are not given, all available data in that time-direction
-    is extracted.
+    is extracted for that beamprocess.
 
     Args:
         beamprocess (str): Name of the beamprocess.
