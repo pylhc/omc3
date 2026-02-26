@@ -17,7 +17,7 @@ All gathered data is returned, if this function is called from python.
 
 .. note::
     This functionality is only available from within the CERN network and requires installing omc3
-    with the cern extra: ``pip install omc3[cern]``.
+    with the cern extra: ``python -m pip install omc3[cern]``.
 
 .. code-block:: none
 
