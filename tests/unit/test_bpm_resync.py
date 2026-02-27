@@ -107,10 +107,10 @@ def test_wrong_plane(tmp_path):
             optics_dir=OPTICS_DIR,
             output_file=tmp_path / "output.sdds",
             ring="HER",
-            first_plane="W",
+            planes="W",
         )
 
-    assert "first_plane' needs to be one of '('X', 'Y')" in str(e.value)
+    assert "planes' needs to be one of '['X', 'Y', 'XY', 'YX']" in str(e.value)
 
 
 def test_resync_planes(tmp_path):
@@ -120,7 +120,7 @@ def test_resync_planes(tmp_path):
         optics_dir=OPTICS_DIR,
         output_file=tmp_path / "output_X.sdds",
         ring="HER",
-        first_plane="X",
+        planes="XY",
     )
 
     resync.main(
@@ -128,7 +128,7 @@ def test_resync_planes(tmp_path):
         optics_dir=OPTICS_DIR,
         output_file=tmp_path / "output_Y.sdds",
         ring="HER",
-        first_plane="Y",
+        planes="YX",
     )
 
     synced_tbt = tbt.read(INPUTS_DIR / "synced.sdds")

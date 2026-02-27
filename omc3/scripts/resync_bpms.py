@@ -63,12 +63,12 @@ Arguments:
 
     default: ``False``
 
-- **first_plane** *(str)*:
-    First plane to process, either `X` or `Y`. The other plane will be processed afterwards.
+- **planes** *(str)*:
+    Planes to process in the order given. Usually `X`, `Y`, `XY` or `YX`.
 
-    flags: **['--first_plane']**
+    flags: **['--planes']**
 
-    choices: ``('X', 'Y')``
+    choices: ``('X', 'Y', 'XY', 'YX')``
 
     default: ``X``
 """
@@ -76,6 +76,7 @@ Arguments:
 from __future__ import annotations
 
 from copy import deepcopy
+from itertools import permutations
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal
 
@@ -86,7 +87,14 @@ from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.dict_parser import ArgumentError
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import DELTA, EXT, NAME, PHASE, TOTAL_PHASE_NAME, TUNE
+from omc3.optics_measurements.constants import (
+    DELTA,
+    EXT,
+    NAME,
+    PHASE,
+    TOTAL_PHASE_NAME,
+    TUNE,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 
@@ -154,12 +162,16 @@ def _get_params() -> dict:
             "default": False,
             "help": "Whether to overwrite the output file if it already exists.",
         },
-        first_plane={
+        planes={
             "type": str,
             "required": False,
-            "choices": PLANES,
+            "choices": [  # create all the possible permutations from the planes list
+                "".join(p)
+                for r in range(1, len(PLANES) + 1)
+                for p in permutations(PLANES, r)
+            ], #
             "default": PLANES[0],
-            "help": "First plane to process.",
+            "help": "Planes to process in the given order.",
         },
     )
 
@@ -168,7 +180,7 @@ def _get_params() -> dict:
 
 
 def sync_tbt(
-    original_tbt: tbt.TbtData, optics_dir: Path, ring: str, first_plane: str
+    original_tbt: tbt.TbtData, optics_dir: Path, ring: str, planes: str
 ) -> tbt.TbtData:
     """Resynchronize the BPMS in the the turn by turn data based on the phase advance.
     Args:
@@ -186,8 +198,8 @@ def sync_tbt(
 
     # Some BPMs can exist in a plane but not the other, we need to check both planes to be sure
     already_processed = set()
-    LOGGER.info(f"Starting with plane {first_plane}")
-    for plane in dict.fromkeys([first_plane, *PLANES]):
+    LOGGER.info(f"Processing planes {planes}")
+    for plane in list(planes):
         phase_df = tfs.read(optics_dir / PHASE_FILE.format(plane=plane.lower()))
         qx = phase_df.headers[f"{TUNE}1"]
         qy = phase_df.headers[f"{TUNE}2"]
@@ -254,7 +266,7 @@ def main(opt):
 
     # Synchronise TbT
     LOGGER.info(f"Resynchronizing {opt.optics_dir.name}...")
-    synced_tbt = sync_tbt(original_tbt, opt.optics_dir, opt.ring, opt.first_plane)
+    synced_tbt = sync_tbt(original_tbt, opt.optics_dir, opt.ring, opt.planes)
 
     # Save the resynced turn by turn data
     opt.output_file.parent.mkdir(exist_ok=True, parents=True)
