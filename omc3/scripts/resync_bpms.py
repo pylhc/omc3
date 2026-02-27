@@ -62,11 +62,21 @@ Arguments:
     flags: **['--overwrite']**
 
     default: ``False``
+
+- **planes** *(str)*:
+    Planes to process in the order given. Usually `X`, `Y`, `XY` or `YX`.
+
+    flags: **['--planes']**
+
+    choices: ``('X', 'Y', 'XY', 'YX')``
+
+    default: ``X``
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
+from itertools import permutations
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal
 
@@ -77,7 +87,14 @@ from generic_parser import EntryPointParameters, entrypoint
 from generic_parser.dict_parser import ArgumentError
 
 from omc3.definitions.constants import PLANES
-from omc3.optics_measurements.constants import DELTA, EXT, NAME, PHASE, TOTAL_PHASE_NAME, TUNE
+from omc3.optics_measurements.constants import (
+    DELTA,
+    EXT,
+    NAME,
+    PHASE,
+    TOTAL_PHASE_NAME,
+    TUNE,
+)
 from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 
@@ -92,7 +109,9 @@ LOGGER = logging_tools.get_logger(__name__)
 RINGS: Final[set[Literal["LER", "HER"]]] = {"LER", "HER"}
 
 # Phase file containing the phase advance of the BPMs
-PHASE_FILE: Final[str] = f"{TOTAL_PHASE_NAME}" + "{plane}" + f"{EXT}"  # to be formatted by 'plane'
+PHASE_FILE: Final[str] = (
+    f"{TOTAL_PHASE_NAME}" + "{plane}" + f"{EXT}"
+)  # to be formatted by 'plane'
 DEFAULT_DATATYPE: Final[Literal["lhc"]] = "lhc"
 
 
@@ -143,13 +162,26 @@ def _get_params() -> dict:
             "default": False,
             "help": "Whether to overwrite the output file if it already exists.",
         },
+        planes={
+            "type": str,
+            "required": False,
+            "choices": [  # create all the possible permutations from the planes list
+                "".join(p)
+                for r in range(1, len(PLANES) + 1)
+                for p in permutations(PLANES, r)
+            ], #
+            "default": PLANES[0],
+            "help": "Planes to process in the given order.",
+        },
     )
 
 
 # ----- Resync Functionality ----- #
 
 
-def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtData:
+def sync_tbt(
+    original_tbt: tbt.TbtData, optics_dir: Path, ring: str, planes: str
+) -> tbt.TbtData:
     """Resynchronize the BPMS in the the turn by turn data based on the phase advance.
     Args:
         original_tbt (tbt.TbtData): Original turn by turn data to be synchronized.
@@ -166,7 +198,8 @@ def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtD
 
     # Some BPMs can exist in a plane but not the other, we need to check both planes to be sure
     already_processed = set()
-    for plane in PLANES:
+    LOGGER.info(f"Processing planes {planes}")
+    for plane in list(planes):
         phase_df = tfs.read(optics_dir / PHASE_FILE.format(plane=plane.lower()))
         qx = phase_df.headers[f"{TUNE}1"]
         qy = phase_df.headers[f"{TUNE}2"]
@@ -180,7 +213,9 @@ def sync_tbt(original_tbt: tbt.TbtData, optics_dir: Path, ring: str) -> tbt.TbtD
         abs_ntune: Series = ntune.abs()
 
         # If the ratio ntune is close to 1, that's one turn, otherwise, it's likely -2 turns
-        mag: np.ndarray = np.select([abs_ntune >= 0.8, abs_ntune >= 0.1], [1, -2], default=0)
+        mag: np.ndarray = np.select(
+            [abs_ntune >= 0.8, abs_ntune >= 0.1], [1, -2], default=0
+        )
         # The final number of turns also depends on the sign of the phase
         final_correction: np.ndarray = (mag * np.sign(ntune) * ring_dir).astype(int)
 
@@ -231,7 +266,7 @@ def main(opt):
 
     # Synchronise TbT
     LOGGER.info(f"Resynchronizing {opt.optics_dir.name}...")
-    synced_tbt = sync_tbt(original_tbt, opt.optics_dir, opt.ring)  # type: ignore
+    synced_tbt = sync_tbt(original_tbt, opt.optics_dir, opt.ring, opt.planes)
 
     # Save the resynced turn by turn data
     opt.output_file.parent.mkdir(exist_ok=True, parents=True)
