@@ -54,9 +54,9 @@ per beam (8 arcs x 2 types).
     default: ``None``
 
 
-- **delta_days** *(float)*:
+- **data_retrieval_days** *(float)*:
 
-    Number of days to look back for data in NXCALS.
+    Number of days to look back for data in NXCALS. Will always take the latest available data within this window.
 
     default: ``0.25`` (e.g. 6 hours)
 
@@ -68,10 +68,10 @@ import argparse
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import tfs
 from generic_parser import EntryPointParameters, entrypoint
 
-from omc3.nxcals.mqt_extraction import get_mqt_vals, knobs_to_madx
+from omc3.machine_data_extraction.mqt_extraction import get_mqt_vals
+from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult
 from omc3.utils.iotools import PathOrStr
 from omc3.utils.logging_tools import get_logger
 from omc3.utils.mock import cern_network_import
@@ -79,6 +79,9 @@ from omc3.utils.time_tools import parse_time
 
 if TYPE_CHECKING:
     from datetime import datetime
+
+    import pandas as pd
+
 
 spark_session_builder = cern_network_import("nxcals.spark_session_builder")
 
@@ -131,7 +134,7 @@ def get_params():
                 "Specify user-defined output path. This should probably be `model_dir/mqts.madx`"
             ),
         },
-        delta_days={
+        data_retrieval_days={
             "type": float,
             "help": "Number of days to look back for data in NXCALS.",
             "default": 0.25,
@@ -148,7 +151,7 @@ def get_params():
         "prog": "MQT Extraction Tool.",
     },
 )
-def main(opt) -> tfs.TfsDataFrame:
+def main(opt) -> pd.DataFrame:
     """
     Main MQT extracting function.
 
@@ -162,33 +165,22 @@ def main(opt) -> tfs.TfsDataFrame:
     spark = spark_session_builder.get_or_create(conf={"spark.ui.showConsoleProgress": "false"})
     time = parse_time(opt.time, opt.timedelta)
 
-    LOGGER.info(f"---- EXTRACTING MQT KNOBS @ {time} for Beam {opt.beam} ----")
-    mqt_vals = get_mqt_vals(spark, time, opt.beam, delta_days=opt.delta_days)
-
-    # Convert to TfsDataFrame for consistency with knob_extractor
-    mqt_df = tfs.TfsDataFrame(
-        index=[result.name for result in mqt_vals],
-        columns=["madx", "value", "timestamp", "pc_name"],
-        headers={"EXTRACTION_TIME": time, "BEAM": opt.beam},
-    )
-    for result in mqt_vals:
-        mqt_df.loc[result.name, "madx"] = result.name
-        mqt_df.loc[result.name, "value"] = result.value
-        mqt_df.loc[result.name, "timestamp"] = result.timestamp
-        mqt_df.loc[result.name, "pc_name"] = result.pc_name
+    LOGGER.info(f"---- EXTRACTING MQT KNOBS @ {time.isoformat()} for Beam {opt.beam} ----")
+    mqt_vals = get_mqt_vals(spark, time, opt.beam, data_retrieval_days=opt.data_retrieval_days)
 
     if opt.output:
         _write_mqt_file(opt.output, mqt_vals, time, opt.beam)
 
-    return mqt_df
+    return NXCALSResult.to_tfs(mqt_vals, time, opt.beam)
 
 
-def _write_mqt_file(output: Path | str, mqt_vals, time: datetime, beam: int):
+def _write_mqt_file(output: Path | str, mqt_vals: list[NXCALSResult], time: datetime, beam: int):
     """Write MQT knobs to a MAD-X file."""
     with Path(output).open("w") as outfile:
         outfile.write("!! --- MQT knobs extracted by mqt_extractor\n")
         outfile.write(f"!! --- extracted MQT knobs for time {time}, beam {beam}\n\n")
-        outfile.write(knobs_to_madx(mqt_vals))
+        outfile.write("\n".join([res.to_madx() for res in mqt_vals]))
+        outfile.write("\n")
 
 
 if __name__ == "__main__":

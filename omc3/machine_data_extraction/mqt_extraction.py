@@ -1,6 +1,6 @@
 """
-Extraction of MQT knobs from NXCALS.
-------------------------------------
+MQT knobs extraction
+--------------------
 
 This module provides functions to retrieve MQT (Quadrupole Trim) knob values for the LHC
 for a specified beam and time using NXCALS and LSA.
@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from omc3.nxcals.knob_extraction import NXCALSResult, get_knob_vals
+from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult, get_knob_vals
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -52,7 +52,11 @@ def generate_mqt_names(beam: int) -> set[str]:
 
 
 def get_mqt_vals(
-    spark: SparkSession, time: datetime, beam: int, delta_days: float = 0.25
+    spark: SparkSession,
+    time: datetime,
+    beam: int,
+    data_retrieval_days: float = 0.25,
+    energy: float | None = None,
 ) -> list[NXCALSResult]:
     """
     Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.
@@ -65,7 +69,9 @@ def get_mqt_vals(
         spark (SparkSession): Active Spark session for NXCALS queries.
         time (datetime): The timestamp for which to retrieve the data (timezone-aware required).
         beam (int): The beam number (1 or 2).
-        delta_days (float): Number of days to look back for data. Default is 0.25.
+        data_retrieval_days (float): Number of days to look back for data in NXCALS. Will always take the latest available data within this window.
+            default: ``0.25`` (e.g. 6 hours)
+        energy (float | None): Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.
 
     Returns:
         list[NXCalResult]: List of NXCalResult objects containing the MAD-X knob names, K-values, and timestamps.
@@ -80,24 +86,13 @@ def get_mqt_vals(
     madx_mqts = generate_mqt_names(beam)
     pattern = f"RPMBB.UA%.RQT%.A%B{beam}:I_MEAS"
     patterns = [pattern]
-    return get_knob_vals(spark, time, beam, patterns, madx_mqts, "MQT: ", delta_days)
-
-
-def knobs_to_madx(mqt_vals: list[NXCALSResult]) -> str:
-    """
-    Convert a list of NXCalResult objects to a MAD-X script string.
-
-    Args:
-        mqt_vals: List of NXCalResult objects containing knob values.
-
-    Returns:
-        A string containing the MAD-X script with knob assignments.
-    """
-    lines = []
-    for result in mqt_vals:
-        timestamp_str = f"{result.timestamp:%Y-%m-%d %H:%M:%S%z}"
-        value_str = f"{result.value:.10E}".replace("E+", "E")
-        lines.append(
-            f"{result.name:<15}= {value_str}; ! powerconverter: {result.pc_name} at {timestamp_str}\n"
-        )
-    return "".join(lines)
+    return get_knob_vals(
+        spark,
+        time,
+        beam,
+        patterns,
+        madx_mqts,
+        "MQT: ",
+        data_retrieval_days,
+        energy,
+    )

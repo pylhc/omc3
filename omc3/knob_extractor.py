@@ -375,7 +375,7 @@ def extract(ldb, knobs: Sequence[str], time: datetime) -> dict[str, float]:
         When extraction was not possible, the value is None.
 
     """
-    LOGGER.info(f"---- EXTRACTING KNOBS @ {time} ----")
+    LOGGER.info(f"---- EXTRACTING KNOBS @ {time.isoformat()} ----")
     knobs_extracted = {}
 
     for category in knobs:
@@ -458,7 +458,7 @@ def _extract_and_gather(
     knobs = tfs.TfsDataFrame(
         index=knob_names,
         columns=[Col.lsa, Col.madx, Col.scaling, Col.value],
-        headers={Head.time: time},
+        headers={Head.time: time.isoformat()},
     )
     knobs[[Col.lsa, Col.madx, Col.scaling]] = knobs_definitions.loc[knob_names, :]
     knobs[Col.value] = pd.Series(extracted_knobs)

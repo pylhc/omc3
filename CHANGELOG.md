@@ -1,10 +1,12 @@
 # OMC3 Changelog
 
-#### 2025-02-XX - v0.28.0 - _mattiastefanelli_, _mlegarre_,  _fsoubelet_
+#### 2026-03-05 - v0.28.0 - _mattiastefanelli_, _mlegarre_,  _fsoubelet_, _jgray_, _jdilly_
 
 - Added:
     - A script to generate summaries from kmod measurements and optionally post it to logbook. The main `kmod_importer` exposes this new functionality as well.
     - A script to perform the BPM re-synchronisation for SuperKEKB BPMs after a first optics analysis.
+    - An `orbit` parameter for `fake_measurement_from_model` script.
+    - A script, `machine_settings_info`, for extracting machine settings from NXCALS and LSA (ported / adapted from `PyLHC`).
 
 #### 2025-01-31 - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
 
