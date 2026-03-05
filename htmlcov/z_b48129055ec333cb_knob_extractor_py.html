@@ -62,10 +62,10 @@
         <p class="text">
             <a id="prevFileLink" class="nav" href="z_b48129055ec333cb_kmod_importer_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a id="nextFileLink" class="nav" href="z_b48129055ec333cb_madx_wrapper_py.html">&#xbb; next</a>
+            <a id="nextFileLink" class="nav" href="z_393815c3ce54a6c2___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
-            created at 2026-02-27 17:07 +0000
+            created at 2026-03-05 14:18 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -457,7 +457,7 @@
     <p class="pln"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t"><span class="str">        When extraction was not possible, the value is None.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t376" href="#t376">376</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">    <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f"</span><span class="fst">---- EXTRACTING KNOBS @ </span><span class="op">{</span><span class="nam">time</span><span class="op">}</span><span class="fst"> ----</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">    <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f"</span><span class="fst">---- EXTRACTING KNOBS @ </span><span class="op">{</span><span class="nam">time</span><span class="op">.</span><span class="nam">isoformat</span><span class="op">(</span><span class="op">)</span><span class="op">}</span><span class="fst"> ----</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t379" href="#t379">379</a></span><span class="t">    <span class="nam">knobs_extracted</span> <span class="op">=</span> <span class="op">{</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t381" href="#t381">381</a></span><span class="t">    <span class="key">for</span> <span class="nam">category</span> <span class="key">in</span> <span class="nam">knobs</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -540,7 +540,7 @@
     <p class="run"><span class="n"><a id="t458" href="#t458">458</a></span><span class="t">    <span class="nam">knobs</span> <span class="op">=</span> <span class="nam">tfs</span><span class="op">.</span><span class="nam">TfsDataFrame</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t459" href="#t459">459</a></span><span class="t">        <span class="nam">index</span><span class="op">=</span><span class="nam">knob_names</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t460" href="#t460">460</a></span><span class="t">        <span class="nam">columns</span><span class="op">=</span><span class="op">[</span><span class="nam">Col</span><span class="op">.</span><span class="nam">lsa</span><span class="op">,</span> <span class="nam">Col</span><span class="op">.</span><span class="nam">madx</span><span class="op">,</span> <span class="nam">Col</span><span class="op">.</span><span class="nam">scaling</span><span class="op">,</span> <span class="nam">Col</span><span class="op">.</span><span class="nam">value</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t461" href="#t461">461</a></span><span class="t">        <span class="nam">headers</span><span class="op">=</span><span class="op">{</span><span class="nam">Head</span><span class="op">.</span><span class="nam">time</span><span class="op">:</span> <span class="nam">time</span><span class="op">}</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t461" href="#t461">461</a></span><span class="t">        <span class="nam">headers</span><span class="op">=</span><span class="op">{</span><span class="nam">Head</span><span class="op">.</span><span class="nam">time</span><span class="op">:</span> <span class="nam">time</span><span class="op">.</span><span class="nam">isoformat</span><span class="op">(</span><span class="op">)</span><span class="op">}</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t462" href="#t462">462</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t463" href="#t463">463</a></span><span class="t">    <span class="nam">knobs</span><span class="op">[</span><span class="op">[</span><span class="nam">Col</span><span class="op">.</span><span class="nam">lsa</span><span class="op">,</span> <span class="nam">Col</span><span class="op">.</span><span class="nam">madx</span><span class="op">,</span> <span class="nam">Col</span><span class="op">.</span><span class="nam">scaling</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="nam">knobs_definitions</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">knob_names</span><span class="op">,</span> <span class="op">:</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t464" href="#t464">464</a></span><span class="t">    <span class="nam">knobs</span><span class="op">[</span><span class="nam">Col</span><span class="op">.</span><span class="nam">value</span><span class="op">]</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">Series</span><span class="op">(</span><span class="nam">extracted_knobs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -695,10 +695,10 @@
         <p>
             <a class="nav" href="z_b48129055ec333cb_kmod_importer_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a class="nav" href="z_b48129055ec333cb_madx_wrapper_py.html">&#xbb; next</a>
+            <a class="nav" href="z_393815c3ce54a6c2___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
-            created at 2026-02-27 17:07 +0000
+            created at 2026-03-05 14:18 +0000
         </p>
     </div>
 </footer>

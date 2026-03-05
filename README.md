@@ -34,6 +34,17 @@
 | omc3/hole\_in\_one.py                                   |      194 |       10 |     95% |333, 335, 373, 456, 482, 498, 500, 502, 504, 881 |
 | omc3/kmod\_importer.py                                  |       74 |        4 |     95% |313-319, 333 |
 | omc3/knob\_extractor.py                                 |      160 |       20 |     88% |77-80, 390-391, 395-396, 400-401, 506-519, 577, 605, 609 |
+| omc3/machine\_data\_extraction/\_\_init\_\_.py          |        1 |        0 |    100% |           |
+| omc3/machine\_data\_extraction/constants.py             |       36 |        0 |    100% |           |
+| omc3/machine\_data\_extraction/data\_classes.py         |      125 |       16 |     87% |209, 222, 226-251, 259-271 |
+| omc3/machine\_data\_extraction/lsa\_beamprocesses.py    |       68 |        9 |     87% |74-75, 93-95, 147-155, 210 |
+| omc3/machine\_data\_extraction/lsa\_knobs.py            |       82 |       13 |     84% |124, 138-141, 148, 179, 210-226 |
+| omc3/machine\_data\_extraction/lsa\_optics.py           |       23 |        1 |     96% |        53 |
+| omc3/machine\_data\_extraction/lsa\_utils.py            |       22 |        0 |    100% |           |
+| omc3/machine\_data\_extraction/madx\_conversion.py      |       28 |       18 |     36% |53-73, 78-86 |
+| omc3/machine\_data\_extraction/mqt\_extraction.py       |       18 |        6 |     67% |     83-89 |
+| omc3/machine\_data\_extraction/nxcals\_knobs.py         |       93 |        7 |     92% |165, 171, 280-284 |
+| omc3/machine\_data\_extraction/utils.py                 |       27 |       12 |     56% |     63-74 |
 | omc3/madx\_wrapper.py                                   |      103 |       12 |     88% |28, 30, 71, 96-97, 208-209, 212, 216-217, 223, 229 |
 | omc3/model/\_\_init\_\_.py                              |        1 |        0 |    100% |           |
 | omc3/model/accelerators/\_\_init\_\_.py                 |        1 |        0 |    100% |           |
@@ -41,7 +52,7 @@
 | omc3/model/accelerators/esrf.py                         |       10 |        3 |     70% |     70-72 |
 | omc3/model/accelerators/generic.py                      |       10 |        0 |    100% |           |
 | omc3/model/accelerators/iota.py                         |       23 |        8 |     65% |83-91, 94-97, 101 |
-| omc3/model/accelerators/lhc.py                          |      167 |       23 |     86% |177, 190, 199, 239-242, 244, 246, 282-297, 315, 328, 334, 354-358 |
+| omc3/model/accelerators/lhc.py                          |      169 |       24 |     86% |166, 179, 192, 201, 241-244, 246, 248, 284-299, 317, 330, 336, 356-360 |
 | omc3/model/accelerators/petra.py                        |       11 |        3 |     73% | 22-23, 27 |
 | omc3/model/accelerators/ps.py                           |       47 |        9 |     81% |112, 124, 129-135 |
 | omc3/model/accelerators/psbase.py                       |       20 |        0 |    100% |           |
@@ -51,18 +62,15 @@
 | omc3/model/constants.py                                 |       36 |        0 |    100% |           |
 | omc3/model/manager.py                                   |       23 |        2 |     91% |    52, 63 |
 | omc3/model/model\_creators/\_\_init\_\_.py              |        1 |        0 |    100% |           |
-| omc3/model/model\_creators/abstract\_model\_creator.py  |      207 |       23 |     89% |97, 123, 131, 140, 175, 281-286, 404-406, 411, 414, 419, 430, 543-556, 560 |
-| omc3/model/model\_creators/lhc\_model\_creator.py       |      275 |       23 |     92% |98, 103, 177, 310, 363-364, 368-369, 380, 393-394, 400-401, 408, 412, 433-439, 455, 460, 505, 595 |
+| omc3/model/model\_creators/abstract\_model\_creator.py  |      217 |       24 |     89% |97, 118, 137, 145, 154, 189, 295-300, 418-420, 425, 428, 433, 444, 557-570, 574 |
+| omc3/model/model\_creators/lhc\_model\_creator.py       |      276 |       23 |     92% |98, 103, 177, 310, 369-370, 374-375, 386, 399-400, 406-407, 414, 418, 439-445, 461, 466, 511, 601 |
 | omc3/model/model\_creators/manager.py                   |       27 |        4 |     85% |81-82, 86-87 |
 | omc3/model/model\_creators/ps\_base\_model\_creator.py  |       39 |       11 |     72% |34, 39-55, 83-86, 89, 95-96 |
 | omc3/model/model\_creators/ps\_model\_creator.py        |       33 |        3 |     91% | 62, 69-70 |
 | omc3/model/model\_creators/psbooster\_model\_creator.py |       27 |        0 |    100% |           |
 | omc3/model/model\_creators/sps\_model\_creator.py       |       82 |       15 |     82% |49, 56, 70-81, 91, 94-110, 115, 240, 252 |
 | omc3/model\_creator.py                                  |       59 |       12 |     80% |136-148, 185 |
-| omc3/mqt\_extractor.py                                  |       38 |       18 |     53% |162-183, 188-191, 195 |
-| omc3/nxcals/\_\_init\_\_.py                             |        1 |        0 |    100% |           |
-| omc3/nxcals/knob\_extraction.py                         |      105 |       80 |     24% |102-153, 181-226, 243-247, 266-288, 304, 330-344 |
-| omc3/nxcals/mqt\_extraction.py                          |       25 |       17 |     32% |46-51, 77-83, 96-103 |
+| omc3/mqt\_extractor.py                                  |       33 |        1 |     97% |       187 |
 | omc3/optics\_measurements/\_\_init\_\_.py               |        1 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_amplitude.py      |       63 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_phase.py          |      283 |        9 |     97% |129-132, 135, 246, 375, 397-398, 490, 601 |
@@ -110,13 +118,14 @@
 | omc3/scripts/bad\_bpms\_summary.py                      |      185 |       13 |     93% |215-216, 220-221, 250, 258, 287, 327-329, 459-460, 470 |
 | omc3/scripts/betabeatsrc\_output\_converter.py          |      141 |       19 |     87% |165-166, 204-205, 213-214, 249-250, 291-292, 331-332, 366-367, 400-401, 440-441, 471 |
 | omc3/scripts/create\_logbook\_entry.py                  |       89 |       24 |     73% |72, 154-155, 163-186, 197, 217, 220, 226, 242, 253-268, 278 |
-| omc3/scripts/fake\_measurement\_from\_model.py          |      256 |        3 |     99% |547, 570, 587 |
+| omc3/scripts/fake\_measurement\_from\_model.py          |      257 |        3 |     99% |548, 571, 588 |
 | omc3/scripts/kmod\_average.py                           |      104 |        7 |     93% |162, 165, 179, 290-291, 305, 321 |
 | omc3/scripts/kmod\_import.py                            |      144 |        9 |     94% |248, 261-262, 308-312, 329, 351-352, 404 |
 | omc3/scripts/kmod\_lumi\_imbalance.py                   |       97 |       11 |     89% |125, 127, 154-160, 163, 167-172, 177-181, 270 |
 | omc3/scripts/kmod\_summary.py                           |      159 |       30 |     81% |185, 203-205, 252-253, 306-307, 338-339, 349, 355-356, 382-383, 393, 448-462, 483-485, 495-497, 528 |
 | omc3/scripts/lhc\_corrector\_list\_check.py             |       41 |       41 |      0% |    10-124 |
 | omc3/scripts/linfile\_clean.py                          |      103 |        5 |     95% |164, 184, 228, 259, 301 |
+| omc3/scripts/machine\_settings\_info.py                 |      132 |       32 |     76% |273-286, 289, 296, 299, 330, 336-338, 360-369, 488-493, 517-525, 532 |
 | omc3/scripts/resync\_bpms.py                            |       68 |        4 |     94% |252-255, 277 |
 | omc3/scripts/update\_nattune\_in\_linfile.py            |       70 |        1 |     99% |       195 |
 | omc3/scripts/write\_madx\_macros.py                     |       30 |       30 |      0% |    19-104 |
@@ -139,13 +148,13 @@
 | omc3/tune\_analysis/constants.py                        |       90 |        1 |     99% |        37 |
 | omc3/tune\_analysis/fitting\_tools.py                   |       62 |        5 |     92% |   206-213 |
 | omc3/tune\_analysis/kick\_file\_modifiers.py            |      165 |       47 |     72% |237-238, 269, 277-282, 319, 330-332, 348-379, 383-399, 403-405 |
-| omc3/tune\_analysis/timber\_extract.py                  |       67 |       45 |     33% |60-62, 83-135, 148-154, 170-171 |
+| omc3/tune\_analysis/timber\_extract.py                  |       67 |       45 |     33% |62-64, 85-137, 150-156, 172-173 |
 | omc3/utils/\_\_init\_\_.py                              |        1 |        0 |    100% |           |
 | omc3/utils/contexts.py                                  |       36 |        2 |     94% |     62-63 |
 | omc3/utils/debugging.py                                 |        8 |        0 |    100% |           |
 | omc3/utils/iotools.py                                   |      145 |       42 |     71% |32-39, 57-65, 79, 89-90, 100-108, 116-127, 134, 142, 152, 225, 244, 287-290 |
 | omc3/utils/knob\_list\_manipulations.py                 |       26 |        2 |     92% |    28, 34 |
-| omc3/utils/logging\_tools.py                            |      213 |      105 |     51% |53, 56, 70-98, 101, 104-113, 127-128, 131, 134-140, 153-157, 165-171, 177-184, 196-202, 205-208, 211, 215, 263-300, 323-329, 340, 350, 388-414, 419 |
+| omc3/utils/logging\_tools.py                            |      222 |      106 |     52% |53, 56, 70-98, 101, 104-113, 127-128, 131, 134-140, 153-157, 165-172, 178-185, 209-215, 218-221, 224, 228, 276-313, 336-342, 353, 363, 401-427, 432 |
 | omc3/utils/math\_classes.py                             |       29 |       29 |      0% |      8-56 |
 | omc3/utils/misc.py                                      |        5 |        0 |    100% |           |
 | omc3/utils/mock.py                                      |       10 |        0 |    100% |           |
@@ -153,8 +162,8 @@
 | omc3/utils/parsertools.py                               |       34 |        6 |     82% |19-20, 66-67, 71-72 |
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
-| omc3/utils/time\_tools.py                               |      135 |       28 |     79% |66-67, 79, 99-110, 139, 156, 182, 197, 202, 206, 210, 214, 224, 227, 232, 237, 247, 252, 257, 262 |
-| **TOTAL**                                               | **12203** | **1705** | **86%** |           |
+| omc3/utils/time\_tools.py                               |      138 |       29 |     79% |31, 55-57, 60, 66-72, 139-140, 152, 174, 200, 215, 220, 224, 228, 232, 242, 245, 250, 255, 265, 270, 275, 280 |
+| **TOTAL**                                               | **12748** | **1709** | **87%** |           |
 
 
 ## Setup coverage badge
