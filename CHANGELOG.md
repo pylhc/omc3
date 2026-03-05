@@ -5,8 +5,8 @@
 - Added:
     - A script to generate summaries from kmod measurements and optionally post it to logbook. The main `kmod_importer` exposes this new functionality as well.
     - A script to perform the BPM re-synchronisation for SuperKEKB BPMs after a first optics analysis.
-    - `Orbit` parameter for `fake_measurement_from_model` script.
-    - `machine_settings_info` script for extracting machine settings from NXCALS and LSA.
+    - An `orbit` parameter for `fake_measurement_from_model` script.
+    - A script, `machine_settings_info`, for extracting machine settings from NXCALS and LSA (ported / adapted from `PyLHC`).
 
 #### 2025-01-31 - v0.27.0 - _jgray_, _jdilly_, _fsoubelet_
 
