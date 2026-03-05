@@ -1,0 +1,1425 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Machine Data Extraction &mdash; omc3 0.28.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d643f27"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model" href="model.html" />
+    <link rel="prev" title="Harpy" href="harpy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mqt-extractor">MQT Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#machine-settings-information">Machine Settings Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#superkekb-bpm-synchronization">SuperKEKB BPM Synchronization</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definitions.html#optics">Optics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Machine Data Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lsa-knobs">LSA Knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lsa-optics">LSA Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lsa-utilities">LSA Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#sps">SPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#model-creator-manager">Model Creator Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segment_by_segment.html#segments">Segments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Machine Data Extraction</li>
+      <li class="wy-breadcrumbs-aside">
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/pylhc/omc3" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <nav id="local-table-of-contents" role="navigation" aria-labelledby="local-table-of-contents-title">
+    <h4 id="local-table-of-contents-title">On This Page</h4>
+    <ul>
+<li><a class="reference internal" href="#">Machine Data Extraction</a><ul>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+<li><a class="reference internal" href="#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li><a class="reference internal" href="#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li><a class="reference internal" href="#lsa-knobs">LSA Knobs</a></li>
+<li><a class="reference internal" href="#lsa-optics">LSA Optics</a></li>
+<li><a class="reference internal" href="#lsa-utilities">LSA Utilities</a></li>
+<li><a class="reference internal" href="#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li><a class="reference internal" href="#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li><a class="reference internal" href="#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li><a class="reference internal" href="#utils">Utils</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav>
+  
+  
+           <div itemprop="articleBody">
+             
+  <section id="module-omc3.machine_data_extraction.constants">
+<span id="machine-data-extraction"></span><h1>Machine Data Extraction<a class="headerlink" href="#module-omc3.machine_data_extraction.constants" title="Link to this heading"></a></h1>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h2>
+<p>Specific constants relating to the retrieval of machine settings information, to help with consistency.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryColumn">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.constants.</span></span><span class="sig-name descname"><span class="pre">MSISummaryColumn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/constants.html#MSISummaryColumn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryColumn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>TFS columns for machine settings information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryColumn.KNOB">
+<span class="sig-name descname"><span class="pre">KNOB</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KNOB'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryColumn.KNOB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryColumn.TIME">
+<span class="sig-name descname"><span class="pre">TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryColumn.TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryColumn.TIMESTAMP">
+<span class="sig-name descname"><span class="pre">TIMESTAMP</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIMESTAMP'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryColumn.TIMESTAMP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryColumn.VALUE">
+<span class="sig-name descname"><span class="pre">VALUE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'VALUE'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryColumn.VALUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.constants.</span></span><span class="sig-name descname"><span class="pre">MSISummaryHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/constants.html#MSISummaryHeader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>TFS headers for machine settings information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.ACCEL">
+<span class="sig-name descname"><span class="pre">ACCEL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ACCELERATOR'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.ACCEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS">
+<span class="sig-name descname"><span class="pre">BEAMPROCESS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BEAMPROCESS'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS_DESCRIPTION">
+<span class="sig-name descname"><span class="pre">BEAMPROCESS_DESCRIPTION</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BEAMPROCESS_DESCRIPTION'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS_DESCRIPTION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS_START">
+<span class="sig-name descname"><span class="pre">BEAMPROCESS_START</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BEAMPROCESS_START'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS_START" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.CONTEXT_CATEGORY">
+<span class="sig-name descname"><span class="pre">CONTEXT_CATEGORY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CONTEXT_CATEGORY'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.CONTEXT_CATEGORY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.END_TIME">
+<span class="sig-name descname"><span class="pre">END_TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'END_TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.END_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.FILL">
+<span class="sig-name descname"><span class="pre">FILL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FILL'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.FILL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.OPTICS">
+<span class="sig-name descname"><span class="pre">OPTICS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OPTICS'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.OPTICS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.OPTICS_START">
+<span class="sig-name descname"><span class="pre">OPTICS_START</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OPTICS_START'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.OPTICS_START" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.START_TIME">
+<span class="sig-name descname"><span class="pre">START_TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'START_TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.START_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.MSISummaryHeader.TIME">
+<span class="sig-name descname"><span class="pre">TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.MSISummaryHeader.TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsColumn">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.constants.</span></span><span class="sig-name descname"><span class="pre">NXCalsTfsColumn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/constants.html#NXCalsTfsColumn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsColumn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>TFS columns for MQT information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsColumn.MADX">
+<span class="sig-name descname"><span class="pre">MADX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MADX'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsColumn.MADX" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsColumn.PC_NAME">
+<span class="sig-name descname"><span class="pre">PC_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PC_NAME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsColumn.PC_NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsColumn.TIME">
+<span class="sig-name descname"><span class="pre">TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsColumn.TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsColumn.TIMESTAMP">
+<span class="sig-name descname"><span class="pre">TIMESTAMP</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIMESTAMP'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsColumn.TIMESTAMP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsColumn.VALUE">
+<span class="sig-name descname"><span class="pre">VALUE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'VALUE'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsColumn.VALUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsHeader">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.constants.</span></span><span class="sig-name descname"><span class="pre">NXCalsTfsHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/constants.html#NXCalsTfsHeader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsHeader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>TFS headers for MQT information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsHeader.BEAM">
+<span class="sig-name descname"><span class="pre">BEAM</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BEAM'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsHeader.BEAM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.constants.NXCalsTfsHeader.EXTRACTION_TIME">
+<span class="sig-name descname"><span class="pre">EXTRACTION_TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EXTRACTION_TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.constants.NXCalsTfsHeader.EXTRACTION_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="dataclasses-for-machine-data">
+<span id="module-omc3.machine_data_extraction.data_classes"></span><h2>DataClasses for Machine Data<a class="headerlink" href="#dataclasses-for-machine-data" title="Link to this heading"></a></h2>
+<p>This module contains the dataclasses that are used to hold
+and pass on the extracted machine data.</p>
+<p>Most of them are purely to hold the data in a structured way,
+some have minor functionality to convert the data into different formats
+such as TFS and MADX.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">BeamProcessInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#BeamProcessInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass to hold BeamProcess information.</p>
+<p>This contains only the relevant fields for OMC, extracted from the Java BeamProcess object.
+Add more fields if needed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo.accelerator">
+<span class="sig-name descname"><span class="pre">accelerator</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo.accelerator" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo.category">
+<span class="sig-name descname"><span class="pre">category</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo.category" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo.context_category">
+<span class="sig-name descname"><span class="pre">context_category</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo.context_category" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo.description">
+<span class="sig-name descname"><span class="pre">description</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo.description" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo.from_java_beamprocess">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_java_beamprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StandAloneBeamProcessImpl</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#BeamProcessInfo.from_java_beamprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo.from_java_beamprocess" title="Link to this definition"></a></dt>
+<dd><p>Create a BeamProcessInfo from a StandAloneBeamProcessImpl object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bp</strong> (<em>StandAloneBeamProcessImpl</em>) -- The BeamProcess object (Java).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding BeamProcessInfo dataclass instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo">BeamProcessInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.BeamProcessInfo.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo.start_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionColumn">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">DefinitionColumn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#DefinitionColumn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionColumn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>Columns for Knob Definition TFS files.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionColumn.CIRCUIT">
+<span class="sig-name descname"><span class="pre">CIRCUIT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CIRCUIT'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionColumn.CIRCUIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionColumn.FACTOR">
+<span class="sig-name descname"><span class="pre">FACTOR</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FACTOR'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionColumn.FACTOR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionColumn.MADX_NAME">
+<span class="sig-name descname"><span class="pre">MADX_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NAME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionColumn.MADX_NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionColumn.TYPE">
+<span class="sig-name descname"><span class="pre">TYPE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TYPE'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionColumn.TYPE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionHeader">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">DefinitionHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#DefinitionHeader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionHeader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>Headers for Knob Definition TFS files.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionHeader.NAME">
+<span class="sig-name descname"><span class="pre">NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KNOB_NAME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionHeader.NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionHeader.OPTICS">
+<span class="sig-name descname"><span class="pre">OPTICS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OPTICS'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionHeader.OPTICS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.DefinitionHeader.OUTPUT_NAME">
+<span class="sig-name descname"><span class="pre">OUTPUT_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OUTPUT_NAME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.DefinitionHeader.OUTPUT_NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.FillInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">FillInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">no</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beamprocesses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#FillInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.FillInfo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass to hold Fill information.</p>
+<p>This contains only the relevant fields for OMC,
+extracted from the Java Fill object.
+Add more fields if needed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.FillInfo.accelerator">
+<span class="sig-name descname"><span class="pre">accelerator</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.FillInfo.accelerator" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.FillInfo.beamprocesses">
+<span class="sig-name descname"><span class="pre">beamprocesses</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.FillInfo.beamprocesses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.FillInfo.no">
+<span class="sig-name descname"><span class="pre">no</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.FillInfo.no" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.FillInfo.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.FillInfo.start_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobDefinition">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">KnobDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.KnobPart" title="omc3.machine_data_extraction.data_classes.KnobPart"><span class="pre">KnobPart</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#KnobDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass to hold Knob Definition information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobDefinition.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobDefinition.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobDefinition.optics">
+<span class="sig-name descname"><span class="pre">optics</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobDefinition.optics" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobDefinition.output_name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">output_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobDefinition.output_name" title="Link to this definition"></a></dt>
+<dd><p>Generates a safe knob name for output files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobDefinition.parts">
+<span class="sig-name descname"><span class="pre">parts</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.KnobPart" title="omc3.machine_data_extraction.data_classes.KnobPart"><span class="pre">KnobPart</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobDefinition.parts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobDefinition.to_madx">
+<span class="sig-name descname"><span class="pre">to_madx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'add2expr'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#KnobDefinition.to_madx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobDefinition.to_madx" title="Link to this definition"></a></dt>
+<dd><p>Converts the knob definition to madx code.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobDefinition.to_tfs">
+<span class="sig-name descname"><span class="pre">to_tfs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#KnobDefinition.to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobDefinition.to_tfs" title="Link to this definition"></a></dt>
+<dd><p>Convert KnobDefinition to TfsDataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobPart">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">KnobPart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">madx_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#KnobPart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobPart" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass to hold Knob Part information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobPart.circuit">
+<span class="sig-name descname"><span class="pre">circuit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobPart.circuit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobPart.factor">
+<span class="sig-name descname"><span class="pre">factor</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobPart.factor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobPart.madx_name">
+<span class="sig-name descname"><span class="pre">madx_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobPart.madx_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.KnobPart.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.KnobPart.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">MachineSettingsInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.FillInfo" title="omc3.machine_data_extraction.data_classes.FillInfo"><span class="pre">FillInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beamprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.OpticsInfo" title="omc3.machine_data_extraction.data_classes.OpticsInfo"><span class="pre">OpticsInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_histories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.TrimHistories" title="omc3.machine_data_extraction.data_classes.TrimHistories"><span class="pre">TrimHistories</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knob_definitions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.KnobDefinition" title="omc3.machine_data_extraction.data_classes.KnobDefinition"><span class="pre">KnobDefinition</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#MachineSettingsInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass to hold the extracted Machine Settings Info.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.accelerator">
+<span class="sig-name descname"><span class="pre">accelerator</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.accelerator" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.beamprocess">
+<span class="sig-name descname"><span class="pre">beamprocess</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.beamprocess" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.fill">
+<span class="sig-name descname"><span class="pre">fill</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.FillInfo" title="omc3.machine_data_extraction.data_classes.FillInfo"><span class="pre">FillInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.fill" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.knob_definitions">
+<span class="sig-name descname"><span class="pre">knob_definitions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.KnobDefinition" title="omc3.machine_data_extraction.data_classes.KnobDefinition"><span class="pre">KnobDefinition</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.knob_definitions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.optics">
+<span class="sig-name descname"><span class="pre">optics</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.OpticsInfo" title="omc3.machine_data_extraction.data_classes.OpticsInfo"><span class="pre">OpticsInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.optics" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.time">
+<span class="sig-name descname"><span class="pre">time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.trim_histories">
+<span class="sig-name descname"><span class="pre">trim_histories</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.TrimHistories" title="omc3.machine_data_extraction.data_classes.TrimHistories"><span class="pre">TrimHistories</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.trim_histories" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.MachineSettingsInfo.trims">
+<span class="sig-name descname"><span class="pre">trims</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.trims" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.OpticsInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">OpticsInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beamprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#OpticsInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.OpticsInfo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass to hold Optics information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.OpticsInfo.accelerator">
+<span class="sig-name descname"><span class="pre">accelerator</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.OpticsInfo.accelerator" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.OpticsInfo.beamprocess">
+<span class="sig-name descname"><span class="pre">beamprocess</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.OpticsInfo.beamprocess" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.OpticsInfo.id">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.OpticsInfo.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.OpticsInfo.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.OpticsInfo.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.OpticsInfo.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.OpticsInfo.start_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">TrimHistories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beamprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TrimTuple</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#TrimHistories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Dataclass to hold Knob Trim History information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.accelerator">
+<span class="sig-name descname"><span class="pre">accelerator</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.accelerator" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.beamprocess">
+<span class="sig-name descname"><span class="pre">beamprocess</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.beamprocess" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.end_time">
+<span class="sig-name descname"><span class="pre">end_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.end_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.headers">
+<span class="sig-name descname"><span class="pre">headers</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.headers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.start_time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.to_tfs_dict">
+<span class="sig-name descname"><span class="pre">to_tfs_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#TrimHistories.to_tfs_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.to_tfs_dict" title="Link to this definition"></a></dt>
+<dd><p>Convert all trims to a dictionary of TfsDataFrames.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.trim_tuple_to_tfs">
+<span class="sig-name descname"><span class="pre">trim_tuple_to_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_tuple</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TrimTuple</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tfs.TfsDataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#TrimHistories.trim_tuple_to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.trim_tuple_to_tfs" title="Link to this definition"></a></dt>
+<dd><p>Convert KnobTrimHistory to TfsDataFrame.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistories.trims">
+<span class="sig-name descname"><span class="pre">trims</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TrimTuple</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistories.trims" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryColumn">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">TrimHistoryColumn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#TrimHistoryColumn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryColumn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>Columns for Trim History TFS files.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryColumn.DATA">
+<span class="sig-name descname"><span class="pre">DATA</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DATA'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryColumn.DATA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryColumn.TIME">
+<span class="sig-name descname"><span class="pre">TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryColumn.TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryColumn.TIMESTAMP">
+<span class="sig-name descname"><span class="pre">TIMESTAMP</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TIMESTAMP'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryColumn.TIMESTAMP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.data_classes.</span></span><span class="sig-name descname"><span class="pre">TrimHistoryHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/data_classes.html#TrimHistoryHeader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
+<p>Headers for Trim History TFS files.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader.ACCEL">
+<span class="sig-name descname"><span class="pre">ACCEL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ACCELERATOR'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.ACCEL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader.BEAMPROCESS">
+<span class="sig-name descname"><span class="pre">BEAMPROCESS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BEAMPROCESS'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.BEAMPROCESS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader.END_TIME">
+<span class="sig-name descname"><span class="pre">END_TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'END_TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.END_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader.FILL">
+<span class="sig-name descname"><span class="pre">FILL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FILL'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.FILL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader.KNOB_NAME">
+<span class="sig-name descname"><span class="pre">KNOB_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KNOB_NAME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.KNOB_NAME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader.OPTICS">
+<span class="sig-name descname"><span class="pre">OPTICS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OPTICS'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.OPTICS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.data_classes.TrimHistoryHeader.START_TIME">
+<span class="sig-name descname"><span class="pre">START_TIME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'START_TIME'</span></span><a class="headerlink" href="#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.START_TIME" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="lsa-beamprocesses">
+<span id="module-omc3.machine_data_extraction.lsa_beamprocesses"></span><h2>LSA Beamprocesses<a class="headerlink" href="#lsa-beamprocesses" title="Link to this heading"></a></h2>
+<p>This module contains functions to extract beamprocess - and related - information
+from LSA.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_beamprocesses.beamprocess_to_dict">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_beamprocesses.</span></span><span class="sig-name descname"><span class="pre">beamprocess_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StandAloneBeamProcessImpl</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_beamprocesses.html#beamprocess_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_beamprocesses.beamprocess_to_dict" title="Link to this definition"></a></dt>
+<dd><p>Convert all <code class="docutils literal notranslate"><span class="pre">get</span></code>- fields of the beamprocess (java) to a dictionary.</p>
+<p>Will contain the original Beamprocess object under the key ‘object’
+and its string representation under ‘name’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bp</strong> (<em>StandAloneBeamProcessImpl</em>) -- Beamprocess object (Java).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary representation of the beamprocess.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_beamprocesses.get_active_beamprocess_at_time">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_beamprocesses.</span></span><span class="sig-name descname"><span class="pre">get_active_beamprocess_at_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lhc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bp_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'POWERCONVERTERS'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_beamprocesses.html#get_active_beamprocess_at_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_beamprocesses.get_active_beamprocess_at_time" title="Link to this definition"></a></dt>
+<dd><p>Find the active beam process at the time given.</p>
+<p>Note: This function has been derived from the original KnobExtractor implementation in the Java Online Model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> (<em>LSAClient</em>) -- The LSA client instance.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- The time at which to find the active beam process.</p></li>
+<li><p><strong>accelerator</strong> (<em>str</em>) -- Name of the accelerator.</p></li>
+<li><p><strong>bp_group</strong> (<em>str</em>) -- BeamProcess Group, choices : ‘POWERCONVERTERS’, ‘ADT’, ‘KICKERS’, ‘SPOOLS’, ‘COLLIMATORS’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding BeamProcessInfo dataclass instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo">BeamProcessInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocess_from_name">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_beamprocesses.</span></span><span class="sig-name descname"><span class="pre">get_beamprocess_from_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_beamprocesses.html#get_beamprocess_from_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocess_from_name" title="Link to this definition"></a></dt>
+<dd><p>Get the BeamProcess by its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> (<em>LSAClient</em>) -- The LSA client instance.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) -- The name of the beam process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding BeamProcessInfo dataclass instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo">BeamProcessInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocess_with_fill_at_time">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_beamprocesses.</span></span><span class="sig-name descname"><span class="pre">get_beamprocess_with_fill_at_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_retrieval_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lhc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.FillInfo" title="omc3.machine_data_extraction.data_classes.FillInfo"><span class="pre">FillInfo</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_beamprocesses.html#get_beamprocess_with_fill_at_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocess_with_fill_at_time" title="Link to this definition"></a></dt>
+<dd><p>Get the info about the active beamprocess at <code class="docutils literal notranslate"><span class="pre">time</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_beamprocesses.get_fills_with_beamprocesses">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_beamprocesses.</span></span><span class="sig-name descname"><span class="pre">get_fills_with_beamprocesses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_retrieval_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lhc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.FillInfo" title="omc3.machine_data_extraction.data_classes.FillInfo"><span class="pre">FillInfo</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_beamprocesses.html#get_fills_with_beamprocesses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_beamprocesses.get_fills_with_beamprocesses" title="Link to this definition"></a></dt>
+<dd><p>Retrieves fills with their associated beamprocesses between the specified time window.
+Adapted from pjlsa’s FindBeamProcessHistory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> (<em>LSAClient</em>) -- The LSA client instance used to query beamprocess history.</p></li>
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Spark session used to query NXCALS fill-number data.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- End time of the retrieval window.</p></li>
+<li><p><strong>data_retrieval_days</strong> (<em>float</em>) -- Number of days to look back from <code class="docutils literal notranslate"><span class="pre">time</span></code>.</p></li>
+<li><p><strong>accelerator</strong> (<em>str</em>) -- Name of the accelerator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of FillInfo objects, each containing the fill number, accelerator, start time, and beam processes.
+They are sorted by fill number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="lsa-knobs">
+<span id="module-omc3.machine_data_extraction.lsa_knobs"></span><h2>LSA Knobs<a class="headerlink" href="#lsa-knobs" title="Link to this heading"></a></h2>
+<p>This module contains functions to extract knob information from LSA.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_knobs.filter_non_existing_knobs">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_knobs.</span></span><span class="sig-name descname"><span class="pre">filter_non_existing_knobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_knobs.html#filter_non_existing_knobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_knobs.filter_non_existing_knobs" title="Link to this definition"></a></dt>
+<dd><p>Return only the knobs that exist from the given list.
+This function was created out of the need to filter these first,
+as knobs that exist but do not belong to a beamprocess return noting in
+_getTrimsByBeamprocess, while knobs that do not exist at all crashed pjlsa.
+This filter should probably have been in pjlsa’s _buildParameterList.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>knobs</strong> (<em>list</em>) -- List of strings of the knobs to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the knob names that actually exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_knobs.find_knob_names">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_knobs.</span></span><span class="sig-name descname"><span class="pre">find_knob_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lhc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regexp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_knobs.html#find_knob_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_knobs.find_knob_names" title="Link to this definition"></a></dt>
+<dd><p>Return knobs for accelerator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> -- The LSA client instance.</p></li>
+<li><p><strong>accelerator</strong> (<em>str</em>) -- Accelerator name.</p></li>
+<li><p><strong>regexp</strong> (<em>str</em>) -- Regular Expression to filter knob names.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sorted list of knob names.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_knobs.get_knob_definition">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_knobs.</span></span><span class="sig-name descname"><span class="pre">get_knob_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.KnobDefinition" title="omc3.machine_data_extraction.data_classes.KnobDefinition"><span class="pre">KnobDefinition</span></a></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_knobs.html#get_knob_definition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_knobs.get_knob_definition" title="Link to this definition"></a></dt>
+<dd><p>Get a dataframe of the structure of the knob. Similar to online model extractor
+(KnobExtractor.getKnobHiercarchy)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> (<em>LSAClient</em>) -- The LSA client instance.</p></li>
+<li><p><strong>knob</strong> (<em>str</em>) -- The name of the knob.</p></li>
+<li><p><strong>optics</strong> (<em>str</em>) -- The optics name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The definition of the knob.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.KnobDefinition" title="omc3.machine_data_extraction.data_classes.KnobDefinition">KnobDefinition</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_knobs.get_last_trim">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_knobs.</span></span><span class="sig-name descname"><span class="pre">get_last_trim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TrimTuple</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_knobs.html#get_last_trim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_knobs.get_last_trim" title="Link to this definition"></a></dt>
+<dd><p>Returns the last trim in the trim history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trims</strong> (<em>dict</em>) -- trim history as extracted via LSA.get_trim_history()</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of knob names and their values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_knobs.get_trim_history">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_knobs.</span></span><span class="sig-name descname"><span class="pre">get_trim_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beamprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lhc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.TrimHistories" title="omc3.machine_data_extraction.data_classes.TrimHistories"><span class="pre">TrimHistories</span></a></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_knobs.html#get_trim_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_knobs.get_trim_history" title="Link to this definition"></a></dt>
+<dd><p>Get trim history for knobs between specified times.
+If any of the times are not given, all available data in that time-direction
+is extracted for that beamprocess.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beamprocess</strong> (<em>str</em>) -- Name of the beamprocess.</p></li>
+<li><p><strong>knobs</strong> (<em>list</em>) -- List of strings of the knobs to check.</p></li>
+<li><p><strong>start_time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- Earliest time to extract trims from.</p></li>
+<li><p><strong>end_time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- Latest time to extract trims to.</p></li>
+<li><p><strong>accelerator</strong> (<em>str</em>) -- Name of the accelerator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TrimHistory object containing trim extraction and history information.
+The actual trims are in the ‘trims’ attribute as a dictionary
+of knob names and their data (as TrimTuples, i.e. NamedTuple of lists of time and data).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="lsa-optics">
+<span id="module-omc3.machine_data_extraction.lsa_optics"></span><h2>LSA Optics<a class="headerlink" href="#lsa-optics" title="Link to this heading"></a></h2>
+<p>This module contains functions to extract the used optics from LSA.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_optics.get_optics_for_beamprocess_at_time">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_optics.</span></span><span class="sig-name descname"><span class="pre">get_optics_for_beamprocess_at_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">beamprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><span class="pre">BeamProcessInfo</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.OpticsInfo" title="omc3.machine_data_extraction.data_classes.OpticsInfo"><span class="pre">OpticsInfo</span></a></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_optics.html#get_optics_for_beamprocess_at_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_optics.get_optics_for_beamprocess_at_time" title="Link to this definition"></a></dt>
+<dd><p>Get the optics information for the given beamprocess at the specified time.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function has been derived from old implementations and returns the right optics,
+but in my tests the optics table only ever had one entry with time 0. (jdilly, 2026)</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> (<em>LSAClient</em>) -- The LSA client instance.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- The time at which to get the optics.</p></li>
+<li><p><strong>beamprocess</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.data_classes.BeamProcessInfo" title="omc3.machine_data_extraction.data_classes.BeamProcessInfo"><em>BeamProcessInfo</em></a>) -- The beamprocess information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding OpticsInfo dataclass instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#omc3.machine_data_extraction.data_classes.OpticsInfo" title="omc3.machine_data_extraction.data_classes.OpticsInfo">OpticsInfo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="lsa-utilities">
+<span id="module-omc3.machine_data_extraction.lsa_utils"></span><h2>LSA Utilities<a class="headerlink" href="#lsa-utilities" title="Link to this heading"></a></h2>
+<p>This module contains utility functions for working with LSA and data extracted from it.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.lsa_utils.calc_k_from_iref">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.lsa_utils.</span></span><span class="sig-name descname"><span class="pre">calc_k_from_iref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/lsa_utils.html#calc_k_from_iref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.lsa_utils.calc_k_from_iref" title="Link to this definition"></a></dt>
+<dd><p>Calculate K values in the LHC from IREF using the LSA service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsa_client</strong> (<em>LSAClient</em>) -- The LSA client instance.</p></li>
+<li><p><strong>currents</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) -- Dictionary of current values keyed by variable name.</p></li>
+<li><p><strong>energy</strong> (<em>float</em>) -- The beam energy in GeV.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of K values keyed by variable name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="nxcals-results-to-mad-x-conversion">
+<span id="module-omc3.machine_data_extraction.madx_conversion"></span><h2>NXCals Results to MAD-X Conversion<a class="headerlink" href="#nxcals-results-to-mad-x-conversion" title="Link to this heading"></a></h2>
+<p>This module provides functions to convert NXCALS knob extraction results into
+a MAD-X script format for further processing.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.madx_conversion.map_lsa_name_to_madx">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.madx_conversion.</span></span><span class="sig-name descname"><span class="pre">map_lsa_name_to_madx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsa_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSAClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/madx_conversion.html#map_lsa_name_to_madx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.madx_conversion.map_lsa_name_to_madx" title="Link to this definition"></a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">MAD-X</span></code> name (Circuit/Knob) from the given circuit name in LSA.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.madx_conversion.map_pc_name_to_madx">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.madx_conversion.</span></span><span class="sig-name descname"><span class="pre">map_pc_name_to_madx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pc_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/madx_conversion.html#map_pc_name_to_madx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.madx_conversion.map_pc_name_to_madx" title="Link to this definition"></a></dt>
+<dd><p>Convert an LHC power converter name or circuit name to its corresponding MAD-X name.</p>
+<p>This function processes the input name by removing the ‘:I_MEAS’ suffix if present,
+extracting the circuit name from full power converter names (starting with ‘RPMBB’ or ‘RPL’),
+applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.</p>
+<dl class="simple">
+<dt>..note::</dt><dd><p>This function currently supports only some of the LHC power converters:
+Corrector bends (RCB), Sextupoles (RS), Quadrupoles (RQ), and Bends (RB).
+Additional logic may be required to handle other magnet types.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pc_name</strong> (<em>str</em>) -- The power converter or circuit name to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted MAD-X name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="s2">&quot;RPMBB.UJ33.RCBH10.L1B1:I_MEAS&quot;</span><span class="p">)</span>
+<span class="go">&#39;acb10.l1b1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="s2">&quot;RQT12.L5B1&quot;</span><span class="p">)</span>
+<span class="go">&#39;kqt12.l5b1&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="mqt-knobs-extraction">
+<span id="module-omc3.machine_data_extraction.mqt_extraction"></span><h2>MQT knobs extraction<a class="headerlink" href="#mqt-knobs-extraction" title="Link to this heading"></a></h2>
+<p>This module provides functions to retrieve MQT (Quadrupole Trim) knob values for the LHC
+for a specified beam and time using NXCALS and LSA.</p>
+<p>There are two types per arc (focusing ‘f’ and defocusing ‘d’), resulting in 16 MQT circuits
+per beam (8 arcs * 2 planes).</p>
+<p>The extraction uses the underlying <cite>knob_extraction</cite> module with MQT-specific patterns.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.mqt_extraction.generate_mqt_names">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.mqt_extraction.</span></span><span class="sig-name descname"><span class="pre">generate_mqt_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/mqt_extraction.html#generate_mqt_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.mqt_extraction.generate_mqt_names" title="Link to this definition"></a></dt>
+<dd><p>Generate the set of MAD-X MQT (Quadrupole Trim) variable names for a given beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>beam</strong> (<em>int</em>) -- The beam number (1 or 2).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A set of MAD-X variable names for MQT magnets, e.g., ‘kqt12.a12b1’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set[str]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If beam is not 1 or 2.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_mqts</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">{&#39;kqt12.a12b1&#39;, &#39;kqt12.a23b1&#39;, ..., &#39;kqtd.a81b1&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.mqt_extraction.get_mqt_vals">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.mqt_extraction.</span></span><span class="sig-name descname"><span class="pre">get_mqt_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_retrieval_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/mqt_extraction.html#get_mqt_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.mqt_extraction.get_mqt_vals" title="Link to this definition"></a></dt>
+<dd><p>Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.</p>
+<p>This function queries NXCALS for current measurements of MQT power converters,
+calculates the corresponding K-values (integrated quadrupole strengths) using LSA,
+and returns them in MAD-X format with timestamps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session for NXCALS queries.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- The timestamp for which to retrieve the data (timezone-aware required).</p></li>
+<li><p><strong>beam</strong> (<em>int</em>) -- The beam number (1 or 2).</p></li>
+<li><p><strong>data_retrieval_days</strong> (<em>float</em>) -- Number of days to look back for data in NXCALS. Will always take the latest available data within this window.
+default: <code class="docutils literal notranslate"><span class="pre">0.25</span></code> (e.g. 6 hours)</p></li>
+<li><p><strong>energy</strong> (<em>float</em><em> | </em><em>None</em>) -- Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of NXCalResult objects containing the MAD-X knob names, K-values, and timestamps.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[NXCalResult]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> -- If beam is not 1 or 2 (propagated from get_mqts), or if time is not timezone-aware.</p></li>
+<li><p><strong>RuntimeError</strong> -- If no data is found in NXCALS or LSA calculations fail.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="nxcals-knob-extraction">
+<span id="module-omc3.machine_data_extraction.nxcals_knobs"></span><h2>NXCals Knob Extraction<a class="headerlink" href="#nxcals-knob-extraction" title="Link to this heading"></a></h2>
+<p>This module provides functionality to extract knob values from NXCALS for the LHC and
+convert them to MAD-X compatible format using LSA services.</p>
+<p>It handles retrieval of raw variable data from NXCALS, conversion of power converter
+currents to K-values, and mapping of power converter names to MAD-X naming
+conventions.</p>
+<p>This module requires the installation of <cite>jpype</cite>, <cite>pyspark</cite>, and access to the
+CERN network to connect to NXCALS and LSA services. You can install the required
+packages via pip:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">omc3[cern]</span>
+<span class="pre">`</span></code></p>
+<p>See the [NXCALS documentation](<a class="reference external" href="https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/">https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/</a>)
+for more information on getting access and using the Python API.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.nxcals_knobs.</span></span><span class="sig-name descname"><span class="pre">NXCALSResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'datetime'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/nxcals_knobs.html#NXCALSResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime">
+<span class="sig-name descname"><span class="pre">datetime</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></span><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.pc_name">
+<span class="sig-name descname"><span class="pre">pc_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.pc_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_madx">
+<span class="sig-name descname"><span class="pre">to_madx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/nxcals_knobs.html#NXCALSResult.to_madx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_madx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_series">
+<span class="sig-name descname"><span class="pre">to_series</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/nxcals_knobs.html#NXCALSResult.to_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_series" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_tfs">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">to_tfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/nxcals_knobs.html#NXCALSResult.to_tfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_tfs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.get_energy">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.nxcals_knobs.</span></span><span class="sig-name descname"><span class="pre">get_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.Timestamp</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/nxcals_knobs.html#get_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.get_energy" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the beam energy of the LHC from NXCALS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- Python datetime (timezone-aware recommended).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Beam energy in GeV and its times.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[float, pd.Timestamp]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> -- If no energy data is found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.get_knob_vals">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.nxcals_knobs.</span></span><span class="sig-name descname"><span class="pre">get_knob_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_retrieval_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/nxcals_knobs.html#get_knob_vals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.get_knob_vals" title="Link to this definition"></a></dt>
+<dd><p>Retrieve knob values for a given beam and time using specified patterns for the LHC.</p>
+<p>This is the main entry point for extracting magnet knob values from NXCALS. The function
+performs a complete workflow:</p>
+<ol class="arabic simple">
+<li><p>Queries NXCALS for power converter current measurements (I_MEAS) using variable patterns</p></li>
+<li><p>Retrieves the beam energy at the specified time</p></li>
+<li><p>Converts currents to K-values (integrated quadrupole strengths) using LSA</p></li>
+<li><p>Maps power converter names to MAD-X naming conventions</p></li>
+<li><p>Returns knob values with their datetimnes</p></li>
+</ol>
+<p>The difference between patterns and knob names:</p>
+<ul class="simple">
+<li><p><strong>patterns</strong>: NXCALS variable patterns (e.g., “RPMBB.UA%.RQT%.A%B1:I_MEAS”) used to query
+raw power converter current measurements. These follow CERN naming conventions and may
+include wildcards (%).</p></li>
+<li><p><strong>expected_knobs</strong>: MAD-X element names (e.g., “kqt12.a12b1”) representing the final
+knob names as used in MAD-X scripts. These are lowercase, simplified names.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session for NXCALS queries.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- Time to retrieve data for.</p></li>
+<li><p><strong>beam</strong> (<em>int</em>) -- Beam number (1 or 2).</p></li>
+<li><p><strong>patterns</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) -- List of NXCALS variable patterns to query for power converter
+currents. Patterns can include SQL-like wildcards (%). Example:
+“RPMBB.UA%.RQT%.A%B1:I_MEAS” matches all MQT quadrupole trim magnets for beam 1.</p></li>
+<li><p><strong>expected_knobs</strong> (<em>set</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) -- Set of expected MAD-X knob names to validate and filter
+results. If None, returns all found knobs without validation.</p></li>
+<li><p><strong>log_prefix</strong> (<em>str</em>) -- Prefix for logging messages to distinguish different extraction runs.</p></li>
+<li><p><strong>data_retrieval_days</strong> (<em>float</em>) -- Number of days to look back for data. Default is 0.25.</p></li>
+<li><p><strong>energy</strong> (<em>float</em><em> | </em><em>None</em>) -- Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List of NXCalResult objects containing MAD-X knob names, K-values,</dt><dd><p>times, and power converter names.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[NXCalResult]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.nxcals_knobs.get_raw_vars">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.nxcals_knobs.</span></span><span class="sig-name descname"><span class="pre">get_raw_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SparkSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_retrieval_days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latest_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult"><span class="pre">NXCALSResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/nxcals_knobs.html#get_raw_vars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.nxcals_knobs.get_raw_vars" title="Link to this definition"></a></dt>
+<dd><p>Retrieve raw variable values from NXCALS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spark</strong> (<em>SparkSession</em>) -- Active Spark session.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- Python datetime (timezone-aware recommended).</p></li>
+<li><p><strong>var_name</strong> (<em>str</em>) -- Name or pattern of the variable(s) to retrieve.</p></li>
+<li><p><strong>data_retrieval_days</strong> (<em>float</em>) -- Number of days to look back for data. Default is 0.25.</p></li>
+<li><p><strong>latest_only</strong> (<em>bool</em>) -- If True, only the latest sample for each variable is returned. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of NXCalResult containing variable name, value, times,
+and power converter name for the latest sample of each matching variable at the given time,
+or all samples if so required.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[NXCalResult]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> -- If no data is found for the variable in the given interval.</p></li>
+<li><p><strong>You may need to increase the data_retrieval_days if necessary.</strong> -- </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="utils">
+<span id="module-omc3.machine_data_extraction.utils"></span><h2>Utils<a class="headerlink" href="#utils" title="Link to this heading"></a></h2>
+<p>Utilities to help with machine data extraction.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.utils.knob_to_output_name">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">knob_to_output_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knob_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/utils.html#knob_to_output_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.utils.knob_to_output_name" title="Link to this definition"></a></dt>
+<dd><p>Convert a knob name to an output-friendly name for file names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>knob_name</strong> (<em>str</em>) -- The original knob name.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The modified knob name suitable for output.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.utils.strip_i_meas">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">strip_i_meas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/utils.html#strip_i_meas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.utils.strip_i_meas" title="Link to this definition"></a></dt>
+<dd><p>Remove the I_MEAS suffix from a variable name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) -- The variable name possibly ending with ‘:I_MEAS’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The variable name without the ‘:I_MEAS’ suffix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.utils.timestamp_to_utciso">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">timestamp_to_utciso</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/utils.html#timestamp_to_utciso"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.utils.timestamp_to_utciso" title="Link to this definition"></a></dt>
+<dd><p>Convert a timestamp to an ISO format string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.machine_data_extraction.utils.try_to_acquire_data">
+<span class="sig-prename descclassname"><span class="pre">omc3.machine_data_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">try_to_acquire_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/machine_data_extraction/utils.html#try_to_acquire_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.machine_data_extraction.utils.try_to_acquire_data" title="Link to this definition"></a></dt>
+<dd><p>Tries to get data from function multiple times.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Args:</dt><dd><p>function (Callable): function to be called, e.g. db.get
+args, kwargs: arguments passed to <code class="docutils literal notranslate"><span class="pre">function</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Return arguments of <code class="docutils literal notranslate"><span class="pre">function</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="harpy.html" class="btn btn-neutral float-left" title="Harpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="model.html" class="btn btn-neutral float-right" title="Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

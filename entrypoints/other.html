@@ -61,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-creator">Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mqt-extractor">MQT Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -79,6 +80,7 @@
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#machine-settings-information">Machine Settings Information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -119,6 +121,19 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/machine_data_extraction.html">Machine Data Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-knobs">LSA Knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-optics">LSA Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-utilities">LSA Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#utils">Utils</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#manager">Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#constants">Constants</a></li>
@@ -137,11 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -233,6 +243,7 @@
 <li><a class="reference internal" href="#tbt-converter">TbT Converter</a></li>
 <li><a class="reference internal" href="#model-creator">Model Creator</a></li>
 <li><a class="reference internal" href="#knob-extractor">Knob Extractor</a></li>
+<li><a class="reference internal" href="#mqt-extractor">MQT Extractor</a></li>
 <li><a class="reference internal" href="#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -474,7 +485,7 @@ timedelta. This allows for easily getting the setting e.g. 2h ago:
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.knob_extractor.extract">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.AccDatetime.datetime" title="omc3.utils.time_tools.AccDatetime.datetime"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.extract" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.extract" title="Link to this definition"></a></dt>
 <dd><p>Standalone function to gather data from  the StateTracker.
 Extracts data via pytimber’s LoggingDB for the knobs given
 (either by name or by category) in knobs.</p>
@@ -483,7 +494,7 @@ Extracts data via pytimber’s LoggingDB for the knobs given
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ldb</strong> (<em>pytimber.LoggingDB</em>) -- The pytimber database.</p></li>
 <li><p><strong>knobs</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) -- Knob Categories or Knob-Names to extract.</p></li>
-<li><p><strong>time</strong> (<a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.AccDatetime.datetime" title="omc3.utils.time_tools.AccDatetime.datetime"><em>datetime</em></a>) -- The time, when to extract.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="../modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- The time, when to extract.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -508,13 +519,13 @@ When extraction was not possible, the value is None.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.knob_extractor.get_state">
-<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.AccDatetime.datetime" title="omc3.utils.time_tools.AccDatetime.datetime"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.get_state" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ldb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.get_state" title="Link to this definition"></a></dt>
 <dd><p>Standalone function to gather and log state data from  the StateTracker.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ldb</strong> (<em>pytimber.LoggingDB</em>) -- The pytimber database.</p></li>
-<li><p><strong>time</strong> (<a class="reference internal" href="../modules/utils.html#omc3.utils.time_tools.AccDatetime.datetime" title="omc3.utils.time_tools.AccDatetime.datetime"><em>datetime</em></a>) -- The time, when to get the state.</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="../modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime" title="omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime"><em>datetime</em></a>) -- The time, when to get the state.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -561,6 +572,89 @@ keys and KnobEntries (without values) as value.</p>
 <dt class="sig sig-object py" id="omc3.knob_extractor.name2lsa">
 <span class="sig-prename descclassname"><span class="pre">omc3.knob_extractor.</span></span><span class="sig-name descname"><span class="pre">name2lsa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/omc3/knob_extractor.html#name2lsa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.knob_extractor.name2lsa" title="Link to this definition"></a></dt>
 <dd><p>Variable in Timber/StateTracker -&gt; LSA name conversion.</p>
+</dd></dl>
+
+<section id="mqt-extractor">
+<span id="module-omc3.mqt_extractor"></span><h2>MQT Extractor<a class="headerlink" href="#mqt-extractor" title="Link to this heading"></a></h2>
+<p>Entrypoint to extract MQT (Quadrupole Trim) knob values from <code class="docutils literal notranslate"><span class="pre">NXCALS</span></code> at a given time,
+and eventually write them out to a file.
+The data is fetched from <code class="docutils literal notranslate"><span class="pre">NXCALS</span></code> through PySpark queries and converted to K-values using <code class="docutils literal notranslate"><span class="pre">LSA</span></code>.</p>
+<p>MQT magnets are trim quadrupoles located in the LHC arcs, used for fine-tuning the optics.
+There are two types per arc (focusing ‘f’ and defocusing ‘d’), resulting in 16 MQT magnets
+per beam (8 arcs x 2 types).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that access to the GPN is required to use this functionality.</p>
+</div>
+<p><strong>Arguments:</strong></p>
+<p><em>--Required--</em></p>
+<ul>
+<li><p><strong>beam</strong> <em>(int)</em>:</p>
+<blockquote>
+<div><p>The beam number (1 or 2).</p>
+</div></blockquote>
+</li>
+<li><p><strong>time</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>At what time to extract the MQT knobs. Accepts ISO-format (YYYY-MM-
+DDThh:mm:ss) with timezone, timestamp or ‘now’. Timezone must be
+specified for ISO-format (e.g. +00:00 for UTC).</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">now</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>output</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Specify user-defined output path. This should probably be
+<cite>model_dir/mqts.madx</cite>. If not provided, the data is only returned
+and not written to a file.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>timedelta</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Add this timedelta to the given time. The format of timedelta is
+‘((d+)(w))+’ with the second token being one of s(seconds),
+m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,
+1d = 1day, 7m30s = 7 min 30 secs. A prefix ‘_’ specifies a negative
+timedelta. This allows for easily getting the setting e.g. 2h ago:
+‘_2h’ while setting the <cite>time</cite> argument to ‘now’ (default).</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>data_retrieval_days</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Number of days to look back for data in NXCALS. Will always take the latest available data within this window.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.25</span></code> (e.g. 6 hours)</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.mqt_extractor.get_params">
+<span class="sig-prename descclassname"><span class="pre">omc3.mqt_extractor.</span></span><span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/mqt_extractor.html#get_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.mqt_extractor.get_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.mqt_extractor.main">
+<span class="sig-prename descclassname"><span class="pre">omc3.mqt_extractor.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/mqt_extractor.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.mqt_extractor.main" title="Link to this definition"></a></dt>
+<dd><p>Main MQT extracting function.</p>
+<p>Retrieves MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam,
+and optionally saves them to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>DataFrame containing the extracted MQT knob values with columns</dt><dd><p>for madx name, value, timestamp, and power converter name.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tfs.TfsDataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <section id="mad-x-wrapper">

@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="NXCALS" href="nxcals.html" />
-    <link rel="prev" title="Harpy" href="harpy.html" /> 
+    <link rel="next" title="Optics Measurements" href="optics_measurements.html" />
+    <link rel="prev" title="Machine Data Extraction" href="machine_data_extraction.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#model-creator">Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mqt-extractor">MQT Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -79,6 +80,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#machine-settings-information">Machine Settings Information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -119,6 +121,19 @@
 <li class="toctree-l2"><a class="reference internal" href="harpy.html#kicker">Kicker</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="machine_data_extraction.html">Machine Data Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#lsa-knobs">LSA Knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#lsa-optics">LSA Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#lsa-utilities">LSA Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine_data_extraction.html#utils">Utils</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#manager">Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
@@ -137,11 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sps-model-creator">SPS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#abstract-model-creator-class">Abstract Model Creator Class</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="nxcals.html">NXCALS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="nxcals.html#knob-extraction">Knob Extraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="optics_measurements.html">Optics Measurements</a><ul>
@@ -274,7 +284,7 @@ It contains entrypoint wrappers to get accelerator classes or their instances.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.model.manager.get_accelerator_class">
-<span class="sig-prename descclassname"><span class="pre">omc3.model.manager.</span></span><span class="sig-name descname"><span class="pre">get_accelerator_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_accelerator_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.manager.get_accelerator_class" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.model.manager.</span></span><span class="sig-name descname"><span class="pre">get_accelerator_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart.type" title="omc3.machine_data_extraction.data_classes.KnobPart.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/model/manager.html#get_accelerator_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.manager.get_accelerator_class" title="Link to this definition"></a></dt>
 <dd><p>Returns only the accelerator-class (non-instanciated).
 Only opt.accel is needed.</p>
 </dd></dl>
@@ -1340,7 +1350,7 @@ The <cite>Accelerator</cite> instance knows already which excitation method is u
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.model.model_creators.manager.get_model_creator_class">
-<span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.manager.</span></span><span class="sig-name descname"><span class="pre">get_model_creator_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.model_creators.manager.CreatorType" title="omc3.model.model_creators.manager.CreatorType"><span class="pre">CreatorType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.model.model_creators.abstract_model_creator.ModelCreator" title="omc3.model.model_creators.abstract_model_creator.ModelCreator"><span class="pre">ModelCreator</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/manager.html#get_model_creator_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.manager.get_model_creator_class" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.model.model_creators.manager.</span></span><span class="sig-name descname"><span class="pre">get_model_creator_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart.type" title="omc3.machine_data_extraction.data_classes.KnobPart.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.model.model_creators.manager.CreatorType" title="omc3.model.model_creators.manager.CreatorType"><span class="pre">CreatorType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart.type" title="omc3.machine_data_extraction.data_classes.KnobPart.type"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omc3.model.model_creators.abstract_model_creator.ModelCreator" title="omc3.model.model_creators.abstract_model_creator.ModelCreator"><span class="pre">ModelCreator</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/model/model_creators/manager.html#get_model_creator_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.model.model_creators.manager.get_model_creator_class" title="Link to this definition"></a></dt>
 <dd><p>Returns the model creator for the given accelerator and creator type.
 This function will raise a ValueError if the accelerator or creator type is unknown.</p>
 <dl class="field-list simple">
@@ -2001,8 +2011,8 @@ if the path results in a valid choice.</p></li>
           </div>
 
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="harpy.html" class="btn btn-neutral float-left" title="Harpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="nxcals.html" class="btn btn-neutral float-right" title="NXCALS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="machine_data_extraction.html" class="btn btn-neutral float-left" title="Machine Data Extraction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="optics_measurements.html" class="btn btn-neutral float-right" title="Optics Measurements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

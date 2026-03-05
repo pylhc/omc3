@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.nxcals.mqt_extraction &mdash; omc3 0.28.0 documentation</title>
+  <title>omc3.machine_data_extraction.constants &mdash; omc3 0.28.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mqt-extractor">MQT Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -76,6 +77,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#machine-settings-information">Machine Settings Information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -116,6 +118,19 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/machine_data_extraction.html">Machine Data Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-knobs">LSA Knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-optics">LSA Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-utilities">LSA Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#utils">Utils</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
@@ -134,11 +149,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/nxcals.html">NXCALS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -215,7 +225,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">omc3.nxcals.mqt_extraction</li>
+      <li class="breadcrumb-item active">omc3.machine_data_extraction.constants</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -226,119 +236,85 @@
   
            <div itemprop="articleBody">
              
-  <h1>Source code for omc3.nxcals.mqt_extraction</h1><div class="highlight"><pre>
+  <h1>Source code for omc3.machine_data_extraction.constants</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Extraction of MQT knobs from NXCALS.</span>
-<span class="sd">------------------------------------</span>
+<span class="sd">Constants</span>
+<span class="sd">---------</span>
 
-<span class="sd">This module provides functions to retrieve MQT (Quadrupole Trim) knob values for the LHC</span>
-<span class="sd">for a specified beam and time using NXCALS and LSA.</span>
-
-<span class="sd">There are two types per arc (focusing &#39;f&#39; and defocusing &#39;d&#39;), resulting in 16 MQT circuits</span>
-<span class="sd">per beam (8 arcs * 2 planes).</span>
-
-<span class="sd">The extraction uses the underlying `knob_extraction` module with MQT-specific patterns.</span>
+<span class="sd">Specific constants relating to the retrieval of machine settings information, to help with consistency.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.nxcals.knob_extraction</span><span class="w"> </span><span class="kn">import</span> <span class="n">NXCALSResult</span><span class="p">,</span> <span class="n">get_knob_vals</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
-
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXT</span> <span class="k">as</span> <span class="n">TFS_SUFFIX</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 
 
-<div class="viewcode-block" id="generate_mqt_names">
-<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.mqt_extraction.generate_mqt_names">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_mqt_names</span><span class="p">(</span><span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="MSISummaryColumn">
+<a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryColumn">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSISummaryColumn</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate the set of MAD-X MQT (Quadrupole Trim) variable names for a given beam.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        beam (int): The beam number (1 or 2).</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        set[str]: A set of MAD-X variable names for MQT magnets, e.g., &#39;kqt12.a12b1&#39;.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If beam is not 1 or 2.</span>
-
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; get_mqts(1)</span>
-<span class="sd">        {&#39;kqt12.a12b1&#39;, &#39;kqt12.a23b1&#39;, ..., &#39;kqtd.a81b1&#39;}</span>
+<span class="sd">    TFS columns for machine settings information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">beam</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Beam must be 1 or 2&quot;</span><span class="p">)</span>
-
-    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">]</span>
-    <span class="n">arcs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="mi">81</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;kqt</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.a</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">b</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arcs</span><span class="p">}</span></div>
+    <span class="n">KNOB</span> <span class="o">=</span> <span class="s2">&quot;KNOB&quot;</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;TIME&quot;</span>
+    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">&quot;TIMESTAMP&quot;</span>
+    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">&quot;VALUE&quot;</span></div>
 
 
-
-<div class="viewcode-block" id="get_mqt_vals">
-<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.mqt_extraction.get_mqt_vals">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_mqt_vals</span><span class="p">(</span>
-    <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">delta_days</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]:</span>
+<div class="viewcode-block" id="MSISummaryHeader">
+<a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSISummaryHeader</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.</span>
-
-<span class="sd">    This function queries NXCALS for current measurements of MQT power converters,</span>
-<span class="sd">    calculates the corresponding K-values (integrated quadrupole strengths) using LSA,</span>
-<span class="sd">    and returns them in MAD-X format with timestamps.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        spark (SparkSession): Active Spark session for NXCALS queries.</span>
-<span class="sd">        time (datetime): The timestamp for which to retrieve the data (timezone-aware required).</span>
-<span class="sd">        beam (int): The beam number (1 or 2).</span>
-<span class="sd">        delta_days (float): Number of days to look back for data. Default is 0.25.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        list[NXCalResult]: List of NXCalResult objects containing the MAD-X knob names, K-values, and timestamps.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If beam is not 1 or 2 (propagated from get_mqts), or if time is not timezone-aware.</span>
-<span class="sd">        RuntimeError: If no data is found in NXCALS or LSA calculations fail.</span>
+<span class="sd">    TFS headers for machine settings information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Time must be timezone-aware.&quot;</span><span class="p">)</span>
+    <span class="n">ACCEL</span> <span class="o">=</span> <span class="s2">&quot;ACCELERATOR&quot;</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;TIME&quot;</span>
+    <span class="n">START_TIME</span> <span class="o">=</span> <span class="s2">&quot;START_TIME&quot;</span>
+    <span class="n">END_TIME</span> <span class="o">=</span> <span class="s2">&quot;END_TIME&quot;</span>
+    <span class="n">BEAMPROCESS</span> <span class="o">=</span> <span class="s2">&quot;BEAMPROCESS&quot;</span>
+    <span class="n">FILL</span> <span class="o">=</span> <span class="s2">&quot;FILL&quot;</span>
+    <span class="n">BEAMPROCESS_START</span> <span class="o">=</span> <span class="s2">&quot;BEAMPROCESS_START&quot;</span>
+    <span class="n">CONTEXT_CATEGORY</span> <span class="o">=</span> <span class="s2">&quot;CONTEXT_CATEGORY&quot;</span>
+    <span class="n">BEAMPROCESS_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;BEAMPROCESS_DESCRIPTION&quot;</span>
+    <span class="n">OPTICS</span> <span class="o">=</span> <span class="s2">&quot;OPTICS&quot;</span>
+    <span class="n">OPTICS_START</span> <span class="o">=</span> <span class="s2">&quot;OPTICS_START&quot;</span></div>
 
-    <span class="n">madx_mqts</span> <span class="o">=</span> <span class="n">generate_mqt_names</span><span class="p">(</span><span class="n">beam</span><span class="p">)</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RPMBB.UA%.RQT%.A%B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">:I_MEAS&quot;</span>
-    <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">pattern</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">get_knob_vals</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">madx_mqts</span><span class="p">,</span> <span class="s2">&quot;MQT: &quot;</span><span class="p">,</span> <span class="n">delta_days</span><span class="p">)</span></div>
 
-
-
-<div class="viewcode-block" id="knobs_to_madx">
-<a class="viewcode-back" href="../../../modules/nxcals.html#omc3.nxcals.mqt_extraction.knobs_to_madx">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">knobs_to_madx</span><span class="p">(</span><span class="n">mqt_vals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="NXCalsTfsColumn">
+<a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NXCalsTfsColumn</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert a list of NXCalResult objects to a MAD-X script string.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        mqt_vals: List of NXCalResult objects containing knob values.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A string containing the MAD-X script with knob assignments.</span>
+<span class="sd">    TFS columns for MQT information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">mqt_vals</span><span class="p">:</span>
-        <span class="n">timestamp_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">timestamp</span><span class="si">:</span><span class="s2">%Y-%m-%d %H:%M:%S%z</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">value_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.10E</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;E+&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2">= </span><span class="si">{</span><span class="n">value_str</span><span class="si">}</span><span class="s2">; ! powerconverter: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">pc_name</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">timestamp_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+    <span class="n">MADX</span> <span class="o">=</span> <span class="s2">&quot;MADX&quot;</span>
+    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">&quot;VALUE&quot;</span>
+    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">&quot;TIMESTAMP&quot;</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;TIME&quot;</span>
+    <span class="n">PC_NAME</span> <span class="o">=</span> <span class="s2">&quot;PC_NAME&quot;</span></div>
 
+
+
+<div class="viewcode-block" id="NXCalsTfsHeader">
+<a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsHeader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NXCalsTfsHeader</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TFS headers for MQT information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">EXTRACTION_TIME</span> <span class="o">=</span> <span class="s2">&quot;EXTRACTION_TIME&quot;</span>
+    <span class="n">BEAM</span> <span class="o">=</span> <span class="s2">&quot;BEAM&quot;</span></div>
+
+
+
+<span class="c1"># Filenames</span>
+<span class="n">MADX_SUFFIX</span> <span class="o">=</span> <span class="s2">&quot;.madx&quot;</span>
+<span class="n">MSI_SUMMARY_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;machine_settings</span><span class="si">{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="n">KNOB_DEFINITION_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_definition&quot;</span>
+<span class="n">KNOB_DEFINITION_TFS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KNOB_DEFINITION_ID</span><span class="si">}{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">KNOB_DEFINITION_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KNOB_DEFINITION_ID</span><span class="si">}{</span><span class="n">MADX_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="n">TRIM_HISTORY_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_trims&quot;</span>
+<span class="n">TRIM_HISTORY_TFS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TRIM_HISTORY_ID</span><span class="si">}{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">TRIM_HISTORY_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TRIM_HISTORY_ID</span><span class="si">}{</span><span class="n">MADX_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
 
            </div>

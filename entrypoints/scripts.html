@@ -61,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="other.html#model-creator">Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#mqt-extractor">MQT Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -79,6 +80,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#machine-settings-information">Machine Settings Information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -119,6 +121,19 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/harpy.html#kicker">Kicker</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/machine_data_extraction.html">Machine Data Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-knobs">LSA Knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-optics">LSA Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#lsa-utilities">LSA Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/machine_data_extraction.html#utils">Utils</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/model.html">Model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#manager">Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#constants">Constants</a></li>
@@ -137,11 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/nxcals.html">NXCALS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -234,6 +244,7 @@
 <li><a class="reference internal" href="#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li><a class="reference internal" href="#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li><a class="reference internal" href="#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li><a class="reference internal" href="#machine-settings-information">Machine Settings Information</a></li>
 <li><a class="reference internal" href="#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li><a class="reference internal" href="#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li><a class="reference internal" href="#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -770,6 +781,131 @@ are the same for both IPs.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="machine-settings-information">
+<span id="module-omc3.scripts.machine_settings_info"></span><h2>Machine Settings Information<a class="headerlink" href="#machine-settings-information" title="Link to this heading"></a></h2>
+<p>Prints an overview over the machine settings at a provided given time, or the current settings if
+no time is given.
+If an output path is given, all info will be written into tfs files,
+a summary can also be logged into console.</p>
+<p>Knob values can be extracted and the knob definition gathered.
+For brevity reasons, this data is not logged into the summary in the console.
+If a start time is given, the trim history for the given knobs can be written out as well.
+This data is also not logged.</p>
+<p>Can be run from command line, parameters as given in <code class="xref py py-meth docutils literal notranslate"><span class="pre">omc3.machine_settings_info.get_info()</span></code>.
+All gathered data is returned, if this function is called from python.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This functionality is only available from within the CERN network and requires installing omc3
+with the cern extra: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">omc3[cern]</span></code>.</p>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: machine_settings_info.py [-h] [--time TIME] [--timedelta TIMEDELTA] [--data_retrieval_days DELTA_DAYS]
+                                [--knobs KNOBS [KNOBS ...]] [--accel ACCEL] [--output_dir OUTPUT_DIR]
+                                [--knob_definitions] [--log]
+
+options:
+-h, --help            show this help message and exit
+--time TIME           At what time to extract the data.
+                      Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;.
+                      Timezone must be specified for ISO-format (e.g. +00:00 for UTC).
+--timedelta TIMEDELTA
+                        Add this timedelta to the given time. The format of timedelta is &#39;((\d+)(\w))+&#39; with the
+                        second token being one of s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months)
+                        e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs.
+                        A prefix &#39;_&#39; specifies a negative timedelta.
+                        This allows for easily getting the setting
+                        e.g. 2h ago: &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).
+--data_retrieval_days DELTA_DAYS
+                        Number of days to look back for data in NXCALS.
+--knobs KNOBS [KNOBS ...]
+                        List of knobnames. If `None` (or omitted) no knobs will be extracted.
+                        If it is just the string ``&#39;all&#39;``, all knobs will be extracted (can be slow).
+                        Use the string ``&#39;default&#39;`` for pre-defined knobs of interest.
+--accel ACCEL         Accelerator name.
+--output_dir OUTPUT_DIR
+                        Output directory.
+--knob_definitions    Set to extract knob definitions.
+--log                 Write summary into log.
+</pre></div>
+</div>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.scripts.machine_settings_info.get_info">
+<span class="sig-prename descclassname"><span class="pre">omc3.scripts.machine_settings_info.</span></span><span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo" title="omc3.machine_data_extraction.data_classes.MachineSettingsInfo"><span class="pre">MachineSettingsInfo</span></a></span></span><a class="reference internal" href="../_modules/omc3/scripts/machine_settings_info.html#get_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.scripts.machine_settings_info.get_info" title="Link to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Get info about <strong>Beamprocess</strong>, <strong>Optics</strong> and <strong>Knobs</strong> at given time.</p>
+</div></blockquote>
+<p><strong>Arguments:</strong></p>
+<p><em>--Optional--</em></p>
+<ul>
+<li><p><strong>accel</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Accelerator name.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">lhc</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>data_retrieval_days</strong> <em>(float)</em>:</p>
+<blockquote>
+<div><p>Number of days to look back for data in NXCALS.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">0.25</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>knob_definitions</strong>:</p>
+<blockquote>
+<div><p>Set to extract knob definitions.</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>knobs</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>List of knobnames. If <cite>None</cite> (or omitted) no knobs will be extracted.
+If it is just the string <code class="docutils literal notranslate"><span class="pre">'all'</span></code>, all knobs will be extracted (can
+be slow). Use the string <code class="docutils literal notranslate"><span class="pre">'default'</span></code> for pre-defined knobs of
+interest.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>log</strong>:</p>
+<blockquote>
+<div><p>Write summary into log (automatically done if no output path is
+given).</p>
+<p>action: <code class="docutils literal notranslate"><span class="pre">store_true</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>output_dir</strong> <em>(PathOrStr)</em>:</p>
+<blockquote>
+<div><p>Output directory.</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>time</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>At what time to extract the data. Accepts ISO-format (YYYY-MM-
+DDThh:mm:ss) with timezone, timestamp or ‘now’. Timezone must be
+specified for ISO-format (e.g. +00:00 for UTC).</p>
+<p>default: <code class="docutils literal notranslate"><span class="pre">now</span></code></p>
+</div></blockquote>
+</li>
+<li><p><strong>timedelta</strong> <em>(str)</em>:</p>
+<blockquote>
+<div><p>Add this timedelta to the given time. The format of timedelta is
+‘((d+)(w))+’ with the second token being one of s(seconds),
+m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,
+1d = 1day, 7m30s = 7 min 30 secs. A prefix ‘_’ specifies a negative
+timedelta. This allows for easily getting the setting e.g. 2h ago:
+‘_2h’ while setting the <cite>time</cite> argument to ‘now’ (default).</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Extracted Machine Settings Info.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo" title="omc3.machine_data_extraction.data_classes.MachineSettingsInfo">MachineSettingsInfo</a></p>
 </dd>
 </dl>
 </dd></dl>

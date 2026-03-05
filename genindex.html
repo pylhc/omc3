@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#tbt-converter">TbT Converter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#model-creator">Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#mqt-extractor">MQT Extractor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
 </ul>
 </li>
@@ -76,6 +77,7 @@
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#machine-settings-information">Machine Settings Information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
 <li class="toctree-l2"><a class="reference internal" href="entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
@@ -116,6 +118,19 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/harpy.html#kicker">Kicker</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="modules/machine_data_extraction.html">Machine Data Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#lsa-knobs">LSA Knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#lsa-optics">LSA Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#lsa-utilities">LSA Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/machine_data_extraction.html#utils">Utils</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="modules/model.html">Model</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/model.html#manager">Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/model.html#constants">Constants</a></li>
@@ -134,11 +149,6 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/model.html#sps-model-creator">SPS Model Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules/nxcals.html">NXCALS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/nxcals.html#knob-extraction">Knob Extraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/nxcals.html#extraction-of-mqt-knobs-from-nxcals">Extraction of MQT knobs from NXCALS.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/optics_measurements.html">Optics Measurements</a><ul>
@@ -274,12 +284,30 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime">AccDatetime (class in omc3.utils.time_tools)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.ACCEL">ACCEL (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.ACCEL">(omc3.machine_data_extraction.data_classes.TrimHistoryHeader attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator.accel">accel (omc3.model.model_creators.abstract_model_creator.ModelCreator attribute)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.AccElementTypes">AccElementTypes (class in omc3.model.accelerators.accelerator)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.Accelerator">Accelerator (class in omc3.model.accelerators.accelerator)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo.accelerator">accelerator (omc3.machine_data_extraction.data_classes.BeamProcessInfo attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.FillInfo.accelerator">(omc3.machine_data_extraction.data_classes.FillInfo attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.accelerator">(omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.OpticsInfo.accelerator">(omc3.machine_data_extraction.data_classes.OpticsInfo attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.accelerator">(omc3.machine_data_extraction.data_classes.TrimHistories attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AcceleratorDatetime">AcceleratorDatetime (in module omc3.utils.time_tools)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.AcceleratorDefinitionError">AcceleratorDefinitionError</a>
@@ -314,14 +342,14 @@
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.rdt.add_freq_to_header">add_freq_to_header() (in module omc3.optics_measurements.rdt)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.crdt.add_line_and_freq_to_header">add_line_and_freq_to_header() (in module omc3.optics_measurements.crdt)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.add_module_handler">add_module_handler() (in module omc3.utils.logging_tools)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_moving_average">add_moving_average() (in module omc3.tune_analysis.kick_file_modifiers)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_odr">add_odr() (in module omc3.tune_analysis.kick_file_modifiers)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.beta_from_amplitude.add_rescaled_beta_columns">add_rescaled_beta_columns() (in module omc3.optics_measurements.beta_from_amplitude)</a>
@@ -394,9 +422,33 @@
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.bad_bpms_summary">bad_bpms_summary() (in module omc3.scripts.bad_bpms_summary)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsHeader.BEAM">BEAM (omc3.machine_data_extraction.constants.NXCalsTfsHeader attribute)</a>
+</li>
       <li><a href="modules/model.html#omc3.model.accelerators.lhc.Lhc.beam">beam (omc3.model.accelerators.lhc.Lhc property)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.Accelerator.beam_direction">beam_direction (omc3.model.accelerators.accelerator.Accelerator property)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS">BEAMPROCESS (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.beamprocess">beamprocess (omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.OpticsInfo.beamprocess">(omc3.machine_data_extraction.data_classes.OpticsInfo attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.beamprocess">(omc3.machine_data_extraction.data_classes.TrimHistories attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.BEAMPROCESS">BEAMPROCESS (omc3.machine_data_extraction.data_classes.TrimHistoryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS_DESCRIPTION">BEAMPROCESS_DESCRIPTION (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.BEAMPROCESS_START">BEAMPROCESS_START (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_beamprocesses.beamprocess_to_dict">beamprocess_to_dict() (in module omc3.machine_data_extraction.lsa_beamprocesses)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.FillInfo.beamprocesses">beamprocesses (omc3.machine_data_extraction.data_classes.FillInfo attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo">BeamProcessInfo (class in omc3.machine_data_extraction.data_classes)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.model_creators.manager.CreatorType.BEST_KNOWLEDGE">BEST_KNOWLEDGE (omc3.model.model_creators.manager.CreatorType attribute)</a>
 </li>
@@ -406,6 +458,8 @@
         <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.FakeOdrOutput.beta">(omc3.tune_analysis.constants.FakeOdrOutput attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs.beta_amp_x">beta_amp_x (omc3.segment_by_segment.segments.SegmentDiffs property)</a>
 </li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs.beta_amp_y">beta_amp_y (omc3.segment_by_segment.segments.SegmentDiffs property)</a>
@@ -416,8 +470,6 @@
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.beta_from_amplitude.beta_from_amplitude">beta_from_amplitude() (in module omc3.optics_measurements.beta_from_amplitude)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/definitions.html#omc3.definitions.optics.OpticsMeasurement.beta_kmod_x">beta_kmod_x (omc3.definitions.optics.OpticsMeasurement property)</a>
 
       <ul>
@@ -458,7 +510,7 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.calc_k_from_iref">calc_k_from_iref() (in module omc3.nxcals.knob_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_utils.calc_k_from_iref">calc_k_from_iref() (in module omc3.machine_data_extraction.lsa_utils)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.beta_from_amplitude.calculate">calculate() (in module omc3.optics_measurements.beta_from_amplitude)</a>
 
@@ -496,6 +548,8 @@
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.calibrate">calibrate() (omc3.optics_measurements.data_models.InputFiles method)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo.category">category (omc3.machine_data_extraction.data_classes.BeamProcessInfo attribute)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.mock.cern_network_import">cern_network_import() (in module omc3.utils.mock)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.cern_utc_string">cern_utc_string() (omc3.utils.time_tools.AccDatetime method)</a>
@@ -511,6 +565,8 @@
       <li><a href="modules/plotting.html#omc3.plotting.utils.colors.change_ebar_alpha_for_axes">change_ebar_alpha_for_axes() (in module omc3.plotting.utils.colors)</a>
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.colors.change_ebar_alpha_for_line">change_ebar_alpha_for_line() (in module omc3.plotting.utils.colors)</a>
+</li>
+      <li><a href="modules/utils.html#omc3.utils.logging_tools.change_log_level">change_log_level() (in module omc3.utils.logging_tools)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.check_accelerator_instance">check_accelerator_instance() (omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator method)</a>
 
@@ -533,6 +589,10 @@
       <li><a href="modules/correction.html#omc3.correction.sequence_evaluation.check_varmap_file">check_varmap_file() (in module omc3.correction.sequence_evaluation)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.measure_optics.chromatic_beating">chromatic_beating() (in module omc3.optics_measurements.measure_optics)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionColumn.CIRCUIT">CIRCUIT (omc3.machine_data_extraction.data_classes.DefinitionColumn attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart.circuit">circuit (omc3.machine_data_extraction.data_classes.KnobPart attribute)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.stats.circular_error">circular_error() (in module omc3.utils.stats)</a>
 </li>
@@ -562,10 +622,10 @@
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpm_files_in_dir">collect_bad_bpm_files_in_dir() (in module omc3.scripts.bad_bpms_summary)</a>
 </li>
-      <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpms">collect_bad_bpms() (in module omc3.scripts.bad_bpms_summary)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_bad_bpms">collect_bad_bpms() (in module omc3.scripts.bad_bpms_summary)</a>
+</li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.collect_date">collect_date() (in module omc3.scripts.bad_bpms_summary)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.column">column (omc3.definitions.optics.ColumnsAndLabels property)</a>
@@ -575,6 +635,10 @@
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.phase.CompensationMode">CompensationMode (class in omc3.optics_measurements.phase)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.rdt.complex_secondary_lines">complex_secondary_lines() (in module omc3.optics_measurements.rdt)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.CONTEXT_CATEGORY">CONTEXT_CATEGORY (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo.context_category">context_category (omc3.machine_data_extraction.data_classes.BeamProcessInfo attribute)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickdataframe">convert_bbs_kickdataframe() (in module omc3.tune_analysis.kick_file_modifiers)</a>
 </li>
@@ -678,15 +742,25 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryColumn.DATA">DATA (omc3.machine_data_extraction.data_classes.TrimHistoryColumn attribute)</a>
+</li>
       <li><a href="modules/plotting.html#omc3.plotting.optics_measurements.utils.DataSet">DataSet (class in omc3.plotting.optics_measurements.utils)</a>
 </li>
-      <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.datetime">datetime (omc3.utils.time_tools.AccDatetime property)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.datetime">datetime (omc3.machine_data_extraction.nxcals_knobs.NXCALSResult attribute)</a>
+
+      <ul>
+        <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.datetime">(omc3.utils.time_tools.AccDatetime property)</a>
 </li>
+      </ul></li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.DebugMode">DebugMode (class in omc3.utils.logging_tools)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.lhc.Lhc.DEFAULT_CORRECTORS_DIR">DEFAULT_CORRECTORS_DIR (omc3.model.accelerators.lhc.Lhc attribute)</a>
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.write_madx_macros.define_observation_points_macros">define_observation_points_macros() (in module omc3.scripts.write_madx_macros)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionColumn">DefinitionColumn (class in omc3.machine_data_extraction.data_classes)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionHeader">DefinitionHeader (class in omc3.machine_data_extraction.data_classes)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.delta_column">delta_column (omc3.definitions.optics.ColumnsAndLabels property)</a>
 </li>
@@ -695,6 +769,8 @@
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.delta_masked_rms_header">delta_masked_rms_header (omc3.definitions.optics.ColumnsAndLabels property)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.delta_rms_header">delta_rms_header (omc3.definitions.optics.ColumnsAndLabels property)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo.description">description (omc3.machine_data_extraction.data_classes.BeamProcessInfo attribute)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.iforest.detect_anomalies">detect_anomalies() (in module omc3.optics_measurements.iforest)</a>
 </li>
@@ -716,14 +792,14 @@
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff">df_rel_diff() (in module omc3.optics_measurements.toolbox)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_diff_with_err">df_rel_diff_with_err() (in module omc3.optics_measurements.toolbox)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_rel_err_sum">df_rel_err_sum() (in module omc3.optics_measurements.toolbox)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum">df_sum() (in module omc3.optics_measurements.toolbox)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.toolbox.df_sum_with_err">df_sum_with_err() (in module omc3.optics_measurements.toolbox)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.diff_correction_column">diff_correction_column (omc3.definitions.optics.ColumnsAndLabels property)</a>
@@ -784,6 +860,12 @@
 </li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.end">end (omc3.segment_by_segment.segments.Segment attribute)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.END_TIME">END_TIME (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.end_time">end_time (omc3.machine_data_extraction.data_classes.TrimHistories attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.END_TIME">END_TIME (omc3.machine_data_extraction.data_classes.TrimHistoryHeader attribute)</a>
+</li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.phase.CompensationMode.EQUATION">EQUATION (omc3.optics_measurements.phase.CompensationMode attribute)</a>
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.optics_measurements.utils.DataSet.err">err (omc3.plotting.optics_measurements.utils.DataSet attribute)</a>
@@ -798,10 +880,10 @@
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.error_expected_column">error_expected_column (omc3.definitions.optics.ColumnsAndLabels property)</a>
 </li>
-      <li><a href="modules/model.html#omc3.model.accelerators.esrf.Esrf">Esrf (class in omc3.model.accelerators.esrf)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/model.html#omc3.model.accelerators.esrf.Esrf">Esrf (class in omc3.model.accelerators.esrf)</a>
+</li>
       <li><a href="modules/harpy.html#omc3.harpy.frequency.estimate_tunes">estimate_tunes() (in module omc3.harpy.frequency)</a>
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.evaluate">evaluate() (in module omc3.scripts.bad_bpms_summary)</a>
@@ -825,6 +907,8 @@
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.timber_extract.extract_between_times">extract_between_times() (in module omc3.tune_analysis.timber_extract)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator.EXTRACTED_MQTS_FILENAME">EXTRACTED_MQTS_FILENAME (omc3.model.model_creators.lhc_model_creator.LhcBestKnowledgeCreator attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsHeader.EXTRACTION_TIME">EXTRACTION_TIME (omc3.machine_data_extraction.constants.NXCalsTfsHeader attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -851,6 +935,10 @@
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.math.SegmentBoundaryConditions.f1010_amplitude">f1010_amplitude (omc3.segment_by_segment.math.SegmentBoundaryConditions attribute)</a>
 </li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.math.SegmentBoundaryConditions.f1010_phase">f1010_phase (omc3.segment_by_segment.math.SegmentBoundaryConditions attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionColumn.FACTOR">FACTOR (omc3.machine_data_extraction.data_classes.DefinitionColumn attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart.factor">factor (omc3.machine_data_extraction.data_classes.KnobPart attribute)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.FakeOdrOutput">FakeOdrOutput (class in omc3.tune_analysis.constants)</a>
 </li>
@@ -890,21 +978,33 @@
         <li><a href="modules/model.html#omc3.model.model_creators.lhc_model_creator.LhcSegmentCreator.files_to_check">(omc3.model.model_creators.lhc_model_creator.LhcSegmentCreator property)</a>
 </li>
       </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.FILL">FILL (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.fill">fill (omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.FILL">FILL (omc3.machine_data_extraction.data_classes.TrimHistoryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.FillInfo">FillInfo (class in omc3.machine_data_extraction.data_classes)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.MaxFilter.filter">filter() (omc3.utils.logging_tools.MaxFilter method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/plotting.html#omc3.plotting.spectrum.utils.filter_amps">filter_amps() (in module omc3.plotting.spectrum.utils)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.data_models.filter_for_dpp">filter_for_dpp() (in module omc3.optics_measurements.data_models)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/correction.html#omc3.correction.filters.filter_measurement">filter_measurement() (in module omc3.correction.filters)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.filter_non_existing_knobs">filter_non_existing_knobs() (in module omc3.machine_data_extraction.lsa_knobs)</a>
 </li>
       <li><a href="modules/correction.html#omc3.correction.filters.filter_response_index">filter_response_index() (in module omc3.correction.filters)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.find_called_files_with_tag">find_called_files_with_tag() (in module omc3.model.accelerators.accelerator)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.iotools.find_file">find_file() (in module omc3.utils.iotools)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.find_knob_names">find_knob_names() (in module omc3.machine_data_extraction.lsa_knobs)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.Accelerator.find_modifier">find_modifier() (omc3.model.accelerators.accelerator.Accelerator method)</a>
 
@@ -942,6 +1042,8 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.from_cern_utc_string">from_cern_utc_string() (omc3.utils.time_tools.AccDatetime class method)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo.from_java_beamprocess">from_java_beamprocess() (omc3.machine_data_extraction.data_classes.BeamProcessInfo class method)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.from_local">from_local() (omc3.utils.time_tools.AccDatetime class method)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.from_local_string">from_local_string() (omc3.utils.time_tools.AccDatetime class method)</a>
@@ -962,7 +1064,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="entrypoints/scripts.html#omc3.scripts.fake_measurement_from_model.generate">generate() (in module omc3.scripts.fake_measurement_from_model)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.mqt_extraction.generate_mqt_names">generate_mqt_names() (in module omc3.nxcals.mqt_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.mqt_extraction.generate_mqt_names">generate_mqt_names() (in module omc3.machine_data_extraction.mqt_extraction)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.generic.Generic">Generic (class in omc3.model.accelerators.generic)</a>
 </li>
@@ -979,6 +1081,8 @@
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_err_col">get_action_err_col() (in module omc3.tune_analysis.constants)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_action_label">get_action_label() (in module omc3.tune_analysis.constants)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_beamprocesses.get_active_beamprocess_at_time">get_active_beamprocess_at_time() (in module omc3.machine_data_extraction.lsa_beamprocesses)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data">get_ampdet_data() (in module omc3.tune_analysis.kick_file_modifiers)</a>
 </li>
@@ -1011,6 +1115,10 @@
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_bbq_col">get_bbq_col() (in module omc3.tune_analysis.constants)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_bbq_out_name">get_bbq_out_name() (in module omc3.tune_analysis.constants)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocess_from_name">get_beamprocess_from_name() (in module omc3.machine_data_extraction.lsa_beamprocesses)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_beamprocesses.get_beamprocess_with_fill_at_time">get_beamprocess_with_fill_at_time() (in module omc3.machine_data_extraction.lsa_beamprocesses)</a>
 </li>
       <li><a href="modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_beta_beat">get_beta_beat() (omc3.correction.response_twiss.TwissResponse method)</a>
 </li>
@@ -1064,7 +1172,7 @@
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.get_empty_df">get_empty_df() (in module omc3.scripts.bad_bpms_summary)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.get_energy">get_energy() (in module omc3.nxcals.knob_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.get_energy">get_energy() (in module omc3.machine_data_extraction.nxcals_knobs)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.Accelerator.get_exciter_bpm">get_exciter_bpm() (omc3.model.accelerators.accelerator.Accelerator method)</a>
 
@@ -1090,6 +1198,8 @@
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.timber_extract.get_fill_times">get_fill_times() (in module omc3.tune_analysis.timber_extract)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_beamprocesses.get_fills_with_beamprocesses">get_fills_with_beamprocesses() (in module omc3.machine_data_extraction.lsa_beamprocesses)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.outliers.get_filter_mask">get_filter_mask() (in module omc3.utils.outliers)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_fine_cut_header">get_fine_cut_header() (in module omc3.tune_analysis.constants)</a>
@@ -1106,6 +1216,8 @@
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_imbalance_w_err">get_imbalance_w_err() (in module omc3.scripts.kmod_lumi_imbalance)</a>
 </li>
+      <li><a href="entrypoints/scripts.html#omc3.scripts.machine_settings_info.get_info">get_info() (in module omc3.scripts.machine_settings_info)</a>
+</li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.get_ip_positions">get_ip_positions() (in module omc3.plotting.utils.annotations)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.lhc.Lhc.get_ips">get_ips() (omc3.model.accelerators.lhc.Lhc method)</a>
@@ -1114,11 +1226,15 @@
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_kick_out_name">get_kick_out_name() (in module omc3.tune_analysis.constants)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.get_knob_vals">get_knob_vals() (in module omc3.nxcals.knob_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.get_knob_definition">get_knob_definition() (in module omc3.machine_data_extraction.lsa_knobs)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.get_knob_vals">get_knob_vals() (in module omc3.machine_data_extraction.nxcals_knobs)</a>
 </li>
       <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.get_labels_with_odr_labels">get_labels_with_odr_labels() (in module omc3.plotting.plot_amplitude_detuning)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict.get_lambda">get_lambda() (omc3.optics_measurements.tune.TuneDict method)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.get_last_trim">get_last_trim() (in module omc3.machine_data_extraction.lsa_knobs)</a>
 </li>
       <li><a href="modules/correction.html#omc3.correction.arc_by_arc.get_left_right_pair">get_left_right_pair() (in module omc3.correction.arc_by_arc)</a>
 </li>
@@ -1184,7 +1300,7 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.colors.get_mpl_color">get_mpl_color() (in module omc3.plotting.utils.colors)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.mqt_extraction.get_mqt_vals">get_mqt_vals() (in module omc3.nxcals.mqt_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.mqt_extraction.get_mqt_vals">get_mqt_vals() (in module omc3.machine_data_extraction.mqt_extraction)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.get_my_logger_name">get_my_logger_name() (in module omc3.utils.logging_tools)</a>
 </li>
@@ -1212,6 +1328,8 @@
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_odr_header_err_coeff_corrected">get_odr_header_err_coeff_corrected() (in module omc3.tune_analysis.constants)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_optics.get_optics_for_beamprocess_at_time">get_optics_for_beamprocess_at_time() (in module omc3.machine_data_extraction.lsa_optics)</a>
+</li>
       <li><a href="entrypoints/plotting.html#omc3.plotting.plot_optics_measurements.get_optics_style_params">get_optics_style_params() (in module omc3.plotting.plot_optics_measurements)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_outlier_limit_header">get_outlier_limit_header() (in module omc3.tune_analysis.constants)</a>
@@ -1236,6 +1354,8 @@
 
       <ul>
         <li><a href="entrypoints/other.html#omc3.knob_extractor.get_params">(in module omc3.knob_extractor)</a>
+</li>
+        <li><a href="entrypoints/other.html#omc3.mqt_extractor.get_params">(in module omc3.mqt_extractor)</a>
 </li>
         <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.get_params">(in module omc3.plotting.plot_amplitude_detuning)</a>
 </li>
@@ -1278,7 +1398,7 @@
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.get_poly_fun">get_poly_fun() (in module omc3.tune_analysis.fitting_tools)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.get_raw_vars">get_raw_vars() (in module omc3.nxcals.knob_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.get_raw_vars">get_raw_vars() (in module omc3.machine_data_extraction.nxcals_knobs)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.get_readable_time_format">get_readable_time_format() (in module omc3.utils.time_tools)</a>
 </li>
@@ -1301,6 +1421,8 @@
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_time_col">get_time_col() (in module omc3.tune_analysis.constants)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_timestamp_index">get_timestamp_index() (in module omc3.tune_analysis.kick_file_modifiers)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.get_trim_history">get_trim_history() (in module omc3.machine_data_extraction.lsa_knobs)</a>
 </li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.get_tstart_head">get_tstart_head() (in module omc3.tune_analysis.constants)</a>
 </li>
@@ -1362,6 +1484,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.Head">Head (class in omc3.knob_extractor)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.headers">headers (omc3.machine_data_extraction.data_classes.TrimHistories attribute)</a>
+</li>
       <li><a href="entrypoints/analysis.html#omc3.hole_in_one.hole_in_one_entrypoint">hole_in_one_entrypoint() (in module omc3.hole_in_one)</a>
 </li>
       <li><a href="entrypoints/analysis.html#omc3.hole_in_one.hole_in_one_params">hole_in_one_params() (in module omc3.hole_in_one)</a>
@@ -1372,6 +1496,8 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.OpticsInfo.id">id (omc3.machine_data_extraction.data_classes.OpticsInfo attribute)</a>
+</li>
       <li><a href="modules/plotting.html#omc3.plotting.spectrum.utils.IdData">IdData (class in omc3.plotting.spectrum.utils)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.iforest.identify_bad_bpms">identify_bad_bpms() (in module omc3.optics_measurements.iforest)</a>
@@ -1458,9 +1584,19 @@
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.OpticsMeasurement.kick_y">kick_y (omc3.definitions.optics.OpticsMeasurement property)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryColumn.KNOB">KNOB (omc3.machine_data_extraction.constants.MSISummaryColumn attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.knob_definitions">knob_definitions (omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/nxcals.html#omc3.nxcals.mqt_extraction.knobs_to_madx">knobs_to_madx() (in module omc3.nxcals.mqt_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.KNOB_NAME">KNOB_NAME (omc3.machine_data_extraction.data_classes.TrimHistoryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.knob_to_output_name">knob_to_output_name() (in module omc3.machine_data_extraction.utils)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition">KnobDefinition (class in omc3.machine_data_extraction.data_classes)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart">KnobPart (class in omc3.machine_data_extraction.data_classes)</a>
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.HarpyReasons.KNOWN">KNOWN (omc3.scripts.bad_bpms_summary.HarpyReasons attribute)</a>
 </li>
@@ -1552,7 +1688,15 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo">MachineSettingsInfo (class in omc3.machine_data_extraction.data_classes)</a>
+</li>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.Col.madx">madx (omc3.knob_extractor.Col attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn.MADX">MADX (omc3.machine_data_extraction.constants.NXCalsTfsColumn attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionColumn.MADX_NAME">MADX_NAME (omc3.machine_data_extraction.data_classes.DefinitionColumn attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart.madx_name">madx_name (omc3.machine_data_extraction.data_classes.KnobPart attribute)</a>
 </li>
       <li><a href="entrypoints/other.html#omc3.madx_wrapper.madx_wrapper_params">madx_wrapper_params() (in module omc3.madx_wrapper)</a>
 </li>
@@ -1566,6 +1710,8 @@
 
       <ul>
         <li><a href="entrypoints/other.html#omc3.madx_wrapper.main">(in module omc3.madx_wrapper)</a>
+</li>
+        <li><a href="entrypoints/other.html#omc3.mqt_extractor.main">(in module omc3.mqt_extractor)</a>
 </li>
         <li><a href="entrypoints/plotting.html#omc3.plotting.plot_amplitude_detuning.main">(in module omc3.plotting.plot_amplitude_detuning)</a>
 </li>
@@ -1586,9 +1732,11 @@
       </ul></li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.make_top_legend">make_top_legend() (in module omc3.plotting.utils.annotations)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.madx_conversion.map_lsa_name_to_madx">map_lsa_name_to_madx() (in module omc3.machine_data_extraction.madx_conversion)</a>
+</li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.fitting_tools.map_odr_fit_to_planes">map_odr_fit_to_planes() (in module omc3.tune_analysis.fitting_tools)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.map_pc_name_to_madx">map_pc_name_to_madx() (in module omc3.nxcals.knob_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.madx_conversion.map_pc_name_to_madx">map_pc_name_to_madx() (in module omc3.machine_data_extraction.madx_conversion)</a>
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.lines.MarkerList">MarkerList (class in omc3.plotting.utils.lines)</a>
 </li>
@@ -1680,6 +1828,26 @@
 </li>
         <li><a href="entrypoints/other.html#module-omc3.knob_extractor">omc3.knob_extractor</a>
 </li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.constants">omc3.machine_data_extraction.constants</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.data_classes">omc3.machine_data_extraction.data_classes</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_beamprocesses">omc3.machine_data_extraction.lsa_beamprocesses</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_knobs">omc3.machine_data_extraction.lsa_knobs</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_optics">omc3.machine_data_extraction.lsa_optics</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_utils">omc3.machine_data_extraction.lsa_utils</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.madx_conversion">omc3.machine_data_extraction.madx_conversion</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.mqt_extraction">omc3.machine_data_extraction.mqt_extraction</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.nxcals_knobs">omc3.machine_data_extraction.nxcals_knobs</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.utils">omc3.machine_data_extraction.utils</a>
+</li>
         <li><a href="entrypoints/other.html#module-omc3.madx_wrapper">omc3.madx_wrapper</a>
 </li>
         <li><a href="modules/model.html#module-omc3.model.accelerators.accelerator">omc3.model.accelerators.accelerator</a>
@@ -1720,9 +1888,7 @@
 </li>
         <li><a href="entrypoints/other.html#module-omc3.model_creator">omc3.model_creator</a>
 </li>
-        <li><a href="modules/nxcals.html#module-omc3.nxcals.knob_extraction">omc3.nxcals.knob_extraction</a>
-</li>
-        <li><a href="modules/nxcals.html#module-omc3.nxcals.mqt_extraction">omc3.nxcals.mqt_extraction</a>
+        <li><a href="entrypoints/other.html#module-omc3.mqt_extractor">omc3.mqt_extractor</a>
 </li>
         <li><a href="modules/optics_measurements.html#module-omc3.optics_measurements.beta_from_amplitude">omc3.optics_measurements.beta_from_amplitude</a>
 </li>
@@ -1810,6 +1976,8 @@
 </li>
         <li><a href="entrypoints/scripts.html#module-omc3.scripts.linfile_clean">omc3.scripts.linfile_clean</a>
 </li>
+        <li><a href="entrypoints/scripts.html#module-omc3.scripts.machine_settings_info">omc3.scripts.machine_settings_info</a>
+</li>
         <li><a href="entrypoints/scripts.html#module-omc3.scripts.resync_bpms">omc3.scripts.resync_bpms</a>
 </li>
         <li><a href="entrypoints/scripts.html#module-omc3.scripts.update_nattune_in_linfile">omc3.scripts.update_nattune_in_linfile</a>
@@ -1867,6 +2035,10 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.move_ip_labels">move_ip_labels() (in module omc3.plotting.utils.annotations)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryColumn">MSISummaryColumn (class in omc3.machine_data_extraction.constants)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader">MSISummaryHeader (class in omc3.machine_data_extraction.constants)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1875,6 +2047,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.n_bpm_method">n_bpm_method() (in module omc3.optics_measurements.beta_from_phase)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo.name">name (omc3.machine_data_extraction.data_classes.BeamProcessInfo attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionHeader.NAME">NAME (omc3.machine_data_extraction.data_classes.DefinitionHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.name">name (omc3.machine_data_extraction.data_classes.KnobDefinition attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.OpticsInfo.name">(omc3.machine_data_extraction.data_classes.OpticsInfo attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.name">(omc3.machine_data_extraction.nxcals_knobs.NXCALSResult attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/model.html#omc3.model.accelerators.accelerator.Accelerator.NAME">NAME (omc3.model.accelerators.accelerator.Accelerator attribute)</a>
 
       <ul>
@@ -1897,12 +2081,8 @@
         <li><a href="modules/model.html#omc3.model.accelerators.sps.Sps.NAME">(omc3.model.accelerators.sps.Sps attribute)</a>
 </li>
       </ul></li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.NXCALSResult.name">name (omc3.nxcals.knob_extraction.NXCALSResult attribute)</a>
-
-      <ul>
-        <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.name">(omc3.segment_by_segment.segments.Segment attribute)</a>
+      <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.name">name (omc3.segment_by_segment.segments.Segment attribute)</a>
 </li>
-      </ul></li>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.name2lsa">name2lsa() (in module omc3.knob_extractor)</a>
 </li>
   </ul></td>
@@ -1912,6 +2092,8 @@
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.HarpyReasons.NANS">NANS (omc3.scripts.bad_bpms_summary.HarpyReasons attribute)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.ColumnsAndLabels.needs_plane">needs_plane (omc3.definitions.optics.ColumnsAndLabels attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.FillInfo.no">no (omc3.machine_data_extraction.data_classes.FillInfo attribute)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.Methods.NO_ERR">NO_ERR (omc3.optics_measurements.beta_from_phase.Methods attribute)</a>
 </li>
@@ -1939,7 +2121,11 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.AccDatetime.now">now() (omc3.utils.time_tools.AccDatetime class method)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.NXCALSResult">NXCALSResult (class in omc3.nxcals.knob_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult">NXCALSResult (class in omc3.machine_data_extraction.nxcals_knobs)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn">NXCalsTfsColumn (class in omc3.machine_data_extraction.constants)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsHeader">NXCalsTfsHeader (class in omc3.machine_data_extraction.constants)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2111,6 +2297,76 @@
 </li>
       </ul></li>
       <li>
+    omc3.machine_data_extraction.constants
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.constants">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.data_classes
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.data_classes">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.lsa_beamprocesses
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_beamprocesses">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.lsa_knobs
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_knobs">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.lsa_optics
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_optics">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.lsa_utils
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.lsa_utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.madx_conversion
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.madx_conversion">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.mqt_extraction
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.mqt_extraction">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.nxcals_knobs
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.nxcals_knobs">module</a>
+</li>
+      </ul></li>
+      <li>
+    omc3.machine_data_extraction.utils
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#module-omc3.machine_data_extraction.utils">module</a>
+</li>
+      </ul></li>
+      <li>
     omc3.madx_wrapper
 
       <ul>
@@ -2251,17 +2507,10 @@
 </li>
       </ul></li>
       <li>
-    omc3.nxcals.knob_extraction
+    omc3.mqt_extractor
 
       <ul>
-        <li><a href="modules/nxcals.html#module-omc3.nxcals.knob_extraction">module</a>
-</li>
-      </ul></li>
-      <li>
-    omc3.nxcals.mqt_extraction
-
-      <ul>
-        <li><a href="modules/nxcals.html#module-omc3.nxcals.mqt_extraction">module</a>
+        <li><a href="entrypoints/other.html#module-omc3.mqt_extractor">module</a>
 </li>
       </ul></li>
       <li>
@@ -2348,6 +2597,8 @@
         <li><a href="modules/optics_measurements.html#module-omc3.optics_measurements.measure_optics">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     omc3.optics_measurements.phase
 
@@ -2355,8 +2606,6 @@
         <li><a href="modules/optics_measurements.html#module-omc3.optics_measurements.phase">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     omc3.optics_measurements.rdt
 
@@ -2568,6 +2817,13 @@
 </li>
       </ul></li>
       <li>
+    omc3.scripts.machine_settings_info
+
+      <ul>
+        <li><a href="entrypoints/scripts.html#module-omc3.scripts.machine_settings_info">module</a>
+</li>
+      </ul></li>
+      <li>
     omc3.scripts.resync_bpms
 
       <ul>
@@ -2739,7 +2995,25 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.OOMFormatter">OOMFormatter (class in omc3.plotting.utils.annotations)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.OPTICS">OPTICS (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionHeader.OPTICS">(omc3.machine_data_extraction.data_classes.DefinitionHeader attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.optics">optics (omc3.machine_data_extraction.data_classes.KnobDefinition attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.optics">(omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.OPTICS">OPTICS (omc3.machine_data_extraction.data_classes.TrimHistoryHeader attribute)</a>
+</li>
       <li><a href="entrypoints/analysis.html#omc3.hole_in_one.optics_params">optics_params() (in module omc3.hole_in_one)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.OPTICS_START">OPTICS_START (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.OpticsInfo">OpticsInfo (class in omc3.machine_data_extraction.data_classes)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.OpticsMeasurement">OpticsMeasurement (class in omc3.definitions.optics)</a>
 </li>
@@ -2753,6 +3027,10 @@
 </li>
       <li><a href="modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator.output_dir">output_dir (omc3.model.model_creators.abstract_model_creator.ModelCreator attribute)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionHeader.OUTPUT_NAME">OUTPUT_NAME (omc3.machine_data_extraction.data_classes.DefinitionHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.output_name">output_name (omc3.machine_data_extraction.data_classes.KnobDefinition property)</a>
+</li>
       <li><a href="modules/plotting.html#omc3.plotting.spectrum.utils.output_plot">output_plot() (in module omc3.plotting.spectrum.utils)</a>
 </li>
   </ul></td>
@@ -2765,6 +3043,8 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.time_tools.parse_time">parse_time() (in module omc3.utils.time_tools)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.parts">parts (omc3.machine_data_extraction.data_classes.KnobDefinition attribute)</a>
+</li>
       <li><a href="modules/model.html#omc3.model.constants.Fetcher.PATH">PATH (omc3.model.constants.Fetcher attribute)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.iotools.PathOrStr">PathOrStr (class in omc3.utils.iotools)</a>
@@ -2773,7 +3053,9 @@
 </li>
       <li><a href="modules/utils.html#omc3.utils.iotools.PathOrStrOrDict">PathOrStrOrDict (class in omc3.utils.iotools)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.NXCALSResult.pc_name">pc_name (omc3.nxcals.knob_extraction.NXCALSResult attribute)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn.PC_NAME">PC_NAME (omc3.machine_data_extraction.constants.NXCalsTfsColumn attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.pc_name">pc_name (omc3.machine_data_extraction.nxcals_knobs.NXCALSResult attribute)</a>
 </li>
       <li><a href="modules/model.html#omc3.model.accelerators.petra.Petra">Petra (class in omc3.model.accelerators.petra)</a>
 </li>
@@ -2831,10 +3113,10 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.windows.PlotWidget">PlotWidget (class in omc3.plotting.utils.windows)</a>
 </li>
-      <li><a href="modules/definitions.html#omc3.definitions.optics.POSITION_COLUMN_MAPPING">POSITION_COLUMN_MAPPING (in module omc3.definitions.optics)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/definitions.html#omc3.definitions.optics.POSITION_COLUMN_MAPPING">POSITION_COLUMN_MAPPING (in module omc3.definitions.optics)</a>
+</li>
       <li><a href="modules/model.html#omc3.model.model_creators.abstract_model_creator.ModelCreator.post_run">post_run() (omc3.model.model_creators.abstract_model_creator.ModelCreator method)</a>
 </li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs.PREFIX">PREFIX (omc3.segment_by_segment.segments.SegmentDiffs attribute)</a>
@@ -3065,8 +3347,6 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.set_yaxis_label">set_yaxis_label() (in module omc3.plotting.utils.annotations)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/plotting.html#omc3.plotting.utils.windows.SimpleTabWindow.show">show() (omc3.plotting.utils.windows.SimpleTabWindow method)</a>
 
       <ul>
@@ -3075,6 +3355,8 @@
       </ul></li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.show_ir">show_ir() (in module omc3.plotting.utils.annotations)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="entrypoints/plotting.html#omc3.plotting.plot_checked_corrections.show_plots">show_plots() (in module omc3.plotting.plot_checked_corrections)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.contexts.silence">silence() (in module omc3.utils.contexts)</a>
@@ -3103,11 +3385,25 @@
 </li>
       <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.start">start (omc3.segment_by_segment.segments.Segment attribute)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.START_TIME">START_TIME (omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo.start_time">start_time (omc3.machine_data_extraction.data_classes.BeamProcessInfo attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.FillInfo.start_time">(omc3.machine_data_extraction.data_classes.FillInfo attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.OpticsInfo.start_time">(omc3.machine_data_extraction.data_classes.OpticsInfo attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.start_time">(omc3.machine_data_extraction.data_classes.TrimHistories attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader.START_TIME">START_TIME (omc3.machine_data_extraction.data_classes.TrimHistoryHeader attribute)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.logging_tools.stream_handler">stream_handler() (in module omc3.utils.logging_tools)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.misc.StrEnum">StrEnum (class in omc3.utils.misc)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.strip_i_meas">strip_i_meas() (in module omc3.nxcals.knob_extraction)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.strip_i_meas">strip_i_meas() (in module omc3.machine_data_extraction.utils)</a>
 </li>
       <li><a href="modules/utils.html#omc3.utils.iotools.strip_quotes">strip_quotes() (in module omc3.utils.iotools)</a>
 </li>
@@ -3147,15 +3443,51 @@
 </li>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.Head.time">time (omc3.knob_extractor.Head attribute)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryColumn.TIME">TIME (omc3.machine_data_extraction.constants.MSISummaryColumn attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader.TIME">(omc3.machine_data_extraction.constants.MSISummaryHeader attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn.TIME">(omc3.machine_data_extraction.constants.NXCalsTfsColumn attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.time">time (omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryColumn.TIME">TIME (omc3.machine_data_extraction.data_classes.TrimHistoryColumn attribute)</a>
+</li>
       <li><a href="modules/utils.html#omc3.utils.contexts.timeit">timeit() (in module omc3.utils.contexts)</a>
 </li>
-      <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.NXCALSResult.timestamp">timestamp (omc3.nxcals.knob_extraction.NXCALSResult attribute)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryColumn.TIMESTAMP">TIMESTAMP (omc3.machine_data_extraction.constants.MSISummaryColumn attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn.TIMESTAMP">(omc3.machine_data_extraction.constants.NXCalsTfsColumn attribute)</a>
+</li>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryColumn.TIMESTAMP">(omc3.machine_data_extraction.data_classes.TrimHistoryColumn attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.timestamp_to_utciso">timestamp_to_utciso() (in module omc3.machine_data_extraction.utils)</a>
 </li>
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.rdt.to_complex">to_complex() (in module omc3.optics_measurements.rdt)</a>
 </li>
+      <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.to_input_string">to_input_string() (omc3.segment_by_segment.segments.Segment method)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.to_madx">to_madx() (omc3.machine_data_extraction.data_classes.KnobDefinition method)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_madx">(omc3.machine_data_extraction.nxcals_knobs.NXCALSResult method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_series">to_series() (omc3.machine_data_extraction.nxcals_knobs.NXCALSResult method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.to_input_string">to_input_string() (omc3.segment_by_segment.segments.Segment method)</a>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.to_tfs">to_tfs() (omc3.machine_data_extraction.data_classes.KnobDefinition method)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_tfs">(omc3.machine_data_extraction.nxcals_knobs.NXCALSResult class method)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.to_tfs_dict">to_tfs_dict() (omc3.machine_data_extraction.data_classes.TrimHistories method)</a>
 </li>
       <li><a href="modules/definitions.html#omc3.definitions.optics.OpticsMeasurement.total_phase_driven_x">total_phase_driven_x (omc3.definitions.optics.OpticsMeasurement property)</a>
 </li>
@@ -3169,6 +3501,24 @@
 </li>
       <li><a href="modules/plotting.html#omc3.plotting.utils.annotations.transpose_legend_order">transpose_legend_order() (in module omc3.plotting.utils.annotations)</a>
 </li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.trim_histories">trim_histories (omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.trim_tuple_to_tfs">trim_tuple_to_tfs() (omc3.machine_data_extraction.data_classes.TrimHistories method)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories">TrimHistories (class in omc3.machine_data_extraction.data_classes)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryColumn">TrimHistoryColumn (class in omc3.machine_data_extraction.data_classes)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader">TrimHistoryHeader (class in omc3.machine_data_extraction.data_classes)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo.trims">trims (omc3.machine_data_extraction.data_classes.MachineSettingsInfo attribute)</a>
+
+      <ul>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.trims">(omc3.machine_data_extraction.data_classes.TrimHistories attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.try_to_acquire_data">try_to_acquire_data() (in module omc3.machine_data_extraction.utils)</a>
+</li>
       <li><a href="modules/tune_analysis.html#omc3.tune_analysis.constants.AmpDetData.tune">tune (omc3.tune_analysis.constants.AmpDetData attribute)</a>
 </li>
       <li><a href="entrypoints/scripts.html#omc3.scripts.bad_bpms_summary.HarpyReasons.TUNE_CLEAN">TUNE_CLEAN (omc3.scripts.bad_bpms_summary.HarpyReasons attribute)</a>
@@ -3180,6 +3530,10 @@
       <li><a href="modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict">TuneDict (class in omc3.optics_measurements.tune)</a>
 </li>
       <li><a href="modules/correction.html#omc3.correction.response_twiss.TwissResponse">TwissResponse (class in omc3.correction.response_twiss)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionColumn.TYPE">TYPE (omc3.machine_data_extraction.data_classes.DefinitionColumn attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart.type">type (omc3.machine_data_extraction.data_classes.KnobPart attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -3218,10 +3572,16 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="entrypoints/other.html#omc3.knob_extractor.Col.value">value (omc3.knob_extractor.Col attribute)</a>
+</li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryColumn.VALUE">VALUE (omc3.machine_data_extraction.constants.MSISummaryColumn attribute)</a>
 
       <ul>
-        <li><a href="modules/nxcals.html#omc3.nxcals.knob_extraction.NXCALSResult.value">(omc3.nxcals.knob_extraction.NXCALSResult attribute)</a>
+        <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn.VALUE">(omc3.machine_data_extraction.constants.NXCalsTfsColumn attribute)</a>
 </li>
+      </ul></li>
+      <li><a href="modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.value">value (omc3.machine_data_extraction.nxcals_knobs.NXCALSResult attribute)</a>
+
+      <ul>
         <li><a href="modules/segment_by_segment.html#omc3.segment_by_segment.math.Measurement.value">(omc3.segment_by_segment.math.Measurement attribute)</a>
 </li>
       </ul></li>
