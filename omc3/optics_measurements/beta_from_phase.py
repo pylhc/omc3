@@ -402,7 +402,7 @@ def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: str|Path) -> 
             mask = twiss_full.index.str.contains(reg)
 
         twiss_full.loc[mask, "dK1"] = (errdefs.loc[indx, "dK1"] * twiss_full.loc[mask, "K1L"]) ** 2
-        twiss_full.loc[mask, "dX"] = errdefs.loc[indx, "dX"]*2
+        twiss_full.loc[mask, "dX"] = errdefs.loc[indx, "dX"] ** 2
         if errdefs.loc[indx, "MAINFIELD"] == "BPM":
             twiss_full.loc[mask, "BPMdS"] = errdefs.loc[indx, "dS"]**2
         else:
