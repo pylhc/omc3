@@ -372,9 +372,14 @@ def n_bpm_method(
     # Drop BPMs where the estimated error exceeds both the measured and model beta.
     # Keeping at least one comparison to β_mdl guards against cases where β_meas
     # itself is already severely distorted somehow.
-    too_high_error_mask = np.logical_or(beta_df[f"{BETA}{plane}"] > beta_df[f"{ERR}{BETA}{plane}"],
-                                        beta_df[f"{BETA}{plane}{MDL}"] > beta_df[f"{ERR}{BETA}{plane}"])
+    too_high_error_mask = np.logical_or(
+        beta_df[f"{BETA}{plane}"] > beta_df[f"{ERR}{BETA}{plane}"],
+        beta_df[f"{BETA}{plane}{MDL}"] > beta_df[f"{ERR}{BETA}{plane}"],
+    )
     beta_df = beta_df.loc[too_high_error_mask]
+
+    # We add the "DELTA{...}" columns as deviations from the model
+    # values and then we return
     beta_df = _calc_and_add_delta_columns(beta_df, plane)
     return beta_df, error_method
 
