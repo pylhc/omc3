@@ -502,8 +502,12 @@ def calculate_beta_alpha_from_single_combination(
     avg_cot_meas = (cot_meas[ix] + cot_meas[iy]) / 2
     alfa_i = 0.5 * (denomalf * dif_cot_meas / dif_cot_model - 2 * avg_cot_meas)
 
-    lng = len(outer_elmts)
-    line_length = 4 * len(outer_elmts.index) + 2 * m + 1
+    lng: int = len(outer_elmts)
+
+    # Now the Jacobian rows for beta and alpha
+
+    # Total length = (2m + 1) phase entries + 4 * n_elements systematic error entries
+    line_length: int = 4 * len(outer_elmts.index) + 2 * m + 1
     outer_elmts_bet = outer_elmts.loc[:, "BETA"].to_numpy()
     outer_el_k2 = outer_elmts.loc[:, "K2L"].to_numpy()
     betaline = np.zeros(line_length)
