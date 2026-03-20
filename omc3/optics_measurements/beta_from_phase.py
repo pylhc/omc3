@@ -900,6 +900,7 @@ def three_bpm_method(
 
 
 def _calc_and_add_delta_columns(beta_df: pd.DataFrame, plane: str) -> pd.DataFrame:
+    """Append beta-beat and alpha-beat columns to dataframe, for both values and errors."""
     beta_df[f"{DELTA}{BETA}{plane}"] = df_rel_diff(beta_df, f"{BETA}{plane}", f"{BETA}{plane}{MDL}")
     beta_df[f"{ERR}{DELTA}{BETA}{plane}"] = df_ratio(beta_df, f"{ERR}{BETA}{plane}", f"{BETA}{plane}{MDL}")
     beta_df[f"{DELTA}{ALPHA}{plane}"] = df_diff(beta_df, f"{ALPHA}{plane}", f"{ALPHA}{plane}{MDL}")
@@ -921,15 +922,35 @@ def _tilt_slice_matrix(
     y y y y y       y z a b
     z z z z z       z a b c
 
-    Careful this mutates the provided data. Be sure to provide a mutable
-    array, ideally a copy, and not a view. In pandas 3.x passing a view
-    will error.
+    After tilting, the matrix is rolled by ``slice_shift`` rows so that the diagonal
+    entry (where row index == column index, i.e. the probed BPM itself) lands at row
+    ``slice_shift``. Only the first ``slice_width`` rows are returned, giving a local
+    neighbourhood of BPMs centred on the probed one.
+
+    The ``tune`` argument corrects for the phase wrap at the ring boundary: entries
+    that cross the 0->2π discontinuity are shifted by ±tune*2π to keep phases
+    monotonically increasing (applied before tilting).
+
+    .. note::
+        Careful: this mutates the provided data. Be sure to provide a mutable
+        array, ideally a copy and not a view. In pandas 3.x passing a view
+        will error.
+
+    Args:
+        matrix: (n_bpms * n_bpms) phase advance matrix to tilt.
+        slice_shift: row index of the probed BPM in the output (= half-window size).
+        slice_width: number of rows to return (= window size, typically 2*slice_shift + 1).
+        tune: fractional tune, used to correct phases across the ring boundary.
+
+    Returns:
+        (slice_width * n_bpms) array with phase advances in a rolling neighbourhood.
     """
     invrange = matrix.shape[0] - 1 - np.arange(matrix.shape[0])
-    matrix[matrix.shape[0] - slice_shift:, :slice_shift] += tune
-    matrix[:slice_shift, matrix.shape[1] - slice_shift:] -= tune
-    return np.roll(matrix[np.arange(matrix.shape[0]), circulant(invrange)[invrange]],
-                   slice_shift, axis=0)[:slice_width]
+    matrix[matrix.shape[0] - slice_shift :, :slice_shift] += tune
+    matrix[:slice_shift, matrix.shape[1] - slice_shift :] -= tune
+    return np.roll(
+        matrix[np.arange(matrix.shape[0]), circulant(invrange)[invrange]], slice_shift, axis=0
+    )[:slice_width]
 
 
 def _get_filtered_model_df(meas_input: DotDict, phase: pd.DataFrame, plane: str, best: bool = False):
