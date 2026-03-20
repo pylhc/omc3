@@ -513,16 +513,25 @@ def calculate_beta_alpha_from_single_combination(
     betaline = np.zeros(line_length)
     alfaline = np.zeros(line_length)
 
-    # slice
-    mloc = outer_elmts.index.get_loc(probed_bpm_name)
-    xloc_r = outer_elmts.index.get_loc(outer_meas_phase_adv.index[ix])
-    yloc_r = outer_elmts.index.get_loc(outer_meas_phase_adv.index[iy])
+    # Locate each BPM and the probed BPM in the element list, then derive the
+    # contiguous slices of elements that lie between each reference BPM and the
+    # probed BPM.  These slices are where systematic errors contribute to the
+    # phase advance (and then β and α) via the Jacobian.
+    mloc: int = outer_elmts.index.get_loc(probed_bpm_name)  # at m is the probed BPM
+    xloc_r: int = outer_elmts.index.get_loc(outer_meas_phase_adv.index[ix])  # at x is first BPM in the triplet
+    yloc_r: int = outer_elmts.index.get_loc(outer_meas_phase_adv.index[iy])  # at y is last BPM in the triplet
+
+    # Compute sin²(φ_mdl_bpmx − φ_mdl_1) and sin²(φ_mdl_bpmy − φ_mdl_1)
+    # which shows up in the denominator of i.e. Eq (20)
     denom_sinx = sin_squared_elements[xloc_r, m]
     denom_siny = sin_squared_elements[yloc_r, m]
+    # Element index ranges between each BPM in the triplet and the probed BPM
     xmloc1, xmloc2 = min(xloc_r, mloc), max(xloc_r, mloc)
     ymloc1, ymloc2 = min(yloc_r, mloc), max(yloc_r, mloc)
 
-    # get betas and sin for the elements in the slice
+    # Get betas and sin for the elements in the slices: slice the
+    # pre-computed sin² matrix and model arrays to the elements
+    # in each [reference BPM <-> probed BPM] interval
     elem_ph_xa = sin_squared_elements[xmloc1:xmloc2, ix]
     elem_ph_ya = sin_squared_elements[ymloc1:ymloc2, iy]
     elem_beta_xa = outer_elmts_bet[xmloc1:xmloc2]
@@ -530,42 +539,53 @@ def calculate_beta_alpha_from_single_combination(
     elem_k2_xa = outer_el_k2[xmloc1:xmloc2]
     elem_k2_ya = outer_el_k2[ymloc1:ymloc2]
 
+    # Common factor for all systematic error partial derivatives in the big
+    # sum term of Eq (20). Here this also includes the denominator term.
     bet_sin_ix = elem_ph_xa * elem_beta_xa / (denom_sinx * denom)
     bet_sin_iy = elem_ph_ya * elem_beta_ya / (denom_siny * denom)
 
-    off1 = range_of_bpms
-    off2 = range_of_bpms + lng
-    off3 = range_of_bpms + 2 * lng
-    off4 = range_of_bpms + 3 * lng
+    # Index offsets into betaline/alfaline for each error source group.
+    # Phase entries occupy [0 : range_of_bpms], systematic errors follow
+    # in the blocks of lng
+    off1: int = range_of_bpms            # dK1  block
+    off2: int = range_of_bpms + lng      # dX   block
+    off3: int = range_of_bpms + 2 * lng  # KdS  block  (forward misalignment)
+    off4: int = range_of_bpms + 3 * lng  # mKdS block  (upstream-drift misalignment)
+
+    # Now below is the big summation over the contributing terms for the errors,
+    # incl. phase uncertainty and systematic errors.
 
     # apply phase uncertainty
     betaline[ix] = -1 / (denom_sinx * denom)
     betaline[iy] = 1 / (denom_siny * denom)
-    # apply quadrupolar field uncertainty (quadrupole longitudinal misalignment already included)
-    betaline[xmloc1 + off1:xmloc2 + off1] += fac1 * bet_sin_ix
-    betaline[ymloc1 + off1:ymloc2 + off1] += fac2 * bet_sin_iy
+    # apply quadrupolar field uncertainty
+    betaline[xmloc1 + off1 :xmloc2 + off1] += fac1 * bet_sin_ix
+    betaline[ymloc1 + off1 :ymloc2 + off1] += fac2 * bet_sin_iy
     # apply sextupole transverse misalignment
-    betaline[xmloc1 + off2: xmloc2 + off2] += fac1 * elem_k2_xa * bet_sin_ix
-    betaline[ymloc1 + off2: ymloc2 + off2] += fac2 * elem_k2_ya * bet_sin_iy
+    betaline[xmloc1 + off2 : xmloc2 + off2] += fac1 * elem_k2_xa * bet_sin_ix
+    betaline[ymloc1 + off2 : ymloc2 + off2] += fac2 * elem_k2_ya * bet_sin_iy
     # apply quadrupole longitudinal misalignments
-    betaline[xmloc1 + off3: xmloc2 + off3] += fac1 * bet_sin_ix
-    betaline[ymloc1 + off3: ymloc2 + off3] += fac2 * bet_sin_iy
-    betaline[xmloc1 + off4: xmloc2 + off4] -= fac1 * bet_sin_ix
-    betaline[ymloc1 + off4: ymloc2 + off4] -= fac2 * bet_sin_iy
+    betaline[xmloc1 + off3 : xmloc2 + off3] += fac1 * bet_sin_ix
+    betaline[ymloc1 + off3 : ymloc2 + off3] += fac2 * bet_sin_iy
+    betaline[xmloc1 + off4 : xmloc2 + off4] -= fac1 * bet_sin_ix
+    betaline[ymloc1 + off4 : ymloc2 + off4] -= fac2 * bet_sin_iy
+
+    # The same thing is done for the alfaline
+
     # apply phase uncertainty
     alfaline[ix] = -1 / (denom_sinx * denom * betmdl1) * denomalf + 1 / denom_sinx
     alfaline[iy] = 1 / (denom_siny * denom * betmdl1) * denomalf + 1 / denom_siny
-    # apply quadrupolar field uncertainty (quadrupole longitudinal misalignment already included)
-    alfaline[xmloc1 + off1:xmloc2 + off1] += fac1 * (.5 * (bet_sin_ix * denomalf + bet_sin_ix / betmdl1 * dif_cot_meas))
-    alfaline[ymloc1 + off1:ymloc2 + off1] += fac2 * (.5 * (bet_sin_iy * denomalf + bet_sin_iy / betmdl1 * dif_cot_meas))
+    # apply quadrupolar field uncertainty
+    alfaline[xmloc1 + off1 :xmloc2 + off1] += fac1 * (.5 * (bet_sin_ix * denomalf + bet_sin_ix / betmdl1 * dif_cot_meas))
+    alfaline[ymloc1 + off1 :ymloc2 + off1] += fac2 * (.5 * (bet_sin_iy * denomalf + bet_sin_iy / betmdl1 * dif_cot_meas))
     # apply sextupole transverse misalignment
-    alfaline[xmloc1 + off2: xmloc2 + off2] += fac1 * elem_k2_xa * bet_sin_ix
-    alfaline[ymloc1 + off2: ymloc2 + off2] += fac2 * elem_k2_ya * bet_sin_iy
+    alfaline[xmloc1 + off2 : xmloc2 + off2] += fac1 * elem_k2_xa * bet_sin_ix
+    alfaline[ymloc1 + off2 : ymloc2 + off2] += fac2 * elem_k2_ya * bet_sin_iy
     # apply quadrupole longitudinal misalignments
-    alfaline[xmloc1 + off3: xmloc2 + off3] += fac1 * (.5 * elem_k2_xa * (bet_sin_ix * denomalf + bet_sin_ix / betmdl1 * dif_cot_meas))
-    alfaline[ymloc1 + off3: ymloc2 + off3] += fac2 * (.5 * elem_k2_ya * (bet_sin_iy * denomalf + bet_sin_iy / betmdl1 * dif_cot_meas))
-    alfaline[xmloc1 + off4: xmloc2 + off4] -= fac1 * (.5 * (bet_sin_ix * denomalf + bet_sin_ix / betmdl1 * dif_cot_meas))
-    alfaline[ymloc1 + off4: ymloc2 + off4] -= fac2 * (.5 * (bet_sin_iy * denomalf + bet_sin_iy / betmdl1 * dif_cot_meas))
+    alfaline[xmloc1 + off3 : xmloc2 + off3] += fac1 * (.5 * elem_k2_xa * (bet_sin_ix * denomalf + bet_sin_ix / betmdl1 * dif_cot_meas))
+    alfaline[ymloc1 + off3 : ymloc2 + off3] += fac2 * (.5 * elem_k2_ya * (bet_sin_iy * denomalf + bet_sin_iy / betmdl1 * dif_cot_meas))
+    alfaline[xmloc1 + off4 : xmloc2 + off4] -= fac1 * (.5 * (bet_sin_ix * denomalf + bet_sin_ix / betmdl1 * dif_cot_meas))
+    alfaline[ymloc1 + off4 : ymloc2 + off4] -= fac2 * (.5 * (bet_sin_iy * denomalf + bet_sin_iy / betmdl1 * dif_cot_meas))
 
     return beta_i, alfa_i, betaline, alfaline
 
