@@ -65,10 +65,10 @@ if TYPE_CHECKING:
 
 LOGGER = logging_tools.get_logger(__name__)
 
-EPSILON = 1.0E-16
-ZERO_THRESHOLD = 1e-2
-COT_THRESHOLD = 15.9
-RCOND = 1.0e-14
+EPSILON: float = 1.0E-16
+ZERO_THRESHOLD: float = 1e-2
+COT_THRESHOLD: float = 15.9
+RCOND: float = 1.0e-14
 
 
 class Methods:
