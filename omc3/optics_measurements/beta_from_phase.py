@@ -144,9 +144,9 @@ def n_bpm_method(
     ``calculate_beta_alpha_from_single_combination``. The estimates of all combinations
     are combined with covariant weighting using the analytical covariance matrix:
 
-        V_β = J · Σ · Jᵀ
+        V_β = T · Σ · Tᵀ
 
-    where J is the Jacobian of (βi, ⍺i) with respect to all error sources, and Σ is the
+    where T is the Jacobian of (βi, ⍺i) with respect to all error sources, and Σ is the
     diagonal matrix of errors sources variances (phase noise + systematic lattice errors).
     See ``_covariant_weighting`` for the combination step.
 
@@ -237,8 +237,7 @@ def n_bpm_method(
         # fmt: on
 
         # sin²(φ_l - φ_mdl_j): (n_elements × n_bpms_window) matrix of squared sines of the
-        # model phase advance from every element l to every window BPM j. These terms will
-        # appear in the denominator of Eq (20) of the reference paper.
+        # model phase advance from every element l to every window BPM j.
         sin_squared_elements = np.square(
             np.sin(outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :])
         )
@@ -460,8 +459,21 @@ def calculate_beta_alpha_from_single_combination(
 ) -> tuple[float, float, np.ndarray, np.ndarray]:
     """
     Computes β₁ and α₁ for one BPM triplet (probed BPM 1, reference BPMs x and y)
-    and builds the corresponding rows of the Jacobian matrices J_β and J_α used for
+    and builds the corresponding rows of the Jacobian matrices T_β and T_α used for
     covariance propagation in ``n_bpm_method``.
+
+    Note about the Jacobian structure (Eq. 22): T = (T^φ  T^K  T^s)
+    The full Jacobian is split into three blocks: phase uncertainty T^φ,
+    quadrupole field errors T^K and BPM longitudinal misalignments T^s.
+    Sextupole horizontal misalignments enter into T^K via Eq (13-14) as
+    effective quadrupole errors due to feed-down. Here K2L comes into play.
+    Longitudinal quadrupole misalignments are decomposed into two thin-lens
+    elements at the quadrupole edges (section II.B, Fig. 3): forward (KdS)
+    and backward (mKdS).
+
+    The returned `betaline` and `alfaline` are 1D vectors of length (2m+1, 4*n_elements),
+    each one being a row of T_β / T_α. Their layout matches the `diag` vector in
+    ``n_bpm_method`` (see below for the blocks).
 
     Args:
         c: tuple, pair of relative indices (ix, iy) for the two reference BPMs of this triplet.
@@ -489,14 +501,14 @@ def calculate_beta_alpha_from_single_combination(
     m = int(n_bpms / 2)  # half window: probed BPM has m neighbors on each side
     ix = c[0]  # index of BPM i
     iy = c[1]  # index of BPM y
-    fac1, fac2 = -np.sign(c[0] - m), np.sign(c[1] - m)
     dif_cot_model = cot_model[ix] - cot_model[iy]
 
-    # Beta estimate at probed BPM for this triplet
+    # Beta estimate at probed BPM for this triplet (Eq. 2)
     dif_cot_meas = cot_meas[ix] - cot_meas[iy]  # numerator term: cot(φ_meas_bpmx) − cot(φ_meas_bpmy)
     denom = dif_cot_model / betmdl1  # denominator term: (cot(φ_mdl_bpmx) − cot(φ_mdl_bpmy)) / β_mdl
     beta_i = dif_cot_meas / denom    # β₁ = β_mdl · Δcot_meas / Δcot_mdl
-    # Alpha estimate at probed BPM for this triplet
+
+    # Alpha estimate at probed BPM for this triplet - derived from transport matrix ratio
     avg_cot_model = (cot_model[ix] + cot_model[iy]) / 2
     denomalf = 2 * (avg_cot_model + alfmdl1)  # denominator term: cot(φ_mdl_bpmx) + cot(φ_mdl_bpmy) + 2α_mdl
     avg_cot_meas = (cot_meas[ix] + cot_meas[iy]) / 2
@@ -504,7 +516,14 @@ def calculate_beta_alpha_from_single_combination(
 
     lng: int = len(outer_elmts)
 
-    # Now the Jacobian rows for beta and alpha
+    # ----- Now the Jacobian rows for beta and alpha
+
+    # Sign factors for the Jacobian entries, corresponding to A_{ij}(λ) in paper Eq. (24)
+    #   fac1 = +1 if BPM j (ix) is to the left  of probed BPM (ix < m)
+    #   fac1 = -1 if BPM j (ix) is to the right of probed BPM (ix > m)
+    # (and vice versa for fac2 / BPM k)
+    fac1: int = -np.sign(c[0] - m)
+    fac2: int = np.sign(c[1] - m)
 
     # Total length = (2m + 1) phase entries + 4 * n_elements systematic error entries
     line_length: int = 4 * len(outer_elmts.index) + 2 * m + 1
@@ -513,7 +532,7 @@ def calculate_beta_alpha_from_single_combination(
     betaline = np.zeros(line_length)
     alfaline = np.zeros(line_length)
 
-    # Locate each BPM and the probed BPM in the element list, then derive the
+    # # Locate BPMs j, k and probed BPM i in the element list, then derive the
     # contiguous slices of elements that lie between each reference BPM and the
     # probed BPM.  These slices are where systematic errors contribute to the
     # phase advance (and then β and α) via the Jacobian.
@@ -522,7 +541,7 @@ def calculate_beta_alpha_from_single_combination(
     yloc_r: int = outer_elmts.index.get_loc(outer_meas_phase_adv.index[iy])  # at y is last BPM in the triplet
 
     # Compute sin²(φ_mdl_bpmx − φ_mdl_1) and sin²(φ_mdl_bpmy − φ_mdl_1)
-    # which shows up in the denominator of i.e. Eq (20)
+    # which show up in T^φ (Eq. 8) and T^K (Eq. 23) respectively
     denom_sinx = sin_squared_elements[xloc_r, m]
     denom_siny = sin_squared_elements[yloc_r, m]
     # Element index ranges between each BPM in the triplet and the probed BPM
@@ -539,31 +558,30 @@ def calculate_beta_alpha_from_single_combination(
     elem_k2_xa = outer_el_k2[xmloc1:xmloc2]
     elem_k2_ya = outer_el_k2[ymloc1:ymloc2]
 
-    # Common factor for all systematic error partial derivatives in the big
-    # sum term of Eq (20). Here this also includes the denominator term.
+    # Common factor for all systematic error Jacobian entries in T^K
     bet_sin_ix = elem_ph_xa * elem_beta_xa / (denom_sinx * denom)
     bet_sin_iy = elem_ph_ya * elem_beta_ya / (denom_siny * denom)
 
-    # Index offsets into betaline/alfaline for each error source group.
+    # Index offsets into betaline/alfaline for each error source block:
+    # T = (T^φ | T^K_dK1 | T^K_dX | T^K_KdS | T^K_mKdS)
     # Phase entries occupy [0 : range_of_bpms], systematic errors follow
-    # in the blocks of lng
-    off1: int = range_of_bpms            # dK1  block
-    off2: int = range_of_bpms + lng      # dX   block
-    off3: int = range_of_bpms + 2 * lng  # KdS  block  (forward misalignment)
-    off4: int = range_of_bpms + 3 * lng  # mKdS block  (upstream-drift misalignment)
+    off1: int = range_of_bpms            # T^K: dK1 block — quadrupole field errors (Eq. 23)
+    off2: int = range_of_bpms + lng      # T^K·K₂L: dX block — sextupole transverse misalignment (Eqs. 13-14)
+    off3: int = range_of_bpms + 2 * lng  # T^K: KdS  — quad longitudinal misalignment, forward element (Sec. II.B)
+    off4: int = range_of_bpms + 3 * lng  # T^K: mKdS — quad longitudinal misalignment, backward/upstream element (Sec. II.B)
 
     # Now below is the big summation over the contributing terms for the errors,
     # incl. phase uncertainty and systematic errors.
 
-    # apply phase uncertainty
+    # apply phase uncertainty - T^φ entries: ∂β/∂φⱼ and ∂β/∂φₖ  (Eq. 8)
     betaline[ix] = -1 / (denom_sinx * denom)
     betaline[iy] = 1 / (denom_siny * denom)
     # apply quadrupolar field uncertainty
     betaline[xmloc1 + off1 :xmloc2 + off1] += fac1 * bet_sin_ix
     betaline[ymloc1 + off1 :ymloc2 + off1] += fac2 * bet_sin_iy
     # apply sextupole transverse misalignment
-    betaline[xmloc1 + off2 : xmloc2 + off2] += fac1 * elem_k2_xa * bet_sin_ix
-    betaline[ymloc1 + off2 : ymloc2 + off2] += fac2 * elem_k2_ya * bet_sin_iy
+    betaline[xmloc1 + off2 : xmloc2 + off2] += fac1 * elem_k2_xa * bet_sin_ix  # the K2L shows up here
+    betaline[ymloc1 + off2 : ymloc2 + off2] += fac2 * elem_k2_ya * bet_sin_iy  # the K2L shows up here
     # apply quadrupole longitudinal misalignments
     betaline[xmloc1 + off3 : xmloc2 + off3] += fac1 * bet_sin_ix
     betaline[ymloc1 + off3 : ymloc2 + off3] += fac2 * bet_sin_iy
