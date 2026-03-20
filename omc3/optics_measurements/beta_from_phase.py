@@ -801,9 +801,9 @@ def three_bpm_method(
     |  cot(phi_13) - cot(phi_12)  |  cot(phi_24) - cot(phi_23)  |   cot(phi_35) - cot(phi_34) |
     +-----------------------------+-----------------------------+-----------------------------+
 
-    - for the combination xxxABBx: first row,
-    - for the combination xBBAxxx: fourth row,
-    - for the combination xxBABxx: second row of ``cot_phase_*_shift2``.
+    -> for the combination xxxABBx: first row,
+    -> for the combination xBBAxxx: fourth row,
+    -> for the combination xxBABxx: second row of ``cot_phase_*_shift2``.
 
     Args:
         meas_input: `OpticsInput` object with optics CLI options.
