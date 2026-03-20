@@ -644,7 +644,7 @@ def _covariant_weighting(mat: np.ndarray, col: np.ndarray) -> typle[float, float
     mat_inv_sum = np.sum(wb)                    # Σ_{j,k} V⁻¹_{jk}: normalization constant
 
     if mat_inv_sum == 0:
-        raise ValueError
+        raise ValueError("Covariance weighting failed: the covariance matrix is degenerate")
 
     # BLUE estimate: β̂ = g̃ᵀ col / Σ V⁻¹  (Eq. A22)
     # Propagated variance: σ²_β̂ = g̃ᵀ V g̃ / (Σ V⁻¹)²
