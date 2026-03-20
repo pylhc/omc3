@@ -752,9 +752,9 @@ def three_bpm_method(
     meas_and_mdl_tunes: tuple[float, float],
 ) -> pd.DataFrame:
     """
-    Calculates betas and alphas three adjacent-BPM triplet combinations
-    (Castro, Ph.D. Thesis, University of Valencia, 1996). Unline in the
-    ``n_bpm_method`` this used only the immediately neighbouring BPMs
+    Calculates betas and alphas using three adjacent-BPM triplet combinations
+    (Castro, Ph.D. Thesis, University of Valencia, 1996). Unlike in the
+    ``n_bpm_method`` this uses only the immediately neighbouring BPMs
     and propagates phase measurement uncertainties only (no systematic
     uncertainties for lattice errors).
 
@@ -825,11 +825,11 @@ def three_bpm_method(
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
 
     # Tilt and slice so that for each probed BPM i the 5 rows hold (see docstring):
-    #   row 0: φ(i-1→j),
-    #   row 1: 0,
-    #   row 2: 0,
-    #   row 3: φ(i+1→j),
-    #   row 4: φ(i+2→j),
+    #   row 0: φ(i-2→j)   two BPMs back
+    #   row 1: φ(i-1→j)   one BPM back
+    #   row 2: 0,         probed BPM i
+    #   row 3: φ(i+1→j),  one BPM forward
+    #   row 4: φ(i+2→j),  two BPMs forward
     # (see _tilt_slice_matrix for the rearrangement). Convert to radians
     tilted_meas = _tilt_slice_matrix(phase[MEASUREMENT].to_numpy(copy=True), 2, 5, tune) * PI2
     tilted_model = _tilt_slice_matrix(phase[MODEL].to_numpy(copy=True), 2, 5, mdltune) * PI2
