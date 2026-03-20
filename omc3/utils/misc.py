@@ -9,6 +9,7 @@ from __future__ import annotations
 from enum import Enum
 
 
+# TODO: remove this and replace with StrEnum from stdlib when min supported Python version is 3.11
 class StrEnum(str, Enum):
     """ Enum for strings.
 
