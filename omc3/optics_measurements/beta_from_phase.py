@@ -248,7 +248,11 @@ def n_bpm_method(
             # cot(φ_mdl_1j): model cotangents relative to the probed BPM's model phase (index m)
             cot_model = 1.0 / np.tan(outer_mdl_ph - outer_mdl_ph[m])
 
+        # Numerical stability filter: discard BPMs whose phase advance is too close to
+        # # a multiple of π (|cot| > COT_THRESHOLD ≈ π/ZERO_THRESHOLD), where the cotangent
+        # diverges and derivatives become unreliable (paper Sec. III, stability criterion)
         patter = (np.abs(cot_meas) <= COT_THRESHOLD) & (np.abs(cot_model) <= COT_THRESHOLD)
+
         diag = np.concatenate((np.square(outer_meas_err.to_numpy()), outer_elmts.loc[:]["dK1"],
                                outer_elmts.loc[:]["dX"], outer_elmts.loc[:]["KdS"],
                                outer_elmts.loc[:]["mKdS"]))
