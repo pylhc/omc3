@@ -16,7 +16,7 @@ Beta from Phase
     and systematic lattice errors (quadrupole field gradient errors, quadrupole longitudinal misalignments, BPM longitudinal
     misalignments and sextupole horizontal misalignments) through an analytical covariance matrix.
 
-- The **3-BPM method**:
+- The **3-BPM method**, originally from:
 
     Castro, P. "Luminosity and beta-function measurements at the electron-positron collider ring LEP"
     Ph.D Thesis, University of Valencia, 1996.
