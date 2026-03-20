@@ -59,13 +59,14 @@ from omc3.utils.misc import StrEnum
 
 if TYPE_CHECKING:
     from generic_parser import DotDict
+    from logging import Logger
 
     from omc3.model.accelerators.accelerator import Accelerator
     from omc3.optics_measurements.phase import PhaseDict
     from omc3.optics_measurements.tune import TuneDict
 
 
-LOGGER = logging_tools.get_logger(__name__)
+LOGGER: Logger = logging_tools.get_logger(__name__)
 
 EPSILON: float = 1.0E-16
 ZERO_THRESHOLD: float = 1e-2
