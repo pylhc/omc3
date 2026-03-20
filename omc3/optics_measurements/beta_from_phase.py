@@ -2,8 +2,27 @@
 Beta from Phase
 --------------------
 
-This module contains some of the beta calculation related functionality of ``optics_measurements``.
-It provides functions to calculate beta and alpha functions from phase advance data.
+ Implements beta and alpha function calculation from phase advance measurements
+
+ Two implementations are provided:
+
+ - The **Analytical N-BPM method**, described in:
+
+    Langner, A. et al., "Analytical N beam position monitor method",
+    Phys. Rev. Accel. Beams 20, 111002 (2017).
+    https://cds.cern.ch/record/2307554
+
+    It uses all valid BPM triplet combinations within a configurable range, propagates both phase measurement uncertainties
+    and systematic lattice errors (quadrupole field gradient errors, quadrupole longitudinal misalignments, BPM longitudinal
+    misalignments and sextupole horizontal misalignments) through an analytical covariance matrix.
+
+- The **3-BPM method**:
+
+    Castro, P. "Luminosity and beta-function measurements at the electron-positron collider ring LEP"
+    Ph.D Thesis, University of Valencia, 1996.
+    https://repository.cern/records/eny2v-4y338
+
+    The initial, simple version using only adjacent BPM triplets, with phase measurement uncertainties only.
 """
 from __future__ import annotations
 
