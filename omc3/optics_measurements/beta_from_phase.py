@@ -134,17 +134,35 @@ def n_bpm_method(
     meas_and_mdl_tunes: tuple[float, float]
 ) -> tuple[tfs.TfsDataFrame, str]:
     """
-    Calculates betas and alphas from using all BPM combination within **range_of_bpms**. It also
-    accounts for systematic errors
+    Calculates betas and alphas using all BPM triplet combinations within a sliding window
+    of `range_of_bpms` BPMs centred on each probed BPM. Please refer to theory at
+    https://cds.cern.ch/record/2307554.
+
+    For each probed BPM i, a total of m = range_of_boms // 2 neighbors are selected on
+    each side. Every valid pair (j, k) within those neighbors contributes to form a BPM
+    triplet (i, j, k) from which βi and ⍺i are estimated individually via the function
+    ``calculate_beta_alpha_from_single_combination``. The estimates of all combinations
+    are combined with covariant weighting using the analytical covariance matrix:
+
+        V = T · Σ · Tᵀ
+
+    where T is the Jacobian of (βi, ⍺i) with respect to all error sources, and Σ is the
+    diagonal matrix of errors sources variances (phase noise + systematic lattice errors).
+    See ``_covariant_weighting`` for the combination step.
+
+    The best-knowledge model is used for the beta/alpha/phase-advance values fed into
+    the error propagation (Jacobian), while the normal model provides the output reference
+    columns ("MDL" suffix).  If no best-knowledge model is available, both fall back to the
+    same model.
 
     Args:
-        meas_input: Optics measurement configuration object.
+        meas_input: `OpticsInput` object with optics CLI options.
         phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
         plane: marking the horizontal or vertical plane, **X** or **Y**.
         meas_and_mdl_tunes: measured and model tunes.
 
     Returns:
-        `TfsDataFrame` containing betas and alfas from phase.
+        `TfsDataFrame` containing betas and alfas from phase, as well as their errors.
     """
     n_bpms = meas_input.range_of_bpms
     n_bpms_phases = len(phase[MEASUREMENT].index)
