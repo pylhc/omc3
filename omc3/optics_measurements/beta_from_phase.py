@@ -731,7 +731,7 @@ def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: Path | str) -
     twiss_full.loc[:, "UNC"] = np.logical_or(
         abs(np.roll(twiss_full.loc[:, "dK1"], -1)) > 1.0e-12, twiss_full.loc[:, "UNC"]
     )
-    LOGGER.debug("Finished assigning variancies from systematic uncertainties")
+    LOGGER.debug("Finished assigning variances from systematic uncertainties")
     return twiss_full.loc[twiss_full["UNC"]]
 
 
