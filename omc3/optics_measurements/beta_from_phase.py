@@ -81,19 +81,20 @@ class Methods(StrEnum):
 
 
 def calculate(
-        meas_input: DotDict,
-        tunes: TuneDict,
-        phase_dict: PhaseDict,
-        header_dict: dict[str, Any],
-        plane: str,
-    ) -> tuple[tfs.TfsDataFrame, dict[str, Any]]:
+    meas_input: DotDict,
+    tunes: TuneDict,
+    phase_dict: PhaseDict,
+    header_dict: dict[str, Any],
+    plane: str,
+) -> tuple[tfs.TfsDataFrame, dict[str, Any]]:
     """
     Calculates betas and alphas from phase advances.
 
     Args:
-        meas_input: `OpticsInput` object
-        tunes: `TuneDict` contains measured tunes.
-        phase_dict: contains measured phase advances.
+        meas_input: `OpticsInput` object with optics CLI options.
+        tunes: `TuneDict` contains model and measured tunes (incl. free motion).
+        phase_dict: `PhaseDict` containing phase advances between BPMs from model,
+            measurements (incl. errors).
         header_dict:  dictionary of header items common for all output files.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
