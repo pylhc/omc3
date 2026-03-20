@@ -182,18 +182,26 @@ def n_bpm_method(
             f"Instead a range of {n_bpms} was requested."
         )
 
+    # Get the accelerator elements including systematic errors, then
+    # (best knowledge) model values and tunes
     elements, error_method = get_elements_with_errors(meas_input, plane)
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
     bk_model = _get_filtered_model_df(meas_input, phase, plane, best=True)
     tune, mdltune = meas_and_mdl_tunes
+
+    # Prepare array for results
     betas_alfas = np.zeros((len(phase[MEASUREMENT].index), 4))
-    nbpms = len(bk_model.index)
-    n_comb = np.zeros(nbpms, dtype=int)
-    m = int(n_bpms / 2)
-    loc_range = np.arange(-m, m + 1)
+    nbpms: int = len(bk_model.index)
+    n_comb: int = np.zeros(nbpms, dtype=int)
+
+
+    m = int(n_bpms / 2)  # half window: probed BPM has m neighbors on each side
+    loc_range = np.arange(-m, m + 1)  # relative indices [-m, ..., 0, ..., m] 0 is the probed BPM
+
+    # Phase advances are stored in units of 2π, convert to radiants for cotangent calculations
     phases_meas = phase[MEASUREMENT] * PI2
     phases_err = phase[f"{ERR}{MEASUREMENT}"] * PI2
-    phases_err.where(phases_err.notnull(), 1, inplace=True)
+    phases_err.where(phases_err.notnull(), 1, inplace=True)  # replace NaN errors with 1
 
     for indx, probed_bpm_name in enumerate(bk_model.index):
         indx_el_first = elements.index.get_loc(bk_model.index[(indx - m) % nbpms])
