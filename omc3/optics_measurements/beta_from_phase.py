@@ -164,17 +164,23 @@ def n_bpm_method(
     Returns:
         `TfsDataFrame` containing betas and alfas from phase, as well as their errors.
     """
-    n_bpms = meas_input.range_of_bpms
-    n_bpms_phases = len(phase[MEASUREMENT].index)
+    # Determine the range of BPMs to draw combinations from (BPM triplets)
+    n_bpms: int = meas_input.range_of_bpms
+    n_bpms_phases: int = len(phase[MEASUREMENT].index)
     if n_bpms_phases < n_bpms:
-        LOGGER.warning(f"Found {n_bpms_phases} BPMs, but {n_bpms} "
-                        "were requested in N-BPM method. Using all available BPMs instead,"
-                        "the results will still be correct.")
+        LOGGER.warning(
+            f"Found {n_bpms_phases} BPMs, but {n_bpms} "
+            "were requested in N-BPM method. Using all available BPMs instead,"
+            "the results will still be correct."
+        )
         n_bpms = n_bpms_phases
 
+    # Ensure at least 3 since we need BPM triplets
     if n_bpms < 3:
-        raise ValueError("At least 3 BPMs are required for N-BPM method!"
-                        f"Instead a range of {n_bpms} was requested.")
+        raise ValueError(
+            "At least 3 BPMs are required for N-BPM method!"
+            f"Instead a range of {n_bpms} was requested."
+        )
 
     elements, error_method = get_elements_with_errors(meas_input, plane)
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
