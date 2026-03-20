@@ -279,7 +279,7 @@ def n_bpm_method(
         #   - |cot_mdl_x - cot_mdl_y| ≤ ZERO_THRESHOLD (near-degenerate model denominator), or
         #   - cot_mdl and cot_meas differences have opposite signs (unphysical: would invert β sign)
         index_tuples = [
-            [x, y]
+            (x, y)
             for x in loc_range[patter] + m
             for y in loc_range[patter] + m
             if (x < y)
@@ -318,22 +318,32 @@ def n_bpm_method(
         # Zero-variance entries (error sources not defined for this window) are excluded before
         # building the covariance matrix to avoid degenerate rows/columns
         mask = diag != 0
-        mat_diag = np.diag(diag[mask])
+        mat_diag = np.diag(diag[mask])  # make that a diagonal matrix (we only had diagonal terms)
 
+        # Below we compute the covariance matrices for β and ⍺ - explained for β below
+        # V_β = T_β[:,active] · Σ_active · T_β[:,active]ᵀ  — covariance matrix of all β estimates
+        # Off-diagonal entries V_β[i,j] represent correlation between estimates i and j arising
+        # from shared error sources (e.g. two BPM triplets using the same quadrupole)
         mat_v_beta = np.dot(mat_t_beta[:, mask], np.dot(mat_diag, np.transpose(mat_t_beta[:, mask])))
         mat_v_alpha = np.dot(mat_t_alpha[:, mask], np.dot(mat_diag, np.transpose(mat_t_alpha[:, mask])))
 
         if np.any(mat_v_beta) and np.any(mat_v_alpha):
+            # Combine all triplet estimates into a single BLUE-weighted β and α with
+            # propagated error. See _covariant_weighting for the derivation
             beti, beterr = _covariant_weighting(mat_v_beta, betas)
             alfi, alferr = _covariant_weighting(mat_v_alpha, alphas)
-            n_comb[indx] = len(betas)
+            n_comb[indx] = len(betas)  # how many combinations get weighted for this BPM's error bar
         else:
+            # All-zero covariance arises when: no valid BPM triplets passed the patter/index_tuples
+            # filters, or all error sources were zero (no phase noise AND no systematic errors).
+            # In either case there is no valid estimate for this BPM; skip and leave betas_alfas at 0
             LOGGER.debug(
                 f"ValueError or no combinations left at {probed_bpm_name}.\n"
                 f"betas:\n{betas}\n"
                 f"alphas:\n{alphas}"
             )
             continue
+
         betas_alfas[indx, :] = np.array([beti, beterr, alfi, alferr])
 
     beta_df[f"{BETA}{plane}"] = betas_alfas[:, 0]
