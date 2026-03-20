@@ -203,28 +203,37 @@ def n_bpm_method(
     phases_err = phase[f"{ERR}{MEASUREMENT}"] * PI2
     phases_err.where(phases_err.notnull(), 1, inplace=True)  # replace NaN errors with 1
 
+    # We go find combinations within the given range for all BPMs in the model
     for indx, probed_bpm_name in enumerate(bk_model.index):
-        indx_el_first = elements.index.get_loc(bk_model.index[(indx - m) % nbpms])
-        indx_el_last = elements.index.get_loc(bk_model.index[(indx + m) % nbpms])
-        mu_column = f"{PHASE_ADV}{plane}"
+        # Find the first and last BPMs in the range
+        indx_el_first: int = elements.index.get_loc(bk_model.index[(indx - m) % nbpms])
+        indx_el_last: int = elements.index.get_loc(bk_model.index[(indx + m) % nbpms])
+        mu_column: str = f"{PHASE_ADV}{plane}"
+
+        # We build a sliding window of (2m+1) BPMs centered on the probed one.
+        # For BPMs near the start/end of the ring the window wraps around. The
+        # tune shift (Q·2π) is subtracted / added to keep phases monotonically
+        # increasing across the wrap boundary
+        # fmt: off
         if indx < m:
-            outer_meas_phase_adv = pd.concat((phases_meas.iloc[indx, nbpms + indx - m:] - tune * PI2, phases_meas.iloc[indx, :indx + m + 1]))
-            outer_meas_err = pd.concat((phases_err.iloc[indx, nbpms + indx - m:], phases_err.iloc[indx, :indx + m + 1]))
-            outer_mdl_ph = np.concatenate((bk_model.iloc[nbpms + indx - m:][mu_column] - mdltune, bk_model.iloc[:indx + m + 1][mu_column])) * PI2
-            outer_elmts = pd.concat((elements.iloc[indx_el_first:], elements.iloc[:indx_el_last + 1]))
-            outer_elmts_ph = np.concatenate((elements.iloc[indx_el_first:][mu_column] - mdltune, elements.iloc[:indx_el_last + 1][mu_column])) * PI2
+            outer_meas_phase_adv = pd.concat((phases_meas.iloc[indx, nbpms + indx - m :] - tune * PI2, phases_meas.iloc[indx, : indx + m + 1]))
+            outer_meas_err = pd.concat((phases_err.iloc[indx, nbpms + indx - m :], phases_err.iloc[indx, : indx + m + 1]))
+            outer_mdl_ph = np.concatenate((bk_model.iloc[nbpms + indx - m :][mu_column] - mdltune, bk_model.iloc[: indx + m + 1][mu_column])) * PI2
+            outer_elmts = pd.concat((elements.iloc[indx_el_first:], elements.iloc[: indx_el_last + 1]))
+            outer_elmts_ph = np.concatenate((elements.iloc[indx_el_first:][mu_column] - mdltune, elements.iloc[: indx_el_last + 1][mu_column])) * PI2
         elif indx + m >= nbpms:
-            outer_meas_phase_adv = pd.concat((phases_meas.iloc[indx, indx - m:], phases_meas.iloc[indx, :indx + m + 1 - nbpms] + tune * PI2))
-            outer_meas_err = pd.concat((phases_err.iloc[indx, indx - m:], phases_err.iloc[indx, :indx + m + 1 - nbpms]))
-            outer_mdl_ph = np.concatenate((bk_model.iloc[indx - m:][mu_column], bk_model.iloc[:indx + m + 1 - nbpms][mu_column] + mdltune)) * PI2
-            outer_elmts = pd.concat((elements.iloc[indx_el_first:], elements.iloc[:indx_el_last + 1]))
-            outer_elmts_ph = np.concatenate((elements.iloc[indx_el_first:][mu_column], elements.iloc[:indx_el_last + 1][mu_column] + mdltune)) * PI2
+            outer_meas_phase_adv = pd.concat((phases_meas.iloc[indx, indx - m :], phases_meas.iloc[indx, : indx + m + 1 - nbpms] + tune * PI2))
+            outer_meas_err = pd.concat((phases_err.iloc[indx, indx - m :], phases_err.iloc[indx, : indx + m + 1 - nbpms]))
+            outer_mdl_ph = np.concatenate((bk_model.iloc[indx - m :][mu_column], bk_model.iloc[: indx + m + 1 - nbpms][mu_column] + mdltune)) * PI2
+            outer_elmts = pd.concat((elements.iloc[indx_el_first:], elements.iloc[: indx_el_last + 1]))
+            outer_elmts_ph = np.concatenate((elements.iloc[indx_el_first:][mu_column], elements.iloc[: indx_el_last + 1][mu_column] + mdltune)) * PI2
         else:
             outer_meas_phase_adv = phases_meas.iloc[indx, indx + loc_range]
             outer_meas_err = phases_err.iloc[indx, indx + loc_range]
             outer_mdl_ph = bk_model.iloc[indx + loc_range][mu_column].to_numpy() * PI2
-            outer_elmts = elements.iloc[indx_el_first:indx_el_last + 1]
-            outer_elmts_ph = elements.iloc[indx_el_first:indx_el_last + 1][mu_column].to_numpy() * PI2
+            outer_elmts = elements.iloc[indx_el_first : indx_el_last + 1]
+            outer_elmts_ph = elements.iloc[indx_el_first : indx_el_last + 1][mu_column].to_numpy() * PI2
+        # fmt: on
         # bpms_inds_elements was not used (jdilly)
         # bpms_inds_elements = [outer_elmts.index.get_loc(bpm_name) for bpm_name in outer_meas_phase_adv.index.to_numpy()]
         sin_squared_elements = np.square(np.sin(
