@@ -286,8 +286,16 @@ def n_bpm_method(
             and (abs(cot_model[x] - cot_model[y]) > ZERO_THRESHOLD)
             and (np.sign(cot_model[x] - cot_model[y]) * np.sign(cot_meas[x] - cot_meas[y]) > 0)
         ]
-        mat_t_beta, mat_t_alpha = np.zeros((len(index_tuples), len(diag))), np.zeros((len(index_tuples), len(diag)))
-        betas, alphas = np.empty(len(index_tuples)), np.empty(len(index_tuples))
+
+        # We allocate arrays for the covariance matrices & results for beta and alpha.
+        # As per docstring these are V_β = T_β · Σ · T_βᵀ  and  V_α = T_α · Σ · T_αᵀ
+        # Each row of is the gradient ∇β (or ∇α) for one triplet combination
+        # V_β[i,j] = covariance between the β estimates from triplets i and j
+        mat_t_beta,  = np.zeros((len(index_tuples), len(diag)))
+        mat_t_alpha= np.zeros((len(index_tuples), len(diag)))
+        betas = np.empty(len(index_tuples)),
+        alphas = np.empty(len(index_tuples))
+
         for i, c in enumerate(index_tuples):
             betas[i], alphas[i], mat_t_beta[i], mat_t_alpha[i] = (
                 calculate_beta_alpha_from_single_combination(
