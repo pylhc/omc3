@@ -347,6 +347,8 @@ def n_bpm_method(
 
         betas_alfas[indx, :] = np.array([beti, beterr, alfi, alferr])
 
+    # ----- By now we have finished the big loop, got results for all BPMs ----- #
+
     # Unpack the per-BPM results from the loop into the output DataFrame.
     # BPMs that hit the 'continue' above remain at zero in betas_alfas (as
     # initialised) and are filtered below.
