@@ -447,41 +447,52 @@ def get_elements_with_errors(meas_input: DotDict, plane: str) -> tuple[pd.DataFr
 
 
 def calculate_beta_alpha_from_single_combination(
-    c,
-    sin_squared_elements,
-    outer_elmts,
-    cot_model,
-    cot_meas,
-    outer_meas_phase_adv,
-    probed_bpm_name,
-    betmdl1,
-    alfmdl1,
-    range_of_bpms
-    ):
+    c: tuple[int, int],
+    sin_squared_elements: np.ndarray,
+    outer_elmts: pd.DataFrame,
+    cot_model: np.ndarray,
+    cot_meas: np.ndarray,
+    outer_meas_phase_adv: pd.Series,
+    probed_bpm_name: str,
+    betmdl1: float,
+    alfmdl1: float,
+    range_of_bpms: int,
+) -> tuple[float, float, np.ndarray, np.ndarray]:
     """
-    Calculates beta and alpha functions as well as the respective covariance matrix lines for the
-    given BPM combination (triplet).
+    Computes β₁ and α₁ for one BPM triplet (probed BPM 1, reference BPMs x and y)
+    and builds the corresponding rows of the Jacobian matrices J_β and J_α used for
+    covariance propagation in ``n_bpm_method``.
 
     Args:
-        c: relative indices of other two BPMs wrt probed one.
-        sin_squared_elements:
-        outer_elmts:
-        cot_model:
-        cot_meas:
-        outer_meas_phase_adv:
-        probed_bpm_name:
-        betmdl1:
-        alfmdl1:
-        range_of_bpms:
+        c: tuple, pair of relative indices (ix, iy) for the two reference BPMs of this triplet.
+            Indices run 0 ... 2m with the probed BPM at position m.
+        sin_squared_elements: (n_elements * n_bpms_window) array of squared sines of the
+            model phase advance from every element l to every window BPM j. In there,
+            entry [l, j] = sin²(φ_l - φ_mdl_j). Pre-computed in ``n_bpm_method``.
+        outer_elmts: DataFrame of lattice elements in the window, which containes the BETA,
+            K1L, K2L, dK1, dX, KdS and mKdS column (after loading systematic errors).
+        cot_model: 1-D array of model cotangents cot(φ_mdl_1j - φ_mdl_11), length 2m+1;
+            where entry m is - by construction (probed BPM to itself).
+        cot_meas: 1D array of model cotangents cot(φ_meas_1j), of length 2m+1.
+        outer_meas_phase_adv: measured phase advances (radians) from the probed BPM
+            to each BPM in the window (index carries BPM names used for element lookup).
+        probed_bpm_name: The name of BPM 1 whose β and α are being estimated.
+        betmdl1 (float): model β at the probed BPM.
+        alfmdl1 (float): model α at the probed BPM.
+        range_of_bpms: total window width.
 
     Returns:
-
+        A tuple (β₁, α₁, betaline, alfaline) where betaline and alfaline are the
+        Jacobian rows for this combination, to be stacked into the complete Jacobian
+        matrices T_β and T_α inside of ``n_bpm_method``.
     """
-    m = int(range_of_bpms / 2)
-    ix = c[0]
-    iy = c[1]
-    fac1, fac2 = -np.sign(c[0]-m), np.sign(c[1]-m)
+    m = int(n_bpms / 2)  # half window: probed BPM has m neighbors on each side
+    ix = c[0]  # index of BPM i
+    iy = c[1]  # index of BPM y
+    fac1, fac2 = -np.sign(c[0] - m), np.sign(c[1] - m)
+
     dif_cot_model = cot_model[ix] - cot_model[iy]
+
     # calculate beta
     dif_cot_meas = cot_meas[ix] - cot_meas[iy]
     denom = dif_cot_model / betmdl1
