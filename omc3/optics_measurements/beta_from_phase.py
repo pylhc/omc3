@@ -88,7 +88,13 @@ def calculate(
     plane: str,
 ) -> tuple[tfs.TfsDataFrame, dict[str, Any]]:
     """
-    Calculates betas and alphas from phase advances.
+    Calculates betas and alphas from phase advances. This will dispatch to
+    use either the ``n_bpm_method`` or ``three_bpm_method``, based on the
+    passed option.
+
+    The measured and model tunes passed downstream are selected based on the
+    compensation model: free (natural) tunes Q/QM are used when no compensation
+    was applied, while driven tunes QF/QFM are used otherwise.
 
     Args:
         meas_input: `OpticsInput` object with optics CLI options.
@@ -99,24 +105,32 @@ def calculate(
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        `BetaDict` object containing specific `TfsDataFrame` with results.
+        Tuple of the results `TfsDataFrame` (betas, alphas, errors, delta columns)
+        and the output file header dictionary..
     """
+    # Figure out which tunes to use and pass down
     meas_and_model_tunes = (
         (tunes[plane]["Q"], tunes[plane]["QM"] % 1)
-        if meas_input.compensation == CompensationMode.NONE else
-        (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
+        if meas_input.compensation == CompensationMode.NONE
+        else (tunes[plane]["QF"], tunes[plane]["QFM"] % 1)
     )
 
+    # Dispatch to the required reconstruction method
     if meas_input.three_bpm_method:
         beta_df = three_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
         error_method = Methods.THREE_BPM
     else:
+        # Here error_method lets us know if we have applied systematic uncertainties
         beta_df, error_method = n_bpm_method(meas_input, phase_dict, plane, meas_and_model_tunes)
 
+    # We provide information on the rms beta-beating
     LOGGER.info(f"Errors from {error_method}")
-    rmsbb = stats.weighted_rms(
-        beta_df.loc[:, f"{DELTA}{BETA}{plane}"].to_numpy(),
-        errors=beta_df.loc[:, f"{ERR}{DELTA}{BETA}{plane}"].to_numpy()) * 100
+    rmsbb = 100 * (
+        stats.weighted_rms(
+            beta_df.loc[:, f"{DELTA}{BETA}{plane}"].to_numpy(),
+            errors=beta_df.loc[:, f"{ERR}{DELTA}{BETA}{plane}"].to_numpy(),
+        )
+    )
     LOGGER.info(f" - RMS beta beat: {rmsbb:.3f}%")
     header = _get_header(header_dict, error_method, meas_input.range_of_bpms, rmsbb)
     return beta_df, header
@@ -256,11 +270,11 @@ def n_bpm_method(
         # Diagonal of the covariance matrix Σ for all error sources. Note systematic errors
         # have been loaded as squares from error_deffs.txt and quadrupole dK1 was multiplied
         # by length in order to obtain the value for the field gradients (lng = length(outer_elmts))
-        #   [0 : n_bpms]                → σ²_φⱼ  (phase measurement variance for each window BPM j)
-        #   [off1 : off1+lng]           → σ²_ΔK1L = (dK1 · K1L)² variance (quad gradient field errors)
-        #   [off2 : off2+lng]           → σ²_ΔX = dX²  (sextupole transverse misalignment)
-        #   [off3 : off3+lng]           → σ²_KdS = (dS · K1L)²  (quad longitudinal misalignment)
-        #   [off4 : off4+lng]           → σ²_mKdS  (upstream drift of misaligned quad, thin-lens)
+        #   [0 : n_bpms]                  → σ²_φⱼ  (phase measurement variance for each window BPM j)
+        #   [off1 : off1 + lng]           → σ²_ΔK1L = (dK1 · K1L)² variance (quad gradient field errors)
+        #   [off2 : off2 + lng]           → σ²_ΔX = dX²  (sextupole transverse misalignment)
+        #   [off3 : off3 + lng]           → σ²_KdS = (dS · K1L)²  (quad longitudinal misalignment)
+        #   [off4 : off4 + lng]           → σ²_mKdS  (upstream drift of misaligned quad, thin-lens)
         diag = np.concatenate(
             (
                 np.square(outer_meas_err.to_numpy()),
