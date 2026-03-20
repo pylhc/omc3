@@ -608,14 +608,49 @@ def calculate_beta_alpha_from_single_combination(
     return beta_i, alfa_i, betaline, alfaline
 
 
-def _covariant_weighting(mat, col):
-    mat_inv = np.linalg.pinv(mat, rcond=RCOND)
-    wb = np.sum(mat_inv, axis=1)
-    mat_inv_sum = np.sum(wb)
+def _covariant_weighting(mat: np.ndarray, col: np.ndarray) -> typle[float, float]:
+    """
+    Combines multiple estimates into a single BLUE (Best Linear Unbiased Estimator)
+    weighted value with propagated uncertainty (Analytical N-BPM paper Appendix A,
+    Eqs. A21-A22).
+
+    Given n_comb individual β (or α) estimates and their full covariance matrix V,
+    the optimal weights are:
+
+        g_i = (Σ_k V⁻¹_{ik}) / (Σ_{j,k} V⁻¹_{jk})      (Eq. A21)
+
+    and the BLUE estimate and its variance are:
+
+        β̂ = Σ_i g_i β_i                                (Eq. A22)
+        σ²_β̂ = gᵀ V g
+
+    The pseudo-inverse (pinv) is used instead of a regular inverse to handle
+    near-singular covariance matrices (e.g. highly correlated triplets), with
+    conditioning threshold RCOND.
+
+    Args:
+        mat: (n_comb * n_comb) covariance matrix V of the individual estimates.
+        col: 1D array of length n_comb holding the individual β or α estimates.
+
+    Returns:
+        Tuple (estimate, uncertainty) where estimate is the BLUE-weighted scalar
+        and uncertainty is its propagated 1σ error.
+
+    Raises:
+        ValueError: if the sum of V⁻¹ is zero (degenerate / all-zero covariance matrix).
+    """
+    mat_inv = np.linalg.pinv(mat, rcond=RCOND)  # V⁻¹, pseudo-inverse for numerical stability
+    wb = np.sum(mat_inv, axis=1)                # g̃_i = Σ_k V⁻¹_{ik}: unnormalized BLUE weights (row sums)
+    mat_inv_sum = np.sum(wb)                    # Σ_{j,k} V⁻¹_{jk}: normalization constant
+
     if mat_inv_sum == 0:
         raise ValueError
-    # returns value and error
-    return float(np.dot(wb.T, col) / mat_inv_sum), np.sqrt(np.dot(wb.T, np.dot(mat, wb)) / mat_inv_sum ** 2)
+
+    # BLUE estimate: β̂ = g̃ᵀ col / Σ V⁻¹  (Eq. A22)
+    # Propagated variance: σ²_β̂ = g̃ᵀ V g̃ / (Σ V⁻¹)²
+    estimate: float = float(np.dot(wb.T, col) / mat_inv_sum)
+    variance: float = np.sqrt(np.dot(wb.T, np.dot(mat, wb)) / mat_inv_sum ** 2)
+    return estimate, variance
 
 
 def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: str|Path) -> pd.DataFrame:
