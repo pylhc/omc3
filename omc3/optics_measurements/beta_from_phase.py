@@ -234,11 +234,14 @@ def n_bpm_method(
             outer_elmts = elements.iloc[indx_el_first : indx_el_last + 1]
             outer_elmts_ph = elements.iloc[indx_el_first : indx_el_last + 1][mu_column].to_numpy() * PI2
         # fmt: on
-        # bpms_inds_elements was not used (jdilly)
-        # bpms_inds_elements = [outer_elmts.index.get_loc(bpm_name) for bpm_name in outer_meas_phase_adv.index.to_numpy()]
-        sin_squared_elements = np.square(np.sin(
-            outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :]
-        ))
+
+        # sin²(φ_l - φ_mdl_j): (n_elements × n_bpms_window) matrix of squared sines of the
+        # model phase advance from every element l to every window BPM j. These terms will
+        # appear in the denominator of Eq (20) of the reference paper.
+        sin_squared_elements = np.square(
+            np.sin(outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :])
+        )
+
         with np.errstate(divide='ignore'):
             cot_meas = 1.0 / np.tan(outer_meas_phase_adv.to_numpy())
             cot_model = 1.0 / np.tan(outer_mdl_ph - outer_mdl_ph[m])
