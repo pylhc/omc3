@@ -291,9 +291,9 @@ def n_bpm_method(
         # As per docstring these are V_β = T_β · Σ · T_βᵀ  and  V_α = T_α · Σ · T_αᵀ
         # Each row of is the gradient ∇β (or ∇α) for one triplet combination
         # V_β[i,j] = covariance between the β estimates from triplets i and j
-        mat_t_beta,  = np.zeros((len(index_tuples), len(diag)))
-        mat_t_alpha= np.zeros((len(index_tuples), len(diag)))
-        betas = np.empty(len(index_tuples)),
+        mat_t_beta = np.zeros((len(index_tuples), len(diag)))
+        mat_t_alpha = np.zeros((len(index_tuples), len(diag)))
+        betas = np.empty(len(index_tuples))
         alphas = np.empty(len(index_tuples))
 
         for i, c in enumerate(index_tuples):
