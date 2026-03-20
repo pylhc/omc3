@@ -144,9 +144,9 @@ def n_bpm_method(
     ``calculate_beta_alpha_from_single_combination``. The estimates of all combinations
     are combined with covariant weighting using the analytical covariance matrix:
 
-        V = T · Σ · Tᵀ
+        V_β = J · Σ · Jᵀ
 
-    where T is the Jacobian of (βi, ⍺i) with respect to all error sources, and Σ is the
+    where J is the Jacobian of (βi, ⍺i) with respect to all error sources, and Σ is the
     diagonal matrix of errors sources variances (phase noise + systematic lattice errors).
     See ``_covariant_weighting`` for the combination step.
 
