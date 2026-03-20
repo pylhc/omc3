@@ -953,7 +953,15 @@ def _tilt_slice_matrix(
     )[:slice_width]
 
 
-def _get_filtered_model_df(meas_input: DotDict, phase: pd.DataFrame, plane: str, best: bool = False):
+def _get_filtered_model_df(meas_input: DotDict, phase: pd.DataFrame, plane: str, best: bool = False) -> pd.DataFrame:
+    """
+    Returns the model DataFrame filtered to the measured BPMs, with S, beta, alpha
+    and mu columns for the given `plane`.
+
+    When `best=False` (normal model), columns are renamed with the `MDL` suffix for the output.
+    When `best=True` (best-knowledge model) columns keep their original names for use in the
+    N-BPM method's Jacobian calculations.
+    """
     model = _get_accel_model(meas_input, best=best)
     df = model.loc[phase[MEASUREMENT].index, [S, f"{BETA}{plane}", f"{ALPHA}{plane}", f"{PHASE_ADV}{plane}"]]
     if not best:
@@ -968,6 +976,10 @@ def _get_filtered_model_df(meas_input: DotDict, phase: pd.DataFrame, plane: str,
 
 
 def _get_accel_model(meas_input: DotDict, best: bool) -> pd.DataFrame:
+    """
+    Returns the best-knowledge model if available and `best=True`, otherwise
+    returns the normal model from the input's defined accelerator.
+    """
     accel: Accelerator = meas_input.accelerator
     if not best:
         return accel.model
