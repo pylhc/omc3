@@ -498,7 +498,7 @@ def calculate_beta_alpha_from_single_combination(
         Jacobian rows for this combination, to be stacked into the complete Jacobian
         matrices T_β and T_α inside of ``n_bpm_method``.
     """
-    m = int(n_bpms / 2)  # half window: probed BPM has m neighbors on each side
+    m = int(range_of_bpms / 2)  # half window: probed BPM has m neighbors on each side
     ix = c[0]  # index of BPM i
     iy = c[1]  # index of BPM y
     dif_cot_model = cot_model[ix] - cot_model[iy]
