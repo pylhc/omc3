@@ -358,12 +358,20 @@ def n_bpm_method(
     beta_df[f"{ERR}{ALPHA}{plane}"] = betas_alfas[:, 3]
     beta_df["NCOMB"] = n_comb
 
+    # Now we do some quality filtering
+
+    # Drop BPMs for which the loop produced no valid combinations
     invalid_mask = beta_df["NCOMB"] == 0
     if np.any(invalid_mask):
         LOGGER.debug(f"No valid combinations for BPMs: {list(beta_df.index[invalid_mask])}.")
-
     beta_df = beta_df.loc[beta_df["NCOMB"] > 0]
+
+    # Drop BPMs with a non-physical negative beta (occurs with very noisy phase advances)
     beta_df = beta_df.loc[beta_df[f"{BETA}{plane}"] > 0]
+
+    # Drop BPMs where the estimated error exceeds both the measured and model beta.
+    # Keeping at least one comparison to β_mdl guards against cases where β_meas
+    # itself is already severely distorted somehow.
     too_high_error_mask = np.logical_or(beta_df[f"{BETA}{plane}"] > beta_df[f"{ERR}{BETA}{plane}"],
                                         beta_df[f"{BETA}{plane}{MDL}"] > beta_df[f"{ERR}{BETA}{plane}"])
     beta_df = beta_df.loc[too_high_error_mask]
