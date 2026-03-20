@@ -249,13 +249,28 @@ def n_bpm_method(
             cot_model = 1.0 / np.tan(outer_mdl_ph - outer_mdl_ph[m])
 
         # Numerical stability filter: discard BPMs whose phase advance is too close to
-        # # a multiple of π (|cot| > COT_THRESHOLD ≈ π/ZERO_THRESHOLD), where the cotangent
+        # a multiple of π (|cot| > COT_THRESHOLD ≈ π/ZERO_THRESHOLD), where the cotangent
         # diverges and derivatives become unreliable (paper Sec. III, stability criterion)
         patter = (np.abs(cot_meas) <= COT_THRESHOLD) & (np.abs(cot_model) <= COT_THRESHOLD)
 
-        diag = np.concatenate((np.square(outer_meas_err.to_numpy()), outer_elmts.loc[:]["dK1"],
-                               outer_elmts.loc[:]["dX"], outer_elmts.loc[:]["KdS"],
-                               outer_elmts.loc[:]["mKdS"]))
+        # Diagonal of the covariance matrix Σ for all error sources. Note systematic errors
+        # have been loaded as squares from error_deffs.txt and quadrupole dK1 was multiplied
+        # by length in order to obtain the value for the field gradients (lng = length(outer_elmts))
+        #   [0 : n_bpms]                → σ²_φⱼ  (phase measurement variance for each window BPM j)
+        #   [off1 : off1+lng]           → σ²_ΔK1L = (dK1 · K1L)² variance (quad gradient field errors)
+        #   [off2 : off2+lng]           → σ²_ΔX = dX²  (sextupole transverse misalignment)
+        #   [off3 : off3+lng]           → σ²_KdS = (dS · K1L)²  (quad longitudinal misalignment)
+        #   [off4 : off4+lng]           → σ²_mKdS  (upstream drift of misaligned quad, thin-lens)
+        diag = np.concatenate(
+            (
+                np.square(outer_meas_err.to_numpy()),
+                outer_elmts.loc[:]["dK1"],
+                outer_elmts.loc[:]["dX"],
+                outer_elmts.loc[:]["KdS"],
+                outer_elmts.loc[:]["mKdS"],
+            )
+        )
+
         outer_elmts = outer_elmts.rename(columns={f"{BETA}{plane}": "BETA"})
         index_tuples = [[x, y] for x in loc_range[patter] + m for y in loc_range[patter] + m
                         if (x < y) and (abs(cot_model[x] - cot_model[y]) > ZERO_THRESHOLD) and
