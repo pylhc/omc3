@@ -27,6 +27,7 @@ Beta from Phase
 from __future__ import annotations
 
 import re
+from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -54,6 +55,7 @@ from omc3.optics_measurements.constants import (
 from omc3.optics_measurements.phase import CompensationMode
 from omc3.optics_measurements.toolbox import df_diff, df_ratio, df_rel_diff
 from omc3.utils import logging_tools, stats
+from omc3.utils.misc import StrEnum
 
 if TYPE_CHECKING:
     from generic_parser import DotDict
@@ -71,7 +73,7 @@ COT_THRESHOLD: float = 15.9
 RCOND: float = 1.0e-14
 
 
-class Methods:
+class Methods(StrEnum):
     THREE_BPM: str = "3BPM method"
     A_NBPM: str = "Analytical N-BPM method"
     NO_ERR: str = "No Errors"
