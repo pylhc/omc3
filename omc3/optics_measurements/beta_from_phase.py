@@ -421,7 +421,7 @@ def get_elements_with_errors(meas_input: DotDict, plane: str) -> tuple[pd.DataFr
         - elements DataFrame indexed by element name with columns:
             S, K1L, K2L, MU{plane}, BET{plane}, dK1, dX, KdS, mKdS, BPMdS.
         - error_method string: ``Methods.A_NBPM`` if at least one systematic error
-        was assigned, ``Methods.NO_ERR`` otherwise.
+            was assigned, ``Methods.NO_ERR`` otherwise.
 
     Raises:
         OSError: if ``error_defs_file`` is None (no error definition file configured).
@@ -774,9 +774,9 @@ def three_bpm_method(
 
     For each probed BPM i, three triplets are formed and their β/β_mdl estimates
     are averaged arithmetically (see ``bet_frac`` below):
-        - xxxABBx → probed BPM followed by two forward neighbours
-        - xBBAxxx → two backward neighbours followed by probed BPM
-        - xxBABxx → probed BPM flanked by skip-one neighbours
+    - xxxABBx → probed BPM followed by two forward neighbours
+    - xBBAxxx → two backward neighbours followed by probed BPM
+    - xxBABxx → probed BPM flanked by skip-one neighbours
 
     The input phase advance data from ``phase["MEAS"]``, ``phase["MODEL"]``,
     ``phase["ERRMEAS"]`` (from ``get_phases``) are of the form:
