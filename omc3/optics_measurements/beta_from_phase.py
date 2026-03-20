@@ -189,11 +189,12 @@ def n_bpm_method(
     bk_model = _get_filtered_model_df(meas_input, phase, plane, best=True)
     tune, mdltune = meas_and_mdl_tunes
 
-    # Prepare array for results
-    betas_alfas = np.zeros((len(phase[MEASUREMENT].index), 4))
     nbpms: int = len(bk_model.index)
     n_comb: int = np.zeros(nbpms, dtype=int)
 
+    # Prepare array for results - this one will contain the
+    # [beta, betaerr, alfa, alfaerr] for each probed BPM
+    betas_alfas = np.zeros((len(phase[MEASUREMENT].index), 4))
 
     m = int(n_bpms / 2)  # half window: probed BPM has m neighbors on each side
     loc_range = np.arange(-m, m + 1)  # relative indices [-m, ..., 0, ..., m] 0 is the probed BPM
@@ -346,6 +347,7 @@ def n_bpm_method(
 
         betas_alfas[indx, :] = np.array([beti, beterr, alfi, alferr])
 
+    # We can assign the computed results to our final returned dataframe
     beta_df[f"{BETA}{plane}"] = betas_alfas[:, 0]
     beta_df[f"{ERR}{BETA}{plane}"] = betas_alfas[:, 1]
     beta_df[f"{ALPHA}{plane}"] = betas_alfas[:, 2]
