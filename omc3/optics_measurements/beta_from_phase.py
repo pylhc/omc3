@@ -272,9 +272,20 @@ def n_bpm_method(
         )
 
         outer_elmts = outer_elmts.rename(columns={f"{BETA}{plane}": "BETA"})
-        index_tuples = [[x, y] for x in loc_range[patter] + m for y in loc_range[patter] + m
-                        if (x < y) and (abs(cot_model[x] - cot_model[y]) > ZERO_THRESHOLD) and
-                        (np.sign(cot_model[x] - cot_model[y]) * np.sign(cot_meas[x] - cot_meas[y]) > 0)]
+
+        # Gather all valid BPM pairs (x, y) forming a triplet with the probed BPM (x < y enforces no duplicates)
+        # In the conditions from this comprehension, a pair is rejected if:
+        #   - either BPM failed the cotangent stability filter above,
+        #   - |cot_mdl_x - cot_mdl_y| ≤ ZERO_THRESHOLD (near-degenerate model denominator), or
+        #   - cot_mdl and cot_meas differences have opposite signs (unphysical: would invert β sign)
+        index_tuples = [
+            [x, y]
+            for x in loc_range[patter] + m
+            for y in loc_range[patter] + m
+            if (x < y)
+            and (abs(cot_model[x] - cot_model[y]) > ZERO_THRESHOLD)
+            and (np.sign(cot_model[x] - cot_model[y]) * np.sign(cot_meas[x] - cot_meas[y]) > 0)
+        ]
         mat_t_beta, mat_t_alpha = np.zeros((len(index_tuples), len(diag))), np.zeros((len(index_tuples), len(diag)))
         betas, alphas = np.empty(len(index_tuples)), np.empty(len(index_tuples))
         for i, c in enumerate(index_tuples):
