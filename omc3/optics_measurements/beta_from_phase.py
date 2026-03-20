@@ -653,20 +653,51 @@ def _covariant_weighting(mat: np.ndarray, col: np.ndarray) -> typle[float, float
     return estimate, variance
 
 
-def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: str|Path) -> pd.DataFrame:
+def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: Path | str) -> pd.DataFrame:
     """
-    Adds uncertainty information to ``twiss_full``.
+    Reads the definition file for systematic uncertainties and populates variance
+    columns on ``twiss_full``, then filters out elements with no uncertainty assigned
 
-    Sources of Errors:
-        ``dK1``:    quadrupolar field errors.
-        ``dS``:     quadrupole longitudinal misalignments.
-        ``dX``:     sextupole transverse misalignments.
-        ``BPMdS``:  BPM longitudinal misalignments.
+    All created output columns store **variances** (σ²), not standard deviations (σ).
+    The error definition file provides rms σ values; and squaring is done in here.
+
+    Here are the output columns (variances) and how they map to error sources:
+
+    +----------+------------------------------------------------+-----------------------------------+
+    | Column   | Physical meaning                               | Formula                           |
+    +----------+------------------------------------------------+-----------------------------------+
+    | dK1      | Quadrupole relative field gradient error       | σ²_ΔK1L = (dK1 · K1L)²            |
+    | dX       | Sextupole transverse (horizontal) misalignment | σ²_ΔX = dX²                       |
+    | KdS      | Quadrupole longitudinal misalignment (forward) | σ²_KdS = (dS · K1L)²              |
+    | mKdS     | Upstream drift of longitudinally misaligned    | σ²_mKdS = KdS of previous elem    |
+    |          | quad (thin-lens decomposition, Sec. II.B)      |                                   |
+    | BPMdS    | BPM longitudinal misalignment                  | σ²_BPMdS = dS²  (stored, unused?) |
+    +----------+------------------------------------------------+-----------------------------------+
+
+    The PATTERN column in the error file is a regex matched against element names,
+    or a `key:<name>` literal for a single named element. The MAINFIELD column
+    distinguishes elements types.
+
+    Only elements with `UNC=True` are returned. This UNC flag is also set on the
+    element immediately preceding a quadrupole with dK1 > 0 (to capture the upstream
+    drift needed for the mKdS thin-lens term in Sec. II.B, Fig. 3).
+
+    Args:
+        twiss_full: lattice element DataFrame (from ``accelerator.elements``),
+            indexed by element name, containing at least K1L and K2L columns.
+        errordefspath: path to the TFS systematic uncertainties definition file.
+
+    Returns:
+        A filtered copy of ``twiss_full`` containing only elements with at least one
+        non-zero variance, with added columns dK1, dX, KdS, mKdS, BPMdS (all σ²).
     """
-    LOGGER.debug("Start creating uncertainty information")
+    LOGGER.debug("Loading systematic uncertainties")
     errdefs = tfs.read(errordefspath)
     twiss_full = twiss_full.assign(UNC=False, dK1=0.0, KdS=0.0, mKdS=0.0, dX=0.0, BPMdS=0.0)
-    # loop over uncertainty definitions, fill the respective columns, set UNC to true
+
+    # Loop over uncertainty definitions, each row matching a set of elements via
+    # PATTERN, and assign the corresponding variance to the appropriate column.
+    # Also set UNC to true on relevant elements.
     for indx in errdefs.index:
         patt = errdefs.loc[indx, "PATTERN"]
         if patt.startswith("key:"):
@@ -677,20 +708,30 @@ def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: str|Path) -> 
             LOGGER.debug(f"creating uncertainty information for RegEx {patt}")
             mask = twiss_full.index.str.contains(reg)
 
+        # Quadrupole field error variance: σ²_ΔK1L = (relative_error · K1L)²
         twiss_full.loc[mask, "dK1"] = (errdefs.loc[indx, "dK1"] * twiss_full.loc[mask, "K1L"]) ** 2
+        # Sextupole transverse misalignment variance: σ²_ΔX = dX² (used later with K2L for feeddown)
         twiss_full.loc[mask, "dX"] = errdefs.loc[indx, "dX"] ** 2
         if errdefs.loc[indx, "MAINFIELD"] == "BPM":
+            # BPM longitudinal misalignment
             twiss_full.loc[mask, "BPMdS"] = errdefs.loc[indx, "dS"]**2
         else:
+            # Quadrupole longitudinal misalignment variance: σ²_KdS = (dS · K1L)²
             twiss_full.loc[mask, "KdS"] = (errdefs.loc[indx, "dS"] * twiss_full.loc[mask, "K1L"]) ** 2
-        twiss_full.loc[mask, "UNC"] = True
+        twiss_full.loc[mask, "UNC"] = True  # flag uncertainty assigned
 
     # in case of quadrupole longitudinal misalignments, the element (DRIFT) in front of the
-    # misaligned quadrupole will be used for the thin lens approximation of the misalignment
+    # misaligned quadrupole will be used for the thin lens approximation of the misalignment:
+    # mKdS is the KdS of the preceding element: in the thin-lens decomposition of a longitudinally
+    # misaligned quadrupole (Sec. II.B, Fig. 3), the upstream drift element carries the backward
+    # thin-lens kick, so its variance equals that of the quad it precedes
     twiss_full["mKdS"] = np.roll(twiss_full.loc[:]["KdS"], 1)
-    twiss_full.loc[:, "UNC"] = np.logical_or(abs(np.roll(twiss_full.loc[:, "dK1"], -1)) > 1.0e-12,
-                                             twiss_full.loc[:, "UNC"])
-    LOGGER.debug("DONE creating uncertainty information")
+    # Also flag the element immediately before any quad with field errors as UNC=True,
+    # so the mKdS entry of that element is included in the window slicing
+    twiss_full.loc[:, "UNC"] = np.logical_or(
+        abs(np.roll(twiss_full.loc[:, "dK1"], -1)) > 1.0e-12, twiss_full.loc[:, "UNC"]
+    )
+    LOGGER.debug("Finished assigning variancies from systematic uncertainties")
     return twiss_full.loc[twiss_full["UNC"]]
 
 
