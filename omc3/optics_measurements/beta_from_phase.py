@@ -490,17 +490,16 @@ def calculate_beta_alpha_from_single_combination(
     ix = c[0]  # index of BPM i
     iy = c[1]  # index of BPM y
     fac1, fac2 = -np.sign(c[0] - m), np.sign(c[1] - m)
-
     dif_cot_model = cot_model[ix] - cot_model[iy]
 
-    # calculate beta
-    dif_cot_meas = cot_meas[ix] - cot_meas[iy]
-    denom = dif_cot_model / betmdl1
-    beta_i = dif_cot_meas / denom
+    # Beta estimate at probed BPM for this triplet
+    dif_cot_meas = cot_meas[ix] - cot_meas[iy]  # numerator term: cot(φ_meas_bpmx) − cot(φ_meas_bpmy)
+    denom = dif_cot_model / betmdl1  # denominator term: (cot(φ_mdl_bpmx) − cot(φ_mdl_bpmy)) / β_mdl
+    beta_i = dif_cot_meas / denom    # β₁ = β_mdl · Δcot_meas / Δcot_mdl
+    # Alpha estimate at probed BPM for this triplet
     avg_cot_model = (cot_model[ix] + cot_model[iy]) / 2
-    denomalf = 2 * (avg_cot_model + alfmdl1)
+    denomalf = 2 * (avg_cot_model + alfmdl1)  # denominator term: cot(φ_mdl_bpmx) + cot(φ_mdl_bpmy) + 2α_mdl
     avg_cot_meas = (cot_meas[ix] + cot_meas[iy]) / 2
-
     alfa_i = 0.5 * (denomalf * dif_cot_meas / dif_cot_model - 2 * avg_cot_meas)
 
     lng = len(outer_elmts)
