@@ -296,6 +296,8 @@ def n_bpm_method(
         betas = np.empty(len(index_tuples))
         alphas = np.empty(len(index_tuples))
 
+        # For each given combination we apply the calculations to determine
+        # beta, alpha and the covariance matrices terms. See that function.
         for i, c in enumerate(index_tuples):
             betas[i], alphas[i], mat_t_beta[i], mat_t_alpha[i] = (
                 calculate_beta_alpha_from_single_combination(
@@ -312,8 +314,12 @@ def n_bpm_method(
                 )
             )
 
+        # Now we have the values, we move on to the error calculations from the covariance terms
+        # Zero-variance entries (error sources not defined for this window) are excluded before
+        # building the covariance matrix to avoid degenerate rows/columns
         mask = diag != 0
         mat_diag = np.diag(diag[mask])
+
         mat_v_beta = np.dot(mat_t_beta[:, mask], np.dot(mat_diag, np.transpose(mat_t_beta[:, mask])))
         mat_v_alpha = np.dot(mat_t_alpha[:, mask], np.dot(mat_diag, np.transpose(mat_t_alpha[:, mask])))
 
