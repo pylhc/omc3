@@ -752,9 +752,20 @@ def three_bpm_method(
     meas_and_mdl_tunes: tuple[float, float],
 ) -> pd.DataFrame:
     """
-    Calculates betas and alphas from using adjacent BPMs (3 combination).
-    ``phase["MEAS"]``, ``phase["MODEL"]``, ``phase["ERRMEAS"]`` (from ``get_phases``) are of the
-    form:
+    Calculates betas and alphas three adjacent-BPM triplet combinations
+    (Castro, Ph.D. Thesis, University of Valencia, 1996). Unline in the
+    ``n_bpm_method`` this used only the immediately neighbouring BPMs
+    and propagates phase measurement uncertainties only (no systematic
+    uncertainties for lattice errors).
+
+    For each probed BPM i, three triplets are formed and their β/β_mdl estimates
+    are averaged arithmetically (see ``bet_frac`` below):
+        - xxxABBx → probed BPM followed by two forward neighbours
+        - xBBAxxx → two backward neighbours followed by probed BPM
+        - xxBABxx → probed BPM flanked by skip-one neighbours
+
+    The input phase advance data from ``phase["MEAS"]``, ``phase["MODEL"]``,
+    ``phase["ERRMEAS"]`` (from ``get_phases``) are of the form:
 
     +----------+----------+----------+----------+----------+
     |          |   BPM1   |   BPM2   |   BPM3   |   BPM4   |
@@ -778,7 +789,7 @@ def three_bpm_method(
     | BPM_(i+1) | phi_12 | phi_23 | phi_34 | phi_45 |
     +-----------+--------+--------+--------+--------+
 
-    ``cot_phase_*_shift1``:
+    The computed ``cot_phase_*_shift1`` gives:
 
     +-----------------------------+-----------------------------+-----------------------------+
     | cot(phi_1n) - cot(phi_1n-1) |  cot(phi_21) - cot(phi_2n)  |   cot(phi_32) - cot(phi_31) |
@@ -791,65 +802,94 @@ def three_bpm_method(
     +-----------------------------+-----------------------------+-----------------------------+
 
     - for the combination xxxABBx: first row,
-    - for the combinstion xBBAxxx: fourth row,
+    - for the combination xBBAxxx: fourth row,
     - for the combination xxBABxx: second row of ``cot_phase_*_shift2``.
 
     Args:
-        meas_input: Optics measurement configuration object.
+        meas_input: `OpticsInput` object with optics CLI options.
         phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
         plane: marking the horizontal or vertical plane, **X** or **Y**.
-        meas_and_mdl_tunes: measured  and model tunes.
+        meas_and_mdl_tunes: measured and model tunes.
 
     Returns:
         `TfsDataFrame` containing betas and alfas from phase.
     """
+    # Ensure at least 3 BPMs so we can form one triplet
     if len(phase[MEASUREMENT].index) < 3:
-        raise ValueError("At least 3 BPMs are required for 3-BPM method!"
-                        f"Instead only {len(phase['MEAS'])} were found in input.")
+        raise ValueError(
+            "At least 3 BPMs are required for 3-BPM method. "
+            f"Instead only {len(phase[MEASUREMENT].index)} were found in input."
+        )
 
     tune, mdltune = meas_and_mdl_tunes
     beta_df = _get_filtered_model_df(meas_input, phase, plane)
-    # tilt phase advances in order to have the phase advances in a neighbourhood
+
+    # Tilt and slice so that for each probed BPM i the 5 rows hold (see docstring):
+    #   row 0: φ(i-1→j),
+    #   row 1: 0,
+    #   row 2: 0,
+    #   row 3: φ(i+1→j),
+    #   row 4: φ(i+2→j),
+    # (see _tilt_slice_matrix for the rearrangement). Convert to radians
     tilted_meas = _tilt_slice_matrix(phase[MEASUREMENT].to_numpy(copy=True), 2, 5, tune) * PI2
     tilted_model = _tilt_slice_matrix(phase[MODEL].to_numpy(copy=True), 2, 5, mdltune) * PI2
     tilted_errmeas = _tilt_slice_matrix(phase[f"{ERR}{MEASUREMENT}"].to_numpy(copy=True), 2, 5, 0) * PI2
+
     betmdl = beta_df.loc[:, f"{BETA}{plane}{MDL}"].to_numpy()
     alfmdl = beta_df.loc[:, f"{ALPHA}{plane}{MDL}"].to_numpy()
-    with np.errstate(divide='ignore'):
+
+    with np.errstate(divide="ignore"):
         cot_phase_meas = 1 / np.tan(tilted_meas)
         cot_phase_model = 1 / np.tan(tilted_model)
-    # calculate enumerators and denominators for far more cases than needed
-    # shift1 are the cases BBA, ABB, AxBB, AxxBB etc. (the used BPMs are adjacent)
-    # shift2 are the cases where the used BPMs are separated by one. only BAB is used for  3-BPM
+
+    # Calculate numerators and denominators for far more cases than needed
+    #   shift1 are the cases BBA, ABB, AxBB, AxxBB etc. (the used BPMs are adjacent)
+    #   shift2 are the cases where the used BPMs are separated by one. only BAB is used for 3-BPM
+    # Here EPSILON guards against a zero Δcot_mdl denominator (nearly degenerate triplet)
     cot_phase_meas_shift1 = cot_phase_meas - np.roll(cot_phase_meas, -1, axis=0)
     cot_phase_model_shift1 = cot_phase_model - np.roll(cot_phase_model, -1, axis=0) + EPSILON
     cot_phase_meas_shift2 = cot_phase_meas - np.roll(cot_phase_meas, -2, axis=0)
     cot_phase_model_shift2 = cot_phase_model - np.roll(cot_phase_model, -2, axis=0) + EPSILON
-    # calculate the sum of the fractions
-    bet_frac = (cot_phase_meas_shift1[0]/cot_phase_model_shift1[0] +
-                cot_phase_meas_shift1[3]/cot_phase_model_shift1[3] +
-                cot_phase_meas_shift2[1]/cot_phase_model_shift2[1]) / 3
 
-    alf_mdl_term = (((cot_phase_model + np.roll(cot_phase_model, -1, axis=0))[0] + 2.0 * alfmdl)
-                + ((cot_phase_model + np.roll(cot_phase_model, -1, axis=0))[3] + 2.0 * alfmdl)
-                + ((cot_phase_model + np.roll(cot_phase_model, -2, axis=0))[1] + 2.0 * alfmdl)) / 6.0
-    alf_meas_term = (((cot_phase_meas + np.roll(cot_phase_meas, -1, axis=0))[0])
-                + ((cot_phase_meas + np.roll(cot_phase_meas, -1, axis=0))[3])
-                + ((cot_phase_meas + np.roll(cot_phase_meas, -2, axis=0))[1])) / 6.0
+    # Calculate β/β_mdl for each of the 3 triplets, which is Δcot_meas / Δcot_mdl
+    # Here bet_frac is their arithmetic mean, so beti = β_mdl · mean(β/β_mdl)
+    bet_frac = (
+        cot_phase_meas_shift1[0] / cot_phase_model_shift1[0]
+        + cot_phase_meas_shift1[3] / cot_phase_model_shift1[3]
+        + cot_phase_meas_shift2[1] / cot_phase_model_shift2[1]
+    ) / 3
+
+    # Alpha model term: average of (cot φ_mdl,j + cot φ_mdl,k + 2α_mdl) / 2
+    # across the 3 combinations
+    alf_mdl_term = (
+        ((cot_phase_model + np.roll(cot_phase_model, -1, axis=0))[0] + 2.0 * alfmdl)
+        + ((cot_phase_model + np.roll(cot_phase_model, -1, axis=0))[3] + 2.0 * alfmdl)
+        + ((cot_phase_model + np.roll(cot_phase_model, -2, axis=0))[1] + 2.0 * alfmdl)
+    ) / 6.0
+    alf_meas_term = (
+        ((cot_phase_meas + np.roll(cot_phase_meas, -1, axis=0))[0])
+        + ((cot_phase_meas + np.roll(cot_phase_meas, -1, axis=0))[3])
+        + ((cot_phase_meas + np.roll(cot_phase_meas, -2, axis=0))[1])
+    ) / 6.0
 
     # multiply the fractions by betmdl and calculate the arithmetic mean
     beti = bet_frac * betmdl
     alfi = bet_frac * alf_mdl_term + alf_meas_term
+
+    # Error propagation, from phase uncertainties
     # calculate errphi_ij^2 / sin^2 phimdl_ij * beta
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         sin_squared_model = tilted_errmeas**2 / np.square(np.sin(tilted_model)) * betmdl
         sin_quadrup_model = tilted_errmeas**2 / np.power(np.sin(tilted_model), 4) * betmdl
-    # square it again beacause it's used in a vector length
+
+    # Square to get variance terms (summed in quadrature across the two BPMs of each triplet)
     sin_squared_model = np.square(sin_squared_model)
     sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
     sin_squ_model_shift2 = sin_squared_model + np.roll(sin_squared_model, -2, axis=0) / np.square(cot_phase_model_shift2)
     sin_quad_model_shift1 = sin_quadrup_model + np.roll(sin_quadrup_model, -1, axis=0) / np.square(cot_phase_model_shift1)
     sin_quad_model_shift2 = sin_quadrup_model + np.roll(sin_quadrup_model, -2, axis=0) / np.square(cot_phase_model_shift2)
+
+    # beterr = (1/3) · sqrt(Σ variance over 3 combinations): propagated σ_β
     beterr = np.sqrt(sin_squ_model_shift1[0] + sin_squ_model_shift1[3] + sin_squ_model_shift2[1]) / 3
     beta_df[f"{BETA}{plane}"] = beti
     beta_df[f"{ERR}{BETA}{plane}"] = beterr
