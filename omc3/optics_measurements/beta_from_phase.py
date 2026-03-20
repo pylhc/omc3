@@ -347,14 +347,16 @@ def n_bpm_method(
 
         betas_alfas[indx, :] = np.array([beti, beterr, alfi, alferr])
 
-    # We can assign the computed results to our final returned dataframe
+    # Unpack the per-BPM results from the loop into the output DataFrame.
+    # BPMs that hit the 'continue' above remain at zero in betas_alfas (as
+    # initialised) and are filtered below.
     beta_df[f"{BETA}{plane}"] = betas_alfas[:, 0]
     beta_df[f"{ERR}{BETA}{plane}"] = betas_alfas[:, 1]
     beta_df[f"{ALPHA}{plane}"] = betas_alfas[:, 2]
     beta_df[f"{ERR}{ALPHA}{plane}"] = betas_alfas[:, 3]
     beta_df["NCOMB"] = n_comb
 
-    invalid_mask = beta_df['NCOMB'] == 0
+    invalid_mask = beta_df["NCOMB"] == 0
     if np.any(invalid_mask):
         LOGGER.debug(f"No valid combinations for BPMs: {list(beta_df.index[invalid_mask])}.")
 
