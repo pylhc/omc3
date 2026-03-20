@@ -385,17 +385,63 @@ def n_bpm_method(
 
 
 def get_elements_with_errors(meas_input: DotDict, plane: str) -> tuple[pd.DataFrame, str]:
+    """
+    Loads the accelerator lattice elements with their systematic error variances,
+    ready to be windowed per probed BPM in ``n_bpm_method``.
+
+    Reads the machine-specific error definition file (``error_defs_file``) and
+    populates four variance columns on the element table via ``_assign_uncertainties``:
+    ``dK1``, ``dX``, ``KdS``, ``mKdS``.
+
+    Only elements with at least one non-zero error source are retained (see
+    ``_assign_uncertainties`` for the filtering logic). The returned ``error_method``
+    string is used downstream to label the output file header and the RMS beta-beat
+    log message.
+
+    Args:
+        meas_input: `OpticsInput` object with optics CLI options. Must have
+        ``accelerator.error_defs_file`` set and ``accelerator.elements`` populated.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        Tuple of:
+        - elements DataFrame indexed by element name with columns:
+            S, K1L, K2L, MU{plane}, BET{plane}, dK1, dX, KdS, mKdS, BPMdS.
+        - error_method string: ``Methods.A_NBPM`` if at least one systematic error
+        was assigned, ``Methods.NO_ERR`` otherwise.
+
+    Raises:
+        OSError: if ``error_defs_file`` is None (no error definition file configured).
+    """
     if meas_input.accelerator.error_defs_file is None:
         raise OSError("Error definition file could not be found")
 
+    # Extract only the columns needed for the Jacobian in 'calculate_beta_alpha_from_single_combination':
+    # K1L → scaled into dK1 variance;
+    # K2L → multiplied into the dX Jacobian entry;
+    # MU{plane} and BET{plane} → model phase advances and betas used in the sin² / bet_sin terms.
+    # Then _assign_uncertainties attributes the systematic errors from file
     elements = meas_input.accelerator.elements.loc[:, [S, "K1L", "K2L", f"{PHASE_ADV}{plane}", f"{BETA}{plane}"]]
     LOGGER.debug("Accelerator Error Definition")
     elements = _assign_uncertainties(elements, meas_input.accelerator.error_defs_file)
-    errors_assigned = (len(elements["dK1"].to_numpy().nonzero()[0]) + len(
-        elements["dX"].to_numpy().nonzero()[0]) + len(elements["KdS"].to_numpy().nonzero()[0])) > 0
+
+    # Check whether any systematic error was actually assigned to at least one element.
+    # dK1, dX and KdS are checked but mKdS is derived from KdS so it needs no separate check.
+    # BPMdS is stored but not currently included in the diag vector so not checked.
+    errors_assigned = (
+        len(elements["dK1"].to_numpy().nonzero()[0])
+        + len(elements["dX"].to_numpy().nonzero()[0])
+        + len(elements["KdS"].to_numpy().nonzero()[0])
+    ) > 0
     if not errors_assigned:
-        LOGGER.warning("No systematic errors were given or no element was found for the given "
-                       "error definitions. The systematic lattice errors are not used.")
+        LOGGER.warning(
+            "No systematic errors were given or no element was found for the given "
+            "error definitions. The systematic lattice errors are not used."
+        )
+
+    # Assign the error method (remember we're only called for analytical N-BPM):
+    #   A_NBPM = full analytical method with systematic errors
+    #   NO_ERR = only phase measurement uncertainties propagated (reduced accuracy)
     error_method = Methods.A_NBPM if errors_assigned else Methods.NO_ERR
     return elements, error_method
 
