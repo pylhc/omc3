@@ -242,9 +242,12 @@ def n_bpm_method(
             np.sin(outer_elmts_ph[:, np.newaxis] - outer_mdl_ph[np.newaxis, :])
         )
 
-        with np.errstate(divide='ignore'):
+        with np.errstate(divide="ignore"):
+            # cot(φ₁ⱼ): measured cotangents for each window BPM j, phase from probed BPM
             cot_meas = 1.0 / np.tan(outer_meas_phase_adv.to_numpy())
+            # cot(φ_mdl_1j): model cotangents relative to the probed BPM's model phase (index m)
             cot_model = 1.0 / np.tan(outer_mdl_ph - outer_mdl_ph[m])
+
         patter = (np.abs(cot_meas) <= COT_THRESHOLD) & (np.abs(cot_model) <= COT_THRESHOLD)
         diag = np.concatenate((np.square(outer_meas_err.to_numpy()), outer_elmts.loc[:]["dK1"],
                                outer_elmts.loc[:]["dX"], outer_elmts.loc[:]["KdS"],
