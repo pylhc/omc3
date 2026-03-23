@@ -1,17 +1,16 @@
-@ Energy	%s	6800GeV
-@ Info		%s	Created on 23/03/2022. Copy from 6.5TeV, best guess for now.
-@ RELATIVE 	%s	MAINFIELD
-@ RADIUS 	%le	0.017
-
-*	PATTERN		dK1		dX		dS		MAINFIELD
-$	%s			%le		%le		%le		%s
-
-	^MQ\.		18e-4	0		0.003	QUAD
-	^MQM		12e-4	0		0.003	QUAD
-	^MQY		 8e-4	0		0.003	QUAD
-	^MQX		10e-4	0		0.003	QUAD
-	^MQW		15e-4	0		0.003	QUAD
-	^MQT		75e-4	0		0.003	QUAD
-	^MQS		0		0		0.01	QUAD
-	^MS\.		0		0.003	0		SEXT
-	^BPM		0		0		0.003	BPM
+@ Energy               %s            "6800GeV"
+@ Info                 %s "Created on 23/03/2022. Copy from 6.5TeV, best guess for now."
+@ RELATIVE             %s          "MAINFIELD"
+@ RADIUS               %le                0.017
+@ TODO                 %s "NEEDS to be revised for HL-LHC!"
+*              PATTERN                  dK1                   dX                   dS            MAINFIELD
+$                   %s                  %le                  %le                  %le                   %s
+               "^MQ\."               0.0018                    0                0.003               "QUAD"
+                "^MQM"               0.0012                    0                0.003               "QUAD"
+                "^MQY"               0.0008                    0                0.003               "QUAD"
+                "^MQX"                0.001                    0                0.003               "QUAD"
+                "^MQW"               0.0015                    0                0.003               "QUAD"
+                "^MQT"               0.0075                    0                0.003               "QUAD"
+                "^MQS"                    0                    0                 0.01               "QUAD"
+               "^MS\."                    0                0.003                    0               "SEXT"
+                "^BPM"                    0                    0                0.003                "BPM"
