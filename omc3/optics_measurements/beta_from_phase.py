@@ -152,7 +152,7 @@ def n_bpm_method(
     of `range_of_bpms` BPMs centred on each probed BPM. Please refer to theory at
     https://cds.cern.ch/record/2307554.
 
-    For each probed BPM i, a total of m = range_of_boms // 2 neighbors are selected on
+    For each probed BPM i, a total of m = range_of_bpms // 2 neighbors are selected on
     each side. Every valid pair (j, k) within those neighbors contributes to form a BPM
     triplet (i, j, k) from which βi and ⍺i are estimated individually via the function
     ``calculate_beta_alpha_from_single_combination``. The estimates of all combinations
@@ -213,7 +213,7 @@ def n_bpm_method(
     m = int(n_bpms / 2)  # half window: probed BPM has m neighbors on each side
     loc_range = np.arange(-m, m + 1)  # relative indices [-m, ..., 0, ..., m] 0 is the probed BPM
 
-    # Phase advances are stored in units of 2π, convert to radiants for cotangent calculations
+    # Phase advances are stored in units of 2π, convert to radians for cotangent calculations
     phases_meas = phase[MEASUREMENT] * PI2
     phases_err = phase[f"{ERR}{MEASUREMENT}"] * PI2
     phases_err.where(phases_err.notnull(), 1, inplace=True)  # replace NaN errors with 1
@@ -495,11 +495,11 @@ def calculate_beta_alpha_from_single_combination(
         sin_squared_elements: (n_elements * n_bpms_window) array of squared sines of the
             model phase advance from every element l to every window BPM j. In there,
             entry [l, j] = sin²(φ_l - φ_mdl_j). Pre-computed in ``n_bpm_method``.
-        outer_elmts: DataFrame of lattice elements in the window, which containes the BETA,
+        outer_elmts: DataFrame of lattice elements in the window, which contains the BETA,
             K1L, K2L, dK1, dX, KdS and mKdS column (after loading systematic errors).
         cot_model: 1-D array of model cotangents cot(φ_mdl_1j - φ_mdl_11), length 2m+1;
             where entry m is - by construction (probed BPM to itself).
-        cot_meas: 1D array of model cotangents cot(φ_meas_1j), of length 2m+1.
+        cot_meas: 1D array of measured cotangents cot(φ_meas_1j), of length 2m+1.
         outer_meas_phase_adv: measured phase advances (radians) from the probed BPM
             to each BPM in the window (index carries BPM names used for element lookup).
         probed_bpm_name: The name of BPM 1 whose β and α are being estimated.
@@ -663,8 +663,8 @@ def _covariant_weighting(mat: np.ndarray, col: np.ndarray) -> tuple[float, float
     # BLUE estimate: β̂ = g̃ᵀ col / Σ V⁻¹  (Eq. A22)
     # Propagated variance: σ²_β̂ = g̃ᵀ V g̃ / (Σ V⁻¹)²
     estimate: float = float(np.dot(wb.T, col) / mat_inv_sum)
-    variance: float = np.sqrt(np.dot(wb.T, np.dot(mat, wb)) / mat_inv_sum ** 2)
-    return estimate, variance
+    uncertainty: float = np.sqrt(np.dot(wb.T, np.dot(mat, wb)) / mat_inv_sum ** 2)
+    return estimate, uncertainty
 
 
 def _assign_uncertainties(twiss_full: pd.DataFrame, errordefspath: Path | str) -> pd.DataFrame:

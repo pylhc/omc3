@@ -3,7 +3,7 @@
 #### 2026-03-?? - v0.28.1 - _fsoubelet_
 
 - Fixed:
-    - Fixed and error in the loading of systematic errors for the Analytical N-BPM method, where the sextupoles' horizontal misalignment was doubled instead of squared. Note that this reduces the impact of systematic sextupolar misalignments on the end result's error bars (for beta and alpha functions).
+    - Fixed an error in the loading of systematic errors for the Analytical N-BPM method, where the sextupoles' horizontal misalignment was doubled instead of squared. Note that this reduces the impact of systematic sextupolar misalignments on the end result's error bars (for beta and alpha functions).
 
 - Added:
     - A great deal of documentation (docstrings, comments) including references was added to the code handling betas and alphas from phase, which is hopefully now much clearer.

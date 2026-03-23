@@ -86,11 +86,11 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
         phase.write(out_dfs, common_header, outputdir, plane)
         phase.write_special(measure_input, phase_results[plane][phase.COMPENSATED], tune_dict[plane]["QF"], plane)
 
-        # If asked, skip optics skip optics calculations below and go straight to coupling
+        # If asked, skip optics calculations below and go straight to coupling
         if measure_input.only_coupling:
             continue
 
-        # Beta and Alfas -
+        # Beta and Alphas -
         beta_df, beta_header = beta_from_phase.calculate(measure_input, tune_dict, phase_results[plane][phase.COMPENSATED], common_header, plane)
         beta_from_phase.write(beta_df, beta_header, outputdir, plane)
         ratio = beta_from_amplitude.calculate(measure_input, input_files, tune_dict, beta_df, common_header, plane)
