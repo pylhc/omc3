@@ -27,7 +27,6 @@ Beta from Phase
 from __future__ import annotations
 
 import re
-from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -58,8 +57,9 @@ from omc3.utils import logging_tools, stats
 from omc3.utils.misc import StrEnum
 
 if TYPE_CHECKING:
-    from generic_parser import DotDict
     from logging import Logger
+
+    from generic_parser import DotDict
 
     from omc3.model.accelerators.accelerator import Accelerator
     from omc3.optics_measurements.phase import PhaseDict
@@ -75,9 +75,9 @@ RCOND: float = 1.0e-14
 
 
 class Methods(StrEnum):
-    THREE_BPM: str = "3BPM method"
-    A_NBPM: str = "Analytical N-BPM method"
-    NO_ERR: str = "No Errors"
+    THREE_BPM: str = "3BPM method"  # ty: ignore
+    A_NBPM: str = "Analytical N-BPM method"  # ty: ignore
+    NO_ERR: str = "No Errors"  # ty: ignore
 
 
 def calculate(
@@ -106,7 +106,7 @@ def calculate(
 
     Returns:
         Tuple of the results `TfsDataFrame` (betas, alphas, errors, delta columns)
-        and the output file header dictionary..
+        and the output file header dictionary.
     """
     # Figure out which tunes to use and pass down
     meas_and_model_tunes = (
@@ -204,7 +204,7 @@ def n_bpm_method(
     tune, mdltune = meas_and_mdl_tunes
 
     nbpms: int = len(bk_model.index)
-    n_comb: int = np.zeros(nbpms, dtype=int)
+    n_comb: np.ndarray = np.zeros(nbpms, dtype=int)
 
     # Prepare array for results - this one will contain the
     # [beta, betaerr, alfa, alfaerr] for each probed BPM
@@ -622,7 +622,7 @@ def calculate_beta_alpha_from_single_combination(
     return beta_i, alfa_i, betaline, alfaline
 
 
-def _covariant_weighting(mat: np.ndarray, col: np.ndarray) -> typle[float, float]:
+def _covariant_weighting(mat: np.ndarray, col: np.ndarray) -> tuple[float, float]:
     """
     Combines multiple estimates into a single BLUE (Best Linear Unbiased Estimator)
     weighted value with propagated uncertainty (Analytical N-BPM paper Appendix A,
