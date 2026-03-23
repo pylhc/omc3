@@ -1,5 +1,13 @@
 # OMC3 Changelog
 
+#### 2026-03-?? - v0.28.1 - _fsoubelet_
+
+- Fixed:
+    - Fixed and error in the loading of systematic errors for the Analytical N-BPM method, where the sextupoles' horizontal misalignment was doubled instead of squared.
+
+- Added:
+    - A great deal of documentation (docstrings, comments) including references was added to the code handling betas and alphas from phase, which is hopefully now much clearer.
+
 #### 2026-03-05 - v0.28.0 - _mattiastefanelli_, _mlegarre_,  _fsoubelet_, _jgray_, _jdilly_
 
 - Added:
