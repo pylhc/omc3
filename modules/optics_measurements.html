@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optics Measurements &mdash; omc3 0.28.0 documentation</title>
+  <title>Optics Measurements &mdash; omc3 0.28.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8d643f27"></script>
+      <script src="../_static/documentation_options.js?v=291cbb3e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -349,13 +349,37 @@ It provides functions to calculate beta functions from amplitude data.</p>
 
 <section id="beta-from-phase">
 <span id="module-omc3.optics_measurements.beta_from_phase"></span><h2>Beta from Phase<a class="headerlink" href="#beta-from-phase" title="Link to this heading"></a></h2>
-<p>This module contains some of the beta calculation related functionality of <code class="docutils literal notranslate"><span class="pre">optics_measurements</span></code>.
-It provides functions to calculate beta and alpha functions from phase advance data.</p>
+<blockquote>
+<div><p>Implements beta and alpha function calculation from phase advance measurements</p>
+<p>Two implementations are provided:</p>
+<ul>
+<li><p>The <strong>Analytical N-BPM method</strong>, described in:</p>
+<blockquote>
+<div><p>Langner, A. et al., “Analytical N beam position monitor method”,
+Phys. Rev. Accel. Beams 20, 111002 (2017).
+<a class="reference external" href="https://cds.cern.ch/record/2307554">https://cds.cern.ch/record/2307554</a></p>
+<p>It uses all valid BPM triplet combinations within a configurable range, propagates both phase measurement uncertainties
+and systematic lattice errors (quadrupole field gradient errors, quadrupole longitudinal misalignments, BPM longitudinal
+misalignments and sextupole horizontal misalignments) through an analytical covariance matrix.</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<ul>
+<li><p>The <strong>3-BPM method</strong>, originally from:</p>
+<blockquote>
+<div><p>Castro, P. “Luminosity and beta-function measurements at the electron-positron collider ring LEP”
+Ph.D Thesis, University of Valencia, 1996.
+<a class="reference external" href="https://repository.cern/records/eny2v-4y338">https://repository.cern/records/eny2v-4y338</a></p>
+<p>The initial, simple version using only adjacent BPM triplets, with phase measurement uncertainties only.</p>
+</div></blockquote>
+</li>
+</ul>
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="omc3.optics_measurements.beta_from_phase.Methods">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">Methods</span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#Methods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.Methods" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">Methods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#Methods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.Methods" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="utils.html#omc3.utils.misc.StrEnum" title="omc3.utils.misc.StrEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="omc3.optics_measurements.beta_from_phase.Methods.A_NBPM">
 <span class="sig-name descname"><span class="pre">A_NBPM</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Analytical</span> <span class="pre">N-BPM</span> <span class="pre">method'</span></span><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.Methods.A_NBPM" title="Link to this definition"></a></dt>
@@ -376,68 +400,152 @@ It provides functions to calculate beta and alpha functions from phase advance d
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.beta_from_phase.calculate">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.optics_measurements.tune.TuneDict" title="omc3.optics_measurements.tune.TuneDict"><span class="pre">TuneDict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omc3.optics_measurements.phase.PhaseDict" title="omc3.optics_measurements.phase.PhaseDict"><span class="pre">PhaseDict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.calculate" title="Link to this definition"></a></dt>
-<dd><p>Calculates betas and alphas from phase advances.</p>
+<dd><p>Calculates betas and alphas from phase advances. This will dispatch to
+use either the <code class="docutils literal notranslate"><span class="pre">n_bpm_method</span></code> or <code class="docutils literal notranslate"><span class="pre">three_bpm_method</span></code>, based on the
+passed option.</p>
+<p>The measured and model tunes passed downstream are selected based on the
+compensation model: free (natural) tunes Q/QM are used when no compensation
+was applied, while driven tunes QF/QFM are used otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object</p></li>
-<li><p><strong>tunes</strong> -- <cite>TuneDict</cite> contains measured tunes.</p></li>
-<li><p><strong>phase_dict</strong> -- contains measured phase advances.</p></li>
+<li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object with optics CLI options.</p></li>
+<li><p><strong>tunes</strong> -- <cite>TuneDict</cite> contains model and measured tunes (incl. free motion).</p></li>
+<li><p><strong>phase_dict</strong> -- <cite>PhaseDict</cite> containing phase advances between BPMs from model,
+measurements (incl. errors).</p></li>
 <li><p><strong>header_dict</strong> -- dictionary of header items common for all output files.</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><cite>BetaDict</cite> object containing specific <cite>TfsDataFrame</cite> with results.</p>
+<dd class="field-even"><p>Tuple of the results <cite>TfsDataFrame</cite> (betas, alphas, errors, delta columns)
+and the output file header dictionary.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination">
-<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">calculate_beta_alpha_from_single_combination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sin_squared_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_elmts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cot_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cot_meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_meas_phase_adv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probed_bpm_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betmdl1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alfmdl1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_of_bpms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#calculate_beta_alpha_from_single_combination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination" title="Link to this definition"></a></dt>
-<dd><p>Calculates beta and alpha functions as well as the respective covariance matrix lines for the
-given BPM combination (triplet).</p>
+<span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">calculate_beta_alpha_from_single_combination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sin_squared_elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_elmts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cot_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cot_meas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_meas_phase_adv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probed_bpm_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betmdl1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alfmdl1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_of_bpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#calculate_beta_alpha_from_single_combination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.calculate_beta_alpha_from_single_combination" title="Link to this definition"></a></dt>
+<dd><p>Computes β₁ and α₁ for one BPM triplet (probed BPM 1, reference BPMs x and y)
+and builds the corresponding rows of the Jacobian matrices T_β and T_α used for
+covariance propagation in <code class="docutils literal notranslate"><span class="pre">n_bpm_method</span></code>.</p>
+<p>Note about the Jacobian structure (Eq. 22): T = (T^φ  T^K  T^s)
+The full Jacobian is split into three blocks: phase uncertainty T^φ,
+quadrupole field errors T^K and BPM longitudinal misalignments T^s.
+Sextupole horizontal misalignments enter into T^K via Eq (13-14) as
+effective quadrupole errors due to feed-down. Here K2L comes into play.
+Longitudinal quadrupole misalignments are decomposed into two thin-lens
+elements at the quadrupole edges (section II.B, Fig. 3): forward (KdS)
+and backward (mKdS).</p>
+<p>The returned <cite>betaline</cite> and <cite>alfaline</cite> are 1D vectors of length (2m+1, 4*n_elements),
+each one being a row of T_β / T_α. Their layout matches the <cite>diag</cite> vector in
+<code class="docutils literal notranslate"><span class="pre">n_bpm_method</span></code> (see below for the blocks).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>c</strong> -- relative indices of other two BPMs wrt probed one.</p></li>
-<li><p><strong>sin_squared_elements</strong></p></li>
-<li><p><strong>outer_elmts</strong></p></li>
-<li><p><strong>cot_model</strong></p></li>
-<li><p><strong>cot_meas</strong></p></li>
-<li><p><strong>outer_meas_phase_adv</strong></p></li>
-<li><p><strong>probed_bpm_name</strong></p></li>
-<li><p><strong>betmdl1</strong></p></li>
-<li><p><strong>alfmdl1</strong></p></li>
-<li><p><strong>range_of_bpms</strong></p></li>
+<li><p><strong>c</strong> -- tuple, pair of relative indices (ix, iy) for the two reference BPMs of this triplet.
+Indices run 0 … 2m with the probed BPM at position m.</p></li>
+<li><p><strong>sin_squared_elements</strong> -- (n_elements * n_bpms_window) array of squared sines of the
+model phase advance from every element l to every window BPM j. In there,
+entry [l, j] = sin²(φ_l - φ_mdl_j). Pre-computed in <code class="docutils literal notranslate"><span class="pre">n_bpm_method</span></code>.</p></li>
+<li><p><strong>outer_elmts</strong> -- DataFrame of lattice elements in the window, which contains the BETA,
+K1L, K2L, dK1, dX, KdS and mKdS column (after loading systematic errors).</p></li>
+<li><p><strong>cot_model</strong> -- 1-D array of model cotangents cot(φ_mdl_1j - φ_mdl_11), length 2m+1;
+where entry m is - by construction (probed BPM to itself).</p></li>
+<li><p><strong>cot_meas</strong> -- 1D array of measured cotangents cot(φ_meas_1j), of length 2m+1.</p></li>
+<li><p><strong>outer_meas_phase_adv</strong> -- measured phase advances (radians) from the probed BPM
+to each BPM in the window (index carries BPM names used for element lookup).</p></li>
+<li><p><strong>probed_bpm_name</strong> -- The name of BPM 1 whose β and α are being estimated.</p></li>
+<li><p><strong>betmdl1</strong> (<em>float</em>) -- model β at the probed BPM.</p></li>
+<li><p><strong>alfmdl1</strong> (<em>float</em>) -- model α at the probed BPM.</p></li>
+<li><p><strong>range_of_bpms</strong> -- total window width.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple (β₁, α₁, betaline, alfaline) where betaline and alfaline are the
+Jacobian rows for this combination, to be stacked into the complete Jacobian
+matrices T_β and T_α inside of <code class="docutils literal notranslate"><span class="pre">n_bpm_method</span></code>.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.beta_from_phase.get_elements_with_errors">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">get_elements_with_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#get_elements_with_errors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.get_elements_with_errors" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Loads the accelerator lattice elements with their systematic error variances,
+ready to be windowed per probed BPM in <code class="docutils literal notranslate"><span class="pre">n_bpm_method</span></code>.</p>
+<p>Reads the machine-specific error definition file (<code class="docutils literal notranslate"><span class="pre">error_defs_file</span></code>) and
+populates four variance columns on the element table via <code class="docutils literal notranslate"><span class="pre">_assign_uncertainties</span></code>:
+<code class="docutils literal notranslate"><span class="pre">dK1</span></code>, <code class="docutils literal notranslate"><span class="pre">dX</span></code>, <code class="docutils literal notranslate"><span class="pre">KdS</span></code>, <code class="docutils literal notranslate"><span class="pre">mKdS</span></code>.</p>
+<p>Only elements with at least one non-zero error source are retained (see
+<code class="docutils literal notranslate"><span class="pre">_assign_uncertainties</span></code> for the filtering logic). The returned <code class="docutils literal notranslate"><span class="pre">error_method</span></code>
+string is used downstream to label the output file header and the RMS beta-beat
+log message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object with optics CLI options. Must have</p></li>
+<li><p><strong>populated.</strong> (<em>accelerator.error_defs_file set and accelerator.elements</em>)</p></li>
+<li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><dl class="simple">
+<dt>elements DataFrame indexed by element name with columns:</dt><dd><p>S, K1L, K2L, MU{plane}, BET{plane}, dK1, dX, KdS, mKdS, BPMdS.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>error_method string: <code class="docutils literal notranslate"><span class="pre">Methods.A_NBPM</span></code> if at least one systematic error</dt><dd><p>was assigned, <code class="docutils literal notranslate"><span class="pre">Methods.NO_ERR</span></code> otherwise.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple of</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> -- if <code class="docutils literal notranslate"><span class="pre">error_defs_file</span></code> is None (no error definition file configured).</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.beta_from_phase.n_bpm_method">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">n_bpm_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_and_mdl_tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#n_bpm_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.n_bpm_method" title="Link to this definition"></a></dt>
-<dd><p>Calculates betas and alphas from using all BPM combination within <strong>range_of_bpms</strong>. It also
-accounts for systematic errors</p>
+<dd><p>Calculates betas and alphas using all BPM triplet combinations within a sliding window
+of <cite>range_of_bpms</cite> BPMs centred on each probed BPM. Please refer to theory at
+<a class="reference external" href="https://cds.cern.ch/record/2307554">https://cds.cern.ch/record/2307554</a>.</p>
+<p>For each probed BPM i, a total of m = range_of_bpms // 2 neighbors are selected on
+each side. Every valid pair (j, k) within those neighbors contributes to form a BPM
+triplet (i, j, k) from which βi and ⍺i are estimated individually via the function
+<code class="docutils literal notranslate"><span class="pre">calculate_beta_alpha_from_single_combination</span></code>. The estimates of all combinations
+are combined with covariant weighting using the analytical covariance matrix:</p>
+<blockquote>
+<div><p>V_β = T · Σ · Tᵀ</p>
+</div></blockquote>
+<p>where T is the Jacobian of (βi, ⍺i) with respect to all error sources, and Σ is the
+diagonal matrix of errors sources variances (phase noise + systematic lattice errors).
+See <code class="docutils literal notranslate"><span class="pre">_covariant_weighting</span></code> for the combination step.</p>
+<p>The best-knowledge model is used for the beta/alpha/phase-advance values fed into
+the error propagation (Jacobian), while the normal model provides the output reference
+columns (“MDL” suffix).  If no best-knowledge model is available, both fall back to the
+same model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>meas_input</strong> -- Optics measurement configuration object.</p></li>
+<li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object with optics CLI options.</p></li>
 <li><p><strong>phase</strong> -- phase matrices of measurement with errors and model tfs (bpm x bpm).</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 <li><p><strong>meas_and_mdl_tunes</strong> -- measured and model tunes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><cite>TfsDataFrame</cite> containing betas and alfas from phase.</p>
+<dd class="field-even"><p><cite>TfsDataFrame</cite> containing betas and alfas from phase, as well as their errors.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -445,9 +553,18 @@ accounts for systematic errors</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.beta_from_phase.three_bpm_method">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.beta_from_phase.</span></span><span class="sig-name descname"><span class="pre">three_bpm_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_and_mdl_tunes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.DataFrame</span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/beta_from_phase.html#three_bpm_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.beta_from_phase.three_bpm_method" title="Link to this definition"></a></dt>
-<dd><p>Calculates betas and alphas from using adjacent BPMs (3 combination).
-<code class="docutils literal notranslate"><span class="pre">phase[&quot;MEAS&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">phase[&quot;MODEL&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">phase[&quot;ERRMEAS&quot;]</span></code> (from <code class="docutils literal notranslate"><span class="pre">get_phases</span></code>) are of the
-form:</p>
+<dd><p>Calculates betas and alphas using three adjacent-BPM triplet combinations
+(Castro, Ph.D. Thesis, University of Valencia, 1996). Unlike in the
+<code class="docutils literal notranslate"><span class="pre">n_bpm_method</span></code> this uses only the immediately neighbouring BPMs
+and propagates phase measurement uncertainties only (no systematic
+uncertainties for lattice errors).</p>
+<p>For each probed BPM i, three triplets are formed and their β/β_mdl estimates
+are averaged arithmetically (see <code class="docutils literal notranslate"><span class="pre">bet_frac</span></code> below):
+- xxxABBx → probed BPM followed by two forward neighbours
+- xBBAxxx → two backward neighbours followed by probed BPM
+- xxBABxx → probed BPM flanked by skip-one neighbours</p>
+<p>The input phase advance data from <code class="docutils literal notranslate"><span class="pre">phase[&quot;MEAS&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">phase[&quot;MODEL&quot;]</span></code>,
+<code class="docutils literal notranslate"><span class="pre">phase[&quot;ERRMEAS&quot;]</span></code> (from <code class="docutils literal notranslate"><span class="pre">get_phases</span></code>) are of the form:</p>
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td></td>
@@ -505,7 +622,7 @@ form:</p>
 </tr>
 </tbody>
 </table>
-<p><code class="docutils literal notranslate"><span class="pre">cot_phase_*_shift1</span></code>:</p>
+<p>The computed <code class="docutils literal notranslate"><span class="pre">cot_phase_*_shift1</span></code> gives:</p>
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p>cot(phi_1n) - cot(phi_1n-1)</p></td>
@@ -526,18 +643,16 @@ form:</p>
 </tr>
 </tbody>
 </table>
-<ul class="simple">
-<li><p>for the combination xxxABBx: first row,</p></li>
-<li><p>for the combinstion xBBAxxx: fourth row,</p></li>
-<li><p>for the combination xxBABxx: second row of <code class="docutils literal notranslate"><span class="pre">cot_phase_*_shift2</span></code>.</p></li>
-</ul>
+<p>-&gt; for the combination xxxABBx: first row,
+-&gt; for the combination xBBAxxx: fourth row,
+-&gt; for the combination xxBABxx: second row of <code class="docutils literal notranslate"><span class="pre">cot_phase_*_shift2</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>meas_input</strong> -- Optics measurement configuration object.</p></li>
+<li><p><strong>meas_input</strong> -- <cite>OpticsInput</cite> object with optics CLI options.</p></li>
 <li><p><strong>phase</strong> -- phase matrices of measurement with errors and model tfs (bpm x bpm).</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
-<li><p><strong>meas_and_mdl_tunes</strong> -- measured  and model tunes.</p></li>
+<li><p><strong>meas_and_mdl_tunes</strong> -- measured and model tunes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
