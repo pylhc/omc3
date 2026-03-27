@@ -73,7 +73,7 @@
 | omc3/mqt\_extractor.py                                  |       33 |        1 |     97% |       187 |
 | omc3/optics\_measurements/\_\_init\_\_.py               |        1 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_amplitude.py      |       63 |        0 |    100% |           |
-| omc3/optics\_measurements/beta\_from\_phase.py          |      283 |        9 |     97% |129-132, 135, 246, 375, 397-398, 490, 601 |
+| omc3/optics\_measurements/beta\_from\_phase.py          |      289 |        9 |     97% |185-190, 194, 430, 661, 718-719, 833, 1005 |
 | omc3/optics\_measurements/chromatic.py                  |       44 |       14 |     68% |     61-79 |
 | omc3/optics\_measurements/constants.py                  |       90 |        0 |    100% |           |
 | omc3/optics\_measurements/coupling.py                   |      160 |        4 |     98% |225, 241, 254-255 |
@@ -84,7 +84,7 @@
 | omc3/optics\_measurements/iforest.py                    |       67 |       46 |     31% |35-40, 44-47, 52-58, 62-63, 67-77, 81-90, 94-100, 104, 108-112 |
 | omc3/optics\_measurements/interaction\_point.py         |       45 |        0 |    100% |           |
 | omc3/optics\_measurements/kick.py                       |       72 |        4 |     94% |63-64, 130-131 |
-| omc3/optics\_measurements/measure\_optics.py            |       86 |       14 |     84% |73, 110-114, 145, 175-183 |
+| omc3/optics\_measurements/measure\_optics.py            |       86 |       14 |     84% |73, 114-118, 149, 179-187 |
 | omc3/optics\_measurements/phase.py                      |      157 |       11 |     93% |95, 127, 217-220, 223-226, 228, 234 |
 | omc3/optics\_measurements/rdt.py                        |      188 |        9 |     95% |172-179, 360, 389-393 |
 | omc3/optics\_measurements/toolbox.py                    |       36 |        0 |    100% |           |
@@ -163,7 +163,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      138 |       29 |     79% |31, 55-57, 60, 66-72, 139-140, 152, 174, 200, 215, 220, 224, 228, 232, 242, 245, 250, 255, 265, 270, 275, 280 |
-| **TOTAL**                                               | **12748** | **1709** | **87%** |           |
+| **TOTAL**                                               | **12754** | **1709** | **87%** |           |
 
 
 ## Setup coverage badge
