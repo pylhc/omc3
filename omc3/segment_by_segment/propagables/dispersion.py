@@ -117,7 +117,7 @@ class Dispersion(Propagable):
         init_condition = self._init_start(plane) if forward else self._init_end(plane)
 
         model_disp = seg_model.loc[:, f"{DISPERSION}{plane}"]
-        model_beta = seg_model.loc[:, f"{BETA}{plane}"]  # <---- fix: use actual beta
+        model_beta = seg_model.loc[:, f"{BETA}{plane}"]
 
         # propagate the error
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
