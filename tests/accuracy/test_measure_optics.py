@@ -5,16 +5,21 @@ import numpy as np
 import pytest
 import tfs
 
+from omc3.definitions.constants import PLANES
 from omc3.hole_in_one import _optics_entrypoint  # <- Protected member of module. Make public?
 from omc3.model import manager
 from omc3.optics_measurements import measure_optics
 from omc3.optics_measurements.constants import (
+    ACTION,
     ALPHA,
     BETA,
     DISPERSION,
+    ERR,
     NORM_DISPERSION,
     PHASE,
+    RES,
     SPECIAL_PHASE_NAME,
+    SQRT_ACTION,
 )
 from omc3.optics_measurements.data_models import InputFiles
 from omc3.optics_measurements.phase import CompensationMode
@@ -83,6 +88,7 @@ def test_measure_optics(
     with timeit(lambda spanned: LOG.debug(f"\nTotal time for optics measurements: {spanned}")):
         measure_optics.measure_optics(inputs, optics_opt)
     evaluate_accuracy(optics_opt.outputdir, LIMITS)
+    evaluate_kick_consistency(optics_opt.outputdir)
 
 
 # Helper ---
@@ -107,8 +113,42 @@ def evaluate_accuracy(meas_path, limits):
     assert ((meas_path / f"{SPECIAL_PHASE_NAME}x.tfs").is_file() and (meas_path / f"{SPECIAL_PHASE_NAME}y.tfs").is_file())
 
 
+def evaluate_kick_consistency(meas_path, tolerance=1e-10):
+    """
+    Verify that 2J columns are consistent with sqrt(2J) columns in kick files.
+    This test was added after we noticed a wrong rescaling was applied.
+    """
+    for plane in PLANES:
+        kick_file: Path = meas_path / f"kick_{plane}.tfs"
+        if not kick_file.is_file():
+            continue
+        df: tfs.TfsDataFrame = tfs.read(kick_file)
+        # Ensure consistency between 2J and sqrt(2J) values
+        np.testing.assert_allclose(
+            df[f"{ACTION}{plane}"].to_numpy(),
+            df[f"{SQRT_ACTION}{plane}"].to_numpy() ** 2,
+            atol=tolerance,
+            err_msg=f"kick_{plane.lower()}: {ACTION}{plane} != {SQRT_ACTION}{plane}^2",
+        )
+        # We also check for the output *RES columns
+        if f"{ACTION}{plane}{RES}" in df.columns:
+            # Ensure consistency between 2J and sqrt(2J) values
+            np.testing.assert_allclose(
+                df[f"{ACTION}{plane}{RES}"].to_numpy(),
+                df[f"{SQRT_ACTION}{plane}{RES}"].to_numpy() ** 2,
+                atol=tolerance,
+                err_msg=f"kick_{plane.lower()}: {ACTION}{plane}{RES} != {SQRT_ACTION}{plane}{RES}^2",
+            )
+            # Ensure consistency between the errors of the above 2 quantities values
+            np.testing.assert_allclose(
+                df[f"{ERR}{ACTION}{plane}{RES}"].to_numpy(),
+                np.abs(2 * df[f"{SQRT_ACTION}{plane}{RES}"].to_numpy() * df[f"{ERR}{SQRT_ACTION}{plane}{RES}"].to_numpy()),
+                atol=tolerance,
+                err_msg=f"kick_{plane.lower()}: {ERR}{ACTION}{plane}{RES} inconsistent with {SQRT_ACTION}{plane}{RES}",
+            )
 
-@pytest.fixture(scope="module", params=(1,), ids=("Beam1",))
+
+@pytest.fixture(scope="module", params=(1, 2), ids=("Beam1", "Beam2"))
 def input_data(request, tmp_path_factory):
     """Creates the input lin data and optics_options."""
     data = {}
