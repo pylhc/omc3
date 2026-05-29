@@ -1,5 +1,10 @@
 # OMC3 Changelog
 
+#### 2026-??-?? - v0.28.2 - _fsoubelet_
+
+- Fixed:
+    - Fixed an inconsistency in the rescaling for the action calculation leading to wrong values of 2J (while having correct values for sqrt(2J)), noticed in B2.
+
 #### 2026-03-27 - v0.28.1 - _fsoubelet_
 
 - Changed:
