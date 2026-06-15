@@ -271,11 +271,11 @@ def _write_spectrum(
 ) -> None:
     tfs.write(
         f"{output_path_without_suffix}{FILE_AMPS_EXT.format(plane=plane.lower())}",
-        spectra[COL_COEFFS].abs().T,
+        spectra[COL_COEFFS].abs().T,  # ty:ignore[unresolved-attribute]
     )
     tfs.write(
         f"{output_path_without_suffix}{FILE_FREQS_EXT.format(plane=plane.lower())}",
-        spectra[COL_FREQS].T,
+        spectra[COL_FREQS].T,  # ty:ignore[unresolved-attribute]
     )
 
 
