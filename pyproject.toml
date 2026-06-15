@@ -144,6 +144,10 @@ addopts = [
     "--import-mode=importlib",
 ]
 
+filterwarnings = [
+    "ignore:More than 20 figures have been opened:RuntimeWarning:matplotlib",
+]
+
 # Helpful for pytest-debugging (leave commented out on commit):
 # log_cli = true
 # log_cli_level = "DEBUG"
