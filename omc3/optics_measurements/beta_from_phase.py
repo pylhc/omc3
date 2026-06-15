@@ -143,7 +143,7 @@ def write(beta_df: pd.DataFrame, header: dict[str, Any], outputdir: str|Path, pl
 
 def n_bpm_method(
     meas_input: DotDict,
-    phase: pd.DataFrame,
+    phase: PhaseDict,
     plane: str,
     meas_and_mdl_tunes: tuple[float, float]
 ) -> tuple[tfs.TfsDataFrame, str]:
@@ -171,7 +171,7 @@ def n_bpm_method(
 
     Args:
         meas_input: `OpticsInput` object with optics CLI options.
-        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
+        phase: `PhaseDict` of phase matrices of measurement with errors and model tfs (bpm x bpm).
         plane: marking the horizontal or vertical plane, **X** or **Y**.
         meas_and_mdl_tunes: measured and model tunes.
 
@@ -761,7 +761,7 @@ def _get_header(header_dict: dict[str, Any], error_method: str, range_of_bpms: i
 
 def three_bpm_method(
     meas_input: DotDict,
-    phase: pd.DataFrame,
+    phase: PhaseDict,
     plane: str,
     meas_and_mdl_tunes: tuple[float, float],
 ) -> pd.DataFrame:
@@ -821,7 +821,7 @@ def three_bpm_method(
 
     Args:
         meas_input: `OpticsInput` object with optics CLI options.
-        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
+        phase: `PhaseDict` of phase matrices of measurement with errors and model tfs (bpm x bpm).
         plane: marking the horizontal or vertical plane, **X** or **Y**.
         meas_and_mdl_tunes: measured and model tunes.
 
