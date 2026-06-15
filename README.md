@@ -83,7 +83,7 @@
 | omc3/optics\_measurements/dpp.py                        |       74 |       14 |     81% |102, 105, 118-130 |
 | omc3/optics\_measurements/iforest.py                    |       67 |       46 |     31% |35-40, 44-47, 52-58, 62-63, 67-77, 81-90, 94-100, 104, 108-112 |
 | omc3/optics\_measurements/interaction\_point.py         |       45 |        0 |    100% |           |
-| omc3/optics\_measurements/kick.py                       |       72 |        4 |     94% |63-64, 130-131 |
+| omc3/optics\_measurements/kick.py                       |       72 |        4 |     94% |67-68, 164-165 |
 | omc3/optics\_measurements/measure\_optics.py            |       86 |       14 |     84% |73, 114-118, 149, 179-187 |
 | omc3/optics\_measurements/phase.py                      |      157 |       11 |     93% |95, 127, 217-220, 223-226, 228, 234 |
 | omc3/optics\_measurements/rdt.py                        |      188 |        9 |     95% |172-179, 360, 389-393 |
