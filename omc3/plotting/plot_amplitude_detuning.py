@@ -140,10 +140,10 @@ from omc3.utils.iotools import PathOrStr, UnionPathStr, save_config
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    import odrpack
     from matplotlib.axes import Axes
     from matplotlib.figure import Figure
     from numpy.typing import ArrayLike
-    from scipy import odr
 
     from omc3.tune_analysis.kick_file_modifiers import AmpDetData
 
@@ -347,7 +347,7 @@ def _plot_2d(tune_plane: str, opt: DotDict) -> dict[str, Figure]:
     return figs
 
 
-def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=None):
+def plot_odr(ax: Axes, odr_fit: odrpack.OdrResult, xmax: float, label: str = '', color=None):
     """Adds a quadratic odr fit to axes."""
 
     color = 'k' if color is None else color
@@ -355,7 +355,7 @@ def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=
 
     # get fits
     order = len(odr_fit.beta) - 1
-    fit_fun = fitting_tools.get_poly_fun(order)
+    fit_fun = fitting_tools.get_polynomial_function(order)
     f = partial(fit_fun, odr_fit.beta)
     f_low = partial(fit_fun, np.array(odr_fit.beta)-np.array(odr_fit.sd_beta))
     f_upp = partial(fit_fun, np.array(odr_fit.beta)+np.array(odr_fit.sd_beta))
@@ -370,7 +370,7 @@ def plot_odr(ax: Axes, odr_fit: odr.Output, xmax: float, label: str = '', color=
 
 
 def _plot_detuning(ax: Axes, data: AmpDetData, label: str, color=None,
-                   limits: dict[str, float] = None, odr_fit: odr.Output=None, odr_label: str =""):
+                   limits: dict[str, float] = None, odr_fit: odrpack.OdrResult=None, odr_label: str =""):
     """Plot the detuning and the ODR into axes."""
     x_lim = _get_default(limits, 'x_lim', [0, max(data.action+data.action_err)])
     offset = 0
@@ -547,7 +547,7 @@ def fit_fun_odr_1d(x, y, q0, qdx, qdy):
     return q0 + qdx * x + qdy * y
 
 
-def plot_odr_3d(ax: Axes, odr_fits: dict[str, odr.Output], xymax: Sequence[float], color=None):
+def plot_odr_3d(ax: Axes, odr_fits: dict[str, odrpack.OdrResult], xymax: Sequence[float], color=None):
     """Plot the odr fit in 3D."""
 
     color = 'k' if color is None else color
@@ -666,7 +666,7 @@ def _format_axes_3d(
 
 # Labels -----------------------------------------------------------------------
 
-def _get_odr_label(odr_fit: odr.Output, tune_plane: str, action_plane: str,
+def _get_odr_label(odr_fit: odrpack.OdrResult, tune_plane: str, action_plane: str,
                    action_unit: str, do_acd_correction: bool):
     """ Returns the label for the ODR fit, nicely formatted and scaled. """
     order = len(odr_fit.beta) - 1
@@ -751,7 +751,7 @@ def _get_default(ddict, key, default):
     return ddict[key]
 
 
-def _scale_data(data: AmpDetData, odr_fit: odr.Output,
+def _scale_data(data: AmpDetData, odr_fit: odrpack.OdrResult,
                 action_unit: str, action_plot_unit: str, tune_scale: float):
     """Scale data to plot-units (y=tune_scale, x=um)."""
     x_scale = UNIT_IN_METERS[action_unit] / UNIT_IN_METERS[action_plot_unit]
