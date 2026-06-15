@@ -48,6 +48,8 @@ from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
+    from datetime import date
+
     from generic_parser import DotDict
     from turn_by_turn import TbtData
 
@@ -238,12 +240,12 @@ def _sync_phase(lin_frame: pd.DataFrame, plane: str) -> pd.DataFrame:
     return lin_frame
 
 
-def _compute_headers(panda: pd.DataFrame, date: None | pd.Timestamp = None) -> dict[str, float]:
+def _compute_headers(df: pd.DataFrame, date: None | date | pd.Timestamp = None) -> dict[str, str | float]:
     headers = {}
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
             try:
-                bpm_tunes = panda[f"{prefix}{COL_TUNE}{plane}"]
+                bpm_tunes = df[f"{prefix}{COL_TUNE}{plane}"]
             except KeyError:
                 pass
             else:
