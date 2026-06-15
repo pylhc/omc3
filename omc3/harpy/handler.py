@@ -132,6 +132,7 @@ def run_per_bunch(
                 order_resonances=harpy_input.resonances,
             )
         )
+        lins[plane] = lins[plane].copy()  # defragment after joins / col assignments etc from previous operations
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
