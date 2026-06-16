@@ -101,7 +101,8 @@ def add_rescaled_beta_columns(df: pd.DataFrame, ratio: float, plane: str) -> pd.
 def beta_from_amplitude(
     meas_input: DotDict, input_files: InputFiles, plane: str, tunes: TuneDict,
 ) -> pd.DataFrame:
-    """Calculates beta function from measured amplitudes across input files.
+    """
+    Calculates beta function from measured amplitudes across input files.
 
     Args:
         meas_input: `OpticsInput` object.
@@ -136,7 +137,9 @@ def beta_from_amplitude(
                       f"MU{plane}{MDL}", f"{DELTA}BET{plane}", f"{ERR}{DELTA}BET{plane}"]]
 
 
-def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
+def _compensate_by_equation(
+    input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str, tunes: TuneDict,
+) -> pd.DataFrame:
     phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
     driven_tune, _free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
     k_bpmac = ac2bpmac[2]
@@ -149,7 +152,9 @@ def _compensate_by_equation(input_files, meas_input, df, plane, tunes):
     return df
 
 
-def _compensate_by_model(input_files, meas_input, df, plane):
+def _compensate_by_model(
+    input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str,
+) -> pd.DataFrame:
     df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"BET{plane}"]]
                                    .rename(columns={f"BET{plane}": f"BET{plane}comp"})),
                   how='inner', left_index=True, right_index=True)
@@ -159,7 +164,7 @@ def _compensate_by_model(input_files, meas_input, df, plane):
     return df
 
 
-def _get_header(header_dict, rmsbbeat, scaling_factor):
+def _get_header(header_dict: dict, rmsbbeat: float, scaling_factor: float) -> dict:
     header = header_dict.copy()
     header['RMSbetabeat'] = rmsbbeat
     header['RescalingFactor'] = scaling_factor
