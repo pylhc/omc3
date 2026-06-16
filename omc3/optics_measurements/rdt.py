@@ -274,8 +274,27 @@ def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple) -> dic
 
 
 def _process_rdt(
-    meas_input: DotDict, input_files: InputFiles, phase_data, invariants, plane, rdt: RDTTuple
-):
+    meas_input: DotDict,
+    input_files: InputFiles,
+    phase_data: pd.DataFrame,
+    invariants: dict[str, pd.DataFrame],
+    plane: str,
+    rdt: RDTTuple,
+) -> pd.DataFrame:
+    """
+    Computes amplitude and phase of a single RDT from spectral lines at BPM pairs.
+
+    Args:
+        meas_input: `OpticsInput` object containing analysis settings.
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
+        phase_data: BPM-pair data from :func:`_best_90_degree_phases`.
+        invariants: dictionary mapping planes to DataFrames of actions and errors per kick.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+        rdt: RDTTuple (j, k, l, m) identifying the RDT.
+
+    Returns:
+        A `DataFrame` with columns for amplitude, phase, real/imaginary parts and their errors.
+    """
     dpp_value = meas_input.analyse_dpp
 
     df = pd.DataFrame(phase_data)
