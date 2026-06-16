@@ -40,9 +40,9 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, plane):
+def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, plane: str) -> tfs.TfsDataFrame:
     """
-    Calculates orbit.
+    Calculates orbit data from measurements.
 
     Args:
         meas_input: `OpticsInput` object
@@ -62,9 +62,11 @@ def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, 
     return output_df
 
 
-def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane: str):
+def calculate_dispersion(
+    meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane: str,
+) -> pd.DataFrame | None:
     """
-    Calculates dispersion.
+    Calculates dispersion data from measurements.
 
     Args:
         meas_input: `OpticsInput` object.
@@ -73,16 +75,18 @@ def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_di
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        `TfsDataFrame` corresponding to output file.
+        `TfsDataFrame` corresponding to output file, or ``None`` if only a single dp/p bin is present.
     """
     if meas_input.three_d_excitation:
         return _calculate_dispersion_3d(meas_input, input_files, header_dict, plane)
     return _calculate_dispersion_2d(meas_input, input_files, header_dict, plane)
 
 
-def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles, beta, header_dict: dict):
+def calculate_normalised_dispersion(
+    meas_input: DotDict, input_files: InputFiles, beta: pd.DataFrame, header_dict: dict,
+) -> pd.DataFrame | None:
     """
-    Calculates normalised dispersion.
+    Calculates normalised dispersion data from measurements.
 
     Args:
         meas_input: `OpticsInput` object.
