@@ -14,6 +14,7 @@ This should be tested and possibly mitigated. (jdilly, 2024)
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -23,7 +24,13 @@ from sklearn.ensemble import IsolationForest
 from omc3.definitions.constants import PLANE_TO_NUM
 from omc3.utils import logging_tools
 
-LOGGER = logging_tools.get_logger(__name__)
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from logging import Logger
+
+    from generic_parser import DotDict
+
+LOGGER: Logger = logging_tools.get_logger(__name__)
 ARCS_CONT = 0.01
 IRS_CONT = 0.025
 
