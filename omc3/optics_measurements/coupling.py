@@ -64,20 +64,22 @@ def calculate_coupling(
     meas_input: DotDict,
     input_files: InputFiles,
     phase_results: dict[str, tuple[PhaseDict, Sequence[tfs.TfsDataFrame]]],
-    tune_dict: dict[str, float],
+    tune_dict: dict[str, dict[str, float]],
     header_dict: dict,
 ) -> None:
     """
-    Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
-    This represents the "2 BPM method" in https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf
-    (a more up-to-date reference will come in the near future).
+    Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach
+    Cminus (|C-|). This represents the "2 BPM method" in
+    https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf.
 
     Two formulae are used to calculate the Cminus, taken from the following reference:
     https://cds.cern.ch/record/2135848/files/PhysRevSTAB.17.051004.pdf
-    The first one (Eq(1)) is an approximation using only the amplitudes of the RDTs, while the second one
-    (Eq(2) in the same paper) is more exact but needs also the phase of the RDT.
+    The first one (Eq(1)) is an approximation using only the amplitudes of the RDTs,
+    while the second one (Eq(2) in the same paper) is more exact but needs also the
+    phase of the RDT.
 
-    The results are written down in the optics_measurements outputs as **f1001.tfs** and **f1010.tfs** files.
+    The results are written down in the optics_measurements outputs as
+    **f1001.tfs** and **f1010.tfs** files.
 
     Args:
         meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
