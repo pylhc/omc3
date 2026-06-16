@@ -225,13 +225,18 @@ def compensate_rdts_by_model(
     return f1001, f1010
 
 
-def compensate_rdts_ryoichi():
-    pass
+def compensate_rdts_ryoichi() -> None:
+    """
+    Placeholder for Ryoichi's RDT compensation method (not yet implemented).
+    See https://github.com/pylhc/omc3/issues/295 for details and refs.
+    """
+    raise NotImplementedError
 
 
 # ----- Helpers ----- #
 
-def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
+
+def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1) -> tuple[np.ndarray, np.ndarray]:
     """
     Does the BPM pairing for coupling calculation.
 
@@ -245,7 +250,7 @@ def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
     return _take_next(phases, mode)
 
 
-def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
+def _take_next(phases: tfs.TfsDataFrame, shift: int = 1) -> tuple[np.ndarray, np.ndarray]:
     """
     Takes the following BPM for momentum reconstruction by a given shift.
 
