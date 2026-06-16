@@ -102,7 +102,7 @@ def calculate(
     measure_input: DotDict,
     input_files: InputFiles,
     tunes: TuneDict,
-    phases: dict[str, PhaseDict],
+    phases: dict[str, dict[str, PhaseDict]],
     invariants: dict[str, pd.DataFrame],
     header: dict,
 ) -> None:
@@ -115,8 +115,8 @@ def calculate(
         input_files: `InputFiles` object containing frequency spectra files (linx/y).
         tunes: `TuneDict` object mapping planes to tunes, as given by
             :func:`omc3.optics_measurements.tune.calculate`.
-        phases:
-        invariants (dict[str, pd.DataFrame]): dictionnary mapping planes to dataframes
+        phases: dictionary mapping planes to `PhaseDict` for compensated and uncompensated cases.
+        invariants: dictionary mapping planes to dataframes
             of actions/errors per kick, e.g. from :func:`omc3.optics_measurements.kick.calculate`.
         header: headers to include to the written result files.
     """
