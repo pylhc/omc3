@@ -63,15 +63,48 @@ def clean_with_isolation_forest(
     return input_files
 
 
-def identify_bad_bpms(meas_input, input_files, plane):
-    bpm_data = pd.concat([tfs_df[["NAME", f"TUNE{plane}", "NOISE_SCALED", f"AMP{plane}"]]
-                          for tfs_df in input_files])
+def identify_bad_bpms(
+    meas_input: DotDict,
+    input_files: Sequence[tfs.TfsDataFrame],
+    plane: str,
+) -> pd.DataFrame:
+    """
+    Identifies anomalous BPMs across arc and IR regions using isolation forest.
+
+    Args:
+        meas_input: `OpticsInput` object containing analysis settings.
+        input_files: list of measurement DataFrames.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A `DataFrame` listing the detected bad BPMs with their significant features and scores.
+    """
+    bpm_data = pd.concat(
+                            [tfs_df[["NAME", f"TUNE{plane}", "NOISE_SCALED", f"AMP{plane}"]]
+                            for tfs_df in input_files]
+                        )
     arc_bpm_data, ir_bpm_data = get_data_for_clustering(bpm_data, plane, meas_input.accelerator)
     return pd.concat([identify_single_cluster_bad_bpms(bpm_data, ARCS_CONT, arc_bpm_data, plane),
                       identify_single_cluster_bad_bpms(bpm_data, IRS_CONT, ir_bpm_data, plane)])
 
 
-def identify_single_cluster_bad_bpms(bpm_tfs_data, cont, data_for_clustering, plane):
+def identify_single_cluster_bad_bpms(
+    bpm_tfs_data: pd.DataFrame,
+    cont: float,
+    data_for_clustering: pd.DataFrame,
+    plane: str,
+) -> pd.DataFrame:
+    """Runs isolation forest on a single cluster and returns the significant features of detected anomalies.
+
+    Args:
+        bpm_tfs_data: concatenated BPM data from all input files.
+        cont: contamination parameter for the isolation forest.
+        data_for_clustering: normalized feature data for clustering.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A `DataFrame` with anomalous BPM names, their most significant feature, and anomaly scores.
+    """
     bad_bpms, good_bpms, bad_bpms_scores = detect_anomalies(cont, data_for_clustering, plane)
     bpm_tfs_data, data_for_clustering, bad_bpms, good_bpms = \
         [reassign_index(data) for data in (bpm_tfs_data, data_for_clustering, bad_bpms, good_bpms)]
