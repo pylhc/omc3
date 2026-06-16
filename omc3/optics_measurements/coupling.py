@@ -185,18 +185,19 @@ def calculate_coupling(
 
 
 def compensate_rdts_by_model(
-    f1001: np.ndarray, f1010: np.ndarray, tune_dict: dict[str, float]
+    f1001: np.ndarray, f1010: np.ndarray, tune_dict: dict[str, dict[str, float]]
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Compensate coupling RDTs by model (equation) only, implies we're providing a driven model (ACD / ATD
-    kick). The scaling factors are calculated from the model's free and driven tunes, and the scaled RDTs
-    are returned.
+    Compensate coupling RDTs by model (factor) only, which implies we're providing
+    a driven model (ACD / ATD kick). The scaling factors are calculated from the model's
+    free and driven tunes, and the scaled RDTs are returned.
 
     Args:
-        f1001 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
-        f1010 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
-        tune_dict (dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
-            calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
+        f1001 (np.ndarray): the pre-calculated driven coupling RDTs as a numpy array.
+        f1010 (np.ndarray): the pre-calculated driven coupling RDTs as a numpy array.
+        tune_dict (dict[str, dict[str, float]]): `TuneDict` object containing measured and model tunes.
+            For each plane, there is an entry calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm'
+            modes, each value being a float.
 
     Returns:
         The scaled RDTs.
