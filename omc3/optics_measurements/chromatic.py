@@ -7,14 +7,42 @@ It provides functions to compute various chromatic beam properties.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pandas as pd
 
 from omc3.optics_measurements.constants import DELTA, ERR, MDL, PHASE_ADV, S
 from omc3.optics_measurements.toolbox import df_prod, df_ratio
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
-def calculate_w_and_phi(betas, dpps, input_files, measure_input, plane):
+    from generic_parser import DotDict
+
+    from omc3.optics_measurements.data_models import InputFiles
+
+
+def calculate_w_and_phi(
+    betas: Sequence[pd.DataFrame],
+    dpps: Sequence[float],
+    input_files: InputFiles,
+    measure_input: DotDict,
+    plane: str,
+) -> pd.DataFrame:
+    """
+    Calculates chromatic amplitude function W and its phase Phi.
+
+    Args:
+        betas: Sequence of beta DataFrames, one per dp/p value.
+        dpps: Sequence of corresponding dp/p values.
+        input_files: `InputFiles` object containing measurement data.
+        measure_input: `OpticsInput` object containing analysis settings.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A `DataFrame` with measured and model W and Phi columns.
+    """
     columns = [f"{pref}{DELTA}{col}{plane}" for pref in ("", ERR) for col in ("BET", "ALF")]
     joined = betas[0].loc[:, columns]
     for i, beta in enumerate(betas[1:]):
