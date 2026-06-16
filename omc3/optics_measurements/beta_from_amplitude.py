@@ -21,21 +21,31 @@ if TYPE_CHECKING:
     from generic_parser import DotDict
 
     from omc3.optics_measurements.data_models import InputFiles
+    from omc3.optics_measurements.tune import TuneDict
 
 
-def calculate(meas_input: DotDict, input_files: InputFiles, tune_dict, beta_phase, header_dict, plane):
+def calculate(
+    meas_input: DotDict,
+    input_files: InputFiles,
+    tune_dict: TuneDict,
+    beta_phase: pd.DataFrame,
+    header_dict: dict,
+    plane: str,
+) -> float:
     """
-    Calculates beta and fills the following `TfsFiles`: ``f"{AMP_BETA_NAME}{plane.lower()}{EXT}"``
+    Calculates beta and returns the phase to amplitude ratio.
+    Also writes the following `TfsFiles`: ``f"{AMP_BETA_NAME}{plane.lower()}{EXT}"``
 
     Args:
         meas_input: `OpticsInput` object.
         input_files: `InputFiles` object contains measurement files.
         tune_dict: `TuneDict` contains measured tunes.
-        beta_phase: contains beta functions from measured from phase.
+        beta_phase: Dataframe containing beta functions measured from phase.
         header_dict: dictionary of header items common for all output files.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
+        The phase-to-amplitude beta ratio (rescaling factor).
     """
     beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
