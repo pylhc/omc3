@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -12,8 +10,6 @@ from omc3.tune_analysis.bbq_tools import (
 )
 from omc3.tune_analysis.fitting_tools import get_polynomial_function
 
-if TYPE_CHECKING:
-    from numpy.random import Generator
 
 @pytest.mark.basic
 def test_moving_average():
@@ -70,11 +66,10 @@ def _plot_helper(*series):
 
 
 def _get_noisy_sinus():
-    rng: Generator = np.random.default_rng()
     n_samples = 1000
-    sin_data = pd.Series(np.sin(np.linspace(0, 2 * np.pi, n_samples)))
-    data = sin_data + (2 * rng.random(n_samples) - 1)
-    high_int = rng.integers(low=0, high=n_samples, size=100)
-    data[high_int[:50]] += 1.0
-    data[high_int[50:]] -= 1.0
+    sin_data = pd.Series(np.sin(np.linspace(0, 2*np.pi, n_samples)))
+    data = sin_data + (2*np.random.rand(n_samples) - 1)
+    high_int = np.random.randint(low=0, high=n_samples, size=100)
+    data[high_int[:50]] += 1.
+    data[high_int[50:]] -= 1.
     return sin_data, data
