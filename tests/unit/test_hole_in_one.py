@@ -25,9 +25,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from turn_by_turn import TbtData
-from tests.accuracy.test_harpy import _get_model_dataframe
-from tests.unit.test_harpy import create_tbt_data
 
 from omc3.harpy.constants import FILE_AMPS_EXT, FILE_FREQS_EXT, FILE_LIN_EXT
 from omc3.hole_in_one import (
@@ -50,7 +47,9 @@ from omc3.optics_measurements.constants import (
     PHASE_NAME,
     TOTAL_PHASE_NAME,
 )
+from tests.accuracy.test_harpy import _get_model_dataframe
 from tests.conftest import INPUTS, ids_str
+from tests.unit.test_harpy import create_tbt_data
 
 if TYPE_CHECKING:
     from pathlib import Path
