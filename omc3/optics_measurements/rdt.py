@@ -200,7 +200,27 @@ def _rdt_to_order_and_type(rdt: RDTTuple) -> str:
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
-def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
+def _best_90_degree_phases(
+    meas_input: DotDict,
+    bpm_names: pd.Index,
+    phases: dict[str, dict[str, PhaseDict]],
+    tunes: TuneDict,
+    plane: str,
+) -> pd.DataFrame:
+    """Finds BPM pairs with phase advance closest to 90 degrees for RDT measurement.
+
+    Args:
+        meas_input: `OpticsInput` object containing analysis settings.
+        bpm_names: index of BPM names to consider.
+        phases: nested dictionary of phase advance data, keyed by plane and
+            compensation mode.
+        tunes: `TuneDict` with tune values per plane.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A `DataFrame` indexed by BPM name with columns for the partner BPM name,
+        measured phase advance to the partner, its error, and longitudinal position.
+    """
     phase_dict: PhaseDict = phases[plane][UNCOMPENSATED]
     if phase_dict is None:
         phase_dict = phases[plane][COMPENSATED]
