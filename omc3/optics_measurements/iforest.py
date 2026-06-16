@@ -38,7 +38,23 @@ IRS_CONT = 0.025
 FEATURE: str = "FEATURE"
 
 
-def clean_with_isolation_forest(input_files, meas_input, plane):
+def clean_with_isolation_forest(
+    input_files: Sequence[tfs.TfsDataFrame], meas_input: DotDict, plane: str,
+) -> Sequence[tfs.TfsDataFrame]:
+    """
+    Runs isolation forest anomaly detection and removes flagged BPMs from input files.
+    For every file where a cleaning is performed, a TfsDataFrame with information on
+    the identified and cleaned BPMs is written to disk in an adjacent location in the
+    corresponding output dir.
+
+    Args:
+        input_files: list of measurement DataFrames.
+        meas_input: `OpticsInput` object containing analysis settings.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        The input files with anomalous BPMs removed.
+    """
     bad_bpms = identify_bad_bpms(meas_input, input_files, plane)
     input_files = remove_bad_bpms(input_files, list(set(bad_bpms.NAME)), plane)
     LOGGER.info(str(list(set(bad_bpms.NAME))))
