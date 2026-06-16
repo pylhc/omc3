@@ -55,7 +55,24 @@ def calculate(
     return x_ratio
 
 
-def phase_to_amp_ratio(measure_input, beta_phase, beta_amp, plane):
+def phase_to_amp_ratio(
+    measure_input: DotDict,
+    beta_phase: pd.DataFrame,
+    beta_amp: pd.DataFrame,
+    plane: str,
+) -> float:
+    """
+    Computes the mean ratio of phase-beta to amplitude-beta for arc BPMs.
+
+    Args:
+        measure_input: `OpticsInput` object.
+        beta_phase: Dataframe with beta from phase measurement.
+        beta_amp: Dataframe with beta from amplitude measurement.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        The mean ratio of phase-beta over amplitude-beta in arc BPMs.
+    """
     ratio = pd.merge(beta_phase.loc[:, [f"BET{plane}"]], beta_amp.loc[:, [f"BET{plane}"]],
                      how='inner', left_index=True, right_index=True, suffixes=("ph", "amp"))
     ph_over_amp = df_ratio(ratio, f"BET{plane}ph", f"BET{plane}amp")
