@@ -84,7 +84,23 @@ def calculate_w_and_phi(
     return output_df
 
 
-def calculate_chromatic_coupling(couplings, dpps, input_files, measure_input):
+def calculate_chromatic_coupling(
+    couplings: Sequence[pd.DataFrame],
+    dpps: Sequence[float],
+    input_files: InputFiles,
+    measure_input: DotDict,
+) -> pd.DataFrame:
+    """Calculates chromatic coupling from coupling data at different dp/p values.
+
+    Args:
+        couplings: Sequence of coupling DataFrames, one per dp/p value.
+        dpps: Sequence of corresponding dp/p values.
+        input_files: `InputFiles` object containing measurement data.
+        measure_input: `OpticsInput` object containing analysis settings.
+
+    Returns:
+        A `DataFrame` with chromatic coupling amplitudes and components.
+    """
     # TODO how to treat the model values?
     columns = [f"{pref}{col}{part}" for pref in ("", ERR) for col in ("F1001", "F1010") for part in ("RE", "IM")]
     joined = couplings[0].loc[:, columns]
