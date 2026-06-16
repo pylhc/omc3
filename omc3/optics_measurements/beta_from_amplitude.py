@@ -5,6 +5,7 @@ Beta from Amplitude
 This module contains some of the beta calculation related functionality of ``optics_measurements``.
 It provides functions to calculate beta functions from amplitude data.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -50,8 +51,17 @@ def calculate(
     beta_amp = beta_from_amplitude(meas_input, input_files, plane, tune_dict)
     x_ratio = phase_to_amp_ratio(meas_input, beta_phase, beta_amp, plane)
     beta_amp = add_rescaled_beta_columns(beta_amp, x_ratio, plane)
-    header_d = _get_header(header_dict, np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].to_numpy()), x_ratio)
-    tfs.write(Path(meas_input.outputdir) / f"{AMP_BETA_NAME}{plane.lower()}{EXT}", beta_amp, header_d, save_index='NAME')
+    header_d = _get_header(
+        header_dict,
+        np.std(beta_amp.loc[:, f"{DELTA}BET{plane}"].to_numpy()),
+        x_ratio,
+    )
+    tfs.write(
+        Path(meas_input.outputdir) / f"{AMP_BETA_NAME}{plane.lower()}{EXT}",
+        beta_amp,
+        header_d,
+        save_index="NAME",
+    )
     return x_ratio
 
 
@@ -73,11 +83,20 @@ def phase_to_amp_ratio(
     Returns:
         The mean ratio of phase-beta over amplitude-beta in arc BPMs.
     """
-    ratio = pd.merge(beta_phase.loc[:, [f"BET{plane}"]], beta_amp.loc[:, [f"BET{plane}"]],
-                     how='inner', left_index=True, right_index=True, suffixes=("ph", "amp"))
+    ratio = pd.merge(
+        beta_phase.loc[:, [f"BET{plane}"]],
+        beta_amp.loc[:, [f"BET{plane}"]],
+        how="inner",
+        left_index=True,
+        right_index=True,
+        suffixes=("ph", "amp"),
+    )
     ph_over_amp = df_ratio(ratio, f"BET{plane}ph", f"BET{plane}amp")
-    mask = (np.array(np.abs(ph_over_amp) > 0.1) & np.array(np.abs(ph_over_amp) < 10.0) &
-            np.array(measure_input.accelerator.get_element_types_mask(ratio.index, ["arc_bpm"])))
+    mask = (
+        np.array(np.abs(ph_over_amp) > 0.1)
+        & np.array(np.abs(ph_over_amp) < 10.0)
+        & np.array(measure_input.accelerator.get_element_types_mask(ratio.index, ["arc_bpm"]))
+    )
     return np.mean(ph_over_amp[mask])
 
 
@@ -99,7 +118,10 @@ def add_rescaled_beta_columns(df: pd.DataFrame, ratio: float, plane: str) -> pd.
 
 
 def beta_from_amplitude(
-    meas_input: DotDict, input_files: InputFiles, plane: str, tunes: TuneDict,
+    meas_input: DotDict,
+    input_files: InputFiles,
+    plane: str,
+    tunes: TuneDict,
 ) -> pd.DataFrame:
     """
     Calculates beta function from measured amplitudes across input files.
@@ -114,11 +136,12 @@ def beta_from_amplitude(
         A `DataFrame` with measured beta, model beta, errors, and beating columns.
     """
     df = pd.DataFrame(meas_input.accelerator.model).loc[:, [S, f"MU{plane}", f"BET{plane}"]]
-    df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
-                       f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
-    df = pd.merge(df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=meas_input.analyse_dpp),
-                  how='inner', left_index=True, right_index=True)
-    df['COUNT'] = len(input_files.get_columns(df, f"AMP{plane}"))
+    df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}", f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
+    df = pd.merge(
+        df, input_files.joined_frame(plane, [f"AMP{plane}", f"MU{plane}"], dpp_value=meas_input.analyse_dpp),
+        how="inner", left_index=True, right_index=True
+    )
+    df["COUNT"] = len(input_files.get_columns(df, f"AMP{plane}"))
 
     if meas_input.compensation == "model":
         df = _compensate_by_model(input_files, meas_input, df, plane)
@@ -133,12 +156,15 @@ def beta_from_amplitude(
     df[f"{ERR}BET{plane}"] = np.std(betas, axis=1)
     df[f"{DELTA}BET{plane}"] = df_rel_diff(df, f"BET{plane}", f"BET{plane}{MDL}")
     df[f"{ERR}{DELTA}BET{plane}"] = df_ratio(df, f"{ERR}BET{plane}", f"BET{plane}{MDL}")
-    return df.loc[:, ['S', 'COUNT', f"BET{plane}", f"{ERR}BET{plane}", f"BET{plane}{MDL}",
-                      f"MU{plane}{MDL}", f"{DELTA}BET{plane}", f"{ERR}{DELTA}BET{plane}"]]
+    return df.loc[:, ["S","COUNT", f"BET{plane}", f"{ERR}BET{plane}", f"BET{plane}{MDL}", f"MU{plane}{MDL}", f"{DELTA}BET{plane}", f"{ERR}{DELTA}BET{plane}"]]
 
 
 def _compensate_by_equation(
-    input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str, tunes: TuneDict,
+    input_files: InputFiles,
+    meas_input: DotDict,
+    df: pd.DataFrame,
+    plane: str,
+    tunes: TuneDict,
 ) -> pd.DataFrame:
     phases_meas = input_files.get_data(df, f"MU{plane}") * meas_input.accelerator.beam_direction
     driven_tune, _free_tune, ac2bpmac = tunes[plane]["Q"], tunes[plane]["QF"], tunes[plane]["ac2bpm"]
@@ -147,25 +173,35 @@ def _compensate_by_equation(
     phases_meas = phases_meas + phase_corr[np.newaxis, :]
     r = tunes.get_lambda(plane)
     phases_meas[k_bpmac:, :] = phases_meas[k_bpmac:, :] - driven_tune
-    amp_compensation = np.sqrt((1 + r ** 2 + 2 * r * np.cos(4 * np.pi * phases_meas)) / (1 - r ** 2))
-    df[input_files.get_columns(df, f"AMP{plane}")] = input_files.get_data(df, f"AMP{plane}") * amp_compensation
+    amp_compensation = np.sqrt((1 + r**2 + 2 * r * np.cos(4 * np.pi * phases_meas)) / (1 - r**2))
+    df[input_files.get_columns(df, f"AMP{plane}")] = (
+        input_files.get_data(df, f"AMP{plane}") * amp_compensation
+    )
     return df
 
 
 def _compensate_by_model(
-    input_files: InputFiles, meas_input: DotDict, df: pd.DataFrame, plane: str,
+    input_files: InputFiles,
+    meas_input: DotDict,
+    df: pd.DataFrame,
+    plane: str,
 ) -> pd.DataFrame:
-    df = pd.merge(df, pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"BET{plane}"]]
-                                   .rename(columns={f"BET{plane}": f"BET{plane}comp"})),
-                  how='inner', left_index=True, right_index=True)
+    df = pd.merge(
+        df,
+        pd.DataFrame(meas_input.accelerator.model_driven.loc[:, [f"BET{plane}"]].rename(columns={f"BET{plane}": f"BET{plane}comp"})),
+        how="inner",
+        left_index=True,
+        right_index=True
+    )
     amp_compensation = np.sqrt(df_ratio(df, f"BET{plane}{MDL}", f"BET{plane}comp"))
-    df[input_files.get_columns(df, f"AMP{plane}")] = (input_files.get_data(df, f"AMP{plane}")
-                                                      * amp_compensation[:, np.newaxis])
+    df[input_files.get_columns(df, f"AMP{plane}")] = (
+        input_files.get_data(df, f"AMP{plane}") * amp_compensation[:, np.newaxis]
+    )
     return df
 
 
 def _get_header(header_dict: dict, rmsbbeat: float, scaling_factor: float) -> dict:
     header = header_dict.copy()
-    header['RMSbetabeat'] = rmsbbeat
-    header['RescalingFactor'] = scaling_factor
+    header["RMSbetabeat"] = rmsbbeat
+    header["RescalingFactor"] = scaling_factor
     return header
