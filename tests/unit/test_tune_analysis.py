@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
 @pytest.mark.basic
 def test_moving_average():
-    np.random.seed(2020)
     sin_data, data = _get_noisy_sinus()
     opt = MinMaxFilterOpt(
         min=-2,
