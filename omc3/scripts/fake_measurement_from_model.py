@@ -130,23 +130,26 @@ LOG = logging_tools.get_logger(__name__)
 
 OUTPUTNAMES_MAP = {
     # Names to be output on input of certain parameters.
-    f'{BETA}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME)),
-    f'{BETA}Y': tuple(f"{name}y" for name in (BETA_NAME, AMP_BETA_NAME)),
-    f'{DISPERSION}X': (f"{DISPERSION_NAME}x",),
-    f'{DISPERSION}Y': (f"{DISPERSION_NAME}y",),
-    f'{PHASE}X': tuple(f"{name}x" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
-    f'{PHASE}Y': tuple(f"{name}y" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
+    f"{BETA}X": tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME)),
+    f"{BETA}Y": tuple(f"{name}y" for name in (BETA_NAME, AMP_BETA_NAME)),
+    f"{DISPERSION}X": (f"{DISPERSION_NAME}x",),
+    f"{DISPERSION}Y": (f"{DISPERSION_NAME}y",),
+    f"{PHASE}X": tuple(f"{name}x" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
+    f"{PHASE}Y": tuple(f"{name}y" for name in (PHASE_NAME, TOTAL_PHASE_NAME)),
     F1010: (F1010_NAME,),
     F1001: (F1001_NAME,),
-    f'{NORM_DISPERSION}X': tuple(f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)),
+    f"{NORM_DISPERSION}X": tuple(
+        f"{name}x" for name in (BETA_NAME, AMP_BETA_NAME, DISPERSION_NAME, NORM_DISP_NAME)
+    ),
     f"{ORBIT}X": (f"{ORBIT_NAME}x",),
     f"{ORBIT}Y": (f"{ORBIT_NAME}y",),
 }
 FAKED_HEADER: str = "FAKED_FROM"
-VALUES: str = 'values'
-ERRORS: str = 'errors'
-EPSILON: float = 1e-14  # smallest allowed relative error, empirical value
-                        # could be smaller but then normal(mean, err) == mean sometimes
+VALUES: str = "values"
+ERRORS: str = "errors"
+# smallest allowed relative error, empirical value
+# could be smaller but then normal(mean, err) == mean sometimes
+EPSILON: float = 1e-14
 
 
 def get_params():
