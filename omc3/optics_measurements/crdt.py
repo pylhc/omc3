@@ -76,8 +76,23 @@ def calculate(
     input_files: InputFiles,
     invariants: dict[str, tfs.TfsDataFrame],
     header: dict[str, Any],
-):
-    """Calculate the CRDT values."""
+) -> None:
+    """Calculates Combined Resonance Driving Terms and writes results to file.
+
+    Iterates over all defined CRDTs (see module-level ``CRDTS`` list), computing
+    amplitudes via ODR fits to the invariants and phases via circular averaging
+    of the spectral lines. Results are written into per-order subfolders of the
+    CRDT output directory.
+
+    The derivation follows https://arxiv.org/pdf/1402.1461.pdf.
+
+    Args:
+        measure_input: `OpticsInput` object containing analysis settings.
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
+        invariants: dictionary mapping planes to DataFrames of actions and errors
+            per kick, e.g. from :func:`omc3.optics_measurements.kick.calculate`.
+        header: headers to include in the written result files.
+    """
     LOGGER.info("Start of CRDT analysis")
 
     dpp_value = measure_input.analyse_dpp
