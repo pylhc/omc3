@@ -204,13 +204,28 @@ def get_data_for_clustering(
     return arc_bpm_data_for_clustering, ir_bpm_data_for_clustering
 
 
-def _normalize_parameter(column_data):
+def _normalize_parameter(column_data: pd.Series) -> pd.Series:
+    """Rescales a Series to the [0, 1] range via min-max normalization."""
     return (column_data - column_data.min()) / (column_data.max() - column_data.min())
 
 
-def remove_bad_bpms(tfs_dfs, bad_bpm_names, plane):
-    for i in range(len(tfs_dfs)):
-        tfs_dfs[i] = tfs_dfs[i].loc[~tfs_dfs[i].index.isin(bad_bpm_names)]
-        tfs_dfs[i].headers[f"Q{PLANE_TO_NUM[plane]}"] = np.mean(tfs_dfs[i][f"TUNE{plane}"])
-        tfs_dfs[i].headers[f"Q{PLANE_TO_NUM[plane]}RMS"] = np.std(tfs_dfs[i][f"TUNE{plane}"])
-    return tfs_dfs
+def remove_bad_bpms(
+    tfs_dfs: Sequence[tfs.TfsDataFrame], bad_bpm_names: list[str], plane: str,
+) -> list[tfs.TfsDataFrame]:
+    """Removes flagged BPMs from all input file DataFrames and recalculates tune statistics.
+
+    Args:
+        tfs_dfs: list of measurement DataFrames.
+        bad_bpm_names: names of BPMs to remove.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A list of the input TfsDataFrames with bad BPMs filtered out.
+    """
+    cleaned: list[tfs.TfsDataFrame] = []
+    for df in tfs_dfs:
+        filtered_df = df.loc[~df.index.isin(bad_bpm_names)]
+        filtered_df.headers[f"Q{PLANE_TO_NUM[plane]}"] = np.mean(filtered_df[f"TUNE{plane}"])
+        filtered_df.headers[f"Q{PLANE_TO_NUM[plane]}RMS"] = np.std(filtered_df[f"TUNE{plane}"])
+        cleaned.append(filtered_df)
+    return cleaned
