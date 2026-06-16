@@ -30,6 +30,8 @@ if TYPE_CHECKING:
 
     from generic_parser import DotDict
 
+    from omc3.model.accelerators.accelerator import Accelerator
+
 LOGGER: Logger = logging_tools.get_logger(__name__)
 ARCS_CONT = 0.01
 IRS_CONT = 0.025
@@ -180,7 +182,19 @@ def detect_anomalies(
     return bad_bpms, good_bpms, bad_bpms_scores
 
 
-def get_data_for_clustering(bpm_tfs_data, plane, accelerator):
+def get_data_for_clustering(
+    bpm_tfs_data: pd.DataFrame, plane: str, accelerator: Accelerator,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Splits BPM data into arc and IR subsets and normalizes features for clustering.
+
+    Args:
+        bpm_tfs_data: concatenated BPM data from all input files.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+        accelerator: accelerator instance providing the element types mask.
+
+    Returns:
+        A tuple of (arc_bpm_data, ir_bpm_data) with normalized features.
+    """
     arc_bpm_mask = accelerator.get_element_types_mask(bpm_tfs_data.NAME, types=["arc_bpm"])
     ir_bpm_data_for_clustering = bpm_tfs_data.iloc[~arc_bpm_mask].copy()
     arc_bpm_data_for_clustering = bpm_tfs_data.iloc[arc_bpm_mask].copy()
