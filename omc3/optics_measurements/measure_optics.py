@@ -61,7 +61,6 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
         input_files: `InputFiles` object containing frequency spectra files (linx/y).
         measure_input: `OpticsInput` object containing analysis settings.
 
-    Returns:
     """
     outputdir = Path(measure_input.outputdir)
     iotools.create_dirs(outputdir)
