@@ -179,12 +179,12 @@ def _check_amp_error(rdt: RDTTuple):
         LOGGER.warning(f"{message}: {error_str}")
 
 
-def _rdt_to_str(rdt: RDTTuple):
+def _rdt_to_str(rdt: RDTTuple) -> str:
     j, k, l, m = rdt  # noqa: E741
     return f"{j}{k}{l}{m}"
 
 
-def _rdt_to_order_and_type(rdt: RDTTuple):
+def _rdt_to_order_and_type(rdt: RDTTuple) -> str:
     j, k, l, m = rdt  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
     orders = {
@@ -234,17 +234,17 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
     )
 
 
-def _get_n_upper_diagonals(n, shape):
+def _get_n_upper_diagonals(n: int, shape: tuple[int, int]) -> np.ndarray:
     return diags(np.ones((n, shape[0])), np.arange(n) + 1, shape=shape).toarray()
 
 
-def _determine_line(rdt: RDTTuple, plane: str) -> dict[str, LineTuple]:
+def _determine_line(rdt: RDTTuple, plane: str) -> LineTuple:
     j, k, l, m = rdt  # noqa: E741
     lines = {"X": (1 - j + k, m - l, 0), "Y": (k - j, 1 - l + m, 0)}
     return lines[plane]
 
 
-def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple):
+def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple) -> dict[str, Any]:
     mod_header = header.copy()
     line = _determine_line(rdt, plane)
     freq = np.mod(line @ np.array([header["Q1"], header["Q2"], 0]), 1)
@@ -299,8 +299,8 @@ def _process_rdt(
 
 
 def _add_tunes_if_in_second_turn(
-    df: pd.DataFrame, input_files: InputFiles, line, phase2, dpp_value
-):
+    df: pd.DataFrame, input_files: InputFiles, line: LineTuple, phase2: np.ndarray, dpp_value: float | None,
+) -> np.ndarray:
     # With pandas 3.x phase2 might be passed as a read-only view so we ensure
     # a copy is made here since we intend to mutate before returning
     phase2 = np.array(phase2, copy=True)
@@ -315,8 +315,8 @@ def _add_tunes_if_in_second_turn(
 
 
 def _calculate_rdt_phases_from_line_phases(
-    df: pd.DataFrame, input_files: InputFiles, line, line_phase, dpp_value
-):
+    df: pd.DataFrame, input_files: InputFiles, line: LineTuple, line_phase: np.ndarray, dpp_value: float | None,
+) -> np.ndarray:
     phases = np.zeros((2, df.index.size, len(input_files.dpp_frames("X", dpp_value))))
     for i, plane in enumerate(PLANES):
         if line[i] != 0:
@@ -329,7 +329,9 @@ def _calculate_rdt_phases_from_line_phases(
     return line_phase - line[0] * phases[0] - line[1] * phases[1] + 0.25
 
 
-def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
+def _fit_rdt_amplitudes(
+    invariants: dict[str, pd.DataFrame], line_amp: np.ndarray, plane: str, rdt: RDTTuple,
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.
     """
@@ -362,7 +364,7 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     return amps, err_amps
 
 
-def get_linearized_problem(invs: dict[str, np.ndarray], plane: str, rdt: RDTTuple):
+def get_linearized_problem(invs: dict[str, np.ndarray], plane: str, rdt: RDTTuple) -> np.ndarray:
     """
     2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
     we use sqrt(2J): unit is sqrt(m).
@@ -425,7 +427,7 @@ def complex_secondary_lines(
     return (np.abs(sig), (np.angle(sig) / tp) % 1, np.abs(esig), (np.angle(esig) / tp) % 1)
 
 
-def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1):
+def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1) -> np.ndarray:
     with suppress(AttributeError):
         amplitudes = amplitudes.to_numpy()
 
