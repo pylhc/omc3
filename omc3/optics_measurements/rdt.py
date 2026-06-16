@@ -155,7 +155,7 @@ def calculate(
                     write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
 
-def write(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, plane: str, rdt: RDTTuple):
+def write(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, plane: str, rdt: RDTTuple) -> None:
     outputdir = Path(meas_input.outputdir) / RDT_FOLDER / _rdt_to_order_and_type(rdt)
     iotools.create_dirs(outputdir)
     tfs.write(outputdir / f"f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}", df, header, save_index=NAME)
