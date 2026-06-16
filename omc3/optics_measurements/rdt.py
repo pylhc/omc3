@@ -207,7 +207,8 @@ def _best_90_degree_phases(
     tunes: TuneDict,
     plane: str,
 ) -> pd.DataFrame:
-    """Finds BPM pairs with phase advance closest to 90 degrees for RDT measurement.
+    """
+    Finds BPM pairs with phase advance closest to 90 degrees for RDT measurement.
 
     Args:
         meas_input: `OpticsInput` object containing analysis settings.
