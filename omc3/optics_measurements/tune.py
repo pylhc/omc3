@@ -21,7 +21,20 @@ if TYPE_CHECKING:
     from omc3.optics_measurements.data_models import InputFiles
 
 
-def calculate(measure_input: DotDict, input_files: InputFiles):
+def calculate(measure_input: DotDict, input_files: InputFiles) -> TuneDict:
+    """
+    Computes measured, model and free tunes from input files.
+
+    Averages per-file tune values weighted by their RMS, and determines
+    the free tune when AC-dipole excitation compensation is active.
+
+    Args:
+        measure_input: `OpticsInput` object containing analysis settings.
+        input_files: `InputFiles` object containing frequency spectra files.
+
+    Returns:
+        A `TuneDict` populated with model, measured and free tunes per plane.
+    """
     tune_d = TuneDict()
     accelerator = measure_input.accelerator
     for plane in PLANES:
