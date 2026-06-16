@@ -67,7 +67,7 @@ class TuneDict(dict):
         super().__init__(zip(PLANES, ({"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None},
                                                     {"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None})))
 
-    def get_lambda(self, plane):
+    def get_lambda(self, plane: str) -> float:
         """
         Computes lambda compensation factor.
 
@@ -80,7 +80,7 @@ class TuneDict(dict):
         return (np.sin(np.pi * (self[plane]["Q"] - self[plane]["QF"])) /
                 np.sin(np.pi * (self[plane]["Q"] + self[plane]["QF"])))
 
-    def phase_ac2bpm(self, df_idx_by_bpms: pd.DataFrame, plane: str, accelerator):
+    def phase_ac2bpm(self, df_idx_by_bpms: pd.DataFrame, plane: str, accelerator) -> tuple[str, float, int, str]:
         """
         Returns the necessary values for the exciter compensation.
         See **DOI: 10.1103/PhysRevSTAB.11.084002**
