@@ -436,12 +436,12 @@ def get_line_sign_and_suffix(
 
 
 def complex_secondary_lines(
-    phase_adv: ArrayLike[float],
-    err_padv: ArrayLike[float],
-    sig1: ArrayLike[complex],
-    sig2: ArrayLike[complex],
-):
-    """
+    phase_adv: ArrayLike,
+    err_padv: ArrayLike,
+    sig1: ArrayLike,
+    sig2: ArrayLike,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Extracts amplitude and phase of secondary spectral lines from BPM pairs.
 
     Args:
         phase_adv: phase advances between two BPMs.
@@ -450,7 +450,7 @@ def complex_secondary_lines(
         sig2: Complex coefficients of a secondary lines at the second BPM of the pairs.
 
     Returns:
-         `Tuple` with amplitudes, phases err_amplitudes and err_phases of the complex signal.
+         `Tuple` with amplitudes, phases, err_amplitudes and err_phases of the complex signal.
     """
     tp = 2.0 * np.pi
     # computing complex secondary line (h-) = x - ip_x. Why do we divide by 2? (jgray 2024)
