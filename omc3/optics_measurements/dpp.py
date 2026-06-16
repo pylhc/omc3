@@ -83,14 +83,24 @@ def append_amp_dpp(list_of_tfs: Sequence[tfs.TfsFile], dpp_values: Sequence[floa
     return list_of_tfs
 
 
-def append_dpp(list_of_tfs: Sequence[tfs.TfsFile], dpp_values: Sequence[float]):
+def append_dpp(list_of_tfs: Sequence[tfs.TfsFile], dpp_values: Sequence[float]) -> Sequence[tfs.TfsFile]:
     """ Add the dpp values to the DPP-header of the tfs files. """
     for i, dpp in enumerate(dpp_values):
         list_of_tfs[i].headers["DPP"] = dpp
     return list_of_tfs
 
 
-def calculate_dpoverp(input_files: InputFiles, meas_input: DotDict):
+def calculate_dpoverp(input_files: InputFiles, meas_input: DotDict) -> float | np.ndarray:
+    """
+    Calculates dp/p from closed orbit and model dispersion at arc BPMs.
+
+    Args:
+        input_files: `InputFiles` object containing measurement data.
+        meas_input: `OpticsInput` object containing analysis settings.
+
+    Returns:
+        Scalar dp/p for a single file, or an array of dp/p values per file.
+    """
     df_orbit = pd.DataFrame(meas_input.accelerator.model).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['CO', 'CORMS']), how='inner',
                         left_index=True, right_index=True)
@@ -108,7 +118,17 @@ def calculate_dpoverp(input_files: InputFiles, meas_input: DotDict):
     return numer / denom
 
 
-def calculate_amp_dpoverp(input_files: InputFiles, meas_input: DotDict):
+def calculate_amp_dpoverp(input_files: InputFiles, meas_input: DotDict) -> float | np.ndarray:
+    """
+    Calculates dp/p amplitude from synchrotron sideband amplitudes and model dispersion.
+
+    Args:
+        input_files: `InputFiles` object containing measurement data.
+        meas_input: `OpticsInput` object containing analysis settings.
+
+    Returns:
+        Scalar dp/p amplitude for a single file, or an array of values per file.
+    """
     df_orbit = pd.DataFrame(meas_input.accelerator.model).loc[:, ['S', 'DX']]
     df_orbit = pd.merge(df_orbit, input_files.joined_frame('X', ['AMPX', 'AMPZ']), how='inner',
                         left_index=True, right_index=True)
