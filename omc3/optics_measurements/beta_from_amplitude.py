@@ -81,13 +81,37 @@ def phase_to_amp_ratio(
     return np.mean(ph_over_amp[mask])
 
 
-def add_rescaled_beta_columns(df, ratio, plane):
+def add_rescaled_beta_columns(df: pd.DataFrame, ratio: float, plane: str) -> pd.DataFrame:
+    """
+    Adds rescaled beta and error columns to the DataFrame using the given ratio.
+
+    Args:
+        df: DataFrame of beta from amplitude to extend.
+        ratio: phase-to-amplitude rescaling factor.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        The input DataFrame with added rescaled columns.
+    """
     df[f"BET{plane}{RES}"] = df.loc[:, f"BET{plane}"].to_numpy() * ratio
     df[f"{ERR}BET{plane}{RES}"] = df.loc[:, f"{ERR}BET{plane}"].to_numpy() * ratio
     return df
 
 
-def beta_from_amplitude(meas_input, input_files, plane, tunes):
+def beta_from_amplitude(
+    meas_input: DotDict, input_files: InputFiles, plane: str, tunes: TuneDict,
+) -> pd.DataFrame:
+    """Calculates beta function from measured amplitudes across input files.
+
+    Args:
+        meas_input: `OpticsInput` object.
+        input_files: `InputFiles` object containing measurement data.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+        tunes: `TuneDict` contains measured tunes.
+
+    Returns:
+        A `DataFrame` with measured beta, model beta, errors, and beating columns.
+    """
     df = pd.DataFrame(meas_input.accelerator.model).loc[:, [S, f"MU{plane}", f"BET{plane}"]]
     df.rename(columns={f"MU{plane}": f"MU{plane}{MDL}",
                        f"BET{plane}": f"BET{plane}{MDL}"}, inplace=True)
