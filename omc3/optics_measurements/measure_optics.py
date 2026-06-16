@@ -170,7 +170,18 @@ def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict) -> dict[str, Any]
     }
 
 
-def copy_calibration_files(outputdir: str|Path, calibrationdir: str|Path):
+def copy_calibration_files(outputdir: str | Path, calibrationdir: str | Path | None) -> dict[str, tfs.TfsDataFrame] | None:
+    """
+    Copies calibration files from calibrationdir to outputdir,
+    then reads them and returns the data.
+
+    Args:
+        outputdir: path to the output directory.
+        calibrationdir: path to the calibration directory. If ``None``, returns ``None``.
+
+    Returns:
+        A dictionary mapping planes to calibration DataFrames, or ``None`` if no calibration directory is given.
+    """
     if calibrationdir is None:
         return None
     calibs = {}
