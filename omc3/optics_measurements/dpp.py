@@ -27,7 +27,7 @@ DPP_TOLERANCE: float = 1e-5  # not sure if these should be different! (jdilly)
 LOGGER = logging.getLogger(__name__)
 
 
-def arrange_dpps(dpps: Sequence[float], tolerance: float = DPP_BIN_TOLERANCE):
+def arrange_dpps(dpps: Sequence[float], tolerance: float = DPP_BIN_TOLERANCE) -> np.ndarray:
     """
     Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero.
     """
@@ -46,11 +46,11 @@ def arrange_dpps(dpps: Sequence[float], tolerance: float = DPP_BIN_TOLERANCE):
     return np.array(arranged_dpps)
 
 
-def _values_in_range(range_to_use, dpp_values):
+def _values_in_range(range_to_use: list[int], dpp_values: Sequence[float]) -> list[float]:
     return [dpp_values[idx] for idx in range_to_use]
 
 
-def _find_range_with_element(ranges, element):
+def _find_range_with_element(ranges: list[list[int]], element: int) -> list[int]:
     return [dpp_range for dpp_range in ranges if element in dpp_range][0]
 
 
@@ -75,16 +75,18 @@ def _compute_ranges(dpps: Sequence[float], tolerance: float) -> list[list[int]]:
     return ranges
 
 
-def append_amp_dpp(list_of_tfs: Sequence[tfs.TfsFile], dpp_values: Sequence[float]):
-    """ Add the dpp values to the DPP-header of the tfs files, if larger than the DPP-tolerance, otherwise set to zero.
-    This is intended to the DPP value for on-momentum files to zero. """
+def append_amp_dpp(list_of_tfs: Sequence[tfs.TfsDataFrame], dpp_values: Sequence[float]) -> Sequence[tfs.TfsDataFrame]:
+    """
+    Add the dpp values to the DPP-header of the tfs files, if larger than the DPP-tolerance,
+    otherwise set to zero. This is intended to the DPP value for on-momentum files to zero.
+    """
     for i, dpp in enumerate(dpp_values):
         list_of_tfs[i].headers["DPPAMP"] = dpp if (not np.isnan(dpp) and np.abs(dpp) > DPP_TOLERANCE) else 0.0
     return list_of_tfs
 
 
-def append_dpp(list_of_tfs: Sequence[tfs.TfsFile], dpp_values: Sequence[float]) -> Sequence[tfs.TfsFile]:
-    """ Add the dpp values to the DPP-header of the tfs files. """
+def append_dpp(list_of_tfs: Sequence[tfs.TfsDataFrame], dpp_values: Sequence[float]) -> Sequence[tfs.TfsDataFrame]:
+    """ Add the dpp values to the DPP-header of the tfs dataframes."""
     for i, dpp in enumerate(dpp_values):
         list_of_tfs[i].headers["DPP"] = dpp
     return list_of_tfs
