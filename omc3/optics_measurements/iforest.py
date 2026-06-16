@@ -114,12 +114,34 @@ def identify_single_cluster_bad_bpms(
     return signif_feature
 
 
-def reassign_index(data):
+def reassign_index(data: pd.DataFrame) -> pd.DataFrame:
+    """Resets the index of the DataFrame to a sequential integer range."""
     data["NEW_INDEX"] = range(len(data.NAME))
     return data.set_index("NEW_INDEX")
 
 
-def get_significant_features(bpm_tfs_data, data_for_clustering, bad_bpms, good_bpms, plane):
+def get_significant_features(
+    bpm_tfs_data: pd.DataFrame,
+    data_for_clustering: pd.DataFrame,
+    bad_bpms: pd.DataFrame,
+    good_bpms: pd.DataFrame,
+    plane: str,
+) -> pd.DataFrame:
+    """Determines the most significant feature for each anomalous BPM.
+
+    For each bad BPM, finds the feature (tune, noise, or amplitude) with the
+    largest deviation from the mean of good BPMs.
+
+    Args:
+        bpm_tfs_data: concatenated BPM data from all input files.
+        data_for_clustering: normalized feature data used for clustering.
+        bad_bpms: DataFrame of BPMs flagged as anomalous.
+        good_bpms: DataFrame of BPMs considered normal.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A `DataFrame` indexed like ``bad_bpms`` with columns NAME, FEATURE, VALUE, and AVG.
+    """
     features_df = pd.DataFrame(index=bad_bpms.index)
     for index in bad_bpms.index:
         max_dist = max([(abs(data_for_clustering.loc[index, col] -
@@ -133,7 +155,19 @@ def get_significant_features(bpm_tfs_data, data_for_clustering, bad_bpms, good_b
     return features_df
 
 
-def detect_anomalies(contamination, data, plane):
+def detect_anomalies(
+    contamination: float, data: pd.DataFrame, plane: str,
+) -> tuple[pd.DataFrame, pd.DataFrame, np.ndarray]:
+    """Fits an isolation forest and separates data into anomalous and normal BPMs.
+
+    Args:
+        contamination: expected proportion of outliers in the data.
+        data: normalized BPM feature data.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A tuple of (bad_bpms, good_bpms, bad_bpms_scores).
+    """
     iforest = IsolationForest(n_estimators=100, max_samples='auto',
                               contamination=contamination, max_features=1.0,
                               bootstrap=False)
