@@ -89,8 +89,9 @@ def calculate_coupling(
             the measured phase advances, with an entry for each transverse plane. In said entry is a
             dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
             the location of the output ``TfsDataFrames`` for the phases.
-        tune_dict (dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
-            calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
+        tune_dict (dict[str, dict[str, float]]): `TuneDict` object containing measured and model tunes.
+            For each plane, there is an entry calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm'
+            modes, each value being a float.
         header_dict (dict): header dictionary of common items for coupling output files,
             will be attached as the header to the **f1001.tfs** and **f1010.tfs** files..
     """
