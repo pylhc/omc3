@@ -104,7 +104,16 @@ class InputFiles(dict):
         """
         return np.array([df.DPP for df in self[plane]])
 
-    def dpp_frames(self, plane: str, dpp_value: float | None):
+    def dpp_frames(self, plane: str, dpp_value: float | None) -> list[tfs.TfsDataFrame]:
+        """Returns the list of DataFrames matching the given ``dpp_value`` for the given plane.
+
+        Args:
+            plane: marking the horizontal or vertical plane, **X** or **Y**.
+            dpp_value: the dp/p value to filter for. If ``None``, all frames are returned.
+
+        Returns:
+            A list of `TfsDataFrame` objects.
+        """
         if dpp_value is None:
             return self._all_frames(plane)
 
@@ -113,14 +122,14 @@ class InputFiles(dict):
             raise ValueError(f"No data found for dp/p {dpp_value} in plane {plane}")
         return dpp_dfs
 
-    def dpp_frames_indices(self, plane: str, dpp_value: float | None):
+    def dpp_frames_indices(self, plane: str, dpp_value: float | None) -> np.ndarray | list[int]:
         """ Return the indices of the frames that match the dpp. """
         if dpp_value is None:
             return list(range(len(self[plane])))
 
         return np.argwhere(np.abs(self.dpps(plane) - dpp_value) < dpp.DPP_TOLERANCE).T[0]
 
-    def _all_frames(self, plane: str):
+    def _all_frames(self, plane: str) -> list[tfs.TfsDataFrame]:
         return self[plane]
 
     def joined_frame(self,
@@ -183,7 +192,16 @@ class InputFiles(dict):
             joined_frame = joined_frame.astype(dtype)
         return joined_frame
 
-    def bpms(self, plane=None, dpp_value=None):
+    def bpms(self, plane: str | None = None, dpp_value: float | None = None) -> pd.Index:
+        """Returns the intersection of BPM indices across all input files for the given plane and dpp.
+
+        Args:
+            plane: **X** or **Y**. If ``None``, returns intersection of both planes.
+            dpp_value: filter for given dp/p value. If ``None``, uses all frames.
+
+        Returns:
+            A `pd.Index` of common BPM names.
+        """
         if plane is None:
             return self.bpms(plane="X", dpp_value=dpp_value).intersection(self.bpms(plane="Y", dpp_value=dpp_value))
         indices = [df.index for df in (self.dpp_frames(plane, dpp_value) if dpp_value is not None else self._all_frames(plane))]
@@ -221,8 +239,8 @@ class InputFiles(dict):
                         ((self[plane][i][f"{AMPLITUDE}{plane}"] * data.loc[:, ERR_CALIBRATION]).fillna(bpm_resolution))**2
                     )
 
-    @ staticmethod
-    def get_columns(frame, column):
+    @staticmethod
+    def get_columns(frame: pd.DataFrame, column: str) -> list[str]:
         """
         Returns list of columns of frame corresponding to column in original files.
 
@@ -238,8 +256,8 @@ class InputFiles(dict):
         new_list.sort(key=int)
         return [f"{column}__{x}" for x in new_list]
 
-    @ staticmethod
-    def get_data(frame, column) -> np.ndarray:
+    @staticmethod
+    def get_data(frame: pd.DataFrame, column: str) -> np.ndarray:
         """
         Returns data in columns of frame corresponding to column in original files.
 
@@ -248,7 +266,7 @@ class InputFiles(dict):
             column: name of column in original files.
 
         Returns:
-            A `np.narray` corresponding to column in original files.
+            A `np.ndarray` corresponding to column in original files.
         """
         columns = InputFiles.get_columns(frame, column)
         return frame.loc[:, columns].to_numpy(dtype=np.float64)
@@ -256,7 +274,7 @@ class InputFiles(dict):
 
 # DPP Filtering related functions ------------------------------------------------------------------
 
-def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, id_: str = None):
+def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, id_: str | None = None):
     """ A helper function to check if off-momentum data is present in the input files,
     but no dpp-value is given by the user.
 
@@ -286,6 +304,6 @@ def check_and_warn_about_offmomentum_data(input_files: InputFiles, plane: str, i
     LOGGER.warning(msg)
 
 
-def filter_for_dpp(to_filter: dict[str, Sequence], input_files: InputFiles, dpp_value: float):
+def filter_for_dpp(to_filter: dict[str, Sequence], input_files: InputFiles, dpp_value: float) -> dict:
     """ Filter the given data for the given dpp-value. """
     return {plane: values[input_files.dpp_frames_indices(plane, dpp_value)] for plane, values in to_filter.items()}
