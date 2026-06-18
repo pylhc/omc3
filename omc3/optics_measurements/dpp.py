@@ -16,6 +16,7 @@ import pandas as pd
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from logging import Logger
 
     import tfs
     from generic_parser import DotDict
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
 DPP_BIN_TOLERANCE: float = 1e-4
 DPP_TOLERANCE: float = 1e-5  # not sure if these should be different! (jdilly)
 
-LOGGER = logging.getLogger(__name__)
+LOGGER: Logger = logging.getLogger(__name__)
 
 
 def arrange_dpps(dpps: Sequence[float], tolerance: float = DPP_BIN_TOLERANCE) -> np.ndarray:
