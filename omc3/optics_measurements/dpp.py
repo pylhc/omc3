@@ -86,7 +86,7 @@ def append_amp_dpp(
 ) -> Sequence[tfs.TfsDataFrame]:
     """
     Add the dpp values to the DPP-header of the tfs files, if larger than the DPP-tolerance,
-    otherwise set to zero. This is intended to the DPP value for on-momentum files to zero.
+    otherwise set to zero. This is intended to set the DPP value for on-momentum files to zero.
     """
     for i, dpp in enumerate(dpp_values):
         list_of_tfs[i].headers["DPPAMP"] = (
