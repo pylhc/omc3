@@ -42,7 +42,8 @@ def betastar_from_phase(meas_input: DotDict, phase_d: phase.PhaseDict) -> pd.Dat
 
     Returns:
         A DataFrame with the beta* and l* as well as the phases used for the calculation
-        as columns and the IP names as index.
+        as columns and the IP names as index. Can return `None` if the provided accelerator
+        class has no `.get_ips` method.
     """
     accel = meas_input.accelerator
     model = accel.model
