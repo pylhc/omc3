@@ -226,9 +226,8 @@ def _best_90_degree_phases(
     if phase_dict is None:
         phase_dict = phases[plane][COMPENSATED]
 
-    bpm_names = phase_dict[MEASUREMENT].index.intersection(
-        bpm_names
-    )  # removes BPMs that are not in model
+    # Remove BPMs that are not in model
+    bpm_names = phase_dict[MEASUREMENT].index.intersection(bpm_names)
     filtered = phase_dict[MEASUREMENT].loc[bpm_names, bpm_names]
 
     # fmt: off
