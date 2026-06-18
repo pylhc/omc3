@@ -117,14 +117,14 @@ def calculate_coupling(
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
-        arithmetically_averaved_columns = [c for c in joined.columns if c.startswith(col)]
-        joined[col] = stats.weighted_mean(joined[arithmetically_averaved_columns], axis=1)
+        arithmetically_averaged_columns = [c for c in joined.columns if c.startswith(col)]
+        joined[col] = stats.weighted_mean(joined[arithmetically_averaged_columns], axis=1)
 
     LOGGER.debug("Averaging (circular mean) frequency columns")  # make sure to use period=1 here
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
-        circularly_averaved_columns = [x for x in joined.columns if x.startswith(col)]
+        arithmetically_averaged_columns = [x for x in joined.columns if x.startswith(col)]
         joined[col] = bd * stats.circular_mean(
-            joined[circularly_averaved_columns], axis=1, period=1
+            joined[arithmetically_averaged_columns], axis=1, period=1
         )
 
     LOGGER.debug("Finding BPM pairs for momentum reconstruction")
