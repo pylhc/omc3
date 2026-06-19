@@ -1,9 +1,12 @@
 # OMC3 Changelog
 
-#### 2026-??-?? - v0.28.2 - _fsoubelet_
+#### 2026-06-19 - v0.28.2 - _fsoubelet_
 
 - Fixed:
     - Fixed an inconsistency in the rescaling for the action calculation leading to wrong values of 2J (while having correct values for sqrt(2J)), noticed in B2.
+    - Fixed a deprecation warning from `scipy.odr`.
+    - Fixed some `pandas` `PerformanceWarning`s in `omc3.harpy`.
+    - Fixed some type hints and docstrings in the `omc3.optics_measurements` modules.
 
 #### 2026-03-27 - v0.28.1 - _fsoubelet_
 

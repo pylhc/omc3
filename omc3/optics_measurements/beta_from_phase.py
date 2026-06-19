@@ -143,7 +143,7 @@ def write(beta_df: pd.DataFrame, header: dict[str, Any], outputdir: str|Path, pl
 
 def n_bpm_method(
     meas_input: DotDict,
-    phase: pd.DataFrame,
+    phase: PhaseDict,
     plane: str,
     meas_and_mdl_tunes: tuple[float, float]
 ) -> tuple[tfs.TfsDataFrame, str]:
@@ -171,7 +171,7 @@ def n_bpm_method(
 
     Args:
         meas_input: `OpticsInput` object with optics CLI options.
-        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
+        phase: `PhaseDict` of phase matrices of measurement with errors and model tfs (bpm x bpm).
         plane: marking the horizontal or vertical plane, **X** or **Y**.
         meas_and_mdl_tunes: measured and model tunes.
 
@@ -761,7 +761,7 @@ def _get_header(header_dict: dict[str, Any], error_method: str, range_of_bpms: i
 
 def three_bpm_method(
     meas_input: DotDict,
-    phase: pd.DataFrame,
+    phase: PhaseDict,
     plane: str,
     meas_and_mdl_tunes: tuple[float, float],
 ) -> pd.DataFrame:
@@ -821,7 +821,7 @@ def three_bpm_method(
 
     Args:
         meas_input: `OpticsInput` object with optics CLI options.
-        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).
+        phase: `PhaseDict` of phase matrices of measurement with errors and model tfs (bpm x bpm).
         plane: marking the horizontal or vertical plane, **X** or **Y**.
         meas_and_mdl_tunes: measured and model tunes.
 
@@ -897,11 +897,14 @@ def three_bpm_method(
         sin_quadrup_model = tilted_errmeas**2 / np.power(np.sin(tilted_model), 4) * betmdl
 
     # Square to get variance terms (summed in quadrature across the two BPMs of each triplet)
+    # These terms can be zero when model phase advances are multiples of pi (e.g. in SPS) so
+    # we wrap it into the np.errstate context.
     sin_squared_model = np.square(sin_squared_model)
-    sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
-    sin_squ_model_shift2 = sin_squared_model + np.roll(sin_squared_model, -2, axis=0) / np.square(cot_phase_model_shift2)
-    sin_quad_model_shift1 = sin_quadrup_model + np.roll(sin_quadrup_model, -1, axis=0) / np.square(cot_phase_model_shift1)
-    sin_quad_model_shift2 = sin_quadrup_model + np.roll(sin_quadrup_model, -2, axis=0) / np.square(cot_phase_model_shift2)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        sin_squ_model_shift1 = sin_squared_model + np.roll(sin_squared_model, -1, axis=0) / np.square(cot_phase_model_shift1)
+        sin_squ_model_shift2 = sin_squared_model + np.roll(sin_squared_model, -2, axis=0) / np.square(cot_phase_model_shift2)
+        sin_quad_model_shift1 = sin_quadrup_model + np.roll(sin_quadrup_model, -1, axis=0) / np.square(cot_phase_model_shift1)
+        sin_quad_model_shift2 = sin_quadrup_model + np.roll(sin_quadrup_model, -2, axis=0) / np.square(cot_phase_model_shift2)
 
     # beterr = (1/3) · sqrt(Σ variance over 3 combinations): propagated σ_β
     beterr = np.sqrt(sin_squ_model_shift1[0] + sin_squ_model_shift1[3] + sin_squ_model_shift2[1]) / 3

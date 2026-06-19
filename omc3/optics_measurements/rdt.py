@@ -102,7 +102,7 @@ def calculate(
     measure_input: DotDict,
     input_files: InputFiles,
     tunes: TuneDict,
-    phases: dict[str, PhaseDict],
+    phases: dict[str, dict[str, PhaseDict]],
     invariants: dict[str, pd.DataFrame],
     header: dict,
 ) -> None:
@@ -115,8 +115,8 @@ def calculate(
         input_files: `InputFiles` object containing frequency spectra files (linx/y).
         tunes: `TuneDict` object mapping planes to tunes, as given by
             :func:`omc3.optics_measurements.tune.calculate`.
-        phases:
-        invariants (dict[str, pd.DataFrame]): dictionnary mapping planes to dataframes
+        phases: dictionary mapping planes to `PhaseDict` for compensated and uncompensated cases.
+        invariants: dictionary mapping planes to dataframes
             of actions/errors per kick, e.g. from :func:`omc3.optics_measurements.kick.calculate`.
         header: headers to include to the written result files.
     """
@@ -155,7 +155,7 @@ def calculate(
                     write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
 
 
-def write(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, plane: str, rdt: RDTTuple):
+def write(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, plane: str, rdt: RDTTuple) -> None:
     outputdir = Path(meas_input.outputdir) / RDT_FOLDER / _rdt_to_order_and_type(rdt)
     iotools.create_dirs(outputdir)
     tfs.write(outputdir / f"f{_rdt_to_str(rdt)}_{plane.lower()}{EXT}", df, header, save_index=NAME)
@@ -179,12 +179,12 @@ def _check_amp_error(rdt: RDTTuple):
         LOGGER.warning(f"{message}: {error_str}")
 
 
-def _rdt_to_str(rdt: RDTTuple):
+def _rdt_to_str(rdt: RDTTuple) -> str:
     j, k, l, m = rdt  # noqa: E741
     return f"{j}{k}{l}{m}"
 
 
-def _rdt_to_order_and_type(rdt: RDTTuple):
+def _rdt_to_order_and_type(rdt: RDTTuple) -> str:
     j, k, l, m = rdt  # noqa: E741
     rdt_type = "normal" if (l + m) % 2 == 0 else "skew"
     orders = {
@@ -200,14 +200,34 @@ def _rdt_to_order_and_type(rdt: RDTTuple):
     return f"{rdt_type}_{orders[j + k + l + m]}"
 
 
-def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
+def _best_90_degree_phases(
+    meas_input: DotDict,
+    bpm_names: pd.Index,
+    phases: dict[str, dict[str, PhaseDict]],
+    tunes: TuneDict,
+    plane: str,
+) -> pd.DataFrame:
+    """
+    Finds BPM pairs with phase advance closest to 90 degrees for RDT measurement.
+
+    Args:
+        meas_input: `OpticsInput` object containing analysis settings.
+        bpm_names: index of BPM names to consider.
+        phases: nested dictionary of phase advance data, keyed by plane and
+            compensation mode.
+        tunes: `TuneDict` with tune values per plane.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+
+    Returns:
+        A `DataFrame` indexed by BPM name with columns for the partner BPM name,
+        measured phase advance to the partner, its error, and longitudinal position.
+    """
     phase_dict: PhaseDict = phases[plane][UNCOMPENSATED]
     if phase_dict is None:
         phase_dict = phases[plane][COMPENSATED]
 
-    bpm_names = phase_dict[MEASUREMENT].index.intersection(
-        bpm_names
-    )  # removes BPMs that are not in model
+    # Remove BPMs that are not in model
+    bpm_names = phase_dict[MEASUREMENT].index.intersection(bpm_names)
     filtered = phase_dict[MEASUREMENT].loc[bpm_names, bpm_names]
 
     # fmt: off
@@ -234,17 +254,17 @@ def _best_90_degree_phases(meas_input, bpm_names, phases, tunes, plane):
     )
 
 
-def _get_n_upper_diagonals(n, shape):
+def _get_n_upper_diagonals(n: int, shape: tuple[int, int]) -> np.ndarray:
     return diags(np.ones((n, shape[0])), np.arange(n) + 1, shape=shape).toarray()
 
 
-def _determine_line(rdt: RDTTuple, plane: str) -> dict[str, LineTuple]:
+def _determine_line(rdt: RDTTuple, plane: str) -> LineTuple:
     j, k, l, m = rdt  # noqa: E741
     lines = {"X": (1 - j + k, m - l, 0), "Y": (k - j, 1 - l + m, 0)}
     return lines[plane]
 
 
-def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple):
+def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple) -> dict[str, Any]:
     mod_header = header.copy()
     line = _determine_line(rdt, plane)
     freq = np.mod(line @ np.array([header["Q1"], header["Q2"], 0]), 1)
@@ -253,8 +273,27 @@ def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple):
 
 
 def _process_rdt(
-    meas_input: DotDict, input_files: InputFiles, phase_data, invariants, plane, rdt: RDTTuple
-):
+    meas_input: DotDict,
+    input_files: InputFiles,
+    phase_data: pd.DataFrame,
+    invariants: dict[str, pd.DataFrame],
+    plane: str,
+    rdt: RDTTuple,
+) -> pd.DataFrame:
+    """
+    Computes amplitude and phase of a single RDT from spectral lines at BPM pairs.
+
+    Args:
+        meas_input: `OpticsInput` object containing analysis settings.
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
+        phase_data: BPM-pair data from :func:`_best_90_degree_phases`.
+        invariants: dictionary mapping planes to DataFrames of actions and errors per kick.
+        plane: marking the horizontal or vertical plane, **X** or **Y**.
+        rdt: RDTTuple (j, k, l, m) identifying the RDT.
+
+    Returns:
+        A `DataFrame` with columns for amplitude, phase, real/imaginary parts and their errors.
+    """
     dpp_value = meas_input.analyse_dpp
 
     df = pd.DataFrame(phase_data)
@@ -299,8 +338,8 @@ def _process_rdt(
 
 
 def _add_tunes_if_in_second_turn(
-    df: pd.DataFrame, input_files: InputFiles, line, phase2, dpp_value
-):
+    df: pd.DataFrame, input_files: InputFiles, line: LineTuple, phase2: np.ndarray, dpp_value: float | None,
+) -> np.ndarray:
     # With pandas 3.x phase2 might be passed as a read-only view so we ensure
     # a copy is made here since we intend to mutate before returning
     phase2 = np.array(phase2, copy=True)
@@ -315,8 +354,8 @@ def _add_tunes_if_in_second_turn(
 
 
 def _calculate_rdt_phases_from_line_phases(
-    df: pd.DataFrame, input_files: InputFiles, line, line_phase, dpp_value
-):
+    df: pd.DataFrame, input_files: InputFiles, line: LineTuple, line_phase: np.ndarray, dpp_value: float | None,
+) -> np.ndarray:
     phases = np.zeros((2, df.index.size, len(input_files.dpp_frames("X", dpp_value))))
     for i, plane in enumerate(PLANES):
         if line[i] != 0:
@@ -329,7 +368,9 @@ def _calculate_rdt_phases_from_line_phases(
     return line_phase - line[0] * phases[0] - line[1] * phases[1] + 0.25
 
 
-def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
+def _fit_rdt_amplitudes(
+    invariants: dict[str, pd.DataFrame], line_amp: np.ndarray, plane: str, rdt: RDTTuple,
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.
     """
@@ -362,7 +403,7 @@ def _fit_rdt_amplitudes(invariants, line_amp, plane, rdt):
     return amps, err_amps
 
 
-def get_linearized_problem(invs: dict[str, np.ndarray], plane: str, rdt: RDTTuple):
+def get_linearized_problem(invs: dict[str, np.ndarray], plane: str, rdt: RDTTuple) -> np.ndarray:
     """
     2 * j * f_jklm * (powers of 2Jx and 2Jy) : f_jklm is later a parameter of a fit
     we use sqrt(2J): unit is sqrt(m).
@@ -394,12 +435,12 @@ def get_line_sign_and_suffix(
 
 
 def complex_secondary_lines(
-    phase_adv: ArrayLike[float],
-    err_padv: ArrayLike[float],
-    sig1: ArrayLike[complex],
-    sig2: ArrayLike[complex],
-):
-    """
+    phase_adv: ArrayLike,
+    err_padv: ArrayLike,
+    sig1: ArrayLike,
+    sig2: ArrayLike,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Extracts amplitude and phase of secondary spectral lines from BPM pairs.
 
     Args:
         phase_adv: phase advances between two BPMs.
@@ -408,7 +449,7 @@ def complex_secondary_lines(
         sig2: Complex coefficients of a secondary lines at the second BPM of the pairs.
 
     Returns:
-         `Tuple` with amplitudes, phases err_amplitudes and err_phases of the complex signal.
+         `Tuple` with amplitudes, phases, err_amplitudes and err_phases of the complex signal.
     """
     tp = 2.0 * np.pi
     # computing complex secondary line (h-) = x - ip_x. Why do we divide by 2? (jgray 2024)
@@ -425,7 +466,7 @@ def complex_secondary_lines(
     return (np.abs(sig), (np.angle(sig) / tp) % 1, np.abs(esig), (np.angle(esig) / tp) % 1)
 
 
-def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1):
+def to_complex(amplitudes: ArrayLike, phases: ArrayLike, period: float = 1) -> np.ndarray:
     with suppress(AttributeError):
         amplitudes = amplitudes.to_numpy()
 

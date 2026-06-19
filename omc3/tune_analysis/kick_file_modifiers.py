@@ -53,7 +53,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
     from pathlib import Path
 
-    from scipy import odr
+    import odrpack
 
 LOG = logging_tools.get_logger(__name__)
 
@@ -188,7 +188,7 @@ def add_corrected_natural_tunes(kickac_df: pd.DataFrame) -> pd.DataFrame:
     return kickac_df
 
 
-def add_odr(kickac_df: pd.DataFrame, odr_fit: odr.Output,
+def add_odr(kickac_df: pd.DataFrame, odr_fit: odrpack.OdrResult,
             action_plane: str, tune_plane: str, corrected: bool = False):
     """
     Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.

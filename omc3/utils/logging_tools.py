@@ -241,9 +241,8 @@ def odr_pprint(printer, odr_out):
     if hasattr(odr_out, 'info'):
         odr_str += (f'  Residual Variance: {odr_out.res_var:.2e}\n'
                     f'  Inverse Condition #: {odr_out.inv_condnum:.2e}\n'
-                    f'  Reason(s) for Halting:\n')
-        for r in odr_out.stopreason:
-            odr_str += f'    {r}\n'
+                    f'  Reason(s) for Halting:\n'
+                    f'    {odr_out.stopreason}\n')
     printer(odr_str)
     np.set_printoptions(**old_opts)
 

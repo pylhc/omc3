@@ -64,20 +64,22 @@ def calculate_coupling(
     meas_input: DotDict,
     input_files: InputFiles,
     phase_results: dict[str, tuple[PhaseDict, Sequence[tfs.TfsDataFrame]]],
-    tune_dict: dict[str, float],
+    tune_dict: dict[str, dict[str, float]],
     header_dict: dict,
 ) -> None:
     """
-    Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach Cminus (|C-|).
-    This represents the "2 BPM method" in https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf
-    (a more up-to-date reference will come in the near future).
+    Calculates the coupling RDTs f1001 and f1010, as well as the closest tune approach
+    Cminus (|C-|). This represents the "2 BPM method" in
+    https://cds.cern.ch/record/1264111/files/CERN-BE-Note-2010-016.pdf.
 
     Two formulae are used to calculate the Cminus, taken from the following reference:
     https://cds.cern.ch/record/2135848/files/PhysRevSTAB.17.051004.pdf
-    The first one (Eq(1)) is an approximation using only the amplitudes of the RDTs, while the second one
-    (Eq(2) in the same paper) is more exact but needs also the phase of the RDT.
+    The first one (Eq(1)) is an approximation using only the amplitudes of the RDTs,
+    while the second one (Eq(2) in the same paper) is more exact but needs also the
+    phase of the RDT.
 
-    The results are written down in the optics_measurements outputs as **f1001.tfs** and **f1010.tfs** files.
+    The results are written down in the optics_measurements outputs as
+    **f1001.tfs** and **f1010.tfs** files.
 
     Args:
         meas_input (dict): `OpticsInput` object containing analysis settings from the command-line.
@@ -87,8 +89,9 @@ def calculate_coupling(
             the measured phase advances, with an entry for each transverse plane. In said entry is a
             dictionary with the measured phase advances for 'free' and 'uncompensated' cases, as well as
             the location of the output ``TfsDataFrames`` for the phases.
-        tune_dict (dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
-            calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
+        tune_dict (dict[str, dict[str, float]]): `TuneDict` object containing measured and model tunes.
+            For each plane, there is an entry calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm'
+            modes, each value being a float.
         header_dict (dict): header dictionary of common items for coupling output files,
             will be attached as the header to the **f1001.tfs** and **f1010.tfs** files..
     """
@@ -114,14 +117,14 @@ def calculate_coupling(
 
     LOGGER.debug("Averaging (arithmetic mean) amplitude columns")
     for col in [SECONDARY_AMPLITUDE_X, SECONDARY_AMPLITUDE_Y]:
-        arithmetically_averaved_columns = [c for c in joined.columns if c.startswith(col)]
-        joined[col] = stats.weighted_mean(joined[arithmetically_averaved_columns], axis=1)
+        arithmetically_averaged_columns = [c for c in joined.columns if c.startswith(col)]
+        joined[col] = stats.weighted_mean(joined[arithmetically_averaged_columns], axis=1)
 
     LOGGER.debug("Averaging (circular mean) frequency columns")  # make sure to use period=1 here
     for col in [SECONDARY_FREQUENCY_X, SECONDARY_FREQUENCY_Y]:
-        circularly_averaved_columns = [x for x in joined.columns if x.startswith(col)]
+        arithmetically_averaged_columns = [x for x in joined.columns if x.startswith(col)]
         joined[col] = bd * stats.circular_mean(
-            joined[circularly_averaved_columns], axis=1, period=1
+            joined[arithmetically_averaged_columns], axis=1, period=1
         )
 
     LOGGER.debug("Finding BPM pairs for momentum reconstruction")
@@ -182,18 +185,19 @@ def calculate_coupling(
 
 
 def compensate_rdts_by_model(
-    f1001: np.ndarray, f1010: np.ndarray, tune_dict: dict[str, float]
+    f1001: np.ndarray, f1010: np.ndarray, tune_dict: dict[str, dict[str, float]]
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Compensate coupling RDTs by model (equation) only, implies we're providing a driven model (ACD / ATD
-    kick). The scaling factors are calculated from the model's free and driven tunes, and the scaled RDTs
-    are returned.
+    Compensate coupling RDTs by model (factor) only, which implies we're providing
+    a driven model (ACD / ATD kick). The scaling factors are calculated from the model's
+    free and driven tunes, and the scaled RDTs are returned.
 
     Args:
-        f1001 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
-        f1010 (np.ndarray): the pre-calculated driven coupling RDTs as an array.
-        tune_dict (dict[str, float]): `TuneDict` object containing measured tunes. There is an entry
-            calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm' modes, each value being a float.
+        f1001 (np.ndarray): the pre-calculated driven coupling RDTs as a numpy array.
+        f1010 (np.ndarray): the pre-calculated driven coupling RDTs as a numpy array.
+        tune_dict (dict[str, dict[str, float]]): `TuneDict` object containing measured and model tunes.
+            For each plane, there is an entry calculated for the 'Q', 'QF', 'QM', 'QFM' and 'ac2bpm'
+            modes, each value being a float.
 
     Returns:
         The scaled RDTs.
@@ -221,13 +225,18 @@ def compensate_rdts_by_model(
     return f1001, f1010
 
 
-def compensate_rdts_ryoichi():
-    pass
+def compensate_rdts_ryoichi() -> None:
+    """
+    Placeholder for Ryoichi's RDT compensation method (not yet implemented).
+    See https://github.com/pylhc/omc3/issues/295 for details and refs.
+    """
+    raise NotImplementedError
 
 
 # ----- Helpers ----- #
 
-def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
+
+def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1) -> tuple[np.ndarray, np.ndarray]:
     """
     Does the BPM pairing for coupling calculation.
 
@@ -241,7 +250,7 @@ def _find_pair(phases: tfs.TfsDataFrame, mode: int = 1):
     return _take_next(phases, mode)
 
 
-def _take_next(phases: tfs.TfsDataFrame, shift: int = 1):
+def _take_next(phases: tfs.TfsDataFrame, shift: int = 1) -> tuple[np.ndarray, np.ndarray]:
     """
     Takes the following BPM for momentum reconstruction by a given shift.
 

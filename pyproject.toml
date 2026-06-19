@@ -87,6 +87,7 @@ test = [
   "omc3[madng]",
 ]
 doc = [
+  "omc3[madng]",  # need pymadng to build its response creation module doc
   "sphinx >= 7.0",
   "sphinx_rtd_theme >= 2.0",
 ]
@@ -143,6 +144,10 @@ markers = [
 
 addopts = [
     "--import-mode=importlib",
+]
+
+filterwarnings = [
+    "ignore:More than 20 figures have been opened:RuntimeWarning:matplotlib",
 ]
 
 # Helpful for pytest-debugging (leave commented out on commit):

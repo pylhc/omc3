@@ -40,9 +40,9 @@ if TYPE_CHECKING:
 LOGGER = logging.getLogger(__name__)
 
 
-def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, plane):
+def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, plane: str) -> tfs.TfsDataFrame:
     """
-    Calculates orbit.
+    Calculates orbit data from measurements.
 
     Args:
         meas_input: `OpticsInput` object
@@ -62,9 +62,11 @@ def calculate_orbit(meas_input: DotDict, input_files: InputFiles, header: dict, 
     return output_df
 
 
-def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane: str):
+def calculate_dispersion(
+    meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane: str,
+) -> pd.DataFrame | None:
     """
-    Calculates dispersion.
+    Calculates dispersion data from measurements.
 
     Args:
         meas_input: `OpticsInput` object.
@@ -73,16 +75,18 @@ def calculate_dispersion(meas_input: DotDict, input_files: InputFiles, header_di
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
-        `TfsDataFrame` corresponding to output file.
+        `TfsDataFrame` corresponding to output file, or ``None`` if only a single dp/p bin is present.
     """
     if meas_input.three_d_excitation:
         return _calculate_dispersion_3d(meas_input, input_files, header_dict, plane)
     return _calculate_dispersion_2d(meas_input, input_files, header_dict, plane)
 
 
-def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles, beta, header_dict: dict):
+def calculate_normalised_dispersion(
+    meas_input: DotDict, input_files: InputFiles, beta: pd.DataFrame, header_dict: dict,
+) -> pd.DataFrame | None:
     """
-    Calculates normalised dispersion.
+    Calculates normalised dispersion data from measurements.
 
     Args:
         meas_input: `OpticsInput` object.
@@ -91,14 +95,14 @@ def calculate_normalised_dispersion(meas_input: DotDict, input_files: InputFiles
         header_dict: `dict` containing information about the analysis.
 
     Returns:
-        `TfsDataFrame` corresponding to output file.
+        `TfsDataFrame` corresponding to output file, or ``None`` if only a single dp/p bin is present.
     """
     if meas_input.three_d_excitation:
         return _calculate_normalised_dispersion_3d(meas_input, input_files, beta, header_dict)
     return _calculate_normalised_dispersion_2d(meas_input, input_files, beta, header_dict)
 
 
-def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, header, plane):
+def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, header: dict, plane: str) -> pd.DataFrame | None:
     dpps = input_files.dpps(plane)
     if _is_single_dpp_bin(dpps):
         return None
@@ -124,7 +128,7 @@ def _calculate_dispersion_2d(meas_input: DotDict, input_files: InputFiles, heade
     return output_df
 
 
-def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane):
+def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, header_dict: dict, plane: str) -> pd.DataFrame:
     """Computes dispersion from 3D kicks."""
     output, accelerator = meas_input.outputdir, meas_input.accelerator
     model = accelerator.model
@@ -144,7 +148,7 @@ def _calculate_dispersion_3d(meas_input: DotDict, input_files: InputFiles, heade
     return output_df
 
 
-def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputFiles, beta, header):
+def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputFiles, beta: pd.DataFrame, header: dict) -> pd.DataFrame | None:
     # TODO there are no errors from orbit
     plane = "X"
 
@@ -183,7 +187,7 @@ def _calculate_normalised_dispersion_2d(meas_input: DotDict, input_files: InputF
     return output_df
 
 
-def _calculate_normalised_dispersion_3d(meas_input: DotDict, input_files: InputFiles, beta, header):
+def _calculate_normalised_dispersion_3d(meas_input: DotDict, input_files: InputFiles, beta: pd.DataFrame, header: dict) -> pd.DataFrame:
     """
     Computes horizontal normalised dispersion from 3D kicks, and performs model-based
     compensation, i.e. as in _free2 files.
@@ -210,7 +214,7 @@ def _calculate_normalised_dispersion_3d(meas_input: DotDict, input_files: InputF
     return output_df
 
 
-def _calculate_dp(model, disp, plane):
+def _calculate_dp(model: pd.DataFrame, disp: pd.DataFrame, plane: str) -> pd.Series:
     _m = "meas"
     df = pd.DataFrame(model).loc[:, ['S', f"MU{plane}", f"DP{plane}", f"D{plane}",
                                      f"BET{plane}", f"ALF{plane}"]]
@@ -227,7 +231,7 @@ def _calculate_dp(model, disp, plane):
     return (-m13 + df.loc[shifted, f"D{plane}{_m}"] - m11 * df.loc[:, f"D{plane}{_m}"]) / m12
 
 
-def _get_merged_df(meas_input, input_files, plane, meas_columns):
+def _get_merged_df(meas_input: DotDict, input_files: InputFiles, plane: str, meas_columns: list[str]) -> pd.DataFrame:
     model = meas_input.accelerator.model
     df = pd.DataFrame(model).reindex(columns=[S, plane, f"D{plane}", f"DP{plane}", f"MU{plane}",
                                               f"BET{plane}", f"DD{plane}"], fill_value=np.nan)
@@ -240,7 +244,7 @@ def _get_merged_df(meas_input, input_files, plane, meas_columns):
     return df
 
 
-def _get_signed_dispersion(input_files, df_orbit, scaled_amps, mask):
+def _get_signed_dispersion(input_files: InputFiles, df_orbit: pd.DataFrame, scaled_amps: np.ndarray, mask: np.ndarray) -> tuple[np.ndarray, np.ndarray | float]:
     same_interval_phase = np.angle(np.exp(PI2I * df_orbit.loc[:, input_files.get_columns(df_orbit, 'MUZ')].to_numpy())) / (2 * np.pi)
     phase_wrt_arcs = same_interval_phase - stats.circular_mean(same_interval_phase[mask, :], period=1, axis=0)
     phase_wrt_arcs = np.abs(np.where(np.abs(phase_wrt_arcs) > 0.5, phase_wrt_arcs - np.sign(phase_wrt_arcs), phase_wrt_arcs))
@@ -253,7 +257,7 @@ def _get_signed_dispersion(input_files, df_orbit, scaled_amps, mask):
     return scaled_amps * np.sign(0.25 - np.abs(phase_wrt_arcs)), 0.0
 
 
-def _get_output_columns(plane, df):
+def _get_output_columns(plane: str, df: pd.DataFrame) -> list[str]:
     cols = ([S, "COUNT", f"MU{plane}MDL"] +           # common columns
             _single_column_set_list(plane) +            # orbit columns
             _single_column_set_list(f"ND{plane}") +     # normalized dispersion columns
@@ -264,18 +268,18 @@ def _get_output_columns(plane, df):
     return [col for col in cols if col in df.columns]
 
 
-def _single_column_set_list(base_name):
+def _single_column_set_list(base_name: str) -> list[str]:
     return [f"{base_name}", f"{ERR}{base_name}", f"{DELTA}{base_name}", f"{ERR}{DELTA}{base_name}", f"{base_name}{MDL}"]
 
 
-def _calculate_from_norm_disp(df, model, plane):
+def _calculate_from_norm_disp(df: pd.DataFrame, model: pd.DataFrame, plane: str) -> pd.DataFrame:
     df[f"D{plane}"] = df.loc[:, f"ND{plane}"] * np.sqrt(df.loc[:, f"BET{plane}"])
     df[f"{ERR}D{plane}"] = df.loc[:, f"{ERR}ND{plane}"] * np.sqrt(df.loc[:, f"BET{plane}"])
     df[f"DP{plane}"] = _calculate_dp(model, df.loc[:, [f"D{plane}", f"{ERR}D{plane}"]], plane)
     return _get_delta_columns(df, plane)
 
 
-def _get_delta_columns(df, plane):
+def _get_delta_columns(df: pd.DataFrame, plane: str) -> pd.DataFrame:
     for col in [f"{plane}", f"D{plane}", f"ND{plane}", f"D2{plane}", f"ND2{plane}"]:
         if col in df.columns:
             df[f"{DELTA}{col}"] = df.loc[:, col] - df.loc[:, f"{col}{MDL}"]

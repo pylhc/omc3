@@ -48,6 +48,8 @@ from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
+    from datetime import date
+
     from generic_parser import DotDict
     from turn_by_turn import TbtData
 
@@ -132,6 +134,7 @@ def run_per_bunch(
                 order_resonances=harpy_input.resonances,
             )
         )
+        lins[plane] = lins[plane].copy()  # defragment after joins / col assignments etc from previous operations
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
@@ -237,12 +240,12 @@ def _sync_phase(lin_frame: pd.DataFrame, plane: str) -> pd.DataFrame:
     return lin_frame
 
 
-def _compute_headers(panda: pd.DataFrame, date: None | pd.Timestamp = None) -> dict[str, float]:
+def _compute_headers(df: pd.DataFrame, date: None | date | pd.Timestamp = None) -> dict[str, str | float]:
     headers = {}
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
             try:
-                bpm_tunes = panda[f"{prefix}{COL_TUNE}{plane}"]
+                bpm_tunes = df[f"{prefix}{COL_TUNE}{plane}"]
             except KeyError:
                 pass
             else:
@@ -268,11 +271,11 @@ def _write_spectrum(
 ) -> None:
     tfs.write(
         f"{output_path_without_suffix}{FILE_AMPS_EXT.format(plane=plane.lower())}",
-        spectra[COL_COEFFS].abs().T,
+        spectra[COL_COEFFS].abs().T,  # ty:ignore[unresolved-attribute]
     )
     tfs.write(
         f"{output_path_without_suffix}{FILE_FREQS_EXT.format(plane=plane.lower())}",
-        spectra[COL_FREQS].T,
+        spectra[COL_FREQS].T,  # ty:ignore[unresolved-attribute]
     )
 
 
