@@ -54,6 +54,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -103,6 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#response-matrix-io">Response Matrix IO</a></li>
@@ -248,6 +250,10 @@
 <li><a class="reference internal" href="#model-appenders">Model Appenders</a></li>
 <li><a class="reference internal" href="#model-diff">Model Diff</a></li>
 <li><a class="reference internal" href="#response-mad-x">Response MAD-X</a></li>
+<li><a class="reference internal" href="#response-mad-ng">Response MAD-NG</a><ul>
+<li><a class="reference internal" href="#differences-to-the-mad-x-implementation">Differences to the MAD-X implementation</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#response-twiss">Response TWISS</a></li>
 <li><a class="reference internal" href="#sequence-evaluation">Sequence Evaluation</a></li>
 <li><a class="reference internal" href="#response-matrix-io">Response Matrix IO</a></li>
@@ -571,6 +577,52 @@ beta, phase, dispersion, tune and coupling and saves it to a file.</p>
 <li><p><strong>delta_k</strong> (<em>float</em>) -- delta K1L to be applied to quads for sensitivity matrix</p></li>
 <li><p><strong>num_proc</strong> (<em>int</em>) -- Number of processes to use in parallel.</p></li>
 <li><p><strong>temp_dir</strong> (<em>str</em>) -- temporary directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses folder of original_jobfile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of response DataFrames keyed by optics type (e.g., ‘BETAX’, ‘PHASEX’, etc.)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="response-mad-ng">
+<span id="module-omc3.correction.response_madng"></span><h2>Response MAD-NG<a class="headerlink" href="#response-mad-ng" title="Link to this heading"></a></h2>
+<p>Provides a function to create the responses of beta, phase, dispersion, tune and coupling via MAD-NG derivatives.</p>
+<p>The variables under investigation need to be provided as a list (which can be obtained from the accelerator
+class).</p>
+<p>For now, the response matrix is stored in a hdf5 file.</p>
+<section id="differences-to-the-mad-x-implementation">
+<h3>Differences to the MAD-X implementation<a class="headerlink" href="#differences-to-the-mad-x-implementation" title="Link to this heading"></a></h3>
+<p>Differential Algebra (DA) is used to compute the derivatives of the optics parameters with respect to the
+variables (knobs). For most optics parameters (beta, phase, dispersion), a single twiss calculation is performed
+with DA enabled, allowing the extraction of derivatives directly from the twiss output.</p>
+<p>Coupling derivatives are computed in a separate twiss calculation after perturbing the variables slightly.
+This is necessary because the coupling calculation is unstable when there is no coupling present.
+By applying a small perturbation to the variables, we ensure that the coupling derivatives can be computed reliably.
+This perturbation is a constant value added to all variables during the coupling twiss calculation, and has been tested
+for the LHC to provide the most stable results.</p>
+<p>By only performing two twiss calculations (one for standard optics and one for coupling),
+this approach is significantly more efficient than performing separate calculations for each variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Joshua Gray</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.correction.response_madng.create_fullresponse">
+<span class="sig-prename descclassname"><span class="pre">omc3.correction.response_madng.</span></span><span class="sig-name descname"><span class="pre">create_fullresponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accel_inst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/correction/response_madng.html#create_fullresponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.correction.response_madng.create_fullresponse" title="Link to this definition"></a></dt>
+<dd><p>Generate a dictionary containing response matrices for
+beta, phase, dispersion, tune and coupling using MAD-NG derivatives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accel_inst</strong> -- Accelerator Instance.</p></li>
+<li><p><strong>variable_categories</strong> (<em>list</em>) -- Categories of the variables/knobs to use.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

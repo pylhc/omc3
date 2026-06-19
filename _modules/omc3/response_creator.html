@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.tbt_converter &mdash; omc3 0.28.2 documentation</title>
+  <title>omc3.response_creator &mdash; omc3 0.28.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=178c8cd6" />
@@ -227,7 +227,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">omc3.tbt_converter</li>
+      <li class="breadcrumb-item active">omc3.response_creator</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -238,195 +238,182 @@
   
            <div itemprop="articleBody">
              
-  <h1>Source code for omc3.tbt_converter</h1><div class="highlight"><pre>
+  <h1>Source code for omc3.response_creator</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">TbT Converter</span>
-<span class="sd">-------------</span>
+<span class="sd">Response Creator</span>
+<span class="sd">----------------</span>
 
-<span class="sd">Top-level script to convert turn-by-turn files from various formats to ``LHC`` binary SDDS files.</span>
-<span class="sd">Optionally, it can replicate files with added noise.</span>
+<span class="sd">Provides a response generation wrapper.</span>
+<span class="sd">The response matrices can be either created by :mod:`omc3.correction.response_madx`,</span>
+<span class="sd">:mod:`omc3.correction.response_madng`, or analytically via :mod:`omc3.correction.response_twiss`.</span>
+
+<span class="sd">Input arguments are split into response creation arguments and accelerator arguments.</span>
+<span class="sd">The former are listed below, the latter depend on the accelerator you want</span>
+<span class="sd">to use. Check :ref:`modules/model:Model` to see which ones are needed.</span>
+
+
+<span class="sd">**Arguments:**</span>
+
+<span class="sd">*--Optional--*</span>
+
+
+<span class="sd">- **outfile_path** *(str)*:</span>
+
+<span class="sd">    Name of fullresponse file.</span>
+
+
+<span class="sd">- **creator** *(str)*:</span>
+
+<span class="sd">    Create either with madx, madng, or analytically from twiss file.</span>
+
+<span class="sd">    choices: ``(&#39;madx&#39;, &#39;madng&#39;, &#39;twiss&#39;)``</span>
+
+<span class="sd">    default: ``madx``</span>
+
+
+<span class="sd">- **debug**:</span>
+
+<span class="sd">    Print debug information.</span>
+
+<span class="sd">    action: ``store_true``</span>
+
+
+<span class="sd">- **delta_k** *(float)*:</span>
+
+<span class="sd">    Delta K1 to be applied to quads for sensitivity matrix (madx-only).</span>
+
+<span class="sd">    default: ``2e-05``</span>
+
+
+<span class="sd">- **optics_params** *(str)*:</span>
+
+<span class="sd">    List of parameters to correct upon (e.g. BBX BBY; twiss-only).</span>
+
+
+<span class="sd">- **variable_categories**:</span>
+
+<span class="sd">    List of the variables classes to use.</span>
+
+<span class="sd">    default: ``[&#39;MQM&#39;, &#39;MQT&#39;, &#39;MQTL&#39;, &#39;MQY&#39;]``</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">turn_by_turn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tbt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">EntryPointParameters</span><span class="p">,</span>
-    <span class="n">entrypoint</span><span class="p">,</span>
-    <span class="n">save_options_to_config</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser.entrypoint_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">EntryPointParameters</span><span class="p">,</span> <span class="n">entrypoint</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">iotools</span><span class="p">,</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction</span><span class="w"> </span><span class="kn">import</span> <span class="n">response_madng</span><span class="p">,</span> <span class="n">response_madx</span><span class="p">,</span> <span class="n">response_twiss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.correction.response_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_fullresponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.global_correction</span><span class="w"> </span><span class="kn">import</span> <span class="n">CORRECTION_DEFAULTS</span><span class="p">,</span> <span class="n">OPTICS_PARAMS_CHOICES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.iotools</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathOrStr</span><span class="p">,</span> <span class="n">save_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
-
-<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-<span class="n">DEFAULT_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;converter_</span><span class="si">{time:s}</span><span class="s2">.ini&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
-<div class="viewcode-block" id="converter_params">
-<a class="viewcode-back" href="../../entrypoints/other.html#omc3.tbt_converter.converter_params">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">converter_params</span><span class="p">():</span>
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ResponseCreatorType">
+<a class="viewcode-back" href="../../entrypoints/correction.html#omc3.response_creator.ResponseCreatorType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResponseCreatorType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">TWISS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;twiss&quot;</span>
+    <span class="n">MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;madx&quot;</span>
+    <span class="n">MADNG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;madng&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="response_params">
+<a class="viewcode-back" href="../../entrypoints/correction.html#omc3.response_creator.response_params">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">response_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;TbT files to analyse&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory.&quot;</span><span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;creator&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">TBT_MODULES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype from which to import. &quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">rct</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">rct</span> <span class="ow">in</span> <span class="n">ResponseCreatorType</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">ResponseCreatorType</span><span class="o">.</span><span class="n">MADX</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Create either with madx, madng, or analytically from twiss file.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_datatype&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">WRITERS</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype to export. &quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;realizations&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of copies with added noise&quot;</span>
-    <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;noise_levels&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Sigma of added Gaussian noise&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;use_average&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If set, returned sdds only contains the average over all particle/bunches.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;drop_elements&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Names of elements to drop from the input file during conversion&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of the variables classes to use.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outfile_path&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of fullresponse file.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta_k&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.00002</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delta K1 to be applied to quads for sensitivity matrix (madx-only).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;optics_params&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of parameters to correct upon (e.g. BBX BBY; twiss-only).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print debug information.&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
 
 
-<div class="viewcode-block" id="converter_entrypoint">
-<a class="viewcode-back" href="../../entrypoints/other.html#omc3.tbt_converter.converter_entrypoint">[docs]</a>
-<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">converter_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">converter_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts turn-by-turn files from various formats to ``LHC`` binary SDDS files.</span>
-<span class="sd">    Optionally can replicate files with added noise.</span>
+<div class="viewcode-block" id="create_response_entrypoint">
+<a class="viewcode-back" href="../../entrypoints/correction.html#omc3.response_creator.create_response_entrypoint">[docs]</a>
+<span class="nd">@entrypoint</span><span class="p">(</span><span class="n">response_params</span><span class="p">())</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_response_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Entry point for creating pandas-based response matrices.</span>
 
-<span class="sd">    Converter Kwargs:</span>
-<span class="sd">      - **files**: TbT files to convert</span>
+<span class="sd">    The response matrices can be either created by response_madx or TwissResponse.</span>
 
-<span class="sd">        Flags: **--files**</span>
-<span class="sd">        Required: ``True``</span>
-<span class="sd">      - **outputdir**: Output directory.</span>
-
-<span class="sd">        Flags: **--outputdir**</span>
-<span class="sd">        Required: ``True``</span>
-<span class="sd">      - **tbt_datatype** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS).</span>
-
-<span class="sd">        Flags: **--tbt_datatype**</span>
-<span class="sd">        Default: ``lhc``</span>
-<span class="sd">      - **output_datatype** *(str)*: Choose the datatype to export.</span>
-
-<span class="sd">        Flags: **--output_datatype**</span>
-<span class="sd">        Default: ``lhc``</span>
-<span class="sd">      - **realizations** *(int)*: Number of copies with added noise.</span>
-
-<span class="sd">        Flags: **--realizations**</span>
-<span class="sd">        Default: ``1``</span>
-<span class="sd">      - **noise_levels** *(float)*: Sigma of added Gaussian noise.</span>
-
-<span class="sd">        Flags: **--noise_levels**</span>
-<span class="sd">        Default: ``None``</span>
-<span class="sd">      - **use_average** *(bool)*: If set, returned sdds only contains the average over all particle/bunches.</span>
-
-<span class="sd">        Flags: **--use_average**</span>
-<span class="sd">        Default: ``False``</span>
-
-<span class="sd">      - **drop_elements**: Names of elements to drop from the input file during conversion.</span>
-
-<span class="sd">        Flags: **--drop_elements**</span>
-<span class="sd">        Default: ``None``</span>
+<span class="sd">    TODO: Add support to give fetcher? But for know we assume the acc-model path is still in the model_dir.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">realizations</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of realizations lower than 1.&quot;</span><span class="p">)</span>
-    <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-    <span class="n">save_options_to_config</span><span class="p">(</span>
-        <span class="nb">str</span><span class="p">(</span>
-            <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-            <span class="o">/</span> <span class="n">DEFAULT_CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">))</span>
-        <span class="p">),</span>
-        <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
-    <span class="p">)</span>
-    <span class="n">_read_and_write_files</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span></div>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating response.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> <span class="n">unknown_opt</span><span class="o">=</span><span class="n">other_opt</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="vm">__file__</span><span class="p">)</span>
+
+    <span class="n">accel_inst</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">other_opt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ResponseCreatorType</span><span class="o">.</span><span class="n">MADX</span><span class="p">:</span>
+        <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_madx</span><span class="o">.</span><span class="n">create_fullresponse</span><span class="p">(</span>
+            <span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">delta_k</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">delta_k</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ResponseCreatorType</span><span class="o">.</span><span class="n">TWISS</span><span class="p">:</span>
+        <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_twiss</span><span class="o">.</span><span class="n">create_response</span><span class="p">(</span>
+            <span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">creator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ResponseCreatorType</span><span class="o">.</span><span class="n">MADNG</span><span class="p">:</span>
+        <span class="n">fullresponse</span> <span class="o">=</span> <span class="n">response_madng</span><span class="o">.</span><span class="n">create_fullresponse</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">variable_categories</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">write_fullresponse</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outfile_path</span><span class="p">,</span> <span class="n">fullresponse</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fullresponse</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_read_and_write_files</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">input_file</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
-        <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">tbt</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">tbt_datatype</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">drop_elements</span><span class="p">:</span>
-            <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">_drop_elements</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">drop_elements</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">use_average</span><span class="p">:</span>
-            <span class="n">tbt_data</span> <span class="o">=</span> <span class="n">tbt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">generate_average_tbtdata</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">realizations</span><span class="p">):</span>
-            <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_r</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">realizations</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">noise_levels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">tbt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                    <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_file_name_without_sdds</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">datatype</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">output_datatype</span><span class="p">,</span>
-                    <span class="n">tbt_data</span><span class="o">=</span><span class="n">tbt_data</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">noise_level</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">noise_levels</span><span class="p">:</span>
-                    <span class="n">tbt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                        <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_file_name_without_sdds</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="si">}</span><span class="s2">_n</span><span class="si">{</span><span class="n">noise_level</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="n">datatype</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">output_datatype</span><span class="p">,</span>
-                        <span class="n">tbt_data</span><span class="o">=</span><span class="n">tbt_data</span><span class="p">,</span>
-                        <span class="n">noise</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">noise_level</span><span class="p">),</span>
-                    <span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_drop_elements</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">elements_to_drop</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Drops the provided elements from the matrices in the provided TbtData object.</span>
-<span class="sd">    For any element not found in the matrices, a warning is logged and the element is skipped.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        tbt_data (tbt.TbtData): a TbTData object from loading your turn-by-turn data from disk.</span>
-<span class="sd">        elements_to_drop (Sequence[str]): list of elements to drop.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A copied version of the provided TbtData object with the relevant element dropped from the matrices.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">copied_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">)</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropping the following unwanted elements: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elements_to_drop</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements_to_drop</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropping element &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">transverse_data</span> <span class="ow">in</span> <span class="n">copied_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">:</span>
-                <span class="n">transverse_data</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">transverse_data</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-                <span class="n">transverse_data</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="n">transverse_data</span><span class="o">.</span><span class="n">Y</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element &#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&#39; could not be found, skipped&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">copied_data</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_file_name_without_sdds</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the file name without suffix if the suffix is **.sdds**, else the filename.</span>
-<span class="sd">    Previous elements in the file path are discarded.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span> <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.sdds&quot;</span> <span class="k">else</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span>
+<span class="c1"># Script Mode ------------------------------------------------------------------</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">converter_entrypoint</span><span class="p">()</span>
+    <span class="n">create_response_entrypoint</span><span class="p">()</span>
 </pre></div>
 
            </div>

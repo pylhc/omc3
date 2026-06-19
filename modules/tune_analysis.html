@@ -53,6 +53,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -102,6 +103,7 @@
 <li class="toctree-l2"><a class="reference internal" href="correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -624,33 +626,38 @@ It provides tools for fitting functions, mainly via odr.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.do_odr">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">do_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xerr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yerr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#do_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.do_odr" title="Link to this definition"></a></dt>
-<dd><p>Returns the odr fit.</p>
-<p>Important Convention:
-The beta-parameter in the ODR models go upwards with order, i.e.</p>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">do_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xerr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yerr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OdrResult</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#do_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.do_odr" title="Link to this definition"></a></dt>
+<dd><p>Returns the odr fit from the provided data and associated error bars.</p>
+<dl>
+<dt>Important Convention:</dt><dd><p>The beta-parameter in the ODR models go upwards with order, i.e.</p>
 <div class="line-block">
 <div class="line">beta[0] = y-Axis offset</div>
 <div class="line">beta[1] = slope</div>
 <div class="line">beta[2] = quadratic term</div>
 <div class="line">etc.</div>
 </div>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> -- <cite>Series</cite> of x data.</p></li>
-<li><p><strong>y</strong> -- <cite>Series</cite> of y data.</p></li>
-<li><p><strong>xerr</strong> -- <cite>Series</cite> of x data errors.</p></li>
-<li><p><strong>yerr</strong> -- <cite>Series</cite> of y data errors.</p></li>
-<li><p><strong>order</strong> -- fit order, <code class="docutils literal notranslate"><span class="pre">1</span></code> for linear, <code class="docutils literal notranslate"><span class="pre">2</span></code> for quadratic.</p></li>
+<li><p><strong>x</strong> -- <cite>pandas.Series</cite> of x data.</p></li>
+<li><p><strong>y</strong> -- <cite>pandas.Series</cite> of y data.</p></li>
+<li><p><strong>xerr</strong> -- <cite>pandas.Series</cite> of x data errors.</p></li>
+<li><p><strong>yerr</strong> -- <cite>pandas.Series</cite> of y data errors.</p></li>
+<li><p><strong>order</strong> -- fit order, <code class="docutils literal notranslate"><span class="pre">1</span></code> for linear, <code class="docutils literal notranslate"><span class="pre">2</span></code> for quadratic, etc.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <cite>~odrpack.OdrResult</cite> with the fitted coefficients in <code class="docutils literal notranslate"><span class="pre">beta</span></code>,
+ordered by ascending polynomial degree.</p>
+</dd>
 </dl>
-<p>Returns: Odr fit. Betas order is index = coefficient of same order.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.first_order_detuning_2d">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">first_order_detuning_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#first_order_detuning_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.first_order_detuning_2d" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">first_order_detuning_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#first_order_detuning_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.first_order_detuning_2d" title="Link to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Calculates the 2D tune array (Qx, Qy)</dt><dd><p>Qx = qx0 + dqx/dex * ex + dqx/dey * ey
 Qy = qy0 + dqy/dex * ex + dqy/dey * ey</p>
@@ -674,36 +681,43 @@ Qy = qy0 + dqy/dex * ex + dqy/dey * ey</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jacobian">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">first_order_detuning_2d_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#first_order_detuning_2d_jacobian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jacobian" title="Link to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Jacobian of the 2D tune array:</dt><dd><dl class="simple">
-<dt>[[dqx/dex, dqx/dey ],</dt><dd><p>[dqy/dex, dqy/dey ]]</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jac_beta">
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">first_order_detuning_2d_jac_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#first_order_detuning_2d_jac_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jac_beta" title="Link to this definition"></a></dt>
+<dd><p>Jacobian of <cite>first_order_detuning_2d</cite> w.r.t. beta. Shape (q=2, npar=5, n).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>beta</strong> -- length 5 tune coefficients in order <cite>INPUT_ORDER</cite>
-0: qx0, 1: qy0, 2: xx, 3: yy, 4: xy/yx</p></li>
-<li><p><strong>x</strong> -- length 2 Sequence, (ex, ey)</p></li>
+<li><p><strong>x</strong> -- array size 2xN.</p></li>
+<li><p><strong>beta</strong> -- length 5 tune coefficients in order <cite>INPUT_ORDER</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>size 2x2xlen(x) containing the Jacobian of the 2d-fit function.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.array</p>
+<dd class="field-even"><p>np.array of shape (2, 5, n).</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.get_poly_fun">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">get_poly_fun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#get_poly_fun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.get_poly_fun" title="Link to this definition"></a></dt>
-<dd><p>Returns the function of polynomial order. (is this pythonic enough?).</p>
+<dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jac_x">
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">first_order_detuning_2d_jac_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#first_order_detuning_2d_jac_x"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.first_order_detuning_2d_jac_x" title="Link to this definition"></a></dt>
+<dd><p>Jacobian of <cite>first_order_detuning_2d</cite> w.r.t. x. Shape (q=2, m=2, n).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> -- array size 2xN.</p></li>
+<li><p><strong>beta</strong> -- length 5 tune coefficients in order <cite>INPUT_ORDER</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array of shape (2, 2, n).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.tune_analysis.fitting_tools.get_polynomial_function">
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.fitting_tools.</span></span><span class="sig-name descname"><span class="pre">get_polynomial_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/fitting_tools.html#get_polynomial_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.fitting_tools.get_polynomial_function" title="Link to this definition"></a></dt>
+<dd><p>Returns the function of polynomial order.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -712,8 +726,13 @@ Qy = qy0 + dqy/dex * ex + dqy/dey * ey</p>
 <dd><p>Maps the calculated odr fit to fake odr fits with <cite>beta</cite> and <cite>sd_beta</cite>
 attributes. These would be the results of first-order amplitude detuning
 odr-fits when done independently by tune and kick plane.</p>
-<dl class="simple">
-<dt>Returns: Dict[str, Dict[str: odr_fit]] of ODR fits, where the inner</dt><dd><p>string gives the kick-plane, the outer the tune-plane..</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>odr_fit]] of ODR fits, where the inner
+string gives the kick-plane, the outer the tune-plane.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, Dict[str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -767,7 +786,7 @@ the measurement plus the standard deviation of the moving average.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.tune_analysis.kick_file_modifiers.add_odr">
-<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odr_fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">odr.Output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_odr" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">omc3.tune_analysis.kick_file_modifiers.</span></span><span class="sig-name descname"><span class="pre">add_odr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kickac_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odr_fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">odrpack.OdrResult</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/tune_analysis/kick_file_modifiers.html#add_odr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.tune_analysis.kick_file_modifiers.add_odr" title="Link to this definition"></a></dt>
 <dd><p>Adds the odr fit of the (un)corrected data to the header of the <code class="docutils literal notranslate"><span class="pre">kickac_df</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

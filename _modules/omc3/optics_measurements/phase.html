@@ -50,6 +50,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -284,7 +286,7 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.tune</span><span class="w"> </span><span class="kn">import</span> <span class="n">TuneDict</span>
 
 <span class="n">PhaseDict</span> <span class="o">=</span> <span class="n">TypedDict</span><span class="p">(</span>
-    <span class="s1">&#39;PhaseDict&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s2">&quot;PhaseDict&quot;</span><span class="p">,</span> <span class="p">{</span>
         <span class="n">MODEL</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">MEASUREMENT</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">MEASUREMENT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
@@ -295,6 +297,7 @@
 <div class="viewcode-block" id="CompensationMode">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.phase.CompensationMode">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CompensationMode</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Available modes for AC-dipole driven motion compensation in phase advance calculations.&quot;&quot;&quot;</span>
     <span class="n">NONE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
     <span class="n">MODEL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;model&quot;</span>
     <span class="n">EQUATION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;equation&quot;</span>
@@ -393,7 +396,7 @@
     <span class="n">model_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">compensation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">no_errors</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PhaseDict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PhaseDict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates phase advances.</span>
 
@@ -576,13 +579,13 @@
     <span class="k">return</span> <span class="n">output_data</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_phase_diff</span><span class="p">(</span><span class="n">phases_a</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">phases_b</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_phase_diff</span><span class="p">(</span><span class="n">phases_a</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">phases_b</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">phases_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">phases_b</span> <span class="o">=</span> <span class="n">phases_a</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">phases_a</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">phases_b</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span> <span class="o">%</span> <span class="mf">1.0</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_square_data_frame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_square_data_frame</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
 
 

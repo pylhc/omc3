@@ -50,6 +50,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -317,8 +319,23 @@
     <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span>
     <span class="n">invariants</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span>
     <span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the CRDT values.&quot;&quot;&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates Combined Resonance Driving Terms and writes results to file.</span>
+
+<span class="sd">    Iterates over all defined CRDTs (see module-level ``CRDTS`` list), computing</span>
+<span class="sd">    amplitudes via ODR fits to the invariants and phases via circular averaging</span>
+<span class="sd">    of the spectral lines. Results are written into per-order subfolders of the</span>
+<span class="sd">    CRDT output directory.</span>
+
+<span class="sd">    The derivation follows https://arxiv.org/pdf/1402.1461.pdf.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        measure_input: `OpticsInput` object containing analysis settings.</span>
+<span class="sd">        input_files: `InputFiles` object containing frequency spectra files (linx/y).</span>
+<span class="sd">        invariants: dictionary mapping planes to DataFrames of actions and errors</span>
+<span class="sd">            per kick, e.g. from :func:`omc3.optics_measurements.kick.calculate`.</span>
+<span class="sd">        header: headers to include in the written result files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start of CRDT analysis&quot;</span><span class="p">)</span>
 
     <span class="n">dpp_value</span> <span class="o">=</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">analyse_dpp</span>
@@ -391,9 +408,9 @@
 <div class="viewcode-block" id="generic_dataframe">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.generic_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">generic_dataframe</span><span class="p">(</span>
-    <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">bpm_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a dataframe based on the MU-MDL columns from each measuement.&quot;&quot;&quot;</span>
+    <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">bpm_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a dataframe based on the MU-MDL columns from each measurement.&quot;&quot;&quot;</span>
     <span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm_names</span><span class="p">,</span> <span class="p">[</span><span class="n">COL_S</span><span class="p">,</span> <span class="s2">&quot;MUX&quot;</span><span class="p">,</span> <span class="s2">&quot;MUY&quot;</span><span class="p">]]</span>
     <span class="n">result_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
         <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">X</span><span class="si">{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">COL_MU</span><span class="si">}</span><span class="s2">Y</span><span class="si">{</span><span class="n">MDL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
@@ -412,7 +429,8 @@
 
 <div class="viewcode-block" id="add_line_and_freq_to_header">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.add_line_and_freq_to_header">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">add_line_and_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">crdt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_line_and_freq_to_header</span><span class="p">(</span><span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">crdt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds spectral line and frequency information to the output header.&quot;&quot;&quot;</span>
     <span class="n">mod_header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">mod_header</span><span class="p">[</span><span class="s2">&quot;LINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;plane&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">crdt</span><span class="p">[</span><span class="s1">&#39;line&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;line&quot;</span><span class="p">]</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;Q1&quot;</span><span class="p">],</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;Q2&quot;</span><span class="p">]]),</span> <span class="mi">1</span><span class="p">)</span>
@@ -423,7 +441,7 @@
 
 <div class="viewcode-block" id="write_to_crdt_folder">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.write_to_crdt_folder">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">write_to_crdt_folder</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">crdt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_to_crdt_folder</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">crdt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span> <span class="o">/</span> <span class="n">CRDT_FOLDER</span> <span class="o">/</span> <span class="n">order</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">outputdir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crdt</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">df</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span></div>
@@ -432,7 +450,8 @@
 
 <div class="viewcode-block" id="get_column_names">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.get_column_names">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_column_names</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_column_names</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the mapping of CRDT column identifiers to their suffixed column names.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="nb">zip</span><span class="p">(</span>
             <span class="n">CRDT_COLUMNS</span><span class="p">,</span>
@@ -448,7 +467,8 @@
 
 <div class="viewcode-block" id="get_crdt_invariant">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.get_crdt_invariant">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_crdt_invariant</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_crdt_invariant</span><span class="p">(</span><span class="n">crdt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">invariants</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the combined invariant and its error for the given CRDT from per-plane invariants.&quot;&quot;&quot;</span>
     <span class="n">exp</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;line&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;line&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">])}</span>
     <span class="c1"># compensate for the normalization with tune line</span>
     <span class="n">exp</span><span class="p">[</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;plane&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">exp</span><span class="p">[</span><span class="n">crdt</span><span class="p">[</span><span class="s2">&quot;plane&quot;</span><span class="p">]]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -464,7 +484,10 @@
 
 <div class="viewcode-block" id="get_crdt_amplitude">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.get_crdt_amplitude">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_crdt_amplitude</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">,</span> <span class="n">line_amps</span><span class="p">,</span> <span class="n">line_amp_errors</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_crdt_amplitude</span><span class="p">(</span>
+    <span class="n">crdt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">invariants</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">line_amps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">line_amp_errors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fits CRDT amplitudes per BPM from spectral line amplitudes and invariants.&quot;&quot;&quot;</span>
     <span class="n">crdt_invariants</span><span class="p">,</span> <span class="n">err_crdt_invariants</span> <span class="o">=</span> <span class="n">get_crdt_invariant</span><span class="p">(</span><span class="n">crdt</span><span class="p">,</span> <span class="n">invariants</span><span class="p">)</span>
     <span class="n">amps</span><span class="p">,</span> <span class="n">err_amps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_amps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">line_amps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
@@ -479,7 +502,12 @@
 
 <div class="viewcode-block" id="fit_amplitude">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.crdt.fit_amplitude">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">fit_amplitude</span><span class="p">(</span><span class="n">lineamplitudes</span><span class="p">,</span> <span class="n">err_lineamplitudes</span><span class="p">,</span> <span class="n">crdt_invariant</span><span class="p">,</span> <span class="n">err_crdt_invariant</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_amplitude</span><span class="p">(</span>
+    <span class="n">lineamplitudes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">err_lineamplitudes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">crdt_invariant</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">err_crdt_invariant</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Was translated from using scipy.odr to using odrpack as they recommended.</span>
 <span class="sd">    See https://docs.scipy.org/doc/scipy/reference/odr.html for explanations.</span>

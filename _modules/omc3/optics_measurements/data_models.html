@@ -50,6 +50,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -350,7 +352,16 @@
 
 <div class="viewcode-block" id="InputFiles.dpp_frames">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.dpp_frames">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dpp_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dpp_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list of DataFrames matching the given ``dpp_value`` for the given plane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
+<span class="sd">            dpp_value: the dp/p value to filter for. If ``None``, all frames are returned.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of `TfsDataFrame` objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
 
@@ -362,7 +373,7 @@
 
 <div class="viewcode-block" id="InputFiles.dpp_frames_indices">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.dpp_frames_indices">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dpp_frames_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dpp_frames_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the indices of the frames that match the dpp. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">])))</span>
@@ -370,7 +381,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span> <span class="o">-</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dpp</span><span class="o">.</span><span class="n">DPP_TOLERANCE</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_all_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_all_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
 
 <div class="viewcode-block" id="InputFiles.joined_frame">
@@ -438,7 +449,16 @@
 
 <div class="viewcode-block" id="InputFiles.bpms">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.bpms">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">bpms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bpms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the intersection of BPM indices across all input files for the given plane and dpp.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            plane: **X** or **Y**. If ``None``, returns intersection of both planes.</span>
+<span class="sd">            dpp_value: filter for given dp/p value. If ``None``, uses all frames.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A `pd.Index` of common BPM names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">plane</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpms</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpms</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">dpp_value</span><span class="o">=</span><span class="n">dpp_value</span><span class="p">))</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dpp_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpp_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_frames</span><span class="p">(</span><span class="n">plane</span><span class="p">))]</span>
@@ -482,8 +502,8 @@
 
 <div class="viewcode-block" id="InputFiles.get_columns">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.get_columns">[docs]</a>
-    <span class="o">@</span> <span class="nb">staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns list of columns of frame corresponding to column in original files.</span>
 
@@ -502,8 +522,8 @@
 
 <div class="viewcode-block" id="InputFiles.get_data">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.InputFiles.get_data">[docs]</a>
-    <span class="o">@</span> <span class="nb">staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns data in columns of frame corresponding to column in original files.</span>
 
@@ -512,7 +532,7 @@
 <span class="sd">            column: name of column in original files.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A `np.narray` corresponding to column in original files.</span>
+<span class="sd">            A `np.ndarray` corresponding to column in original files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="n">InputFiles</span><span class="o">.</span><span class="n">get_columns</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
@@ -524,7 +544,7 @@
 
 <div class="viewcode-block" id="check_and_warn_about_offmomentum_data">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.check_and_warn_about_offmomentum_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_and_warn_about_offmomentum_data</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_and_warn_about_offmomentum_data</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; A helper function to check if off-momentum data is present in the input files,</span>
 <span class="sd">    but no dpp-value is given by the user.</span>
 
@@ -557,7 +577,7 @@
 
 <div class="viewcode-block" id="filter_for_dpp">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.data_models.filter_for_dpp">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">filter_for_dpp</span><span class="p">(</span><span class="n">to_filter</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">filter_for_dpp</span><span class="p">(</span><span class="n">to_filter</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Filter the given data for the given dpp-value. &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">plane</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">input_files</span><span class="o">.</span><span class="n">dpp_frames_indices</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dpp_value</span><span class="p">)]</span> <span class="k">for</span> <span class="n">plane</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">to_filter</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 

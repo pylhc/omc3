@@ -1,0 +1,732 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>omc3.correction.response_madng &mdash; omc3 0.28.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1ee43154"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/omc_logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main Entrypoints</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#hole-in-one">Hole in One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/analysis.html#amplitude-detuning-analysis">Amplitude Detuning Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/other.html">Other</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#tbt-converter">TbT Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#model-creator">Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#knob-extractor">Knob Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mqt-extractor">MQT Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/other.html#mad-x-wrapper">MAD-X Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-optics-measurements">Plot Optics Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-tfs">Plot TFS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-spectrum">Plot Spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-correction-test">Plot Correction Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-amplitude-detuning-results">Plot Amplitude Detuning Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-k-modulation-results">Plot K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/plotting.html#plot-bbq">Plot BBQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/scripts.html">Scripts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#betabeat-src-output-converter">BetaBeat.src Output Converter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#average-k-modulation-results">Average K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#import-k-modulation-results">Import K-Modulation Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#k-mod-luminosity-imbalance">K-Mod Luminosity Imbalance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#machine-settings-information">Machine Settings Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#update-natural-tune-in-lin-files">Update Natural Tune in Lin-Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#write-mad-x-macros">Write MAD-X Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#fake-measurement-from-model">Fake Measurement from Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#linfile-cleaning">Linfile Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#bad-bpms-summary">Bad BPMs Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#create-logbook-entry">Create Logbook Entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#corrector-lists-check">Corrector Lists Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/scripts.html#superkekb-bpm-synchronization">SuperKEKB BPM Synchronization</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/correction.html">Correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#filters">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#arc-by-arc-global-correction">Arc-by-Arc Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/definitions.html">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#formats">Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/definitions.html#optics">Optics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/harpy.html">Harpy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#clean">Clean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#frequency">Frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#handler">Handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/harpy.html#kicker">Kicker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/machine_data_extraction.html">Machine Data Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#dataclasses-for-machine-data">DataClasses for Machine Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-beamprocesses">LSA Beamprocesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-knobs">LSA Knobs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-optics">LSA Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#lsa-utilities">LSA Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#nxcals-results-to-mad-x-conversion">NXCals Results to MAD-X Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#mqt-knobs-extraction">MQT knobs extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#nxcals-knob-extraction">NXCals Knob Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/machine_data_extraction.html#utils">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/model.html">Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#manager">Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#accelerator">Accelerator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#esrf">ESRF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc">LHC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps">PS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster">PS Booster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#superkekb">SuperKEKB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps">SPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#iota">Iota</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#petra">PETRA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#model-creator-manager">Model Creator Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#lhc-model-creator">LHC Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-model-creator">PS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#ps-booster-model-creator">PS Booster Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#sps-model-creator">SPS Model Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/model.html#abstract-model-creator-class">Abstract Model Creator Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/optics_measurements.html">Optics Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#measure-optics">Measure Optics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-amplitude">Beta from Amplitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#beta-from-phase">Beta from Phase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#chromatic">Chromatic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#combined-rdts">Combined RDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dispersion">Dispersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#dpp">Dpp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#isolation-forest">Isolation Forest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#interaction-point">Interaction Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#kick">Kick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#phase-advance">Phase Advance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#resonance-driving-terms">Resonance Driving Terms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#toolbox">Toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/optics_measurements.html#tune">Tune</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/plotting.html">Plot-Subfunctions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.optics_measurements.constants">Optics Measurements Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.spectrum.stem">Spectrum Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/plotting.html#module-omc3.plotting.utils.annotations">Common Plot Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/segment_by_segment.html">Segment-by-Segment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#maths-functions">Maths Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#propagables">Propagables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/segment_by_segment.html#segments">Segments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/tune_analysis.html">Tune Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#bbq-tools">BBQ Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#fitting-tools">Fitting Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#kick-file-modifiers">Kick File Modifiers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/tune_analysis.html#timber-extraction">Timber Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#contexts">Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#io-tools">IO Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#logging-tools">Logging Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#math-classes">Math Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#miscellaneous-tools">Miscellaneous Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#mock">Mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#outliers">Outliers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#stats">Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/utils.html#time-tools">Time Tools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">omc3</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">omc3.correction.response_madng</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for omc3.correction.response_madng</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Response MAD-NG</span>
+<span class="sd">===============</span>
+
+<span class="sd">Provides a function to create the responses of beta, phase, dispersion, tune and coupling via MAD-NG derivatives.</span>
+
+<span class="sd">The variables under investigation need to be provided as a list (which can be obtained from the accelerator</span>
+<span class="sd">class).</span>
+
+<span class="sd">For now, the response matrix is stored in a hdf5 file.</span>
+
+<span class="sd">Differences to the MAD-X implementation</span>
+<span class="sd">---------------------------------------</span>
+
+<span class="sd">Differential Algebra (DA) is used to compute the derivatives of the optics parameters with respect to the</span>
+<span class="sd">variables (knobs). For most optics parameters (beta, phase, dispersion), a single twiss calculation is performed</span>
+<span class="sd">with DA enabled, allowing the extraction of derivatives directly from the twiss output.</span>
+
+<span class="sd">Coupling derivatives are computed in a separate twiss calculation after perturbing the variables slightly.</span>
+<span class="sd">This is necessary because the coupling calculation is unstable when there is no coupling present.</span>
+<span class="sd">By applying a small perturbation to the variables, we ensure that the coupling derivatives can be computed reliably.</span>
+<span class="sd">This perturbation is a constant value added to all variables during the coupling twiss calculation, and has been tested</span>
+<span class="sd">for the LHC to provide the most stable results.</span>
+
+<span class="sd">By only performing two twiss calculations (one for standard optics and one for coupling),</span>
+<span class="sd">this approach is significantly more efficient than performing separate calculations for each variable.</span>
+
+<span class="sd">:author: Joshua Gray</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymadng</span><span class="w"> </span><span class="kn">import</span> <span class="n">MAD</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.madx_wrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_string</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccElementTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.model_creators.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreatorType</span><span class="p">,</span> <span class="n">get_model_creator_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BETA</span><span class="p">,</span>
+    <span class="n">DISPERSION</span><span class="p">,</span>
+    <span class="n">F1001</span><span class="p">,</span>
+    <span class="n">F1010</span><span class="p">,</span>
+    <span class="n">NORM_DISPERSION</span><span class="p">,</span>
+    <span class="n">PHASE_ADV</span><span class="p">,</span>
+    <span class="n">TUNE</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.logging_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">MADX</span><span class="p">,</span> <span class="n">get_logger</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.model.accelerators.accelerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Accelerator</span>
+
+<span class="n">MADNG_VARMAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;mu1&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mu2&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;betx&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bety&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disp1&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disp3&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>  <span class="c1"># disp3 corresponds to vertical dispersion (dy) in MAD-NG</span>
+<span class="p">}</span>
+
+<span class="n">COUPLING_VARMAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;f1001&quot;</span><span class="p">:</span> <span class="n">F1001</span><span class="p">,</span>
+    <span class="s2">&quot;f1010&quot;</span><span class="p">:</span> <span class="n">F1010</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">MADNG_OPTICS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;disp1&quot;</span><span class="p">:</span> <span class="s2">&quot;dx&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disp3&quot;</span><span class="p">:</span> <span class="s2">&quot;dy&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># From testing, this value gives enough stability for the coupling derivatives</span>
+<span class="c1"># We have to have a delta k as the calculation of the coupling rdts are unstable</span>
+<span class="c1"># when we don&#39;t have coupling.</span>
+<span class="c1"># But since all knobs are changed at the same time, it is ideal to perturb them</span>
+<span class="c1"># by as small a value as possible to avoid large changes in the optics.</span>
+<span class="n">NG_DELTA_K</span> <span class="o">=</span> <span class="mf">1e-6</span>
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_initialise_madng_with_logging</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise MAD-NG, sending the stdout of the MAD-NG instance to a log file.</span>
+
+<span class="sd">    This function does the very basics;</span>
+<span class="sd">    - Creates a MAD-NG instance with logging to a file</span>
+<span class="sd">    - Loads the sequence</span>
+<span class="sd">    - Adds the beam to the sequence</span>
+<span class="sd">    This is a minimal setup that allows the MAD-NG instance to be used for this sequence.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        accel_inst: Accelerator instance</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple of (MAD instance, log file path)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create log file in the model directory</span>
+    <span class="n">log_path</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s2">&quot;madng_response.log&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAD-NG output will be logged to: </span><span class="si">{</span><span class="n">log_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Initialize MAD-NG with stdout redirected to log file</span>
+    <span class="k">with</span> <span class="n">MAD</span><span class="p">(</span><span class="n">stdout</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">log_path</span><span class="p">),</span> <span class="n">redirect_stderr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">mad</span><span class="p">:</span>
+        <span class="n">_load_sequence</span><span class="p">(</span><span class="n">mad</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">)</span>
+        <span class="n">_setup_beam</span><span class="p">(</span><span class="n">mad</span><span class="p">,</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span>
+
+        <span class="k">yield</span> <span class="n">mad</span><span class="p">,</span> <span class="n">log_path</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_madng_output</span><span class="p">(</span><span class="n">log_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Once MAD-NG has written to a log file, read and log its contents.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        log_path: Path to the log file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">log_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">log_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">:=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">MADX</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MAD-NG log file </span><span class="si">{</span><span class="n">log_path</span><span class="si">}</span><span class="s2"> does not exist!&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_sequence</span><span class="p">(</span><span class="n">mad</span><span class="p">:</span> <span class="n">MAD</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a sequence into MAD-NG, handling all path creation, file generation, and cleanup internally.&quot;&quot;&quot;</span>
+    <span class="c1"># Create the model creator and prepare</span>
+    <span class="n">creator_class</span> <span class="o">=</span> <span class="n">get_model_creator_class</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">NOMINAL</span><span class="p">)</span>
+    <span class="n">creator</span> <span class="o">=</span> <span class="n">creator_class</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
+    <span class="n">creator</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">()</span>
+
+    <span class="c1"># Construct paths</span>
+    <span class="n">madx_seq_path</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">creator</span><span class="o">.</span><span class="n">save_sequence_filename</span>
+    <span class="n">seq_name</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">sequence_name</span>
+    <span class="n">log_file</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="s2">&quot;madng_sequence_creation.log&quot;</span>
+
+    <span class="k">if</span> <span class="n">madx_seq_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved sequence file </span><span class="si">{</span><span class="n">madx_seq_path</span><span class="si">}</span><span class="s2"> already exists!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Generate the MAD-X sequence file</span>
+    <span class="n">madx_string</span> <span class="o">=</span> <span class="n">creator</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">creator</span><span class="o">.</span><span class="n">get_save_sequence_script</span><span class="p">()</span>
+    <span class="n">run_string</span><span class="p">(</span><span class="n">madx_string</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="n">log_file</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">madx_seq_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Saved sequence file </span><span class="si">{</span><span class="n">madx_seq_path</span><span class="si">}</span><span class="s2"> was not created! Check </span><span class="si">{</span><span class="n">log_file</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Load into MAD-NG</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;MADX:load(&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">madx_seq_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="s1">&quot;)&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mad</span><span class="o">.</span><span class="n">MADX</span><span class="p">[</span><span class="n">seq_name</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Sequence &#39;</span><span class="si">{</span><span class="n">seq_name</span><span class="si">}</span><span class="s2">&#39; not found in MAD file &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">madx_seq_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loaded_sequence = MADX.</span><span class="si">{</span><span class="n">seq_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">loaded_sequence</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">beam_direction</span>
+
+    <span class="c1"># Clean up the temporary file</span>
+    <span class="n">madx_seq_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_setup_beam</span><span class="p">(</span><span class="n">mad</span><span class="p">:</span> <span class="n">MAD</span><span class="p">,</span> <span class="n">beam_energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">particle</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;proton&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up beam parameters (copied from BaseMadInterface).&quot;&quot;&quot;</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;loaded_sequence.beam = beam </span><span class="se">{{</span><span class="s1"> particle = &quot;</span><span class="si">{</span><span class="n">particle</span><span class="si">}</span><span class="s1">&quot;, energy = </span><span class="si">{</span><span class="n">beam_energy</span><span class="si">:</span><span class="s1">.15e</span><span class="si">}</span><span class="s1"> </span><span class="se">}}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_fullresponse">
+<a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_madng.create_fullresponse">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_fullresponse</span><span class="p">(</span>
+    <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span>
+    <span class="n">variable_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a dictionary containing response matrices for</span>
+<span class="sd">    beta, phase, dispersion, tune and coupling using MAD-NG derivatives.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        accel_inst : Accelerator Instance.</span>
+<span class="sd">        variable_categories (list): Categories of the variables/knobs to use.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Dictionary of response DataFrames keyed by optics type (e.g., &#39;BETAX&#39;, &#39;PHASEX&#39;, etc.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating fullresponse via MAD-NG&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Initialise MAD-NG with logging</span>
+    <span class="k">with</span> <span class="n">_initialise_madng_with_logging</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span> <span class="k">as</span> <span class="p">(</span><span class="n">mad</span><span class="p">,</span> <span class="n">log_path</span><span class="p">):</span>
+        <span class="c1"># Get variables</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">get_variables</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">variable_categories</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No variables found! Make sure your categories are valid!&quot;</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing response for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2"> variables&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Compute derivatives with twiss</span>
+            <span class="n">response_dict</span> <span class="o">=</span> <span class="n">_compute_response_with_derivatives</span><span class="p">(</span><span class="n">mad</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error while computing response with MAD-NG derivatives.&quot;</span><span class="p">)</span>
+            <span class="n">_log_madng_output</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+        <span class="n">_log_madng_output</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response_dict</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_response_with_derivatives</span><span class="p">(</span>
+    <span class="n">mad</span><span class="p">:</span> <span class="n">MAD</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">accel_inst</span><span class="p">:</span> <span class="n">Accelerator</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute response matrices using MAD-NG derivatives.</span>
+
+<span class="sd">    This function sets up differential algebra in MAD-NG to compute derivatives of optics</span>
+<span class="sd">    (beta, phase, dispersion, tunes, coupling) with respect to the given variables (knobs).</span>
+<span class="sd">    It performs two twiss calculations: one for standard optics and one for coupling,</span>
+<span class="sd">    then extracts and processes the derivative data into response matrices.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mad: MAD-NG instance</span>
+<span class="sd">        variables: List of variable names (knobs) for which to compute responses</span>
+<span class="sd">        accel_inst: Accelerator instance providing BPM patterns and other info</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary of response DataFrames keyed by optics type (e.g., &#39;BETAX&#39;, &#39;PHASEX&#39;, etc.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_vars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+
+    <span class="c1"># Define optics parameters for which we want derivatives</span>
+    <span class="n">optics_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">MADNG_VARMAP</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">coupling_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">COUPLING_VARMAP</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="c1"># Create mapping from optics parameters to derivative column names, e.g., &#39;betx&#39; -&gt; [&#39;betx_100&#39;, &#39;betx_010&#39;, ...]</span>
+    <span class="n">kopt_dict</span> <span class="o">=</span> <span class="n">_create_kopt_dict</span><span class="p">(</span><span class="n">optics_list</span><span class="p">,</span> <span class="n">n_vars</span><span class="p">)</span>
+    <span class="n">flat_opt_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">kopt_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+
+    <span class="c1"># Create mapping for coupling parameters e.g., &#39;f1001&#39; -&gt; [&#39;f1001_100&#39;, &#39;f1001_010&#39;, ...]</span>
+    <span class="n">coupling_kopt_dict</span> <span class="o">=</span> <span class="n">_create_kopt_dict</span><span class="p">(</span><span class="n">coupling_params</span><span class="p">,</span> <span class="n">n_vars</span><span class="p">)</span>
+    <span class="n">coupling_optics_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">coupling_kopt_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+
+    <span class="n">dk</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">variables</span><span class="p">,</span> <span class="n">NG_DELTA_K</span><span class="p">)</span>
+
+    <span class="c1"># Set up Differential Algebra for derivatives</span>
+    <span class="c1"># This MAD-NG script performs the following workflow:</span>
+    <span class="c1"># 1. Receive lists of knobs, optics parameters, and BPM pattern from Python.</span>
+    <span class="c1"># 2. Create a differential algebra map (damap) for containing the variables and initial conditions.</span>
+    <span class="c1"># 3. Convert knobs to DA variables by adding their damap components.</span>
+    <span class="c1"># 4. Select BPMs and END element for observation.</span>
+    <span class="c1"># 5. Run twiss calculation with derivatives enabled for standard optics.</span>
+    <span class="c1"># 6. Receive delta k values and coupling optics list.</span>
+    <span class="c1"># 7. Perturb knobs with delta k for stable coupling derivative computation.</span>
+    <span class="c1"># 8. Run second twiss calculation for coupling derivatives.</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">--start-mad</span>
+<span class="s2">local knob_list = py:recv()</span>
+<span class="s2">local opt_list = py:recv()</span>
+<span class="s2">local bpm_pattern = py:recv()</span>
+<span class="s2">local num_k = #knob_list</span>
+<span class="s2">local k_ord = 2</span>
+<span class="s2">local x0 = MAD.damap { nv = 6, np = num_k, no = {k_ord, k_ord, k_ord, k_ord, 1, 1}, po=1, pn=knob_list}</span>
+<span class="s2">for i, knob in ipairs(knob_list) do</span>
+<span class="s2">    ! dk[knob] = MADX[knob] + 0 (Converts the knob to a DA variable)</span>
+<span class="s2">    MADX[knob] = MADX[knob] + x0[knob]</span>
+<span class="s2">end</span>
+
+<span class="s2">-- Observe all elements</span>
+<span class="s2">local observed in MAD.element.flags</span>
+<span class="s2">local drift_element in MAD.element</span>
+<span class="s2">loaded_sequence:deselect(observed)</span>
+<span class="s2">loaded_sequence:select(observed, {pattern=bpm_pattern})  ! Observe all BPMs</span>
+<span class="s2">loaded_sequence:select(observed, {pattern=&quot;$end&quot;}) ! Also observe END marker for tunes</span>
+
+<span class="s2">-- Compute twiss with derivatives</span>
+<span class="s2">tws, _ = twiss {</span>
+<span class="s2">    sequence=loaded_sequence,</span>
+<span class="s2">    observe=1,</span>
+<span class="s2">    X0=x0,</span>
+<span class="s2">    trkopt=opt_list,</span>
+<span class="s2">    coupling=true, ! Set to true for betx and bety calculation</span>
+<span class="s2">}</span>
+
+<span class="s2">local dk = py:recv()</span>
+<span class="s2">local coupling_list = py:recv()</span>
+<span class="s2">-- Apply delta k to knobs so that the coupling derivatives can be computed too</span>
+<span class="s2">for i, knob in ipairs(knob_list) do</span>
+<span class="s2">    MADX[knob] = MADX[knob] + dk[knob]</span>
+<span class="s2">end</span>
+
+<span class="s2">tws_coupling, _ = twiss {</span>
+<span class="s2">    sequence=loaded_sequence,</span>
+<span class="s2">    observe=1,</span>
+<span class="s2">    X0=x0,</span>
+<span class="s2">    trkopt=coupling_list,</span>
+<span class="s2">    coupling=true,</span>
+<span class="s2">}</span>
+<span class="s2">--end-mad</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Send the required data to MAD-NG script</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>  <span class="c1"># List of knob names</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">flat_opt_list</span><span class="p">)</span>  <span class="c1"># Flattened list of derivative column names for standard optics</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">accel_inst</span><span class="o">.</span><span class="n">RE_DICT</span><span class="p">[</span><span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">])</span>  <span class="c1"># BPM pattern for observation</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">dk</span><span class="p">)</span>  <span class="c1"># Dictionary of delta k values for perturbation</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">coupling_optics_list</span><span class="p">)</span>  <span class="c1"># Flattened list of derivative column names for coupling</span>
+
+    <span class="c1"># Extract and process twiss data from MAD-NG</span>
+    <span class="n">optics_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">MADNG_OPTICS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">optic</span><span class="p">,</span> <span class="n">optic</span><span class="p">)</span> <span class="k">for</span> <span class="n">optic</span> <span class="ow">in</span> <span class="n">optics_list</span><span class="p">]</span>
+    <span class="n">all_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">optics_columns</span> <span class="o">+</span> <span class="n">flat_opt_list</span>
+
+    <span class="c1"># Get twiss data with all columns</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracting </span><span class="si">{</span><span class="n">all_cols</span><span class="si">}</span><span class="s2"> from MAD-NG twiss output&quot;</span><span class="p">)</span>
+    <span class="n">twiss_df</span> <span class="o">=</span> <span class="n">mad</span><span class="o">.</span><span class="n">tws</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">all_cols</span><span class="p">)</span>
+    <span class="n">twiss_df</span> <span class="o">=</span> <span class="n">twiss_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Twiss extracted with shape </span><span class="si">{</span><span class="n">twiss_df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracting </span><span class="si">{</span><span class="n">coupling_optics_list</span><span class="si">}</span><span class="s2"> from MAD-NG twiss output&quot;</span><span class="p">)</span>
+    <span class="n">twiss_df_coupling</span> <span class="o">=</span> <span class="n">mad</span><span class="o">.</span><span class="n">tws_coupling</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">coupling_optics_list</span><span class="p">)</span>
+    <span class="n">twiss_df_coupling</span> <span class="o">=</span> <span class="n">twiss_df_coupling</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coupling twiss extracted with shape </span><span class="si">{</span><span class="n">twiss_df_coupling</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Extract response matrices</span>
+    <span class="n">response_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Get element names</span>
+    <span class="n">bpms</span> <span class="o">=</span> <span class="n">twiss_df</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="c1"># Tunes (at the END element)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">bpms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Get the &#39;END&#39; element for tunes</span>
+    <span class="n">tune_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">twiss_df</span><span class="p">[</span><span class="n">kopt_dict</span><span class="p">[</span><span class="s2">&quot;mu1&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">end</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">twiss_df</span><span class="p">[</span><span class="n">kopt_dict</span><span class="p">[</span><span class="s2">&quot;mu2&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">end</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">response_dict</span><span class="p">[</span><span class="n">TUNE</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">tune_data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">variables</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Remove END from bpms for other optics</span>
+    <span class="n">bpms</span> <span class="o">=</span> <span class="n">bpms</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">twiss_df</span> <span class="o">=</span> <span class="n">twiss_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpms</span><span class="p">]</span>
+    <span class="n">twiss_df_coupling</span> <span class="o">=</span> <span class="n">twiss_df_coupling</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpms</span><span class="p">]</span>
+
+    <span class="c1"># Build response dictionary for other optics</span>
+    <span class="k">for</span> <span class="n">optic_param</span><span class="p">,</span> <span class="n">response_key</span> <span class="ow">in</span> <span class="n">MADNG_VARMAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">deriv_cols</span> <span class="o">=</span> <span class="n">kopt_dict</span><span class="p">[</span><span class="n">optic_param</span><span class="p">]</span>
+        <span class="n">response_dict</span><span class="p">[</span><span class="n">response_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">twiss_df</span><span class="p">[</span><span class="n">deriv_cols</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>  <span class="c1"># shape (bpms, n_vars)</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">bpms</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Compute normalised dispersion response</span>
+    <span class="c1"># d/dx (D/sqrt(beta)) = (2 beta * dD/dx - D * dbeta/dx) / (2 beta^(3/2))</span>
+    <span class="c1"># Normalised Y dispersion can&#39;t even be used, see global correction OPTICS_PARAMS_CHOICES, so we skip it</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]:</span>
+        <span class="n">disp_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">beta_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># Convert to numpy arrays for computation and avoid NaNs (pandas may introduce NaNs)</span>
+        <span class="n">disp</span> <span class="o">=</span> <span class="n">twiss_df</span><span class="p">[</span><span class="n">disp_col</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">twiss_df</span><span class="p">[</span><span class="n">beta_col</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">disp_resp</span> <span class="o">=</span> <span class="n">response_dict</span><span class="p">[</span><span class="n">disp_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">beta_resp</span> <span class="o">=</span> <span class="n">response_dict</span><span class="p">[</span><span class="n">beta_col</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+        <span class="n">numerator</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">beta</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">disp_resp</span> <span class="o">-</span> <span class="n">disp</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">beta_resp</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">beta</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">**</span> <span class="mf">1.5</span>
+        <span class="n">norm_disp_resp</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
+
+        <span class="n">response_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">norm_disp_resp</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">bpms</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">variables</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Normalise beta response</span>
+    <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+        <span class="n">beta_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">twiss_df</span><span class="p">[</span><span class="n">beta_col</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">response_dict</span><span class="p">[</span><span class="n">beta_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_dict</span><span class="p">[</span><span class="n">beta_col</span><span class="p">]</span> <span class="o">/</span> <span class="n">beta</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">coupling_param</span><span class="p">,</span> <span class="n">response_key</span> <span class="ow">in</span> <span class="n">COUPLING_VARMAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">deriv_cols</span> <span class="o">=</span> <span class="n">coupling_kopt_dict</span><span class="p">[</span><span class="n">coupling_param</span><span class="p">]</span>
+        <span class="n">coupling_data</span> <span class="o">=</span> <span class="n">twiss_df_coupling</span><span class="p">[</span><span class="n">deriv_cols</span><span class="p">]</span>
+        <span class="n">response_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">response_key</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">coupling_data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">bpms</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">response_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">response_key</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">coupling_data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">bpms</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">beam_direction</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Change the sign of the coupling responses for reverse beam direction</span>
+        <span class="c1"># In all honesty, I don&#39;t know why this has to be done, but it works... (jgray 2026)</span>
+        <span class="k">for</span> <span class="n">coupling_param</span> <span class="ow">in</span> <span class="n">COUPLING_VARMAP</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">response_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">coupling_param</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">response_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">coupling_param</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># Check for any NaNs in the response matrices</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">response_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NaNs found in response matrix for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> NaNs&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response_dict</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_kopt_dict</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">n_vars</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a dictionary mapping each optics parameter to its list of derivative column names.</span>
+
+<span class="sd">    For each parameter (e.g., &#39;betx&#39;), this generates a list of column names corresponding to</span>
+<span class="sd">    the derivatives of that parameter with respect to each variable (knob). Each column name</span>
+<span class="sd">    uses a binary mask string to indicate which variable the derivative is taken with respect to.</span>
+
+<span class="sd">    The binary mask is a string of length n_vars, consisting of &#39;0&#39;s and &#39;1&#39;s, where a &#39;1&#39; at</span>
+<span class="sd">    position j indicates that the derivative is with respect to the j-th variable in the list</span>
+<span class="sd">    provided to MAD-NG. All other positions are &#39;0&#39;.</span>
+
+<span class="sd">    For example, with 3 variables [&#39;var1&#39;, &#39;var2&#39;, &#39;var3&#39;] and parameter &#39;betx&#39;, the output would be:</span>
+<span class="sd">    {</span>
+<span class="sd">        &#39;betx&#39;: [&#39;betx_100&#39;, &#39;betx_010&#39;, &#39;betx_001&#39;]</span>
+<span class="sd">    }</span>
+<span class="sd">    Here, &#39;betx_100&#39; is the derivative of betx w.r.t. var1, &#39;betx_010&#39; w.r.t. var2, etc.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        params: List of parameter names (e.g., [&#39;mu1&#39;, &#39;betx&#39;, ...])</span>
+<span class="sd">        n_vars: Number of variables (knobs) for which derivatives are computed</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary mapping each parameter name to its list of derivative column names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">param</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">_make_binary_mask</span><span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">n_vars</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_vars</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_binary_mask</span><span class="p">(</span><span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_vars</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create binary mask string for derivative w.r.t. variable j.</span>
+
+<span class="sd">    Generates a string of &#39;1&#39;s and &#39;0&#39;s where the j-th position is &#39;1&#39; and others &#39;0&#39;,</span>
+<span class="sd">    used by MAD-NG to specify which variable&#39;s derivative is being computed.</span>
+<span class="sd">    For example, with 3 variables and j=1, returns &#39;010&#39;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        j: Index of the variable for which the derivative is taken</span>
+<span class="sd">        n_vars: Total number of variables</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Binary mask string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;1&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">else</span> <span class="s2">&quot;0&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_vars</span><span class="p">))</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

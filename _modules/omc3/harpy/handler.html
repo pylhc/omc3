@@ -50,6 +50,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -287,6 +289,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">turn_by_turn</span><span class="w"> </span><span class="kn">import</span> <span class="n">TbtData</span>
 
@@ -373,6 +377,7 @@
                 <span class="n">order_resonances</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">resonances</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
+        <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># defragment after joins / col assignments etc from previous operations</span>
         <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">_add_calculated_phase_errors</span><span class="p">(</span><span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">])</span>
         <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sync_phase</span><span class="p">(</span><span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">plane</span><span class="p">)</span>
         <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">_rescale_amps_to_main_line_and_compute_noise</span><span class="p">(</span><span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">plane</span><span class="p">)</span>
@@ -479,12 +484,12 @@
     <span class="k">return</span> <span class="n">lin_frame</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_headers</span><span class="p">(</span><span class="n">panda</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_headers</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">date</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]:</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">ALL_PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;NAT&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">bpm_tunes</span> <span class="o">=</span> <span class="n">panda</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">COL_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                <span class="n">bpm_tunes</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">COL_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
@@ -510,11 +515,11 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path_without_suffix</span><span class="si">}{</span><span class="n">FILE_AMPS_EXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">spectra</span><span class="p">[</span><span class="n">COL_COEFFS</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="n">spectra</span><span class="p">[</span><span class="n">COL_COEFFS</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="c1"># ty:ignore[unresolved-attribute]</span>
     <span class="p">)</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path_without_suffix</span><span class="si">}{</span><span class="n">FILE_FREQS_EXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">spectra</span><span class="p">[</span><span class="n">COL_FREQS</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="n">spectra</span><span class="p">[</span><span class="n">COL_FREQS</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="c1"># ty:ignore[unresolved-attribute]</span>
     <span class="p">)</span>
 
 

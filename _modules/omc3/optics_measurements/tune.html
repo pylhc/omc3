@@ -50,6 +50,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -262,7 +264,20 @@
 
 <div class="viewcode-block" id="calculate">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.tune.calculate">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TuneDict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes measured, model and free tunes from input files.</span>
+
+<span class="sd">    Averages per-file tune values weighted by their RMS, and determines</span>
+<span class="sd">    the free tune when AC-dipole excitation compensation is active.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        measure_input: `OpticsInput` object containing analysis settings.</span>
+<span class="sd">        input_files: `InputFiles` object containing frequency spectra files.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `TuneDict` populated with model, measured and free tunes per plane.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tune_d</span> <span class="o">=</span> <span class="n">TuneDict</span><span class="p">()</span>
     <span class="n">accelerator</span> <span class="o">=</span> <span class="n">measure_input</span><span class="o">.</span><span class="n">accelerator</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
@@ -300,7 +315,7 @@
 
 <div class="viewcode-block" id="TuneDict.get_lambda">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict.get_lambda">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes lambda compensation factor.</span>
 
@@ -316,7 +331,7 @@
 
 <div class="viewcode-block" id="TuneDict.phase_ac2bpm">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.tune.TuneDict.phase_ac2bpm">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">phase_ac2bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_idx_by_bpms</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">phase_ac2bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_idx_by_bpms</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the necessary values for the exciter compensation.</span>
 <span class="sd">        See **DOI: 10.1103/PhysRevSTAB.11.084002**</span>

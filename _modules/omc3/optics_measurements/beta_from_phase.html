@@ -50,6 +50,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -393,7 +395,7 @@
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.n_bpm_method">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">n_bpm_method</span><span class="p">(</span>
     <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span>
-    <span class="n">phase</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">PhaseDict</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">meas_and_mdl_tunes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -421,7 +423,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        meas_input: `OpticsInput` object with optics CLI options.</span>
-<span class="sd">        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).</span>
+<span class="sd">        phase: `PhaseDict` of phase matrices of measurement with errors and model tfs (bpm x bpm).</span>
 <span class="sd">        plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
 <span class="sd">        meas_and_mdl_tunes: measured and model tunes.</span>
 
@@ -1020,7 +1022,7 @@
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.beta_from_phase.three_bpm_method">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">three_bpm_method</span><span class="p">(</span>
     <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span>
-    <span class="n">phase</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">PhaseDict</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">meas_and_mdl_tunes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -1080,7 +1082,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        meas_input: `OpticsInput` object with optics CLI options.</span>
-<span class="sd">        phase: phase matrices of measurement with errors and model tfs (bpm x bpm).</span>
+<span class="sd">        phase: `PhaseDict` of phase matrices of measurement with errors and model tfs (bpm x bpm).</span>
 <span class="sd">        plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
 <span class="sd">        meas_and_mdl_tunes: measured and model tunes.</span>
 
@@ -1156,11 +1158,14 @@
         <span class="n">sin_quadrup_model</span> <span class="o">=</span> <span class="n">tilted_errmeas</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">tilted_model</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">betmdl</span>
 
     <span class="c1"># Square to get variance terms (summed in quadrature across the two BPMs of each triplet)</span>
+    <span class="c1"># These terms can be zero when model phase advances are multiples of pi (e.g. in SPS) so</span>
+    <span class="c1"># we wrap it into the np.errstate context.</span>
     <span class="n">sin_squared_model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">)</span>
-    <span class="n">sin_squ_model_shift1</span> <span class="o">=</span> <span class="n">sin_squared_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift1</span><span class="p">)</span>
-    <span class="n">sin_squ_model_shift2</span> <span class="o">=</span> <span class="n">sin_squared_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift2</span><span class="p">)</span>
-    <span class="n">sin_quad_model_shift1</span> <span class="o">=</span> <span class="n">sin_quadrup_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_quadrup_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift1</span><span class="p">)</span>
-    <span class="n">sin_quad_model_shift2</span> <span class="o">=</span> <span class="n">sin_quadrup_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_quadrup_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift2</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="n">sin_squ_model_shift1</span> <span class="o">=</span> <span class="n">sin_squared_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift1</span><span class="p">)</span>
+        <span class="n">sin_squ_model_shift2</span> <span class="o">=</span> <span class="n">sin_squared_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_squared_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift2</span><span class="p">)</span>
+        <span class="n">sin_quad_model_shift1</span> <span class="o">=</span> <span class="n">sin_quadrup_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_quadrup_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift1</span><span class="p">)</span>
+        <span class="n">sin_quad_model_shift2</span> <span class="o">=</span> <span class="n">sin_quadrup_model</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">sin_quadrup_model</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">cot_phase_model_shift2</span><span class="p">)</span>
 
     <span class="c1"># beterr = (1/3) · sqrt(Σ variance over 3 combinations): propagated σ_β</span>
     <span class="n">beterr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sin_squ_model_shift1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_squ_model_shift1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin_squ_model_shift2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">3</span>

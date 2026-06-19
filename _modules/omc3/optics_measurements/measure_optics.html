@@ -50,6 +50,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../entrypoints/correction.html">Correction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#global-correction">Global Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#response-creator">Response Creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#correction-test">Correction Test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../entrypoints/correction.html#segment-by-segment-propagation">Segment-by-Segment Propagation</a></li>
 </ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-appenders">Model Appenders</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#model-diff">Model Diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-x">Response MAD-X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-mad-ng">Response MAD-NG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-twiss">Response TWISS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#sequence-evaluation">Sequence Evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/correction.html#response-matrix-io">Response Matrix IO</a></li>
@@ -302,7 +304,6 @@
 <span class="sd">        input_files: `InputFiles` object containing frequency spectra files (linx/y).</span>
 <span class="sd">        measure_input: `OpticsInput` object containing analysis settings.</span>
 
-<span class="sd">    Returns:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">measure_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">outputdir</span><span class="p">)</span>
@@ -377,16 +378,14 @@
 
 <div class="viewcode-block" id="chromatic_beating">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.chromatic_beating">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">:</span> <span class="n">tune</span><span class="o">.</span><span class="n">TuneDict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chromatic_beating</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">measure_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">tune_dict</span><span class="p">:</span> <span class="n">tune</span><span class="o">.</span><span class="n">TuneDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main function to compute chromatic optics beating.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        tune_dict:</span>
 <span class="sd">        input_files: `InputFiles` object containing frequency spectra files (linx/y).</span>
-<span class="sd">        measure_input:` OpticsInput` object containing analysis settings.</span>
-
-<span class="sd">    Returns:</span>
+<span class="sd">        measure_input: `OpticsInput` object containing analysis settings.</span>
+<span class="sd">        tune_dict: `TuneDict` object containing measured tunes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dpps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">dpps</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">))))</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -420,7 +419,18 @@
 
 <div class="viewcode-block" id="copy_calibration_files">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.measure_optics.copy_calibration_files">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">copy_calibration_files</span><span class="p">(</span><span class="n">outputdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">,</span> <span class="n">calibrationdir</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copy_calibration_files</span><span class="p">(</span><span class="n">outputdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">calibrationdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copies calibration files from calibrationdir to outputdir,</span>
+<span class="sd">    then reads them and returns the data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        outputdir: path to the output directory.</span>
+<span class="sd">        calibrationdir: path to the calibration directory. If ``None``, returns ``None``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary mapping planes to calibration DataFrames, or ``None`` if no calibration directory is given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">calibrationdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="n">calibs</span> <span class="o">=</span> <span class="p">{}</span>
