@@ -29,7 +29,7 @@
 | omc3/harpy/clean.py                                     |      151 |       15 |     90% |42, 90, 113, 188, 204-205, 215-216, 240-247 |
 | omc3/harpy/constants.py                                 |       26 |        0 |    100% |           |
 | omc3/harpy/frequency.py                                 |      196 |        7 |     96% |151, 238, 507, 524-526, 546 |
-| omc3/harpy/handler.py                                   |      126 |        1 |     99% |       301 |
+| omc3/harpy/handler.py                                   |      127 |        1 |     99% |       304 |
 | omc3/harpy/kicker.py                                    |       27 |        0 |    100% |           |
 | omc3/hole\_in\_one.py                                   |      194 |       10 |     95% |333, 335, 373, 456, 482, 498, 500, 502, 504, 881 |
 | omc3/kmod\_importer.py                                  |       74 |        4 |     95% |313-319, 333 |
@@ -73,21 +73,21 @@
 | omc3/mqt\_extractor.py                                  |       33 |        1 |     97% |       187 |
 | omc3/optics\_measurements/\_\_init\_\_.py               |        1 |        0 |    100% |           |
 | omc3/optics\_measurements/beta\_from\_amplitude.py      |       63 |        0 |    100% |           |
-| omc3/optics\_measurements/beta\_from\_phase.py          |      289 |        9 |     97% |185-190, 194, 430, 661, 718-719, 833, 1005 |
-| omc3/optics\_measurements/chromatic.py                  |       44 |       14 |     68% |     61-79 |
+| omc3/optics\_measurements/beta\_from\_phase.py          |      290 |        9 |     97% |185-190, 194, 430, 661, 718-719, 833, 1008 |
+| omc3/optics\_measurements/chromatic.py                  |       45 |       14 |     69% |   130-171 |
 | omc3/optics\_measurements/constants.py                  |       90 |        0 |    100% |           |
-| omc3/optics\_measurements/coupling.py                   |      160 |        4 |     98% |225, 241, 254-255 |
+| omc3/optics\_measurements/coupling.py                   |      160 |        4 |     98% |233, 250, 263-264 |
 | omc3/optics\_measurements/crdt.py                       |       83 |        0 |    100% |           |
-| omc3/optics\_measurements/data\_models.py               |      115 |       15 |     87% |58, 65, 86, 113, 119, 164, 169, 172, 205-219 |
-| omc3/optics\_measurements/dispersion.py                 |      158 |       47 |     70% |79, 97, 112-113, 129-144, 162, 169-170, 176-177, 191-210, 244-253, 291-292 |
-| omc3/optics\_measurements/dpp.py                        |       74 |       14 |     81% |102, 105, 118-130 |
-| omc3/optics\_measurements/iforest.py                    |       67 |       46 |     31% |35-40, 44-47, 52-58, 62-63, 67-77, 81-90, 94-100, 104, 108-112 |
+| omc3/optics\_measurements/data\_models.py               |      115 |       15 |     87% |58, 65, 86, 122, 128, 173, 178, 181, 223-237 |
+| omc3/optics\_measurements/dispersion.py                 |      158 |       47 |     70% |81, 101, 116-117, 133-148, 166, 173-174, 180-181, 195-214, 248-257, 295-296 |
+| omc3/optics\_measurements/dpp.py                        |       74 |       14 |     81% |146, 149, 177-189 |
+| omc3/optics\_measurements/iforest.py                    |       70 |       48 |     31% |60-65, 84-89, 110-116, 121-122, 147-157, 173-182, 198-204, 209, 225-231 |
 | omc3/optics\_measurements/interaction\_point.py         |       45 |        0 |    100% |           |
 | omc3/optics\_measurements/kick.py                       |       72 |        4 |     94% |67-68, 164-165 |
-| omc3/optics\_measurements/measure\_optics.py            |       86 |       14 |     84% |73, 114-118, 149, 179-187 |
-| omc3/optics\_measurements/phase.py                      |      157 |       11 |     93% |95, 127, 217-220, 223-226, 228, 234 |
-| omc3/optics\_measurements/rdt.py                        |      188 |        9 |     95% |172-179, 360, 389-393 |
-| omc3/optics\_measurements/toolbox.py                    |       36 |        0 |    100% |           |
+| omc3/optics\_measurements/measure\_optics.py            |       86 |       14 |     84% |72, 113-117, 146, 187-195 |
+| omc3/optics\_measurements/phase.py                      |      157 |       11 |     93% |96, 128, 218-221, 224-227, 229, 235 |
+| omc3/optics\_measurements/rdt.py                        |      188 |        9 |     95% |172-179, 401, 430-434 |
+| omc3/optics\_measurements/toolbox.py                    |       37 |        0 |    100% |           |
 | omc3/optics\_measurements/tune.py                       |       38 |        0 |    100% |           |
 | omc3/plotting/\_\_init\_\_.py                           |        0 |        0 |    100% |           |
 | omc3/plotting/\_\_main\_\_.py                           |        8 |        8 |      0% |      1-12 |
@@ -118,7 +118,7 @@
 | omc3/scripts/bad\_bpms\_summary.py                      |      185 |       13 |     93% |215-216, 220-221, 250, 258, 287, 327-329, 459-460, 470 |
 | omc3/scripts/betabeatsrc\_output\_converter.py          |      141 |       19 |     87% |165-166, 204-205, 213-214, 249-250, 291-292, 331-332, 366-367, 400-401, 440-441, 471 |
 | omc3/scripts/create\_logbook\_entry.py                  |       89 |       24 |     73% |72, 154-155, 163-186, 197, 217, 220, 226, 242, 253-268, 278 |
-| omc3/scripts/fake\_measurement\_from\_model.py          |      257 |        3 |     99% |548, 571, 588 |
+| omc3/scripts/fake\_measurement\_from\_model.py          |      257 |        3 |     99% |551, 574, 591 |
 | omc3/scripts/kmod\_average.py                           |      104 |        7 |     93% |162, 165, 179, 290-291, 305, 321 |
 | omc3/scripts/kmod\_import.py                            |      144 |        9 |     94% |248, 261-262, 308-312, 329, 351-352, 404 |
 | omc3/scripts/kmod\_lumi\_imbalance.py                   |       97 |       11 |     89% |125, 127, 154-160, 163, 167-172, 177-181, 270 |
@@ -146,7 +146,7 @@
 | omc3/tune\_analysis/\_\_init\_\_.py                     |        0 |        0 |    100% |           |
 | omc3/tune\_analysis/bbq\_tools.py                       |       76 |        6 |     92% |75, 81, 86, 150-151, 175 |
 | omc3/tune\_analysis/constants.py                        |       90 |        1 |     99% |        37 |
-| omc3/tune\_analysis/fitting\_tools.py                   |       62 |        5 |     92% |   206-213 |
+| omc3/tune\_analysis/fitting\_tools.py                   |       65 |        5 |     92% |   247-257 |
 | omc3/tune\_analysis/kick\_file\_modifiers.py            |      165 |       47 |     72% |237-238, 269, 277-282, 319, 330-332, 348-379, 383-399, 403-405 |
 | omc3/tune\_analysis/timber\_extract.py                  |       67 |       45 |     33% |62-64, 85-137, 150-156, 172-173 |
 | omc3/utils/\_\_init\_\_.py                              |        1 |        0 |    100% |           |
@@ -154,7 +154,7 @@
 | omc3/utils/debugging.py                                 |        8 |        0 |    100% |           |
 | omc3/utils/iotools.py                                   |      145 |       42 |     71% |32-39, 57-65, 79, 89-90, 100-108, 116-127, 134, 142, 152, 225, 244, 287-290 |
 | omc3/utils/knob\_list\_manipulations.py                 |       26 |        2 |     92% |    28, 34 |
-| omc3/utils/logging\_tools.py                            |      222 |      106 |     52% |53, 56, 70-98, 101, 104-113, 127-128, 131, 134-140, 153-157, 165-172, 178-185, 209-215, 218-221, 224, 228, 276-313, 336-342, 353, 363, 401-427, 432 |
+| omc3/utils/logging\_tools.py                            |      220 |      106 |     52% |53, 56, 70-98, 101, 104-113, 127-128, 131, 134-140, 153-157, 165-172, 178-185, 209-215, 218-221, 224, 228, 275-312, 335-341, 352, 362, 400-426, 431 |
 | omc3/utils/math\_classes.py                             |       29 |       29 |      0% |      8-56 |
 | omc3/utils/misc.py                                      |        5 |        0 |    100% |           |
 | omc3/utils/mock.py                                      |       10 |        0 |    100% |           |
@@ -163,7 +163,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      138 |       29 |     79% |31, 55-57, 60, 66-72, 139-140, 152, 174, 200, 215, 220, 224, 228, 232, 242, 245, 250, 255, 265, 270, 275, 280 |
-| **TOTAL**                                               | **12754** | **1709** | **87%** |           |
+| **TOTAL**                                               | **12762** | **1711** | **87%** |           |
 
 
 ## Setup coverage badge
