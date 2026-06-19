@@ -61,7 +61,6 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
         input_files: `InputFiles` object containing frequency spectra files (linx/y).
         measure_input: `OpticsInput` object containing analysis settings.
 
-    Returns:
     """
     outputdir = Path(measure_input.outputdir)
     iotools.create_dirs(outputdir)
@@ -133,16 +132,14 @@ def measure_optics(input_files: InputFiles, measure_input: DotDict) -> None:
         chromatic_beating(input_files, measure_input, tune_dict)
 
 
-def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict: tune.TuneDict):
+def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict: tune.TuneDict) -> None:
     """
     Main function to compute chromatic optics beating.
 
     Args:
-        tune_dict:
         input_files: `InputFiles` object containing frequency spectra files (linx/y).
-        measure_input:` OpticsInput` object containing analysis settings.
-
-    Returns:
+        measure_input: `OpticsInput` object containing analysis settings.
+        tune_dict: `TuneDict` object containing measured tunes.
     """
     dpps = np.array(list(set(input_files.dpps("X"))))
     if np.max(dpps) - np.min(dpps) == 0.0:
@@ -173,7 +170,18 @@ def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict) -> dict[str, Any]
     }
 
 
-def copy_calibration_files(outputdir: str|Path, calibrationdir: str|Path):
+def copy_calibration_files(outputdir: str | Path, calibrationdir: str | Path | None) -> dict[str, tfs.TfsDataFrame] | None:
+    """
+    Copies calibration files from calibrationdir to outputdir,
+    then reads them and returns the data.
+
+    Args:
+        outputdir: path to the output directory.
+        calibrationdir: path to the calibration directory. If ``None``, returns ``None``.
+
+    Returns:
+        A dictionary mapping planes to calibration DataFrames, or ``None`` if no calibration directory is given.
+    """
     if calibrationdir is None:
         return None
     calibs = {}

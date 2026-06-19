@@ -76,8 +76,23 @@ def calculate(
     input_files: InputFiles,
     invariants: dict[str, tfs.TfsDataFrame],
     header: dict[str, Any],
-):
-    """Calculate the CRDT values."""
+) -> None:
+    """Calculates Combined Resonance Driving Terms and writes results to file.
+
+    Iterates over all defined CRDTs (see module-level ``CRDTS`` list), computing
+    amplitudes via ODR fits to the invariants and phases via circular averaging
+    of the spectral lines. Results are written into per-order subfolders of the
+    CRDT output directory.
+
+    The derivation follows https://arxiv.org/pdf/1402.1461.pdf.
+
+    Args:
+        measure_input: `OpticsInput` object containing analysis settings.
+        input_files: `InputFiles` object containing frequency spectra files (linx/y).
+        invariants: dictionary mapping planes to DataFrames of actions and errors
+            per kick, e.g. from :func:`omc3.optics_measurements.kick.calculate`.
+        header: headers to include in the written result files.
+    """
     LOGGER.info("Start of CRDT analysis")
 
     dpp_value = measure_input.analyse_dpp
@@ -147,9 +162,9 @@ def calculate(
 
 
 def generic_dataframe(
-    input_files: InputFiles, measure_input: DotDict, bpm_names: Sequence[str], dpp_value: int = 0
-):
-    """Generate a dataframe based on the MU-MDL columns from each measuement."""
+    input_files: InputFiles, measure_input: DotDict, bpm_names: Sequence[str], dpp_value: float = 0,
+) -> pd.DataFrame:
+    """Generate a dataframe based on the MU-MDL columns from each measurement."""
     result_df = pd.DataFrame(measure_input.accelerator.model).loc[bpm_names, [COL_S, "MUX", "MUY"]]
     result_df.rename(
         columns={f"{COL_MU}X": f"{COL_MU}X{MDL}", f"{COL_MU}Y": f"{COL_MU}Y{MDL}"}, inplace=True
@@ -165,7 +180,8 @@ def generic_dataframe(
     return result_df
 
 
-def add_line_and_freq_to_header(header, crdt):
+def add_line_and_freq_to_header(header: dict[str, Any], crdt: dict) -> dict[str, Any]:
+    """Adds spectral line and frequency information to the output header."""
     mod_header = header.copy()
     mod_header["LINE"] = f"{crdt['plane']}({crdt['line'][0]}, {crdt['line'][1]})"
     freq = np.mod(crdt["line"] @ np.array([header["Q1"], header["Q2"]]), 1)
@@ -173,13 +189,14 @@ def add_line_and_freq_to_header(header, crdt):
     return mod_header
 
 
-def write_to_crdt_folder(df, header, meas_input, order, crdt):
+def write_to_crdt_folder(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, order: str, crdt: str) -> None:
     outputdir = Path(meas_input.outputdir) / CRDT_FOLDER / order
     iotools.create_dirs(outputdir)
     tfs.write(str(outputdir / f"{crdt}{EXT}"), df, header, save_index=NAME)
 
 
-def get_column_names(line):
+def get_column_names(line: str) -> dict[str, str]:
+    """Returns the mapping of CRDT column identifiers to their suffixed column names."""
     return dict(
         zip(
             CRDT_COLUMNS,
@@ -192,7 +209,8 @@ def get_column_names(line):
     )
 
 
-def get_crdt_invariant(crdt, invariants):
+def get_crdt_invariant(crdt: dict, invariants: dict[str, np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+    """Computes the combined invariant and its error for the given CRDT from per-plane invariants."""
     exp = {"X": np.abs(crdt["line"][0]), "Y": np.abs(crdt["line"][1])}
     # compensate for the normalization with tune line
     exp[crdt["plane"]] = (exp[crdt["plane"]] - 1)
@@ -205,7 +223,10 @@ def get_crdt_invariant(crdt, invariants):
     return crdt_invariant, err_crdt_invariant
 
 
-def get_crdt_amplitude(crdt, invariants, line_amps, line_amp_errors):
+def get_crdt_amplitude(
+    crdt: dict, invariants: dict[str, np.ndarray], line_amps: np.ndarray, line_amp_errors: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Fits CRDT amplitudes per BPM from spectral line amplitudes and invariants."""
     crdt_invariants, err_crdt_invariants = get_crdt_invariant(crdt, invariants)
     amps, err_amps = np.zeros(line_amps.shape[0]), np.zeros(line_amps.shape[0])
 
@@ -217,7 +238,12 @@ def get_crdt_amplitude(crdt, invariants, line_amps, line_amp_errors):
     return amps, err_amps
 
 
-def fit_amplitude(lineamplitudes, err_lineamplitudes, crdt_invariant, err_crdt_invariant):
+def fit_amplitude(
+    lineamplitudes: np.ndarray,
+    err_lineamplitudes: np.ndarray,
+    crdt_invariant: np.ndarray,
+    err_crdt_invariant: np.ndarray,
+) -> tuple[float, float]:
     """
     Was translated from using scipy.odr to using odrpack as they recommended.
     See https://docs.scipy.org/doc/scipy/reference/odr.html for explanations.

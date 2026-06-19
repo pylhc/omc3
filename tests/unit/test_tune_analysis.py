@@ -8,7 +8,7 @@ from omc3.tune_analysis.bbq_tools import (
     clean_outliers_moving_average,
     get_moving_average,
 )
-from omc3.tune_analysis.fitting_tools import get_poly_fun
+from omc3.tune_analysis.fitting_tools import get_polynomial_function
 
 
 @pytest.mark.basic
@@ -31,14 +31,14 @@ def test_moving_average():
 @pytest.mark.basic
 def test_get_poly_fun():
     x_arr = np.linspace(0, 100, 101, dtype=int)  # use int for exact compare (==) below
-    p0 = get_poly_fun(0)
-    assert all(p0([1.43], x_arr) == 1.43)
+    p0 = get_polynomial_function(0)
+    assert all(p0(x_arr, [1.43]) == 1.43)
 
-    p1 = get_poly_fun(1)
-    assert all(p1([0, 1], x_arr) == x_arr)
+    p1 = get_polynomial_function(1)
+    assert all(p1(x_arr, [0, 1]) == x_arr)
 
-    p2 = get_poly_fun(2)
-    assert all(p2([0, 2, 3.5], x_arr) == 2*x_arr + 3.5*(x_arr**2))
+    p2 = get_polynomial_function(2)
+    assert all(p2(x_arr, [0, 2, 3.5]) == 2*x_arr + 3.5*(x_arr**2))
 
 
 @pytest.mark.extended

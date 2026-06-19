@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from omc3.optics_measurements.tune import TuneDict
 
 PhaseDict = TypedDict(
-    'PhaseDict', {
+    "PhaseDict", {
         MODEL: pd.DataFrame,
         MEASUREMENT: pd.DataFrame,
         f'{ERR}{MEASUREMENT}': pd.DataFrame
@@ -54,6 +54,7 @@ PhaseDict = TypedDict(
 LOGGER = logging_tools.get_logger(__name__)
 
 class CompensationMode:
+    """Available modes for AC-dipole driven motion compensation in phase advance calculations."""
     NONE: str = "none"
     MODEL: str = "model"
     EQUATION: str = "equation"
@@ -145,7 +146,7 @@ def _calculate_phase_advances(
     model_df: pd.DataFrame,
     compensation: str,
     no_errors: bool,
-) -> tuple[PhaseDict, list[pd.DataFrame, pd.DataFrame]]:
+) -> tuple[PhaseDict, list[pd.DataFrame]]:
     """
     Calculates phase advances.
 
@@ -325,13 +326,13 @@ def _create_output_df(phase_advances: PhaseDict, model: pd.DataFrame, plane: str
     return output_data
 
 
-def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike = None) -> ArrayLike:
+def _get_all_phase_diff(phases_a: ArrayLike, phases_b: ArrayLike | None = None) -> ArrayLike:
     if phases_b is None:
         phases_b = phases_a
     return (phases_a[np.newaxis, :] - phases_b[:, np.newaxis]) % 1.0
 
 
-def _get_square_data_frame(data, index) -> pd.DataFrame:
+def _get_square_data_frame(data: np.ndarray, index: pd.Index) -> pd.DataFrame:
     return pd.DataFrame(data=data, index=index, columns=index)
 
 

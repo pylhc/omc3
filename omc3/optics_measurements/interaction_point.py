@@ -32,7 +32,7 @@ LOGGER = logging_tools.get_logger(__name__)
 COLUMNS = ("IP", "BETASTAR", "ERRBETASTAR", "PHASEADV", "ERRPHASEADV", "PHASEDVMDL", "LSTAR")
 
 
-def betastar_from_phase(meas_input: DotDict, phase_d: phase.PhaseDict) -> pd.DataFrame:
+def betastar_from_phase(meas_input: DotDict, phase_d: phase.PhaseDict) -> pd.DataFrame | None:
     """
     Calculate beta* and l* from the phase advance of the IP-BPMs.
 
@@ -42,7 +42,8 @@ def betastar_from_phase(meas_input: DotDict, phase_d: phase.PhaseDict) -> pd.Dat
 
     Returns:
         A DataFrame with the beta* and l* as well as the phases used for the calculation
-        as columns and the IP names as index.
+        as columns and the IP names as index. Can return `None` if the provided accelerator
+        class has no `.get_ips` method.
     """
     accel = meas_input.accelerator
     model = accel.model
@@ -64,7 +65,7 @@ def betastar_from_phase(meas_input: DotDict, phase_d: phase.PhaseDict) -> pd.Dat
     return pd.DataFrame(columns=COLUMNS, data=rows)
 
 
-def write(df_ips: pd.DataFrame, headers: dict[str, Any], output_dir: str|Path, plane: str):
+def write(df_ips: pd.DataFrame, headers: dict[str, Any], output_dir: str | Path, plane: str) -> None:
     """ Write the interaction point data to disk.
     Empty DataFrames are skipped on write.
 
@@ -100,16 +101,16 @@ def phase_to_betastar(lstar: float, phase: float, errphase: float) -> tuple[floa
     )
 
 
-def _phase_to_betastar_value(lstar, phase):
+def _phase_to_betastar_value(lstar: float, phase: float) -> float:
     tan_phase = np.tan(phase)
     return (lstar * (1 - np.sqrt(tan_phase ** 2 + 1))) / tan_phase
 
 
-def _phase_to_betastar_error(lstar: float, phase: float, errphase: float):
+def _phase_to_betastar_error(lstar: float, phase: float, errphase: float) -> float:
     return abs((errphase * lstar * (abs(np.cos(phase)) - 1)) / (np.sin(phase) ** 2))
 
 
-def _get_meas_phase(bpm_left, bpm_right, phases_df):
+def _get_meas_phase(bpm_left: str, bpm_right: str, phases_df: phase.PhaseDict) -> tuple[float, float, float]:
     return (
         phases_df[MEASUREMENT].loc[bpm_left, bpm_right],
         phases_df[f"{ERR}{MEASUREMENT}"].loc[bpm_left, bpm_right],
@@ -117,5 +118,5 @@ def _get_meas_phase(bpm_left, bpm_right, phases_df):
     )
 
 
-def _get_lstar(bpm_left, bpm_right, model):
+def _get_lstar(bpm_left: str, bpm_right: str, model: pd.DataFrame) -> float:
     return abs(model.loc[bpm_left, S] - model.loc[bpm_right, S]) / 2.
