@@ -32,11 +32,26 @@ LOGGER: Logger = logging.getLogger(__name__)
 def arrange_dpps(dpps: Sequence[float], tolerance: float = DPP_BIN_TOLERANCE) -> np.ndarray:
     """
     Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero.
+
+    Args:
+        dpps: Sequence of dp/p values, one per analysed file.
+        tolerance: Maximum difference between dp/p values to be grouped
+            into the same bin.
+
+    Returns:
+        Array of arranged dp/p values, same length as *dpps*, where each
+        entry is the bin-averaged value with the zero-bin offset subtracted.
     """
     closest_to_zero = np.argmin(np.abs(dpps))
     ranges = _compute_ranges(dpps, tolerance)
     zero_offset = np.mean(_values_in_range(_find_range_with_element(ranges, closest_to_zero), dpps))
     LOGGER.debug(f"dp/p closest to zero is {dpps[closest_to_zero]}")
+
+    # We re-center the dp/p values so the bin closest to 0 becomes 0, but the 'zero_offset'
+    # is the actual mean dp/p of that "on-momentum" bin. Warning below is emitted when
+    # 'zero_offset' is large, which mean that even the "on-momentum" were taken with
+    # significant momentum deviation from the design closed orbit (aka when we do off-momentum
+    # measurements). Or it could be that the optics parameters are wrong.
     if np.abs(zero_offset) > tolerance:
         LOGGER.warning(
             f"Analysed files have large momentum deviation {zero_offset}. "
