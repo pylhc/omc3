@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_86458b78cc8952f1_lhc_model_creator_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-19 17:47 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.2">coverage.py v7.14.2</a>,
+            created at 2026-06-24 16:41 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -149,12 +149,12 @@
     <p class="pln"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">accel</span><span class="op">:</span> <span class="nam">Accelerator</span><span class="op">,</span> <span class="nam">logfile</span><span class="op">:</span> <span class="nam">Path</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span> <span class="nam">acc_models_path</span><span class="op">:</span> <span class="nam">Path</span> <span class="op">=</span> <span class="key">None</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="str">        Initialize the Model Creator.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="str">        Initialise the Model Creator.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t"><span class="str">        Args:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t"><span class="str">            accel (Accelerator): Accelerator Instance</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t">        <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">"Initializing Model Creator Base Attributes"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t">        <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">"Initialising Model Creator Base Attributes"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">accel</span><span class="op">:</span> <span class="nam">Accelerator</span> <span class="op">=</span> <span class="nam">accel</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">acc_models_path</span><span class="op">:</span> <span class="nam">Path</span> <span class="op">=</span> <span class="nam">acc_models_path</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">logfile</span><span class="op">:</span> <span class="nam">Path</span> <span class="op">=</span> <span class="nam">logfile</span>&nbsp;</span><span class="r"></span></p>
@@ -441,7 +441,7 @@
     <p class="run run2"><span class="n"><a id="t359" href="#t359">359</a></span><span class="t">        <span class="op">**</span><span class="nam">kwargs</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t360" href="#t360">360</a></span><span class="t">    <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t361" href="#t361">361</a></span><span class="t">        <span class="str">"""Creates Segment of a model."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t362" href="#t362">362</a></span><span class="t">        <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">"Initializing Segment Creator"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t362" href="#t362">362</a></span><span class="t">        <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">"Initialising Segment Creator"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t363" href="#t363">363</a></span><span class="t">        <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">__init__</span><span class="op">(</span><span class="nam">accel</span><span class="op">,</span> <span class="op">*</span><span class="nam">args</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t364" href="#t364">364</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">segment</span> <span class="op">=</span> <span class="nam">segment</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t365" href="#t365">365</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">measurables</span> <span class="op">=</span> <span class="nam">measurables</span>&nbsp;</span><span class="r"></span></p>
@@ -620,7 +620,7 @@
     <p class="pln"><span class="n"><a id="t538" href="#t538">538</a></span><span class="t"><span class="str">            corr_files (Sequence[Path]): Sequence of correction/matching files.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t539" href="#t539">539</a></span><span class="t"><span class="str">            update_dpp (bool): Whether to update the dpp in the machine.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t540" href="#t540">540</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t541" href="#t541">541</a></span><span class="t">        <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">"Initializing Correction Model Creator Base Attributes"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t541" href="#t541">541</a></span><span class="t">        <span class="nam">LOGGER</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">"Initialising Correction Model Creator Base Attributes"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t542" href="#t542">542</a></span><span class="t">        <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">__init__</span><span class="op">(</span><span class="nam">accel</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t543" href="#t543">543</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">twiss_out</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">resolve_path_for_madx</span><span class="op">(</span><span class="nam">twiss_out</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t544" href="#t544">544</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -717,8 +717,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_86458b78cc8952f1_lhc_model_creator_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-19 17:47 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.2">coverage.py v7.14.2</a>,
+            created at 2026-06-24 16:41 +0000
         </p>
     </div>
 </footer>

@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_718810d49bcd4332_toolbox_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-19 17:47 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.2">coverage.py v7.14.2</a>,
+            created at 2026-06-24 16:41 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -454,12 +454,12 @@
     <p class="run run2"><span class="n"><a id="t372" href="#t372">372</a></span><span class="t">    <span class="nam">invariants</span><span class="op">:</span> <span class="nam">dict</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">]</span><span class="op">,</span> <span class="nam">line_amp</span><span class="op">:</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">,</span> <span class="nam">plane</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span> <span class="nam">rdt</span><span class="op">:</span> <span class="nam">RDTTuple</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t373" href="#t373">373</a></span><span class="t"><span class="op">)</span> <span class="op">-></span> <span class="nam">tuple</span><span class="op">[</span><span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">,</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t374" href="#t374">374</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t"><span class="str">    Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t375" href="#t375">375</a></span><span class="t"><span class="str">    Returns RDT amplitudes in units of metres ^ {1 - n/2}, where n is the order of RDT.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t376" href="#t376">376</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t377" href="#t377">377</a></span><span class="t">    <span class="key">import</span> <span class="nam">warnings</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t378" href="#t378">378</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t379" href="#t379">379</a></span><span class="t">    <span class="nam">amps</span><span class="op">,</span> <span class="nam">err_amps</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">empty</span><span class="op">(</span><span class="nam">line_amp</span><span class="op">.</span><span class="nam">shape</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">)</span><span class="op">,</span> <span class="nam">np</span><span class="op">.</span><span class="nam">empty</span><span class="op">(</span><span class="nam">line_amp</span><span class="op">.</span><span class="nam">shape</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">    <span class="nam">kick_data</span> <span class="op">=</span> <span class="nam">get_linearized_problem</span><span class="op">(</span><span class="nam">invariants</span><span class="op">,</span> <span class="nam">plane</span><span class="op">,</span> <span class="nam">rdt</span><span class="op">)</span>  <span class="com"># corresponding to actions in meters</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t380" href="#t380">380</a></span><span class="t">    <span class="nam">kick_data</span> <span class="op">=</span> <span class="nam">get_linearized_problem</span><span class="op">(</span><span class="nam">invariants</span><span class="op">,</span> <span class="nam">plane</span><span class="op">,</span> <span class="nam">rdt</span><span class="op">)</span>  <span class="com"># corresponding to actions in metres</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t381" href="#t381">381</a></span><span class="t">    <span class="nam">guess</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">mean</span><span class="op">(</span><span class="nam">line_amp</span> <span class="op">/</span> <span class="nam">kick_data</span><span class="op">,</span> <span class="nam">axis</span><span class="op">=</span><span class="num">1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t382" href="#t382">382</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t383" href="#t383">383</a></span><span class="t">    <span class="key">def</span> <span class="nam">fitting</span><span class="op">(</span><span class="nam">x</span><span class="op">,</span> <span class="nam">f</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -564,8 +564,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_718810d49bcd4332_toolbox_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-19 17:47 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.2">coverage.py v7.14.2</a>,
+            created at 2026-06-24 16:41 +0000
         </p>
     </div>
 </footer>

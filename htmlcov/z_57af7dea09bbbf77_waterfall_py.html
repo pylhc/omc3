@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_d7ca240d075ceae4_annotations_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-19 17:47 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.2">coverage.py v7.14.2</a>,
+            created at 2026-06-24 16:41 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -150,7 +150,7 @@
     <p class="pln"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="key">def</span> <span class="nam">_get_color_norm</span><span class="op">(</span><span class="nam">minmax</span><span class="op">,</span> <span class="nam">plane</span><span class="op">,</span> <span class="nam">common</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">    <span class="str">""" Returns the color-norm calculated from the min and max values. """</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">    <span class="str">""" Returns the colour-norm calculated from the min and max values. """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">common</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t">        <span class="key">return</span> <span class="nam">colors</span><span class="op">.</span><span class="nam">LogNorm</span><span class="op">(</span><span class="op">*</span><span class="nam">minmax</span><span class="op">[</span><span class="nam">plane</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -159,7 +159,7 @@
     <p class="pln"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t"><span class="key">def</span> <span class="nam">_plot_color_mesh</span><span class="op">(</span><span class="nam">ax</span><span class="op">,</span> <span class="nam">freqs</span><span class="op">,</span> <span class="nam">amps</span><span class="op">,</span> <span class="nam">idx_data</span><span class="op">,</span> <span class="nam">cmap</span><span class="op">,</span> <span class="nam">norm</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">    <span class="str">""" Plots the frequencies as a mesh, with amplitudes as colors. """</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">    <span class="str">""" Plots the frequencies as a mesh, with amplitudes as colours. """</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">    <span class="nam">freqs</span> <span class="op">=</span> <span class="nam">freqs</span><span class="op">.</span><span class="nam">sort_values</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">    <span class="nam">amps</span> <span class="op">=</span> <span class="nam">amps</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">freqs</span><span class="op">.</span><span class="nam">index</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -170,12 +170,12 @@
     <p class="pln"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t"><span class="key">def</span> <span class="nam">_plot_vlines</span><span class="op">(</span><span class="nam">ax</span><span class="op">,</span> <span class="nam">freqs</span><span class="op">,</span> <span class="nam">amps</span><span class="op">,</span> <span class="nam">idx_data</span><span class="op">,</span> <span class="nam">cmap</span><span class="op">,</span> <span class="nam">norm</span><span class="op">,</span> <span class="nam">line_width</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">    <span class="str">""" Plots the frequencies as vertical lines, with amplitudes as colors. """</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">    <span class="str">""" Plots the frequencies as vertical lines, with amplitudes as colours. """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t">    <span class="nam">lines</span> <span class="op">=</span> <span class="nam">ax</span><span class="op">.</span><span class="nam">vlines</span><span class="op">(</span><span class="nam">x</span><span class="op">=</span><span class="nam">freqs</span><span class="op">,</span> <span class="nam">ymin</span><span class="op">=</span><span class="nam">idx_data</span> <span class="op">-</span> <span class="num">.5</span><span class="op">,</span> <span class="nam">ymax</span><span class="op">=</span><span class="nam">idx_data</span> <span class="op">+</span> <span class="num">.5</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">                      <span class="nam">linestyles</span><span class="op">=</span><span class="str">'solid'</span><span class="op">,</span> <span class="nam">cmap</span><span class="op">=</span><span class="nam">cmap</span><span class="op">,</span> <span class="nam">norm</span><span class="op">=</span><span class="nam">norm</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">                      <span class="nam">linewidths</span><span class="op">=</span><span class="nam">line_width</span><span class="op">,</span> <span class="nam">zorder</span><span class="op">=</span><span class="op">-</span><span class="num">3</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">                      <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">    <span class="nam">lines</span><span class="op">.</span><span class="nam">set_array</span><span class="op">(</span><span class="nam">amps</span><span class="op">)</span>  <span class="com"># sets the colors of the segments</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">    <span class="nam">lines</span><span class="op">.</span><span class="nam">set_array</span><span class="op">(</span><span class="nam">amps</span><span class="op">)</span>  <span class="com"># sets the colours of the segments</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="key">def</span> <span class="nam">_format_axes</span><span class="op">(</span><span class="nam">fig_cont</span><span class="op">,</span> <span class="nam">limits</span><span class="op">,</span> <span class="nam">ncol</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -205,8 +205,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_d7ca240d075ceae4_annotations_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.1">coverage.py v7.14.1</a>,
-            created at 2026-06-19 17:47 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.14.2">coverage.py v7.14.2</a>,
+            created at 2026-06-24 16:41 +0000
         </p>
     </div>
 </footer>
