@@ -2,7 +2,7 @@
 Model Creator Manager
 ---------------------
 
-A manager that helps you find the optimal model creator of your favorite accelerator.
+A manager that helps you find the optimal model creator of your favourite accelerator.
 """
 from __future__ import annotations
 

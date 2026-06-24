@@ -14,7 +14,7 @@ class MathMixin:
 
         Caveats:
          - This assumes that the inheriting class accepts an instance of its parent class
-           in its initialization method !!
+           in its initialisation method !!
          - Use this as the FIRST class in inheritance !
     """
 

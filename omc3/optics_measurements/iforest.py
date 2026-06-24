@@ -101,15 +101,16 @@ def identify_single_cluster_bad_bpms(
     Args:
         bpm_tfs_data: concatenated BPM data from all input files.
         cont: contamination parameter for the isolation forest.
-        data_for_clustering: normalized feature data for clustering.
+        data_for_clustering: normalised feature data for clustering.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
         A `DataFrame` with anomalous BPM names, their most significant feature, and anomaly scores.
     """
     bad_bpms, good_bpms, bad_bpms_scores = detect_anomalies(cont, data_for_clustering, plane)
-    bpm_tfs_data, data_for_clustering, bad_bpms, good_bpms = \
-        [reassign_index(data) for data in (bpm_tfs_data, data_for_clustering, bad_bpms, good_bpms)]
+    bpm_tfs_data, data_for_clustering, bad_bpms, good_bpms = [
+        reassign_index(data) for data in (bpm_tfs_data, data_for_clustering, bad_bpms, good_bpms)
+    ]
     signif_feature = get_significant_features(bpm_tfs_data, data_for_clustering, bad_bpms,
                                               good_bpms, plane)
     signif_feature.loc[:, "SCORE"] = bad_bpms_scores
@@ -136,7 +137,7 @@ def get_significant_features(
 
     Args:
         bpm_tfs_data: concatenated BPM data from all input files.
-        data_for_clustering: normalized feature data used for clustering.
+        data_for_clustering: normalised feature data used for clustering.
         bad_bpms: DataFrame of BPMs flagged as anomalous.
         good_bpms: DataFrame of BPMs considered normal.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
@@ -164,7 +165,7 @@ def detect_anomalies(
 
     Args:
         contamination: expected proportion of outliers in the data.
-        data: normalized BPM feature data.
+        data: normalised BPM feature data.
         plane: marking the horizontal or vertical plane, **X** or **Y**.
 
     Returns:
@@ -185,7 +186,7 @@ def detect_anomalies(
 def get_data_for_clustering(
     bpm_tfs_data: pd.DataFrame, plane: str, accelerator: Accelerator,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Splits BPM data into arc and IR subsets and normalizes features for clustering.
+    """Splits BPM data into arc and IR subsets and normalises features for clustering.
 
     Args:
         bpm_tfs_data: concatenated BPM data from all input files.
@@ -193,7 +194,7 @@ def get_data_for_clustering(
         accelerator: accelerator instance providing the element types mask.
 
     Returns:
-        A tuple of (arc_bpm_data, ir_bpm_data) with normalized features.
+        A tuple of (arc_bpm_data, ir_bpm_data) with normalised features.
     """
     arc_bpm_mask = accelerator.get_element_types_mask(bpm_tfs_data.NAME, types=["arc_bpm"])
     ir_bpm_data_for_clustering = bpm_tfs_data.iloc[~arc_bpm_mask].copy()
@@ -205,7 +206,7 @@ def get_data_for_clustering(
 
 
 def _normalize_parameter(column_data: pd.Series) -> pd.Series:
-    """Rescales a Series to the [0, 1] range via min-max normalization."""
+    """Rescales a Series to the [0, 1] range via min-max normalisation."""
     return (column_data - column_data.min()) / (column_data.max() - column_data.min())
 
 

@@ -162,7 +162,7 @@ def _scale_to_meters(bpm_data: pd.DataFrame, unit: str) -> pd.DataFrame:
 def _closed_orbit_analysis(
     bpm_data: pd.DataFrame, model: None | pd.DataFrame, bpm_res
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    # Initialize the linear frame DataFrame with BPM names and positions
+    # Initialise the linear frame DataFrame with BPM names and positions
     lin_frame = pd.DataFrame(
         index=bpm_data.index.to_numpy(),
         data={

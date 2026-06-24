@@ -152,8 +152,8 @@ def n_bpm_method(
     of `range_of_bpms` BPMs centred on each probed BPM. Please refer to theory at
     https://cds.cern.ch/record/2307554.
 
-    For each probed BPM i, a total of m = range_of_bpms // 2 neighbors are selected on
-    each side. Every valid pair (j, k) within those neighbors contributes to form a BPM
+    For each probed BPM i, a total of m = range_of_bpms // 2 neighbours are selected on
+    each side. Every valid pair (j, k) within those neighbours contributes to form a BPM
     triplet (i, j, k) from which βi and ⍺i are estimated individually via the function
     ``calculate_beta_alpha_from_single_combination``. The estimates of all combinations
     are combined with covariant weighting using the analytical covariance matrix:
@@ -210,7 +210,7 @@ def n_bpm_method(
     # [beta, betaerr, alfa, alfaerr] for each probed BPM
     betas_alfas = np.zeros((len(phase[MEASUREMENT].index), 4))
 
-    m = int(n_bpms / 2)  # half window: probed BPM has m neighbors on each side
+    m = int(n_bpms / 2)  # half window: probed BPM has m neighbours on each side
     loc_range = np.arange(-m, m + 1)  # relative indices [-m, ..., 0, ..., m] 0 is the probed BPM
 
     # Phase advances are stored in units of 2π, convert to radians for cotangent calculations
@@ -225,7 +225,7 @@ def n_bpm_method(
         indx_el_last: int = elements.index.get_loc(bk_model.index[(indx + m) % nbpms])
         mu_column: str = f"{PHASE_ADV}{plane}"
 
-        # We build a sliding window of (2m+1) BPMs centered on the probed one.
+        # We build a sliding window of (2m+1) BPMs centred on the probed one.
         # For BPMs near the start/end of the ring the window wraps around. The
         # tune shift (Q·2π) is subtracted / added to keep phases monotonically
         # increasing across the wrap boundary
@@ -512,7 +512,7 @@ def calculate_beta_alpha_from_single_combination(
         Jacobian rows for this combination, to be stacked into the complete Jacobian
         matrices T_β and T_α inside of ``n_bpm_method``.
     """
-    m = int(range_of_bpms / 2)  # half window: probed BPM has m neighbors on each side
+    m = int(range_of_bpms / 2)  # half window: probed BPM has m neighbours on each side
     ix = c[0]  # index of BPM i
     iy = c[1]  # index of BPM y
     dif_cot_model = cot_model[ix] - cot_model[iy]
@@ -655,7 +655,7 @@ def _covariant_weighting(mat: np.ndarray, col: np.ndarray) -> tuple[float, float
     """
     mat_inv = np.linalg.pinv(mat, rcond=RCOND)  # V⁻¹, pseudo-inverse for numerical stability
     wb = np.sum(mat_inv, axis=1)                # g̃_i = Σ_k V⁻¹_{ik}: unnormalized BLUE weights (row sums)
-    mat_inv_sum = np.sum(wb)                    # Σ_{j,k} V⁻¹_{jk}: normalization constant
+    mat_inv_sum = np.sum(wb)                    # Σ_{j,k} V⁻¹_{jk}: normalisation constant
 
     if mat_inv_sum == 0:
         raise ValueError("Covariance weighting failed: the covariance matrix is degenerate")

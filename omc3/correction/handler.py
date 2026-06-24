@@ -129,7 +129,7 @@ def correct(accel_inst: Accelerator, opt: DotDict) -> None:
                 resp_dict = filters.filter_response_index(resp_dict, meas_dict, optics_params)
                 resp_matrix = _join_responses(resp_dict, optics_params, vars_list)
 
-        # ######### Actual optimization ######### #
+        # ######### Actual optimisation ######### #
         delta += _calculate_delta(resp_matrix, meas_dict, optics_params, vars_list, opt.method, method_options)
 
         # remove unused correctors from vars_list
@@ -335,7 +335,7 @@ def _filter_by_strength(delta: pd.DataFrame, resp_matrix: pd.DataFrame, min_stre
     return delta, resp_matrix.loc[:, delta.index], delta.index.to_numpy()
 
 
-# Optimization -----------------------------------------------------------------
+# Optimisation -----------------------------------------------------------------
 
 
 def _get_method_fun(method: str) -> Callable:

@@ -54,7 +54,7 @@ def text_to_marker(text: str, center: bool = True) -> np.ndarray:
 
     Args:
         text (str): Text to use as a marker.
-        center (bool): Center the path around the origin (otherwise bottom left is anchor).
+        center (bool): Centre the path around the origin (otherwise bottom left is anchor).
 
     Returns:
         Array of the path vertices.
@@ -62,7 +62,7 @@ def text_to_marker(text: str, center: bool = True) -> np.ndarray:
     path = MarkerStyle(rf"$\mathrm{{{text}}}$").get_path()
 
     if center:
-        # center path: remove any offsets (extend.min) and move to center (-size[0]/2)
+        # centre path: remove any offsets (extend.min) and move to centre (-size[0]/2)
         extend = path.get_extents()
         t = mtrans.Affine2D().translate(
             -extend.min[0] - extend.size[0] / 2, -extend.min[1] - extend.size[1] / 2

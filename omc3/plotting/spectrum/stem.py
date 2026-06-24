@@ -68,7 +68,7 @@ def _plot_stems(fig_cont: FigureContainer) -> None:
                 # Matplotlib >= v3.8
                 markers, stems, base = ax.stem(data[plane][FREQS], data[plane][AMPS], basefmt='none', label=label)
 
-            # Set appropriate colors
+            # Set appropriate colours
             color = get_cycled_color(idx_data)
             markers.set_markeredgecolor(color)
             stems.set_color(color)
@@ -109,7 +109,7 @@ def _create_legend(ax, labels, lines, ncol):
     legend_width = leg.get_window_extent().transformed(leg.axes.transAxes.inverted()).width
     x_shift = 0
     if legend_width > 1:
-        x_shift = (legend_width - 1) / 2.  # shift more into center
+        x_shift = (legend_width - 1) / 2.  # shift more into centre
 
     # move above line-labels
     nlines = sum([line is not None for line in lines.values()]) + 0.05

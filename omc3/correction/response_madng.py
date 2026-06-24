@@ -105,7 +105,7 @@ def _initialise_madng_with_logging(accel_inst: Accelerator):
     log_path = accel_inst.model_dir / "madng_response.log"
     LOGGER.info(f"MAD-NG output will be logged to: {log_path}")
 
-    # Initialize MAD-NG with stdout redirected to log file
+    # Initialise MAD-NG with stdout redirected to log file
     with MAD(stdout=str(log_path), redirect_stderr=True, debug=True) as mad:
         _load_sequence(mad, accel_inst)
         _setup_beam(mad, accel_inst.energy)

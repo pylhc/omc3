@@ -181,7 +181,7 @@ def _assert_correct_dispersion_columns(outputdir: Path, plane: str) -> None:
 
 
 def _assert_correct_normalized_dispersion_columns(outputdir: Path, plane: str) -> None:
-    """Checks the expected columns are present in the normalized dispersion file in outputdir"""
+    """Checks the expected columns are present in the normalised dispersion file in outputdir"""
     dframe = tfs.read(outputdir / f"{NORM_DISP_NAME}{plane.lower()}.tfs")
     expected_converted_columns = [f"{ERR}ND{plane}"]    # replace renamed
     expected_created_columns = [f"{DELTA}ND{plane}", f"{ERR}{DELTA}ND{plane}"]  # new
@@ -196,7 +196,7 @@ def _assert_correct_normalized_dispersion_columns(outputdir: Path, plane: str) -
 
 
 def _assert_correct_coupling_columns(outputdir: Path, rdt: str) -> None:
-    """Checks the expected columns are present in the normalized dispersion file in outputdir"""
+    """Checks the expected columns are present in the normalised dispersion file in outputdir"""
     dframe = tfs.read(outputdir / f"f{rdt}.tfs")
     expected_converted_columns = [NAME, S, AMPLITUDE, f"{ERR}{AMPLITUDE}", PHASE, f"{ERR}{PHASE}", f"{REAL}",
                                   f"{ERR}{REAL}", f"{IMAG}", f"{ERR}{IMAG}", f"{REAL}{MDL}", f"{IMAG}{MDL}"]

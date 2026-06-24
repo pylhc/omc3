@@ -251,7 +251,7 @@ def test_lhc_global_correct_arc_by_arc(tmp_path: Path, model_inj_beams: DotDict,
     """ This test is similar to `test_lhc_global_correct` above,
     but as the arc-by-arc correction does not work yet as intended (see https://github.com/pylhc/omc3/issues/480),
     checking the improvement of the phase-advance does not work very well.
-    So no randomizing errors here and only one iteration step.
+    So no randomising errors here and only one iteration step.
     And the used correctors are only the ones in the arcs with errors.
 
     TODO: (after #480 has been fixed)
