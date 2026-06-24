@@ -44,7 +44,7 @@ def test_bad_arg_tbt_datatype():
 
 
 def test_resync(tmp_path):
-    # Synchronize the BPMs and check against the control
+    # Synchronise the BPMs and check against the control
     resync.main(
         input=INPUTS_DIR / "unsynced.sdds",
         optics_dir=OPTICS_DIR,
@@ -65,7 +65,7 @@ def test_overwrite_ok(tmp_path):
     # Write an output file to create a conflict
     (tmp_path / "output.sdds").write_text("This file already exists.")
 
-    # Synchronize the BPMs and check against the control
+    # Synchronise the BPMs and check against the control
     resync.main(
         input=INPUTS_DIR / "unsynced.sdds",
         optics_dir=OPTICS_DIR,
@@ -87,7 +87,7 @@ def test_overwrite_raise(tmp_path):
     # Write an output file to create a conflict
     (tmp_path / "output.sdds").write_text("This file already exists.")
 
-    # Synchronize the BPMs and check against the control
+    # Synchronise the BPMs and check against the control
     with pytest.raises(FileExistsError) as e:
         resync.main(
             input=INPUTS_DIR / "unsynced.sdds",

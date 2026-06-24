@@ -212,7 +212,7 @@ def get_column_names(line: str) -> dict[str, str]:
 def get_crdt_invariant(crdt: dict, invariants: dict[str, np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
     """Computes the combined invariant and its error for the given CRDT from per-plane invariants."""
     exp = {"X": np.abs(crdt["line"][0]), "Y": np.abs(crdt["line"][1])}
-    # compensate for the normalization with tune line
+    # compensate for the normalisation with tune line
     exp[crdt["plane"]] = (exp[crdt["plane"]] - 1)
 
     crdt_invariant = invariants["X"].T[0] ** exp["X"] * invariants["Y"].T[0] ** exp["Y"]

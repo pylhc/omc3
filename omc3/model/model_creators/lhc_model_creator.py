@@ -85,7 +85,7 @@ def _b2_columns() -> list[str]:
 
 class LhcModelCreator(ModelCreator):
     def __init__(self, accel: Lhc, *args, **kwargs):
-        LOGGER.debug("Initializing LHC Model Creator")
+        LOGGER.debug("Initialising LHC Model Creator")
         super().__init__(accel, *args, **kwargs)
 
     def prepare_options(self, opt):
@@ -233,7 +233,7 @@ class LhcModelCreator(ModelCreator):
         return f"LHCB{self.accel.beam}"
 
     def _get_sequence_initialize_script(self) -> str:
-        """Returns the LHC sequence initialization script.
+        """Returns the LHC sequence initialisation script.
 
         This is split up here from the matching (in the base-script),
         to accompany the needs of the Best Knowledge Model Creator,
@@ -564,7 +564,7 @@ class LhcCorrectionModelCreator(CorrectionModelCreator, LhcModelCreator):  # ---
             twiss_out (Union[Path, str]): Path to the twiss(-elements) file to write
             change_params (Sequence[Path]): Sequence of correction/matching files
         """
-        LOGGER.debug("Initializing LHC Correction Model Creator")
+        LOGGER.debug("Initialising LHC Correction Model Creator")
         super().__init__(accel, twiss_out, corr_files, update_dpp)
 
     def get_madx_script(self) -> str:

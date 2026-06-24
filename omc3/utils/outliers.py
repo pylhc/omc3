@@ -25,7 +25,7 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
     Filters the array of values which are meant to be constant or a linear function of the x-data
     array if that is provided, by checking how many sigmas they are deviating from the average.
 
-    The outlier filtering function is utilized at multiple stages of the data analysis.
+    The outlier filtering function is utilised at multiple stages of the data analysis.
     It removes data points in the tails of the measured distribution,
     which are too populated due to the finite sample size,
     assuming a normal distribution specified by measured mean and standard
@@ -90,7 +90,7 @@ def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.
         nsig = _get_significance_cut_from_length(np.sum(mask))
 
     # Set number of remaining points to check decrease in loop
-    n_previous = np.sum(mask) + 1  # initialization for the first check
+    n_previous = np.sum(mask) + 1  # initialisation for the first check
 
     # Cleaning iteration
     for _ in range(niter):

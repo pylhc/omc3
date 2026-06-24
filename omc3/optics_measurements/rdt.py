@@ -372,12 +372,12 @@ def _fit_rdt_amplitudes(
     invariants: dict[str, pd.DataFrame], line_amp: np.ndarray, plane: str, rdt: RDTTuple,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Returns RDT amplitudes in units of meters ^ {1 - n/2}, where n is the order of RDT.
+    Returns RDT amplitudes in units of metres ^ {1 - n/2}, where n is the order of RDT.
     """
     import warnings
 
     amps, err_amps = np.empty(line_amp.shape[0]), np.empty(line_amp.shape[0])
-    kick_data = get_linearized_problem(invariants, plane, rdt)  # corresponding to actions in meters
+    kick_data = get_linearized_problem(invariants, plane, rdt)  # corresponding to actions in metres
     guess = np.mean(line_amp / kick_data, axis=1)
 
     def fitting(x, f):

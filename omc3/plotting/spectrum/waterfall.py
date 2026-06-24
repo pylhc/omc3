@@ -68,7 +68,7 @@ def _plot_waterfall(fig_cont, line_width, cmap, common_plane_colors):
 
 
 def _get_color_norm(minmax, plane, common):
-    """ Returns the color-norm calculated from the min and max values. """
+    """ Returns the colour-norm calculated from the min and max values. """
     if not common:
         return colors.LogNorm(*minmax[plane])
 
@@ -77,7 +77,7 @@ def _get_color_norm(minmax, plane, common):
 
 
 def _plot_color_mesh(ax, freqs, amps, idx_data, cmap, norm):
-    """ Plots the frequencies as a mesh, with amplitudes as colors. """
+    """ Plots the frequencies as a mesh, with amplitudes as colours. """
     freqs = freqs.sort_values()
     amps = amps.loc[freqs.index]
 
@@ -88,12 +88,12 @@ def _plot_color_mesh(ax, freqs, amps, idx_data, cmap, norm):
 
 
 def _plot_vlines(ax, freqs, amps, idx_data, cmap, norm, line_width):
-    """ Plots the frequencies as vertical lines, with amplitudes as colors. """
+    """ Plots the frequencies as vertical lines, with amplitudes as colours. """
     lines = ax.vlines(x=freqs, ymin=idx_data - .5, ymax=idx_data + .5,
                       linestyles='solid', cmap=cmap, norm=norm,
                       linewidths=line_width, zorder=-3,
                       )
-    lines.set_array(amps)  # sets the colors of the segments
+    lines.set_array(amps)  # sets the colours of the segments
 
 
 def _format_axes(fig_cont, limits, ncol):

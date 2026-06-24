@@ -92,7 +92,7 @@ def test_get_data_model(beam1_path):
 
 @pytest.mark.basic
 def test_run_and_output(tmp_path, both_beams_path):
-    """ Tests a full run and checks if output makes sense. No errors, no randomization. """
+    """ Tests a full run and checks if output makes sense. No errors, no randomisation. """
     results = fake_measurement(
         twiss=both_beams_path,
         randomize=None,
@@ -124,7 +124,7 @@ def test_run_and_output(tmp_path, both_beams_path):
         assert len(delta_columns)
 
         for col in list(error_columns) + list(delta_columns):
-            assert (df[col] == 0).all()  # randomization is off and errors 0 ...
+            assert (df[col] == 0).all()  # randomisation is off and errors 0 ...
 
         for col in model_columns:
             param = col[: -len(MDL)]
@@ -141,7 +141,7 @@ def test_run_and_output(tmp_path, both_beams_path):
 @pytest.mark.parametrize('randomize', [[VALUES, ERRORS], [VALUES], [ERRORS], []],
                          ids=["errors,values", "values", "errors", "None"])
 def test_run_random(both_beams_path, randomize):
-    """ Tests errors and values and if applicable their randomization (very basically)."""
+    """ Tests errors and values and if applicable their randomisation (very basically)."""
     error_val = 0.1
     results = fake_measurement(
         twiss=both_beams_path,
@@ -170,7 +170,7 @@ def _test_error_columns(name, df, randomized, error_val):
             if name.startswith(TOTAL_PHASE_NAME):
                 assert sum(df[col] == 0) == 1  # first entry is zero
             else:
-                assert (df[col] != 0).all()  # all should be different as randomized
+                assert (df[col] != 0).all()  # all should be different as randomised
         else:
             idx = df.index
             if name.startswith(TOTAL_PHASE_NAME):
@@ -204,7 +204,7 @@ def _test_delta_columns(name, df, randomized):
             if name.startswith(TOTAL_PHASE_NAME):
                 assert sum(df[col] == 0) == 1  # first entry is zero
             else:
-                assert (df[col] != 0).all()  # all should be different as randomized
+                assert (df[col] != 0).all()  # all should be different as randomised
         else:
             assert not df[col].any()
 
@@ -231,7 +231,7 @@ def _test_model_columns(name, df, randomized):
 @pytest.mark.parametrize("beam", ("beam1_coupling", "beam1", "beam2"))
 @pytest.mark.basic
 def test_parameter(beam, parameter):
-    """Test each parameter individually and checks if the randomization makes sense.
+    """Test each parameter individually and checks if the randomisation makes sense.
     As the default beam1 and beam2 do not include coupling,
     the model with skew quads is used as well.
     """

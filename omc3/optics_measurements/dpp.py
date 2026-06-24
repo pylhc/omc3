@@ -47,7 +47,7 @@ def arrange_dpps(dpps: Sequence[float], tolerance: float = DPP_BIN_TOLERANCE) ->
     zero_offset = np.mean(_values_in_range(_find_range_with_element(ranges, closest_to_zero), dpps))
     LOGGER.debug(f"dp/p closest to zero is {dpps[closest_to_zero]}")
 
-    # We re-center the dp/p values so the bin closest to 0 becomes 0, but the 'zero_offset'
+    # We re-centre the dp/p values so the bin closest to 0 becomes 0, but the 'zero_offset'
     # is the actual mean dp/p of that "on-momentum" bin. Warning below is emitted when
     # 'zero_offset' is large, which mean that even the "on-momentum" were taken with
     # significant momentum deviation from the design closed orbit (aka when we do off-momentum

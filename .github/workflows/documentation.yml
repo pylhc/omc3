@@ -1,5 +1,5 @@
 # Build documentation
-# The build is uploaded as artifact if triggered from a pull request
+# The build is uploaded as artefact if triggered from a pull request
 # The build is published to GitHub pages if triggered by a push to the master branch (which requires merging a PR)
 name: Build and upload documentation
 

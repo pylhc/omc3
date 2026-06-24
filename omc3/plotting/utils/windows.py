@@ -9,7 +9,7 @@ either PySide(2 or 6) or PyQt(5 or 6), depending on which it installed on the sy
 As the `qtpy` library is optional, there are some checks to make sure
 the imports do not fail, but then the classes cannot be used.
 To check if QtPy is installed, either run :meth:`omc3.plotting.plot_window.is_qtpy_installed`
-or try to initialize one of the windows, which will fail with a TypeError,
+or try to initialise one of the windows, which will fail with a TypeError,
 as they want to call QApplication which is set to `None`.
 
 An exception to all of this is  :meth:`omc3.plotting.plot_window.create_pyplot_window_from_fig`,
@@ -66,7 +66,7 @@ def log_no_qtpy_many_windows():
     LOG.warning(
         "QtPy is not installed. "
         "Plots will be shown in individual windows. "
-        "Install QtPy for a more organized representation. "
+        "Install QtPy for a more organised representation. "
     )
 
 

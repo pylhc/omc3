@@ -239,7 +239,7 @@ BETA_COLUMN =            ColumnsAndLabels(BETA, _label=ylabels['beta'], _text_la
 ALPHA_COLUMN =           ColumnsAndLabels(ALPHA, _label=ylabels['alpha'], _text_label='alpha')
 ORBIT_COLUMN =           ColumnsAndLabels(ORBIT, _label=ylabels['co'], _text_label='orbit')
 DISPERSION_COLUMN =      ColumnsAndLabels(DISPERSION, _label=ylabels['dispersion'], _text_label='dispersion')
-NORM_DISPERSION_COLUMN = ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalized dispersion')
+NORM_DISPERSION_COLUMN = ColumnsAndLabels(NORM_DISPERSION, _label=ylabels['norm_dispersion'], _text_label='normalised dispersion')
 PHASE_COLUMN =           ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='phase')
 TOTAL_PHASE_COLUMN =     ColumnsAndLabels(PHASE, _label=ylabels['phase'], _text_label='total phase')
 MU_COLUMN =              ColumnsAndLabels(PHASE_ADV, _label=ylabels['phasetot'], _text_label='total phase')
