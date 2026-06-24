@@ -647,8 +647,8 @@ It won’t open the file, so only the files path is returned.</p>
 <li><p><strong>level_root</strong> -- main logging level, defaults to <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>.</p></li>
 <li><p><strong>level_console</strong> -- console logging level, defaults to <code class="docutils literal notranslate"><span class="pre">INFO</span></code>.</p></li>
 <li><p><strong>fmt</strong> -- Format of the logging. For default see <code class="docutils literal notranslate"><span class="pre">BASIC_FORMAT</span></code>.</p></li>
-<li><p><strong>color</strong> -- If <cite>None</cite> colors are used if tty is detected.
-<cite>False</cite> will never use colors and <cite>True</cite> will always enforce them.</p></li>
+<li><p><strong>color</strong> -- If <cite>None</cite> colours are used if tty is detected.
+<cite>False</cite> will never use colours and <cite>True</cite> will always enforce them.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -713,7 +713,7 @@ perform operations with it, while returning an instance of the inheriting class.
 <dl class="simple">
 <dt>Caveats:</dt><dd><ul class="simple">
 <li><p>This assumes that the inheriting class accepts an instance of its parent class
-in its initialization method !!</p></li>
+in its initialisation method !!</p></li>
 <li><p>Use this as the FIRST class in inheritance !</p></li>
 </ul>
 </dd>
@@ -775,7 +775,7 @@ insightful <code class="docutils literal notranslate"><span class="pre">ImportEr
 <span class="sig-prename descclassname"><span class="pre">omc3.utils.outliers.</span></span><span class="sig-name descname"><span class="pre">get_filter_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">niter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/omc3/utils/outliers.html#get_filter_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.utils.outliers.get_filter_mask" title="Link to this definition"></a></dt>
 <dd><p>Filters the array of values which are meant to be constant or a linear function of the x-data
 array if that is provided, by checking how many sigmas they are deviating from the average.</p>
-<p>The outlier filtering function is utilized at multiple stages of the data analysis.
+<p>The outlier filtering function is utilised at multiple stages of the data analysis.
 It removes data points in the tails of the measured distribution,
 which are too populated due to the finite sample size,
 assuming a normal distribution specified by measured mean and standard
@@ -932,7 +932,7 @@ Axis or axes along which to average data</p></li>
 <dd><p>Computes effective sample size of weighted data along specified axis,
 the minimum value returned is 2 to avoid non-reasonable error blow-up.</p>
 <p>It is calculated via Kish’s approximate formula
-from the (not necessarily normalized) weights <span class="math notranslate nohighlight">\(w_i\)</span> (see wikipedia):</p>
+from the (not necessarily normalised) weights <span class="math notranslate nohighlight">\(w_i\)</span> (see wikipedia):</p>
 <div class="math notranslate nohighlight">
 \[n_\mathrm{eff} = \frac{\left(\sum_i w_i\right)^2}{\sum_i w_i^2}\]</div>
 <p>What it represents:

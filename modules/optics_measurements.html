@@ -577,8 +577,8 @@ log message.</p>
 <dd><p>Calculates betas and alphas using all BPM triplet combinations within a sliding window
 of <cite>range_of_bpms</cite> BPMs centred on each probed BPM. Please refer to theory at
 <a class="reference external" href="https://cds.cern.ch/record/2307554">https://cds.cern.ch/record/2307554</a>.</p>
-<p>For each probed BPM i, a total of m = range_of_bpms // 2 neighbors are selected on
-each side. Every valid pair (j, k) within those neighbors contributes to form a BPM
+<p>For each probed BPM i, a total of m = range_of_bpms // 2 neighbours are selected on
+each side. Every valid pair (j, k) within those neighbours contributes to form a BPM
 triplet (i, j, k) from which βi and ⍺i are estimated individually via the function
 <code class="docutils literal notranslate"><span class="pre">calculate_beta_alpha_from_single_combination</span></code>. The estimates of all combinations
 are combined with covariant weighting using the analytical covariance matrix:</p>
@@ -1180,7 +1180,7 @@ corresponding output dir.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>contamination</strong> -- expected proportion of outliers in the data.</p></li>
-<li><p><strong>data</strong> -- normalized BPM feature data.</p></li>
+<li><p><strong>data</strong> -- normalised BPM feature data.</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>
@@ -1193,7 +1193,7 @@ corresponding output dir.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.optics_measurements.iforest.get_data_for_clustering">
 <span class="sig-prename descclassname"><span class="pre">omc3.optics_measurements.iforest.</span></span><span class="sig-name descname"><span class="pre">get_data_for_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bpm_tfs_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accelerator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="model.html#omc3.model.accelerators.accelerator.Accelerator" title="omc3.model.accelerators.accelerator.Accelerator"><span class="pre">Accelerator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pd.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/optics_measurements/iforest.html#get_data_for_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.optics_measurements.iforest.get_data_for_clustering" title="Link to this definition"></a></dt>
-<dd><p>Splits BPM data into arc and IR subsets and normalizes features for clustering.</p>
+<dd><p>Splits BPM data into arc and IR subsets and normalises features for clustering.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1203,7 +1203,7 @@ corresponding output dir.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple of (arc_bpm_data, ir_bpm_data) with normalized features.</p>
+<dd class="field-even"><p>A tuple of (arc_bpm_data, ir_bpm_data) with normalised features.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1218,7 +1218,7 @@ largest deviation from the mean of good BPMs.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bpm_tfs_data</strong> -- concatenated BPM data from all input files.</p></li>
-<li><p><strong>data_for_clustering</strong> -- normalized feature data used for clustering.</p></li>
+<li><p><strong>data_for_clustering</strong> -- normalised feature data used for clustering.</p></li>
 <li><p><strong>bad_bpms</strong> -- DataFrame of BPMs flagged as anomalous.</p></li>
 <li><p><strong>good_bpms</strong> -- DataFrame of BPMs considered normal.</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
@@ -1257,7 +1257,7 @@ largest deviation from the mean of good BPMs.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bpm_tfs_data</strong> -- concatenated BPM data from all input files.</p></li>
 <li><p><strong>cont</strong> -- contamination parameter for the isolation forest.</p></li>
-<li><p><strong>data_for_clustering</strong> -- normalized feature data for clustering.</p></li>
+<li><p><strong>data_for_clustering</strong> -- normalised feature data for clustering.</p></li>
 <li><p><strong>plane</strong> -- marking the horizontal or vertical plane, <strong>X</strong> or <strong>Y</strong>.</p></li>
 </ul>
 </dd>

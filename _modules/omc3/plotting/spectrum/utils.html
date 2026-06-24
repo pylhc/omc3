@@ -722,7 +722,7 @@
 <div class="viewcode-block" id="get_cycled_color">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.spectrum.utils.get_cycled_color">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_cycled_color</span><span class="p">(</span><span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get the color at (wrapped) idx in the color cycle. The CN-Method only works until &#39;C9&#39;.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get the colour at (wrapped) idx in the colour cycle. The CN-Method only works until &#39;C9&#39;.&quot;&quot;&quot;</span>
     <span class="n">cycle</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">cycle</span><span class="p">[</span><span class="n">idx</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">cycle</span><span class="p">)]</span></div>
 

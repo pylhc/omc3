@@ -310,12 +310,12 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">logfile</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">acc_models_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the Model Creator.</span>
+<span class="sd">        Initialise the Model Creator.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            accel (Accelerator): Accelerator Instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing Model Creator Base Attributes&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialising Model Creator Base Attributes&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="p">:</span> <span class="n">Accelerator</span> <span class="o">=</span> <span class="n">accel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">acc_models_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">acc_models_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">logfile</span>
@@ -638,7 +638,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates Segment of a model.&quot;&quot;&quot;</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing Segment Creator&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialising Segment Creator&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accel</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">segment</span> <span class="o">=</span> <span class="n">segment</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">measurables</span> <span class="o">=</span> <span class="n">measurables</span>
@@ -826,7 +826,7 @@
 <span class="sd">            corr_files (Sequence[Path]): Sequence of correction/matching files.</span>
 <span class="sd">            update_dpp (bool): Whether to update the dpp in the machine.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing Correction Model Creator Base Attributes&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialising Correction Model Creator Base Attributes&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">accel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">twiss_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">twiss_out</span><span class="p">)</span>
 

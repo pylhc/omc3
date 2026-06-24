@@ -350,15 +350,16 @@
 <span class="sd">    Args:</span>
 <span class="sd">        bpm_tfs_data: concatenated BPM data from all input files.</span>
 <span class="sd">        cont: contamination parameter for the isolation forest.</span>
-<span class="sd">        data_for_clustering: normalized feature data for clustering.</span>
+<span class="sd">        data_for_clustering: normalised feature data for clustering.</span>
 <span class="sd">        plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A `DataFrame` with anomalous BPM names, their most significant feature, and anomaly scores.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span><span class="p">,</span> <span class="n">bad_bpms_scores</span> <span class="o">=</span> <span class="n">detect_anomalies</span><span class="p">(</span><span class="n">cont</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-    <span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span> <span class="o">=</span> \
-        <span class="p">[</span><span class="n">reassign_index</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span><span class="p">)]</span>
+    <span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">reassign_index</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span><span class="p">)</span>
+    <span class="p">]</span>
     <span class="n">signif_feature</span> <span class="o">=</span> <span class="n">get_significant_features</span><span class="p">(</span><span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span>
                                               <span class="n">good_bpms</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="n">signif_feature</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;SCORE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_bpms_scores</span>
@@ -391,7 +392,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        bpm_tfs_data: concatenated BPM data from all input files.</span>
-<span class="sd">        data_for_clustering: normalized feature data used for clustering.</span>
+<span class="sd">        data_for_clustering: normalised feature data used for clustering.</span>
 <span class="sd">        bad_bpms: DataFrame of BPMs flagged as anomalous.</span>
 <span class="sd">        good_bpms: DataFrame of BPMs considered normal.</span>
 <span class="sd">        plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
@@ -422,7 +423,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        contamination: expected proportion of outliers in the data.</span>
-<span class="sd">        data: normalized BPM feature data.</span>
+<span class="sd">        data: normalised BPM feature data.</span>
 <span class="sd">        plane: marking the horizontal or vertical plane, **X** or **Y**.</span>
 
 <span class="sd">    Returns:</span>
@@ -446,7 +447,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_data_for_clustering</span><span class="p">(</span>
     <span class="n">bpm_tfs_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Splits BPM data into arc and IR subsets and normalizes features for clustering.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Splits BPM data into arc and IR subsets and normalises features for clustering.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bpm_tfs_data: concatenated BPM data from all input files.</span>
@@ -454,7 +455,7 @@
 <span class="sd">        accelerator: accelerator instance providing the element types mask.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A tuple of (arc_bpm_data, ir_bpm_data) with normalized features.</span>
+<span class="sd">        A tuple of (arc_bpm_data, ir_bpm_data) with normalised features.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">arc_bpm_mask</span> <span class="o">=</span> <span class="n">accelerator</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;arc_bpm&quot;</span><span class="p">])</span>
     <span class="n">ir_bpm_data_for_clustering</span> <span class="o">=</span> <span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">~</span><span class="n">arc_bpm_mask</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -467,7 +468,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_parameter</span><span class="p">(</span><span class="n">column_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rescales a Series to the [0, 1] range via min-max normalization.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rescales a Series to the [0, 1] range via min-max normalisation.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">column_data</span> <span class="o">-</span> <span class="n">column_data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">column_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">column_data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 
 

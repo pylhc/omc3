@@ -291,7 +291,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_element_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">init_from_element_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize from the string representation for elements</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialise from the string representation for elements</span>
 <span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
         <span class="n">segment</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">element_name</span><span class="p">)</span>
         <span class="n">segment</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">element_name</span>
@@ -302,7 +302,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_segment_definition">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">init_from_segment_definition</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize from the string representation for segments</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialise from the string representation for segments</span>
 <span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">segment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span></div>
 
@@ -311,7 +311,7 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_input">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">init_from_input</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize from the string representation for segments or elements</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialise from the string representation for segments or elements</span>
 <span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">init_from_segment_definition</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span>

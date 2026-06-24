@@ -290,7 +290,7 @@
     <span class="n">zero_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">_values_in_range</span><span class="p">(</span><span class="n">_find_range_with_element</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">closest_to_zero</span><span class="p">),</span> <span class="n">dpps</span><span class="p">))</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dp/p closest to zero is </span><span class="si">{</span><span class="n">dpps</span><span class="p">[</span><span class="n">closest_to_zero</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="c1"># We re-center the dp/p values so the bin closest to 0 becomes 0, but the &#39;zero_offset&#39;</span>
+    <span class="c1"># We re-centre the dp/p values so the bin closest to 0 becomes 0, but the &#39;zero_offset&#39;</span>
     <span class="c1"># is the actual mean dp/p of that &quot;on-momentum&quot; bin. Warning below is emitted when</span>
     <span class="c1"># &#39;zero_offset&#39; is large, which mean that even the &quot;on-momentum&quot; were taken with</span>
     <span class="c1"># significant momentum deviation from the design closed orbit (aka when we do off-momentum</span>

@@ -351,7 +351,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
-            <span class="c1"># summarize</span>
+            <span class="c1"># summarise</span>
             <span class="n">time_used</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
             <span class="n">log_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exiting Debug-Mode </span><span class="si">{</span><span class="n">log_id</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">time_used</span><span class="si">:</span><span class="s2">f</span><span class="si">}</span><span class="s2">s.&quot;</span><span class="p">)</span>
@@ -542,8 +542,8 @@
 <span class="sd">        level_root: main logging level, defaults to ``DEBUG``.</span>
 <span class="sd">        level_console: console logging level, defaults to ``INFO``.</span>
 <span class="sd">        fmt: Format of the logging. For default see ``BASIC_FORMAT``.</span>
-<span class="sd">        color: If `None` colors are used if tty is detected.</span>
-<span class="sd">              `False` will never use colors and `True` will always enforce them.</span>
+<span class="sd">        color: If `None` colours are used if tty is detected.</span>
+<span class="sd">              `False` will never use colours and `True` will always enforce them.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Logger instance.</span>
@@ -694,7 +694,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_maybe_bring_color</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="n">colorlevel</span><span class="o">=</span><span class="n">INFO</span><span class="p">,</span> <span class="n">color_flag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds color to the logs (can only be used in a terminal).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds colour to the logs (can only be used in a terminal).&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">color_flag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">color_flag</span> <span class="o">=</span> <span class="n">_isatty</span><span class="p">()</span>
 
@@ -725,7 +725,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_isatty</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if stdout is a tty, which means it should support color-codes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if stdout is a tty, which means it should support colour-codes.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="s1">&#39;isatty&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">()</span>
 </pre></div>
 

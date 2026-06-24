@@ -406,7 +406,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_closed_orbit_analysis</span><span class="p">(</span>
     <span class="n">bpm_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">bpm_res</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-    <span class="c1"># Initialize the linear frame DataFrame with BPM names and positions</span>
+    <span class="c1"># Initialise the linear frame DataFrame with BPM names and positions</span>
     <span class="n">lin_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
         <span class="n">index</span><span class="o">=</span><span class="n">bpm_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
         <span class="n">data</span><span class="o">=</span><span class="p">{</span>

@@ -306,7 +306,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        text (str): Text to use as a marker.</span>
-<span class="sd">        center (bool): Center the path around the origin (otherwise bottom left is anchor).</span>
+<span class="sd">        center (bool): Centre the path around the origin (otherwise bottom left is anchor).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Array of the path vertices.</span>
@@ -314,7 +314,7 @@
     <span class="n">path</span> <span class="o">=</span> <span class="n">MarkerStyle</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;$\mathrm</span><span class="se">{{</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="se">}}</span><span class="s2">$&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_path</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
-        <span class="c1"># center path: remove any offsets (extend.min) and move to center (-size[0]/2)</span>
+        <span class="c1"># centre path: remove any offsets (extend.min) and move to centre (-size[0]/2)</span>
         <span class="n">extend</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">get_extents</span><span class="p">()</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">mtrans</span><span class="o">.</span><span class="n">Affine2D</span><span class="p">()</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
             <span class="o">-</span><span class="n">extend</span><span class="o">.</span><span class="n">min</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">extend</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">extend</span><span class="o">.</span><span class="n">min</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">extend</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>

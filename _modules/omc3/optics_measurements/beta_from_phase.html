@@ -404,8 +404,8 @@
 <span class="sd">    of `range_of_bpms` BPMs centred on each probed BPM. Please refer to theory at</span>
 <span class="sd">    https://cds.cern.ch/record/2307554.</span>
 
-<span class="sd">    For each probed BPM i, a total of m = range_of_bpms // 2 neighbors are selected on</span>
-<span class="sd">    each side. Every valid pair (j, k) within those neighbors contributes to form a BPM</span>
+<span class="sd">    For each probed BPM i, a total of m = range_of_bpms // 2 neighbours are selected on</span>
+<span class="sd">    each side. Every valid pair (j, k) within those neighbours contributes to form a BPM</span>
 <span class="sd">    triplet (i, j, k) from which βi and ⍺i are estimated individually via the function</span>
 <span class="sd">    ``calculate_beta_alpha_from_single_combination``. The estimates of all combinations</span>
 <span class="sd">    are combined with covariant weighting using the analytical covariance matrix:</span>
@@ -462,7 +462,7 @@
     <span class="c1"># [beta, betaerr, alfa, alfaerr] for each probed BPM</span>
     <span class="n">betas_alfas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">MEASUREMENT</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="mi">4</span><span class="p">))</span>
 
-    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_bpms</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># half window: probed BPM has m neighbors on each side</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_bpms</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># half window: probed BPM has m neighbours on each side</span>
     <span class="n">loc_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># relative indices [-m, ..., 0, ..., m] 0 is the probed BPM</span>
 
     <span class="c1"># Phase advances are stored in units of 2π, convert to radians for cotangent calculations</span>
@@ -477,7 +477,7 @@
         <span class="n">indx_el_last</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">bk_model</span><span class="o">.</span><span class="n">index</span><span class="p">[(</span><span class="n">indx</span> <span class="o">+</span> <span class="n">m</span><span class="p">)</span> <span class="o">%</span> <span class="n">nbpms</span><span class="p">])</span>
         <span class="n">mu_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE_ADV</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="c1"># We build a sliding window of (2m+1) BPMs centered on the probed one.</span>
+        <span class="c1"># We build a sliding window of (2m+1) BPMs centred on the probed one.</span>
         <span class="c1"># For BPMs near the start/end of the ring the window wraps around. The</span>
         <span class="c1"># tune shift (Q·2π) is subtracted / added to keep phases monotonically</span>
         <span class="c1"># increasing across the wrap boundary</span>
@@ -770,7 +770,7 @@
 <span class="sd">        Jacobian rows for this combination, to be stacked into the complete Jacobian</span>
 <span class="sd">        matrices T_β and T_α inside of ``n_bpm_method``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">range_of_bpms</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># half window: probed BPM has m neighbors on each side</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">range_of_bpms</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># half window: probed BPM has m neighbours on each side</span>
     <span class="n">ix</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># index of BPM i</span>
     <span class="n">iy</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># index of BPM y</span>
     <span class="n">dif_cot_model</span> <span class="o">=</span> <span class="n">cot_model</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">-</span> <span class="n">cot_model</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span>
@@ -914,7 +914,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mat_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">RCOND</span><span class="p">)</span>  <span class="c1"># V⁻¹, pseudo-inverse for numerical stability</span>
     <span class="n">wb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mat_inv</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>                <span class="c1"># g̃_i = Σ_k V⁻¹_{ik}: unnormalized BLUE weights (row sums)</span>
-    <span class="n">mat_inv_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wb</span><span class="p">)</span>                    <span class="c1"># Σ_{j,k} V⁻¹_{jk}: normalization constant</span>
+    <span class="n">mat_inv_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wb</span><span class="p">)</span>                    <span class="c1"># Σ_{j,k} V⁻¹_{jk}: normalisation constant</span>
 
     <span class="k">if</span> <span class="n">mat_inv_sum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Covariance weighting failed: the covariance matrix is degenerate&quot;</span><span class="p">)</span>

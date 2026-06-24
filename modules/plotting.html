@@ -255,7 +255,7 @@
 </li>
 <li><a class="reference internal" href="#module-omc3.plotting.utils.annotations">Common Plot Functionality</a><ul>
 <li><a class="reference internal" href="#plotting-utilities-annotations">Plotting Utilities: Annotations</a></li>
-<li><a class="reference internal" href="#plotting-utilities-colors">Plotting Utilities: Colors</a></li>
+<li><a class="reference internal" href="#plotting-utilities-colours">Plotting Utilities: Colours</a></li>
 <li><a class="reference internal" href="#plotting-utilities-lines">Plotting Utilities: Lines</a></li>
 <li><a class="reference internal" href="#plotting-utilities-style">Plotting Utilities: Style</a></li>
 <li><a class="reference internal" href="#plot-window">Plot Window</a></li>
@@ -450,7 +450,7 @@ try-excepts.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.spectrum.utils.get_cycled_color">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.spectrum.utils.</span></span><span class="sig-name descname"><span class="pre">get_cycled_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/spectrum/utils.html#get_cycled_color"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.spectrum.utils.get_cycled_color" title="Link to this definition"></a></dt>
-<dd><p>Get the color at (wrapped) idx in the color cycle. The CN-Method only works until ‘C9’.</p>
+<dd><p>Get the colour at (wrapped) idx in the colour cycle. The CN-Method only works until ‘C9’.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -721,15 +721,15 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 i.e. the entries are row-first instead of column-first.</p>
 </dd></dl>
 
-<section id="plotting-utilities-colors">
-<span id="module-omc3.plotting.utils.colors"></span><h3>Plotting Utilities: Colors<a class="headerlink" href="#plotting-utilities-colors" title="Link to this heading"></a></h3>
-<p>Helper functions to handle colors in plots.</p>
+<section id="plotting-utilities-colours">
+<span id="module-omc3.plotting.utils.colors"></span><h3>Plotting Utilities: Colours<a class="headerlink" href="#plotting-utilities-colours" title="Link to this heading"></a></h3>
+<p>Helper functions to handle colours in plots.</p>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.utils.colors.change_color_brightness">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.colors.</span></span><span class="sig-name descname"><span class="pre">change_color_brightness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/colors.html#change_color_brightness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.utils.colors.change_color_brightness" title="Link to this definition"></a></dt>
-<dd><p>Lightens the given color by multiplying (1-luminosity) by the given amount. Input can be
-<code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> color string, hex string, or RGB tuple. An amount of 1 equals to no change. 0
+<dd><p>Lightens the given colour by multiplying (1-luminosity) by the given amount. Input can be
+<code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> colour string, hex string, or RGB tuple. An amount of 1 equals to no change. 0
 is very bright (white) and 2 is very dark. Original code by Ian Hincks
 Source: <a class="reference external" href="https://stackoverflow.com/questions/37765197/darken-or-lighten-a-color-in-matplotlib">https://stackoverflow.com/questions/37765197/darken-or-lighten-a-color-in-matplotlib</a></p>
 </dd></dl>
@@ -750,7 +750,7 @@ Loop through bars (ebar[1]) and caps (ebar[2]) and set the alpha value.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.plotting.utils.colors.get_mpl_color">
 <span class="sig-prename descclassname"><span class="pre">omc3.plotting.utils.colors.</span></span><span class="sig-name descname"><span class="pre">get_mpl_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/omc3/plotting/utils/colors.html#get_mpl_color"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.plotting.utils.colors.get_mpl_color" title="Link to this definition"></a></dt>
-<dd><p>Gets the ‘new’ default <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> colors by index, or the whole cycle.</p>
+<dd><p>Gets the ‘new’ default <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> colours by index, or the whole cycle.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -827,7 +827,7 @@ including the options of setting <cite>markerfacecolor</cite> and <cite>markered
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<em>str</em>) -- Text to use as a marker.</p></li>
-<li><p><strong>center</strong> (<em>bool</em>) -- Center the path around the origin (otherwise bottom left is anchor).</p></li>
+<li><p><strong>center</strong> (<em>bool</em>) -- Centre the path around the origin (otherwise bottom left is anchor).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -870,7 +870,7 @@ either PySide(2 or 6) or PyQt(5 or 6), depending on which it installed on the sy
 As the <cite>qtpy</cite> library is optional, there are some checks to make sure
 the imports do not fail, but then the classes cannot be used.
 To check if QtPy is installed, either run <code class="xref py py-meth docutils literal notranslate"><span class="pre">omc3.plotting.plot_window.is_qtpy_installed()</span></code>
-or try to initialize one of the windows, which will fail with a TypeError,
+or try to initialise one of the windows, which will fail with a TypeError,
 as they want to call QApplication which is set to <cite>None</cite>.</p>
 <p>An exception to all of this is  <code class="xref py py-meth docutils literal notranslate"><span class="pre">omc3.plotting.plot_window.create_pyplot_window_from_fig()</span></code>,
 which allows to create a <cite>pyplot</cite> handled window from an already existing figure.

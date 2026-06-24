@@ -312,7 +312,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_color_norm</span><span class="p">(</span><span class="n">minmax</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">common</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the color-norm calculated from the min and max values. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Returns the colour-norm calculated from the min and max values. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">common</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">(</span><span class="o">*</span><span class="n">minmax</span><span class="p">[</span><span class="n">plane</span><span class="p">])</span>
 
@@ -321,7 +321,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_plot_color_mesh</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">amps</span><span class="p">,</span> <span class="n">idx_data</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Plots the frequencies as a mesh, with amplitudes as colors. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Plots the frequencies as a mesh, with amplitudes as colours. &quot;&quot;&quot;</span>
     <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
     <span class="n">amps</span> <span class="o">=</span> <span class="n">amps</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">freqs</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 
@@ -332,12 +332,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_plot_vlines</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">amps</span><span class="p">,</span> <span class="n">idx_data</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">line_width</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Plots the frequencies as vertical lines, with amplitudes as colors. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Plots the frequencies as vertical lines, with amplitudes as colours. &quot;&quot;&quot;</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">idx_data</span> <span class="o">-</span> <span class="mf">.5</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">idx_data</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">,</span>
                       <span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
                       <span class="n">linewidths</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">3</span><span class="p">,</span>
                       <span class="p">)</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">amps</span><span class="p">)</span>  <span class="c1"># sets the colors of the segments</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">amps</span><span class="p">)</span>  <span class="c1"># sets the colours of the segments</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_format_axes</span><span class="p">(</span><span class="n">fig_cont</span><span class="p">,</span> <span class="n">limits</span><span class="p">,</span> <span class="n">ncol</span><span class="p">):</span>

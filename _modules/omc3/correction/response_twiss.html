@@ -251,7 +251,7 @@
 
 
 <span class="sd">The calculation is based on formulas in [#FranchiAnalyticformulasrapid2017]_, [#TomasReviewlinearoptics2017]_</span>
-<span class="sd">and is summarized in [#DillyUpdatedGlobalOpticsCorrection2018]_, where the following</span>
+<span class="sd">and is summarised in [#DillyUpdatedGlobalOpticsCorrection2018]_, where the following</span>
 <span class="sd">equations can be found in Eq. 10 - Eq. 15.</span>
 
 
@@ -276,7 +276,7 @@
 <span class="sd">    \frac{cos(\tau_{y,mj})}{sin(\pi Q_y)}</span>
 
 
-<span class="sd">* Norm. Dispersion Response: similar as above but with :math:`\frac{1}{\sqrt{\beta}}` linearized</span>
+<span class="sd">* Norm. Dispersion Response: similar as above but with :math:`\frac{1}{\sqrt{\beta}}` linearised</span>
 
 <span class="sd">.. math::</span>
 
@@ -423,8 +423,8 @@
         <span class="n">variable_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">varmap_or_path</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">at_elements</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bpms&quot;</span><span class="p">):</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing TwissResponse.&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time initializing TwissResponse: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialising TwissResponse.&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time initialising TwissResponse: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="c1"># Get input</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_model_twiss</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_beam_sign</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">accel_inst</span><span class="p">,</span> <span class="s2">&quot;beam&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
@@ -604,7 +604,7 @@
         <span class="k">return</span> <span class="n">dbeta</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_calc_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta normalised dispersion.&quot;&quot;&quot;</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Dispersion Response Matrix&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
@@ -656,8 +656,8 @@
         <span class="k">return</span> <span class="n">disp_resp</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_calc_norm_dispersion_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta normalized dispersion.&quot;&quot;&quot;</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Normalized Dispersion Response Matrix&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response Matrix for delta normalised dispersion.&quot;&quot;&quot;</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculate Normalised Dispersion Response Matrix&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Time needed: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)):</span>
             <span class="n">tw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twiss</span>
             <span class="n">adv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advances</span>
@@ -720,7 +720,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s2">&quot;  No &#39;</span><span class="si">{</span><span class="n">el_type</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39; variables found. &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;Normalized Dispersion Response &#39;</span><span class="si">{</span><span class="n">out_str</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39; will be empty.&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Normalised Dispersion Response &#39;</span><span class="si">{</span><span class="n">out_str</span><span class="si">:</span><span class="s2">s</span><span class="si">}</span><span class="s2">&#39; will be empty.&quot;</span>
                         <span class="p">)</span>
                         <span class="n">disp_resp</span><span class="p">[</span><span class="n">out_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">el_out</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">disp_resp</span>
@@ -843,7 +843,7 @@
         <span class="k">return</span> <span class="n">dtune</span>
 
     <span class="c1">################################</span>
-    <span class="c1">#       Normalizing</span>
+    <span class="c1">#       Normalising</span>
     <span class="c1">################################</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_beta_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
@@ -933,7 +933,7 @@
 <div class="viewcode-block" id="TwissResponse.get_norm_dispersion">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.response_twiss.TwissResponse.get_norm_dispersion">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_norm_dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for Normalized Dispersion &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns Response Matrix for Normalised Dispersion &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_norm_dispersion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_norm_dispersion_response</span><span class="p">()</span>
 
