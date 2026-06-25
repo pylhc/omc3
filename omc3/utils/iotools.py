@@ -176,7 +176,7 @@ def strip_quotes(value: Any) -> Any:
 
     """
     if isinstance(value, str):
-        value = value.strip("'\"")  # behavior like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
+        value = value.strip("'\"")  # behaviour like dict-parser, IMPORTANT FOR EVERY STRING-FAKER
     return value
 
 

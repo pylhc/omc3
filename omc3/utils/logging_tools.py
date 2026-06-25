@@ -102,7 +102,7 @@ class DebugMode:
 
     def __exit__(self, *args, **kwargs):
         if self.active:
-            # summarize
+            # summarise
             time_used = time.time() - self.start_time
             log_id = "" if self.log_file is None else f"'{Path(self.log_file).name}'"
             self.logger.debug(f"Exiting Debug-Mode {log_id:s} after {time_used:f}s.")
@@ -263,8 +263,8 @@ def get_logger(name, level_root=DEBUG, level_console=None, fmt=BASIC_FORMAT, col
         level_root: main logging level, defaults to ``DEBUG``.
         level_console: console logging level, defaults to ``INFO``.
         fmt: Format of the logging. For default see ``BASIC_FORMAT``.
-        color: If `None` colors are used if tty is detected.
-              `False` will never use colors and `True` will always enforce them.
+        color: If `None` colours are used if tty is detected.
+              `False` will never use colours and `True` will always enforce them.
 
     Returns:
         Logger instance.
@@ -396,7 +396,7 @@ def _get_caller_logger_name():
 
 
 def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
-    """Adds color to the logs (can only be used in a terminal)."""
+    """Adds colour to the logs (can only be used in a terminal)."""
     if color_flag is None:
         color_flag = _isatty()
 
@@ -427,5 +427,5 @@ def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):
 
 
 def _isatty():
-    """Checks if stdout is a tty, which means it should support color-codes."""
+    """Checks if stdout is a tty, which means it should support colour-codes."""
     return hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()

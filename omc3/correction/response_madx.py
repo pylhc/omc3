@@ -247,7 +247,7 @@ def _create_fullresponse_from_dict(
     resp = resp.transpose(2, 1, 0)
     model_index = list(keys).index("0")
 
-    # Create normalized dispersion and dividing BET by nominal model
+    # Create normalised dispersion and dividing BET by nominal model
     normalised_dispersion_x = np.divide(
         resp[columns.index(f"{DISPERSION}X")], np.sqrt(resp[columns.index(f"{BETA}X")])
     )

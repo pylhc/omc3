@@ -267,7 +267,7 @@ def effective_sample_size(data, weights, axis=None):
     the minimum value returned is 2 to avoid non-reasonable error blow-up.
 
     It is calculated via Kish's approximate formula
-    from the (not necessarily normalized) weights :math:`w_i` (see wikipedia):
+    from the (not necessarily normalised) weights :math:`w_i` (see wikipedia):
 
     .. math::
 

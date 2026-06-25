@@ -10,7 +10,7 @@ Provides a class to get response matrices from Twiss parameters.
 
 
 The calculation is based on formulas in [#FranchiAnalyticformulasrapid2017]_, [#TomasReviewlinearoptics2017]_
-and is summarized in [#DillyUpdatedGlobalOpticsCorrection2018]_, where the following
+and is summarised in [#DillyUpdatedGlobalOpticsCorrection2018]_, where the following
 equations can be found in Eq. 10 - Eq. 15.
 
 
@@ -35,7 +35,7 @@ equations can be found in Eq. 10 - Eq. 15.
     \frac{cos(\tau_{y,mj})}{sin(\pi Q_y)}
 
 
-* Norm. Dispersion Response: similar as above but with :math:`\frac{1}{\sqrt{\beta}}` linearized
+* Norm. Dispersion Response: similar as above but with :math:`\frac{1}{\sqrt{\beta}}` linearised
 
 .. math::
 
@@ -180,8 +180,8 @@ class TwissResponse:
         variable_categories: Sequence[str],
         varmap_or_path: dict | Path | str,
         at_elements: str = "bpms"):
-        LOG.debug("Initializing TwissResponse.")
-        with timeit(lambda t: LOG.debug(f"  Time initializing TwissResponse: {t} s")):
+        LOG.debug("Initialising TwissResponse.")
+        with timeit(lambda t: LOG.debug(f"  Time initialising TwissResponse: {t} s")):
             # Get input
             self._twiss = self._get_model_twiss(accel_inst)
             self._beam_sign = 1 if getattr(accel_inst, "beam", 1) == 1 else -1
@@ -361,7 +361,7 @@ class TwissResponse:
         return dbeta
 
     def _calc_dispersion_response(self):
-        """Response Matrix for delta normalized dispersion."""
+        """Response Matrix for delta normalised dispersion."""
         LOG.debug("Calculate Dispersion Response Matrix")
         with timeit(lambda t: LOG.debug(f"  Time needed: {t} s")):
             tw = self._twiss
@@ -413,8 +413,8 @@ class TwissResponse:
         return disp_resp
 
     def _calc_norm_dispersion_response(self):
-        """Response Matrix for delta normalized dispersion."""
-        LOG.debug("Calculate Normalized Dispersion Response Matrix")
+        """Response Matrix for delta normalised dispersion."""
+        LOG.debug("Calculate Normalised Dispersion Response Matrix")
         with timeit(lambda t: LOG.debug(f"  Time needed: {t} s")):
             tw = self._twiss
             adv = self._phase_advances
@@ -477,7 +477,7 @@ class TwissResponse:
                     else:
                         LOG.debug(
                             f"  No '{el_type:s}' variables found. "
-                            f"Normalized Dispersion Response '{out_str:s}' will be empty."
+                            f"Normalised Dispersion Response '{out_str:s}' will be empty."
                         )
                         disp_resp[out_str] = pd.DataFrame(None, index=el_out)
         return disp_resp
@@ -600,7 +600,7 @@ class TwissResponse:
         return dtune
 
     ################################
-    #       Normalizing
+    #       Normalising
     ################################
 
     def _normalize_beta_response(self, beta):
@@ -682,7 +682,7 @@ class TwissResponse:
         return self._dispersion_mapped if mapped else self._dispersion
 
     def get_norm_dispersion(self, mapped=True):
-        """ Returns Response Matrix for Normalized Dispersion """
+        """ Returns Response Matrix for Normalised Dispersion """
         if not self._norm_dispersion:
             self._norm_dispersion = self._calc_norm_dispersion_response()
 

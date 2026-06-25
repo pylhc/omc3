@@ -149,7 +149,7 @@ def _get_interpolated_moving_average(data_series: pd.Series, clean_mask: pd.Seri
         data = data.interpolate("index").bfill().ffill()
     except TypeError as e:
         raise TypeError("Interpolation failed. "
-                        "Usually due to a dtype format that is not properly recognized.") from e
+                        "Usually due to a dtype format that is not properly recognised.") from e
 
     shift = -int((length-1)/2)  # Shift average to middle value
 

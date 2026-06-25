@@ -1,8 +1,8 @@
 """
-Plotting Utilities: Colors
---------------------------
+Plotting Utilities: Colours
+---------------------------
 
-Helper functions to handle colors in plots.
+Helper functions to handle colours in plots.
 """
 from __future__ import annotations
 
@@ -13,18 +13,18 @@ import matplotlib as mpl
 
 
 def get_mpl_color(idx=None):
-    """Gets the 'new' default ``matplotlib`` colors by index, or the whole cycle."""
+    """Gets the 'new' default ``matplotlib`` colours by index, or the whole cycle."""
     c = [
-        '#1f77b4',  # muted blue
-        '#ff7f0e',  # safety orange
-        '#2ca02c',  # cooked asparagus green
-        '#d62728',  # brick red
-        '#9467bd',  # muted purple
-        '#8c564b',  # chestnut brown
-        '#e377c2',  # raspberry yogurt pink
-        '#7f7f7f',  # middle gray
-        '#bcbd22',  # curry yellow-green
-        '#17becf',  # blue-teal
+        "#1f77b4",  # muted blue
+        "#ff7f0e",  # safety orange
+        "#2ca02c",  # cooked asparagus green
+        "#d62728",  # brick red
+        "#9467bd",  # muted purple
+        "#8c564b",  # chestnut brown
+        "#e377c2",  # raspberry yogurt pink
+        "#7f7f7f",  # middle gray
+        "#bcbd22",  # curry yellow-green
+        "#17becf",  # blue-teal
     ]
     if idx is None:
         return cycle(c)
@@ -43,8 +43,8 @@ def rgb_plotly_to_mpl(rgb_string):
 
 def change_color_brightness(color, amount=0.5):
     """
-    Lightens the given color by multiplying (1-luminosity) by the given amount. Input can be
-    ``matplotlib`` color string, hex string, or RGB tuple. An amount of 1 equals to no change. 0
+    Lightens the given colour by multiplying (1-luminosity) by the given amount. Input can be
+    ``matplotlib`` colour string, hex string, or RGB tuple. An amount of 1 equals to no change. 0
     is very bright (white) and 2 is very dark. Original code by Ian Hincks
     Source: https://stackoverflow.com/questions/37765197/darken-or-lighten-a-color-in-matplotlib
     """

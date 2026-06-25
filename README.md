@@ -7,7 +7,7 @@
 
 This is the python-tool package of the Optics Measurements and Corrections team (OMC) at CERN.
 
-Most of the codes are generic and not limited to CERN accelerators, and the package can easily be used for your favorite circular accelerator.
+Most of the codes are generic and not limited to CERN accelerators, and the package can easily be used for your favourite circular accelerator.
 To see how to adapt this for your machine, see our [documentation](https://pylhc.github.io/omc3/), `Model` section.
 To contribute, see [our guidelines](https://pylhc.github.io/packages/development/contributing/) on the OMC website.
 
@@ -77,7 +77,7 @@ Other general utility scripts are in [`/omc3/scripts`](omc3/scripts):
 - `kmod_average.py` to calculate the average of multiple K-modulation measurements.
 - `kmod_import.py` to import a K-modulation measurement into an optics-measurement directory.
 - `kmod_lumi_imbalace.py` to calculate the luminosity imbalance between two IPs from averaged K-modulation files.
-- `bad_bpms_summary.py` to collect and summarize the bad BPMs from GUI runs.
+- `bad_bpms_summary.py` to collect and summarise the bad BPMs from GUI runs.
 - `resync_bpms.py` to perform re-synchronisation of SuperKEKB BPMs data after a first optics analysis.
 
 Example use for these scripts can be found in the [`tests`](tests) files.

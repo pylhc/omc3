@@ -85,11 +85,11 @@ def _get_help_str(name: str, parameters: dict) -> str:
 # ---- formatting ----------------------------------------------------------------------------------
 def _fmt_name(name) -> str:
     return name
-    # # if color terminal:
+    # # if colour terminal:
     # return f"\33[1m{name}\33[22m"
 
 
 def _fmt_type(name) -> str:
     return name
-    # # if color terminal:
+    # # if colour terminal:
     # return f"\33[33m{name}\33[0m"

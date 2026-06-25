@@ -46,7 +46,7 @@ class Segment:
 
     @classmethod
     def init_from_element_name(cls, element_name: str):
-        """ Initialize from the string representation for elements
+        """ Initialise from the string representation for elements
         as used in inputs."""
         segment = cls(element_name, element_name, element_name)
         segment.element = element_name
@@ -54,13 +54,13 @@ class Segment:
 
     @classmethod
     def init_from_segment_definition(cls, segment: str):
-        """ Initialize from the string representation for segments
+        """ Initialise from the string representation for segments
         as used in inputs."""
         return cls(*segment.split(","))
 
     @classmethod
     def init_from_input(cls, input_str: str):
-        """ Initialize from the string representation for segments or elements
+        """ Initialise from the string representation for segments or elements
         as used in inputs."""
         try:
             return cls.init_from_segment_definition(input_str)

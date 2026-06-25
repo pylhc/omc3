@@ -260,11 +260,11 @@ def _get_signed_dispersion(input_files: InputFiles, df_orbit: pd.DataFrame, scal
 def _get_output_columns(plane: str, df: pd.DataFrame) -> list[str]:
     cols = ([S, "COUNT", f"MU{plane}MDL"] +           # common columns
             _single_column_set_list(plane) +            # orbit columns
-            _single_column_set_list(f"ND{plane}") +     # normalized dispersion columns
+            _single_column_set_list(f"ND{plane}") +     # normalised dispersion columns
             _single_column_set_list(f"D{plane}") +      # dispersion columns
             [f"DP{plane}", f"DP{plane}{MDL}"] +         # more dispersion columns
             _single_column_set_list(f"D2{plane}") +     # second order dispersion columns
-            _single_column_set_list(f"ND2{plane}"))     # second order normalized dispersion columns
+            _single_column_set_list(f"ND2{plane}"))     # second order normalised dispersion columns
     return [col for col in cols if col in df.columns]
 
 
