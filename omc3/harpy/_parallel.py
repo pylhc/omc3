@@ -113,8 +113,8 @@ def estimate_peak_rss_bytes_per_bunch(harpy_input: DotDict, n_bpms: int) -> int:
     via `np.dot(u, s_vt_freq[:, mask])`, plus its `np.abs` copy).
 
     Its width is the number of selected frequency lines: the full `2 ** turn_bits`
-    when `full_spectra` are written (default in the CCC) or cleaning is disabled
-    (all-ones mask), and a negligible narrow band otherwise.
+    when `full_spectra` are written (default from the BB GUI in the CCC) or cleaning
+    is disabled (all-ones mask), and a negligible narrow band otherwise.
 
     It scales with ``turn_bits`` and ``n_bpms``, not with the number of turns (the
     SVD reduces to ``sing_val`` rows before the zero-padded FFT).
