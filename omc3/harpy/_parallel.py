@@ -68,7 +68,7 @@ def usable_cores() -> int:
         return os.process_cpu_count() or 1
 
     try:
-        return len(os.sched_getaffinity(0))  # Linux only, honours affinity
+        return len(os.sched_getaffinity(0))  # Linux only, honours affinity |  # ty:ignore[unresolved-attribute]
     except AttributeError:  # macOS / Windows: no sched_getaffinity
         pass
 
