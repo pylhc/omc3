@@ -7,7 +7,10 @@ import pytest
 import tfs
 import turn_by_turn as tbt
 from generic_parser import DotDict
+from pandas.testing import assert_frame_equal
+from tfs.testing import assert_tfs_frame_equal
 
+from omc3.harpy import _parallel
 from omc3.hole_in_one import _add_suffix_and_iter_bunches, hole_in_one_entrypoint
 from tests.accuracy.test_harpy import _get_model_dataframe
 
@@ -15,7 +18,7 @@ from tests.accuracy.test_harpy import _get_model_dataframe
 @pytest.mark.basic
 @pytest.mark.parametrize("suffix", ("_my_suffix", None))
 def test_input_suffix_and_single_bunch(suffix):
-    """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
+    """Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffix is attached to single-bunch files."""
     input_name = "input_file.sdds"
     options = DotDict(
@@ -42,7 +45,7 @@ def test_input_suffix_and_single_bunch(suffix):
 @pytest.mark.parametrize("suffix", ("_my_suffix", None))
 @pytest.mark.parametrize("bunches", (None, (1, 15)))
 def test_input_suffix_and_multibunch(suffix, bunches):
-    """ Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
+    """Tests the function :func:`omc3.hole_in_one._add_suffix_and_loop_over_bunches`
     by checking that the suffixes are attached to multi-bunch files and they are
     split up into single-bunch files correctly."""
     input_name = "input_file.sdds"
@@ -57,8 +60,10 @@ def test_input_suffix_and_multibunch(suffix, bunches):
     )
     n_data = 0
     bunch_ids = bunches or tbt_data.bunch_ids
-    matrices =  [tbt_data.matrices[tbt_data.bunch_ids.index(id_)] for id_ in bunch_ids]
-    for (data, filename_with_suffix), bunch_id, matrix in zip(_add_suffix_and_iter_bunches(tbt_data, options, input_name), bunch_ids, matrices):
+    matrices = [tbt_data.matrices[tbt_data.bunch_ids.index(id_)] for id_ in bunch_ids]
+    for (data, filename_with_suffix), bunch_id, matrix in zip(
+        _add_suffix_and_iter_bunches(tbt_data, options, input_name), bunch_ids, matrices
+    ):
         bunch_str = f"_bunchID{bunch_id}"
         suffix_str = suffix or ""
         assert filename_with_suffix == f"{input_name}{bunch_str}{suffix_str}"
@@ -78,7 +83,7 @@ def test_input_suffix_and_multibunch(suffix, bunches):
 @pytest.mark.parametrize("suffix", ("_my_suffix", None))
 @pytest.mark.parametrize("bunches", (None, (1, 15)))
 def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
-    """ Runs harpy and checks that the right files are created.
+    """Runs harpy and checks that the right files are created.
 
     Only with bunchID as we have enough tests in the accuracy tests,
     that implicitly check that the single-bunch files are created.
@@ -91,18 +96,19 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
     tbt.write(tbt_file, create_tbt_data(model=model, bunch_ids=all_bunches))
 
     # Run harpy ---
-    hole_in_one_entrypoint(harpy=True,
-                           clean=False,
-                           autotunes="transverse",
-                           outputdir=str(tmp_path),
-                           files=[tbt_file],
-                           to_write=["lin", "spectra"],
-                           turn_bits=4,  # make it fast
-                           output_bits=4,
-                           unit="m",
-                           suffix=suffix,
-                           bunch_ids=None if bunches is None else list(bunches),
-                           )
+    hole_in_one_entrypoint(
+        harpy=True,
+        clean=False,
+        autotunes="transverse",
+        outputdir=str(tmp_path),
+        files=[tbt_file],
+        to_write=["lin", "spectra"],
+        turn_bits=4,  # make it fast
+        output_bits=4,
+        unit="m",
+        suffix=suffix,
+        bunch_ids=None if bunches is None else list(bunches),
+    )
 
     # Check that the right files are created ---
     exts = [".lin", ".freqs", ".amps"]
@@ -118,9 +124,9 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
                     assert not file_path.is_file()
 
 
-# Helper ---
-
-def create_tbt_data(model: pd.DataFrame, bunch_ids: Sequence[int] = (0, ), n_turns: int = 10) -> tbt.TbtData:
+def create_tbt_data(
+    model: pd.DataFrame, bunch_ids: Sequence[int] = (0,), n_turns: int = 10
+) -> tbt.TbtData:
     """Create simple turn-by-turn data based on the given model.
 
     Args:
@@ -131,8 +137,12 @@ def create_tbt_data(model: pd.DataFrame, bunch_ids: Sequence[int] = (0, ), n_tur
     Returns:
         tbt.TbtData: Created TbtData
     """
+    # fmt: off
     ints = np.arange(n_turns) - n_turns / 2
     data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUX"].to_numpy()[:, None] + model.loc[:, "TUNEX"].to_numpy()[:, None] * ints[None, :]))
     data_y = model.loc[:, "AMPY"].to_numpy()[:, None] * np.cos(2 * np.pi * (model.loc[:, "MUY"].to_numpy()[:, None] + model.loc[:, "TUNEY"].to_numpy()[:, None] * ints[None, :]))
     matrix = tbt.TransverseData(X=pd.DataFrame(data=data_x, index=model.index), Y=pd.DataFrame(data=data_y, index=model.index))
-    return tbt.TbtData(matrices=[matrix] * len(bunch_ids), bunch_ids=list(bunch_ids), nturns=n_turns)
+    # fmt: on
+    return tbt.TbtData(
+        matrices=[matrix] * len(bunch_ids), bunch_ids=list(bunch_ids), nturns=n_turns
+    )
