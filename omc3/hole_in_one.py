@@ -510,6 +510,10 @@ def _harpy_entrypoint(params: list[str]) -> tuple[DotDict, list[str]]:
         raise AttributeError(
             "The magnet order for resonance lines calculation should be between 2 and 8 (inclusive)."
         )
+    if options.n_jobs < 0:
+        raise AttributeError(
+            "n_jobs must be >= 0 (0 = automatic, 1 = serial, N = N worker processes)."
+        )
     options.outputdir = Path(options.outputdir)
     return options, rest
 
