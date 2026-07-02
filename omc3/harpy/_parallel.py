@@ -42,8 +42,9 @@ SAFETY_MARGIN = 0.85  # 85% to leave room for other processes etc.
 # this value is safe (leads to fewer workers for parallelisation and no risk of bein OOM).
 _BASELINE_RSS_BYTES = int(1.5e9)  # 1.5GB peak RSS for a bunch in the lowest consuming scenario
 
-# Generous upper bound on the number of frequency lines selected by the narrow
-# (resonance-band) mask; its transient is negligible next to the baseline.
+# Generous upper bound on the number of frequency lines selected by the narrow mask.
+# Its transient is negligible next to the baseline. See comments inside of the
+# estimate_peak_rss_bytes_per_bunch function for details and how this plays a role.
 _NARROW_MASK_BINS = 1 << 14  # equivalent to 2**14
 
 # ----- System information ----- #
