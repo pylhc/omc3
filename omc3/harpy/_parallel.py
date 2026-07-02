@@ -197,7 +197,7 @@ def decide_n_workers(
 
     # Compute the number of workers / jobs to dispatch, log it and return
     n_jobs: int = max(1, min(cores_cap, n_bunches, ram_cap))
-    LOGGER.info(
+    LOGGER.debug(
         f"Parallel harpy: n_jobs={n_jobs} (cores_cap={cores_cap}, bunches={n_bunches}, "
         f"ram_cap={ram_cap_str}, peak/bunch~{peak_rss / 1e9:.1f}GB, available~{available_ram_str})"
     )
