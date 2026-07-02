@@ -52,7 +52,7 @@ _NARROW_MASK_BINS = 1 << 14  # equivalent to 2**14
 
 def usable_cores() -> int:
     """
-    Tries to return the number of cores actually available to this process.
+    Tries to return the number of logical cores actually available to this process.
 
     Prefers approaches that honour the CPU affinity mask (taskset, cgroup cpuset,
     HPC pinning, ...) so a pinned process does not oversubscribe. Tries, in order:
@@ -64,18 +64,26 @@ def usable_cores() -> int:
 
     Always returns at least 1.
     """
+    LOGGER.debug("Determining available logical CPU cores, attempting to honour CPU affinity.")
     if hasattr(os, "process_cpu_count"):  # Python 3.13+, honours affinity + PYTHON_CPU_COUNT
         return os.process_cpu_count() or 1
 
+    # fmt: off
     try:
         return len(os.sched_getaffinity(0))  # Linux only, honours affinity |  # ty:ignore[unresolved-attribute]
     except AttributeError:  # macOS / Windows: no sched_getaffinity
         pass
+    # fmt: on
 
     try:  # macOS has no affinity concept -> AttributeError
         return len(psutil.Process().cpu_affinity()) or 1  # works on Windows
     except (AttributeError, NotImplementedError, OSError):
         pass
+
+    LOGGER.debug(
+        "Defaulting to number of logical cores, with no affinity. "
+        "This can lead to overloading if the machine is shared with many other processes."
+    )
     return os.cpu_count() or 1
 
 
@@ -96,12 +104,12 @@ def available_ram_bytes() -> int | None:
 
 def estimate_peak_rss_bytes_per_bunch(harpy_input: DotDict, n_bpms: int) -> int:
     """
-    Analytic estimate of the peak resident set sizememory of a single
+    Analytic estimate of the peak resident set size memory of a single
     ``run_per_bunch`` call, in bytes. This is the number of bytes we estimate
-    one worker will peak at.
+    one worker will peak at for a given bunch.
 
     The dominant transient for this is the coefficient array built when calling
-    :func:`omc3.harpy.frequency.windowed_padded_rfft` (which runs allocates memory
+    :func:`omc3.harpy.frequency.windowed_padded_rfft` (which allocates memory
     via `np.dot(u, s_vt_freq[:, mask])`, plus its `np.abs` copy).
 
     Its width is the number of selected frequency lines: the full `2 ** turn_bits`
@@ -197,7 +205,7 @@ def decide_n_workers(
 
     # Compute the number of workers / jobs to dispatch, log it and return
     n_jobs: int = max(1, min(cores_cap, n_bunches, ram_cap))
-    LOGGER.debug(
+    LOGGER.info(
         f"Parallel harpy: n_jobs={n_jobs} (cores_cap={cores_cap}, bunches={n_bunches}, "
         f"ram_cap={ram_cap_str}, peak/bunch~{peak_rss / 1e9:.1f}GB, available~{available_ram_str})"
     )
