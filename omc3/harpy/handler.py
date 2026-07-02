@@ -193,7 +193,7 @@ def run_per_bunch(
             else {
                 "X": clean.svd_decomposition(bpm_datas["X"], harpy_input.sing_val),
                 "Y": clean.svd_decomposition(bpm_datas["Y"], harpy_input.sing_val),
-            },
+            },  # ty:ignore[invalid-argument-type]
         )
     )
 
