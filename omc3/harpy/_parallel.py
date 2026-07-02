@@ -33,9 +33,9 @@ LOGGER: Logger = logging_tools.get_logger(__name__)
 _BYTES_FLOAT64 = 8
 _BYTES_COMPLEX128 = 16
 
-# Fraction of available RAM the worker pool is allowed
-# to use, with a little bit of margin
-SAFETY_MARGIN = 0.85
+# Fraction of available RAM the worker pool is allowed to use,
+# with a little bit of margin. Could be tweaked.
+SAFETY_MARGIN = 0.85  # 85% to leave room for other processes etc.
 
 # Empirically measured floor on the optics1 server (64-core, 536 BPMs, lin-only path):
 # Python + NumPy + libraries + one bunch of data + the SVD working set. Overestimating
