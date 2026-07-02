@@ -95,6 +95,8 @@ def analyse_bunches_parallel(
         return []
 
     # Get the parameters we need here to orchestrate
+    LOGGER.info("Determining parallelisation strategy based on inputs, bunches, CPU cores and RAM.")
+    n_bunches: int = len(bunch_tasks)
     n_bpms: int = max(tbt_data.matrices[0][PLANES[0]].index.size for tbt_data, _ in bunch_tasks)
     n_jobs: int = _parallel.decide_n_workers(
         harpy_input, len(bunch_tasks), n_bpms, requested=harpy_input.n_jobs
@@ -102,11 +104,13 @@ def analyse_bunches_parallel(
 
     # If we are running sequentially (old behaviour)
     if n_jobs == 1:
+        LOGGER.info(f"Performing harmonic analysis sequentially on {n_bunches} bunches.")
         return [
             _run_per_bunch_blas_capped(tbt_data, harpy_input, name) for tbt_data, name in bunch_tasks
         ]
 
     # If we are parallelising across bunches, start a pool and dispatch futures
+    LOGGER.info(f"Starting {n_jobs} concurrent workers.")
     with ProcessPoolExecutor(max_workers=n_jobs) as pool:
         futures: list[Future[dict[str, TfsDataFrame]]] = [
             pool.submit(_run_per_bunch_blas_capped, tbt_data, harpy_input, name)
