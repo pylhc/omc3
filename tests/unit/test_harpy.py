@@ -174,7 +174,13 @@ def test_harpy_ram_clamp_forces_serial(tmp_path, monkeypatch):
 # Helper ---
 
 
-def _run_harpy_multibunch(dirpath: Path, model: pd.DataFrame, bunch_ids, n_jobs: int) -> Path:
+def _run_harpy_multibunch(
+    dirpath: Path,
+    model: pd.DataFrame,
+    bunch_ids,
+    n_jobs: int,
+    to_write: Sequence[str] = ("lin",),
+) -> Path:
     """Write a multi-bunch tbt file and run harpy on it with the given ``n_jobs``."""
     tbt_file = dirpath / "test_file.sdds"
     tbt.write(tbt_file, create_tbt_data(model=model, bunch_ids=bunch_ids, n_turns=512))
@@ -184,7 +190,7 @@ def _run_harpy_multibunch(dirpath: Path, model: pd.DataFrame, bunch_ids, n_jobs:
         autotunes="transverse",
         outputdir=str(dirpath),
         files=[tbt_file],
-        to_write=["lin"],
+        to_write=list(to_write),
         turn_bits=10,
         output_bits=8,
         unit="m",
