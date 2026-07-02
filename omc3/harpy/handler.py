@@ -139,7 +139,10 @@ def run_per_bunch(
                 order_resonances=harpy_input.resonances,
             )
         )
-        lins[plane] = lins[plane].copy()  # defragment after joins / col assignments etc from previous operations
+
+        # Defragment after joins / col assignments within find_resonances
+        lins[plane] = lins[plane].copy()
+
         lins[plane] = _add_calculated_phase_errors(lins[plane])
         lins[plane] = _sync_phase(lins[plane], plane)
         lins[plane] = _rescale_amps_to_main_line_and_compute_noise(lins[plane], plane)
@@ -248,7 +251,9 @@ def _sync_phase(lin_frame: pd.DataFrame, plane: str) -> pd.DataFrame:
     return lin_frame
 
 
-def _compute_headers(df: pd.DataFrame, date: None | date | pd.Timestamp = None) -> dict[str, str | float]:
+def _compute_headers(
+    df: pd.DataFrame, date: None | date | pd.Timestamp = None
+) -> dict[str, str | float]:
     headers = {}
     for plane in ALL_PLANES:
         for prefix in ("", "NAT"):
