@@ -39,8 +39,8 @@ SAFETY_MARGIN = 0.85
 
 # Empirically measured floor on the optics1 server (64-core, 536 BPMs, lin-only path):
 # Python + NumPy + libraries + one bunch of data + the SVD working set. Overestimating
-# is safe (fewer workers, no OOM), so this doubles as the whole footprint of the narrow-mask path.
-_BASELINE_RSS_BYTES = int(1.5e9)
+# this value is safe (leads to fewer workers for parallelisation and no risk of bein OOM).
+_BASELINE_RSS_BYTES = int(1.5e9)  # 1.5GB peak RSS for a bunch in the lowest consuming scenario
 
 # Generous upper bound on the number of frequency lines selected by the narrow
 # (resonance-band) mask; its transient is negligible next to the baseline.
