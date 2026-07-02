@@ -116,8 +116,11 @@ def estimate_peak_rss_bytes_per_bunch(harpy_input: DotDict, n_bpms: int) -> int:
     when `full_spectra` are written (default from the BB GUI in the CCC) or cleaning
     is disabled (all-ones mask), and a negligible narrow band otherwise.
 
-    It scales with ``turn_bits`` and ``n_bpms``, not with the number of turns (the
-    SVD reduces to ``sing_val`` rows before the zero-padded FFT).
+    It scales with ``turn_bits`` and ``n_bpms``, not with the number of turns in the
+    measurement, for two reasons. First, the rfft zero-pads its input to a fixed length
+    set by `2 ** (turn_bits + 1)`, so the measurement's turn count is overshadowed by the
+    padding. Second, the SVD reduces the data to ``sing_val`` rows before that FFT, so the
+    turns never enter the dominant ``(n_bpms, n_mask)`` array at all.
 
     Args:
         harpy_input (DotDict): Harpy analysis settings from which to query ``turn_bits``,
