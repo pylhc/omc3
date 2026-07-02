@@ -5,7 +5,7 @@ Handler
 This module contains high-level functions to manage the functionality of ``harpy``.
 
 Various tools are provided to handle the cleaning, frequency analysis and resonance search
-for a single-bunch `TbtData` input. Additionally, a running function exists to everything
+for a single-bunch `TbtData` input. Additionally, a running function exists to handle everything
 for a single bunch, and a high-level overseer function orchestrates the parallelisation of
 different bunches workloads across workers.
 """
@@ -68,6 +68,8 @@ def run_per_bunch(
 ) -> dict[str, tfs.TfsDataFrame]:
     """
     Cleans data, analyses frequencies and searches for resonances.
+    Potentially also writes output data to disk if requested in the
+    harpy parameters.
 
     Args:
         tbt_data: single bunch `TbtData`.
