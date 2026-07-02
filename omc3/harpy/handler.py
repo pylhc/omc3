@@ -110,7 +110,7 @@ def analyse_bunches_parallel(
         ]
 
     # If we are parallelising across bunches, start a pool and dispatch futures
-    LOGGER.info(f"Starting {n_jobs} concurrent workers.")
+    LOGGER.info(f"Dispatching {n_bunches} to {n_jobs} concurrent workers.")
     with ProcessPoolExecutor(max_workers=n_jobs) as pool:
         futures: list[Future[dict[str, TfsDataFrame]]] = [
             pool.submit(_run_per_bunch_blas_capped, tbt_data, harpy_input, name)
