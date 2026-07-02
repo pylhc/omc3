@@ -133,7 +133,7 @@ def estimate_peak_rss_bytes_per_bunch(harpy_input: DotDict, n_bpms: int) -> int:
     # Neglect the measurement array length (6600 for ACD, 40 000 for ADT) vs zero padding
     padded: int = 1 << harpy_input.turn_bits  # equivalent to 2 ** turn_bits, frequency bins
 
-    # Determine if we have the extra memory usage from full-spectra
+    # Determine if we have the extra memory usage from full-spectra / no cleaning
     full: bool = ("full_spectra" in harpy_input.to_write) or (not harpy_input.clean)
 
     # Witdh, in frequency bins, of the coefficient array dominating the memory peak,
