@@ -8,6 +8,7 @@ import tfs
 import turn_by_turn as tbt
 from generic_parser import DotDict
 from pandas.testing import assert_frame_equal
+from tfs.testing import assert_dict_equal
 
 from omc3.harpy import _parallel
 from omc3.hole_in_one import _add_suffix_and_iter_bunches, hole_in_one_entrypoint
@@ -121,6 +122,51 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
                     tfs.read(file_path)
                 else:
                     assert not file_path.is_file()
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize("n_jobs", (0, 2))
+def test_harpy_parallel_matches_serial(tmp_path, n_jobs):
+    """
+    The auto (n_jobs=0) and forced-pool (n_jobs=2) paths must produce lin files
+    identical to the serial (n_jobs=1) run: only the orchestration changes, not the maths.
+    """
+    model = _get_model_dataframe()
+    bunch_ids = [1, 5, 15]
+
+    serial_dir = tmp_path / "serial"
+    serial_dir.mkdir()
+    parallel_dir = tmp_path / "parallel"
+    parallel_dir.mkdir()
+
+    serial_file = _run_harpy_multibunch(serial_dir, model, bunch_ids, n_jobs=1)
+    parallel_file = _run_harpy_multibunch(parallel_dir, model, bunch_ids, n_jobs=n_jobs)
+
+    for bunch in bunch_ids:
+        for plane in "xy":
+            serial = tfs.read(f"{serial_file}_bunchID{bunch}.lin{plane}")
+            parallel = tfs.read(f"{parallel_file}_bunchID{bunch}.lin{plane}")
+            assert_frame_equal(serial, parallel)
+            # TIME is the (wall-clock) timestamp of each run, so exclude it; the rest
+            # of the headers (tunes, units) must match.
+            serial_headers = {k: v for k, v in serial.headers.items() if k != "TIME"}
+            parallel_headers = {k: v for k, v in parallel.headers.items() if k != "TIME"}
+            assert_dict_equal(serial_headers, parallel_headers)
+
+
+@pytest.mark.basic
+def test_harpy_ram_clamp_forces_serial(tmp_path, monkeypatch):
+    """
+    A tiny available-RAM reading must clamp the automatic pool down to a single
+    worker, and the run must still complete and produce the expected lin files.
+    """
+    monkeypatch.setattr(_parallel, "available_ram_bytes", lambda: int(1e6))  # 1 MB RAM
+    model = _get_model_dataframe()
+    bunch_ids = [1, 5, 15]
+    tbt_file = _run_harpy_multibunch(tmp_path, model, bunch_ids, n_jobs=0)
+    for bunch in bunch_ids:
+        for plane in "xy":
+            assert Path(f"{tbt_file}_bunchID{bunch}.lin{plane}").is_file()
 
 
 # Helper ---
