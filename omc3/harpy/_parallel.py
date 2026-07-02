@@ -5,12 +5,12 @@ Parallel
 Private helpers for harpy's per-bunch parallel orchestration:
 
 - Resource estimation (peak resident memory per bunch, available RAM, usable cores),
-- Worker count strategy,
-- BLAS thread-capping utilities.
+- Dispatched workers count strategy.
 
 The functions are kept free of side effects (aside from querying ``psutil`` for host RAM
 and cores) so the sizing logic can be unit-tested in isolation. The actual dispatch /
-orchestration lives in :func:`omc3.harpy.handler.analyse_bunches`.
+orchestration (and the BLAS thread-capping around it) lives in
+:func:`omc3.harpy.handler.analyse_bunches`.
 """
 
 from __future__ import annotations
@@ -19,7 +19,6 @@ import os
 from typing import TYPE_CHECKING
 
 import psutil
-from threadpoolctl import threadpool_limits
 
 from omc3.utils import logging_tools
 
@@ -142,7 +141,7 @@ def estimate_peak_rss_bytes_per_bunch(harpy_input: DotDict, n_bpms: int) -> int:
     return _BASELINE_RSS_BYTES + transient
 
 
-def decide_n_jobs(
+def decide_n_workers(
     harpy_input: DotDict,
     n_bunches: int,
     n_bpms: int,
