@@ -2,15 +2,14 @@
 Parallel
 --------
 
-Private helpers for harpy's per-bunch parallel orchestration:
+Private helper module for harpy's per-bunch parallel orchestration:
 
 - Resource estimation (peak resident memory per bunch, available RAM, usable cores),
 - Dispatched workers count strategy.
 
-The functions are kept free of side effects (aside from querying ``psutil`` for host RAM
-and cores) so the sizing logic can be unit-tested in isolation. The actual dispatch /
-orchestration (and the BLAS thread-capping around it) lives in
-:func:`omc3.harpy.handler.analyse_bunches`.
+The functions are kept free of side effects, aside from querying ``psutil`` for host RAM
+and cores. The actual dispatch / orchestration (and the BLAS thread-capping around it) lives
+in :func:`omc3.harpy.handler.analyse_bunches_parallel`.
 """
 
 from __future__ import annotations
