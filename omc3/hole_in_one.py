@@ -115,6 +115,12 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
         are processed.
 
         Flags: **--bunch_ids**
+      - **n_jobs** *(int)*: Number of worker processes for the per-bunch frequency analysis.
+        0 (default) chooses automatically: min(usable cores, number of bunches, RAM budget).
+        1 runs serially. A positive N caps the pool at N processes (still clamped to what fits in RAM).
+
+        Flags: **--n_jobs**
+        Default: ``0``
       - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'm'.
 
         Flags: **--unit**
@@ -726,6 +732,15 @@ def harpy_params() -> EntryPointParameters:
         default=HARPY_DEFAULTS["resonances"],
         help="Maximum magnet order of resonance lines to calculate.",
     )
+    params.add_parameter(
+        name="n_jobs",
+        type=int,
+        default=HARPY_DEFAULTS["n_jobs"],
+        help="Number of worker processes for the per-bunch frequency analysis. "
+        "0 (default) chooses automatically: min(usable cores, number of bunches, "
+        "RAM budget). 1 runs serially. A positive N caps the pool at N processes "
+        "(still clamped to what fits in RAM).",
+    )
     # fmt: on
     return params
 
@@ -867,6 +882,7 @@ HARPY_DEFAULTS = {
     "to_write": ["lin", "bpm_summary"],
     "tbt_datatype": "lhc",
     "resonances": 4,
+    "n_jobs": 0,
 }
 
 OPTICS_DEFAULTS = {
