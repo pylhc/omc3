@@ -384,7 +384,9 @@ def _get_suboptions(
 
 
 def _write_config_file(
-    harpy_opt: dict[str, Any], optics_opt: dict[str, Any], accelerator_opt: dict[str, Any]
+    harpy_opt: dict[str, Any] | None,
+    optics_opt: dict[str, Any] | None,
+    accelerator_opt: dict[str, Any] | None,
 ) -> None:
     """Write the parsed options into a config file for later use."""
     all_options: dict[str, Any] = {}
