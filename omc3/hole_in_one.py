@@ -423,8 +423,7 @@ def _run_harpy(harpy_options: DotDict) -> list[Path]:
                 tbt_data, harpy_options, file
             )
         ]
-        lins = handler.analyse_bunches_parallel(bunch_tasks, harpy_options)
-    return lins
+        return handler.analyse_bunches_parallel(bunch_tasks, harpy_options)
 
 
 def _parse_tbt_data(files: Iterable[Path | str | tbt.TbtData], tbt_datatype: str
