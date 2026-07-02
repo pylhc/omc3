@@ -8,17 +8,17 @@ Private helpers for harpy's per-bunch parallel orchestration:
 - Worker count strategy,
 - BLAS thread-capping utilities.
 
-The functions are kept free of side effects (aside from reading ``/proc/meminfo``) so
-the sizing logic can be unit-tested in isolation. The actual dispatch / orchestration
-lives in :func:`omc3.harpy.handler.analyse_bunches`.
+The functions are kept free of side effects (aside from querying ``psutil`` for host RAM
+and cores) so the sizing logic can be unit-tested in isolation. The actual dispatch /
+orchestration lives in :func:`omc3.harpy.handler.analyse_bunches`.
 """
 
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from typing import TYPE_CHECKING
 
+import psutil
 from threadpoolctl import threadpool_limits
 
 from omc3.utils import logging_tools
@@ -50,19 +50,31 @@ _NARROW_MASK_BINS = 1 << 14  # equivalent to 2**14
 
 # ----- System information ----- #
 
+
 def usable_cores() -> int:
     """
-    Returns the number of cores actually available to this process.
+    Tries to return the number of cores actually available to this process.
 
-    Attempts to use approaches which honour the CPU affinity mask (taskset,
-    cgroup cpuset, HPC bindings etc). First via ``os.process_cpu_count`` (which
-    is Python 3.13+) then with ``os.sched_getaffinity`` (which is Linux only, and
-    that is fine in the CCC). Falls back to ``os.cpu_count()`` but that is the
-    total number of CPUs on the machine. Defaults to 1.
+    Prefers approaches that honour the CPU affinity mask (taskset, cgroup cpuset,
+    HPC pinning, ...) so a pinned process does not oversubscribe. Tries, in order:
+
+    - ``os.process_cpu_count`` (Python 3.13+, honours affinity and ``PYTHON_CPU_COUNT``),
+    - ``os.sched_getaffinity`` (Linux only, honours affinity),
+    - ``psutil.Process().cpu_affinity`` (Windows/Linux only, honours affinity),
+    - ``os.cpu_count`` (total logical CPUs, ignores affinity).
+
+    Always returns at least 1.
     """
-    if hasattr(os, "process_cpu_count"):  # Python 3.13+: honours affinity + PYTHON_CPU_COUNT
+    if hasattr(os, "process_cpu_count"):  # Python 3.13+, honours affinity + PYTHON_CPU_COUNT
         return os.process_cpu_count() or 1
+
     try:
-        return len(os.sched_getaffinity(0))  # Linux only, honours affinity mask
-    except AttributeError:  # macOS/Windows
-        return os.cpu_count() or 1
+        return len(os.sched_getaffinity(0))  # Linux only, honours affinity
+    except AttributeError:  # macOS / Windows: no sched_getaffinity
+        pass
+
+    try:  # macOS has no affinity concept -> AttributeError
+        return len(psutil.Process().cpu_affinity()) or 1  # works on Windows
+    except (AttributeError, NotImplementedError, OSError):
+        pass
+    return os.cpu_count() or 1
