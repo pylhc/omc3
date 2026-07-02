@@ -2,24 +2,29 @@
 Handler
 -------
 
-This module contains high-level functions to manage most functionality of ``harpy``.
-Tools are provided to handle the cleaning, frequency analysis and resonance search for a
-single-bunch `TbtData`.
+This module contains high-level functions to manage the functionality of ``harpy``.
+
+Various tools are provided to handle the cleaning, frequency analysis and resonance search
+for a single-bunch `TbtData` input. Additionally, a running function exists to everything
+for a single bunch, and a high-level overseer function orchestrates the parallelisation of
+different bunches workloads across workers.
 """
 
 from __future__ import annotations
 
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 import pandas as pd
 import tfs
+from threadpoolctl import threadpool_limits
 
 from omc3.definitions import formats
 from omc3.definitions.constants import PLANE_TO_NUM as P2N
 from omc3.definitions.constants import PLANES
-from omc3.harpy import clean, frequency, kicker
+from omc3.harpy import _parallel, clean, frequency, kicker
 from omc3.harpy.constants import (
     COL_AMP,
     COL_BPM_RES,
@@ -145,6 +150,9 @@ def run_per_bunch(
         if "lin" in harpy_input.to_write:
             _write_lin_tfs(output_file_path, plane, lins[plane])
     return lins
+
+
+# ----- Various helpers ----- #
 
 
 def _get_cut_tbt_matrix(tbt_data: TbtData, turn_indices: list[int], plane: str) -> pd.DataFrame:
