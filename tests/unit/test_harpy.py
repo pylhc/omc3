@@ -8,6 +8,7 @@ import tfs
 import turn_by_turn as tbt
 from generic_parser import DotDict
 from pandas.testing import assert_frame_equal
+from tfs.frame import TfsDataFrame
 from tfs.testing import assert_dict_equal
 
 from omc3.harpy import _parallel
@@ -143,20 +144,27 @@ def test_harpy_parallel_matches_serial(tmp_path, n_jobs, to_write):
     parallel_dir.mkdir()
 
     # Run it the old way, serial calculation per bunch
-    serial_file = _run_harpy_multibunch(serial_dir, model, bunch_ids, n_jobs=1)
+    serial_file = _run_harpy_multibunch(serial_dir, model, bunch_ids, n_jobs=1, to_write=to_write)
 
     # Run it the "new" way, parallelising over bunches
-    parallel_file = _run_harpy_multibunch(parallel_dir, model, bunch_ids, n_jobs=n_jobs)
+    parallel_file = _run_harpy_multibunch(parallel_dir, model, bunch_ids, n_jobs=n_jobs, to_write=to_write)
 
+    # Check lin files always, and spectra files (.amps/.freqs) when full spectra were written
+    extensions: list[str] = [".lin"]
+    if "full_spectra" in to_write:
+        extensions += [".amps", ".freqs"]
+
+    # Now we compare results for each bunch
     for bunch in bunch_ids:
-        for plane in "xy":
-            serial = tfs.read(f"{serial_file}_bunchID{bunch}.lin{plane}")
-            parallel = tfs.read(f"{parallel_file}_bunchID{bunch}.lin{plane}")
-            assert_frame_equal(serial, parallel)
-            # Exclude TIME header, which is the (wall-clock) timestamp of each run
-            serial_headers = {k: v for k, v in serial.headers.items() if k != "TIME"}
-            parallel_headers = {k: v for k, v in parallel.headers.items() if k != "TIME"}
-            assert_dict_equal(serial_headers, parallel_headers)
+        for plane in "xy":  # there's output per plane
+            for ext in extensions:  # and we check all relevant output files (potentially incl. spectra)
+                serial: TfsDataFrame = tfs.read(f"{serial_file}_bunchID{bunch}{ext}{plane}")
+                parallel: TfsDataFrame = tfs.read(f"{parallel_file}_bunchID{bunch}{ext}{plane}")
+                assert_frame_equal(serial, parallel)
+                # Exclude TIME header, which is the (wall-clock) timestamp of each run
+                serial_headers = {k: v for k, v in serial.headers.items() if k != "TIME"}
+                parallel_headers = {k: v for k, v in parallel.headers.items() if k != "TIME"}
+                assert_dict_equal(serial_headers, parallel_headers)
 
 
 @pytest.mark.basic
