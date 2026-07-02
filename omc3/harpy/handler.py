@@ -84,8 +84,8 @@ def analyse_bunches_parallel(
     parallel path, so the results do not depend on the chosen ``n_jobs``.
 
     Args:
-        bunch_tasks: list of ``(single-bunch TbtData, output filename)`` pairs.
-        harpy_input: analysis settings.
+        bunch_tasks: A list of ``(single-bunch TbtData, output filename)`` pairs.
+        harpy_input (DotDict): The harpy analysis settings.
 
     Returns:
         One ``{plane: TfsDataFrame}`` dictionary per bunch, in the input order.
@@ -98,19 +98,60 @@ def analyse_bunches_parallel(
         harpy_input, len(bunch_tasks), n_bpms, requested=harpy_input.n_jobs
     )
 
-    with threadpool_limits(limits=1, user_api="blas"):
-        if n_jobs == 1:
-            return [
-                _run_per_bunch_blas_capped(tbt_data, harpy_input, name) for tbt_data, name in bunch_tasks
-            ]
+    if n_jobs == 1:
+        return [
+            _run_per_bunch_blas_capped(tbt_data, harpy_input, name) for tbt_data, name in bunch_tasks
+        ]
 
-        with ProcessPoolExecutor(max_workers=n_jobs) as pool:
-            futures: list[Future[dict[str, TfsDataFrame]]] = [
-                pool.submit(_run_per_bunch_blas_capped, tbt_data, harpy_input, name)
-                for tbt_data, name in bunch_tasks
-            ]
-            # Iterate in submission order so the returned list matches the input order.
-            return [future.result() for future in futures]
+    with ProcessPoolExecutor(max_workers=n_jobs) as pool:
+        futures: list[Future[dict[str, TfsDataFrame]]] = [
+            pool.submit(_run_per_bunch_blas_capped, tbt_data, harpy_input, name)
+            for tbt_data, name in bunch_tasks
+        ]
+        # Iterate in submission order so the returned list matches the input order.
+        return [future.result() for future in futures]
+
+
+def _run_per_bunch_blas_capped(
+    tbt_data: TbtData, harpy_input: DotDict, output_filename: str
+) -> dict[str, tfs.TfsDataFrame]:
+    """
+    The unit of work dispatched serially or to a pool worker: analyse one bunch with
+    BLAS capped to a single thread.
+
+    This is done because the numpy operations that dominate a bunch's analysis (the SVD
+    in cleaning and the dot-products / FFTs in the frequency analysis) each fan out across
+    a multithreaded BLAS backend by default. However this is a very poor use of threads as
+    it oversubscribes the machine and scales poorly. Forcing single-threaded BLAS is both
+    faster and frees up logical cores that we can use to parallelise across bunches.
+
+    This is only true for the specific operations called within harpy's analysis, so we
+    create this wrapper to cap the BLAS threads at one (1) for the duration of the wrapped
+    `run_per_bunch` function ONLY.
+
+    Note
+    ----
+        The thread capping lives *inside* this function, and not around the pool dispatch in
+        `analyse_bunches_parallel`, because *it has to*. The ``threadpool_limits`` context
+        manager only changes the BLAS library loaded in the *current* process. Since pool
+        workers are separate processes from the main one, using a context manager in the parent
+        (which does no BLAS work, only submits futures) would not reach them.
+
+        Because pools use ``forkserver`` (Linux, 3.14+) or ``spawn`` (macOS/Windows), our workers
+        start as fresh interpreters that re-import NumPy with BLAS defaulting to all cores rather
+        than inheriting the parent's state. Where ``fork`` is the default (Linux, <=3.13) we don't
+        want to rely on an inheritance leak.
+
+        For this reason the cap must execute in the worker, i.e. inside the callable it runs. This
+        means either implementing the cap inside of the `run_per_bunch` function directly (but then
+        one can't run it uncapped in tests or for whatever reason) or creating this little wrapper
+        which is dispatched to the workers and ensures the capping.
+
+        The wrapper is kept at module level so it stays picklable for those non-``fork`` start
+        methods, should there remain any.
+    """
+    with threadpool_limits(limits=1, user_api="blas"):
+        return run_per_bunch(tbt_data, harpy_input, output_filename)
 
 
 def run_per_bunch(
