@@ -78,3 +78,15 @@ def usable_cores() -> int:
     except (AttributeError, NotImplementedError, OSError):
         pass
     return os.cpu_count() or 1
+
+
+def available_ram_bytes() -> int | None:
+    """
+    Returns currently available RAM in bytes (memory that can be
+    given to processes without swapping), via ``psutil``. Returns
+    or ``None`` if it cannot be determined.
+    """
+    try:
+        return psutil.virtual_memory().available
+    except (OSError, RuntimeError, ValueError):
+        return None
