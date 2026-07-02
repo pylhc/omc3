@@ -37,7 +37,7 @@ _BYTES_COMPLEX128 = 16
 
 # Fraction of available RAM the worker pool is allowed
 # to use, with a little bit of margin
-SAFETY_MARGIN = 0.9
+SAFETY_MARGIN = 0.85
 
 # Empirically measured floor on the optics1 server (64-core, 536 BPMs, lin-only path):
 # Python + NumPy + libraries + one bunch of data + the SVD working set. Overestimating
@@ -140,3 +140,66 @@ def estimate_peak_rss_bytes_per_bunch(harpy_input: DotDict, n_bpms: int) -> int:
 
     # Return the estimated peak + minimum memory occupancy (data loading etc)
     return _BASELINE_RSS_BYTES + transient
+
+
+def decide_n_jobs(
+    harpy_input: DotDict,
+    n_bunches: int,
+    n_bpms: int,
+    *,
+    requested: int = 0,
+    margin: float = SAFETY_MARGIN,
+) -> int:
+    """
+    Choose the number of worker processes for per-bunch analysis. Each bunch is sent
+    to a worker. This assumes the number of BLAS threads is limited (for `numpy.svd`
+    operations for instance where it maxes out the threads and doesn't do much with
+    it).
+
+    Note
+    ----
+        The `requested` argument mirrors the `n_jobs` for the harpy parameters. Passing
+        `0` selects automatically (all usable cores, RAM permitting); `1` runs serially
+        (which is the old behaviour) and providing an integer value `N` caps the pool at
+        either `N` processes or the automatically determined number (RAM permitting).
+
+        The result is `max(1, min(cores_cap, n_bunches, ram_cap))`, where `ram_cap` is
+        `floor(margin * available_ram / peak_rss_per_bunch)` (or unconstrained when the
+        available RAM could not be determined).
+
+    Args:
+        harpy_input (DotDict): Harpy analysis settings, forwarded to
+            :func:`estimate_peak_rss_bytes_per_bunch` for the per-bunch RSS estimate.
+        n_bunches (int): Number of bunches to process. Caps the pool since each bunch
+            goes to at most one worker.
+        n_bpms (int): Number of BPMs (use the pre-clean count as a safe upper bound),
+            used for the per-bunch RSS estimate.
+        requested (int): the `n_jobs` option passed to ``harpy``. See the note above.
+        margin (float): fraction of available RAM the worker pool may occupy, leaving
+            the remainder as headroom against under-estimating the peak and for other
+            running processes.
+
+    Returns:
+        The number of worker processes to use, always at least 1.
+    """
+    # Determine a few parameters
+    cores_cap: int = requested if requested > 0 else usable_cores()
+    peak_rss: int = estimate_peak_rss_bytes_per_bunch(harpy_input, n_bpms)
+    available_ram = available_ram_bytes()
+
+    # Determine the available RAM to use, including the safety margin
+    # If unknown RAM -> do not let it constrain the choice
+    if available_ram is None:
+        ram_cap: int = n_bunches
+        available_ram_str, ram_cap_str = "unknown", "n/a"
+    else:
+        ram_cap = int(margin * available_ram / peak_rss)
+        available_ram_str, ram_cap_str = f"{available_ram / 1e9:.0f}GB", str(ram_cap)
+
+    # Compute the number of workers / jobs to dispatch, log it and return
+    n_jobs: int = max(1, min(cores_cap, n_bunches, ram_cap))
+    LOGGER.info(
+        f"Parallel harpy: n_jobs={n_jobs} (cores_cap={cores_cap}, bunches={n_bunches}, "
+        f"ram_cap={ram_cap_str}, peak/bunch~{peak_rss / 1e9:.1f}GB, available~{available_ram_str})"
+    )
+    return n_jobs
