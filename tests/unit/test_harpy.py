@@ -125,7 +125,7 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
 
 
 @pytest.mark.basic
-@pytest.mark.parametrize("n_jobs", (0, 2))
+@pytest.mark.parametrize("n_jobs", (0, 2))  # keep njobs not too high for CI
 def test_harpy_parallel_matches_serial(tmp_path, n_jobs):
     """
     The auto (n_jobs=0) and forced-pool (n_jobs=2) paths must produce lin files
@@ -139,7 +139,10 @@ def test_harpy_parallel_matches_serial(tmp_path, n_jobs):
     parallel_dir = tmp_path / "parallel"
     parallel_dir.mkdir()
 
+    # Run it the old way, serial calculation per bunch
     serial_file = _run_harpy_multibunch(serial_dir, model, bunch_ids, n_jobs=1)
+
+    # Run it the "new" way, parallelising over bunches
     parallel_file = _run_harpy_multibunch(parallel_dir, model, bunch_ids, n_jobs=n_jobs)
 
     for bunch in bunch_ids:
