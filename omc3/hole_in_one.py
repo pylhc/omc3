@@ -407,17 +407,15 @@ def _run_harpy(harpy_options: DotDict) -> list[Path]:
     """Run frequency analysis on turn-by-turn data."""
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
-        lins = []
         tbt_datas = _parse_tbt_data(harpy_options.files, harpy_options.tbt_datatype)
-        for tbt_data, file in tbt_datas:
-            lins.extend(
-                [
-                    handler.run_per_bunch(bunch_data, harpy_options, name_for_bunch)
-                    for bunch_data, name_for_bunch in _add_suffix_and_iter_bunches(
-                        tbt_data, harpy_options, file
-                    )
-                ]
+        bunch_tasks = [
+            (bunch_data, name_for_bunch)
+            for tbt_data, file in tbt_datas
+            for bunch_data, name_for_bunch in _add_suffix_and_iter_bunches(
+                tbt_data, harpy_options, file
             )
+        ]
+        lins = handler.analyse_bunches_parallel(bunch_tasks, harpy_options)
     return lins
 
 
