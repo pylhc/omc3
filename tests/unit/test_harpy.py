@@ -126,10 +126,13 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
 
 @pytest.mark.basic
 @pytest.mark.parametrize("n_jobs", (0, 2))  # keep njobs not too high for CI
-def test_harpy_parallel_matches_serial(tmp_path, n_jobs):
+@pytest.mark.parametrize("to_write", (["lin"], ["lin", "full_spectra"]))
+def test_harpy_parallel_matches_serial(tmp_path, n_jobs, to_write):
     """
-    The auto (n_jobs=0) and forced-pool (n_jobs=2) paths must produce lin files
+    The auto (n_jobs=0) and forced-pool (n_jobs=2) paths must produce output files
     identical to the serial (n_jobs=1) run: only the orchestration changes, not the maths.
+    The ``full_spectra`` case (default from the GUI in the CCC) writes out additional files
+    as``.amps``/``.freqs`` which we will check too.
     """
     model = _get_model_dataframe()
     bunch_ids = [1, 5, 15]
