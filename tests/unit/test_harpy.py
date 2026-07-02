@@ -150,8 +150,7 @@ def test_harpy_parallel_matches_serial(tmp_path, n_jobs):
             serial = tfs.read(f"{serial_file}_bunchID{bunch}.lin{plane}")
             parallel = tfs.read(f"{parallel_file}_bunchID{bunch}.lin{plane}")
             assert_frame_equal(serial, parallel)
-            # TIME is the (wall-clock) timestamp of each run, so exclude it; the rest
-            # of the headers (tunes, units) must match.
+            # Exclude TIME header, which is the (wall-clock) timestamp of each run
             serial_headers = {k: v for k, v in serial.headers.items() if k != "TIME"}
             parallel_headers = {k: v for k, v in parallel.headers.items() if k != "TIME"}
             assert_dict_equal(serial_headers, parallel_headers)
