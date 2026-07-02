@@ -8,7 +8,6 @@ import tfs
 import turn_by_turn as tbt
 from generic_parser import DotDict
 from pandas.testing import assert_frame_equal
-from tfs.testing import assert_tfs_frame_equal
 
 from omc3.harpy import _parallel
 from omc3.hole_in_one import _add_suffix_and_iter_bunches, hole_in_one_entrypoint
@@ -122,6 +121,28 @@ def test_harpy_with_suffix_and_bunchid(tmp_path, suffix, bunches):
                     tfs.read(file_path)
                 else:
                     assert not file_path.is_file()
+
+
+# Helper ---
+
+
+def _run_harpy_multibunch(dirpath: Path, model: pd.DataFrame, bunch_ids, n_jobs: int) -> Path:
+    """Write a multi-bunch tbt file and run harpy on it with the given ``n_jobs``."""
+    tbt_file = dirpath / "test_file.sdds"
+    tbt.write(tbt_file, create_tbt_data(model=model, bunch_ids=bunch_ids, n_turns=512))
+    hole_in_one_entrypoint(
+        harpy=True,
+        clean=True,
+        autotunes="transverse",
+        outputdir=str(dirpath),
+        files=[tbt_file],
+        to_write=["lin"],
+        turn_bits=10,
+        output_bits=8,
+        unit="m",
+        n_jobs=n_jobs,
+    )
+    return tbt_file
 
 
 def create_tbt_data(
