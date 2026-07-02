@@ -73,7 +73,7 @@ PLANE_TO_NUM: dict[str, int] = {**P2N, "Z": 3}
 
 def analyse_bunches_parallel(
     bunch_tasks: list[tuple[TbtData, str]], harpy_input: DotDict
-) -> list[dict[str, tfs.TfsDataFrame]]:
+) -> list[dict[str, TfsDataFrame]]:
     """
     Run :func:`run_per_bunch` over all bunches, in parallel when beneficial.
 

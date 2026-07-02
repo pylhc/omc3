@@ -58,6 +58,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
 
     from generic_parser import DotDict
+    from tfs import TfsDataFrame
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -411,7 +412,7 @@ def _write_config_file(
     save_options_to_config(out_dir / file_name, all_options)
 
 
-def _run_harpy(harpy_options: DotDict) -> list[Path]:
+def _run_harpy(harpy_options: DotDict) -> list[dict[str, TfsDataFrame]]:
     """Run frequency analysis on turn-by-turn data."""
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
