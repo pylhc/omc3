@@ -90,19 +90,23 @@ def analyse_bunches_parallel(
     Returns:
         One ``{plane: TfsDataFrame}`` dictionary per bunch, in the input order.
     """
+    # Early exit if we're provided nothing somehow
     if not bunch_tasks:
         return []
 
+    # Get the parameters we need here to orchestrate
     n_bpms: int = max(tbt_data.matrices[0][PLANES[0]].index.size for tbt_data, _ in bunch_tasks)
     n_jobs: int = _parallel.decide_n_workers(
         harpy_input, len(bunch_tasks), n_bpms, requested=harpy_input.n_jobs
     )
 
+    # If we are running sequentially (old behaviour)
     if n_jobs == 1:
         return [
             _run_per_bunch_blas_capped(tbt_data, harpy_input, name) for tbt_data, name in bunch_tasks
         ]
 
+    # If we are parallelising across bunches, start a pool and dispatch futures
     with ProcessPoolExecutor(max_workers=n_jobs) as pool:
         futures: list[Future[dict[str, TfsDataFrame]]] = [
             pool.submit(_run_per_bunch_blas_capped, tbt_data, harpy_input, name)
@@ -150,6 +154,8 @@ def _run_per_bunch_blas_capped(
         The wrapper is kept at module level so it stays picklable for those non-``fork`` start
         methods, should there remain any.
     """
+    # Context manager so the cap is released after exiting, although we dispatch
+    # this to different processes and those are terminated after exiting
     with threadpool_limits(limits=1, user_api="blas"):
         return run_per_bunch(tbt_data, harpy_input, output_filename)
 
