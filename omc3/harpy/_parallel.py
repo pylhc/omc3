@@ -184,7 +184,7 @@ def decide_n_workers(
     # Determine a few parameters
     cores_cap: int = requested if requested > 0 else usable_cores()
     peak_rss: int = estimate_peak_rss_bytes_per_bunch(harpy_input, n_bpms)
-    available_ram = available_ram_bytes()
+    available_ram: int | None = available_ram_bytes()
 
     # Determine the available RAM to use, including the safety margin
     # If unknown RAM -> do not let it constrain the choice
