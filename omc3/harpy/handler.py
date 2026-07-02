@@ -53,14 +53,64 @@ from omc3.utils import logging_tools
 from omc3.utils.contexts import timeit
 
 if TYPE_CHECKING:
+    from concurrent.futures._base import Future
     from datetime import date
+    from logging import Logger
 
     from generic_parser import DotDict
+    from tfs.frame import TfsDataFrame
     from turn_by_turn import TbtData
 
-LOGGER = logging_tools.get_logger(__name__)
-ALL_PLANES = (*PLANES, "Z")
-PLANE_TO_NUM = {**P2N, "Z": 3}
+LOGGER: Logger = logging_tools.get_logger(__name__)
+
+# ----- Some constants ----- #
+
+ALL_PLANES: tuple[str, str, Literal["Z"]] = (*PLANES, "Z")
+PLANE_TO_NUM: dict[str, int] = {**P2N, "Z": 3}
+
+# ----- Orchestration and Calculation ----- #
+
+
+def analyse_bunches_parallel(
+    bunch_tasks: list[tuple[TbtData, str]], harpy_input: DotDict
+) -> list[dict[str, tfs.TfsDataFrame]]:
+    """
+    Run :func:`run_per_bunch` over all bunches, in parallel when beneficial.
+
+    Each bunch is analysed independently, so the work is spread across a process pool
+    whose size is chosen automatically (RAM- and core-aware, see
+    :func:`omc3.harpy._parallel.decide_n_jobs`) unless ``harpy_input.n_jobs`` overrides
+    it (``1`` = serial). BLAS is capped to a single thread in both the serial and the
+    parallel path, so the results do not depend on the chosen ``n_jobs``.
+
+    Args:
+        bunch_tasks: list of ``(single-bunch TbtData, output filename)`` pairs.
+        harpy_input: analysis settings.
+
+    Returns:
+        One ``{plane: TfsDataFrame}`` dictionary per bunch, in the input order.
+    """
+    if not bunch_tasks:
+        return []
+
+    n_bpms: int = max(tbt_data.matrices[0][PLANES[0]].index.size for tbt_data, _ in bunch_tasks)
+    n_jobs: int = _parallel.decide_n_workers(
+        harpy_input, len(bunch_tasks), n_bpms, requested=harpy_input.n_jobs
+    )
+
+    with threadpool_limits(limits=1, user_api="blas"):
+        if n_jobs == 1:
+            return [
+                _run_per_bunch_blas_capped(tbt_data, harpy_input, name) for tbt_data, name in bunch_tasks
+            ]
+
+        with ProcessPoolExecutor(max_workers=n_jobs) as pool:
+            futures: list[Future[dict[str, TfsDataFrame]]] = [
+                pool.submit(_run_per_bunch_blas_capped, tbt_data, harpy_input, name)
+                for tbt_data, name in bunch_tasks
+            ]
+            # Iterate in submission order so the returned list matches the input order.
+            return [future.result() for future in futures]
 
 
 def run_per_bunch(
