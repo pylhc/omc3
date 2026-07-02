@@ -171,7 +171,8 @@ def decide_n_workers(
         The `requested` argument mirrors the `n_jobs` for the harpy parameters. Passing
         `0` selects automatically (all usable cores, RAM permitting); `1` runs serially
         (which is the old behaviour) and providing an integer value `N` caps the pool at
-        either `N` processes or the automatically determined number (RAM permitting).
+        either `N` processes or the automatically determined number (RAM permitting) if
+        the latter is smaller.
 
         The result is `max(1, min(cores_cap, n_bunches, ram_cap))`, where `ram_cap` is
         `floor(margin * available_ram / peak_rss_per_bunch)` (or unconstrained when the
