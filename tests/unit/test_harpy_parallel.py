@@ -178,3 +178,19 @@ def test_usable_cores_falls_back_to_cpu_count(monkeypatch):
     monkeypatch.setattr(_parallel.psutil, "Process", lambda: SimpleNamespace(cpu_affinity=_raise))
     monkeypatch.setattr(os, "cpu_count", lambda: 7)  # patch as well as we can't predict the CI machine
     assert _parallel.usable_cores() == 7
+
+
+# ----- Detection of Available RAM ----- #
+
+
+@pytest.mark.basic
+def test_available_ram_bytes_returns_none_on_error(monkeypatch):
+    """
+    If psutil cannot read memory, check that available_ram_bytes()
+    reports None (and RAM remains unconstrained).
+    """
+    def _raise():
+        raise OSError
+
+    monkeypatch.setattr(_parallel.psutil, "virtual_memory", _raise)
+    assert _parallel.available_ram_bytes() is None
