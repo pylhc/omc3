@@ -39,7 +39,7 @@ SAFETY_MARGIN = 0.85  # 85% to leave room for other processes etc.
 
 # Empirically measured floor on the optics1 server (64-core, 536 BPMs, lin-only path):
 # Python + NumPy + libraries + one bunch of data + the SVD working set. Overestimating
-# this value is safe (leads to fewer workers for parallelisation and no risk of bein OOM).
+# this value is safe (leads to fewer workers for parallelisation and no risk of being OOM).
 _BASELINE_RSS_BYTES = int(1.5e9)  # 1.5GB peak RSS for a bunch in the lowest consuming scenario
 
 # Generous upper bound on the number of frequency lines selected by the narrow mask.
@@ -136,7 +136,7 @@ def estimate_peak_rss_bytes_per_bunch(harpy_input: DotDict, n_bpms: int) -> int:
     # Determine if we have the extra memory usage from full-spectra / no cleaning
     full: bool = ("full_spectra" in harpy_input.to_write) or (not harpy_input.clean)
 
-    # Witdh, in frequency bins, of the coefficient array dominating the memory peak,
+    # Width, in frequency bins, of the coefficient array dominating the memory peak,
     # i.e. how many rfft bins survive get_freq_mask() into the `coefs` array.
     # - full: the whole half spectrum (2**turn_bits) is materialised, when full_spectra is required.
     # - otherwise: get_freq_mask() keeps only narrow ± tolerance bands around the tunes / resonances,
