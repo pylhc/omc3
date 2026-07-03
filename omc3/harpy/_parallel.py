@@ -170,13 +170,14 @@ def decide_n_workers(
     ----
         The `requested` argument mirrors the `n_jobs` for the harpy parameters. Passing
         `0` selects automatically (all usable cores, RAM permitting); `1` runs serially
-        (which is the old behaviour) and providing an integer value `N` caps the pool at
-        either `N` processes or the automatically determined number (RAM permitting) if
-        the latter is smaller.
+        (which is the old behaviour) and providing an integer value `N` uses up to `N`
+        workers, still bounded by the same safety limits. In other words `N` can only
+        throttle the pool *below* the automatic choice, never oversubscribe it.
 
-        The result is `max(1, min(cores_cap, n_bunches, ram_cap))`, where `ram_cap` is
-        `floor(margin * available_ram / peak_rss_per_bunch)` (or unconstrained when the
-        available RAM could not be determined).
+        The result is `max(1, min(cores_cap, n_bunches, ram_cap))`, where `cores_cap` is
+        `usable_cores()` when automatic or `min(N, usable_cores())` when `N` is requested,
+        and `ram_cap` is `floor(margin * available_ram / peak_rss_per_bunch)` (or
+        unconstrained when the available RAM could not be determined).
 
     Args:
         harpy_input (DotDict): Harpy analysis settings, forwarded to
@@ -193,8 +194,10 @@ def decide_n_workers(
     Returns:
         The number of worker processes to use, always at least 1.
     """
-    # Determine a few parameters
-    cores_cap: int = requested if requested > 0 else usable_cores()
+    # Determine a few parameters. A requested N only ever caps *below* the usable cores:
+    # workers are CPU-bound (BLAS capped to 1 thread), so more workers than cores just
+    # oversubscribes with no gain. Hence N can be throttled down but never oversubscribe.
+    cores_cap: int = min(requested, usable_cores()) if requested > 0 else usable_cores()
     peak_rss: int = estimate_peak_rss_bytes_per_bunch(harpy_input, n_bpms)
     available_ram: int | None = available_ram_bytes()
 
