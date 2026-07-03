@@ -11,7 +11,7 @@ from generic_parser import DotDict
 from pandas.testing import assert_frame_equal
 from tfs.testing import assert_dict_equal
 
-from omc3.harpy import _parallel
+from omc3.harpy import _parallel, handler
 from omc3.hole_in_one import _add_suffix_and_iter_bunches, hole_in_one_entrypoint
 from tests.accuracy.test_harpy import _get_model_dataframe
 
@@ -183,6 +183,15 @@ def test_harpy_ram_clamp_forces_serial(tmp_path, monkeypatch):
     for bunch in bunch_ids:
         for plane in "xy":
             assert Path(f"{tbt_file}_bunchID{bunch}.lin{plane}").is_file()
+
+
+@pytest.mark.basic
+def test_analyse_no_tasks_returns_empty():
+    """
+    With no bunches to process, the orchestrator should return early with
+    an empty list, without computing a strategy or starting a pool.
+    """
+    assert handler.analyse_bunches_parallel([], DotDict(n_jobs=0)) == []
 
 
 # Helper ---
