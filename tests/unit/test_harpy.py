@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -8,12 +9,14 @@ import tfs
 import turn_by_turn as tbt
 from generic_parser import DotDict
 from pandas.testing import assert_frame_equal
-from tfs.frame import TfsDataFrame
 from tfs.testing import assert_dict_equal
 
 from omc3.harpy import _parallel
 from omc3.hole_in_one import _add_suffix_and_iter_bunches, hole_in_one_entrypoint
 from tests.accuracy.test_harpy import _get_model_dataframe
+
+if TYPE_CHECKING:
+    from tfs.frame import TfsDataFrame
 
 
 @pytest.mark.basic
