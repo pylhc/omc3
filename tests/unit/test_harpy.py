@@ -150,7 +150,9 @@ def test_harpy_parallel_matches_serial(tmp_path, n_jobs, to_write):
     serial_file = _run_harpy_multibunch(serial_dir, model, bunch_ids, n_jobs=1, to_write=to_write)
 
     # Run it the "new" way, parallelising over bunches
-    parallel_file = _run_harpy_multibunch(parallel_dir, model, bunch_ids, n_jobs=n_jobs, to_write=to_write)
+    parallel_file = _run_harpy_multibunch(
+        parallel_dir, model, bunch_ids, n_jobs=n_jobs, to_write=to_write
+    )
 
     # Check lin files always, and spectra files (.amps/.freqs) when full spectra were written
     extensions: list[str] = [".lin"]
@@ -160,7 +162,9 @@ def test_harpy_parallel_matches_serial(tmp_path, n_jobs, to_write):
     # Now we compare results for each bunch
     for bunch in bunch_ids:
         for plane in "xy":  # there's output per plane
-            for ext in extensions:  # and we check all relevant output files (potentially incl. spectra)
+            for (
+                ext
+            ) in extensions:  # and we check all relevant output files (potentially incl. spectra)
                 serial: TfsDataFrame = tfs.read(f"{serial_file}_bunchID{bunch}{ext}{plane}")
                 parallel: TfsDataFrame = tfs.read(f"{parallel_file}_bunchID{bunch}{ext}{plane}")
                 assert_frame_equal(serial, parallel)
@@ -192,6 +196,22 @@ def test_analyse_no_tasks_returns_empty():
     an empty list, without computing a strategy or starting a pool.
     """
     assert handler.analyse_bunches_parallel([], DotDict(n_jobs=0)) == []
+
+
+@pytest.mark.basic
+def test_harpy_negative_n_jobs_is_rejected(tmp_path):
+    """
+    A negative --n_jobs is rejected up front by the harpy entrypoint validation,
+    before any file is read (so the input path need not exist).
+    """
+    with pytest.raises(AttributeError, match="n_jobs must be >= 0"):
+        hole_in_one_entrypoint(
+            harpy=True,
+            autotunes="transverse",
+            outputdir=str(tmp_path),
+            files=["does_not_need_to_exist.sdds"],
+            n_jobs=-1,
+        )
 
 
 # Helper ---
