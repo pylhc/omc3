@@ -16,6 +16,68 @@ def _min_harpy_input(turn_bits=20, to_write=("lin",), clean=True) -> DotDict:
     return DotDict(turn_bits=turn_bits, to_write=list(to_write), clean=clean)
 
 
+
+# ----- Detection of Available RAM ----- #
+
+
+@pytest.mark.basic
+def test_available_ram_bytes_returns_none_on_error(monkeypatch):
+    """
+    If psutil cannot read memory, check that available_ram_bytes()
+    reports None (and RAM remains unconstrained).
+    """
+    def _raise():
+        raise OSError
+
+    monkeypatch.setattr(_parallel.psutil, "virtual_memory", _raise)
+    assert _parallel.available_ram_bytes() is None
+
+
+# ----- Detection of Usable Cores ----- #
+
+# Our coverage CI runs on Python 3.14+, where usable_cores() returns early inside of
+# os.process_cpu_count(). These tests remove the attribute to force (and cover) each
+# fallback: os.sched_getaffinity -> psutil affinity -> os.cpu_count.
+
+
+@pytest.mark.basic
+def test_usable_cores_via_sched_getaffinity(monkeypatch):
+    """
+    Without os.process_cpu_count(), the Linux os.sched_getaffinity path is used.
+    """
+    monkeypatch.delattr(os, "process_cpu_count", raising=False)  # simulate lower Python
+    monkeypatch.setattr(os, "sched_getaffinity", lambda _pid: {0, 1, 2}, raising=False)
+    assert _parallel.usable_cores() == 3
+
+
+@pytest.mark.basic
+def test_usable_cores_via_psutil_affinity(monkeypatch):
+    """
+    Without process_cpu_count() and sched_getaffinity(), psutil's affinity is used.
+    """
+    monkeypatch.delattr(os, "process_cpu_count", raising=False)  # simulate lower Python
+    monkeypatch.delattr(os, "sched_getaffinity", raising=False)  # simulate non-Linux
+    monkeypatch.setattr(
+        _parallel.psutil, "Process", lambda: SimpleNamespace(cpu_affinity=lambda: [0, 1, 2, 3])
+    )
+    assert _parallel.usable_cores() == 4
+
+
+@pytest.mark.basic
+def test_usable_cores_falls_back_to_cpu_count(monkeypatch):
+    """
+    When no affinity source is available, fall back to os.cpu_count().
+    """
+    def _raise():
+        raise NotImplementedError
+
+    monkeypatch.delattr(os, "process_cpu_count", raising=False)  # simulate lower Python
+    monkeypatch.delattr(os, "sched_getaffinity", raising=False)  # simulate non-Linux
+    monkeypatch.setattr(_parallel.psutil, "Process", lambda: SimpleNamespace(cpu_affinity=_raise))
+    monkeypatch.setattr(os, "cpu_count", lambda: 7)  # patch as well as we can't predict the CI machine
+    assert _parallel.usable_cores() == 7
+
+
 # ----- Estimation of Peak RSS per Bunch ----- #
 
 
@@ -133,64 +195,3 @@ def test_decide_n_jobs_never_below_one(monkeypatch):
     monkeypatch.setattr(_parallel, "available_ram_bytes", lambda: 1)  # 1 byte!
     assert _parallel.decide_n_workers(_min_harpy_input(), 0, 536, requested=0) == 1
     assert _parallel.decide_n_workers(_min_harpy_input(), 10, 536, requested=0) == 1
-
-
-# ----- Detection of Usable Cores ----- #
-
-# Our coverage CI runs on Python 3.14+, where usable_cores() returns early inside of
-# os.process_cpu_count(). These tests remove the attribute to force (and cover) each
-# fallback: os.sched_getaffinity -> psutil affinity -> os.cpu_count.
-
-
-@pytest.mark.basic
-def test_usable_cores_via_sched_getaffinity(monkeypatch):
-    """
-    Without os.process_cpu_count(), the Linux os.sched_getaffinity path is used.
-    """
-    monkeypatch.delattr(os, "process_cpu_count", raising=False)  # simulate lower Python
-    monkeypatch.setattr(os, "sched_getaffinity", lambda _pid: {0, 1, 2}, raising=False)
-    assert _parallel.usable_cores() == 3
-
-
-@pytest.mark.basic
-def test_usable_cores_via_psutil_affinity(monkeypatch):
-    """
-    Without process_cpu_count() and sched_getaffinity(), psutil's affinity is used.
-    """
-    monkeypatch.delattr(os, "process_cpu_count", raising=False)  # simulate lower Python
-    monkeypatch.delattr(os, "sched_getaffinity", raising=False)  # simulate non-Linux
-    monkeypatch.setattr(
-        _parallel.psutil, "Process", lambda: SimpleNamespace(cpu_affinity=lambda: [0, 1, 2, 3])
-    )
-    assert _parallel.usable_cores() == 4
-
-
-@pytest.mark.basic
-def test_usable_cores_falls_back_to_cpu_count(monkeypatch):
-    """
-    When no affinity source is available, fall back to os.cpu_count().
-    """
-    def _raise():
-        raise NotImplementedError
-
-    monkeypatch.delattr(os, "process_cpu_count", raising=False)  # simulate lower Python
-    monkeypatch.delattr(os, "sched_getaffinity", raising=False)  # simulate non-Linux
-    monkeypatch.setattr(_parallel.psutil, "Process", lambda: SimpleNamespace(cpu_affinity=_raise))
-    monkeypatch.setattr(os, "cpu_count", lambda: 7)  # patch as well as we can't predict the CI machine
-    assert _parallel.usable_cores() == 7
-
-
-# ----- Detection of Available RAM ----- #
-
-
-@pytest.mark.basic
-def test_available_ram_bytes_returns_none_on_error(monkeypatch):
-    """
-    If psutil cannot read memory, check that available_ram_bytes()
-    reports None (and RAM remains unconstrained).
-    """
-    def _raise():
-        raise OSError
-
-    monkeypatch.setattr(_parallel.psutil, "virtual_memory", _raise)
-    assert _parallel.available_ram_bytes() is None
