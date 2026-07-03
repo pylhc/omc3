@@ -207,6 +207,14 @@ def decide_n_workers(
         ram_cap = int(margin * available_ram / peak_rss)
         available_ram_str, ram_cap_str = f"{available_ram / 1e9:.0f}GB", str(ram_cap)
 
+        # In case the estimated peak RSS is higher than available RAM, we warn the user
+        if peak_rss > available_ram:
+            LOGGER.warning(
+                f"The estimated peak RSS (memory usage) of a bunch is {peak_rss / 1e9:.1f}GB. "
+                f"The available detected RAM is {available_ram_str}. "
+                "This might lead to slowdowns or crashes!"
+            )
+
     # Compute the number of workers / jobs to dispatch, log it and return
     n_jobs: int = max(1, min(cores_cap, n_bunches, ram_cap))
     LOGGER.info(
