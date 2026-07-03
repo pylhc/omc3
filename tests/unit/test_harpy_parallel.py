@@ -107,6 +107,14 @@ def test_decide_n_jobs_requested_still_ram_clamped(monkeypatch):
 
 
 @pytest.mark.basic
+def test_decide_n_jobs_requested_clamped_to_cores(monkeypatch):
+    """A requested N above the usable cores is throttled down: we never oversubscribe cores."""
+    monkeypatch.setattr(_parallel, "usable_cores", lambda: 8)  # 8 cores only
+    monkeypatch.setattr(_parallel, "available_ram_bytes", lambda: int(1e12))  # 1000GB of RAM!
+    assert _parallel.decide_n_workers(_min_harpy_input(), 100, 536, requested=200) == 8
+
+
+@pytest.mark.basic
 def test_decide_n_jobs_ram_unknown_falls_back_to_cores_and_bunches(monkeypatch):
     """Ensure with no RAM info we fall back to min between n_cores and n_bunches."""
     monkeypatch.setattr(_parallel, "usable_cores", lambda: 8)  # 8 cores
