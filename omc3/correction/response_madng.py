@@ -64,8 +64,8 @@ MADNG_VARMAP: dict[str, str] = {
     "mu2": f"{PHASE_ADV}Y",
     "betx": f"{BETA}X",
     "bety": f"{BETA}Y",
-    "disp1": f"{DISPERSION}X",
-    "disp3": f"{DISPERSION}Y",  # disp3 corresponds to vertical dispersion (dy) in MAD-NG
+    "disp1": f"{DISPERSION}X",  # The use of disp in MAD-NG is because of PTC.
+    "disp3": f"{DISPERSION}Y",  # disp3 corresponds to vertical dispersion (dy) in MAD-NG.
 }
 
 COUPLING_VARMAP: dict[str, str] = {
