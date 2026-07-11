@@ -65,7 +65,7 @@ from typing import TYPE_CHECKING
 
 from generic_parser.entrypoint_parser import DotDict, EntryPointParameters, entrypoint
 
-from omc3.correction import response_madng, response_madx, response_twiss
+from omc3.correction import response_madng, response_madx, response_twiss, response_xsuite
 from omc3.correction.response_io import write_fullresponse
 from omc3.global_correction import CORRECTION_DEFAULTS, OPTICS_PARAMS_CHOICES
 from omc3.model import manager
@@ -84,6 +84,7 @@ class ResponseCreatorType(StrEnum):
     TWISS: str = "twiss"
     MADX: str = "madx"
     MADNG: str = "madng"
+    XSUITE: str = "xsuite"
 
 
 def response_params():
@@ -93,7 +94,7 @@ def response_params():
         type=str,
         choices=tuple(rct.value for rct in ResponseCreatorType),
         default=ResponseCreatorType.MADX.value,
-        help="Create either with madx, madng, or analytically from twiss file.",
+        help="Create with madx, madng, xsuite, or analytically from twiss file.",
     )
     params.add_parameter(
         name="variable_categories",
@@ -153,6 +154,11 @@ def create_response_entrypoint(opt: DotDict, other_opt) -> dict[str, pd.DataFram
 
     elif opt.creator.lower() == ResponseCreatorType.MADNG:
         fullresponse = response_madng.create_fullresponse(accel_inst, opt.variable_categories)
+
+    elif opt.creator.lower() == ResponseCreatorType.XSUITE:
+        fullresponse = response_xsuite.create_fullresponse(
+            accel_inst, opt.variable_categories, delta_k=opt.delta_k
+        )
 
     if opt.outfile_path is not None:
         write_fullresponse(opt.outfile_path, fullresponse)

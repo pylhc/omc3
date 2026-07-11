@@ -75,6 +75,45 @@ def test_response_accuracy(model_inj_beams, orientation, creator):
         assert check, f"Fullresponse via {creator} does not match for {key}"
 
 
+@pytest.mark.extended
+@pytest.mark.parametrize('orientation', ('skew', 'normal'))
+def test_response_accuracy_xsuite(model_inj_beams, orientation):
+    """Tests the xsuite response against the saved (MAD-X) reference response matrix.
+
+    Like the twiss path, xsuite reproduces MAD-X only approximately, so we compare with a
+    relative-RMS tolerance rather than exact values.
+    Hint: the `model_inj_beam` fixture is defined in `conftest.py`."""
+    pytest.importorskip("xtrack")
+
+    is_skew = orientation == 'skew'
+    beam = model_inj_beams.beam
+    correction_params = get_skew_params(beam) if is_skew else get_normal_params(beam)
+    optics_params = _adapt_optics_params(correction_params.optics_params, "xsuite", is_skew)
+
+    create_kwargs = dict(
+        **model_inj_beams,
+        creator="xsuite",
+        delta_k=DELTA_K,
+        variable_categories=correction_params.variables,
+    )
+
+    if beam != 1:
+        # Beam 2 is not yet supported by the xsuite response (reversed line direction) and
+        # must raise rather than silently produce a wrong response.
+        with pytest.raises(NotImplementedError):
+            create_response(**create_kwargs)
+        return
+
+    new_response = create_response(**create_kwargs)
+
+    original_response = read_fullresponse(model_inj_beams.model_dir / correction_params.fullresponse)
+    for key in optics_params:
+        original = original_response[key]
+        new = new_response[key].loc[original.index, original.columns]
+        check = (rms(original - new) / rms(original)).mean() < TWISS_RMS_TOL
+        assert check, f"Fullresponse via xsuite does not match for {key}"
+
+
 @pytest.mark.basic
 @pytest.mark.timeout(180)  # might get stuck in a loop if madx-code is wrong
 def test_varmap_creation(model_inj_beams):
