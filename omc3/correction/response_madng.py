@@ -37,9 +37,9 @@ import numpy as np
 import pandas as pd
 from pymadng import MAD
 
-from omc3.madx_wrapper import run_string
 from omc3.model.accelerators.accelerator import AccElementTypes
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
+from omc3.model.xsuite_bridge import build_madx_sequence
 from omc3.optics_measurements.constants import (
     BETA,
     DISPERSION,
@@ -142,14 +142,8 @@ def _load_sequence(mad: MAD, accel_inst: Accelerator):
     if madx_seq_path.exists():
         raise FileExistsError(f"Saved sequence file {madx_seq_path} already exists!")
 
-    # Generate the MAD-X sequence file
-    madx_string = creator.get_base_madx_script() + "\n" + creator.get_save_sequence_script()
-    run_string(madx_string, log_file=log_file, cwd=accel_inst.model_dir)
-
-    if not madx_seq_path.exists():
-        raise FileNotFoundError(
-            f"Saved sequence file {madx_seq_path} was not created! Check {log_file}"
-        )
+    # Generate the MAD-X sequence file via the shared bridge (single MAD-X call site).
+    madx_seq_path = build_madx_sequence(creator, log_file=log_file)
 
     # Load into MAD-NG
     mad.send(f'MADX:load("{madx_seq_path.absolute()!s}")')
@@ -298,7 +292,6 @@ tws_coupling, _ = twiss {
 }
 --end-mad
 """)
-
     # Send the required data to MAD-NG script
     mad.send(variables)  # List of knob names
     mad.send(flat_opt_list)  # Flattened list of derivative column names for standard optics

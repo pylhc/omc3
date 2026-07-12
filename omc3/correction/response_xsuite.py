@@ -30,9 +30,9 @@ import xtrack as xt
 from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
-import omc3.madx_wrapper as madx_wrapper
 from omc3.correction.constants import INCR, ORBIT_DPP
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
+from omc3.model.xsuite_bridge import _PROTON_MASS_EV, XSUITE_JSON, create_xsuite_json
 from omc3.optics_measurements.constants import (
     ALPHA,
     BETA,
@@ -48,9 +48,6 @@ from omc3.utils import logging_tools
 from omc3.utils.contexts import suppress_warnings, timeit
 
 LOG = logging_tools.get_logger(__name__)
-
-# Proton rest mass in eV, used to set the xtrack reference particle.
-_PROTON_MASS_EV: float = 938.272_088_16e6
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -185,9 +182,9 @@ def _run_xsuite(
     creator = _get_nominal_model_creator(accel_inst)
     if sequence_file is None:
         creator.prepare_run()
-        madx_string = creator.get_base_madx_script() + "\n" + creator.get_save_sequence_script()
-        madx_wrapper.run_string(madx_string, cwd=accel_inst.model_dir)
-        seq_file = accel_inst.model_dir / creator.save_sequence_filename
+        # Build (once) the xtrack lattice json via the sanctioned MAD-X bridge; the workers
+        # load it directly with xt.Environment.from_json (see _init_xsuite_worker).
+        seq_file = create_xsuite_json(creator, accel_inst.model_dir / XSUITE_JSON)
     else:
         seq_file = sequence_file
 

@@ -27,26 +27,25 @@ from typing import TYPE_CHECKING
 import numpy as np
 import tfs
 
-import omc3.madx_wrapper as madx_wrapper
 from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.constants import TWISS_DAT, TWISS_ELEMENTS_DAT
 from omc3.model.model_creators.lhc_model_creator import LhcModelCreator
+from omc3.model.xsuite_bridge import (
+    _PROTON_MASS_EV,
+    XSUITE_JSON,
+    create_xsuite_json,
+    load_line,
+)
 from omc3.optics_measurements.constants import NAME
 from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import pandas as pd
 
 LOGGER = logging_tools.get_logger(__name__)
 
-# Proton rest mass in eV, used to set the xtrack reference particle.
-_PROTON_MASS_EV: float = 938.272_088_16e6
-
-# Filename of the xtrack lattice (Environment) json the xsuite model creator consumes.
-# It is produced from the MAD-X-built sequence by `create_xsuite_json`.
-XSUITE_JSON: str = "xsuite_lattice.json"
+# Re-exported from the bridge for backwards compatibility (previously defined here).
+__all__ = ["XSUITE_JSON", "LhcXsuiteModelCreator", "create_xsuite_json"]
 
 # Mapping of the columns produced by ``xtrack``'s ``twiss4d`` (lowercase) onto the
 # ``MAD-X`` twiss column names (uppercase) that ``omc3`` expects downstream.
@@ -127,8 +126,6 @@ class LhcXsuiteModelCreator(LhcModelCreator):
         :func:`create_xsuite_json` (the only place MAD-X is used) and then loaded to compute
         the twiss with ``xtrack``.
         """
-        import xtrack as xt  # local import: xtrack is an optional dependency
-
         accel = self.accel
 
         if accel.excitation != AccExcitationMode.FREE:
@@ -158,9 +155,7 @@ class LhcXsuiteModelCreator(LhcModelCreator):
 
         # 3. Load the xsuite lattice and set the reference particle.
         LOGGER.info(f"Loading the xsuite lattice from {json_file}.")
-        env = xt.Environment.from_json(str(json_file))
-        line = env[self.sequence_name.lower()]
-        line.particle_ref = xt.Particles(p0c=accel.energy * 1e9, mass0=_PROTON_MASS_EV)
+        _env, line = load_line(accel, json_file, self.sequence_name)
 
         # 4. Compute the twiss (incl. Edwards-Teng coupling terms) and write the output files.
         LOGGER.info("Computing twiss with xtrack.")
@@ -250,39 +245,3 @@ def _twiss_to_tfs(twiss, table, qx: float, qy: float, energy: float, beam: int) 
         "Q2": float(qy),
     }
     return out
-
-
-# =====================================================================================
-# MAD-X BRIDGE - the ONLY place the xsuite model creator depends on MAD-X: it builds and
-# matches the LHC sequence with MAD-X and serialises it to an xtrack lattice json.
-# =====================================================================================
-def create_xsuite_json(creator: LhcXsuiteModelCreator, json_file: Path) -> None:
-    """Build the LHC lattice with MAD-X and save it as an xtrack Environment ``.json``.
-
-    It runs MAD-X to build and match the sequence, saves it to a ``.seq``, loads that into
-    xtrack and serialises the environment to ``json_file``.
-
-    Args:
-        creator: the model creator, providing the MAD-X script and the model directory / paths.
-        json_file: destination path for the xtrack Environment json.
-    """
-    import xtrack as xt
-
-    accel = creator.accel
-    LOGGER.info("Building the LHC sequence with MAD-X to bootstrap the xsuite lattice json.")
-
-    # Build and save the (matched) sequence with MAD-X, exactly as the MAD-NG response does.
-    madx_script = creator.get_base_madx_script() + "\n" + creator.get_save_sequence_script()
-    run_kwargs = {}
-    if accel.model_dir is not None:
-        run_kwargs["cwd"] = accel.model_dir
-        if creator.logfile is not None:
-            run_kwargs["log_file"] = accel.model_dir / creator.logfile
-        if creator.jobfile is not None:
-            run_kwargs["output_file"] = accel.model_dir / creator.jobfile
-    madx_wrapper.run_string(madx_script, **run_kwargs)
-
-    seq_file = accel.model_dir / creator.save_sequence_filename
-    env = xt.load(file=str(seq_file), format="madx")
-    env.to_json(str(json_file))
-    LOGGER.info(f"Saved xsuite lattice json to {json_file}.")
