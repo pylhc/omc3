@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 import pytest
 import tfs
 from generic_parser import DotDict
@@ -259,6 +260,88 @@ def test_lhc_creation_nominal_free(tmp_path, acc_models_lhc_2025):
         outputdir=tmp_path, type="nominal", logfile=tmp_path / "madx_log.txt", **accel_opt
     )
     check_accel_from_dir_vs_options(tmp_path, accel_opt, accel)
+
+
+@pytest.mark.basic
+def test_lhc_creation_nominal_xsuite_smoke(tmp_path, acc_models_lhc_2025):
+    """Smoke test: the xsuite creator produces readable twiss files with the expected columns."""
+    pytest.importorskip("xtrack")
+    from omc3.model.model_creators.lhc_xsuite_model_creator import _OUTPUT_COLUMNS
+
+    accel_opt = {
+        "accel": "lhc",
+        "year": "2025",
+        "beam": 1,
+        "nat_tunes": [0.31, 0.32],
+        "dpp": 0.0,
+        "energy": 6800.0,
+        "fetch": Fetcher.PATH,
+        "path": acc_models_lhc_2025,
+        "modifiers": LHC_2025_30CM_MODIFIERS,
+    }
+    accel = create_instance_and_model(
+        outputdir=tmp_path, type="nominal_xsuite", logfile=tmp_path / "madx_log.txt", **accel_opt
+    )
+    assert accel.model is not None
+    assert accel.elements is not None
+
+    for twiss_name in (TWISS_DAT, TWISS_ELEMENTS_DAT):
+        df_twiss = tfs.read(tmp_path / twiss_name, index=NAME)
+        assert set(_OUTPUT_COLUMNS) <= {*df_twiss.columns, NAME}
+        assert "ENERGY" in df_twiss.headers
+        assert df_twiss.headers["Q1"] == pytest.approx(62.31, abs=1e-3)
+
+    # DOROS BPMs must survive the sequence -> xtrack round-trip (as in the MAD-X path).
+    df_bpms = tfs.read(tmp_path / TWISS_DAT, index=NAME)
+    assert any(df_bpms.index.str.match(r"BPM.+_DOROS$"))
+
+
+@pytest.mark.extended
+def test_lhc_creation_nominal_xsuite_vs_madx(tmp_path, acc_models_lhc_2025):
+    """The xsuite twiss must reproduce the MAD-X twiss within physical tolerances."""
+    pytest.importorskip("xtrack")
+    accel_opt = {
+        "accel": "lhc",
+        "year": "2025",
+        "beam": 1,
+        "nat_tunes": [0.31, 0.32],
+        "dpp": 0.0,
+        "energy": 6800.0,
+        "fetch": Fetcher.PATH,
+        "path": acc_models_lhc_2025,
+        "modifiers": LHC_2025_30CM_MODIFIERS,
+    }
+    madx_dir = tmp_path / "madx"
+    xsuite_dir = tmp_path / "xsuite"
+
+    create_instance_and_model(
+        outputdir=madx_dir, type="nominal", logfile=madx_dir / "log.txt", **accel_opt
+    )
+    create_instance_and_model(
+        outputdir=xsuite_dir, type="nominal_xsuite", logfile=xsuite_dir / "log.txt", **accel_opt
+    )
+
+    madx = tfs.read(madx_dir / TWISS_DAT, index=NAME)
+    xsuite = tfs.read(xsuite_dir / TWISS_DAT, index=NAME)
+
+    # Tunes from the headers.
+    assert xsuite.headers["Q1"] == pytest.approx(madx.headers["Q1"], abs=1e-4)
+    assert xsuite.headers["Q2"] == pytest.approx(madx.headers["Q2"], abs=1e-4)
+
+    common = madx.index.intersection(xsuite.index)
+    assert len(common) > 500  # sanity: BPMs are present in both
+    m, x = madx.loc[common], xsuite.loc[common]
+
+    # Relative tolerance on the beta functions (0.1% beta-beating bar is the physical one).
+    for col in ("BETX", "BETY"):
+        rel = np.abs(m[col] - x[col]) / np.abs(m[col])
+        assert rel.max() < 1e-3, f"{col} relative diff too large: {rel.max():.2e}"
+
+    # Absolute tolerance on phases (tune units) and dispersion (m).
+    for col in ("MUX", "MUY"):
+        assert np.abs(m[col] - x[col]).max() < 1e-4
+    for col in ("DX", "DY"):
+        assert np.abs(m[col] - x[col]).max() < 1e-4
 
 
 @pytest.mark.basic

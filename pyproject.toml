@@ -73,7 +73,10 @@ cern = [
 ]
 madng = [
   # limit pymadng to maximum 0.9.2 as 0.9.3 might have coupling bug
-  "pymadng >= 0.8.3, < 0.9.3",
+  "pymadng >= 0.8.3, ~= 0.9.3",
+]
+xsuite = [
+  "xtrack >= 0.107",  # twiss engine for the xsuite model creator (MAD-X migration)
 ]
 optional = [
   "pymupdf >= 1.22",  # logbook for conversion from pdf to png
@@ -87,9 +90,11 @@ test = [
   "pytest-timeout >= 1.4",
   "gitpython >= 3.1",  # imported as 'git', used for acc-models fixture
   "omc3[madng]",
+  "omc3[xsuite]",
 ]
 doc = [
   "omc3[madng]",  # need pymadng to build its response creation module doc
+  "omc3[xsuite]",
   "sphinx >= 7.0",
   "sphinx_rtd_theme >= 2.0",
 ]

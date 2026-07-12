@@ -18,6 +18,7 @@ from omc3.model.model_creators.lhc_model_creator import (
     LhcModelCreator,
     LhcSegmentCreator,
 )
+from omc3.model.model_creators.lhc_xsuite_model_creator import LhcXsuiteModelCreator
 from omc3.model.model_creators.ps_model_creator import PsModelCreator
 from omc3.model.model_creators.psbooster_model_creator import PsboosterModelCreator
 from omc3.model.model_creators.sps_model_creator import (
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
 
 class CreatorType(StrEnum):
     NOMINAL: str = "nominal"
+    NOMINAL_XSUITE: str = "nominal_xsuite"
     BEST_KNOWLEDGE: str = "best_knowledge"
     SEGMENT: str = "segment"
     CORRECTION: str = "correction"
@@ -42,6 +44,7 @@ class CreatorType(StrEnum):
 CREATORS: dict[str, dict[CreatorType, type]] = {
     Lhc.NAME: {
         CreatorType.NOMINAL: LhcModelCreator,
+        CreatorType.NOMINAL_XSUITE: LhcXsuiteModelCreator,
         CreatorType.BEST_KNOWLEDGE: LhcBestKnowledgeCreator,
         CreatorType.CORRECTION: LhcCorrectionModelCreator,
         CreatorType.SEGMENT: LhcSegmentCreator,

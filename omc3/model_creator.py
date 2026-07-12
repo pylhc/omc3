@@ -37,7 +37,7 @@ def _get_params():
     )
     params.add_parameter(
         name="type",
-        choices=(CreatorType.NOMINAL.value, CreatorType.BEST_KNOWLEDGE.value),  # this script manages only these two
+        choices=(CreatorType.NOMINAL.value, CreatorType.NOMINAL_XSUITE.value, CreatorType.BEST_KNOWLEDGE.value),  # this script manages only these
         default=CreatorType.NOMINAL.value,
         help="Type of model to create.",
     )
@@ -114,7 +114,7 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
 
             Type of model to create.
 
-            choices: ``('nominal', 'best_knowledge')``
+            choices: ``('nominal', 'nominal_xsuite', 'best_knowledge')``
 
 
     Accelerator Keyword Args:
