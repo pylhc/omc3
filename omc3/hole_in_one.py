@@ -479,7 +479,7 @@ def _add_suffix_and_iter_bunches(
         )
 
 
-def _measure_optics(lins: list[Path], optics_opt: DotDict) -> None:
+def _measure_optics(lins: list[dict[str, TfsDataFrame]], optics_opt: DotDict) -> None:
     """Measure lattice optics from frequency spectra or files."""
     if len(lins) == 0:
         lins = optics_opt.files
