@@ -91,7 +91,7 @@ def available_ram_bytes() -> int | None:
     """
     Returns currently available RAM in bytes (memory that can be
     given to processes without swapping), via ``psutil``. Returns
-    or ``None`` if it cannot be determined.
+    ``None`` if it cannot be determined.
     """
     try:
         return psutil.virtual_memory().available
