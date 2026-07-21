@@ -79,7 +79,7 @@ def analyse_bunches_parallel(
 
     Each bunch is analysed independently, so the work is spread across a process pool
     whose size is chosen automatically (RAM- and core-aware, see
-    :func:`omc3.harpy._parallel.decide_n_jobs`) unless ``harpy_input.n_jobs`` overrides
+    :func:`omc3.harpy._parallel.decide_n_workers`) unless ``harpy_input.n_jobs`` overrides
     it (``1`` = serial). BLAS is capped to a single thread in both the serial and the
     parallel path, so the results do not depend on the chosen ``n_jobs``.
 
