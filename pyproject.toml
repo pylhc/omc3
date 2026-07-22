@@ -58,6 +58,8 @@ dependencies = [
   "tables >= 3.10.1",
   "requests >= 2.27",
   "odrpack >= 0.4.0",
+  "psutil >= 7.0",
+  "threadpoolctl >= 3.0",
 ]
 
 [project.optional-dependencies]
