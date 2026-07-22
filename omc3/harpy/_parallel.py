@@ -33,9 +33,9 @@ LOGGER: Logger = logging_tools.get_logger(__name__)
 _BYTES_FLOAT64 = 8
 _BYTES_COMPLEX128 = 16
 
-# Fraction of available RAM the worker pool is allowed to use,
-# with a little bit of margin. Could be tweaked.
-SAFETY_MARGIN = 0.85  # 85% to leave room for other processes etc.
+# Default fraction of available RAM that the worker pool is allowed to use.
+# This is meant to leave a little bit of margin. Can be tweaked at function call.
+ALLOWED_RAM_PORTION = 0.85  # 85% to leave room for other processes etc.
 
 # Empirically measured floor on the optics1 server (64-core, 536 BPMs, lin-only path):
 # Python + NumPy + libraries + one bunch of data + the SVD working set. Overestimating
@@ -158,7 +158,7 @@ def decide_n_workers(
     n_bpms: int,
     *,
     requested: int = 0,
-    margin: float = SAFETY_MARGIN,
+    margin: float = ALLOWED_RAM_PORTION,
 ) -> int:
     """
     Choose the number of worker processes for per-bunch analysis. Each bunch is sent

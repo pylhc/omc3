@@ -150,7 +150,7 @@ def test_decide_n_jobs_ram_bound(monkeypatch):
     harpy_input: DotDict = _min_harpy_input(to_write=["lin", "full_spectra"])  # ~15 GB/worker
     peak: int = _parallel.estimate_peak_rss_bytes_per_bunch(harpy_input, 536)
     n_workers: int = _parallel.decide_n_workers(harpy_input, 64, 536, requested=0)
-    assert n_workers == int(_parallel.SAFETY_MARGIN * 100e9 / peak)
+    assert n_workers == int(_parallel.ALLOWED_RAM_PORTION * 100e9 / peak)
     assert n_workers < 10  # RAM-bound, well below the 64 cores / number of bunches (we properly throttle)
 
 
