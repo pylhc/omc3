@@ -6,7 +6,7 @@
     - The `harpy` internal logic has been reworked:
         - Its own operations cap the BLAS threads at 1 for better efficiency (which frees up logical cores).
         - A parallelisation strategy is deployed over the bunches to make use of the freed cores.
-        - A new `n_jobs` parameter can be provided, which defaults to auto determination of the number of workers.
+        - A new `n_jobs` parameter can be provided, which defaults to auto determination of the number of workers. Should the available RAM not be determinable, the auto determination conservatively falls back to a single worker (although providing `n_jobs` explicitly parallelises anyway).
 
 #### 2026-06-19 - v0.28.2 - _fsoubelet_
 
