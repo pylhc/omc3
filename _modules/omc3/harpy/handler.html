@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.handler &mdash; omc3 0.28.2 documentation</title>
+  <title>omc3.harpy.handler &mdash; omc3 0.29.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=1ee43154"></script>
+      <script src="../../../_static/documentation_options.js?v=fcb1757e"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -243,24 +243,29 @@
 <span class="sd">Handler</span>
 <span class="sd">-------</span>
 
-<span class="sd">This module contains high-level functions to manage most functionality of ``harpy``.</span>
-<span class="sd">Tools are provided to handle the cleaning, frequency analysis and resonance search for a</span>
-<span class="sd">single-bunch `TbtData`.</span>
+<span class="sd">This module contains high-level functions to manage the functionality of ``harpy``.</span>
+
+<span class="sd">Various tools are provided to handle the cleaning, frequency analysis and resonance search</span>
+<span class="sd">for a single-bunch `TbtData` input. Additionally, a running function exists to handle everything</span>
+<span class="sd">for a single bunch, and a high-level overseer function orchestrates the parallelisation of</span>
+<span class="sd">different bunches workloads across workers.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tfs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threadpoolctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">threadpool_limits</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">formats</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANE_TO_NUM</span> <span class="k">as</span> <span class="n">P2N</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANES</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">clean</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">kicker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">_parallel</span><span class="p">,</span> <span class="n">clean</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">kicker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.harpy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">COL_AMP</span><span class="p">,</span>
     <span class="n">COL_BPM_RES</span><span class="p">,</span>
@@ -289,14 +294,118 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.contexts</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tfs.frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">turn_by_turn</span><span class="w"> </span><span class="kn">import</span> <span class="n">TbtData</span>
 
-<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">ALL_PLANES</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">PLANES</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">)</span>
-<span class="n">PLANE_TO_NUM</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">P2N</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="n">LOGGER</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># ----- Some constants ----- #</span>
+
+<span class="n">ALL_PLANES</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">PLANES</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">)</span>
+<span class="n">PLANE_TO_NUM</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">P2N</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+
+<span class="c1"># ----- Orchestration and Calculation ----- #</span>
+
+
+<div class="viewcode-block" id="analyse_bunches_parallel">
+<a class="viewcode-back" href="../../../modules/harpy.html#omc3.harpy.handler.analyse_bunches_parallel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">analyse_bunches_parallel</span><span class="p">(</span>
+    <span class="n">bunch_tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">TbtData</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">harpy_input</span><span class="p">:</span> <span class="n">DotDict</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run :func:`run_per_bunch` over all bunches, in parallel when beneficial.</span>
+
+<span class="sd">    Each bunch is analysed independently, so the work is spread across a process pool</span>
+<span class="sd">    whose size is chosen automatically (RAM- and core-aware, see</span>
+<span class="sd">    :func:`omc3.harpy._parallel.decide_n_workers`) unless ``harpy_input.n_jobs`` overrides</span>
+<span class="sd">    it (``1`` = serial). BLAS is capped to a single thread in both the serial and the</span>
+<span class="sd">    parallel path, so the results do not depend on the chosen ``n_jobs``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bunch_tasks: A list of ``(single-bunch TbtData, output filename)`` pairs.</span>
+<span class="sd">        harpy_input (DotDict): The harpy analysis settings.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        One ``{plane: TfsDataFrame}`` dictionary per bunch, in the input order.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Early exit if we&#39;re provided nothing somehow</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">bunch_tasks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># Get the parameters we need here to orchestrate</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Determining parallelisation strategy based on inputs, bunches, CPU cores and RAM.&quot;</span><span class="p">)</span>
+    <span class="n">n_bunches</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bunch_tasks</span><span class="p">)</span>
+    <span class="n">n_bpms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">PLANES</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">bunch_tasks</span><span class="p">)</span>
+    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_parallel</span><span class="o">.</span><span class="n">decide_n_workers</span><span class="p">(</span>
+        <span class="n">harpy_input</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">bunch_tasks</span><span class="p">),</span> <span class="n">n_bpms</span><span class="p">,</span> <span class="n">requested</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">n_jobs</span>
+    <span class="p">)</span>
+
+    <span class="c1"># If we are running sequentially (old behaviour)</span>
+    <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performing harmonic analysis sequentially on </span><span class="si">{</span><span class="n">n_bunches</span><span class="si">}</span><span class="s2"> bunches.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">_run_per_bunch_blas_capped</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">bunch_tasks</span>
+        <span class="p">]</span>
+
+    <span class="c1"># If we are parallelising across bunches, start a pool and dispatch futures</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dispatching </span><span class="si">{</span><span class="n">n_bunches</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> concurrent workers.&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">futures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Future</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_run_per_bunch_blas_capped</span><span class="p">,</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">bunch_tasks</span>
+        <span class="p">]</span>
+        <span class="c1"># Iterate in submission order so the returned list matches the input order.</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">]</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_run_per_bunch_blas_capped</span><span class="p">(</span>
+    <span class="n">tbt_data</span><span class="p">:</span> <span class="n">TbtData</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The unit of work dispatched serially or to a pool worker: analyse one bunch with</span>
+<span class="sd">    BLAS capped to a single thread.</span>
+
+<span class="sd">    This is done because the numpy operations that dominate a bunch&#39;s analysis (the SVD</span>
+<span class="sd">    in cleaning and the dot-products / FFTs in the frequency analysis) each fan out across</span>
+<span class="sd">    a multithreaded BLAS backend by default. However this is a very poor use of threads as</span>
+<span class="sd">    it oversubscribes the machine and scales poorly. Forcing single-threaded BLAS is both</span>
+<span class="sd">    faster and frees up logical cores that we can use to parallelise across bunches.</span>
+
+<span class="sd">    This is only true for the specific operations called within harpy&#39;s analysis, so we</span>
+<span class="sd">    create this wrapper to cap the BLAS threads at one (1) for the duration of the wrapped</span>
+<span class="sd">    `run_per_bunch` function ONLY.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">        The thread capping lives *inside* this function, and not around the pool dispatch in</span>
+<span class="sd">        `analyse_bunches_parallel`, because *it has to*. The ``threadpool_limits`` context</span>
+<span class="sd">        manager only changes the BLAS library loaded in the *current* process. Since pool</span>
+<span class="sd">        workers are separate processes from the main one, using a context manager in the parent</span>
+<span class="sd">        (which does no BLAS work, only submits futures) would not reach them.</span>
+
+<span class="sd">        Because pools use ``forkserver`` (Linux, 3.14+) or ``spawn`` (macOS/Windows), our workers</span>
+<span class="sd">        start as fresh interpreters that re-import NumPy with BLAS defaulting to all cores rather</span>
+<span class="sd">        than inheriting the parent&#39;s state. Where ``fork`` is the default (Linux, &lt;=3.13) we don&#39;t</span>
+<span class="sd">        want to rely on an inheritance leak.</span>
+
+<span class="sd">        For this reason the cap must execute in the worker, i.e. inside the callable it runs. This</span>
+<span class="sd">        means either implementing the cap inside of the `run_per_bunch` function directly (but then</span>
+<span class="sd">        one can&#39;t run it uncapped in tests or for whatever reason) or creating this little wrapper</span>
+<span class="sd">        which is dispatched to the workers and ensures the capping.</span>
+
+<span class="sd">        The wrapper is kept at module level so it stays picklable for those non-``fork`` start</span>
+<span class="sd">        methods, should there remain any.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Context manager so the cap is released after exiting, although we dispatch</span>
+    <span class="c1"># this to different processes and those are terminated after exiting</span>
+    <span class="k">with</span> <span class="n">threadpool_limits</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">user_api</span><span class="o">=</span><span class="s2">&quot;blas&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">run_per_bunch</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_input</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="run_per_bunch">
@@ -306,6 +415,8 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cleans data, analyses frequencies and searches for resonances.</span>
+<span class="sd">    Potentially also writes output data to disk if requested in the</span>
+<span class="sd">    harpy parameters.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tbt_data: single bunch `TbtData`.</span>
@@ -338,7 +449,7 @@
             <span class="k">else</span> <span class="p">{</span>
                 <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">clean</span><span class="o">.</span><span class="n">svd_decomposition</span><span class="p">(</span><span class="n">bpm_datas</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">),</span>
                 <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="n">clean</span><span class="o">.</span><span class="n">svd_decomposition</span><span class="p">(</span><span class="n">bpm_datas</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span> <span class="n">harpy_input</span><span class="o">.</span><span class="n">sing_val</span><span class="p">),</span>
-            <span class="p">},</span>
+            <span class="p">},</span>  <span class="c1"># ty:ignore[invalid-argument-type]</span>
         <span class="p">)</span>
     <span class="p">)</span>
 
@@ -377,7 +488,10 @@
                 <span class="n">order_resonances</span><span class="o">=</span><span class="n">harpy_input</span><span class="o">.</span><span class="n">resonances</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># defragment after joins / col assignments etc from previous operations</span>
+
+        <span class="c1"># Defragment after joins / col assignments within find_resonances</span>
+        <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
         <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">_add_calculated_phase_errors</span><span class="p">(</span><span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">])</span>
         <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sync_phase</span><span class="p">(</span><span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">plane</span><span class="p">)</span>
         <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">_rescale_amps_to_main_line_and_compute_noise</span><span class="p">(</span><span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">plane</span><span class="p">)</span>
@@ -389,6 +503,9 @@
             <span class="n">_write_lin_tfs</span><span class="p">(</span><span class="n">output_file_path</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">lins</span><span class="p">[</span><span class="n">plane</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">lins</span></div>
 
+
+
+<span class="c1"># ----- Various helpers ----- #</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_cut_tbt_matrix</span><span class="p">(</span><span class="n">tbt_data</span><span class="p">:</span> <span class="n">TbtData</span><span class="p">,</span> <span class="n">turn_indices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -484,7 +601,9 @@
     <span class="k">return</span> <span class="n">lin_frame</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_headers</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">date</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_headers</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">date</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]:</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">ALL_PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;NAT&quot;</span><span class="p">):</span>

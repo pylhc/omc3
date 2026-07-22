@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harpy &mdash; omc3 0.28.2 documentation</title>
+  <title>Harpy &mdash; omc3 0.29.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1ee43154"></script>
+      <script src="../_static/documentation_options.js?v=fcb1757e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -454,14 +454,40 @@ main lobe, also decreasing spectral leakage in closest lobes):
 
 <section id="handler">
 <span id="module-omc3.harpy.handler"></span><h2>Handler<a class="headerlink" href="#handler" title="Link to this heading"></a></h2>
-<p>This module contains high-level functions to manage most functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.
-Tools are provided to handle the cleaning, frequency analysis and resonance search for a
-single-bunch <cite>TbtData</cite>.</p>
+<p>This module contains high-level functions to manage the functionality of <code class="docutils literal notranslate"><span class="pre">harpy</span></code>.</p>
+<p>Various tools are provided to handle the cleaning, frequency analysis and resonance search
+for a single-bunch <cite>TbtData</cite> input. Additionally, a running function exists to handle everything
+for a single bunch, and a high-level overseer function orchestrates the parallelisation of
+different bunches workloads across workers.</p>
 </section>
+<dl class="py function">
+<dt class="sig sig-object py" id="omc3.harpy.handler.analyse_bunches_parallel">
+<span class="sig-prename descclassname"><span class="pre">omc3.harpy.handler.</span></span><span class="sig-name descname"><span class="pre">analyse_bunches_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bunch_tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">TbtData</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harpy_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TfsDataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/harpy/handler.html#analyse_bunches_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.harpy.handler.analyse_bunches_parallel" title="Link to this definition"></a></dt>
+<dd><p>Run <a class="reference internal" href="#omc3.harpy.handler.run_per_bunch" title="omc3.harpy.handler.run_per_bunch"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_per_bunch()</span></code></a> over all bunches, in parallel when beneficial.</p>
+<p>Each bunch is analysed independently, so the work is spread across a process pool
+whose size is chosen automatically (RAM- and core-aware, see
+<code class="xref py py-func docutils literal notranslate"><span class="pre">omc3.harpy._parallel.decide_n_workers()</span></code>) unless <code class="docutils literal notranslate"><span class="pre">harpy_input.n_jobs</span></code> overrides
+it (<code class="docutils literal notranslate"><span class="pre">1</span></code> = serial). BLAS is capped to a single thread in both the serial and the
+parallel path, so the results do not depend on the chosen <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bunch_tasks</strong> -- A list of <code class="docutils literal notranslate"><span class="pre">(single-bunch</span> <span class="pre">TbtData,</span> <span class="pre">output</span> <span class="pre">filename)</span></code> pairs.</p></li>
+<li><p><strong>harpy_input</strong> (<em>DotDict</em>) -- The harpy analysis settings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One <code class="docutils literal notranslate"><span class="pre">{plane:</span> <span class="pre">TfsDataFrame}</span></code> dictionary per bunch, in the input order.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="omc3.harpy.handler.run_per_bunch">
 <span class="sig-prename descclassname"><span class="pre">omc3.harpy.handler.</span></span><span class="sig-name descname"><span class="pre">run_per_bunch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tbt_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TbtData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harpy_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DotDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tfs.TfsDataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/omc3/harpy/handler.html#run_per_bunch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#omc3.harpy.handler.run_per_bunch" title="Link to this definition"></a></dt>
-<dd><p>Cleans data, analyses frequencies and searches for resonances.</p>
+<dd><p>Cleans data, analyses frequencies and searches for resonances.
+Potentially also writes output data to disk if requested in the
+harpy parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

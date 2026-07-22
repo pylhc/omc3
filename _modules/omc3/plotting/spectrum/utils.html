@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.plotting.spectrum.utils &mdash; omc3 0.28.2 documentation</title>
+  <title>omc3.plotting.spectrum.utils &mdash; omc3 0.29.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1ee43154"></script>
+      <script src="../../../../_static/documentation_options.js?v=fcb1757e"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -442,7 +442,7 @@
     <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">resonances</span> <span class="o">@</span> <span class="n">q</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;</span> <span class="mf">.5</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">freqs</span><span class="p">)</span>
 
-    <span class="n">freqs</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>  <span class="c1"># in case of all zeros, this is int and causes crash with float-nan</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># in case of all zeros, this is int and causes crash with float-nan</span>
     <span class="n">freqs</span><span class="p">[</span><span class="o">~</span><span class="n">use_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
     <span class="k">return</span> <span class="n">freqs</span>
 

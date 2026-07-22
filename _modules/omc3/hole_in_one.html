@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.hole_in_one &mdash; omc3 0.28.2 documentation</title>
+  <title>omc3.hole_in_one &mdash; omc3 0.29.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1ee43154"></script>
+      <script src="../../_static/documentation_options.js?v=fcb1757e"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -299,6 +299,7 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfsDataFrame</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -361,6 +362,13 @@
 <span class="sd">        are processed.</span>
 
 <span class="sd">        Flags: **--bunch_ids**</span>
+<span class="sd">      - **n_jobs** *(int)*: Number of worker processes for the per-bunch frequency analysis.</span>
+<span class="sd">        0 (default) chooses automatically: min(usable cores, number of bunches, RAM budget), and</span>
+<span class="sd">        falls back to serial if the available RAM cannot be determined. 1 runs serially. A positive</span>
+<span class="sd">        N caps the pool at N processes (still clamped to what fits in RAM, when that can be determined).</span>
+
+<span class="sd">        Flags: **--n_jobs**</span>
+<span class="sd">        Default: ``0``</span>
 <span class="sd">      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in &#39;m&#39;.</span>
 
 <span class="sd">        Flags: **--unit**</span>
@@ -625,7 +633,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_config_file</span><span class="p">(</span>
-    <span class="n">harpy_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">optics_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">accelerator_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="n">harpy_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">optics_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">accelerator_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the parsed options into a config file for later use.&quot;&quot;&quot;</span>
     <span class="n">all_options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -650,22 +660,19 @@
     <span class="n">save_options_to_config</span><span class="p">(</span><span class="n">out_dir</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">all_options</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_run_harpy</span><span class="p">(</span><span class="n">harpy_options</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_run_harpy</span><span class="p">(</span><span class="n">harpy_options</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run frequency analysis on turn-by-turn data.&quot;&quot;&quot;</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">harpy_options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time for Harpy: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
-        <span class="n">lins</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">tbt_datas</span> <span class="o">=</span> <span class="n">_parse_tbt_data</span><span class="p">(</span><span class="n">harpy_options</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">harpy_options</span><span class="o">.</span><span class="n">tbt_datatype</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">tbt_datas</span><span class="p">:</span>
-            <span class="n">lins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">handler</span><span class="o">.</span><span class="n">run_per_bunch</span><span class="p">(</span><span class="n">bunch_data</span><span class="p">,</span> <span class="n">harpy_options</span><span class="p">,</span> <span class="n">name_for_bunch</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">bunch_data</span><span class="p">,</span> <span class="n">name_for_bunch</span> <span class="ow">in</span> <span class="n">_add_suffix_and_iter_bunches</span><span class="p">(</span>
-                        <span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_options</span><span class="p">,</span> <span class="n">file</span>
-                    <span class="p">)</span>
-                <span class="p">]</span>
+        <span class="n">bunch_tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">bunch_data</span><span class="p">,</span> <span class="n">name_for_bunch</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">tbt_datas</span>
+            <span class="k">for</span> <span class="n">bunch_data</span><span class="p">,</span> <span class="n">name_for_bunch</span> <span class="ow">in</span> <span class="n">_add_suffix_and_iter_bunches</span><span class="p">(</span>
+                <span class="n">tbt_data</span><span class="p">,</span> <span class="n">harpy_options</span><span class="p">,</span> <span class="n">file</span>
             <span class="p">)</span>
-    <span class="k">return</span> <span class="n">lins</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">handler</span><span class="o">.</span><span class="n">analyse_bunches_parallel</span><span class="p">(</span><span class="n">bunch_tasks</span><span class="p">,</span> <span class="n">harpy_options</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_tbt_data</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">],</span> <span class="n">tbt_datatype</span><span class="p">:</span> <span class="nb">str</span>
@@ -720,7 +727,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_measure_optics</span><span class="p">(</span><span class="n">lins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">optics_opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_measure_optics</span><span class="p">(</span><span class="n">lins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]],</span> <span class="n">optics_opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Measure lattice optics from frequency spectra or files.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">lins</span> <span class="o">=</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">files</span>
@@ -758,6 +765,10 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">resonances</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
             <span class="s2">&quot;The magnet order for resonance lines calculation should be between 2 and 8 (inclusive).&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+            <span class="s2">&quot;n_jobs must be &gt;= 0 (0 = automatic, 1 = serial, N = N worker processes).&quot;</span>
         <span class="p">)</span>
     <span class="n">options</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">rest</span>
@@ -973,6 +984,16 @@
         <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;resonances&quot;</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum magnet order of resonance lines to calculate.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;n_jobs&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;n_jobs&quot;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of worker processes for the per-bunch frequency analysis. &quot;</span>
+        <span class="s2">&quot;0 (default) chooses automatically: min(usable cores, number of bunches, &quot;</span>
+        <span class="s2">&quot;RAM budget), and falls back to serial if the available RAM cannot be &quot;</span>
+        <span class="s2">&quot;determined. 1 runs serially. A positive N caps the pool at N processes &quot;</span>
+        <span class="s2">&quot;(still clamped to what fits in RAM, when that can be determined).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="c1"># fmt: on</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
@@ -1118,6 +1139,7 @@
     <span class="s2">&quot;to_write&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;lin&quot;</span><span class="p">,</span> <span class="s2">&quot;bpm_summary&quot;</span><span class="p">],</span>
     <span class="s2">&quot;tbt_datatype&quot;</span><span class="p">:</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;resonances&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">OPTICS_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>

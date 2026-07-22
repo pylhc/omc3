@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; omc3 0.28.2 documentation</title>
+  <title>Analysis &mdash; omc3 0.29.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=178c8cd6" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1ee43154"></script>
+      <script src="../_static/documentation_options.js?v=fcb1757e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -343,6 +343,13 @@ Default: <code class="docutils literal notranslate"><span class="pre">[0,</span>
 <li><p><strong>bunch_ids</strong> <em>(int)</em>: Bunches to process in multi-bunch file. If not specified, all bunches
 are processed.</p>
 <p>Flags: <strong>--bunch_ids</strong></p>
+</li>
+<li><p><strong>n_jobs</strong> <em>(int)</em>: Number of worker processes for the per-bunch frequency analysis.
+0 (default) chooses automatically: min(usable cores, number of bunches, RAM budget), and
+falls back to serial if the available RAM cannot be determined. 1 runs serially. A positive
+N caps the pool at N processes (still clamped to what fits in RAM, when that can be determined).</p>
+<p>Flags: <strong>--n_jobs</strong>
+Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
 </li>
 <li><p><strong>unit</strong> <em>(str)</em>: A unit of TbT BPM orbit data. All cuts and output are in ‘m’.</p>
 <p>Flags: <strong>--unit</strong>
