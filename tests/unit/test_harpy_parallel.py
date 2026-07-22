@@ -2,6 +2,7 @@
 Unit tests for the harpy parallel orchestration strategy in omc3.harpy._parallel.
 """
 
+import logging
 import os
 from types import SimpleNamespace
 
@@ -180,12 +181,49 @@ def test_decide_n_jobs_requested_clamped_to_cores(monkeypatch):
 
 
 @pytest.mark.basic
-def test_decide_n_jobs_ram_unknown_falls_back_to_cores_and_bunches(monkeypatch):
-    """Ensure with no RAM info we fall back to min between n_cores and n_bunches."""
+def test_decide_n_jobs_ram_unknown_falls_back_to_serial(monkeypatch):
+    """
+    With no RAM info we cannot size the pool safely, so deciding automatically
+    conservatively falls back to a single worker (an OOM-killed worker would take
+    the whole pool down with it, so 'slow' is a better failure mode than 'dead').
+    """
     monkeypatch.setattr(_parallel, "usable_cores", lambda: 8)  # 8 cores
     monkeypatch.setattr(_parallel, "available_ram_bytes", lambda: None)  # Unavailable RAM info
-    assert _parallel.decide_n_workers(_min_harpy_input(), 100, 536, requested=0) == 8  # n_cores
-    assert _parallel.decide_n_workers(_min_harpy_input(), 3, 536, requested=0) == 3  # n_bunches
+    assert _parallel.decide_n_workers(_min_harpy_input(), 100, 536, requested=0) == 1
+    assert _parallel.decide_n_workers(_min_harpy_input(), 3, 536, requested=0) == 1
+
+
+@pytest.mark.basic
+def test_decide_n_jobs_ram_unknown_honours_explicit_request(monkeypatch):
+    """
+    An explicitly requested --n_jobs lifts the fallback above: the user knows their
+    machine better than a detection which just failed. The cores and bunches caps
+    still apply, though.
+    """
+    monkeypatch.setattr(_parallel, "usable_cores", lambda: 8)  # 8 cores
+    monkeypatch.setattr(_parallel, "available_ram_bytes", lambda: None)  # Unavailable RAM info
+    assert _parallel.decide_n_workers(_min_harpy_input(), 100, 536, requested=4) == 4  # requested
+    assert _parallel.decide_n_workers(_min_harpy_input(), 100, 536, requested=200) == 8  # n_cores
+    assert _parallel.decide_n_workers(_min_harpy_input(), 3, 536, requested=64) == 3  # n_bunches
+
+
+@pytest.mark.basic
+def test_decide_n_jobs_ram_unknown_warns(monkeypatch, caplog):
+    """
+    Both unknown-RAM paths warn: the automatic one so that an unexpected serial run
+    can be diagnosed, and the explicit one so the user knows we did not validate it.
+    """
+    monkeypatch.setattr(_parallel, "usable_cores", lambda: 8)  # 8 cores
+    monkeypatch.setattr(_parallel, "available_ram_bytes", lambda: None)  # Unavailable RAM info
+
+    with caplog.at_level(logging.WARNING):
+        _parallel.decide_n_workers(_min_harpy_input(), 100, 536, requested=0)
+    assert "falling back to a single worker" in caplog.text
+
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        _parallel.decide_n_workers(_min_harpy_input(), 100, 536, requested=4)
+    assert "explicitly requested n_jobs=4" in caplog.text
 
 
 @pytest.mark.basic
