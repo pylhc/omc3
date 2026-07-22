@@ -117,8 +117,9 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
 
         Flags: **--bunch_ids**
       - **n_jobs** *(int)*: Number of worker processes for the per-bunch frequency analysis.
-        0 (default) chooses automatically: min(usable cores, number of bunches, RAM budget).
-        1 runs serially. A positive N caps the pool at N processes (still clamped to what fits in RAM).
+        0 (default) chooses automatically: min(usable cores, number of bunches, RAM budget), and
+        falls back to serial if the available RAM cannot be determined. 1 runs serially. A positive
+        N caps the pool at N processes (still clamped to what fits in RAM, when that can be determined).
 
         Flags: **--n_jobs**
         Default: ``0``
@@ -740,8 +741,9 @@ def harpy_params() -> EntryPointParameters:
         default=HARPY_DEFAULTS["n_jobs"],
         help="Number of worker processes for the per-bunch frequency analysis. "
         "0 (default) chooses automatically: min(usable cores, number of bunches, "
-        "RAM budget). 1 runs serially. A positive N caps the pool at N processes "
-        "(still clamped to what fits in RAM).",
+        "RAM budget), and falls back to serial if the available RAM cannot be "
+        "determined. 1 runs serially. A positive N caps the pool at N processes "
+        "(still clamped to what fits in RAM, when that can be determined).",
     )
     # fmt: on
     return params
