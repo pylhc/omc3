@@ -1,6 +1,6 @@
 """
-Parallel
---------
+Harpy Parallel Helpers
+----------------------
 
 Private helper module for harpy's per-bunch parallel orchestration:
 
