@@ -172,12 +172,14 @@ def decide_n_workers(
         `0` selects automatically (all usable cores, RAM permitting); `1` runs serially
         (which is the old behaviour) and providing an integer value `N` uses up to `N`
         workers, still bounded by the same safety limits. In other words `N` can only
-        throttle the pool *below* the automatic choice, never oversubscribe it.
+        throttle the pool *below* the automatic choice, never oversubscribe it. Requesting
+        `N` explicitly is also what lifts the fallback described below.
 
         The result is `max(1, min(cores_cap, n_bunches, ram_cap))`, where `cores_cap` is
         `usable_cores()` when automatic or `min(N, usable_cores())` when `N` is requested,
-        and `ram_cap` is `floor(margin * available_ram / peak_rss_per_bunch)` (or
-        unconstrained when the available RAM could not be determined).
+        and `ram_cap` is `floor(margin * available_ram / peak_rss_per_bunch)` (or `1` when
+        the available RAM could not be determined and no explicit `N` was requested, as we
+        do not guess a pool size we cannot verify).
 
     Args:
         harpy_input (DotDict): Harpy analysis settings, forwarded to
@@ -201,11 +203,27 @@ def decide_n_workers(
     peak_rss: int = estimate_peak_rss_bytes_per_bunch(harpy_input, n_bpms)
     available_ram: int | None = available_ram_bytes()
 
-    # Determine the available RAM to use, including the safety margin
-    # If unknown RAM -> do not let it constrain the choice
+    # Determine the available RAM to use, including the safety margin.
+    # If unknown RAM -> we cannot size the pool. An OOM-killed worker takes the whole pool
+    # down with it, so the safe failure mode is to stay serial when deciding automatically.
+    # However, an explicitly provided 'n_jobs' is trusted, as the user knows their machine
+    # better than a detection which just failed.
     if available_ram is None:
-        ram_cap: int = n_bunches
-        available_ram_str, ram_cap_str = "unknown", "n/a"
+        available_ram_str = "unknown"
+        if requested > 0:
+            ram_cap: int = n_bunches  # do not constrain, the user asked for it
+            ram_cap_str = "n/a (explicit n_jobs)"
+            LOGGER.warning(
+                "Could not determine the available RAM on this machine; proceeding with "
+                f"the explicitly requested n_jobs={requested}."
+            )
+        else:
+            ram_cap = 1
+            ram_cap_str = "1 (unknown RAM)"
+            LOGGER.warning(
+                "Could not determine the available RAM on this machine, falling back to a "
+                "single worker. Provide n_jobs=N explicitly to parallelise anyway."
+            )
     else:
         ram_cap = int(margin * available_ram / peak_rss)
         available_ram_str, ram_cap_str = f"{available_ram / 1e9:.0f}GB", str(ram_cap)
