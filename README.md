@@ -26,12 +26,13 @@
 | omc3/definitions/optics.py                              |      152 |        6 |     96% |127, 136-139, 158 |
 | omc3/global\_correction.py                              |       65 |        2 |     97% |  320, 387 |
 | omc3/harpy/\_\_init\_\_.py                              |        1 |        0 |    100% |           |
+| omc3/harpy/\_parallel.py                                |       56 |        0 |    100% |           |
 | omc3/harpy/clean.py                                     |      151 |       15 |     90% |42, 90, 113, 188, 204-205, 215-216, 240-247 |
 | omc3/harpy/constants.py                                 |       26 |        0 |    100% |           |
-| omc3/harpy/frequency.py                                 |      196 |        7 |     96% |151, 238, 507, 524-526, 546 |
-| omc3/harpy/handler.py                                   |      127 |        1 |     99% |       304 |
+| omc3/harpy/frequency.py                                 |      196 |        4 |     98% |151, 238, 507, 546 |
+| omc3/harpy/handler.py                                   |      146 |        1 |     99% |       420 |
 | omc3/harpy/kicker.py                                    |       27 |        0 |    100% |           |
-| omc3/hole\_in\_one.py                                   |      194 |       10 |     95% |333, 335, 373, 456, 482, 498, 500, 502, 504, 881 |
+| omc3/hole\_in\_one.py                                   |      195 |       10 |     95% |341, 343, 381, 463, 489, 505, 507, 509, 511, 903 |
 | omc3/kmod\_importer.py                                  |       74 |        4 |     95% |313-319, 333 |
 | omc3/knob\_extractor.py                                 |      160 |       20 |     88% |77-80, 390-391, 395-396, 400-401, 506-519, 577, 605, 609 |
 | omc3/machine\_data\_extraction/\_\_init\_\_.py          |        1 |        0 |    100% |           |
@@ -163,7 +164,7 @@
 | omc3/utils/rbac.py                                      |       70 |        2 |     97% |  116, 120 |
 | omc3/utils/stats.py                                     |       83 |        2 |     98% |   329-330 |
 | omc3/utils/time\_tools.py                               |      138 |       29 |     79% |31, 55-57, 60, 66-72, 139-140, 152, 174, 200, 215, 220, 224, 228, 232, 242, 245, 250, 255, 265, 270, 275, 280 |
-| **TOTAL**                                               | **12762** | **1711** | **87%** |           |
+| **TOTAL**                                               | **12838** | **1708** | **87%** |           |
 
 
 ## Setup coverage badge
