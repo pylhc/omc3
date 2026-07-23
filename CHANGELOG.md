@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2026-07-?? - v0.29.0 - _fsoubelet_
+#### 2026-07-23 - v0.29.0 - _fsoubelet_
 
 - Changed:
     - The `harpy` internal logic has been reworked:
