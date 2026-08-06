@@ -11,7 +11,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-import dateutil.tz as tz
+from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
 from omc3.definitions.formats import TIME
