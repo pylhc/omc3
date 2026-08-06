@@ -326,7 +326,7 @@ def unbias_variance(data, weights, axis=None):
     sample_size = effective_sample_size(data, weights, axis=axis)
     try:
         return sample_size / (sample_size - 1)
-    except ZeroDivisionError or RuntimeWarning:
+    except (ZeroDivisionError, RuntimeWarning):
         return np.zeros(sample_size.shape)
 
 
