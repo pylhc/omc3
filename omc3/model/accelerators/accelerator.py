@@ -365,7 +365,6 @@ class AcceleratorDefinitionError(Exception):
     should have been overwritten.
     """
 
-    pass
 
 
 # Helper ----

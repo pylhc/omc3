@@ -140,7 +140,6 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
             print_help(accel_class.get_parameters())
         except Exception as e:  # noqa: BLE001 (ugly that we catch all exceptions here...)
             LOGGER.debug(f"An error occurred: {e}")
-            pass
 
         print("---- Model Creator | Usage ----\n")
         print_help(model_manager._get_params())

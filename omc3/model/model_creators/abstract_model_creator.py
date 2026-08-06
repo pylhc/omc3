@@ -94,7 +94,6 @@ class ModelCreator(ABC):
             opt: The remaining options (i.e. those not yet consumed by the model creator)
 
         """
-        pass
 
     def full_run(self):
         """Does the full run: preparation, running madx, post_run."""
@@ -134,7 +133,6 @@ class ModelCreator(ABC):
         """
         Returns the ``MAD-X`` script used to create the model (directory).
         """
-        pass
 
     @abstractmethod
     def get_base_madx_script(self) -> str:
@@ -142,7 +140,6 @@ class ModelCreator(ABC):
         Returns the ``MAD-X`` script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
         as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).
         """
-        pass
 
     @property
     def sequence_name(self) -> str:
