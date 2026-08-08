@@ -35,10 +35,13 @@ from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, find_file
 
 if TYPE_CHECKING:
+    from logging import Logger
+    from typing import ClassVar
+
     import numpy as np
 
-LOG = logging_tools.get_logger(__name__)
-CURRENT_DIR = Path(__file__).parent
+LOG: Logger = logging_tools.get_logger(__name__)
+CURRENT_DIR: Path = Path(__file__).parent
 
 
 class AccExcitationMode:  # TODO: use enum! (jdilly, 2025)
@@ -65,7 +68,7 @@ class Accelerator:
     NAME: str
     LOCAL_REPO_NAME: str | None = None
     # RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)
-    RE_DICT: dict[str, str] = {
+    RE_DICT: ClassVar[dict[str, str]] = {
         AccElementTypes.BPMS: r"^B.*",
         AccElementTypes.MAGNETS: r".*",
         AccElementTypes.ARC_BPMS: r"^B.*",

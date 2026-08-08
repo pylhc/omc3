@@ -64,6 +64,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from generic_parser import EntryPoint
 
@@ -75,15 +76,19 @@ from omc3.model.accelerators.accelerator import (
 from omc3.model.accelerators.psbase import PsBase
 from omc3.model.constants import PLANE_TO_HV
 
-LOGGER = logging.getLogger(__name__)
-CURRENT_DIR = Path(__file__).parent
+if TYPE_CHECKING:
+    from logging import Logger
+    from typing import ClassVar
+
+LOGGER: Logger = logging.getLogger(__name__)
+CURRENT_DIR: Path = Path(__file__).parent
 
 
 class Psbooster(PsBase):
     """Parent Class for Psbooster-types."""
     NAME: str = "psbooster"
     LOCAL_REPO_NAME: str = "acc-models-psb"
-    RE_DICT: dict[str, str] = {
+    RE_DICT: ClassVar[dict[str, str]] = {
         AccElementTypes.BPMS: r"BR\d\.BPM[^T]",
         AccElementTypes.MAGNETS: r".*",
         AccElementTypes.ARC_BPMS: r"BR\d\.BPM[^T]",
