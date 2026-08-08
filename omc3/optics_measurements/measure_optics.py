@@ -162,7 +162,7 @@ def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict) -> dict[str, Any]
         "Measure_optics:version": VERSION,
         "Command": f"{sys.executable} {' '.join(sys.argv)}",
         "CWD": Path.cwd().absolute(),
-        "Date": datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S"),
+        "Date": datetime.datetime.now(tz=datetime.UTC).strftime("%d. %B %Y, %H:%M:%S"),
         MODEL_DIRECTORY: meas_input.accelerator.model_dir,
         "Compensation": meas_input.compensation,
         "Q1": tune_dict["X"]["QF"],
