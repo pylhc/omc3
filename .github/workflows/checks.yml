@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # This runs ruff check by default, our pyproject.toml has the config
-      - uses: astral-sh/ruff-action@v3
+      - uses: astral-sh/ruff-action@v4.1.0
         with:
           version: "latest"
           src: "omc3/"
