@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import tfs
 
-import omc3.madx_wrapper as madx_wrapper
+from omc3 import madx_wrapper
 from omc3.correction.response_io import write_varmap
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.utils import logging_tools

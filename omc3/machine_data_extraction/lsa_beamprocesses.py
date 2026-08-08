@@ -11,8 +11,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
-import dateutil.tz as tz
 import numpy as np
+from dateutil import tz
 
 from omc3.machine_data_extraction.data_classes import BeamProcessInfo, FillInfo
 from omc3.machine_data_extraction.nxcals_knobs import NXCALSResult, get_raw_vars

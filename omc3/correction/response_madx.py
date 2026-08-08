@@ -27,7 +27,7 @@ import tfs
 from numpy.exceptions import ComplexWarning
 from optics_functions.coupling import coupling_via_cmatrix
 
-import omc3.madx_wrapper as madx_wrapper
+from omc3 import madx_wrapper
 from omc3.correction.constants import INCR, ORBIT_DPP
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
