@@ -67,7 +67,7 @@ def evaluate_for_variables(
         if len(variables) == 0:
             raise ValueError("No variables found! Make sure your categories are valid!")
 
-        num_proc = num_proc if len(variables) > num_proc else len(variables)
+        num_proc = min(len(variables), num_proc)
         process_pool = multiprocessing.Pool(processes=num_proc)
 
         k_values = _get_orders(order)

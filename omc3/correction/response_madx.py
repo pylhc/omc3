@@ -84,7 +84,7 @@ def create_fullresponse(
         variables = accel_inst.get_variables(classes=variable_categories)
         if len(variables) == 0:
             raise ValueError("No variables found! Make sure your categories are valid!")
-        num_proc = num_proc if len(variables) > num_proc else len(variables)
+        num_proc = min(len(variables), num_proc)
         process_pool = multiprocessing.Pool(processes=num_proc)
 
         incr_dict = _generate_madx_jobs(accel_inst, variables, delta_k, num_proc, temp_dir)
