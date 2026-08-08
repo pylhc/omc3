@@ -113,33 +113,6 @@ class DebugMode:
             self.mod_logger.removeHandler(self.console_h)
 
 
-class TempFile:
-    """
-    Context Manager. Lets another function write into a temporary file and logs its contents.
-    It won't open the file, so only the files path is returned.
-
-    Args:
-        file_path (str): Place to write the tempfile to.
-        log_func (func): The function with which the content should be logged (e.g. LOG.info).
-    """
-
-    def __init__(self, file_path: Path | str, log_func):
-        self.path = Path(file_path)
-        self.log_func = log_func
-
-    def __enter__(self) -> Path:
-        return self.path
-
-    def __exit__(self, value, traceback):
-        try:
-            content = Path(self.path).read_text()
-            self.log_func(f"{self.path:s}:\n" + content)
-        except OSError:
-            self.log_func(f"{self.path:s}: -file does not exist-")
-        else:
-            Path(self.path).unlink()
-
-
 @contextmanager
 def log_pandas_settings_with_copy(log_func):
     """Logs pandas ``SettingsWithCopy`` warning to loc_func instead of printing the warning."""
