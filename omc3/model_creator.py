@@ -20,9 +20,12 @@ from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.parsertools import print_help, require_param
 
 if TYPE_CHECKING:
+    from logging import Logger
+
     from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
-LOGGER = logging_tools.get_logger(__name__)
+
+LOGGER: Logger = logging_tools.get_logger(__name__)
 
 
 def _get_params():
