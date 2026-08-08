@@ -274,7 +274,7 @@ def extend_segment(segment: Segment, model: pd.DataFrame, measurement: OpticsMea
     return new_segment
 
 
-def get_differences(propagables: list[Propagable], segment_name: str = "", output_dir: Path = None) -> SegmentDiffs:
+def get_differences(propagables: list[Propagable], segment_name: str = "", output_dir: Path | None = None) -> SegmentDiffs:
     """Calculate the differences of the propagated model and the measurement and write
     them out into files (if ``output`` had been given).
 

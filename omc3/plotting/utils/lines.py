@@ -90,8 +90,8 @@ def plot_vertical_lines_fast(ax, x, y=(0, 1), **kwargs):
 def plot_vertical_line(
     ax,
     axvline_args: dict,
-    text: str = None,
-    text_loc: str = None,
+    text: str | None = None,
+    text_loc: str | None = None,
     label_size: float = rcParams["font.size"],
 ):
     """

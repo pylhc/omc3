@@ -30,9 +30,11 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-def diff_twiss_parameters(model_a: tfs.TfsDataFrame,
-                          model_b: tfs.TfsDataFrame,
-                          parameters: Sequence[str] = None) -> tfs.TfsDataFrame:
+def diff_twiss_parameters(
+    model_a: tfs.TfsDataFrame,
+    model_b: tfs.TfsDataFrame,
+    parameters: Sequence[str] | None = None,
+) -> tfs.TfsDataFrame:
     """Create a TfsDataFrame containing the difference of the given parameters between
     model_a and model_b."""
     # preparation ---

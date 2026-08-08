@@ -28,7 +28,7 @@ COMPLEVEL: int = 9  # goes from 0-9, 9 is highest compression, None deactivates 
 # Fullresponse -----------------------------------------------------------------
 
 
-def read_fullresponse(path: Path, optics_parameters: Sequence[str] = None) -> dict[str, pd.DataFrame]:
+def read_fullresponse(path: Path, optics_parameters: Sequence[str] | None = None) -> dict[str, pd.DataFrame]:
     """Load the response matrices from disk.
     Beware: As empty DataFrames are skipped on write,
     default for not found entries are empty DataFrames.
@@ -66,7 +66,7 @@ def write_fullresponse(path: Path, fullresponse: dict[str, pd.DataFrame]):
 # Varmap -----------------------------------------------------------------------
 
 
-def read_varmap(path: Path, k_values: Sequence[str] = None) -> dict[str, dict[str, pd.Series]]:
+def read_varmap(path: Path, k_values: Sequence[str] | None = None) -> dict[str, dict[str, pd.Series]]:
     """Load the variable mapping file from disk.
     Beware: As empty DataFrames are skipped on write,
     default for not found entries are empty Series.

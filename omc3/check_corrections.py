@@ -438,7 +438,7 @@ def _check_opt_add_dicts(opt: DotDict) -> DotDict:
 
 
 def _get_corrections(
-    corrections: Sequence[Path], file_pattern: str = None
+    corrections: Sequence[Path], file_pattern: str | None = None
 ) -> dict[str, Sequence[Path]]:
     """Sort the given correction files:
     If given by individual files, they all go into one bucket,
@@ -614,7 +614,7 @@ def _create_check_columns(
     colmap_meas: ColumnsAndLabels,
     colmap_model: ColumnsAndLabels,
     attribute: str,
-    rms_mask: dict = None,
+    rms_mask: dict | None = None,
 ) -> None:
     """Creates the columns in the measurements, that allow for checking the corrections.
     These are:

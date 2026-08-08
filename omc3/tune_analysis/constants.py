@@ -189,7 +189,7 @@ def get_action_err_col(plane: str) -> str:
 # Plotting #####################################################################
 
 
-def get_tune_label(plane: str, scale: int = None) -> str:
+def get_tune_label(plane: str, scale: int | None = None) -> str:
     """ Tune label for the action/tune plots. """
     unit = ""
     if scale:

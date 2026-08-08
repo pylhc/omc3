@@ -100,7 +100,7 @@ class PlotWidget(QWidget):
 
 class TabWidget(QTabWidget):
 
-    def __init__(self, title: str = None):
+    def __init__(self, title: str | None = None):
         """A simple tab widget, that in addition
         to QTabWidget keeps track of the tabs via dictionary
         and can have a title.
@@ -120,7 +120,7 @@ class TabWidget(QTabWidget):
 
 class SimpleTabWindow:
 
-    def __init__(self, title: str = "Simple Tab Window", size: tuple[int, int] = None):
+    def __init__(self, title: str = "Simple Tab Window", size: tuple[int, int] | None = None):
         """A simple GUI window, i.e. a standalone graphical application,
         which contains a single Tab-Widget, allowing the user to add tabs to it.
 
@@ -156,7 +156,7 @@ class SimpleTabWindow:
 
 class VerticalTabWindow(SimpleTabWindow):
 
-    def __init__(self, title: str = "Vertical Tab Window", size: tuple[int, int] = None):
+    def __init__(self, title: str = "Vertical Tab Window", size: tuple[int, int] | None = None):
         """A Window in which the tabs are aligned vertically on the left-hand side.
         This window assumes that you may want to have tabs within tabs,
         so the convenience function `add_to_tab` is implemented, which allows
@@ -183,7 +183,7 @@ class VerticalTabWindow(SimpleTabWindow):
         self.app.exec()
 
 
-def create_pyplot_window_from_fig(fig: Figure, title: str = None):
+def create_pyplot_window_from_fig(fig: Figure, title: str | None = None):
     """Create a window from the given figure, which is managed by pyplot.
     This is similar to how figures behave when created with `pyplot.figure()`,
     but you can crate the figure instance first and the manager later.

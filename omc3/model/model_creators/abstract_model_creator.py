@@ -65,7 +65,7 @@ class ModelCreator(ABC):
     jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
     save_sequence_filename: str = "saved_madx.seq"
 
-    def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
+    def __init__(self, accel: Accelerator, logfile: Path | None = None, acc_models_path: Path | None = None):
         """
         Initialise the Model Creator.
 

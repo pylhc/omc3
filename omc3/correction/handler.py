@@ -225,7 +225,7 @@ def get_measurement_data(
         keys: Sequence[str],
         meas_dir: Path,
         beta_filename: str,
-        w_dict: dict[str, float] = None,
+        w_dict: dict[str, float] | None = None,
 ) -> tuple[list[str], dict[str, tfs.TfsDataFrame]]:
     """ Loads all measurements defined by `keys` into a dictionary. """
     measurement = {}

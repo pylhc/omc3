@@ -287,8 +287,8 @@ def _sort_paths_by_ip(
 def calculate_all_lumi_imbalances(
     averaged_results: dict[str, dict[int, tfs.TfsDataFrame]],
     df_model: tfs.TfsDataFrame,
-    output_dir: Path | str = None,
-    ) -> None:
+    output_dir: Path | str | None = None,
+) -> None:
     """Calculates the luminosity imbalance between two IPs.
 
     Args:

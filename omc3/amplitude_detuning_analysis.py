@@ -288,10 +288,12 @@ def analyse_with_bbq_corrections(opt: DotDict) -> tuple[TfsDataFrame, TfsDataFra
     return kick_df, bbq_df
 
 
-def get_kick_and_bbq_df(kick: Path | str, bbq_in: Path | str,
-                        beam: int = None,
-                        filter_opt: FilterOpts = None,
-                        ) -> tuple[TfsDataFrame, TfsDataFrame]:
+def get_kick_and_bbq_df(
+    kick: Path | str,
+    bbq_in: Path | str,
+    beam: int | None = None,
+    filter_opt: FilterOpts | None = None,
+) -> tuple[TfsDataFrame, TfsDataFrame]:
     """Load the input data."""
     bbq_df = None
     if bbq_in is not None and bbq_in == INPUT_PREVIOUS:

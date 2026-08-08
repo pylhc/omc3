@@ -75,7 +75,7 @@ def _get_ampdet_columns(corrected):
 # Data Addition ################################################################
 
 
-def add_bbq_data(kick_df: pd.DataFrame, bbq_df: pd.DataFrame, column: str, bbq_column: str = None):
+def add_bbq_data(kick_df: pd.DataFrame, bbq_df: pd.DataFrame, column: str, bbq_column: str | None = None):
     """
     Add BBQ values from column to kickac dataframe into same column.
 

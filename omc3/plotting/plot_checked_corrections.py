@@ -424,7 +424,7 @@ def _create_correction_plots_per_filename(
     return figs
 
 
-def save_plots(output_dir: Path, figure_dict: dict[str, Figure], input_dir: Path = None):
+def save_plots(output_dir: Path, figure_dict: dict[str, Figure], input_dir: Path | None = None):
     """ Save the plots. """
     for figname, fig in figure_dict.items():
         outdir = output_dir
