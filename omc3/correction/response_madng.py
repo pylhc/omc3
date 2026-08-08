@@ -199,10 +199,10 @@ def create_fullresponse(
         try:
             # Compute derivatives with twiss
             response_dict = _compute_response_with_derivatives(mad, variables, accel_inst)
-        except RuntimeError as e:
+        except RuntimeError:
             LOGGER.error("Error while computing response with MAD-NG derivatives.")
             _log_madng_output(log_path)
-            raise e
+            raise
         _log_madng_output(log_path)
 
     return response_dict
