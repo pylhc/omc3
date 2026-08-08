@@ -390,7 +390,7 @@ def extract(ldb, knobs: Sequence[str], time: datetime) -> dict[str, float]:
                 LOGGER.debug(f"{knob} not found in StateTracker")
                 continue
 
-            timestamps, values = knobvalue[knobkey]
+            _timestamps, values = knobvalue[knobkey]
             if len(values) == 0:
                 LOGGER.debug(f"No value for {knob} found")
                 continue

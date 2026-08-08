@@ -169,7 +169,7 @@ class MomentumDispersion(Propagable):
 
         # get the measured values
         names = self.get_segment_observation_points(plane)
-        momentum_dispersion, err_pdisp = self.get_at(names, self._meas, plane)
+        momentum_dispersion, _err_pdisp = self.get_at(names, self._meas, plane)
 
         # get the propagated values
         model_momentum_dispersion = seg_model.loc[names, f"{MOMENTUM_DISPERSION}{plane}"]

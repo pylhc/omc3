@@ -190,7 +190,7 @@ def do_2d_kicks_odr(x: ArrayLike, y: ArrayLike, xerr: ArrayLike, yerr: ArrayLike
     def curve_fit_fun(v, *args):
         return first_order_detuning_2d(v, args).ravel()
 
-    beta, beta_cov = curve_fit(f=curve_fit_fun, xdata=x, ydata=y.ravel(), p0=[0] * 5)
+    beta, _beta_cov = curve_fit(f=curve_fit_fun, xdata=x, ydata=y.ravel(), p0=[0] * 5)
 
     res_str = ",\n".join([f"{n:>16} = {b:9.3g}" for n, b in zip(INPUT_ORDER, beta)])
     LOG.info(f"\nDetuning estimate without errors (curve fit):\n{res_str}\n")
