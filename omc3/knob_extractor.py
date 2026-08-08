@@ -488,8 +488,7 @@ def _write_knobsfile(output: Path | str, collected_knobs: tfs.TfsDataFrame):
         outfile.write(f"!! --- extracted knobs for time {collected_knobs.headers[Head.time]}\n\n")
         for category, knobs_df in category_knobs.items():
             outfile.write(f"!! --- {category:10} --------------------\n")
-            for knob, knob_entry in knobs_df.iterrows():
-                outfile.write(f"{get_madx_command(knob_entry)}\n")
+            outfile.writelines(f"{get_madx_command(knob_entry)}\n" for knob, knob_entry in knobs_df.iterrows())
             outfile.write("\n")
         outfile.write("\n")
 
