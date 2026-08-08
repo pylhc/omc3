@@ -73,7 +73,7 @@ class DebugMode:
             caller_file: str = _get_caller()
             current_module: str = _get_current_module(caller_file)
 
-            self.logger = logging.getLogger(".".join([current_module, Path(caller_file).name]))
+            self.logger = logging.getLogger(f"{current_module}.{Path(caller_file).name}")
 
             # set level to debug
             self.current_level = self.logger.getEffectiveLevel()
@@ -392,7 +392,7 @@ def _get_caller_logger_name():
     """Returns logger name of the caller."""
     caller_file: str = _get_caller()
     current_module = _get_current_module(caller_file)
-    return ".".join([current_module, Path(caller_file).name])
+    return f"{current_module}.{Path(caller_file).name}"
 
 
 def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):

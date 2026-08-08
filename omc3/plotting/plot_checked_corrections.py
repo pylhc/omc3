@@ -509,7 +509,7 @@ def show_plots(figure_dict: dict[str, Figure]):
                     continue
 
                 if not correction_name:
-                    name_y = "_".join([rdt, complement_column.text_label, complement_column.expected_column])
+                    name_y = f"{rdt}_{complement_column.text_label}_{complement_column.expected_column}"
                 else:
                     name_y = "_".join(name_x.split("_")[:-1] + [complement_column.text_label,])
 
