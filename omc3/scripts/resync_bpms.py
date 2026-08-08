@@ -169,7 +169,7 @@ def _get_params() -> dict:
                 "".join(p)
                 for r in range(1, len(PLANES) + 1)
                 for p in permutations(PLANES, r)
-            ], #
+            ],
             "default": PLANES[0],
             "help": "Planes to process in the given order.",
         },
