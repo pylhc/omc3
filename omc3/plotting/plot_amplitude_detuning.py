@@ -717,7 +717,7 @@ def _get_scaled_odr_label(odr_fit, order, action_unit, acd_correction, magnitude
 def _get_scaled_labels(val, std, scale):
     scaled_vas, scaled_std = val*scale, std*scale
     if abs(scaled_std) > 1 or scaled_std == 0:
-        return f'{int(round(scaled_vas)):d}', f'{int(round(scaled_std)):d}'
+        return f"{round(scaled_vas):d}", f"{round(scaled_std):d}"
     return significant_digits(scaled_vas, scaled_std)
 
 
