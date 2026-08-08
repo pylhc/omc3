@@ -271,7 +271,7 @@ def plot_checked_corrections(opt: DotDict):
         for correction in opt.corrections:
             correction_dirs[correction] = opt.input_dir / correction
 
-    measurements: Path = opt.meas_dir or list(correction_dirs.values())[0]
+    measurements: Path = opt.meas_dir or next(iter(correction_dirs.values()))
 
     files = _get_corrected_measurement_names(correction_dirs.values())
     ip_positions = _get_ip_positions(opt.ip_positions, opt.x_axis, opt.ip_search_pattern)
