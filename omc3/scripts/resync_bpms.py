@@ -99,9 +99,11 @@ from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr
 
 if TYPE_CHECKING:
+    from logging import Logger
+
     from pandas import Series
 
-LOGGER = logging_tools.get_logger(__name__)
+LOGGER: Logger = logging_tools.get_logger(__name__)
 
 # ----- Some very specific constants -----
 
@@ -112,7 +114,7 @@ RINGS: Final[set[Literal["LER", "HER"]]] = {"LER", "HER"}
 PHASE_FILE: Final[str] = (
     f"{TOTAL_PHASE_NAME}" + "{plane}" + f"{EXT}"
 )  # to be formatted by 'plane'
-DEFAULT_DATATYPE: Final[Literal["lhc"]] = "lhc"
+DEFAULT_DATATYPE: Final = "lhc"
 
 
 # ----- Entrypoint parsing ----- #
