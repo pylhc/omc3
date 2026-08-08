@@ -49,8 +49,8 @@ class Dispersion(Propagable):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the dispersion is in the measurement data. """
         try:
-            meas.dispersion_x
-            meas.dispersion_y
+            _x = meas.dispersion_x  # just testing presence via access
+            _y = meas.dispersion_y  # just testing presence via access
         except FileNotFoundError:
             return False
         return True
@@ -140,8 +140,8 @@ class MomentumDispersion(Propagable):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the dispersion is in the measurement data. """
         try:
-            meas.dispersion_x
-            meas.dispersion_y
+            _x = meas.dispersion_x  # just testing presence via access
+            _y = meas.dispersion_y  # just testing presence via access
         except FileNotFoundError:
             return False
         return True

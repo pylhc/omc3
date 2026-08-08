@@ -202,7 +202,7 @@ class F1001(Coupling):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the coupling rdt is in the measurement data. """
         try:
-            meas.f1001
+            _f1001 = meas.f1001  # just testing presence via access
         except FileNotFoundError:
             return False
         return True
@@ -245,7 +245,7 @@ class F1010(Coupling):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the coupling rdt is in the measurement data. """
         try:
-            meas.f1010
+            _f1010 = meas.f1010  # just testing presence via access
         except FileNotFoundError:
             return False
         return True
