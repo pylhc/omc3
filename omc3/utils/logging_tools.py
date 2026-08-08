@@ -81,7 +81,7 @@ class DebugMode:
             self.logger.debug("Running in Debug-Mode.")
 
             # create logfile name:
-            now = f"{datetime.datetime.now().isoformat():s}_"
+            now = f"{datetime.datetime.now(tz=datetime.UTC).isoformat():s}_"
             if log_file is None:
                 log_file = str(Path(caller_file).resolve().with_suffix(".log"))
             self.log_file = str(Path(log_file).parent / (now + Path(log_file).name))
