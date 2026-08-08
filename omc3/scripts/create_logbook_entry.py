@@ -154,7 +154,7 @@ def _get_rbac_token() -> str:
     except CONNECTION_ERRORS as e:
         LOGGER.debug(
             f"Getting RBAC token from location failed. "
-            f"{e.__class__.__name__}: {str(e)}"
+            f"{e.__class__.__name__}: {e!s}"
         )
     else:
         LOGGER.info(f"Logged in to RBAC via location as user {rbac.user}.")
@@ -165,7 +165,7 @@ def _get_rbac_token() -> str:
     except CONNECTION_ERRORS as e:
         LOGGER.debug(
             f"Getting RBAC token via Kerberos failed. "
-            f"{e.__class__.__name__}: {str(e)}"
+            f"{e.__class__.__name__}: {e!s}"
         )
     else:
         LOGGER.info(f"Logged in to RBAC via Kerberos as user {rbac.user}.")

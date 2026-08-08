@@ -162,7 +162,7 @@ def get_os_username():
     try:
         return os.getlogin()
     except OSError as e:
-        LOGGER.debug(f"Could not get username from login. {str(e)}")
+        LOGGER.debug(f"Could not get username from login. {e!s}")
 
     for variable in ["LOGNAME", "USERNAME", "USER"]:
         try:

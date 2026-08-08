@@ -286,7 +286,7 @@ def _plot_2d(tune_plane: str, opt: DotDict) -> dict[str, Figure]:
                                                     corrected=corrected
                                                     )
                 except KeyError as e:
-                    LOG.debug(f"Entries not found in dataframe: {str(e)}")
+                    LOG.debug(f"Entries not found in dataframe: {e!s}")
                     continue  # should only happen when there is no 'corrected' columns
 
                 # Read data from kick_df headers ---

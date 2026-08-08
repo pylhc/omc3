@@ -38,7 +38,7 @@ LOG = logging_tools.get_logger(__name__)
 try:
     from qtpy.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget
 except ImportError as e:
-    LOG.debug(f"Could not import QtPy: {str(e)}")
+    LOG.debug(f"Could not import QtPy: {e!s}")
     QMainWindow, QApplication, QVBoxLayout  = None, None, None
     FigureCanvas, NavigationToolbar = None, None  # for mock in pytest
     QWidget, QTabWidget = object, object

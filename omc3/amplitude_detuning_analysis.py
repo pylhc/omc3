@@ -508,10 +508,10 @@ def _get_bbq_data(beam: int, input_: Path | str | int, kick_df: TfsDataFrame) ->
                 t_start - t_delta, t_end + t_delta, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols))
             )
         else:  # input_ is a file name or path
-            LOG.debug(f"Getting bbq data from file '{str(input_):s}'")
+            LOG.debug(f"Getting bbq data from file '{input_!s:s}'")
             data = read_timed_dataframe(input_)
             if not len(data.index):
-                raise ValueError(f"No entries in {str(input_):s}.") from e
+                raise ValueError(f"No entries in {input_!s:s}.") from e
 
     else:  # input_ is a number, assumed to be a fill number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")

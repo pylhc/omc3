@@ -96,7 +96,7 @@ def _generate_madx_jobs(
     def _do_macro(var):
         return (
             f"exec, create_table(table.{var:s});\n"
-            f"write, table=table.{var:s}, file='{str(_get_tablefile(temp_dir, var)):s}';\n"
+            f"write, table=table.{var:s}, file='{_get_tablefile(temp_dir, var)!s:s}';\n"
         )
 
     LOG.debug("Generating MADX jobfiles.")
@@ -312,7 +312,7 @@ def check_varmap_file(accel_inst: Accelerator, vars_categories):
         Path(accel_inst.model_dir) / f"varmap_{'_'.join(sorted(set(vars_categories)))}.{EXT}"
     )
     if not varmap_path.exists():
-        LOG.info(f"Variable mapping '{str(varmap_path):s}' not found. Evaluating it via madx.")
+        LOG.info(f"Variable mapping '{varmap_path!s:s}' not found. Evaluating it via madx.")
         mapping = evaluate_for_variables(accel_inst, vars_categories)
         write_varmap(varmap_path, mapping)
 

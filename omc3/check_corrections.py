@@ -459,7 +459,7 @@ def _get_corrections(
         if len(do_not_exist):
             raise OSError(
                 f"Some correction files do not exist for scenario {name}:"
-                f" {str(do_not_exist)}"
+                f" {do_not_exist!s}"
             )
 
     return corr_dict
@@ -537,7 +537,7 @@ def _create_model_and_write_diff_to_measurements(
         corr_model_path, correction_files, accel_inst
     )  # writes out twiss file!
     corr_model_elements = _maybe_add_coupling_to_model(corr_model_elements, measurement)
-    LOG.debug(f"Matched model created in {str(corr_model_path.absolute())}.")
+    LOG.debug(f"Matched model created in {corr_model_path.absolute()!s}.")
 
     # Get diff to nominal model
     diff_columns = (

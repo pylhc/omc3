@@ -34,8 +34,8 @@ def read_fullresponse(path: Path, optics_parameters: Sequence[str] = None) -> di
     default for not found entries are empty DataFrames.
     """
     if not path.exists():
-        raise OSError(f"Fullresponse file {str(path)} does not exist.")
-    LOG.info(f"Loading response matrices from file '{str(path)}'")
+        raise OSError(f"Fullresponse file {path!s} does not exist.")
+    LOG.info(f"Loading response matrices from file '{path!s}'")
 
     # If encountering issues, remove the context manager and debug
     with ignore_natural_name_warning(), pd.HDFStore(path, mode="r") as store:
@@ -53,9 +53,9 @@ def write_fullresponse(path: Path, fullresponse: dict[str, pd.DataFrame]):
     """Write the full response matrices to disk.
     Beware: Empty Dataframes are skipped! (HDF creates gigantic files otherwise)
     """
-    LOG.info(f"Saving response matrices into file '{str(path)}'")
+    LOG.info(f"Saving response matrices into file '{path!s}'")
     if path.exists():
-        LOG.warning(f"Fullresponse file {str(path)} already exist and will be overwritten.")
+        LOG.warning(f"Fullresponse file {path!s} already exist and will be overwritten.")
 
     # If encountering issues, remove the context manager and debug
     with ignore_natural_name_warning(), pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:
@@ -72,8 +72,8 @@ def read_varmap(path: Path, k_values: Sequence[str] = None) -> dict[str, dict[st
     default for not found entries are empty Series.
     """
     if not path.exists():
-        raise OSError(f"Varmap file {str(path)} does not exist.")
-    LOG.info(f"Loading varmap from file '{str(path)}'")
+        raise OSError(f"Varmap file {path!s} does not exist.")
+    LOG.info(f"Loading varmap from file '{path!s}'")
 
     # If encountering issues, remove the context manager and debug
     with ignore_natural_name_warning(), pd.HDFStore(path, mode="r") as store:
@@ -92,7 +92,7 @@ def write_varmap(path: Path, varmap: dict[str, dict[str, pd.Series]]):
     """Write the  variable mapping file to disk.
     Beware: Empty Dataframes are skipped! (HDF creates gigantic files otherwise)
     """
-    LOG.info(f"Saving varmap into file '{str(path)}'")
+    LOG.info(f"Saving varmap into file '{path!s}'")
 
     # If encountering issues, remove the context manager and debug
     with ignore_natural_name_warning(), pd.HDFStore(path, mode="w", complib=COMPLIB, complevel=COMPLEVEL) as store:

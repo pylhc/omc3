@@ -71,7 +71,7 @@ def get_active_beamprocess_at_time(
         raise ValueError(
             f"No active BeamProcess found for group '{bp_group}' at time {time.isoformat()}."
         )
-    LOGGER.debug(f"Active BeamProcess at time '{time.isoformat()}': {str(beamprocess)}")
+    LOGGER.debug(f"Active BeamProcess at time '{time.isoformat()}': {beamprocess!s}")
     return BeamProcessInfo.from_java_beamprocess(beamprocess)
 
 
@@ -122,7 +122,7 @@ def get_beamprocess_with_fill_at_time(
     try:
         start_time = _find_beamprocess_start(fill_info.beamprocesses, time, bp_info.name)
     except ValueError as e:
-        raise ValueError(f"In fill {fill_info.no} the {str(e)}") from e
+        raise ValueError(f"In fill {fill_info.no} the {e!s}") from e
     LOGGER.debug(
         f"Beamprocess {bp_info.name} in fill {fill_info.no} started at time {start_time.isoformat()}."
     )
