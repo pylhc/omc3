@@ -252,7 +252,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">dateutil.tz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tz</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil</span><span class="w"> </span><span class="kn">import</span> <span class="n">tz</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span><span class="w"> </span><span class="kn">import</span> <span class="n">relativedelta</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.definitions.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">TIME</span>
@@ -298,7 +298,6 @@
         <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">time_str</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not parse time string as ISO format&quot;</span><span class="p">)</span>
-        <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -311,7 +310,6 @@
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">time_str</span><span class="p">),</span> <span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">UTC</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not parse time string as a timestamp&quot;</span><span class="p">)</span>
-        <span class="k">pass</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t read datetime &#39;</span><span class="si">{</span><span class="n">time_str</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
@@ -393,27 +391,26 @@
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.time_tools.local_string_to_utc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">local_string_to_utc</span><span class="p">(</span><span class="n">local_string</span><span class="p">,</span> <span class="n">timezone</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a time string in local time to UTC time.&quot;&quot;&quot;</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">local_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">())</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">)</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+        <span class="n">local_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">()</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">local_to_utc</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">timezone</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="utc_string_to_utc">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.time_tools.utc_string_to_utc">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">utc_string_to_utc</span><span class="p">(</span><span class="n">utc_string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">utc_string_to_utc</span><span class="p">(</span><span class="n">utc_string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a time string in utc to a UTC datetime object.&quot;&quot;&quot;</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span></div>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_readable_time_format</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span></div>
 
 
 
 <div class="viewcode-block" id="cern_utc_string_to_utc">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.time_tools.cern_utc_string_to_utc">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">cern_utc_string_to_utc</span><span class="p">(</span><span class="n">utc_string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cern_utc_string_to_utc</span><span class="p">(</span><span class="n">utc_string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a time string in cern-utc to a utc datetime object.&quot;&quot;&quot;</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_cern_time_format</span><span class="p">())</span>
-    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span></div>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">utc_string</span><span class="p">,</span> <span class="n">get_cern_time_format</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">tzutc</span><span class="p">())</span></div>
 
 
 

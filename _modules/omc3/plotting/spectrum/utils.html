@@ -585,7 +585,7 @@
                 <span class="n">data_series</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">AMPS</span><span class="p">]</span> <span class="o">=</span> <span class="n">rescale_amp</span><span class="p">(</span><span class="n">data_series</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">AMPS</span><span class="p">])</span>
 
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">data_series</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">AMPS</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()):</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;NAN FOUND&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;NAN FOUND&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data_series</span></div>
 
 

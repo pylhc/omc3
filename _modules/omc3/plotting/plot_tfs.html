@@ -652,12 +652,14 @@
 
 <div class="viewcode-block" id="get_id">
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_tfs.get_id">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_id</span><span class="p">(</span><span class="n">filename_parts</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">file_label</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">same_axes</span><span class="p">,</span> <span class="n">same_figure</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">planes</span><span class="o">=</span><span class="p">[]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_id</span><span class="p">(</span><span class="n">filename_parts</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">file_label</span><span class="p">,</span> <span class="n">column_label</span><span class="p">,</span> <span class="n">same_axes</span><span class="p">,</span> <span class="n">same_figure</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">plane</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">planes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the right IDs for the current sorting way.</span>
 <span class="sd">    This is where the actual sorting happens, by mapping the right IDs according to the chosen</span>
 <span class="sd">    options.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">planes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">planes</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># avoid default mutable argument in function</span>
     <span class="n">planes</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">planes</span><span class="p">)</span>
 
     <span class="n">file_last</span> <span class="o">=</span> <span class="n">filename_parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">EXT</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>

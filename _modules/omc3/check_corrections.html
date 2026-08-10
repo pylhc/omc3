@@ -685,7 +685,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_corrections</span><span class="p">(</span>
-    <span class="n">corrections</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">file_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">corrections</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">file_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort the given correction files:</span>
 <span class="sd">    If given by individual files, they all go into one bucket,</span>
@@ -706,7 +706,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">do_not_exist</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Some correction files do not exist for scenario </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">do_not_exist</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">do_not_exist</span><span class="si">!s}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">corr_dict</span>
@@ -784,7 +784,7 @@
         <span class="n">corr_model_path</span><span class="p">,</span> <span class="n">correction_files</span><span class="p">,</span> <span class="n">accel_inst</span>
     <span class="p">)</span>  <span class="c1"># writes out twiss file!</span>
     <span class="n">corr_model_elements</span> <span class="o">=</span> <span class="n">_maybe_add_coupling_to_model</span><span class="p">(</span><span class="n">corr_model_elements</span><span class="p">,</span> <span class="n">measurement</span><span class="p">)</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Matched model created in </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">corr_model_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Matched model created in </span><span class="si">{</span><span class="n">corr_model_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">!s}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Get diff to nominal model</span>
     <span class="n">diff_columns</span> <span class="o">=</span> <span class="p">(</span>
@@ -861,7 +861,7 @@
     <span class="n">colmap_meas</span><span class="p">:</span> <span class="n">ColumnsAndLabels</span><span class="p">,</span>
     <span class="n">colmap_model</span><span class="p">:</span> <span class="n">ColumnsAndLabels</span><span class="p">,</span>
     <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">rms_mask</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rms_mask</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates the columns in the measurements, that allow for checking the corrections.</span>
 <span class="sd">    These are:</span>

@@ -273,9 +273,11 @@
 
 <div class="viewcode-block" id="diff_twiss_parameters">
 <a class="viewcode-back" href="../../../modules/correction.html#omc3.correction.model_diff.diff_twiss_parameters">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">diff_twiss_parameters</span><span class="p">(</span><span class="n">model_a</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
-                          <span class="n">model_b</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
-                          <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">diff_twiss_parameters</span><span class="p">(</span>
+    <span class="n">model_a</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
+    <span class="n">model_b</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a TfsDataFrame containing the difference of the given parameters between</span>
 <span class="sd">    model_a and model_b.&quot;&quot;&quot;</span>
     <span class="c1"># preparation ---</span>

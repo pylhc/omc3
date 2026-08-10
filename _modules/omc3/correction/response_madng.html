@@ -393,10 +393,10 @@
         <span class="p">)</span>
 
     <span class="c1"># Load into MAD-NG</span>
-    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;MADX:load(&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">madx_seq_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="s1">&quot;)&#39;</span><span class="p">)</span>
+    <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;MADX:load(&quot;</span><span class="si">{</span><span class="n">madx_seq_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">!s}</span><span class="s1">&quot;)&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mad</span><span class="o">.</span><span class="n">MADX</span><span class="p">[</span><span class="n">seq_name</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Sequence &#39;</span><span class="si">{</span><span class="n">seq_name</span><span class="si">}</span><span class="s2">&#39; not found in MAD file &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">madx_seq_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Sequence &#39;</span><span class="si">{</span><span class="n">seq_name</span><span class="si">}</span><span class="s2">&#39; not found in MAD file &#39;</span><span class="si">{</span><span class="n">madx_seq_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">!s}</span><span class="s2">&#39;&quot;</span>
         <span class="p">)</span>
     <span class="n">mad</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loaded_sequence = MADX.</span><span class="si">{</span><span class="n">seq_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">mad</span><span class="o">.</span><span class="n">loaded_sequence</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">accel_inst</span><span class="o">.</span><span class="n">beam_direction</span>
@@ -442,10 +442,10 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Compute derivatives with twiss</span>
             <span class="n">response_dict</span> <span class="o">=</span> <span class="n">_compute_response_with_derivatives</span><span class="p">(</span><span class="n">mad</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">accel_inst</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error while computing response with MAD-NG derivatives.&quot;</span><span class="p">)</span>
             <span class="n">_log_madng_output</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">e</span>
+            <span class="k">raise</span>
         <span class="n">_log_madng_output</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">response_dict</span></div>

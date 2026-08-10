@@ -533,7 +533,7 @@
                                                     <span class="n">corrected</span><span class="o">=</span><span class="n">corrected</span>
                                                     <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entries not found in dataframe: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entries not found in dataframe: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">continue</span>  <span class="c1"># should only happen when there is no &#39;corrected&#39; columns</span>
 
                 <span class="c1"># Read data from kick_df headers ---</span>
@@ -619,8 +619,15 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_plot_detuning</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">AmpDetData</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">limits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odrpack</span><span class="o">.</span><span class="n">OdrResult</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">odr_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_detuning</span><span class="p">(</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">AmpDetData</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">limits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odrpack</span><span class="o">.</span><span class="n">OdrResult</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">odr_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the detuning and the ODR into axes.&quot;&quot;&quot;</span>
     <span class="n">x_lim</span> <span class="o">=</span> <span class="n">_get_default</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="s1">&#39;x_lim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">action</span><span class="o">+</span><span class="n">data</span><span class="o">.</span><span class="n">action_err</span><span class="p">)])</span>
     <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
@@ -886,8 +893,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_format_axes_3d</span><span class="p">(</span>
-        <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">ax_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">acd</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">odr_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span>
+    <span class="n">limits</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="n">ax_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">acd</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">odr_labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="c1"># labels</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">ax_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ax_labels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
@@ -968,7 +979,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_scaled_labels</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
     <span class="n">scaled_vas</span><span class="p">,</span> <span class="n">scaled_std</span> <span class="o">=</span> <span class="n">val</span><span class="o">*</span><span class="n">scale</span><span class="p">,</span> <span class="n">std</span><span class="o">*</span><span class="n">scale</span>
     <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">scaled_std</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">scaled_std</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">scaled_vas</span><span class="p">))</span><span class="si">:</span><span class="s1">d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">scaled_std</span><span class="p">))</span><span class="si">:</span><span class="s1">d</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">scaled_vas</span><span class="p">)</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">scaled_std</span><span class="p">)</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">return</span> <span class="n">significant_digits</span><span class="p">(</span><span class="n">scaled_vas</span><span class="p">,</span> <span class="n">scaled_std</span><span class="p">)</span>
 
 

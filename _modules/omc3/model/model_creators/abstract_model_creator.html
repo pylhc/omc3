@@ -308,7 +308,7 @@
     <span class="n">jobfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">JOB_MODEL_MADX_NOMINAL</span>  <span class="c1"># lowercase as it might be changed in subclasses __init__</span>
     <span class="n">save_sequence_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;saved_madx.seq&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">logfile</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">acc_models_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accel</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span> <span class="n">logfile</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">acc_models_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialise the Model Creator.</span>
 
@@ -338,8 +338,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            opt: The remaining options (i.e. those not yet consumed by the model creator)</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="ModelCreator.full_run">
@@ -384,8 +383,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_script</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the ``MAD-X`` script used to create the model (directory).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="ModelCreator.get_base_madx_script">
@@ -395,8 +393,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the ``MAD-X`` script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,</span>
 <span class="sd">        as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 
     <span class="nd">@property</span>
@@ -786,10 +783,10 @@
             <span class="n">madx_script</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="sa">f</span><span class="s1">&#39;call, file=&quot;</span><span class="si">{</span><span class="n">corrections_path</span><span class="si">}</span><span class="s1">&quot;;&#39;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;exec, twiss_segment(forward_SbSSEQ, &quot;</span>
-                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">twiss_forward_corr_path</span><span class="si">}</span><span class="s1">&quot;, biniSbSParams);&#39;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;exec, twiss_segment(backward_SbSSEQ, &quot;</span>
-                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">twiss_backward_corr_path</span><span class="si">}</span><span class="s1">&quot;, bendSbSParams);&#39;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="s2">&quot;exec, twiss_segment(forward_SbSSEQ, &quot;</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">twiss_forward_corr_path</span><span class="si">}</span><span class="s1">&quot;, biniSbSParams);&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">&quot;exec, twiss_segment(backward_SbSSEQ, &quot;</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">twiss_backward_corr_path</span><span class="si">}</span><span class="s1">&quot;, bendSbSParams);&#39;</span><span class="p">),</span>
                     <span class="s2">&quot;&quot;</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">)</span>

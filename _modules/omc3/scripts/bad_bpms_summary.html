@@ -296,6 +296,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -662,7 +664,7 @@
                     <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">NAME</span><span class="p">,</span> <span class="n">ACCEL</span><span class="p">,</span> <span class="n">SOURCE</span><span class="p">,</span> <span class="n">PLANE</span><span class="p">],</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                     <span class="o">.</span><span class="n">agg</span><span class="p">(</span>
                         <span class="n">COUNT</span><span class="o">=</span><span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">),</span>  <span class="c1"># Count the number of rows in each group</span>
-                        <span class="n">REASONS</span><span class="o">=</span><span class="p">(</span><span class="n">REASONS</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[]))))</span>  <span class="c1"># Flatten and combine the lists</span>
+                        <span class="n">REASONS</span><span class="o">=</span><span class="p">(</span><span class="n">REASONS</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">iadd</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="p">[]))))</span>  <span class="c1"># Flatten + combine lists (avoid sum which is quadratic)</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 

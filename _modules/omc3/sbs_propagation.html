@@ -288,6 +288,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -418,7 +419,7 @@
         <span class="n">creator</span><span class="o">.</span><span class="n">prepare_options</span><span class="p">(</span><span class="n">fetcher_opts</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">AcceleratorDefinitionError</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">fetcher_opts</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>
-            <span class="n">exit</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
         <span class="k">raise</span>
 
     <span class="c1"># Run the actual model creation</span>
@@ -481,7 +482,7 @@
         <span class="n">segment_creator</span><span class="o">.</span><span class="n">prepare_options</span><span class="p">(</span><span class="n">fetcher_opts</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">AcceleratorDefinitionError</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">fetcher_opts</span><span class="o">.</span><span class="n">list_choices</span><span class="p">:</span>
-            <span class="n">exit</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
         <span class="k">raise</span>
 
     <span class="n">segment_creator</span><span class="o">.</span><span class="n">full_run</span><span class="p">()</span>
@@ -529,7 +530,7 @@
 
 <div class="viewcode-block" id="get_differences">
 <a class="viewcode-back" href="../../entrypoints/correction.html#omc3.sbs_propagation.get_differences">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_differences</span><span class="p">(</span><span class="n">propagables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Propagable</span><span class="p">],</span> <span class="n">segment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentDiffs</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_differences</span><span class="p">(</span><span class="n">propagables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Propagable</span><span class="p">],</span> <span class="n">segment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentDiffs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the differences of the propagated model and the measurement and write</span>
 <span class="sd">    them out into files (if ``output`` had been given).</span>
 

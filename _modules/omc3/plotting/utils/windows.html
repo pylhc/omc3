@@ -279,7 +279,7 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QTabWidget</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not import QtPy: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not import QtPy: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QVBoxLayout</span>  <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
     <span class="n">FigureCanvas</span><span class="p">,</span> <span class="n">NavigationToolbar</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>  <span class="c1"># for mock in pytest</span>
     <span class="n">QWidget</span><span class="p">,</span> <span class="n">QTabWidget</span> <span class="o">=</span> <span class="nb">object</span><span class="p">,</span> <span class="nb">object</span>
@@ -352,7 +352,7 @@
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.TabWidget">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TabWidget</span><span class="p">(</span><span class="n">QTabWidget</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A simple tab widget, that in addition</span>
 <span class="sd">        to QTabWidget keeps track of the tabs via dictionary</span>
 <span class="sd">        and can have a title.</span>
@@ -378,7 +378,7 @@
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.SimpleTabWindow">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimpleTabWindow</span><span class="p">:</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Simple Tab Window&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Simple Tab Window&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A simple GUI window, i.e. a standalone graphical application,</span>
 <span class="sd">        which contains a single Tab-Widget, allowing the user to add tabs to it.</span>
 
@@ -423,7 +423,7 @@
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.VerticalTabWindow">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VerticalTabWindow</span><span class="p">(</span><span class="n">SimpleTabWindow</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Vertical Tab Window&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Vertical Tab Window&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A Window in which the tabs are aligned vertically on the left-hand side.</span>
 <span class="sd">        This window assumes that you may want to have tabs within tabs,</span>
 <span class="sd">        so the convenience function `add_to_tab` is implemented, which allows</span>
@@ -459,7 +459,7 @@
 
 <div class="viewcode-block" id="create_pyplot_window_from_fig">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.windows.create_pyplot_window_from_fig">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_pyplot_window_from_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">:</span> <span class="n">Figure</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_pyplot_window_from_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">:</span> <span class="n">Figure</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a window from the given figure, which is managed by pyplot.</span>
 <span class="sd">    This is similar to how figures behave when created with `pyplot.figure()`,</span>
 <span class="sd">    but you can crate the figure instance first and the manager later.</span>
