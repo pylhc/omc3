@@ -499,9 +499,9 @@ class SegmentCreator(ModelCreator, ABC):
             madx_script += "\n".join(
                 [
                     f'call, file="{corrections_path}";',
-                    (f"exec, twiss_segment(forward_SbSSEQ, "
+                    ("exec, twiss_segment(forward_SbSSEQ, "
                     f'"{twiss_forward_corr_path}", biniSbSParams);'),
-                    (f"exec, twiss_segment(backward_SbSSEQ, "
+                    ("exec, twiss_segment(backward_SbSSEQ, "
                     f'"{twiss_backward_corr_path}", bendSbSParams);'),
                     "",
                 ]
