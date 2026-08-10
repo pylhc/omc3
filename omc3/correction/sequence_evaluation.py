@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import tfs
 
-import omc3.madx_wrapper as madx_wrapper
+from omc3 import madx_wrapper
 from omc3.correction.response_io import write_varmap
 from omc3.model.model_creators.manager import CreatorType, get_model_creator_class
 from omc3.utils import logging_tools
@@ -67,7 +67,7 @@ def evaluate_for_variables(
         if len(variables) == 0:
             raise ValueError("No variables found! Make sure your categories are valid!")
 
-        num_proc = num_proc if len(variables) > num_proc else len(variables)
+        num_proc = min(len(variables), num_proc)
         process_pool = multiprocessing.Pool(processes=num_proc)
 
         k_values = _get_orders(order)
@@ -96,7 +96,7 @@ def _generate_madx_jobs(
     def _do_macro(var):
         return (
             f"exec, create_table(table.{var:s});\n"
-            f"write, table=table.{var:s}, file='{str(_get_tablefile(temp_dir, var)):s}';\n"
+            f"write, table=table.{var:s}, file='{_get_tablefile(temp_dir, var)!s:s}';\n"
         )
 
     LOG.debug("Generating MADX jobfiles.")
@@ -312,7 +312,7 @@ def check_varmap_file(accel_inst: Accelerator, vars_categories):
         Path(accel_inst.model_dir) / f"varmap_{'_'.join(sorted(set(vars_categories)))}.{EXT}"
     )
     if not varmap_path.exists():
-        LOG.info(f"Variable mapping '{str(varmap_path):s}' not found. Evaluating it via madx.")
+        LOG.info(f"Variable mapping '{varmap_path!s:s}' not found. Evaluating it via madx.")
         mapping = evaluate_for_variables(accel_inst, vars_categories)
         write_varmap(varmap_path, mapping)
 

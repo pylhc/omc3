@@ -390,7 +390,7 @@ def extract(ldb, knobs: Sequence[str], time: datetime) -> dict[str, float]:
                 LOGGER.debug(f"{knob} not found in StateTracker")
                 continue
 
-            timestamps, values = knobvalue[knobkey]
+            _timestamps, values = knobvalue[knobkey]
             if len(values) == 0:
                 LOGGER.debug(f"No value for {knob} found")
                 continue
@@ -488,8 +488,7 @@ def _write_knobsfile(output: Path | str, collected_knobs: tfs.TfsDataFrame):
         outfile.write(f"!! --- extracted knobs for time {collected_knobs.headers[Head.time]}\n\n")
         for category, knobs_df in category_knobs.items():
             outfile.write(f"!! --- {category:10} --------------------\n")
-            for knob, knob_entry in knobs_df.iterrows():
-                outfile.write(f"{get_madx_command(knob_entry)}\n")
+            outfile.writelines(f"{get_madx_command(knob_entry)}\n" for knob, knob_entry in knobs_df.iterrows())
             outfile.write("\n")
         outfile.write("\n")
 

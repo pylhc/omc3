@@ -56,6 +56,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from generic_parser import EntryPoint
 
@@ -64,8 +65,12 @@ from omc3.model.accelerators.psbase import PsBase
 from omc3.model.constants import PLANE_TO_HV
 from omc3.utils.parsertools import require_param
 
-LOGGER = logging.getLogger(__name__)
-CURRENT_DIR = Path(__file__).parent
+if TYPE_CHECKING:
+    from logging import Logger
+    from typing import ClassVar
+
+LOGGER: Logger = logging.getLogger(__name__)
+CURRENT_DIR: Path = Path(__file__).parent
 
 # tune matching methods
 # check `ps/base.madx`
@@ -81,7 +86,7 @@ class Ps(PsBase):
 
     NAME: str = "ps"
     LOCAL_REPO_NAME: str = "acc-models-ps"
-    RE_DICT: dict[str, str] = {
+    RE_DICT: ClassVar[dict[str, str]] = {
         AccElementTypes.BPMS: r"PR\.BPM",
         AccElementTypes.MAGNETS: r".*",
         AccElementTypes.ARC_BPMS: r"PR\.BPM",

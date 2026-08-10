@@ -276,7 +276,7 @@ def _sort_paths_by_ip(
         beam_dir = path / f"{BEAM_DIR}{beam}"
         lsa_results = beam_dir / f"{LSA_FILE_NAME}{EXT}"
         df = tfs.read(lsa_results, index=NAME)
-        ip = [ip.upper() for ip in IPS if ip.upper() in df.index][0]
+        ip = next(ip.upper() for ip in IPS if ip.upper() in df.index)
         sorted_paths[ip].append(path)
     return sorted_paths
 
@@ -287,8 +287,8 @@ def _sort_paths_by_ip(
 def calculate_all_lumi_imbalances(
     averaged_results: dict[str, dict[int, tfs.TfsDataFrame]],
     df_model: tfs.TfsDataFrame,
-    output_dir: Path | str = None,
-    ) -> None:
+    output_dir: Path | str | None = None,
+) -> None:
     """Calculates the luminosity imbalance between two IPs.
 
     Args:

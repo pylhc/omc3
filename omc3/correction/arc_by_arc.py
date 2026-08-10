@@ -131,7 +131,7 @@ def identify_closest_arc_bpm_to_ip(bpms: Sequence[str], ip: int, side: Literal["
     TODO: Use a regex instead, filtering the list by [LR]IP and choose the lowest via sort.
     This would assure that also BPMW etc. could be used. (jdilly, 2025)
     """
-    beam = list(bpms)[0][-1]
+    beam = next(iter(bpms))[-1]
 
     indices = range(1, 15)
     for ii in indices:

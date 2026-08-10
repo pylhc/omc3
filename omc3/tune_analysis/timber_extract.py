@@ -46,7 +46,7 @@ AcceptableTimeStamp = NewType("AcceptableTimeStamp", CERNDatetime | int | float)
 
 
 def lhc_fill_to_tfs(
-    fill_number: int, keys: Sequence[str] = None, names: dict[str, str] = None
+    fill_number: int, keys: Sequence[str] | None = None, names: dict[str, str] | None = None
 ) -> tfs.TfsDataFrame:
     """
     Extracts data for keys of fill from ``Timber``.
@@ -67,8 +67,8 @@ def lhc_fill_to_tfs(
 def extract_between_times(
     t_start: AcceptableTimeStamp,
     t_end: AcceptableTimeStamp,
-    keys: Sequence[str] = None,
-    names: dict[str, str] = None,
+    keys: Sequence[str] | None = None,
+    names: dict[str, str] | None = None,
 ) -> tfs.TfsDataFrame:
     """
     Extracts data for keys between ``t_start`` and ``t_end`` from ``Timber``.

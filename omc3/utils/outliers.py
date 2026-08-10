@@ -20,7 +20,7 @@ LOGGER = logging_tools.get_logger(__name__)
 
 
 def get_filter_mask(data: ArrayLike, x_data: ArrayLike = None, limit: float = 0.0,
-                    niter: int = 20, nsig: int = None, mask: ArrayLike = None) -> ArrayLike:
+                    niter: int = 20, nsig: int | None = None, mask: ArrayLike | None = None) -> ArrayLike:
     r"""
     Filters the array of values which are meant to be constant or a linear function of the x-data
     array if that is provided, by checking how many sigmas they are deviating from the average.

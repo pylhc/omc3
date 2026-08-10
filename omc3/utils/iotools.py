@@ -245,7 +245,7 @@ def maybe_add_command(opt: dict, script: str) -> dict:
     return opt
 
 
-def save_config(output_dir: Path, opt: dict, script: str, unknown_opt: dict | list = None):
+def save_config(output_dir: Path, opt: dict, script: str, unknown_opt: dict | list | None = None):
     """
     Quick wrapper for ``save_options_to_config``.
 

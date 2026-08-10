@@ -65,7 +65,7 @@ class ModelCreator(ABC):
     jobfile: str = JOB_MODEL_MADX_NOMINAL  # lowercase as it might be changed in subclasses __init__
     save_sequence_filename: str = "saved_madx.seq"
 
-    def __init__(self, accel: Accelerator, logfile: Path = None, acc_models_path: Path = None):
+    def __init__(self, accel: Accelerator, logfile: Path | None = None, acc_models_path: Path | None = None):
         """
         Initialise the Model Creator.
 
@@ -94,7 +94,6 @@ class ModelCreator(ABC):
             opt: The remaining options (i.e. those not yet consumed by the model creator)
 
         """
-        pass
 
     def full_run(self):
         """Does the full run: preparation, running madx, post_run."""
@@ -134,7 +133,6 @@ class ModelCreator(ABC):
         """
         Returns the ``MAD-X`` script used to create the model (directory).
         """
-        pass
 
     @abstractmethod
     def get_base_madx_script(self) -> str:
@@ -142,7 +140,6 @@ class ModelCreator(ABC):
         Returns the ``MAD-X`` script used to set-up the basic accelerator in MAD-X, without actually creating the twiss-output,
         as some modifications to the accelerator may come afterwards (depending on which model-creator is calling this).
         """
-        pass
 
     @property
     def sequence_name(self) -> str:
@@ -502,10 +499,10 @@ class SegmentCreator(ModelCreator, ABC):
             madx_script += "\n".join(
                 [
                     f'call, file="{corrections_path}";',
-                    f"exec, twiss_segment(forward_SbSSEQ, "
-                    f'"{twiss_forward_corr_path}", biniSbSParams);',
-                    f"exec, twiss_segment(backward_SbSSEQ, "
-                    f'"{twiss_backward_corr_path}", bendSbSParams);',
+                    ("exec, twiss_segment(forward_SbSSEQ, "
+                    f'"{twiss_forward_corr_path}", biniSbSParams);'),
+                    ("exec, twiss_segment(backward_SbSSEQ, "
+                    f'"{twiss_backward_corr_path}", bendSbSParams);'),
                     "",
                 ]
             )

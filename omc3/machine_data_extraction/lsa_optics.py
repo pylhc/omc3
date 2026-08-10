@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-import dateutil.tz as tz
+from dateutil import tz
 
 from omc3.machine_data_extraction.data_classes import OpticsInfo
 from omc3.utils import logging_tools

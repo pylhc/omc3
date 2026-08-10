@@ -318,7 +318,7 @@ def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
                 data_series[plane][AMPS] = rescale_amp(data_series[plane][AMPS])
 
             if any(data_series[plane][AMPS].isna()):
-                raise Exception("NAN FOUND")
+                raise ValueError("NAN FOUND")
     return data_series
 
 

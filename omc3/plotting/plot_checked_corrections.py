@@ -271,7 +271,7 @@ def plot_checked_corrections(opt: DotDict):
         for correction in opt.corrections:
             correction_dirs[correction] = opt.input_dir / correction
 
-    measurements: Path = opt.meas_dir or list(correction_dirs.values())[0]
+    measurements: Path = opt.meas_dir or next(iter(correction_dirs.values()))
 
     files = _get_corrected_measurement_names(correction_dirs.values())
     ip_positions = _get_ip_positions(opt.ip_positions, opt.x_axis, opt.ip_search_pattern)
@@ -424,7 +424,7 @@ def _create_correction_plots_per_filename(
     return figs
 
 
-def save_plots(output_dir: Path, figure_dict: dict[str, Figure], input_dir: Path = None):
+def save_plots(output_dir: Path, figure_dict: dict[str, Figure], input_dir: Path | None = None):
     """ Save the plots. """
     for figname, fig in figure_dict.items():
         outdir = output_dir
@@ -509,7 +509,7 @@ def show_plots(figure_dict: dict[str, Figure]):
                     continue
 
                 if not correction_name:
-                    name_y = "_".join([rdt, complement_column.text_label, complement_column.expected_column])
+                    name_y = f"{rdt}_{complement_column.text_label}_{complement_column.expected_column}"
                 else:
                     name_y = "_".join(name_x.split("_")[:-1] + [complement_column.text_label,])
 

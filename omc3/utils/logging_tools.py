@@ -73,7 +73,7 @@ class DebugMode:
             caller_file: str = _get_caller()
             current_module: str = _get_current_module(caller_file)
 
-            self.logger = logging.getLogger(".".join([current_module, Path(caller_file).name]))
+            self.logger = logging.getLogger(f"{current_module}.{Path(caller_file).name}")
 
             # set level to debug
             self.current_level = self.logger.getEffectiveLevel()
@@ -81,7 +81,7 @@ class DebugMode:
             self.logger.debug("Running in Debug-Mode.")
 
             # create logfile name:
-            now = f"{datetime.datetime.now().isoformat():s}_"
+            now = f"{datetime.datetime.now(tz=datetime.UTC).isoformat():s}_"
             if log_file is None:
                 log_file = str(Path(caller_file).resolve().with_suffix(".log"))
             self.log_file = str(Path(log_file).parent / (now + Path(log_file).name))
@@ -111,33 +111,6 @@ class DebugMode:
             self.logger.setLevel(self.current_level)
             self.mod_logger.removeHandler(self.file_h)
             self.mod_logger.removeHandler(self.console_h)
-
-
-class TempFile:
-    """
-    Context Manager. Lets another function write into a temporary file and logs its contents.
-    It won't open the file, so only the files path is returned.
-
-    Args:
-        file_path (str): Place to write the tempfile to.
-        log_func (func): The function with which the content should be logged (e.g. LOG.info).
-    """
-
-    def __init__(self, file_path: Path | str, log_func):
-        self.path = Path(file_path)
-        self.log_func = log_func
-
-    def __enter__(self) -> Path:
-        return self.path
-
-    def __exit__(self, value, traceback):
-        try:
-            content = Path(self.path).read_text()
-            self.log_func(f"{self.path:s}:\n" + content)
-        except OSError:
-            self.log_func(f"{self.path:s}: -file does not exist-")
-        else:
-            Path(self.path).unlink()
 
 
 @contextmanager
@@ -392,7 +365,7 @@ def _get_caller_logger_name():
     """Returns logger name of the caller."""
     caller_file: str = _get_caller()
     current_module = _get_current_module(caller_file)
-    return ".".join([current_module, Path(caller_file).name])
+    return f"{current_module}.{Path(caller_file).name}"
 
 
 def _maybe_bring_color(format_string, colorlevel=INFO, color_flag=None):

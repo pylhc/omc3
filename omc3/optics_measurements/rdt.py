@@ -318,7 +318,7 @@ def _process_rdt(
     )
 
     # Get amplitude and phase of the line from linx/liny file
-    line_amp, line_phase, line_amp_e, line_phase_e = complex_secondary_lines(  # TODO use the errors
+    line_amp, line_phase, _line_amp_e, _line_phase_e = complex_secondary_lines(  # TODO use the errors
         df.loc[:, MEASUREMENT].to_numpy()[:, np.newaxis] * meas_input.accelerator.beam_direction,
         df.loc[:, f"{ERR}{MEASUREMENT}"].to_numpy()[:, np.newaxis],
         comp_coeffs1,

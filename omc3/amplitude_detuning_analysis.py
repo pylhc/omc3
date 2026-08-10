@@ -288,10 +288,12 @@ def analyse_with_bbq_corrections(opt: DotDict) -> tuple[TfsDataFrame, TfsDataFra
     return kick_df, bbq_df
 
 
-def get_kick_and_bbq_df(kick: Path | str, bbq_in: Path | str,
-                        beam: int = None,
-                        filter_opt: FilterOpts = None,
-                        ) -> tuple[TfsDataFrame, TfsDataFrame]:
+def get_kick_and_bbq_df(
+    kick: Path | str,
+    bbq_in: Path | str,
+    beam: int | None = None,
+    filter_opt: FilterOpts | None = None,
+) -> tuple[TfsDataFrame, TfsDataFrame]:
     """Load the input data."""
     bbq_df = None
     if bbq_in is not None and bbq_in == INPUT_PREVIOUS:
@@ -508,10 +510,10 @@ def _get_bbq_data(beam: int, input_: Path | str | int, kick_df: TfsDataFrame) ->
                 t_start - t_delta, t_end + t_delta, keys=timber_keys, names=dict(zip(timber_keys, bbq_cols))
             )
         else:  # input_ is a file name or path
-            LOG.debug(f"Getting bbq data from file '{str(input_):s}'")
+            LOG.debug(f"Getting bbq data from file '{input_!s:s}'")
             data = read_timed_dataframe(input_)
             if not len(data.index):
-                raise ValueError(f"No entries in {str(input_):s}.") from e
+                raise ValueError(f"No entries in {input_!s:s}.") from e
 
     else:  # input_ is a number, assumed to be a fill number
         LOG.debug(f"Getting timber data from fill '{input_:d}'")

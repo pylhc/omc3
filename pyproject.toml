@@ -190,6 +190,7 @@ indent-width = 4
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 ignore = [
   "E501",  # line too long
+  "EXE002",  # file executable but shebang not present
   "FBT001",  # boolean-type-hint-positional-argument
   "FBT002",  # boolean-default-value-positional-argument
   "PT019",  # pytest-fixture-param-without-value (but suggested solution fails)

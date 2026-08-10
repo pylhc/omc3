@@ -17,8 +17,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-import dateutil.tz as tz
 import tfs
+from dateutil import tz
 
 from omc3.machine_data_extraction.utils import knob_to_output_name, timestamp_to_utciso
 from omc3.utils.misc import StrEnum

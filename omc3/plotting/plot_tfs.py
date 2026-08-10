@@ -400,12 +400,14 @@ def sort_data(opt):
     return collector
 
 
-def get_id(filename_parts, column, file_label, column_label, same_axes, same_figure, prefix, plane='', planes=[]):
+def get_id(filename_parts, column, file_label, column_label, same_axes, same_figure, prefix, plane='', planes = None):
     """
     Get the right IDs for the current sorting way.
     This is where the actual sorting happens, by mapping the right IDs according to the chosen
     options.
     """
+    if planes is None:
+        planes = []  # avoid default mutable argument in function
     planes = "".join(planes)
 
     file_last = filename_parts[-1].replace(EXT, "").strip("_")

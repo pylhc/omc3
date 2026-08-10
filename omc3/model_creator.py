@@ -20,9 +20,12 @@ from omc3.utils.iotools import PathOrStr, save_config
 from omc3.utils.parsertools import print_help, require_param
 
 if TYPE_CHECKING:
+    from logging import Logger
+
     from omc3.model.model_creators.abstract_model_creator import ModelCreator
 
-LOGGER = logging_tools.get_logger(__name__)
+
+LOGGER: Logger = logging_tools.get_logger(__name__)
 
 
 def _get_params():
@@ -140,7 +143,6 @@ def create_instance_and_model(opt, accel_opt) -> Accelerator | None:
             print_help(accel_class.get_parameters())
         except Exception as e:  # noqa: BLE001 (ugly that we catch all exceptions here...)
             LOGGER.debug(f"An error occurred: {e}")
-            pass
 
         print("---- Model Creator | Usage ----\n")
         print_help(model_manager._get_params())

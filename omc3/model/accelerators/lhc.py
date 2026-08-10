@@ -100,11 +100,12 @@ from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Sequence
+    from logging import Logger
+    from typing import ClassVar
 
-
-LOGGER = logging_tools.get_logger(__name__)
-CURRENT_DIR = Path(__file__).parent
-LHC_DIR = CURRENT_DIR / "lhc"
+LOGGER: Logger = logging_tools.get_logger(__name__)
+CURRENT_DIR: Path = Path(__file__).parent
+LHC_DIR: Path = CURRENT_DIR / "lhc"
 
 
 class Lhc(Accelerator):
@@ -114,7 +115,7 @@ class Lhc(Accelerator):
 
     NAME: str = "lhc"
     LOCAL_REPO_NAME: str = "acc-models-lhc"
-    RE_DICT: dict[str, str] = {
+    RE_DICT: ClassVar[dict[str, str]] = {
         AccElementTypes.BPMS: r"BPM.*",
         AccElementTypes.MAGNETS: r"^M.*",
         AccElementTypes.ARC_BPMS: r"BPM.*\.0*(1[5-9]|[2-9]\d|[1-9]\d{2,})[RL]",
@@ -256,7 +257,7 @@ class Lhc(Accelerator):
         # Check if no filtering but only sorting was required
         if (frm is None) and (to is None) and (len(sorted_vars) != len(variables)):
             unknown_vars = sorted(var for var in variables if var not in sorted_vars)
-            LOGGER.debug(f"The following variables do not have a location: {str(unknown_vars)}")
+            LOGGER.debug(f"The following variables do not have a location: {unknown_vars!s}")
             sorted_vars = sorted_vars + unknown_vars
         return sorted_vars
 

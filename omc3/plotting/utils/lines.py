@@ -6,11 +6,16 @@ Line-plotting related functionality.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import matplotlib.transforms as mtrans
 import numpy as np
 from matplotlib import rcParams
 from matplotlib.markers import MarkerStyle
 from matplotlib.patches import PathPatch
+
+if TYPE_CHECKING:
+    from typing import ClassVar
 
 VERTICAL_LINES_TEXT_LOCATIONS = {
     "bottom": {"y": -0.01, "va": "top", "ha": "center"},
@@ -25,7 +30,7 @@ class MarkerList:
     """Create a list of predefined markers."""
 
     # markers = ["s", "o", ">", "D", "v", "*", "h", "^", "p", "X", "<", "P"]  # matplotlib 2.++
-    markers = ["s", "o", ">", "D", "v", "*", "h", "^", "p", "<"]
+    markers: ClassVar[list[str]] = ["s", "o", ">", "D", "v", "*", "h", "^", "p", "<"]
 
     def __init__(self):
         self.idx = 0
@@ -90,8 +95,8 @@ def plot_vertical_lines_fast(ax, x, y=(0, 1), **kwargs):
 def plot_vertical_line(
     ax,
     axvline_args: dict,
-    text: str = None,
-    text_loc: str = None,
+    text: str | None = None,
+    text_loc: str | None = None,
     label_size: float = rcParams["font.size"],
 ):
     """

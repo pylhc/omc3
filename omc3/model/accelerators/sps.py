@@ -18,6 +18,7 @@ from omc3.utils.knob_list_manipulations import get_vars_by_classes
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+    from typing import ClassVar
 
     from generic_parser import DotDict
 
@@ -27,7 +28,7 @@ class Sps(Accelerator):
     """ SPS accelerator. """
     NAME: str = "sps"
     LOCAL_REPO_NAME: str = "acc-models-sps"
-    RE_DICT: dict[str, str] = {
+    RE_DICT: ClassVar[dict[str, str]] = {
         AccElementTypes.BPMS: r"^BP.*",
         AccElementTypes.MAGNETS: r".*",  # has a variety of names...
         AccElementTypes.ARC_BPMS: r"^BP.*",

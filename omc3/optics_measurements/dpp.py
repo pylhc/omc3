@@ -70,7 +70,7 @@ def _values_in_range(range_to_use: list[int], dpp_values: Sequence[float]) -> li
 
 
 def _find_range_with_element(ranges: list[list[int]], element: int) -> list[int]:
-    return [dpp_range for dpp_range in ranges if element in dpp_range][0]
+    return next(dpp_range for dpp_range in ranges if element in dpp_range)
 
 
 def _compute_ranges(dpps: Sequence[float], tolerance: float) -> list[list[int]]:

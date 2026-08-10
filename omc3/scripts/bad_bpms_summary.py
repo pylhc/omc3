@@ -55,6 +55,8 @@ their given number of appearances after 'harpy' and 'isolation forest'.
 """
 from __future__ import annotations
 
+import functools
+import operator
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
@@ -389,7 +391,7 @@ def evaluate(df: tfs.TfsDataFrame) -> tfs.TfsDataFrame:
                     df.groupby([NAME, ACCEL, SOURCE, PLANE], as_index=False)
                     .agg(
                         COUNT=(NAME, 'size'),  # Count the number of rows in each group
-                        REASONS=(REASONS, lambda x: list(set(sum(x, []))))  # Flatten and combine the lists
+                        REASONS=(REASONS, lambda x: list(set(functools.reduce(operator.iadd, x, []))))  # Flatten + combine lists (avoid sum which is quadratic)
                     )
                 )
 

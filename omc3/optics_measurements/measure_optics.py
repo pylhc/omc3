@@ -149,7 +149,7 @@ def chromatic_beating(input_files: InputFiles, measure_input: DotDict, tune_dict
         for dpp_val in dpps:
             dpp_meas_input = deepcopy(measure_input)
             dpp_meas_input["analyse_dpp"] = dpp_val
-            phase_res, out_dfs = phase.calculate(dpp_meas_input, input_files, tune_dict, plane)
+            phase_res, _out_dfs = phase.calculate(dpp_meas_input, input_files, tune_dict, plane)
             beta_df, _ = beta_from_phase.calculate(dpp_meas_input, tune_dict, phase_res[phase.COMPENSATED], {}, plane)
             betas.append(beta_df)
         output_df = chromatic.calculate_w_and_phi(betas, dpps, input_files, measure_input, plane)
@@ -162,7 +162,7 @@ def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict) -> dict[str, Any]
         "Measure_optics:version": VERSION,
         "Command": f"{sys.executable} {' '.join(sys.argv)}",
         "CWD": Path.cwd().absolute(),
-        "Date": datetime.datetime.today().strftime("%d. %B %Y, %H:%M:%S"),
+        "Date": datetime.datetime.now(tz=datetime.UTC).strftime("%d. %B %Y, %H:%M:%S"),
         MODEL_DIRECTORY: meas_input.accelerator.model_dir,
         "Compensation": meas_input.compensation,
         "Q1": tune_dict["X"]["QF"],
