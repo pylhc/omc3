@@ -58,6 +58,8 @@ dependencies = [
   "tables >= 3.10.1",
   "requests >= 2.27",
   "odrpack >= 0.4.0",
+  "psutil >= 7.0",
+  "threadpoolctl >= 3.0",
 ]
 
 [project.optional-dependencies]
@@ -188,6 +190,7 @@ indent-width = 4
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 ignore = [
   "E501",  # line too long
+  "EXE002",  # file executable but shebang not present
   "FBT001",  # boolean-type-hint-positional-argument
   "FBT002",  # boolean-default-value-positional-argument
   "PT019",  # pytest-fixture-param-without-value (but suggested solution fails)

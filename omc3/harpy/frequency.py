@@ -265,7 +265,7 @@ def _calculate_natural_tunes(
         A DataFrame containing the natural tune frequencies, amplitudes, and phases for each BPM.
         The columns are named according to the plane (e.g., 'NATTUNEX', 'NATAMPX', 'NATMUX').
     """
-    # Get the relavant fractional tune
+    # Get the relevant fractional tune
     freq = nattunes["XY".index(plane)] % 1
 
     # Find the natural tune, amplitude and phase

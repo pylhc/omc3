@@ -286,7 +286,7 @@ def _plot_2d(tune_plane: str, opt: DotDict) -> dict[str, Figure]:
                                                     corrected=corrected
                                                     )
                 except KeyError as e:
-                    LOG.debug(f"Entries not found in dataframe: {str(e)}")
+                    LOG.debug(f"Entries not found in dataframe: {e!s}")
                     continue  # should only happen when there is no 'corrected' columns
 
                 # Read data from kick_df headers ---
@@ -369,8 +369,15 @@ def plot_odr(ax: Axes, odr_fit: odrpack.OdrResult, xmax: float, label: str = '',
     return color
 
 
-def _plot_detuning(ax: Axes, data: AmpDetData, label: str, color=None,
-                   limits: dict[str, float] = None, odr_fit: odrpack.OdrResult=None, odr_label: str =""):
+def _plot_detuning(
+    ax: Axes,
+    data: AmpDetData,
+    label: str,
+    color=None,
+    limits: dict[str, float] | None = None,
+    odr_fit: odrpack.OdrResult | None = None,
+    odr_label: str ="",
+):
     """Plot the detuning and the ODR into axes."""
     x_lim = _get_default(limits, 'x_lim', [0, max(data.action+data.action_err)])
     offset = 0
@@ -624,8 +631,12 @@ def plot_cube(ax: Axes, x: ArrayLike, y: ArrayLike, f_low: callable, f_upp: call
 
 
 def _format_axes_3d(
-        ax: Axes, limits: dict[str, float], ax_labels: Sequence[str],
-        acd: bool, odr_labels: Sequence[dict[str, str]] = None):
+    ax: Axes,
+    limits: dict[str, float],
+    ax_labels: Sequence[str],
+    acd: bool,
+    odr_labels: Sequence[dict[str, str]] | None = None,
+):
     # labels
     ax.set_xlabel(ax_labels[0], labelpad=15)
     ax.set_ylabel(ax_labels[1], labelpad=15)
@@ -706,7 +717,7 @@ def _get_scaled_odr_label(odr_fit, order, action_unit, acd_correction, magnitude
 def _get_scaled_labels(val, std, scale):
     scaled_vas, scaled_std = val*scale, std*scale
     if abs(scaled_std) > 1 or scaled_std == 0:
-        return f'{int(round(scaled_vas)):d}', f'{int(round(scaled_std)):d}'
+        return f"{round(scaled_vas):d}", f"{round(scaled_std):d}"
     return significant_digits(scaled_vas, scaled_std)
 
 

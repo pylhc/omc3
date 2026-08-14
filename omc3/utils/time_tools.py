@@ -11,7 +11,7 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-import dateutil.tz as tz
+from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
 from omc3.definitions.formats import TIME
@@ -54,7 +54,6 @@ def _parse_time_from_str(time_str: str) -> datetime:
         dt = datetime.fromisoformat(time_str)
     except (TypeError, ValueError):
         LOGGER.debug("Could not parse time string as ISO format")
-        pass
     else:
         if dt.tzinfo is None:
             raise ValueError(
@@ -67,7 +66,6 @@ def _parse_time_from_str(time_str: str) -> datetime:
         return datetime.fromtimestamp(float(time_str), tz=tz.UTC)
     except (TypeError, ValueError):
         LOGGER.debug("Could not parse time string as a timestamp")
-        pass
 
     raise ValueError(f"Couldn't read datetime '{time_str}'")
 
@@ -129,21 +127,20 @@ def utc_to_local(dt_utc, timezone):
 
 def local_string_to_utc(local_string, timezone):
     """Converts a time string in local time to UTC time."""
-    dt = datetime.strptime(local_string, get_readable_time_format())
-    dt = dt.replace(tzinfo=timezone)
+    dt: datetime = datetime.strptime(
+        local_string, get_readable_time_format()
+    ).replace(tzinfo=timezone)
     return local_to_utc(dt, timezone)
 
 
-def utc_string_to_utc(utc_string):
+def utc_string_to_utc(utc_string) -> datetime:
     """Convert a time string in utc to a UTC datetime object."""
-    dt = datetime.strptime(utc_string, get_readable_time_format())
-    return dt.replace(tzinfo=tz.tzutc())
+    return datetime.strptime(utc_string, get_readable_time_format()).replace(tzinfo=tz.tzutc())
 
 
-def cern_utc_string_to_utc(utc_string):
+def cern_utc_string_to_utc(utc_string) -> datetime:
     """Convert a time string in cern-utc to a utc datetime object."""
-    dt = datetime.strptime(utc_string, get_cern_time_format())
-    return dt.replace(tzinfo=tz.tzutc())
+    return datetime.strptime(utc_string, get_cern_time_format()).replace(tzinfo=tz.tzutc())
 
 
 def check_tz(localized_dt, timezone):

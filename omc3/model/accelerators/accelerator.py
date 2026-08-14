@@ -35,10 +35,13 @@ from omc3.utils import logging_tools
 from omc3.utils.iotools import PathOrStr, find_file
 
 if TYPE_CHECKING:
+    from logging import Logger
+    from typing import ClassVar
+
     import numpy as np
 
-LOG = logging_tools.get_logger(__name__)
-CURRENT_DIR = Path(__file__).parent
+LOG: Logger = logging_tools.get_logger(__name__)
+CURRENT_DIR: Path = Path(__file__).parent
 
 
 class AccExcitationMode:  # TODO: use enum! (jdilly, 2025)
@@ -65,7 +68,7 @@ class Accelerator:
     NAME: str
     LOCAL_REPO_NAME: str | None = None
     # RE_DICT needs to use MAD-X compatible regex patterns (jdilly, 2021)
-    RE_DICT: dict[str, str] = {
+    RE_DICT: ClassVar[dict[str, str]] = {
         AccElementTypes.BPMS: r"^B.*",
         AccElementTypes.MAGNETS: r".*",
         AccElementTypes.ARC_BPMS: r"^B.*",
@@ -201,10 +204,10 @@ class Accelerator:
         driven_filenames = {"acd": model_dir / TWISS_AC_DAT, "adt": model_dir / TWISS_ADT_DAT}
         if driven_filenames["acd"].is_file() and driven_filenames["adt"].is_file():
             raise AcceleratorDefinitionError("ADT as well as ACD models provided. Choose only one.")
-        for key in driven_filenames:
-            if driven_filenames[key].is_file():
+        for key, filename in driven_filenames.items():
+            if filename.is_file():
                 self.excitation = DRIVEN_EXCITATIONS[key]
-                self.model_driven = tfs.read(driven_filenames[key], index=NAME)
+                self.model_driven = tfs.read(filename, index=NAME)
 
         if self.excitation != AccExcitationMode.FREE:
             self.drv_tunes = [self.model_driven.headers["Q1"], self.model_driven.headers["Q2"]]
@@ -365,7 +368,6 @@ class AcceleratorDefinitionError(Exception):
     should have been overwritten.
     """
 
-    pass
 
 
 # Helper ----

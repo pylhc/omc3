@@ -63,18 +63,23 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import AccElementTypes, Accelerator
 
-LOGGER = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from logging import Logger
+    from typing import ClassVar
+
+LOGGER: Logger = logging.getLogger(__name__)
 CURRENT_DIR: Path = Path(__file__).parent
 
 
 class Iota(Accelerator):
     NAME = "iota"
-    RE_DICT = {AccElementTypes.BPMS: r"^IBPM.*",
+    RE_DICT: ClassVar[dict[str, str]] = {AccElementTypes.BPMS: r"^IBPM.*",
                AccElementTypes.MAGNETS: r"^Q.*",
                AccElementTypes.ARC_BPMS: r"^IBPM.*"}
 

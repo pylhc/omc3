@@ -28,7 +28,7 @@ class RBAC:
     _BASE = "https://rbac-pro1.cern.ch:8443/rba/api/v1"
     _KRB5_SERVICE = "RBAC@rbac-pro-lb.cern.ch"
 
-    def __init__(self, base: str = None, krb5_service: str = None,
+    def __init__(self, base: str | None = None, krb5_service: str | None = None,
                  application: str = "omc3", lifetime_minutes: int = 8 * 60):
         """
         Create this RBAC-Communicator instance.
@@ -144,7 +144,7 @@ class RBAC:
         self.token = response.content.decode("utf-8")
         return response.content.decode("utf-8")
 
-    def _set_user(self, user: str = None):
+    def _set_user(self, user: str | None = None):
         """ Set user attribute. """
         self.user = user or self.user or get_os_username()
         LOGGER.debug(f"Set user as '{self.user}'.")
@@ -162,7 +162,7 @@ def get_os_username():
     try:
         return os.getlogin()
     except OSError as e:
-        LOGGER.debug(f"Could not get username from login. {str(e)}")
+        LOGGER.debug(f"Could not get username from login. {e!s}")
 
     for variable in ["LOGNAME", "USERNAME", "USER"]:
         try:

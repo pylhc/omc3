@@ -135,4 +135,3 @@ class SegmentDiffs(TfsCollection):
 
 class SbsDefinitionError(Exception):
     """ Exception to be raised when the sbs definition is invalid."""
-    pass

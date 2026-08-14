@@ -66,7 +66,7 @@ class FigureCollector:
 
     def add_data_for_id(self, figure_id: str, label: str, data: DataSet,
                         x_label: str, y_label: str,
-                        path: Path = None, axes_id: str = '',
+                        path: Path | None = None, axes_id: str = '',
                         axes_ids: Iterable[str] = ('',)) -> None:
         """Add the data at the appropriate figure container."""
         try:

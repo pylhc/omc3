@@ -46,8 +46,8 @@ class AlphaPhase(Propagable):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the alpha phase is in the measurement data. """
         try:
-            meas.beta_phase_x
-            meas.beta_phase_y
+            _x = meas.beta_phase_x  # just testing presence via access | why not test alfx?
+            _y = meas.beta_phase_y  # just testing presence via access | why not test alfy?
         except FileNotFoundError:
             return False
         return True

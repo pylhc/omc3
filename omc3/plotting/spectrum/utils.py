@@ -183,7 +183,7 @@ def _get_resonance_frequencies(resonances, q):
     freqs = np.mod(resonances @ q, 1)
     freqs = np.where(freqs > .5, 1 - freqs, freqs)
 
-    freqs.dtype = np.float64  # in case of all zeros, this is int and causes crash with float-nan
+    freqs = freqs.astype(np.float64, copy=False)  # in case of all zeros, this is int and causes crash with float-nan
     freqs[~use_idx] = np.nan
     return freqs
 
@@ -318,7 +318,7 @@ def get_data_for_bpm(data: dict, bpm: str, rescale: bool) -> dict:
                 data_series[plane][AMPS] = rescale_amp(data_series[plane][AMPS])
 
             if any(data_series[plane][AMPS].isna()):
-                raise Exception("NAN FOUND")
+                raise ValueError("NAN FOUND")
     return data_series
 
 

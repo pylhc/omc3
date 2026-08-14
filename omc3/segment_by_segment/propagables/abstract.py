@@ -249,7 +249,7 @@ class Propagable(ABC):
     # These need to be present in all propagables, but as usually a single `compute_xxx`
     # function can handle the different cases, the calling functions are implemented here.
 
-    @cache
+    @cache  # ruff: ignore [B019] | warning: cache prevents GC of instance & can lead to memory leaks
     def measured_forward(self, plane: str) -> tuple[pd.Series, pd.Series]:
         """Interpolation of measured deviations to forward propagated model."""
         return self._compute_measured(
@@ -258,7 +258,7 @@ class Propagable(ABC):
             forward=True
         )
 
-    @cache
+    @cache  # ruff: ignore [B019] | warning: cache prevents GC of instance & can lead to memory leaks
     def measured_backward(self, plane: str) -> tuple[pd.Series, pd.Series]:
         """Interpolation of measured deviations to backward propagated model."""
         return self._compute_measured(
@@ -267,7 +267,7 @@ class Propagable(ABC):
             forward=False
         )
 
-    @cache
+    @cache  # ruff: ignore [B019] | warning: cache prevents GC of instance & can lead to memory leaks
     def expected_forward(self, plane: str) -> tuple[pd.Series, pd.Series]:
         """Interpolation of measured deviations to corrected forward propagated model."""
         return self._compute_measured(
@@ -276,7 +276,7 @@ class Propagable(ABC):
             forward=True
         )
 
-    @cache
+    @cache  # ruff: ignore [B019] | warning: cache prevents GC of instance & can lead to memory leaks
     def expected_backward(self, plane: str) -> tuple[pd.Series, pd.Series]:
         """Interpolation of measured deviations to corrected backward propagated model."""
         return self._compute_measured(
@@ -285,7 +285,7 @@ class Propagable(ABC):
             forward=False
         )
 
-    @cache
+    @cache  # ruff: ignore [B019] | warning: cache prevents GC of instance & can lead to memory leaks
     def correction_forward(self, plane: str) -> tuple[pd.Series, pd.Series]:
         """Deviations between forward propagated models with and without correction."""
         return self._compute_correction(
@@ -295,7 +295,7 @@ class Propagable(ABC):
             forward=True,
         )
 
-    @cache
+    @cache  # ruff: ignore [B019] | warning: cache prevents GC of instance & can lead to memory leaks
     def correction_backward(self, plane: str) -> tuple[pd.Series, pd.Series]:
         """Deviations between backward propagated models with and without correction."""
         return self._compute_correction(

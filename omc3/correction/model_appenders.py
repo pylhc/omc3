@@ -41,7 +41,7 @@ LOG = logging_tools.get_logger(__name__)
 def add_differences_to_model_to_measurements(
     model: pd.DataFrame,
     measurement: dict[str, pd.DataFrame],
-    keys: Sequence[str] = None,
+    keys: Sequence[str] | None = None,
 ) -> dict[str, pd.DataFrame]:
     """
     Provided with DataFrames from a model and a measurement, and a number of keys to be found in both,

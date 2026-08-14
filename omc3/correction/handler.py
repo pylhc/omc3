@@ -225,7 +225,7 @@ def get_measurement_data(
         keys: Sequence[str],
         meas_dir: Path,
         beta_filename: str,
-        w_dict: dict[str, float] = None,
+        w_dict: dict[str, float] | None = None,
 ) -> tuple[list[str], dict[str, tfs.TfsDataFrame]]:
     """ Loads all measurements defined by `keys` into a dictionary. """
     measurement = {}
@@ -423,7 +423,7 @@ def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
         delta (pd.DataFrame): DataFrame containing a DELTA column and
                               the corrector names as index.
     """
-    a = datetime.datetime.fromtimestamp(time.time())
+    a = datetime.datetime.fromtimestamp(time.time(), tz=datetime.UTC)
     delta_out = -delta.loc[:, [DELTA]]
     delta_out.headers["PATH"] = str(knob_path.parent)
     delta_out.headers["DATE"] = str(a.ctime())

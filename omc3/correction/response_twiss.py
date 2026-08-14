@@ -380,16 +380,16 @@ class TwissResponse:
             q_map = {"X": tw.Q1, "Y": tw.Q2}
             disp_resp = dict.fromkeys([f"{p}_{t}" for p in sign_map for t in sign_map[p]])
 
-            for plane in sign_map:
+            for plane, value in sign_map.items():
                 q = q_map[plane]
                 col_beta = f"{BETA}{plane}"
-                el_types = sign_map[plane].keys()
+                el_types = value.keys()
                 els_per_type = [els_in[el_type] for el_type in el_types]
 
                 coeff = np.sqrt(tw.loc[el_out, col_beta].to_numpy()) / (2 * np.sin(np.pi * q))
 
                 for el_in, el_type in zip(els_per_type, el_types):
-                    coeff_sign = sign_map[plane][el_type]
+                    coeff_sign = value[el_type]
                     out_str = f"{plane}_{el_type}"
 
                     if len(el_in):
@@ -436,16 +436,16 @@ class TwissResponse:
             q_map = {"X": tw.Q1, "Y": tw.Q2}
             disp_resp = dict.fromkeys([f"{p:s}_{t:s}" for p in sign_map for t in sign_map[p]])
 
-            for plane in sign_map:
+            for plane, value in sign_map.items():
                 q = q_map[plane]
                 col_beta = f"{BETA}{plane}"
-                el_types = sign_map[plane].keys()
+                el_types = value.keys()
                 els_per_type = [els_in[el_type] for el_type in el_types]
 
                 coeff = 1 / (2 * np.sin(np.pi * q))
                 coeff_corr = 1 / (4 * np.sin(2 * np.pi * q))
                 for el_in, el_type in zip(els_per_type, el_types):
-                    coeff_sign = sign_map[plane][el_type]
+                    coeff_sign = value[el_type]
                     out_str = f"{plane:s}_{el_type:s}"
 
                     if len(el_in):

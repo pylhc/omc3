@@ -55,8 +55,8 @@ class Phase(Propagable):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the phase is in the measurement data. """
         try:
-            meas.total_phase_x
-            meas.total_phase_y
+            _x = meas.total_phase_x  # just testing presence via access
+            _y = meas.total_phase_y  # just testing presence via access
         except FileNotFoundError:
             return False
         return True

@@ -28,8 +28,10 @@ def omc3_styles():
     return {p.with_suffix('').name: p for p in STYLES_DIR.glob('*.mplstyle')}
 
 
-def set_style(styles: Path | str | Sequence[Path | str] = 'standard',
-              manual: dict[str, Any] = None):
+def set_style(
+    styles: Path | str | Sequence[Path | str] = 'standard',
+    manual: dict[str, Any] | None = None,
+):
     """
     Sets the style for all following plots.
 

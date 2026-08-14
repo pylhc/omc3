@@ -47,6 +47,7 @@ from __future__ import annotations
 import contextlib
 import functools
 import shutil
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -171,7 +172,7 @@ def _maybe_create_nominal_model(accel: Accelerator, fetcher_opts: DotDict):
         creator.prepare_options(fetcher_opts)
     except AcceleratorDefinitionError:
         if fetcher_opts.list_choices:
-            exit()
+            sys.exit()
         raise
 
     # Run the actual model creation
@@ -232,7 +233,7 @@ def create_segment(
         segment_creator.prepare_options(fetcher_opts)
     except AcceleratorDefinitionError:
         if fetcher_opts.list_choices:
-            exit()
+            sys.exit()
         raise
 
     segment_creator.full_run()
@@ -274,7 +275,7 @@ def extend_segment(segment: Segment, model: pd.DataFrame, measurement: OpticsMea
     return new_segment
 
 
-def get_differences(propagables: list[Propagable], segment_name: str = "", output_dir: Path = None) -> SegmentDiffs:
+def get_differences(propagables: list[Propagable], segment_name: str = "", output_dir: Path | None = None) -> SegmentDiffs:
     """Calculate the differences of the propagated model and the measurement and write
     them out into files (if ``output`` had been given).
 

@@ -28,6 +28,7 @@ from omc3.utils import logging_tools
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from typing import ClassVar
 
     from tfs import TfsDataFrame
 
@@ -48,7 +49,7 @@ class Coupling(Propagable):
 
     columns: PropagableColumns = PropagableColumns("")  # measured columns don't have prefix
     MODEL_COLUMN_PREFIX: str  # needs to be defined per RDT
-    error_propagation_funcs: dict[str, Callable]  # Need to be defined per RDT
+    error_propagation_funcs: dict[str, Callable]  # To be defined per RDT
 
     @Propagable.segment_models.setter
     def segment_models(self, segment_models: SegmentModels):
@@ -184,7 +185,7 @@ class F1001(Coupling):
     i.e. real, imaginary, amplitude or phase.
     """
     MODEL_COLUMN_PREFIX = COL_F1001
-    error_propagation_funcs: dict[str, Callable] = {
+    error_propagation_funcs: ClassVar[dict[str, Callable]] = {
         REAL: sbs_math.propagate_error_f1001_real,
         IMAG: sbs_math.propagate_error_f1001_imag,
         AMPLITUDE: sbs_math.propagate_error_f1001_amp,
@@ -202,7 +203,7 @@ class F1001(Coupling):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the coupling rdt is in the measurement data. """
         try:
-            meas.f1001
+            _f1001 = meas.f1001  # just testing presence via access
         except FileNotFoundError:
             return False
         return True
@@ -227,7 +228,7 @@ class F1010(Coupling):
     i.e. real, imaginary, amplitude or phase.
     """
     MODEL_COLUMN_PREFIX = COL_F1010
-    error_propagation_funcs: dict[str, Callable] = {
+    error_propagation_funcs: ClassVar[dict[str, Callable]] = {
         REAL: sbs_math.propagate_error_f1010_real,
         IMAG: sbs_math.propagate_error_f1010_imag,
         AMPLITUDE: sbs_math.propagate_error_f1010_amp,
@@ -245,7 +246,7 @@ class F1010(Coupling):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the coupling rdt is in the measurement data. """
         try:
-            meas.f1010
+            _f1010 = meas.f1010  # just testing presence via access
         except FileNotFoundError:
             return False
         return True

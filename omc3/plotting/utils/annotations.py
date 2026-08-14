@@ -65,7 +65,7 @@ def set_yaxis_label(param: str, plane: str, ax=None, delta: bool = False, chromc
         raise ValueError(f"Label '{param}' not found.")
 
     if delta:
-        if param.startswith("beta") or param.startswith("norm"):
+        if param.startswith(("beta", "norm")):
             label = fr'$\Delta({label[1:-1]})$'
         else:
             label = fr'$\Delta {label[1:]}'

@@ -208,8 +208,8 @@ def _restore_file(file):
 
 def clean_columns(files: Sequence[Path | str],
                   columns: Sequence[str],
-                  limit: float = None,   # default set in _check_limits
-                  keep: Sequence[str] = None,  # default set below
+                  limit: float | None = None,   # default set in _check_limits
+                  keep: Sequence[str] | None = None,  # default set below
                   backup: bool = True):
     """ Clean the columns in the given files."""
     for file in files:

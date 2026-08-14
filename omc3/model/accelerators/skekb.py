@@ -64,6 +64,8 @@ Model Creation Keyword Args:
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from generic_parser import EntryPoint
 
 from omc3.model.accelerators.accelerator import (
@@ -73,14 +75,18 @@ from omc3.model.accelerators.accelerator import (
 )
 from omc3.utils import logging_tools
 
-LOGGER = logging_tools.get_logger(__name__)
+if TYPE_CHECKING:
+    from logging import Logger
+    from typing import ClassVar
+
+LOGGER: Logger = logging_tools.get_logger(__name__)
 
 
 class SKekB(Accelerator):
     """KEK's SuperKEKB accelerator."""
     NAME = "skekb"
     RINGS = ("ler", "her")
-    RE_DICT: dict[str, str] = {
+    RE_DICT: ClassVar[dict[str, str]] = {
         AccElementTypes.BPMS: r"^M*",
         AccElementTypes.MAGNETS: r".*",
         AccElementTypes.ARC_BPMS: r"^M*",

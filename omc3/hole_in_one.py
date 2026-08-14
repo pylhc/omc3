@@ -58,6 +58,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator, Iterable
 
     from generic_parser import DotDict
+    from tfs import TfsDataFrame
 
 LOGGER = logging_tools.get_logger(__name__)
 
@@ -115,6 +116,13 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
         are processed.
 
         Flags: **--bunch_ids**
+      - **n_jobs** *(int)*: Number of worker processes for the per-bunch frequency analysis.
+        0 (default) chooses automatically: min(usable cores, number of bunches, RAM budget), and
+        falls back to serial if the available RAM cannot be determined. 1 runs serially. A positive
+        N caps the pool at N processes (still clamped to what fits in RAM, when that can be determined).
+
+        Flags: **--n_jobs**
+        Default: ``0``
       - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'm'.
 
         Flags: **--unit**
@@ -378,7 +386,9 @@ def _get_suboptions(
 
 
 def _write_config_file(
-    harpy_opt: dict[str, Any], optics_opt: dict[str, Any], accelerator_opt: dict[str, Any]
+    harpy_opt: dict[str, Any] | None,
+    optics_opt: dict[str, Any] | None,
+    accelerator_opt: dict[str, Any] | None,
 ) -> None:
     """Write the parsed options into a config file for later use."""
     all_options: dict[str, Any] = {}
@@ -403,22 +413,19 @@ def _write_config_file(
     save_options_to_config(out_dir / file_name, all_options)
 
 
-def _run_harpy(harpy_options: DotDict) -> list[Path]:
+def _run_harpy(harpy_options: DotDict) -> list[dict[str, TfsDataFrame]]:
     """Run frequency analysis on turn-by-turn data."""
     iotools.create_dirs(harpy_options.outputdir)
     with timeit(lambda spanned: LOGGER.info(f"Total time for Harpy: {spanned}")):
-        lins = []
         tbt_datas = _parse_tbt_data(harpy_options.files, harpy_options.tbt_datatype)
-        for tbt_data, file in tbt_datas:
-            lins.extend(
-                [
-                    handler.run_per_bunch(bunch_data, harpy_options, name_for_bunch)
-                    for bunch_data, name_for_bunch in _add_suffix_and_iter_bunches(
-                        tbt_data, harpy_options, file
-                    )
-                ]
+        bunch_tasks = [
+            (bunch_data, name_for_bunch)
+            for tbt_data, file in tbt_datas
+            for bunch_data, name_for_bunch in _add_suffix_and_iter_bunches(
+                tbt_data, harpy_options, file
             )
-    return lins
+        ]
+        return handler.analyse_bunches_parallel(bunch_tasks, harpy_options)
 
 
 def _parse_tbt_data(files: Iterable[Path | str | tbt.TbtData], tbt_datatype: str
@@ -473,7 +480,7 @@ def _add_suffix_and_iter_bunches(
         )
 
 
-def _measure_optics(lins: list[Path], optics_opt: DotDict) -> None:
+def _measure_optics(lins: list[dict[str, TfsDataFrame]], optics_opt: DotDict) -> None:
     """Measure lattice optics from frequency spectra or files."""
     if len(lins) == 0:
         lins = optics_opt.files
@@ -511,6 +518,10 @@ def _harpy_entrypoint(params: list[str]) -> tuple[DotDict, list[str]]:
     if not 2 <= options.resonances <= 8:
         raise AttributeError(
             "The magnet order for resonance lines calculation should be between 2 and 8 (inclusive)."
+        )
+    if options.n_jobs < 0:
+        raise AttributeError(
+            "n_jobs must be >= 0 (0 = automatic, 1 = serial, N = N worker processes)."
         )
     options.outputdir = Path(options.outputdir)
     return options, rest
@@ -724,6 +735,16 @@ def harpy_params() -> EntryPointParameters:
         default=HARPY_DEFAULTS["resonances"],
         help="Maximum magnet order of resonance lines to calculate.",
     )
+    params.add_parameter(
+        name="n_jobs",
+        type=int,
+        default=HARPY_DEFAULTS["n_jobs"],
+        help="Number of worker processes for the per-bunch frequency analysis. "
+        "0 (default) chooses automatically: min(usable cores, number of bunches, "
+        "RAM budget), and falls back to serial if the available RAM cannot be "
+        "determined. 1 runs serially. A positive N caps the pool at N processes "
+        "(still clamped to what fits in RAM, when that can be determined).",
+    )
     # fmt: on
     return params
 
@@ -865,6 +886,7 @@ HARPY_DEFAULTS = {
     "to_write": ["lin", "bpm_summary"],
     "tbt_datatype": "lhc",
     "resonances": 4,
+    "n_jobs": 0,
 }
 
 OPTICS_DEFAULTS = {

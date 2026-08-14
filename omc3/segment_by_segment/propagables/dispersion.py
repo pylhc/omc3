@@ -49,8 +49,8 @@ class Dispersion(Propagable):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the dispersion is in the measurement data. """
         try:
-            meas.dispersion_x
-            meas.dispersion_y
+            _x = meas.dispersion_x  # just testing presence via access
+            _y = meas.dispersion_y  # just testing presence via access
         except FileNotFoundError:
             return False
         return True
@@ -140,8 +140,8 @@ class MomentumDispersion(Propagable):
     def in_measurement(cls, meas: OpticsMeasurement) -> bool:
         """ Check if the dispersion is in the measurement data. """
         try:
-            meas.dispersion_x
-            meas.dispersion_y
+            _x = meas.dispersion_x  # just testing presence via access
+            _y = meas.dispersion_y  # just testing presence via access
         except FileNotFoundError:
             return False
         return True
@@ -169,7 +169,7 @@ class MomentumDispersion(Propagable):
 
         # get the measured values
         names = self.get_segment_observation_points(plane)
-        momentum_dispersion, err_pdisp = self.get_at(names, self._meas, plane)
+        momentum_dispersion, _err_pdisp = self.get_at(names, self._meas, plane)
 
         # get the propagated values
         model_momentum_dispersion = seg_model.loc[names, f"{MOMENTUM_DISPERSION}{plane}"]
