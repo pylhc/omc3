@@ -11,11 +11,11 @@
  * for non-relativistic machines, like the PSB
  ************************************************************/
  select, flag=twiss, clear;
- select, flag=twiss, pattern="^BR.*BPM[^T]",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ select, flag=twiss, pattern="^BR.*BPM[^T]",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dy, dpx,dpy,px,py,phix,phiy;
  twiss, centre, DELTAP = %(DPP)s, sequence=psb%(RING)s, file="%(OUTPUT)s/twiss.dat";
 
  select, flag=twiss, clear;
- select, flag=twiss,column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ select, flag=twiss,column=name, s, keyword, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dy, dpx,dpy,px,py,phix,phiy;
  twiss, centre, DELTAP = %(DPP)s, sequence=psb%(RING)s, file="%(OUTPUT)s/twiss_elements.dat";
 
  ac_s = %(USE_ACD)s;
@@ -30,6 +30,6 @@
       vacmap43 := ac_s * (2*(cos(2*pi*Qyd)-cos(2*pi*Qy))/(betyac*sin(2*pi*Qy)));
 
       select, flag=twiss, clear;
-      select, flag=twiss, pattern="^BR.*BPM",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+      select, flag=twiss, pattern="^BR.*BPM",column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dy, dpx,dpy,px,py,phix,phiy;
       twiss, centre, DELTAP = 0, sequence=psb%(RING)s, file="%(OUTPUT)s/twiss_ac.dat";
  }
