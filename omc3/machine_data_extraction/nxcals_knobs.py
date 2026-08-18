@@ -129,7 +129,7 @@ def get_knob_vals(
         energy (float | None): Beam energy in GeV. If None, the energy is retrieved from the HX:ENG variable.
 
     Returns:
-        list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,
+        list[NXCALSResult]: List of NXCALSResult objects containing MAD-X knob names, K-values,
             times, and power converter names.
     """
     LOGGER.info(f"{log_prefix}Starting data retrieval for beam {beam} at time {time}")
@@ -143,7 +143,7 @@ def get_knob_vals(
 
     # Get beam energy for K-value calculations
     if energy is None:
-        energy, _ = get_energy(spark, time)
+        energy, _ = get_energy(spark, time, beam)
 
     # Prepare currents dict for LSA
     currents = {strip_i_meas(var.name): var.value for var in combined_vars}
@@ -204,7 +204,7 @@ def get_raw_vars(
         latest_only (bool): If True, only the latest sample for each variable is returned. Default is True.
 
     Returns:
-        list[NXCalResult]: List of NXCalResult containing variable name, value, times,
+        list[NXCALSResult]: List of NXCALSResult containing variable name, value, times,
         and power converter name for the latest sample of each matching variable at the given time,
         or all samples if so required.
 
@@ -263,22 +263,39 @@ def get_raw_vars(
     return results
 
 
-def get_energy(spark: SparkSession, time: datetime) -> tuple[float, pd.Timestamp]:
+def get_energy(
+    spark: SparkSession, time: datetime, beam: int, averaging_minutes: float = 1.0
+) -> tuple[float, datetime]:
     """
     Retrieve the beam energy of the LHC from NXCALS.
+
+    The energy signal varies from sample to sample, so rather than taking a single
+    reading, the energy is averaged over all samples in the ``averaging_minutes``
+    preceding ``time``.
 
     Args:
         spark (SparkSession): Active Spark session.
         time (datetime): Python datetime (timezone-aware recommended).
+        beam (int): The beam number.
+        averaging_minutes (float): Length of the window (in minutes) before ``time``
+            over which to average the energy. Default is 1.0.
 
     Returns:
-        tuple[float, pd.Timestamp]: Beam energy in GeV and its times.
+        tuple[float, datetime]: Mean beam energy in GeV over the window and the
+        earliest datetime of the samples used for averaging.
 
     Raises:
         RuntimeError: If no energy data is found.
     """
-    scale = 0.120
-    raw_vars: list[NXCALSResult] = get_raw_vars(spark, time, "HX:ENG")
+    raw_vars: list[NXCALSResult] = get_raw_vars(
+        spark,
+        time,
+        f"LHC.BCCM.B{beam}.A:BEAM_ENERGY", #A, B and C exist, no idea what they mean, possibly identical (jgray 2026)
+        data_retrieval_days=averaging_minutes / (24 * 60),
+        latest_only=False,
+    )
     if not raw_vars:
         raise RuntimeError("No energy data found.")
-    return raw_vars[0].value * scale, raw_vars[0].datetime
+    mean_energy = sum(var.value for var in raw_vars) / len(raw_vars)
+    earliest_datetime = min(var.datetime for var in raw_vars)
+    return mean_energy, earliest_datetime
