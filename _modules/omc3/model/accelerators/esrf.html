@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.accelerators.esrf</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">ESRF</span>
 <span class="sd">----</span>
 
@@ -259,7 +259,7 @@
 
 <span class="sd">        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)</span>
 
-<span class="sd">        choices: ``(&#39;acd&#39;, &#39;adt&#39;)``</span>
+<span class="sd">        choices: ``('acd', 'adt')``</span>
 
 
 <span class="sd">    - **drv_tunes** *(float)*:</span>
@@ -292,7 +292,7 @@
 <span class="sd">        If True, x-ing angles will be applied to model</span>
 
 <span class="sd">        action: ``store_true``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -307,11 +307,11 @@
 <div class="viewcode-block" id="Esrf">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.esrf.Esrf">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Esrf</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
-    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;esrf&quot;</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">"esrf"</span>
     <span class="n">RE_DICT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BPM&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BPM\.(\d*[02468]\.[1-5]|\d*[13579]\.[3-7])&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"BPM"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">".*"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"BPM\.(\d*[02468]\.[1-5]|\d*[13579]\.[3-7])"</span><span class="p">,</span>
     <span class="p">}</span>  <span class="c1"># bpms 1-5 in even cells and bpms 3-7 in odd cells.</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

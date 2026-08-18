@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.plotting.utils.colors</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Plotting Utilities: Colours</span>
 <span class="sd">---------------------------</span>
 
 <span class="sd">Helper functions to handle colours in plots.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">colorsys</span>
@@ -256,18 +256,18 @@
 <div class="viewcode-block" id="get_mpl_color">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.get_mpl_color">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mpl_color</span><span class="p">(</span><span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the &#39;new&#39; default ``matplotlib`` colours by index, or the whole cycle.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Gets the 'new' default ``matplotlib`` colours by index, or the whole cycle."""</span>
     <span class="n">c</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;#1f77b4&quot;</span><span class="p">,</span>  <span class="c1"># muted blue</span>
-        <span class="s2">&quot;#ff7f0e&quot;</span><span class="p">,</span>  <span class="c1"># safety orange</span>
-        <span class="s2">&quot;#2ca02c&quot;</span><span class="p">,</span>  <span class="c1"># cooked asparagus green</span>
-        <span class="s2">&quot;#d62728&quot;</span><span class="p">,</span>  <span class="c1"># brick red</span>
-        <span class="s2">&quot;#9467bd&quot;</span><span class="p">,</span>  <span class="c1"># muted purple</span>
-        <span class="s2">&quot;#8c564b&quot;</span><span class="p">,</span>  <span class="c1"># chestnut brown</span>
-        <span class="s2">&quot;#e377c2&quot;</span><span class="p">,</span>  <span class="c1"># raspberry yogurt pink</span>
-        <span class="s2">&quot;#7f7f7f&quot;</span><span class="p">,</span>  <span class="c1"># middle gray</span>
-        <span class="s2">&quot;#bcbd22&quot;</span><span class="p">,</span>  <span class="c1"># curry yellow-green</span>
-        <span class="s2">&quot;#17becf&quot;</span><span class="p">,</span>  <span class="c1"># blue-teal</span>
+        <span class="s2">"#1f77b4"</span><span class="p">,</span>  <span class="c1"># muted blue</span>
+        <span class="s2">"#ff7f0e"</span><span class="p">,</span>  <span class="c1"># safety orange</span>
+        <span class="s2">"#2ca02c"</span><span class="p">,</span>  <span class="c1"># cooked asparagus green</span>
+        <span class="s2">"#d62728"</span><span class="p">,</span>  <span class="c1"># brick red</span>
+        <span class="s2">"#9467bd"</span><span class="p">,</span>  <span class="c1"># muted purple</span>
+        <span class="s2">"#8c564b"</span><span class="p">,</span>  <span class="c1"># chestnut brown</span>
+        <span class="s2">"#e377c2"</span><span class="p">,</span>  <span class="c1"># raspberry yogurt pink</span>
+        <span class="s2">"#7f7f7f"</span><span class="p">,</span>  <span class="c1"># middle gray</span>
+        <span class="s2">"#bcbd22"</span><span class="p">,</span>  <span class="c1"># curry yellow-green</span>
+        <span class="s2">"#17becf"</span><span class="p">,</span>  <span class="c1"># blue-teal</span>
     <span class="p">]</span>
     <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">cycle</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
@@ -278,11 +278,11 @@
 <div class="viewcode-block" id="rgb_plotly_to_mpl">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.rgb_plotly_to_mpl">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rgb_plotly_to_mpl</span><span class="p">(</span><span class="n">rgb_string</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to transforn plotly rbg to ``matplotlib`` rgb.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">rgb_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Helper function to transforn plotly rbg to ``matplotlib`` rgb."""</span>
+    <span class="k">if</span> <span class="n">rgb_string</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'#'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">rgb_string</span>
 
-    <span class="n">rgb_string</span> <span class="o">=</span> <span class="n">rgb_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;rgba&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">rgb_string</span> <span class="o">=</span> <span class="n">rgb_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"rgba"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"rgb"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
     <span class="n">rgb</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">rgb_string</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="o">/</span><span class="mf">255.</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rgb</span><span class="p">]</span></div>
 
@@ -291,15 +291,15 @@
 <div class="viewcode-block" id="change_color_brightness">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.change_color_brightness">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">change_color_brightness</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Lightens the given colour by multiplying (1-luminosity) by the given amount. Input can be</span>
 <span class="sd">    ``matplotlib`` colour string, hex string, or RGB tuple. An amount of 1 equals to no change. 0</span>
 <span class="sd">    is very bright (white) and 2 is very dark. Original code by Ian Hincks</span>
 <span class="sd">    Source: https://stackoverflow.com/questions/37765197/darken-or-lighten-a-color-in-matplotlib</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span><span class="o">&lt;=</span><span class="n">amount</span><span class="o">&lt;=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The brightness change has to be between 0 and 2.&quot;</span>
-                         <span class="sa">f</span><span class="s2">&quot; Instead it was </span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The brightness change has to be between 0 and 2."</span>
+                         <span class="sa">f</span><span class="s2">" Instead it was </span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">cnames</span><span class="p">[</span><span class="n">color</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -313,10 +313,10 @@
 <div class="viewcode-block" id="change_ebar_alpha_for_line">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.change_ebar_alpha_for_line">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">change_ebar_alpha_for_line</span><span class="p">(</span><span class="n">ebar</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Changes the alpha value of an error-bar container.</span>
 <span class="sd">    Loop through bars (ebar[1]) and caps (ebar[2]) and set the alpha value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">bars_or_caps</span> <span class="ow">in</span> <span class="n">ebar</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="k">for</span> <span class="n">bar_or_cap</span> <span class="ow">in</span> <span class="n">bars_or_caps</span><span class="p">:</span>
             <span class="n">bar_or_cap</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span></div>
@@ -326,7 +326,7 @@
 <div class="viewcode-block" id="change_ebar_alpha_for_axes">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.colors.change_ebar_alpha_for_axes">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">change_ebar_alpha_for_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for change_ebar_alpha_for_line to change all in one axes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Wrapper for change_ebar_alpha_for_line to change all in one axes."""</span>
     <span class="k">for</span> <span class="n">ebar</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">containers</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ebar</span><span class="p">,</span> <span class="n">mpl</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">ErrorbarContainer</span><span class="p">):</span>
             <span class="n">change_ebar_alpha_for_line</span><span class="p">(</span><span class="n">ebar</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span></div>

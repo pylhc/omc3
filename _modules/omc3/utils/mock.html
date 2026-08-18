@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.utils.mock</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Mock</span>
 <span class="sd">----</span>
 
@@ -249,9 +249,9 @@
 <span class="sd">.. code-block:: python</span>
 
 <span class="sd">    from omc3.utils.mock import cern_network_import</span>
-<span class="sd">    pytimber = cern_network_import(&quot;pytimber&quot;)</span>
-<span class="sd">    db = pytimber.LoggingDB(source=&quot;nxcals&quot;)  # will raise if pytimber not installed</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pytimber = cern_network_import("pytimber")</span>
+<span class="sd">    db = pytimber.LoggingDB(source="nxcals")  # will raise if pytimber not installed</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
@@ -260,20 +260,20 @@
 <div class="viewcode-block" id="CERNNetworkMockPackage">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.CERNNetworkMockPackage">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CERNNetworkMockPackage</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Mock class to raise an error if the desired package functionality is called when the package is not</span>
 <span class="sd">    actually installed. Designed for packages installable only from inside the CERN network,</span>
 <span class="sd">    that are declared as ``cern`` extra. See module documentation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; package does not seem to be installed but is needed for this function. &quot;</span>
-            <span class="s2">&quot;Install it with the &#39;cern&#39; extra dependency, which requires to be on the CERN network and to &quot;</span>
-            <span class="s2">&quot;install from the acc-py package index. Refer to the documentation for more information.&quot;</span>
+            <span class="sa">f</span><span class="s2">"The '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' package does not seem to be installed but is needed for this function. "</span>
+            <span class="s2">"Install it with the 'cern' extra dependency, which requires to be on the CERN network and to "</span>
+            <span class="s2">"install from the acc-py package index. Refer to the documentation for more information."</span>
         <span class="p">)</span></div>
 
 
@@ -281,14 +281,14 @@
 <div class="viewcode-block" id="cern_network_import">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.mock.cern_network_import">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cern_network_import</span><span class="p">(</span><span class="n">package</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convenience function to try and import packages only available (and installable) on the CERN network.</span>
 <span class="sd">    If installed, the module is returned, otherwise a mock class is returned, which will raise an</span>
 <span class="sd">    insightful ``ImportError`` on attempted use.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        package (str): name of the package to try and import.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">package</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>

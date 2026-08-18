@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.lsa_knobs</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">LSA Knobs</span>
 <span class="sd">---------</span>
 
 <span class="sd">This module contains functions to extract knob information from LSA.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -256,8 +256,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 
-<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
-<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
+<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"jpype"</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pjlsa"</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
@@ -269,13 +269,13 @@
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">PARAMETER_KNOB</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;KNOB&quot;</span>
+<span class="n">PARAMETER_KNOB</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"KNOB"</span>
 
 
 <div class="viewcode-block" id="find_knob_names">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.find_knob_names">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_knob_names</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span> <span class="n">regexp</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_knob_names</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lhc"</span><span class="p">,</span> <span class="n">regexp</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return knobs for accelerator.</span>
 
 <span class="sd">    Args:</span>
@@ -285,8 +285,8 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Sorted list of knob names.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting knobs for </span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Getting knobs for </span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 
     <span class="c1"># Prepare request</span>
     <span class="n">request_builder</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_ParametersRequestBuilder</span><span class="p">()</span>
@@ -296,11 +296,11 @@
     <span class="c1"># Get parameters and filter</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_parameterService</span><span class="o">.</span><span class="n">findParameters</span><span class="p">(</span><span class="n">request_builder</span><span class="o">.</span><span class="n">build</span><span class="p">())</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> Knobs extracted for </span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span><span class="si">}</span><span class="s2"> Knobs extracted for </span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">param_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">regexp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selecting Knobs containing expression: </span><span class="si">{</span><span class="n">regexp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Selecting Knobs containing expression: </span><span class="si">{</span><span class="n">regexp</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">,</span> <span class="n">param_names</span><span class="p">))</span>  <span class="c1"># type: ignore[arg-type]</span>
 
@@ -311,20 +311,20 @@
 <div class="viewcode-block" id="filter_non_existing_knobs">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.filter_non_existing_knobs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">filter_non_existing_knobs</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">knobs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return only the knobs that exist from the given list.</span>
 <span class="sd">    This function was created out of the need to filter these first,</span>
 <span class="sd">    as knobs that exist but do not belong to a beamprocess return noting in</span>
 <span class="sd">    _getTrimsByBeamprocess, while knobs that do not exist at all crashed pjlsa.</span>
-<span class="sd">    This filter should probably have been in pjlsa&#39;s _buildParameterList.</span>
+<span class="sd">    This filter should probably have been in pjlsa's _buildParameterList.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        knobs (list): List of strings of the knobs to check.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of the knob names that actually exist.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checking if the following knobs exist: </span><span class="si">{</span><span class="n">knobs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Checking if the following knobs exist: </span><span class="si">{</span><span class="n">knobs</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">existing</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">missing</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -335,7 +335,7 @@
             <span class="n">existing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following knobs do not exist and will be filtered: </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The following knobs do not exist and will be filtered: </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">existing</span></div>
 
@@ -349,9 +349,9 @@
     <span class="n">knobs</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">end_time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lhc"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrimHistories</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get trim history for knobs between specified times.</span>
 <span class="sd">    If any of the times are not given, all available data in that time-direction</span>
 <span class="sd">    is extracted for that beamprocess.</span>
@@ -365,18 +365,18 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        TrimHistory object containing trim extraction and history information.</span>
-<span class="sd">        The actual trims are in the &#39;trims&#39; attribute as a dictionary</span>
+<span class="sd">        The actual trims are in the 'trims' attribute as a dictionary</span>
 <span class="sd">        of knob names and their data (as TrimTuples, i.e. NamedTuple of lists of time and data).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Extracting Trim history.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Extracting Trim history."</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">knobs</span><span class="p">:</span>
         <span class="n">knobs</span> <span class="o">=</span> <span class="n">find_knob_names</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">knobs</span> <span class="o">=</span> <span class="n">filter_non_existing_knobs</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">,</span> <span class="n">knobs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">knobs</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None of the given knobs exist!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"None of the given knobs exist!"</span><span class="p">)</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting trims for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">knobs</span><span class="p">)</span><span class="si">}</span><span class="s2"> knobs.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Getting trims for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">knobs</span><span class="p">)</span><span class="si">}</span><span class="s2"> knobs."</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">trims</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">getTrims</span><span class="p">(</span>
             <span class="n">parameter</span><span class="o">=</span><span class="n">knobs</span><span class="p">,</span>
@@ -388,15 +388,15 @@
         <span class="c1"># In the past this happened, when a knob was not defined, but</span>
         <span class="c1"># this should have been caught by the filter_existing_knobs above</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Something went wrong when extracting trims for the knobs: </span><span class="si">{</span><span class="n">knobs</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Something went wrong when extracting trims for the knobs: </span><span class="si">{</span><span class="n">knobs</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trims</span><span class="p">)</span><span class="si">}</span><span class="s2"> trims extracted.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trims</span><span class="p">)</span><span class="si">}</span><span class="s2"> trims extracted."</span><span class="p">)</span>
     <span class="n">trims_not_found</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">knobs</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">trims</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trims_not_found</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The following knobs were not found in &#39;</span><span class="si">{</span><span class="n">beamprocess</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;or had no trims during the given time: </span><span class="si">{</span><span class="n">trims_not_found</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"The following knobs were not found in '</span><span class="si">{</span><span class="n">beamprocess</span><span class="si">}</span><span class="s2">' "</span>
+            <span class="sa">f</span><span class="s2">"or had no trims during the given time: </span><span class="si">{</span><span class="n">trims_not_found</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">TrimHistories</span><span class="p">(</span>
@@ -412,15 +412,15 @@
 <div class="viewcode-block" id="get_last_trim">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.get_last_trim">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_last_trim</span><span class="p">(</span><span class="n">trims</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TrimTuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last trim in the trim history.</span>
+<span class="w">    </span><span class="sd">"""Returns the last trim in the trim history.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        trims (dict): trim history as extracted via LSA.get_trim_history()</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary of knob names and their values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Extracting last trim from found trim histories.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Extracting last trim from found trim histories."</span><span class="p">)</span>
     <span class="n">trim_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">trim</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">trim</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">trims</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># return last set value</span>
     <span class="k">for</span> <span class="n">trim</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">trim_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">try</span><span class="p">:</span>
@@ -428,7 +428,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">continue</span>  <span class="c1"># single value, as expected</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trim </span><span class="si">{</span><span class="n">trim</span><span class="si">}</span><span class="s2"> hat multiple data entries </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">, taking only the last one.&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Trim </span><span class="si">{</span><span class="n">trim</span><span class="si">}</span><span class="s2"> hat multiple data entries </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">, taking only the last one."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">trim_dict</span></div>
 
 
@@ -436,7 +436,7 @@
 <div class="viewcode-block" id="get_knob_definition">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_knobs.get_knob_definition">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_knob_definition</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">knob</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">optics</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KnobDefinition</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get a dataframe of the structure of the knob. Similar to online model extractor</span>
 <span class="sd">    (KnobExtractor.getKnobHiercarchy)</span>
 
@@ -447,19 +447,19 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        KnobDefinition: The definition of the knob.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting knob defintions for &#39;</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">&#39;, optics &#39;</span><span class="si">{</span><span class="n">optics</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Getting knob defintions for '</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">', optics '</span><span class="si">{</span><span class="n">optics</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
     <span class="n">knob_def</span> <span class="o">=</span> <span class="n">KnobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">knob</span><span class="p">,</span> <span class="n">optics</span><span class="o">=</span><span class="n">optics</span><span class="p">)</span>
 
     <span class="n">lsa_knob</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_knobService</span><span class="o">.</span><span class="n">findKnob</span><span class="p">(</span><span class="n">knob</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">lsa_knob</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Knob &#39;</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">&#39; does not exist&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Knob '</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">' does not exist"</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">knob_settings</span> <span class="o">=</span> <span class="n">lsa_knob</span><span class="o">.</span><span class="n">getKnobFactors</span><span class="p">()</span><span class="o">.</span><span class="n">getFactorsForOptic</span><span class="p">(</span><span class="n">optics</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">jpype</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">IllegalArgumentException</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Knob &#39;</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">&#39; not available for optics &#39;</span><span class="si">{</span><span class="n">optics</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Knob '</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">' not available for optics '</span><span class="si">{</span><span class="n">optics</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">knob_setting</span> <span class="ow">in</span> <span class="n">knob_settings</span><span class="p">:</span>
         <span class="n">circuit</span> <span class="o">=</span> <span class="n">knob_setting</span><span class="o">.</span><span class="n">getComponentName</span><span class="p">()</span>
@@ -468,7 +468,7 @@
         <span class="n">madx_name</span> <span class="o">=</span> <span class="n">map_lsa_name_to_madx</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">,</span> <span class="n">circuit</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">madx_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Circuit &#39;</span><span class="si">{</span><span class="n">circuit</span><span class="si">}</span><span class="s2">&#39; could not be resolved to a MADX name in LSA!&quot;</span>
+                <span class="sa">f</span><span class="s2">"Circuit '</span><span class="si">{</span><span class="n">circuit</span><span class="si">}</span><span class="s2">' could not be resolved to a MADX name in LSA!"</span>
             <span class="p">)</span>
 
         <span class="n">part</span> <span class="o">=</span> <span class="n">KnobPart</span><span class="p">(</span>
@@ -477,7 +477,7 @@
             <span class="n">factor</span><span class="o">=</span><span class="n">knob_setting</span><span class="o">.</span><span class="n">getFactor</span><span class="p">(),</span>
             <span class="n">madx_name</span><span class="o">=</span><span class="n">madx_name</span>
         <span class="p">)</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found component </span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Found component </span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">knob_def</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">knob_def</span></div>
 

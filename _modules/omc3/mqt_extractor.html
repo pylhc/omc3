@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.mqt_extractor</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">MQT Extractor</span>
 <span class="sd">-------------</span>
 
@@ -248,7 +248,7 @@
 <span class="sd">The data is fetched from ``NXCALS`` through PySpark queries and converted to K-values using ``LSA``.</span>
 
 <span class="sd">MQT magnets are trim quadrupoles located in the LHC arcs, used for fine-tuning the optics.</span>
-<span class="sd">There are two types per arc (focusing &#39;f&#39; and defocusing &#39;d&#39;), resulting in 16 MQT magnets</span>
+<span class="sd">There are two types per arc (focusing 'f' and defocusing 'd'), resulting in 16 MQT magnets</span>
 <span class="sd">per beam (8 arcs x 2 types).</span>
 
 <span class="sd">.. note::</span>
@@ -266,7 +266,7 @@
 <span class="sd">- **time** *(str)*:</span>
 
 <span class="sd">    At what time to extract the MQT knobs. Accepts ISO-format (YYYY-MM-</span>
-<span class="sd">    DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. Timezone must be</span>
+<span class="sd">    DDThh:mm:ss) with timezone, timestamp or 'now'. Timezone must be</span>
 <span class="sd">    specified for ISO-format (e.g. +00:00 for UTC).</span>
 
 <span class="sd">    default: ``now``</span>
@@ -286,11 +286,11 @@
 <span class="sd">- **timedelta** *(str)*:</span>
 
 <span class="sd">    Add this timedelta to the given time. The format of timedelta is</span>
-<span class="sd">    &#39;((\d+)(\w))+&#39; with the second token being one of s(seconds),</span>
+<span class="sd">    '((\d+)(\w))+' with the second token being one of s(seconds),</span>
 <span class="sd">    m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,</span>
-<span class="sd">    1d = 1day, 7m30s = 7 min 30 secs. A prefix &#39;_&#39; specifies a negative</span>
+<span class="sd">    1d = 1day, 7m30s = 7 min 30 secs. A prefix '_' specifies a negative</span>
 <span class="sd">    timedelta. This allows for easily getting the setting e.g. 2h ago:</span>
-<span class="sd">    &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).</span>
+<span class="sd">    '_2h' while setting the `time` argument to 'now' (default).</span>
 
 <span class="sd">    default: ``None``</span>
 
@@ -301,7 +301,7 @@
 
 <span class="sd">    default: ``0.25`` (e.g. 6 hours)</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -324,11 +324,11 @@
     <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
-<span class="n">spark_session_builder</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;nxcals.spark_session_builder&quot;</span><span class="p">)</span>
+<span class="n">spark_session_builder</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"nxcals.spark_session_builder"</span><span class="p">)</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">USAGE_EXAMPLES</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Usage Examples:</span>
+<span class="n">USAGE_EXAMPLES</span> <span class="o">=</span> <span class="s2">"""Usage Examples:</span>
 
 <span class="s2">python -m omc3.mqt_extractor --beam 1 --time 2022-05-04T14:00+00:00</span>
 <span class="s2">    extracts the MQT knobs for beam 1 at 14h on May 4th 2022</span>
@@ -338,7 +338,7 @@
 
 <span class="s2">python -m omc3.mqt_extractor --beam 1 --time now --output model_dir/mqts.madx</span>
 <span class="s2">    extracts the current MQT settings for beam 1 and writes to file</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 
 <div class="viewcode-block" id="get_params">
@@ -346,41 +346,41 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">beam</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;The beam number (1 or 2).&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"The beam number (1 or 2)."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">time</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;At what time to extract the MQT knobs. &quot;</span>
-                <span class="s2">&quot;Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. &quot;</span>
-                <span class="s2">&quot;Timezone must be specified for ISO-format (e.g. +00:00 for UTC).&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"At what time to extract the MQT knobs. "</span>
+                <span class="s2">"Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'. "</span>
+                <span class="s2">"Timezone must be specified for ISO-format (e.g. +00:00 for UTC)."</span>
             <span class="p">),</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;now&quot;</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"now"</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">timedelta</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Add this timedelta to the given time. &quot;</span>
-                <span class="s2">&quot;The format of timedelta is &#39;((</span><span class="se">\\</span><span class="s2">d+)(</span><span class="se">\\</span><span class="s2">w))+&#39; &quot;</span>
-                <span class="s2">&quot;with the second token being one of &quot;</span>
-                <span class="s2">&quot;s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) &quot;</span>
-                <span class="s2">&quot;e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. &quot;</span>
-                <span class="s2">&quot;A prefix &#39;_&#39; specifies a negative timedelta. &quot;</span>
-                <span class="s2">&quot;This allows for easily getting the setting &quot;</span>
-                <span class="s2">&quot;e.g. 2h ago: &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"Add this timedelta to the given time. "</span>
+                <span class="s2">"The format of timedelta is '((</span><span class="se">\\</span><span class="s2">d+)(</span><span class="se">\\</span><span class="s2">w))+' "</span>
+                <span class="s2">"with the second token being one of "</span>
+                <span class="s2">"s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) "</span>
+                <span class="s2">"e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. "</span>
+                <span class="s2">"A prefix '_' specifies a negative timedelta. "</span>
+                <span class="s2">"This allows for easily getting the setting "</span>
+                <span class="s2">"e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default)."</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="n">output</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Specify user-defined output path. This should probably be `model_dir/mqts.madx`&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"Specify user-defined output path. This should probably be `model_dir/mqts.madx`"</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="n">data_retrieval_days</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of days to look back for data in NXCALS.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Number of days to look back for data in NXCALS."</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span></div>
 
@@ -392,13 +392,13 @@
     <span class="n">get_params</span><span class="p">(),</span>
     <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">argument_parser_args</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;epilog&quot;</span><span class="p">:</span> <span class="n">USAGE_EXAMPLES</span><span class="p">,</span>
-        <span class="s2">&quot;formatter_class&quot;</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
-        <span class="s2">&quot;prog&quot;</span><span class="p">:</span> <span class="s2">&quot;MQT Extraction Tool.&quot;</span><span class="p">,</span>
+        <span class="s2">"epilog"</span><span class="p">:</span> <span class="n">USAGE_EXAMPLES</span><span class="p">,</span>
+        <span class="s2">"formatter_class"</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
+        <span class="s2">"prog"</span><span class="p">:</span> <span class="s2">"MQT Extraction Tool."</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Main MQT extracting function.</span>
 
 <span class="sd">    Retrieves MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam,</span>
@@ -407,11 +407,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.TfsDataFrame: DataFrame containing the extracted MQT knob values with columns</span>
 <span class="sd">            for madx name, value, timestamp, and power converter name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">spark</span> <span class="o">=</span> <span class="n">spark_session_builder</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spark.ui.showConsoleProgress&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">})</span>
+<span class="sd">    """</span>
+    <span class="n">spark</span> <span class="o">=</span> <span class="n">spark_session_builder</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">conf</span><span class="o">=</span><span class="p">{</span><span class="s2">"spark.ui.showConsoleProgress"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">})</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---- EXTRACTING MQT KNOBS @ </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2"> for Beam </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2"> ----&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"---- EXTRACTING MQT KNOBS @ </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2"> for Beam </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="si">}</span><span class="s2"> ----"</span><span class="p">)</span>
     <span class="n">mqt_vals</span> <span class="o">=</span> <span class="n">get_mqt_vals</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="n">data_retrieval_days</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">data_retrieval_days</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
@@ -422,15 +422,15 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_mqt_file</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mqt_vals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write MQT knobs to a MAD-X file.&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
-        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;!! --- MQT knobs extracted by mqt_extractor</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!! --- extracted MQT knobs for time </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">, beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">res</span><span class="o">.</span><span class="n">to_madx</span><span class="p">()</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">mqt_vals</span><span class="p">]))</span>
-        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Write MQT knobs to a MAD-X file."""</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"!! --- MQT knobs extracted by mqt_extractor</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"!! --- extracted MQT knobs for time </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">, beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">res</span><span class="o">.</span><span class="n">to_madx</span><span class="p">()</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">mqt_vals</span><span class="p">]))</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

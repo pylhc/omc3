@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.global_correction</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">Global Correction</span>
 <span class="sd">-----------------</span>
 
@@ -319,7 +319,7 @@
 
 <span class="sd">    Optimization method to use.</span>
 
-<span class="sd">    choices: ``(&#39;pinv&#39;, &#39;omp&#39;)``</span>
+<span class="sd">    choices: ``('pinv', 'omp')``</span>
 
 <span class="sd">    default: ``pinv``</span>
 
@@ -339,16 +339,16 @@
 
 <span class="sd">- **n_correctors** *(int)*:</span>
 
-<span class="sd">    Maximum number of correctors to use. (Method: &#39;omp&#39;)</span>
+<span class="sd">    Maximum number of correctors to use. (Method: 'omp')</span>
 
 
 <span class="sd">- **optics_params** *(str)*:</span>
 
 <span class="sd">    List of parameters to correct upon (e.g. BETX BETY)</span>
 
-<span class="sd">    choices: ``(&#39;PHASEX&#39;, &#39;PHASEY&#39;, &#39;BETX&#39;, &#39;BETY&#39;, &#39;DX&#39;, &#39;DY&#39;, &#39;NDX&#39;, &#39;Q&#39;, &#39;F1001R&#39;, &#39;F1001I&#39;, &#39;F1010R&#39;, &#39;F1010I&#39;)``</span>
+<span class="sd">    choices: ``('PHASEX', 'PHASEY', 'BETX', 'BETY', 'DX', 'DY', 'NDX', 'Q', 'F1001R', 'F1001I', 'F1010R', 'F1010I')``</span>
 
-<span class="sd">    default: ``[&#39;PHASEX&#39;, &#39;PHASEY&#39;, &#39;BETX&#39;, &#39;BETY&#39;, &#39;NDX&#39;, &#39;Q&#39;]``</span>
+<span class="sd">    default: ``['PHASEX', 'PHASEY', 'BETX', 'BETY', 'NDX', 'Q']``</span>
 
 
 <span class="sd">- **output_filename**:</span>
@@ -361,7 +361,7 @@
 <span class="sd">- **svd_cut** *(float)*:</span>
 
 <span class="sd">    Cutoff for small singular values of the pseudo inverse. (Method:</span>
-<span class="sd">    &#39;pinv&#39;)Singular values smaller than rcond*largest_singular_value are</span>
+<span class="sd">    'pinv')Singular values smaller than rcond*largest_singular_value are</span>
 <span class="sd">    set to zero</span>
 
 <span class="sd">    default: ``0.01``</span>
@@ -385,7 +385,7 @@
 
 <span class="sd">    List of names of the variables classes to use.</span>
 
-<span class="sd">    default: ``[&#39;MQM&#39;, &#39;MQT&#39;, &#39;MQTL&#39;, &#39;MQY&#39;]``</span>
+<span class="sd">    default: ``['MQM', 'MQT', 'MQTL', 'MQY']``</span>
 
 
 <span class="sd">- **weights** *(float)*:</span>
@@ -404,7 +404,7 @@
 <span class="sd"> * Values missing in the response (i.e. correctors of the other beam) shall be treated as zeros</span>
 <span class="sd"> * Missing a part that treats the output from LSA</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -431,22 +431,22 @@
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">OPTICS_PARAMS_CHOICES</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
-                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
-                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span>
-                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">,</span>
-                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">)</span>
+<span class="n">OPTICS_PARAMS_CHOICES</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y"</span><span class="p">,</span>
+                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y"</span><span class="p">,</span>
+                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">,</span>
+                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y"</span><span class="p">,</span>
+                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I"</span><span class="p">)</span>
 
 <span class="n">CORRECTION_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;output_filename&quot;</span><span class="p">:</span> <span class="s2">&quot;changeparameters_iter&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;svd_cut&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
-    <span class="s2">&quot;optics_params&quot;</span><span class="p">:</span> <span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span>
-    <span class="s2">&quot;variable_categories&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;MQM&quot;</span><span class="p">,</span> <span class="s2">&quot;MQT&quot;</span><span class="p">,</span> <span class="s2">&quot;MQTL&quot;</span><span class="p">,</span> <span class="s2">&quot;MQY&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;beta_filename&quot;</span><span class="p">:</span> <span class="s2">&quot;beta_phase_&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;pinv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;iterations&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s2">&quot;include_ips_in_arc_by_arc&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s2">"output_filename"</span><span class="p">:</span> <span class="s2">"changeparameters_iter"</span><span class="p">,</span>
+    <span class="s2">"svd_cut"</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="s2">"optics_params"</span><span class="p">:</span> <span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span>
+    <span class="s2">"variable_categories"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"MQM"</span><span class="p">,</span> <span class="s2">"MQT"</span><span class="p">,</span> <span class="s2">"MQTL"</span><span class="p">,</span> <span class="s2">"MQY"</span><span class="p">],</span>
+    <span class="s2">"beta_filename"</span><span class="p">:</span> <span class="s2">"beta_phase_"</span><span class="p">,</span>
+    <span class="s2">"method"</span><span class="p">:</span> <span class="s2">"pinv"</span><span class="p">,</span>
+    <span class="s2">"iterations"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">"include_ips_in_arc_by_arc"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -454,87 +454,87 @@
 <a class="viewcode-back" href="../../entrypoints/correction.html#omc3.global_correction.correction_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">correction_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;meas_dir&quot;</span><span class="p">,</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"meas_dir"</span><span class="p">,</span>
                          <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the directory containing the measurement files.&quot;</span><span class="p">,)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_dir&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Path to the directory containing the measurement files."</span><span class="p">,)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"output_dir"</span><span class="p">,</span>
                          <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the directory where to write the output files.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;fullresponse_path&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Path to the directory where to write the output files."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"fullresponse_path"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the fullresponse binary file.If not given, &quot;</span>
-                              <span class="s2">&quot;calculates the response analytically.&quot;</span><span class="p">,)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;optics_params&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Path to the fullresponse binary file.If not given, "</span>
+                              <span class="s2">"calculates the response analytically."</span><span class="p">,)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"optics_params"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;optics_params&quot;</span><span class="p">]),</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"optics_params"</span><span class="p">]),</span>
                          <span class="n">choices</span><span class="o">=</span><span class="n">OPTICS_PARAMS_CHOICES</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;List of parameters to correct upon (e.g. </span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X </span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y)&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_filename&quot;</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;output_filename&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Identifier of the output files.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;min_corrector_strength&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">"List of parameters to correct upon (e.g. </span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X </span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y)"</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"output_filename"</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"output_filename"</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Identifier of the output files."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"min_corrector_strength"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
                          <span class="n">default</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Minimum (absolute) strength of correctors.&quot;</span><span class="p">,)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;modelcut&quot;</span><span class="p">,</span>
-                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Minimum (absolute) strength of correctors."</span><span class="p">,)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"modelcut"</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Reject BPMs whose deviation to the model is higher &quot;</span>
-                              <span class="s2">&quot;than the corresponding input. Input in order of optics_params.&quot;</span><span class="p">,)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;errorcut&quot;</span><span class="p">,</span>
-                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Reject BPMs whose deviation to the model is higher "</span>
+                              <span class="s2">"than the corresponding input. Input in order of optics_params."</span><span class="p">,)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"errorcut"</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Reject BPMs whose error bar is higher than the corresponding &quot;</span>
-                              <span class="s2">&quot;input. Input in order of optics_params.&quot;</span><span class="p">,)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;weights&quot;</span><span class="p">,</span>
-                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Weight to apply to each measured quantity. &quot;</span>
-                              <span class="s2">&quot;Input in order of optics_params.&quot;</span><span class="p">,)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">,</span>
-                         <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;variable_categories&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List of names of the variables classes to use.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;beta_filename&quot;</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;beta_filename&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Prefix of the beta file to use. E.g.: beta_phase_&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;method&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Reject BPMs whose error bar is higher than the corresponding "</span>
+                              <span class="s2">"input. Input in order of optics_params."</span><span class="p">,)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"weights"</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Weight to apply to each measured quantity. "</span>
+                              <span class="s2">"Input in order of optics_params."</span><span class="p">,)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"variable_categories"</span><span class="p">,</span>
+                         <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"variable_categories"</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"List of names of the variables classes to use."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"beta_filename"</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"beta_filename"</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Prefix of the beta file to use. E.g.: beta_phase_"</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"method"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;pinv&quot;</span><span class="p">,</span> <span class="s2">&quot;omp&quot;</span><span class="p">),</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optimization method to use.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;svd_cut&quot;</span><span class="p">,</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"pinv"</span><span class="p">,</span> <span class="s2">"omp"</span><span class="p">),</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"method"</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Optimization method to use."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"svd_cut"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;svd_cut&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Cutoff for small singular values of the pseudo inverse. &quot;</span>
-                              <span class="s2">&quot;(Method: &#39;pinv&#39;)Singular values smaller than &quot;</span>
-                              <span class="s2">&quot;rcond*largest_singular_value are set to zero&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;n_correctors&quot;</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"svd_cut"</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Cutoff for small singular values of the pseudo inverse. "</span>
+                              <span class="s2">"(Method: 'pinv')Singular values smaller than "</span>
+                              <span class="s2">"rcond*largest_singular_value are set to zero"</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"n_correctors"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of correctors to use. (Method: &#39;omp&#39;)&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;iterations&quot;</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Maximum number of correctors to use. (Method: 'omp')"</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"iterations"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;iterations&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of correction iterations to perform. &quot;</span>
-                              <span class="s2">&quot;A value of `1` means the correction is calculated once.&quot;</span>
-                              <span class="s2">&quot;In this case, the accelerator instance does not need to be able&quot;</span>
-                              <span class="s2">&quot;to produce a new model.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;use_errorbars&quot;</span><span class="p">,</span>
-                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Take into account the measured errorbars as weights.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;update_response&quot;</span><span class="p">,</span>
-                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Update the (analytical) response per iteration.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;arc_by_arc_phase&quot;</span><span class="p">,</span>
-                         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set to perform arc-by-arc total phase correction.&quot;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;include_ips_in_arc_by_arc&quot;</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"iterations"</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Maximum number of correction iterations to perform. "</span>
+                              <span class="s2">"A value of `1` means the correction is calculated once."</span>
+                              <span class="s2">"In this case, the accelerator instance does not need to be able"</span>
+                              <span class="s2">"to produce a new model."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"use_errorbars"</span><span class="p">,</span>
+                         <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Take into account the measured errorbars as weights."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"update_response"</span><span class="p">,</span>
+                         <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Update the (analytical) response per iteration."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"arc_by_arc_phase"</span><span class="p">,</span>
+                         <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"Set to perform arc-by-arc total phase correction."</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"include_ips_in_arc_by_arc"</span><span class="p">,</span>
                          <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">),</span>
-                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;include_ips_in_arc_by_arc&quot;</span><span class="p">],</span>
-                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If not specified only takes pure arcs. Otherwise it includes IPs left or right of arcs.&quot;</span><span class="p">,</span> <span class="p">)</span>
+                         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">,</span> <span class="s2">"both"</span><span class="p">),</span>
+                         <span class="n">default</span><span class="o">=</span><span class="n">CORRECTION_DEFAULTS</span><span class="p">[</span><span class="s2">"include_ips_in_arc_by_arc"</span><span class="p">],</span>
+                         <span class="n">help</span><span class="o">=</span><span class="s2">"If not specified only takes pure arcs. Otherwise it includes IPs left or right of arcs."</span><span class="p">,</span> <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -543,8 +543,8 @@
 <a class="viewcode-back" href="../../entrypoints/correction.html#omc3.global_correction.global_correction_entrypoint">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">correction_params</span><span class="p">())</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">global_correction_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Do the global correction. Iteratively.&quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting Iterative Global Correction.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Do the global correction. Iteratively."""</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Starting Iterative Global Correction."</span><span class="p">)</span>
     <span class="n">save_config</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">),</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">,</span> <span class="n">unknown_opt</span><span class="o">=</span><span class="n">accel_opt</span><span class="p">)</span>
 
     <span class="n">opt</span> <span class="o">=</span> <span class="n">_check_opt_add_dicts</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
@@ -556,15 +556,15 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_opt_add_dicts</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># acts inplace...</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Check on options and put in missing values &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Check on options and put in missing values """</span>
     <span class="n">def_dict</span> <span class="o">=</span> <span class="n">_get_default_values</span><span class="p">()</span>
 
     <span class="c1"># Check cuts and fill defaults</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;modelcut&quot;</span><span class="p">,</span> <span class="s2">&quot;errorcut&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"modelcut"</span><span class="p">,</span> <span class="s2">"errorcut"</span><span class="p">,</span> <span class="s2">"weights"</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">def_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Length of </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not the same as of the optical parameters!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Length of </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not the same as of the optical parameters!"</span><span class="p">)</span>
         <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_params</span><span class="p">,</span> <span class="n">opt</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
 
     <span class="c1"># Convert Strings to Paths</span>
@@ -576,61 +576,61 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_add_hardcoded_paths</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DotDict</span><span class="p">:</span>  <span class="c1"># acts inplace...</span>
-    <span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">.madx&quot;</span>
-    <span class="n">opt</span><span class="o">.</span><span class="n">change_params_correct_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">_correct.madx&quot;</span>
-    <span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">.tfs&quot;</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">change_params_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">.madx"</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">change_params_correct_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">_correct.madx"</span>
+    <span class="n">opt</span><span class="o">.</span><span class="n">knob_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">.tfs"</span>
     <span class="k">return</span> <span class="n">opt</span>
 
 
 <span class="c1"># Define functions here, to new optics params</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_default_values</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;modelcut&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+        <span class="s2">"modelcut"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="s2">&quot;errorcut&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.035</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.035</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mf">0.027</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+        <span class="s2">"errorcut"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.035</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mf">0.035</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mf">0.027</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
         <span class="p">},</span>
-        <span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"weights"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PHASE</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BETA</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DISPERSION</span><span class="si">}</span><span class="s2">Y"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">NORM_DISPERSION</span><span class="si">}</span><span class="s2">X"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">R"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1001</span><span class="si">}</span><span class="s2">I"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">R"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">F1010</span><span class="si">}</span><span class="s2">I"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">}</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">global_correction_entrypoint</span><span class="p">()</span>
 </pre></div>
 

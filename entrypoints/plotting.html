@@ -266,16 +266,16 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_optics_measurements</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot</span>
 
 <span class="n">figs</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span>
-    <span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;folder1&#39;</span><span class="p">,</span> <span class="s1">&#39;folder2&#39;</span><span class="p">],</span>
-    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;LabelForFolder1&#39;</span><span class="p">,</span> <span class="s1">&#39;LabelForFolder2&#39;</span><span class="p">],</span>
-    <span class="n">combine_by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">],</span>  <span class="c1"># to compare folder1 and folder2</span>
-    <span class="n">output</span><span class="o">=</span><span class="s1">&#39;output_directory&#39;</span><span class="p">,</span>
+    <span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s1">'folder1'</span><span class="p">,</span> <span class="s1">'folder2'</span><span class="p">],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">'LabelForFolder1'</span><span class="p">,</span> <span class="s1">'LabelForFolder2'</span><span class="p">],</span>
+    <span class="n">combine_by</span><span class="o">=</span><span class="p">[</span><span class="s1">'files'</span><span class="p">],</span>  <span class="c1"># to compare folder1 and folder2</span>
+    <span class="n">output</span><span class="o">=</span><span class="s1">'output_directory'</span><span class="p">,</span>
     <span class="n">delta</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># delta from reference</span>
-    <span class="n">optics_parameters</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;orbit&#39;</span><span class="p">,</span> <span class="s1">&#39;beta_phase&#39;</span><span class="p">,</span> <span class="s1">&#39;beta_amplitude&#39;</span><span class="p">,</span>
-                       <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;total_phase&#39;</span><span class="p">,</span>
-                       <span class="s1">&#39;f1001_x&#39;</span><span class="p">,</span> <span class="s1">&#39;f1010_x&#39;</span><span class="p">],</span>
-    <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;location&#39;</span><span class="p">,</span>  <span class="c1"># or &#39;phase-advance&#39;</span>
-    <span class="n">ip_positions</span><span class="o">=</span><span class="s1">&#39;LHCB1&#39;</span><span class="p">,</span>
+    <span class="n">optics_parameters</span><span class="o">=</span><span class="p">[</span><span class="s1">'orbit'</span><span class="p">,</span> <span class="s1">'beta_phase'</span><span class="p">,</span> <span class="s1">'beta_amplitude'</span><span class="p">,</span>
+                       <span class="s1">'phase'</span><span class="p">,</span> <span class="s1">'total_phase'</span><span class="p">,</span>
+                       <span class="s1">'f1001_x'</span><span class="p">,</span> <span class="s1">'f1010_x'</span><span class="p">],</span>
+    <span class="n">x_axis</span><span class="o">=</span><span class="s1">'location'</span><span class="p">,</span>  <span class="c1"># or 'phase-advance'</span>
+    <span class="n">ip_positions</span><span class="o">=</span><span class="s1">'LHCB1'</span><span class="p">,</span>
     <span class="n">suppress_column_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">ncol_legend</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -442,19 +442,19 @@ also <cite>ncol_legend</cite>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">omc3.plotting.plot_tfs</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot</span>
 
 <span class="n">figs</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span>
-    <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;beta_phase_</span><span class="si">{0}</span><span class="s1">.tfs&#39;</span><span class="p">,</span> <span class="s1">&#39;beta_amp_</span><span class="si">{0}</span><span class="s1">.tfs&#39;</span><span class="p">],</span>
-    <span class="n">same_figure</span><span class="o">=</span><span class="s1">&#39;planes&#39;</span><span class="p">,</span>
-    <span class="n">same_axes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">],</span>
-    <span class="n">x_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">],</span>
-    <span class="n">y_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;BET</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">],</span>
+    <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">'beta_phase_</span><span class="si">{0}</span><span class="s1">.tfs'</span><span class="p">,</span> <span class="s1">'beta_amp_</span><span class="si">{0}</span><span class="s1">.tfs'</span><span class="p">],</span>
+    <span class="n">same_figure</span><span class="o">=</span><span class="s1">'planes'</span><span class="p">,</span>
+    <span class="n">same_axes</span><span class="o">=</span><span class="p">[</span><span class="s1">'files'</span><span class="p">],</span>
+    <span class="n">x_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'S'</span><span class="p">],</span>
+    <span class="n">y_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'BET</span><span class="si">{0}</span><span class="s1">'</span><span class="p">],</span>
     <span class="n">error_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">planes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">],</span>
-    <span class="n">x_labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Location [m]&#39;</span><span class="p">],</span>
-    <span class="n">file_labels</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s1">&#39;$\beta$ from phase&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$eta$ from amplitude&#39;</span><span class="p">],</span>
-    <span class="c1"># column_labels=[r&#39;$\beta_{0}$&#39;],    # would have bx in legend</span>
-    <span class="n">column_labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>                  <span class="c1"># removes COLUMNX COLUMNY from legend-names</span>
-    <span class="n">y_labels</span><span class="o">=</span><span class="p">[[</span><span class="sa">r</span><span class="s1">&#39;$\beta_x$&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\beta_y$&#39;</span><span class="p">]],</span>  <span class="c1"># axes labels (outer = figures, inner = axes)</span>
-    <span class="n">output</span><span class="o">=</span><span class="s1">&#39;output_dir&#39;</span><span class="p">,</span>
+    <span class="n">planes</span><span class="o">=</span><span class="p">[</span><span class="s1">'X'</span><span class="p">,</span> <span class="s1">'Y'</span><span class="p">],</span>
+    <span class="n">x_labels</span><span class="o">=</span><span class="p">[</span><span class="s1">'Location [m]'</span><span class="p">],</span>
+    <span class="n">file_labels</span><span class="o">=</span><span class="p">[</span><span class="sa">r</span><span class="s1">'$\beta$ from phase'</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'$eta$ from amplitude'</span><span class="p">],</span>
+    <span class="c1"># column_labels=[r'$\beta_{0}$'],    # would have bx in legend</span>
+    <span class="n">column_labels</span><span class="o">=</span><span class="p">[</span><span class="s1">''</span><span class="p">],</span>                  <span class="c1"># removes COLUMNX COLUMNY from legend-names</span>
+    <span class="n">y_labels</span><span class="o">=</span><span class="p">[[</span><span class="sa">r</span><span class="s1">'$\beta_x$'</span><span class="p">,</span> <span class="sa">r</span><span class="s1">'$\beta_y$'</span><span class="p">]],</span>  <span class="c1"># axes labels (outer = figures, inner = axes)</span>
+    <span class="n">output</span><span class="o">=</span><span class="s1">'output_dir'</span><span class="p">,</span>
     <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">single_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">change_marker</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

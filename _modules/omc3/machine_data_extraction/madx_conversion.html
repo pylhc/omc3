@@ -239,13 +239,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.madx_conversion</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">NXCals Results to MAD-X Conversion</span>
 <span class="sd">----------------------------------</span>
 
 <span class="sd">This module provides functions to convert NXCALS knob extraction results into</span>
 <span class="sd">a MAD-X script format for further processing.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -255,8 +255,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.machine_data_extraction.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">strip_i_meas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 
-<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
-<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
+<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"jpype"</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pjlsa"</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -268,11 +268,11 @@
 <div class="viewcode-block" id="map_pc_name_to_madx">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.madx_conversion.map_pc_name_to_madx">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">map_pc_name_to_madx</span><span class="p">(</span><span class="n">pc_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert an LHC power converter name or circuit name to its corresponding MAD-X name.</span>
 
-<span class="sd">    This function processes the input name by removing the &#39;:I_MEAS&#39; suffix if present,</span>
-<span class="sd">    extracting the circuit name from full power converter names (starting with &#39;RPMBB&#39; or &#39;RPL&#39;),</span>
+<span class="sd">    This function processes the input name by removing the ':I_MEAS' suffix if present,</span>
+<span class="sd">    extracting the circuit name from full power converter names (starting with 'RPMBB' or 'RPL'),</span>
 <span class="sd">    applying specific string replacements for MAD-X compatibility, and converting the result to lowercase.</span>
 
 <span class="sd">    ..note::</span>
@@ -287,19 +287,19 @@
 <span class="sd">        str: The converted MAD-X name.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; map_pc_name_to_madx(&quot;RPMBB.UJ33.RCBH10.L1B1:I_MEAS&quot;)</span>
-<span class="sd">        &#39;acb10.l1b1&#39;</span>
-<span class="sd">        &gt;&gt;&gt; map_pc_name_to_madx(&quot;RQT12.L5B1&quot;)</span>
-<span class="sd">        &#39;kqt12.l5b1&#39;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Remove the &#39;:I_MEAS&#39; suffix if it exists</span>
+<span class="sd">        &gt;&gt;&gt; map_pc_name_to_madx("RPMBB.UJ33.RCBH10.L1B1:I_MEAS")</span>
+<span class="sd">        'acb10.l1b1'</span>
+<span class="sd">        &gt;&gt;&gt; map_pc_name_to_madx("RQT12.L5B1")</span>
+<span class="sd">        'kqt12.l5b1'</span>
+<span class="sd">    """</span>
+    <span class="c1"># Remove the ':I_MEAS' suffix if it exists</span>
     <span class="n">pc_name</span> <span class="o">=</span> <span class="n">strip_i_meas</span><span class="p">(</span><span class="n">pc_name</span><span class="p">)</span>
 
     <span class="c1"># Extract circuit name from full power converter names</span>
-    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">pc_name</span><span class="p">:</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">pc_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-        <span class="c1"># For full names like &#39;RPMBB.UJ33.RCBH10.L1B1&#39;, take from the third part onward, else use pc_name</span>
-        <span class="n">circuit_name</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">pc_name</span>
+    <span class="k">if</span> <span class="s2">"."</span> <span class="ow">in</span> <span class="n">pc_name</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">pc_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+        <span class="c1"># For full names like 'RPMBB.UJ33.RCBH10.L1B1', take from the third part onward, else use pc_name</span>
+        <span class="n">circuit_name</span> <span class="o">=</span> <span class="s2">"."</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">pc_name</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">circuit_name</span> <span class="o">=</span> <span class="n">pc_name</span>
 
@@ -307,12 +307,12 @@
     <span class="n">circuit_name</span> <span class="o">=</span> <span class="n">circuit_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="c1"># Apply MAD-X specific replacements</span>
-    <span class="k">if</span> <span class="n">circuit_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;rcb&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;a</span><span class="si">{</span><span class="n">circuit_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">if</span> <span class="n">circuit_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;k</span><span class="si">{</span><span class="n">circuit_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">circuit_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"rcb"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"a</span><span class="si">{</span><span class="n">circuit_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">if</span> <span class="n">circuit_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"r"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"k</span><span class="si">{</span><span class="n">circuit_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">"</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Power converter name </span><span class="si">{</span><span class="n">pc_name</span><span class="si">}</span><span class="s2"> does not start with an &#39;R&#39;.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Power converter name </span><span class="si">{</span><span class="n">pc_name</span><span class="si">}</span><span class="s2"> does not start with an 'R'."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">circuit_name</span></div>
 
 
@@ -320,15 +320,15 @@
 <div class="viewcode-block" id="map_lsa_name_to_madx">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.madx_conversion.map_lsa_name_to_madx">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">map_lsa_name_to_madx</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the ``MAD-X`` name (Circuit/Knob) from the given circuit name in LSA.&quot;&quot;&quot;</span>
-    <span class="n">logical_name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">"""Returns the ``MAD-X`` name (Circuit/Knob) from the given circuit name in LSA."""</span>
+    <span class="n">logical_name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># python lists did not work (jdilly) --&gt;</span>
     <span class="n">slist</span> <span class="o">=</span> <span class="n">jpype</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">Collections</span><span class="o">.</span><span class="n">singletonList</span><span class="p">(</span><span class="n">logical_name</span><span class="p">)</span>
 
     <span class="c1"># returns a map --&gt;</span>
     <span class="n">madx_name_map</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_deviceService</span><span class="o">.</span><span class="n">findMadStrengthNamesByLogicalNames</span><span class="p">(</span><span class="n">slist</span><span class="p">)</span>
     <span class="n">madx_name</span> <span class="o">=</span> <span class="n">madx_name_map</span><span class="p">[</span><span class="n">logical_name</span><span class="p">]</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Name conversion: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">logical_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">madx_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Name conversion: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">logical_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">madx_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">madx_name</span></div>
 
 </pre></div>

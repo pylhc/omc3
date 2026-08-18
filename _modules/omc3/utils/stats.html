@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.utils.stats</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Stats</span>
 <span class="sd">-----</span>
 
@@ -251,7 +251,7 @@
 <span class="sd">- TODO: write tests</span>
 <span class="sd">- TODO: LOGGER or Raising error and warnings?</span>
 <span class="sd">- TODO: if zeros or nans occur in errors, fallback to uniform weights only in affected cases</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -269,7 +269,7 @@
 <div class="viewcode-block" id="circular_mean">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.circular_mean">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">circular_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">PI2</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes weighted circular average along the specified axis.</span>
 
 <span class="sd">    Parameters:</span>
@@ -284,7 +284,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the weighted circular average along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">phases</span> <span class="o">=</span> <span class="n">data</span> <span class="o">*</span> <span class="n">PI2I</span> <span class="o">/</span> <span class="n">period</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
 
@@ -295,7 +295,7 @@
 <div class="viewcode-block" id="circular_nanmean">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.circular_nanmean">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">circular_nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">PI2</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;Wrapper around circular_mean with added nan handling&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""""Wrapper around circular_mean with added nan handling"""</span>
     <span class="k">return</span> <span class="n">circular_mean</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
                          <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
                          <span class="n">errors</span><span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
@@ -306,7 +306,7 @@
 <div class="viewcode-block" id="circular_error">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.circular_error">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">circular_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">PI2</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_value_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes error of weighted circular average along the specified axis.</span>
 
 <span class="sd">    Parameters:</span>
@@ -323,7 +323,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the error of weighted circular average along the specified axis.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
     <span class="n">phases</span> <span class="o">=</span> <span class="n">data</span> <span class="o">*</span> <span class="n">PI2I</span> <span class="o">/</span> <span class="n">period</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">)</span>
     <span class="n">complex_phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
@@ -345,7 +345,7 @@
 <div class="viewcode-block" id="circular_nanerror">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.circular_nanerror">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">circular_nanerror</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">PI2</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_value_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;Wrapper around circular_error with added nan handling&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""""Wrapper around circular_error with added nan handling"""</span>
     <span class="k">return</span> <span class="n">circular_error</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
                           <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
                           <span class="n">errors</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
@@ -357,7 +357,7 @@
 <div class="viewcode-block" id="weighted_mean">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.weighted_mean">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">weighted_mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes weighted average along the specified axis.</span>
 
 <span class="sd">    Parameters:</span>
@@ -370,7 +370,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the weighted average along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span></div>
 
@@ -379,7 +379,7 @@
 <div class="viewcode-block" id="weighted_nanmean">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.weighted_nanmean">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">weighted_nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;Wrapper around weighted_mean with added nan handling&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""""Wrapper around weighted_mean with added nan handling"""</span>
     <span class="k">return</span> <span class="n">weighted_mean</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
                          <span class="n">errors</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
                          <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
@@ -398,7 +398,7 @@
 <div class="viewcode-block" id="weighted_error">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.weighted_error">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">weighted_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_value_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes error of weighted average along the specified axis.</span>
 <span class="sd">    This is similar to calculating the standard deviation on the data,</span>
 <span class="sd">    but with both, the average to which the deviation is calculated,</span>
@@ -422,7 +422,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the error of weighted average along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
     <span class="n">weighted_average</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
     <span class="n">weighted_average</span> <span class="o">=</span> <span class="n">weighted_average</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">_get_shape</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
@@ -442,7 +442,7 @@
 <div class="viewcode-block" id="circular_rms">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.circular_rms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">circular_rms</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">PI2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes the circular root mean square along the specified axis.</span>
 
 <span class="sd">    Parameters:</span>
@@ -455,7 +455,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the circular root mean square along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">circular_mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">data</span> <span class="o">/</span> <span class="n">period</span><span class="p">),</span> <span class="n">period</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span> <span class="o">*</span> <span class="n">period</span><span class="p">)</span></div>
 
 
@@ -463,7 +463,7 @@
 <div class="viewcode-block" id="rms">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.rms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rms</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes the root mean square along the specified axis.</span>
 
 <span class="sd">    Parameters:</span>
@@ -474,7 +474,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the root mean square along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">weighted_rms</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
 
@@ -482,7 +482,7 @@
 <div class="viewcode-block" id="weighted_rms">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.weighted_rms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">weighted_rms</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes weighted root mean square along the specified axis.</span>
 
 <span class="sd">    Parameters:</span>
@@ -495,7 +495,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns weighted root mean square along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">))</span></div>
 
@@ -504,7 +504,7 @@
 <div class="viewcode-block" id="weighted_nanrms">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.weighted_nanrms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">weighted_nanrms</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;Wrapper around weigthed_rms with added nan handling&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""""Wrapper around weigthed_rms with added nan handling"""</span>
     <span class="k">return</span> <span class="n">weighted_rms</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
                         <span class="n">errors</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
                         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
@@ -514,7 +514,7 @@
 <div class="viewcode-block" id="weights_from_errors">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.weights_from_errors">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">weights_from_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="n">PI2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Computes weights from measurement errors, weights are not output if errors contain zeros or nans</span>
 
 <span class="sd">    Parameters:</span>
@@ -525,14 +525,14 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the error of weighted circular average along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">errors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">errors</span><span class="p">)):</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;NaNs found, weights are not used.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"NaNs found, weights are not used."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">errors</span><span class="p">)):</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Zeros found, weights are not used.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Zeros found, weights are not used."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">errors</span> <span class="o">*</span> <span class="n">PI2</span> <span class="o">/</span> <span class="n">period</span><span class="p">)</span></div>
 
@@ -541,11 +541,11 @@
 <div class="viewcode-block" id="effective_sample_size">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.effective_sample_size">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">effective_sample_size</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes effective sample size of weighted data along specified axis,</span>
 <span class="sd">    the minimum value returned is 2 to avoid non-reasonable error blow-up.</span>
 
-<span class="sd">    It is calculated via Kish&#39;s approximate formula</span>
+<span class="sd">    It is calculated via Kish's approximate formula</span>
 <span class="sd">    from the (not necessarily normalised) weights :math:`w_i` (see wikipedia):</span>
 
 <span class="sd">    .. math::</span>
@@ -553,11 +553,11 @@
 <span class="sd">        n_\mathrm{eff} = \frac{\left(\sum_i w_i\right)^2}{\sum_i w_i^2}</span>
 
 <span class="sd">    What it represents:</span>
-<span class="sd">    &quot;In most instances, weighting causes a decrease in the statistical significance of results.</span>
+<span class="sd">    "In most instances, weighting causes a decrease in the statistical significance of results.</span>
 <span class="sd">    The effective sample size is a measure of the precision of the survey</span>
 <span class="sd">    (e.g., even if you have a sample of 1,000 people, an effective sample size of 100 would indicate</span>
 <span class="sd">    that the weighted sample is no more robust than a well-executed un-weighted</span>
-<span class="sd">    simple random sample of 100 people).&quot; -</span>
+<span class="sd">    simple random sample of 100 people)." -</span>
 <span class="sd">    https://wiki.q-researchsoftware.com/wiki/Weights,_Effective_Sample_Size_and_Design_Effects</span>
 
 <span class="sd">    Parameters:</span>
@@ -569,7 +569,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the error of weighted circular average along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sample_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -581,7 +581,7 @@
 <div class="viewcode-block" id="unbias_variance">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.unbias_variance">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unbias_variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes a correction factor to unbias variance of weighted average of data along specified axis,</span>
 <span class="sd">    e.g. transform the standard deviation 1</span>
 
@@ -604,7 +604,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns the error of weighted circular average along the specified axis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">sample_size</span> <span class="o">=</span> <span class="n">effective_sample_size</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">sample_size</span> <span class="o">/</span> <span class="p">(</span><span class="n">sample_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -616,7 +616,7 @@
 <div class="viewcode-block" id="t_value_correction">
 <a class="viewcode-back" href="../../../modules/utils.html#omc3.utils.stats.t_value_correction">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">t_value_correction</span><span class="p">(</span><span class="n">sample_size</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates the multiplicative correction factor to determine standard deviation of</span>
 <span class="sd">    a normally distributed quantity from standard deviation of its finite-sized sample.</span>
 <span class="sd">    The minimum allowed sample size is 2 to avoid non-reasonable error blow-up</span>
@@ -633,7 +633,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        multiplicative correction factor(s) of same shape as sample_size.</span>
 <span class="sd">        Can contain nans.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">CONFIDENCE_LEVEL</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sample_size</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
 
 </pre></div>

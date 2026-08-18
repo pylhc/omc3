@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Utils</span>
 <span class="sd">-----</span>
 
 <span class="sd">Utilities to help with machine data extraction.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -259,7 +259,7 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="n">jpype</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
+<span class="n">jpype</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"jpype"</span><span class="p">)</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -267,7 +267,7 @@
 <div class="viewcode-block" id="knob_to_output_name">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.knob_to_output_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">knob_to_output_name</span><span class="p">(</span><span class="n">knob_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert a knob name to an output-friendly name for file names.</span>
 
 <span class="sd">    Args:</span>
@@ -275,31 +275,31 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The modified knob name suitable for output.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">knob_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span></div>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">knob_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"-"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="strip_i_meas">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.strip_i_meas">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">strip_i_meas</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Remove the I_MEAS suffix from a variable name.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        text (str): The variable name possibly ending with &#39;:I_MEAS&#39;.</span>
+<span class="sd">        text (str): The variable name possibly ending with ':I_MEAS'.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: The variable name without the &#39;:I_MEAS&#39; suffix.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">&quot;:I_MEAS&quot;</span><span class="p">)</span></div>
+<span class="sd">        str: The variable name without the ':I_MEAS' suffix.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">":I_MEAS"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="try_to_acquire_data">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.try_to_acquire_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">try_to_acquire_data</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tries to get data from function multiple times.</span>
+<span class="w">    </span><span class="sd">"""Tries to get data from function multiple times.</span>
 
 <span class="sd">     Args:</span>
 <span class="sd">         function (Callable): function to be called, e.g. db.get</span>
@@ -308,26 +308,26 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Return arguments of ``function``</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">retries</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;retries&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">retries</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"retries"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">tries</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">jpype</span><span class="o">.</span><span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">IllegalStateException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Could not acquire data, user probably has no access to NXCALS&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">"Could not acquire data, user probably has no access to NXCALS"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">except</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># Might be a case for retries</span>
-            <span class="k">if</span> <span class="s2">&quot;RetryableException&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">retries</span><span class="p">:</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not acquire data! Trial no </span><span class="si">{</span><span class="n">tries</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">retries</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"RetryableException"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">retries</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not acquire data! Trial no </span><span class="si">{</span><span class="n">tries</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">retries</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="k">continue</span>  <span class="c1"># will go to the next iteratoin of the loop, so retry</span>
-            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Could not acquire data!&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not acquire data after </span><span class="si">{</span><span class="n">retries</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> retries.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">"Could not acquire data!"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not acquire data after </span><span class="si">{</span><span class="n">retries</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2"> retries."</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="timestamp_to_utciso">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.utils.timestamp_to_utciso">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">timestamp_to_utciso</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a timestamp to an ISO format string.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Convert a timestamp to an ISO format string."""</span>
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="o">.</span><span class="n">UTC</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span></div>
 
 </pre></div>

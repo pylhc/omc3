@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.nxcals_knobs</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">NXCals Knob Extraction</span>
 <span class="sd">----------------------</span>
 
@@ -260,7 +260,7 @@
 
 <span class="sd">See the [NXCALS documentation](https://nxcals-docs.web.cern.ch/current/user-guide/data-access/quickstart/)</span>
 <span class="sd">for more information on getting access and using the Python API.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -281,18 +281,18 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
 
-<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
-<span class="n">builders</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;nxcals.api.extraction.data.builders&quot;</span><span class="p">)</span>
-<span class="n">functions</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pyspark.sql.functions&quot;</span><span class="p">)</span>
-<span class="n">window</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pyspark.sql.window&quot;</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pjlsa"</span><span class="p">)</span>
+<span class="n">builders</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"nxcals.api.extraction.data.builders"</span><span class="p">)</span>
+<span class="n">functions</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pyspark.sql.functions"</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pyspark.sql.window"</span><span class="p">)</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># Constants --------------------------------------------------------------------</span>
 
-<span class="n">VARIABLE_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nxcals_variable_name&quot;</span>
-<span class="n">VALUE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nxcals_value&quot;</span>
-<span class="n">TIMESTAMP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nxcals_timestamp&quot;</span>
+<span class="n">VARIABLE_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"nxcals_variable_name"</span>
+<span class="n">VALUE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"nxcals_value"</span>
+<span class="n">TIMESTAMP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"nxcals_timestamp"</span>
 
 <div class="viewcode-block" id="NXCALSResult">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult">[docs]</a>
@@ -306,7 +306,7 @@
 <div class="viewcode-block" id="NXCALSResult.to_madx">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.NXCALSResult.to_madx">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_madx</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2"> .10e</span><span class="si">}</span><span class="s2">; ! powerconverter: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pc_name</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2"> .10e</span><span class="si">}</span><span class="s2">; ! powerconverter: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pc_name</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span></div>
 
 
 <div class="viewcode-block" id="NXCALSResult.to_series">
@@ -346,11 +346,11 @@
     <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">patterns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">expected_knobs</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">log_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">log_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
     <span class="n">data_retrieval_days</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
     <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve knob values for a given beam and time using specified patterns for the LHC.</span>
 
 <span class="sd">    This is the main entry point for extracting magnet knob values from NXCALS. The function</span>
@@ -364,10 +364,10 @@
 
 <span class="sd">    The difference between patterns and knob names:</span>
 
-<span class="sd">    - **patterns**: NXCALS variable patterns (e.g., &quot;RPMBB.UA%.RQT%.A%B1:I_MEAS&quot;) used to query</span>
+<span class="sd">    - **patterns**: NXCALS variable patterns (e.g., "RPMBB.UA%.RQT%.A%B1:I_MEAS") used to query</span>
 <span class="sd">      raw power converter current measurements. These follow CERN naming conventions and may</span>
 <span class="sd">      include wildcards (%).</span>
-<span class="sd">    - **expected_knobs**: MAD-X element names (e.g., &quot;kqt12.a12b1&quot;) representing the final</span>
+<span class="sd">    - **expected_knobs**: MAD-X element names (e.g., "kqt12.a12b1") representing the final</span>
 <span class="sd">      knob names as used in MAD-X scripts. These are lowercase, simplified names.</span>
 
 <span class="sd">    Args:</span>
@@ -376,7 +376,7 @@
 <span class="sd">        beam (int): Beam number (1 or 2).</span>
 <span class="sd">        patterns (list[str]): List of NXCALS variable patterns to query for power converter</span>
 <span class="sd">            currents. Patterns can include SQL-like wildcards (%). Example:</span>
-<span class="sd">            &quot;RPMBB.UA%.RQT%.A%B1:I_MEAS&quot; matches all MQT quadrupole trim magnets for beam 1.</span>
+<span class="sd">            "RPMBB.UA%.RQT%.A%B1:I_MEAS" matches all MQT quadrupole trim magnets for beam 1.</span>
 <span class="sd">        expected_knobs (set[str] | None): Set of expected MAD-X knob names to validate and filter</span>
 <span class="sd">            results. If None, returns all found knobs without validation.</span>
 <span class="sd">        log_prefix (str): Prefix for logging messages to distinguish different extraction runs.</span>
@@ -386,13 +386,13 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        list[NXCalResult]: List of NXCalResult objects containing MAD-X knob names, K-values,</span>
 <span class="sd">            times, and power converter names.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Starting data retrieval for beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> at time </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Starting data retrieval for beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> at time </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Retrieve raw current measurements from NXCALS</span>
     <span class="n">combined_vars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Getting currents for pattern </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Getting currents for pattern </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">raw_vars</span> <span class="o">=</span> <span class="n">get_raw_vars</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">data_retrieval_days</span><span class="p">)</span>
         <span class="n">combined_vars</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">raw_vars</span><span class="p">)</span>
 
@@ -404,7 +404,7 @@
     <span class="n">currents</span> <span class="o">=</span> <span class="p">{</span><span class="n">strip_i_meas</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">):</span> <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">combined_vars</span><span class="p">}</span>
 
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Calculating K values for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">currents</span><span class="p">)</span><span class="si">}</span><span class="s2"> power converters with energy </span><span class="si">{</span><span class="n">energy</span><span class="si">}</span><span class="s2"> GeV&quot;</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Calculating K values for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">currents</span><span class="p">)</span><span class="si">}</span><span class="s2"> power converters with energy </span><span class="si">{</span><span class="n">energy</span><span class="si">}</span><span class="s2"> GeV"</span>
     <span class="p">)</span>
 
     <span class="c1"># Calculate K values using LSA</span>
@@ -420,10 +420,10 @@
         <span class="n">expected_knobs</span> <span class="o">=</span> <span class="n">found_keys</span>
 
     <span class="k">if</span> <span class="n">missing_keys</span> <span class="o">:=</span> <span class="n">expected_knobs</span> <span class="o">-</span> <span class="n">found_keys</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Missing K-values for knobs: </span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Missing K-values for knobs: </span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">unknown_keys</span> <span class="o">:=</span> <span class="n">found_keys</span> <span class="o">-</span> <span class="n">expected_knobs</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Unknown K-values found: </span><span class="si">{</span><span class="n">unknown_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Unknown K-values found: </span><span class="si">{</span><span class="n">unknown_keys</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Build result list with times</span>
     <span class="n">times</span> <span class="o">=</span> <span class="p">{</span><span class="n">map_pc_name_to_madx</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">):</span> <span class="n">var</span><span class="o">.</span><span class="n">datetime</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">combined_vars</span><span class="p">}</span>
@@ -437,7 +437,7 @@
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pc_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NXCALSResult</span><span class="p">(</span><span class="n">madx_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dtime</span><span class="p">,</span> <span class="n">pc_name</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Missing data for </span><span class="si">{</span><span class="n">madx_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log_prefix</span><span class="si">}</span><span class="s2">Missing data for </span><span class="si">{</span><span class="n">madx_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">results</span></div>
 
@@ -451,7 +451,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_vars</span><span class="p">(</span>
     <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_retrieval_days</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">latest_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve raw variable values from NXCALS.</span>
 
 <span class="sd">    Args:</span>
@@ -469,22 +469,22 @@
 <span class="sd">    Raises:</span>
 <span class="sd">        RuntimeError: If no data is found for the variable in the given interval.</span>
 <span class="sd">        You may need to increase the data_retrieval_days if necessary.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Ensure time is in UTC</span>
     <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Datetime object must be timezone-aware&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Datetime object must be timezone-aware"</span><span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
     <span class="c1"># Look back data_retrieval_days, may need up to 1 day to find data</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">data_retrieval_days</span><span class="p">)</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrieving raw variables </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Retrieving raw variables </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">df</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">builders</span><span class="o">.</span><span class="n">DataQuery</span><span class="o">.</span><span class="n">builder</span><span class="p">(</span><span class="n">spark</span><span class="p">)</span>
         <span class="o">.</span><span class="n">variables</span><span class="p">()</span>
-        <span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;CMW&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">"CMW"</span><span class="p">)</span>
         <span class="o">.</span><span class="n">nameLike</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
         <span class="o">.</span><span class="n">timeWindow</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
         <span class="o">.</span><span class="n">build</span><span class="p">()</span>
@@ -493,11 +493,11 @@
     <span class="c1"># Avoid full count() – just check if we have at least one row</span>
     <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No data found for </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;You may need to increase the data_retrieval_days from </span><span class="si">{</span><span class="n">data_retrieval_days</span><span class="si">}</span><span class="s2"> days if necessary.&quot;</span>
+            <span class="sa">f</span><span class="s2">"No data found for </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">start_time</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s2">. "</span>
+            <span class="sa">f</span><span class="s2">"You may need to increase the data_retrieval_days from </span><span class="si">{</span><span class="n">data_retrieval_days</span><span class="si">}</span><span class="s2"> days if necessary."</span>
         <span class="p">)</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw variables </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> retrieved successfully.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Raw variables </span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2"> retrieved successfully."</span><span class="p">)</span>
 
 
     <span class="k">if</span> <span class="n">latest_only</span><span class="p">:</span>
@@ -506,17 +506,17 @@
             <span class="n">functions</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">TIMESTAMP</span><span class="p">)</span><span class="o">.</span><span class="n">desc</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">&quot;row_num&quot;</span><span class="p">,</span> <span class="n">functions</span><span class="o">.</span><span class="n">row_number</span><span class="p">()</span><span class="o">.</span><span class="n">over</span><span class="p">(</span><span class="n">window_spec</span><span class="p">))</span>
-            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">functions</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;row_num&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s2">"row_num"</span><span class="p">,</span> <span class="n">functions</span><span class="o">.</span><span class="n">row_number</span><span class="p">()</span><span class="o">.</span><span class="n">over</span><span class="p">(</span><span class="n">window_spec</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">functions</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"row_num"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">VARIABLE_NAME</span><span class="p">,</span> <span class="n">VALUE</span><span class="p">,</span> <span class="n">TIMESTAMP</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">():</span>
         <span class="n">full_varname</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">VARIABLE_NAME</span><span class="p">]</span>
         <span class="n">raw_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">VALUE</span><span class="p">])</span>
-        <span class="n">dtime</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">TIMESTAMP</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ns&quot;</span><span class="p">,</span> <span class="n">utc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">dtime</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">TIMESTAMP</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"ns"</span><span class="p">,</span> <span class="n">utc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NXCALSResult</span><span class="p">(</span><span class="n">full_varname</span><span class="p">,</span> <span class="n">raw_val</span><span class="p">,</span> <span class="n">dtime</span><span class="p">,</span> <span class="n">strip_i_meas</span><span class="p">(</span><span class="n">full_varname</span><span class="p">)))</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LHC value retrieved: </span><span class="si">{</span><span class="n">full_varname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">raw_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">dtime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"LHC value retrieved: </span><span class="si">{</span><span class="n">full_varname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">raw_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">dtime</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">results</span></div>
 
@@ -525,7 +525,7 @@
 <div class="viewcode-block" id="get_energy">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.nxcals_knobs.get_energy">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_energy</span><span class="p">(</span><span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve the beam energy of the LHC from NXCALS.</span>
 
 <span class="sd">    Args:</span>
@@ -537,11 +537,11 @@
 
 <span class="sd">    Raises:</span>
 <span class="sd">        RuntimeError: If no energy data is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.120</span>
-    <span class="n">raw_vars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_raw_vars</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="s2">&quot;HX:ENG&quot;</span><span class="p">)</span>
+    <span class="n">raw_vars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_raw_vars</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="s2">"HX:ENG"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_vars</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No energy data found.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"No energy data found."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">raw_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span> <span class="n">raw_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">datetime</span></div>
 
 </pre></div>

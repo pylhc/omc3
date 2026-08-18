@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.accelerators.ps</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">PS</span>
 <span class="sd">--</span>
 
@@ -259,7 +259,7 @@
 
 <span class="sd">        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)</span>
 
-<span class="sd">        choices: ``(&#39;acd&#39;, &#39;adt&#39;)``</span>
+<span class="sd">        choices: ``('acd', 'adt')``</span>
 
 
 <span class="sd">    - **drv_tunes** *(float)*:</span>
@@ -292,7 +292,7 @@
 <span class="sd">        If True, x-ing angles will be applied to model</span>
 
 <span class="sd">        action: ``store_true``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -316,23 +316,23 @@
 <span class="c1"># tune matching methods</span>
 <span class="c1"># check `ps/base.madx`</span>
 <span class="n">TUNE_METHODS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;qf&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># main quadrupoles (low energy quads)</span>
-    <span class="s2">&quot;pfw&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># pole face windings</span>
-    <span class="s2">&quot;bh&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># combined function magnet quadrupole</span>
-    <span class="s2">&quot;f8l&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>  <span class="c1"># figure of eight loop</span>
+    <span class="s2">"qf"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># main quadrupoles (low energy quads)</span>
+    <span class="s2">"pfw"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># pole face windings</span>
+    <span class="s2">"bh"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># combined function magnet quadrupole</span>
+    <span class="s2">"f8l"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>  <span class="c1"># figure of eight loop</span>
 <span class="p">}</span>
 
 <div class="viewcode-block" id="Ps">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Ps</span><span class="p">(</span><span class="n">PsBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parent Class for PS-types.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Parent Class for PS-types."""</span>
 
-    <span class="n">NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ps&quot;</span>
-    <span class="n">LOCAL_REPO_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;acc-models-ps&quot;</span>
+    <span class="n">NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"ps"</span>
+    <span class="n">LOCAL_REPO_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"acc-models-ps"</span>
     <span class="n">RE_DICT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;PR\.BPM&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;PR\.BPM&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"PR\.BPM"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">".*"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"PR\.BPM"</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># Public Methods ##########################################################</span>
@@ -341,9 +341,9 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">():</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="n">Ps</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tune_method&quot;</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"tune_method"</span><span class="p">,</span>
                              <span class="n">choices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">TUNE_METHODS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-                             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tune method&quot;</span><span class="p">)</span>
+                             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Tune method"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -356,7 +356,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">init_from_model_dir</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>
             <span class="k">return</span>  <span class="c1"># if we create the model from the model dir, none of the following needs to happen</span>
 
-        <span class="n">require_param</span><span class="p">(</span><span class="s2">&quot;tune_method&quot;</span><span class="p">,</span> <span class="n">Ps</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">opt</span><span class="p">)</span>
+        <span class="n">require_param</span><span class="p">(</span><span class="s2">"tune_method"</span><span class="p">,</span> <span class="n">Ps</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">opt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tune_method</span> <span class="o">=</span> <span class="n">TUNE_METHODS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">tune_method</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Ps.verify_object">
@@ -368,7 +368,7 @@
 <div class="viewcode-block" id="Ps.get_file">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.ps.Ps.get_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get filepaths for PS files.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get filepaths for PS files."""</span>
         <span class="n">ps_dir</span> <span class="o">=</span> <span class="n">CURRENT_DIR</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAME</span>
         <span class="n">ps_year_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()</span>
 
@@ -378,7 +378,7 @@
                 <span class="k">return</span> <span class="n">file_path</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not available for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"File </span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not available for accelerator </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span></div>
 
 
@@ -387,11 +387,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">bpms_to_find</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PR.BPM00&quot;</span><span class="p">,</span> <span class="s2">&quot;PR.BPM03&quot;</span><span class="p">]</span>
+        <span class="n">bpms_to_find</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PR.BPM00"</span><span class="p">,</span> <span class="s2">"PR.BPM03"</span><span class="p">]</span>
         <span class="n">found_bpms</span> <span class="o">=</span> <span class="p">[</span><span class="n">bpm</span> <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms_to_find</span> <span class="k">if</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">KeyError</span>
-        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP&quot;</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP"</span></div>
 </div>
 
 </pre></div>

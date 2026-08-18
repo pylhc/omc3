@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.constants</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Constants</span>
 <span class="sd">---------</span>
 
 <span class="sd">Specific constants relating to the retrieval of machine settings information, to help with consistency.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.optics_measurements.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EXT</span> <span class="k">as</span> <span class="n">TFS_SUFFIX</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
@@ -253,70 +253,70 @@
 <div class="viewcode-block" id="MSISummaryColumn">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryColumn">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MSISummaryColumn</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    TFS columns for machine settings information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">KNOB</span> <span class="o">=</span> <span class="s2">&quot;KNOB&quot;</span>
-    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;TIME&quot;</span>
-    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">&quot;TIMESTAMP&quot;</span>
-    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">&quot;VALUE&quot;</span></div>
+<span class="sd">    """</span>
+    <span class="n">KNOB</span> <span class="o">=</span> <span class="s2">"KNOB"</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">"TIME"</span>
+    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">"TIMESTAMP"</span>
+    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">"VALUE"</span></div>
 
 
 <div class="viewcode-block" id="MSISummaryHeader">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.MSISummaryHeader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MSISummaryHeader</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    TFS headers for machine settings information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ACCEL</span> <span class="o">=</span> <span class="s2">&quot;ACCELERATOR&quot;</span>
-    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;TIME&quot;</span>
-    <span class="n">START_TIME</span> <span class="o">=</span> <span class="s2">&quot;START_TIME&quot;</span>
-    <span class="n">END_TIME</span> <span class="o">=</span> <span class="s2">&quot;END_TIME&quot;</span>
-    <span class="n">BEAMPROCESS</span> <span class="o">=</span> <span class="s2">&quot;BEAMPROCESS&quot;</span>
-    <span class="n">FILL</span> <span class="o">=</span> <span class="s2">&quot;FILL&quot;</span>
-    <span class="n">BEAMPROCESS_START</span> <span class="o">=</span> <span class="s2">&quot;BEAMPROCESS_START&quot;</span>
-    <span class="n">CONTEXT_CATEGORY</span> <span class="o">=</span> <span class="s2">&quot;CONTEXT_CATEGORY&quot;</span>
-    <span class="n">BEAMPROCESS_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;BEAMPROCESS_DESCRIPTION&quot;</span>
-    <span class="n">OPTICS</span> <span class="o">=</span> <span class="s2">&quot;OPTICS&quot;</span>
-    <span class="n">OPTICS_START</span> <span class="o">=</span> <span class="s2">&quot;OPTICS_START&quot;</span></div>
+<span class="sd">    """</span>
+    <span class="n">ACCEL</span> <span class="o">=</span> <span class="s2">"ACCELERATOR"</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">"TIME"</span>
+    <span class="n">START_TIME</span> <span class="o">=</span> <span class="s2">"START_TIME"</span>
+    <span class="n">END_TIME</span> <span class="o">=</span> <span class="s2">"END_TIME"</span>
+    <span class="n">BEAMPROCESS</span> <span class="o">=</span> <span class="s2">"BEAMPROCESS"</span>
+    <span class="n">FILL</span> <span class="o">=</span> <span class="s2">"FILL"</span>
+    <span class="n">BEAMPROCESS_START</span> <span class="o">=</span> <span class="s2">"BEAMPROCESS_START"</span>
+    <span class="n">CONTEXT_CATEGORY</span> <span class="o">=</span> <span class="s2">"CONTEXT_CATEGORY"</span>
+    <span class="n">BEAMPROCESS_DESCRIPTION</span> <span class="o">=</span> <span class="s2">"BEAMPROCESS_DESCRIPTION"</span>
+    <span class="n">OPTICS</span> <span class="o">=</span> <span class="s2">"OPTICS"</span>
+    <span class="n">OPTICS_START</span> <span class="o">=</span> <span class="s2">"OPTICS_START"</span></div>
 
 
 <div class="viewcode-block" id="NXCalsTfsColumn">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsColumn">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NXCalsTfsColumn</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    TFS columns for MQT information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">MADX</span> <span class="o">=</span> <span class="s2">&quot;MADX&quot;</span>
-    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">&quot;VALUE&quot;</span>
-    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">&quot;TIMESTAMP&quot;</span>
-    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;TIME&quot;</span>
-    <span class="n">PC_NAME</span> <span class="o">=</span> <span class="s2">&quot;PC_NAME&quot;</span></div>
+<span class="sd">    """</span>
+    <span class="n">MADX</span> <span class="o">=</span> <span class="s2">"MADX"</span>
+    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">"VALUE"</span>
+    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">"TIMESTAMP"</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">"TIME"</span>
+    <span class="n">PC_NAME</span> <span class="o">=</span> <span class="s2">"PC_NAME"</span></div>
 
 
 
 <div class="viewcode-block" id="NXCalsTfsHeader">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.constants.NXCalsTfsHeader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NXCalsTfsHeader</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    TFS headers for MQT information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">EXTRACTION_TIME</span> <span class="o">=</span> <span class="s2">&quot;EXTRACTION_TIME&quot;</span>
-    <span class="n">BEAM</span> <span class="o">=</span> <span class="s2">&quot;BEAM&quot;</span></div>
+<span class="sd">    """</span>
+    <span class="n">EXTRACTION_TIME</span> <span class="o">=</span> <span class="s2">"EXTRACTION_TIME"</span>
+    <span class="n">BEAM</span> <span class="o">=</span> <span class="s2">"BEAM"</span></div>
 
 
 
 <span class="c1"># Filenames</span>
-<span class="n">MADX_SUFFIX</span> <span class="o">=</span> <span class="s2">&quot;.madx&quot;</span>
-<span class="n">MSI_SUMMARY_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;machine_settings</span><span class="si">{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">MADX_SUFFIX</span> <span class="o">=</span> <span class="s2">".madx"</span>
+<span class="n">MSI_SUMMARY_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"machine_settings</span><span class="si">{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">"</span>
 
-<span class="n">KNOB_DEFINITION_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_definition&quot;</span>
-<span class="n">KNOB_DEFINITION_TFS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KNOB_DEFINITION_ID</span><span class="si">}{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="n">KNOB_DEFINITION_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">KNOB_DEFINITION_ID</span><span class="si">}{</span><span class="n">MADX_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">KNOB_DEFINITION_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"_definition"</span>
+<span class="n">KNOB_DEFINITION_TFS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">KNOB_DEFINITION_ID</span><span class="si">}{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">"</span>
+<span class="n">KNOB_DEFINITION_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">KNOB_DEFINITION_ID</span><span class="si">}{</span><span class="n">MADX_SUFFIX</span><span class="si">}</span><span class="s2">"</span>
 
-<span class="n">TRIM_HISTORY_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_trims&quot;</span>
-<span class="n">TRIM_HISTORY_TFS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TRIM_HISTORY_ID</span><span class="si">}{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="n">TRIM_HISTORY_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TRIM_HISTORY_ID</span><span class="si">}{</span><span class="n">MADX_SUFFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">TRIM_HISTORY_ID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"_trims"</span>
+<span class="n">TRIM_HISTORY_TFS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TRIM_HISTORY_ID</span><span class="si">}{</span><span class="n">TFS_SUFFIX</span><span class="si">}</span><span class="s2">"</span>
+<span class="n">TRIM_HISTORY_MADX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TRIM_HISTORY_ID</span><span class="si">}{</span><span class="n">MADX_SUFFIX</span><span class="si">}</span><span class="s2">"</span>
 </pre></div>
 
            </div>

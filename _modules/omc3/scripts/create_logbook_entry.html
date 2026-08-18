@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.create_logbook_entry</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Create Logbook Entry</span>
 <span class="sd">--------------------</span>
 
@@ -254,7 +254,7 @@
 
 <span class="sd">    Text to be written into the new logbook entry.</span>
 
-<span class="sd">    default: ``&quot;&quot;``</span>
+<span class="sd">    default: ``""``</span>
 
 
 <span class="sd">- **files** *(PathOrStr)*:</span>
@@ -286,7 +286,7 @@
 
 <span class="sd">    Tags to be added to the event.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">mimetypes</span>
@@ -305,7 +305,7 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
-<span class="n">pylogbook</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pylogbook&quot;</span><span class="p">)</span>  <span class="c1"># raises ImportError if used</span>
+<span class="n">pylogbook</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pylogbook"</span><span class="p">)</span>  <span class="c1"># raises ImportError if used</span>
 
 <span class="c1"># for typing:</span>
 <span class="k">try</span><span class="p">:</span>
@@ -321,7 +321,7 @@
 <span class="c1"># Possible errors during RBAC connection</span>
 <span class="n">CONNECTION_ERRORS</span> <span class="o">=</span> <span class="p">(</span><span class="n">HTTPError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">ConnectTimeout</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span>
 
-<span class="n">OMC_LOGBOOK</span> <span class="o">=</span> <span class="s2">&quot;LHC_OMC&quot;</span>
+<span class="n">OMC_LOGBOOK</span> <span class="o">=</span> <span class="s2">"LHC_OMC"</span>
 <span class="n">PNG_DPI</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># dpi for converted png (from pdf)</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -331,36 +331,36 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">logbook</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Name of the logbook to create the entry in.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">OMC_LOGBOOK</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Name of the logbook to create the entry in."</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="n">OMC_LOGBOOK</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">text</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Text to be written into the new logbook entry.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Text to be written into the new logbook entry."</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">files</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Files to attach to the new logbook entry.&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">"nargs"</span><span class="p">:</span> <span class="s2">"+"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Files to attach to the new logbook entry."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">filenames</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">OptionalStr</span><span class="p">,</span>
-            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Filenames to be used with the given files. &quot;</span>
-                <span class="s2">&quot;If omitted, the original filenames will be used.&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">OptionalStr</span><span class="p">,</span>
+            <span class="s2">"nargs"</span><span class="p">:</span> <span class="s2">"+"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"Filenames to be used with the given files. "</span>
+                <span class="s2">"If omitted, the original filenames will be used."</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="n">tags</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Tags to be added to the event.&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"nargs"</span><span class="p">:</span> <span class="s2">"+"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Tags to be added to the event."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">pdf2png</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Convert pdf files to png and also upload these.&quot;</span>
+            <span class="s2">"action"</span><span class="p">:</span> <span class="s2">"store_true"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Convert pdf files to png and also upload these."</span>
         <span class="p">}</span>
     <span class="p">)</span></div>
 
@@ -370,7 +370,7 @@
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.create_logbook_entry.main">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Create a new entry in the logbook and attach the given files. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Create a new entry in the logbook and attach the given files. """</span>
     <span class="c1"># do attachments first as it also tests if files are there etc.</span>
     <span class="n">attachments</span> <span class="o">=</span> <span class="n">_get_attachments</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">pdf2png</span><span class="p">)</span>
 
@@ -394,57 +394,57 @@
 <span class="c1"># Private Functions ------------------------------------------------------------</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_rbac_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get an RBAC token, either by location or by Kerberos. &quot;&quot;&quot;</span>
-    <span class="n">rbac</span> <span class="o">=</span> <span class="n">RBAC</span><span class="p">(</span><span class="n">application</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;omc3.</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">""" Get an RBAC token, either by location or by Kerberos. """</span>
+    <span class="n">rbac</span> <span class="o">=</span> <span class="n">RBAC</span><span class="p">(</span><span class="n">application</span><span class="o">=</span><span class="sa">f</span><span class="s2">"omc3.</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">rbac</span><span class="o">.</span><span class="n">authenticate_location</span><span class="p">()</span>
     <span class="k">except</span> <span class="n">CONNECTION_ERRORS</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Getting RBAC token from location failed. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Getting RBAC token from location failed. "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logged in to RBAC via location as user </span><span class="si">{</span><span class="n">rbac</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Logged in to RBAC via location as user </span><span class="si">{</span><span class="n">rbac</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rbac</span><span class="o">.</span><span class="n">token</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">rbac</span><span class="o">.</span><span class="n">authenticate_kerberos</span><span class="p">()</span>
     <span class="k">except</span> <span class="n">CONNECTION_ERRORS</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Getting RBAC token via Kerberos failed. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Getting RBAC token via Kerberos failed. "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logged in to RBAC via Kerberos as user </span><span class="si">{</span><span class="n">rbac</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Logged in to RBAC via Kerberos as user </span><span class="si">{</span><span class="n">rbac</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rbac</span><span class="o">.</span><span class="n">token</span>
 
     <span class="c1"># DEBUG ONLY ---</span>
     <span class="c1"># try:</span>
-    <span class="c1">#     rbac.authenticate_explicit(user=input(&quot;Username: &quot;), password=input(&quot;Password: &quot;))</span>
+    <span class="c1">#     rbac.authenticate_explicit(user=input("Username: "), password=input("Password: "))</span>
     <span class="c1"># except CONNTECTION_ERRORS as e:</span>
     <span class="c1">#     LOGGER.debug(</span>
-    <span class="c1">#         f&quot;Explicit RBAC failed. &quot;</span>
-    <span class="c1">#         f&quot;{e.__class__.__name__}: {str(e)}&quot;</span>
+    <span class="c1">#         f"Explicit RBAC failed. "</span>
+    <span class="c1">#         f"{e.__class__.__name__}: {str(e)}"</span>
     <span class="c1">#     )</span>
     <span class="c1"># else:</span>
-    <span class="c1">#     LOGGER.info(f&quot;Logged in to RBAC as user {rbac.user}.&quot;)</span>
+    <span class="c1">#     LOGGER.info(f"Logged in to RBAC as user {rbac.user}.")</span>
     <span class="c1">#     return rbac.token</span>
 
-    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">&quot;Could not get RBAC token.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span><span class="s2">"Could not get RBAC token."</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_attachments</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
                      <span class="n">filenames</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                      <span class="n">pdf2png</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AttachmentBuilderType</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Read the file-attachments and assign their names. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Read the file-attachments and assign their names. """</span>
     <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
 
     <span class="k">if</span> <span class="n">filenames</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;List of files (length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s2">) and &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;list of filenames (length: </span><span class="si">{</span><span class="n">filenames</span><span class="si">}</span><span class="s2">) &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;need to be of equal length.&quot;</span>
+            <span class="sa">f</span><span class="s2">"List of files (length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s2">) and "</span>
+            <span class="sa">f</span><span class="s2">"list of filenames (length: </span><span class="si">{</span><span class="n">filenames</span><span class="si">}</span><span class="s2">) "</span>
+            <span class="sa">f</span><span class="s2">"need to be of equal length."</span>
         <span class="p">)</span>
 
     <span class="n">_add_mimetypes</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
@@ -460,31 +460,31 @@
 
         <span class="c1"># Convert pdf to png if desired</span>
         <span class="n">png_attachment</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">pdf2png</span> <span class="ow">and</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">pdf2png</span> <span class="ow">and</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">".pdf"</span><span class="p">:</span>
             <span class="n">png_attachment</span> <span class="o">=</span> <span class="n">_convert_pdf_to_png</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">png_attachment</span><span class="p">:</span>
             <span class="n">attachments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">png_attachment</span><span class="p">)</span>
 
         <span class="c1"># Assign new filenames</span>
-        <span class="k">if</span> <span class="n">filename</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"none"</span><span class="p">:</span>
             <span class="n">attachment</span><span class="o">.</span><span class="n">short_name</span> <span class="o">=</span> <span class="n">filename</span>
             <span class="k">if</span> <span class="n">png_attachment</span><span class="p">:</span>
-                <span class="n">png_attachment</span><span class="o">.</span><span class="n">short_name</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.PDF&quot;</span><span class="p">,</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+                <span class="n">png_attachment</span><span class="o">.</span><span class="n">short_name</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">".pdf"</span><span class="p">,</span> <span class="s2">".png"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">".PDF"</span><span class="p">,</span> <span class="s2">".png"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">attachments</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_add_mimetypes</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Adds all unknown suffixes as plain/text, which should suffice for our</span>
+<span class="w">    </span><span class="sd">""" Adds all unknown suffixes as plain/text, which should suffice for our</span>
 <span class="sd">    purposes.</span>
-<span class="sd">    TODO: if it&#39;s a binary sdds file, it should be &#39;application/octet-stream&#39;</span>
+<span class="sd">    TODO: if it's a binary sdds file, it should be 'application/octet-stream'</span>
 <span class="sd">          see https://stackoverflow.com/a/6783972/5609590</span>
 
 <span class="sd">    This is done, because the attachment builder uses the mimetypes package</span>
-<span class="sd">    to guess the mimetype and if it doesn&#39;t find it (e.g. `.tfs` or `.dat`)</span>
+<span class="sd">    to guess the mimetype and if it doesn't find it (e.g. `.tfs` or `.dat`)</span>
 <span class="sd">    raises an error.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
 
@@ -492,36 +492,36 @@
         <span class="n">f_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="n">mime</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">f_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">mimetypes</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">mimetypes</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">"text/plain"</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_convert_pdf_to_png</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Convert the first page of a pdf file into a png image. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Convert the first page of a pdf file into a png image. """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">fitz</span>  <span class="c1"># PyMuPDF, imported as fitz for backward compatibility reasons</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Missing `pymupdf` package. PDF conversion not possible.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Missing `pymupdf` package. PDF conversion not possible."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>  <span class="c1"># open document</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Big PDF-File with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="si">}</span><span class="s2"> pages found. &quot;</span>
-                       <span class="s2">&quot;Conversion only implemented for single-page files. &quot;</span>
-                       <span class="s2">&quot;Skipping conversion.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Big PDF-File with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="si">}</span><span class="s2"> pages found. "</span>
+                       <span class="s2">"Conversion only implemented for single-page files. "</span>
+                       <span class="s2">"Skipping conversion."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="n">pixmap</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_pixmap</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="n">PNG_DPI</span><span class="p">)</span>  <span class="c1"># only first page</span>
     <span class="k">return</span> <span class="n">AttachmentBuilder</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span>
-        <span class="n">contents</span><span class="o">=</span><span class="n">pixmap</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(</span><span class="s2">&quot;png&quot;</span><span class="p">),</span>
-        <span class="n">mime_type</span><span class="o">=</span><span class="s2">&quot;image/png&quot;</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">filepath</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">contents</span><span class="o">=</span><span class="n">pixmap</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(</span><span class="s2">"png"</span><span class="p">),</span>
+        <span class="n">mime_type</span><span class="o">=</span><span class="s2">"image/png"</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">filepath</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".png"</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
     <span class="p">)</span>
 
 
 <span class="c1"># Script Mode ------------------------------------------------------------------</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.machine_settings_info</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Machine Settings Information</span>
 <span class="sd">----------------------------</span>
 
@@ -269,28 +269,28 @@
 <span class="sd">    options:</span>
 <span class="sd">    -h, --help            show this help message and exit</span>
 <span class="sd">    --time TIME           At what time to extract the data.</span>
-<span class="sd">                          Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;.</span>
+<span class="sd">                          Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'.</span>
 <span class="sd">                          Timezone must be specified for ISO-format (e.g. +00:00 for UTC).</span>
 <span class="sd">    --timedelta TIMEDELTA</span>
-<span class="sd">                            Add this timedelta to the given time. The format of timedelta is &#39;((\\d+)(\\w))+&#39; with the</span>
+<span class="sd">                            Add this timedelta to the given time. The format of timedelta is '((\\d+)(\\w))+' with the</span>
 <span class="sd">                            second token being one of s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months)</span>
 <span class="sd">                            e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs.</span>
-<span class="sd">                            A prefix &#39;_&#39; specifies a negative timedelta.</span>
+<span class="sd">                            A prefix '_' specifies a negative timedelta.</span>
 <span class="sd">                            This allows for easily getting the setting</span>
-<span class="sd">                            e.g. 2h ago: &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).</span>
+<span class="sd">                            e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default).</span>
 <span class="sd">    --data_retrieval_days DELTA_DAYS</span>
 <span class="sd">                            Number of days to look back for data in NXCALS.</span>
 <span class="sd">    --knobs KNOBS [KNOBS ...]</span>
 <span class="sd">                            List of knobnames. If `None` (or omitted) no knobs will be extracted.</span>
-<span class="sd">                            If it is just the string ``&#39;all&#39;``, all knobs will be extracted (can be slow).</span>
-<span class="sd">                            Use the string ``&#39;default&#39;`` for pre-defined knobs of interest.</span>
+<span class="sd">                            If it is just the string ``'all'``, all knobs will be extracted (can be slow).</span>
+<span class="sd">                            Use the string ``'default'`` for pre-defined knobs of interest.</span>
 <span class="sd">    --accel ACCEL         Accelerator name.</span>
 <span class="sd">    --output_dir OUTPUT_DIR</span>
 <span class="sd">                            Output directory.</span>
 <span class="sd">    --knob_definitions    Set to extract knob definitions.</span>
 <span class="sd">    --log                 Write summary into log.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -335,8 +335,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.time_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_time</span>
 
-<span class="n">spark_session_builder</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;nxcals.spark_session_builder&quot;</span><span class="p">)</span>
-<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
+<span class="n">spark_session_builder</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"nxcals.spark_session_builder"</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pjlsa"</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -351,62 +351,62 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse Commandline Arguments and return them as options.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Parse Commandline Arguments and return them as options."""</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">time</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;At what time to extract the data. &quot;</span>
-                <span class="s2">&quot;Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. &quot;</span>
-                <span class="s2">&quot;Timezone must be specified for ISO-format (e.g. +00:00 for UTC).&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"At what time to extract the data. "</span>
+                <span class="s2">"Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'. "</span>
+                <span class="s2">"Timezone must be specified for ISO-format (e.g. +00:00 for UTC)."</span>
             <span class="p">),</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;now&quot;</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"now"</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">timedelta</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Add this timedelta to the given time. &quot;</span>
-                <span class="s2">&quot;The format of timedelta is &#39;((</span><span class="se">\\</span><span class="s2">d+)(</span><span class="se">\\</span><span class="s2">w))+&#39; &quot;</span>
-                <span class="s2">&quot;with the second token being one of &quot;</span>
-                <span class="s2">&quot;s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) &quot;</span>
-                <span class="s2">&quot;e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. &quot;</span>
-                <span class="s2">&quot;A prefix &#39;_&#39; specifies a negative timedelta. &quot;</span>
-                <span class="s2">&quot;This allows for easily getting the setting &quot;</span>
-                <span class="s2">&quot;e.g. 2h ago: &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"Add this timedelta to the given time. "</span>
+                <span class="s2">"The format of timedelta is '((</span><span class="se">\\</span><span class="s2">d+)(</span><span class="se">\\</span><span class="s2">w))+' "</span>
+                <span class="s2">"with the second token being one of "</span>
+                <span class="s2">"s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) "</span>
+                <span class="s2">"e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. "</span>
+                <span class="s2">"A prefix '_' specifies a negative timedelta. "</span>
+                <span class="s2">"This allows for easily getting the setting "</span>
+                <span class="s2">"e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default)."</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="n">data_retrieval_days</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of days to look back for data in NXCALS.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Number of days to look back for data in NXCALS."</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">knobs</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;+&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;List of knobnames. &quot;</span>
-            <span class="s2">&quot;If `None` (or omitted) no knobs will be extracted. &quot;</span>
-            <span class="s2">&quot;If it is just the string ``&#39;all&#39;``, &quot;</span>
-            <span class="s2">&quot;all knobs will be extracted (can be slow). &quot;</span>
-            <span class="s2">&quot;Use the string ``&#39;default&#39;`` for pre-defined knobs of interest.&quot;</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"nargs"</span><span class="p">:</span> <span class="s2">"+"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"List of knobnames. "</span>
+            <span class="s2">"If `None` (or omitted) no knobs will be extracted. "</span>
+            <span class="s2">"If it is just the string ``'all'``, "</span>
+            <span class="s2">"all knobs will be extracted (can be slow). "</span>
+            <span class="s2">"Use the string ``'default'`` for pre-defined knobs of interest."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">accel</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Accelerator name.&quot;</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"lhc"</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Accelerator name."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">output_dir</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Output directory.&quot;</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Output directory."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">knob_definitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Set to extract knob definitions.&quot;</span><span class="p">,</span>
+            <span class="s2">"action"</span><span class="p">:</span> <span class="s2">"store_true"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Set to extract knob definitions."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">log</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Write summary into log.&quot;</span><span class="p">,</span>
+            <span class="s2">"action"</span><span class="p">:</span> <span class="s2">"store_true"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Write summary into log."</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
@@ -415,7 +415,7 @@
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.machine_settings_info.get_info">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_info</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MachineSettingsInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">     Get info about **Beamprocess**, **Optics** and **Knobs** at given time.</span>
 
 <span class="sd">    **Arguments:**</span>
@@ -446,8 +446,8 @@
 <span class="sd">    - **knobs** *(str)*:</span>
 
 <span class="sd">        List of knobnames. If `None` (or omitted) no knobs will be extracted.</span>
-<span class="sd">        If it is just the string ``&#39;all&#39;``, all knobs will be extracted (can</span>
-<span class="sd">        be slow). Use the string ``&#39;default&#39;`` for pre-defined knobs of</span>
+<span class="sd">        If it is just the string ``'all'``, all knobs will be extracted (can</span>
+<span class="sd">        be slow). Use the string ``'default'`` for pre-defined knobs of</span>
 <span class="sd">        interest.</span>
 
 <span class="sd">        default: ``None``</span>
@@ -471,7 +471,7 @@
 <span class="sd">    - **time** *(str)*:</span>
 
 <span class="sd">        At what time to extract the data. Accepts ISO-format (YYYY-MM-</span>
-<span class="sd">        DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. Timezone must be</span>
+<span class="sd">        DDThh:mm:ss) with timezone, timestamp or 'now'. Timezone must be</span>
 <span class="sd">        specified for ISO-format (e.g. +00:00 for UTC).</span>
 
 <span class="sd">        default: ``now``</span>
@@ -480,15 +480,15 @@
 <span class="sd">    - **timedelta** *(str)*:</span>
 
 <span class="sd">        Add this timedelta to the given time. The format of timedelta is</span>
-<span class="sd">        &#39;((\\d+)(\\w))+&#39; with the second token being one of s(seconds),</span>
+<span class="sd">        '((\\d+)(\\w))+' with the second token being one of s(seconds),</span>
 <span class="sd">        m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,</span>
-<span class="sd">        1d = 1day, 7m30s = 7 min 30 secs. A prefix &#39;_&#39; specifies a negative</span>
+<span class="sd">        1d = 1day, 7m30s = 7 min 30 secs. A prefix '_' specifies a negative</span>
 <span class="sd">        timedelta. This allows for easily getting the setting e.g. 2h ago:</span>
-<span class="sd">        &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).</span>
+<span class="sd">        '_2h' while setting the `time` argument to 'now' (default).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        MachineSettingsInfo: Extracted Machine Settings Info.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">spark</span><span class="p">,</span> <span class="n">lsa_client</span> <span class="o">=</span> <span class="n">_get_clients</span><span class="p">()</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
 
@@ -513,10 +513,10 @@
 
     <span class="c1"># Knobs ---</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">knobs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">knobs</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">knobs</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Extracting all knobs can be very slow and unstable!&quot;</span>
-                <span class="s2">&quot; Please consider using a smaller selection of knobs if you experience issues.&quot;</span>
+                <span class="s2">"Extracting all knobs can be very slow and unstable!"</span>
+                <span class="s2">" Please consider using a smaller selection of knobs if you experience issues."</span>
             <span class="p">)</span>
         <span class="n">machine_info</span><span class="o">.</span><span class="n">trim_histories</span> <span class="o">=</span> <span class="n">_get_trim_history</span><span class="p">(</span>
             <span class="n">lsa_client</span><span class="o">=</span><span class="n">lsa_client</span><span class="p">,</span>
@@ -549,49 +549,49 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_log_info</span><span class="p">(</span><span class="n">machine_info</span><span class="p">:</span> <span class="n">MachineSettingsInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log a summary of the extracted info to console (Info-Level).</span>
+<span class="w">    </span><span class="sd">"""Log a summary of the extracted info to console (Info-Level).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        machine_info (MachineSettingsInfo): Extracted Machine Settings Info</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">summary</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">----------- Summary ---------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;Accelerator:  </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">accelerator</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;Given Time:   </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">"</span><span class="se">\n</span><span class="s2">----------- Summary ---------------------</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Accelerator:  </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">accelerator</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Given Time:   </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">fill</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># For ty.</span>
-        <span class="n">summary</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Fill:         </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">fill</span><span class="o">.</span><span class="n">no</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">summary</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"Fill:         </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">fill</span><span class="o">.</span><span class="n">no</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">if</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">summary</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Beamprocess:  </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  Start:      </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  Context:    </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">context_category</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  Descr.:     </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Beamprocess:  </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  Start:      </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  Context:    </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">context_category</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  Descr.:     </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">optics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">summary</span> <span class="o">+=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Optics:       </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">optics</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;  Start:      </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">optics</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Optics:       </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">optics</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  Start:      </span><span class="si">{</span><span class="n">machine_info</span><span class="o">.</span><span class="n">optics</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">summary</span> <span class="o">+=</span> <span class="s2">&quot;----------- Trims -----------------------</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">summary</span> <span class="o">+=</span> <span class="s2">"----------- Trims -----------------------</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">for</span> <span class="n">trim</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trims</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">summary</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">trim</span><span class="si">:</span><span class="s2">30s</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">summary</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">trim</span><span class="si">:</span><span class="s2">30s</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
 
-    <span class="n">summary</span> <span class="o">+=</span> <span class="s2">&quot;-----------------------------------------</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">summary</span> <span class="o">+=</span> <span class="s2">"-----------------------------------------</span><span class="se">\n\n</span><span class="s2">"</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_output</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">machine_info</span><span class="p">:</span> <span class="n">MachineSettingsInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write all extracted info into files.</span>
+<span class="w">    </span><span class="sd">"""Write all extracted info into files.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        output_dir (Path | str): Output Directory</span>
 <span class="sd">        machine_info (MachineSettingsInfo): Machine Settings Info</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
     <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -609,8 +609,8 @@
             <span class="n">madx</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">to_madx</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">to_tfs</span><span class="p">()</span>
 
-            <span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">definition</span><span class="o">.</span><span class="n">output_name</span><span class="si">}{</span><span class="n">KNOB_DEFINITION_MADX</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">madx</span><span class="p">)</span>
-            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">definition</span><span class="o">.</span><span class="n">output_name</span><span class="si">}{</span><span class="n">KNOB_DEFINITION_TFS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">definition</span><span class="o">.</span><span class="n">output_name</span><span class="si">}{</span><span class="n">KNOB_DEFINITION_MADX</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">madx</span><span class="p">)</span>
+            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">definition</span><span class="o">.</span><span class="n">output_name</span><span class="si">}{</span><span class="n">KNOB_DEFINITION_TFS</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 
     <span class="c1"># Trim Histories ---</span>
     <span class="k">if</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trim_histories</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -621,18 +621,18 @@
             <span class="n">machine_info</span><span class="o">.</span><span class="n">trim_histories</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">TrimHistoryHeader</span><span class="o">.</span><span class="n">FILL</span><span class="p">]</span> <span class="o">=</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">fill</span><span class="o">.</span><span class="n">no</span>
 
         <span class="k">for</span> <span class="n">knob</span><span class="p">,</span> <span class="n">trim_df</span> <span class="ow">in</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trim_histories</span><span class="o">.</span><span class="n">to_tfs_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knob</span><span class="si">}{</span><span class="n">TRIM_HISTORY_TFS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">trim_df</span><span class="p">)</span>
+            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">knob</span><span class="si">}{</span><span class="n">TRIM_HISTORY_TFS</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">trim_df</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summary_df</span><span class="p">(</span><span class="n">machine_info</span><span class="p">:</span> <span class="n">MachineSettingsInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert MachineSettingsInfo into a ``TfsDataFrame``.</span>
+<span class="w">    </span><span class="sd">"""Convert MachineSettingsInfo into a ``TfsDataFrame``.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        machine_info (MachineSettingsInfo): Machine Settings Info.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.TfsDataFrame: Summary as TfsDataFrame.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">trims</span> <span class="o">=</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trims</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
     <span class="n">info_tfs</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">trims</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Column</span><span class="o">.</span><span class="n">KNOB</span><span class="p">,</span> <span class="n">Column</span><span class="o">.</span><span class="n">VALUE</span><span class="p">])</span>
@@ -668,19 +668,19 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_clients</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">SparkSession</span><span class="p">,</span> <span class="n">LSAClient</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize and return SparkSession and LSAClient.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Initialize and return SparkSession and LSAClient."""</span>
 
     <span class="c1"># Set log level to WARNING to avoid too much logging from Spark/LSA ---</span>
     <span class="n">log_level</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">WARNING</span>
-    <span class="n">log_level_str</span> <span class="o">=</span> <span class="s2">&quot;WARN&quot;</span>
+    <span class="n">log_level_str</span> <span class="o">=</span> <span class="s2">"WARN"</span>
 
     <span class="k">with</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">change_log_level</span><span class="p">(</span><span class="n">log_level</span><span class="p">):</span>
         <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span> <span class="o">=</span> <span class="n">spark_session_builder</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
-            <span class="n">conf</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spark.ui.showConsoleProgress&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">}</span>
+            <span class="n">conf</span><span class="o">=</span><span class="p">{</span><span class="s2">"spark.ui.showConsoleProgress"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">}</span>
         <span class="p">)</span>
         <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span><span class="o">.</span><span class="n">setLogLevel</span><span class="p">(</span><span class="n">log_level_str</span><span class="p">)</span>
         <span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span> <span class="o">=</span> <span class="n">pjlsa</span><span class="o">.</span><span class="n">LSAClient</span><span class="p">()</span>
-        <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;py4j&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="n">logging_tools</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"py4j"</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">spark</span><span class="p">,</span> <span class="n">lsa_client</span>
 
@@ -693,7 +693,7 @@
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
     <span class="n">beamprocess</span><span class="p">:</span> <span class="n">BeamProcessInfo</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpticsInfo</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get Optics Info at given time.</span>
+<span class="w">    </span><span class="sd">"""Get Optics Info at given time.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        lsa_client (LSAClient): LSA Client</span>
@@ -702,7 +702,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        OpticsInfo | None: Optics Info Dictionary or None if no optics found</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_optics_for_beamprocess_at_time</span><span class="p">(</span>
             <span class="n">lsa_client</span><span class="o">=</span><span class="n">lsa_client</span><span class="p">,</span>
@@ -724,12 +724,12 @@
     <span class="n">data_retrieval_days</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">beamprocess_info</span><span class="p">:</span> <span class="n">BeamProcessInfo</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrimHistories</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get Trim Histories for given knobs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get Trim Histories for given knobs."""</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">knobs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">match</span> <span class="n">knobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-            <span class="k">case</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">"all"</span><span class="p">:</span>
                 <span class="n">knobs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># will extract all knobs in get_trim_history</span>
-            <span class="k">case</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s2">"default"</span><span class="p">:</span>
                 <span class="n">knobs</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">name2lsa</span><span class="p">(</span><span class="n">knob</span><span class="p">)</span> <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">category</span>
                 <span class="p">]</span>
@@ -749,16 +749,16 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_knob_definitions</span><span class="p">(</span>
     <span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">machine_info</span><span class="p">:</span> <span class="n">MachineSettingsInfo</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">KnobDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get knob definitions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get knob definitions."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">optics</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Knob defintions requested, but no optics found.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Knob defintions requested, but no optics found."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trim_histories</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Knob definitions requested, but no trims extracted.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Knob definitions requested, but no trims extracted."</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Extracting knob definitions.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Extracting knob definitions."</span><span class="p">)</span>
     <span class="n">optics</span> <span class="o">=</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">optics</span><span class="o">.</span><span class="n">name</span>
     <span class="n">defs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">machine_info</span><span class="o">.</span><span class="n">trim_histories</span><span class="o">.</span><span class="n">trims</span><span class="p">:</span>
@@ -772,7 +772,7 @@
 <span class="c1"># Script Mode ##################################################################</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">get_info</span><span class="p">()</span>
 </pre></div>
 

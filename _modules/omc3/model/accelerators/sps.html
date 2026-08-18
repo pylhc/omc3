@@ -239,11 +239,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.accelerators.sps</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">SPS</span>
 <span class="sd">---</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -268,13 +268,13 @@
 <div class="viewcode-block" id="Sps">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.sps.Sps">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Sps</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; SPS accelerator. &quot;&quot;&quot;</span>
-    <span class="n">NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sps&quot;</span>
-    <span class="n">LOCAL_REPO_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;acc-models-sps&quot;</span>
+<span class="w">    </span><span class="sd">""" SPS accelerator. """</span>
+    <span class="n">NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"sps"</span>
+    <span class="n">LOCAL_REPO_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"acc-models-sps"</span>
     <span class="n">RE_DICT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;^BP.*&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>  <span class="c1"># has a variety of names...</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;^BP.*&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"^BP.*"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">".*"</span><span class="p">,</span>  <span class="c1"># has a variety of names...</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"^BP.*"</span><span class="p">,</span>
     <span class="p">}</span>
 
 <div class="viewcode-block" id="Sps.get_parameters">
@@ -282,7 +282,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">():</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">Accelerator</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optics tag.&quot;</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"year"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Optics tag."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -294,7 +294,7 @@
 <div class="viewcode-block" id="Sps.get_variables">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.sps.Sps.get_variables">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">correctors_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;correctors.json&quot;</span><span class="p">)</span>
+        <span class="n">correctors_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">"correctors.json"</span><span class="p">)</span>
         <span class="n">all_vars_by_class</span> <span class="o">=</span> <span class="n">load_multiple_jsons</span><span class="p">(</span><span class="n">correctors_file</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">get_vars_by_classes</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="n">all_vars_by_class</span><span class="p">)</span></div>
 
@@ -312,9 +312,9 @@
 <div class="viewcode-block" id="Sps.find_modifier">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.sps.Sps.find_modifier">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_modifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modifier</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Try to find a modifier file, which might be given only by its name.</span>
-<span class="sd">        This is looking for full-path, model-dir and in the acc-models-path&#39;s strength-dir.,</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" Try to find a modifier file, which might be given only by its name.</span>
+<span class="sd">        This is looking for full-path, model-dir and in the acc-models-path's strength-dir.,</span>
+<span class="sd">        """</span>
         <span class="n">dirs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span><span class="p">)</span>

@@ -239,18 +239,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.mqt_extraction</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">MQT knobs extraction</span>
 <span class="sd">--------------------</span>
 
 <span class="sd">This module provides functions to retrieve MQT (Quadrupole Trim) knob values for the LHC</span>
 <span class="sd">for a specified beam and time using NXCALS and LSA.</span>
 
-<span class="sd">There are two types per arc (focusing &#39;f&#39; and defocusing &#39;d&#39;), resulting in 16 MQT circuits</span>
+<span class="sd">There are two types per arc (focusing 'f' and defocusing 'd'), resulting in 16 MQT circuits</span>
 <span class="sd">per beam (8 arcs * 2 planes).</span>
 
 <span class="sd">The extraction uses the underlying `knob_extraction` module with MQT-specific patterns.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -270,28 +270,28 @@
 <div class="viewcode-block" id="generate_mqt_names">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.mqt_extraction.generate_mqt_names">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_mqt_names</span><span class="p">(</span><span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate the set of MAD-X MQT (Quadrupole Trim) variable names for a given beam.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        beam (int): The beam number (1 or 2).</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        set[str]: A set of MAD-X variable names for MQT magnets, e.g., &#39;kqt12.a12b1&#39;.</span>
+<span class="sd">        set[str]: A set of MAD-X variable names for MQT magnets, e.g., 'kqt12.a12b1'.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If beam is not 1 or 2.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; get_mqts(1)</span>
-<span class="sd">        {&#39;kqt12.a12b1&#39;, &#39;kqt12.a23b1&#39;, ..., &#39;kqtd.a81b1&#39;}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        {'kqt12.a12b1', 'kqt12.a23b1', ..., 'kqtd.a81b1'}</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">beam</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Beam must be 1 or 2&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Beam must be 1 or 2"</span><span class="p">)</span>
 
-    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">]</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"f"</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">]</span>
     <span class="n">arcs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="mi">81</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;kqt</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.a</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">b</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arcs</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"kqt</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.a</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">b</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arcs</span><span class="p">}</span></div>
 
 
 
@@ -304,7 +304,7 @@
     <span class="n">data_retrieval_days</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
     <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieve MQT (Quadrupole Trim) knob values from NXCALS for a specific time and beam.</span>
 
 <span class="sd">    This function queries NXCALS for current measurements of MQT power converters,</span>
@@ -325,12 +325,12 @@
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If beam is not 1 or 2 (propagated from get_mqts), or if time is not timezone-aware.</span>
 <span class="sd">        RuntimeError: If no data is found in NXCALS or LSA calculations fail.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Time must be timezone-aware.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Time must be timezone-aware."</span><span class="p">)</span>
 
     <span class="n">madx_mqts</span> <span class="o">=</span> <span class="n">generate_mqt_names</span><span class="p">(</span><span class="n">beam</span><span class="p">)</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RPMBB.UA%.RQT%.A%B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">:I_MEAS&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"RPMBB.UA%.RQT%.A%B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">:I_MEAS"</span>
     <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">pattern</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">get_knob_vals</span><span class="p">(</span>
         <span class="n">spark</span><span class="p">,</span>
@@ -338,7 +338,7 @@
         <span class="n">beam</span><span class="p">,</span>
         <span class="n">patterns</span><span class="p">,</span>
         <span class="n">madx_mqts</span><span class="p">,</span>
-        <span class="s2">&quot;MQT: &quot;</span><span class="p">,</span>
+        <span class="s2">"MQT: "</span><span class="p">,</span>
         <span class="n">data_retrieval_days</span><span class="p">,</span>
         <span class="n">energy</span><span class="p">,</span>
     <span class="p">)</span></div>

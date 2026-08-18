@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.lhc_corrector_list_check</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Corrector Lists Check</span>
 <span class="sd">---------------------</span>
 
@@ -247,7 +247,7 @@
 <span class="sd">It checks if all the correctors in the LHC sequence are used in the variables.</span>
 
 <span class="sd">These checks are performed against the correction knobs used for global corrections.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
@@ -260,30 +260,30 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="n">ACC_MODELS_LHC</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">AFS_ACCELERATOR_MODEL_REPOSITORY</span> <span class="o">/</span> <span class="s2">&quot;lhc&quot;</span>
-<span class="n">LHC_SEQ_FILE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc.seq&quot;</span>
+<span class="n">ACC_MODELS_LHC</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">AFS_ACCELERATOR_MODEL_REPOSITORY</span> <span class="o">/</span> <span class="s2">"lhc"</span>
+<span class="n">LHC_SEQ_FILE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lhc.seq"</span>
 
 
 <div class="viewcode-block" id="parse_lhc_sequence">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.parse_lhc_sequence">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_lhc_sequence</span><span class="p">(</span><span class="n">year</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Find all the correctors in the LHC sequence.</span>
-<span class="sd">    They follow the pattern &#39;kq[^fsx][.a-z0-9]+&#39;</span>
+<span class="w">    </span><span class="sd">""" Find all the correctors in the LHC sequence.</span>
+<span class="sd">    They follow the pattern 'kq[^fsx][.a-z0-9]+'</span>
 
 <span class="sd">    They can be grouped into correctors for beam 1 and beam 2</span>
-<span class="sd">    depending on their ending &#39;b1&#39; or &#39;b2&#39;.</span>
+<span class="sd">    depending on their ending 'b1' or 'b2'.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        year (str): Year of the optics (or hllhc1.x version).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict[int, set[str]]: Sets of corrector names grouped by beam.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="n">ACC_MODELS_LHC</span> <span class="o">/</span> <span class="n">year</span> <span class="o">/</span> <span class="n">LHC_SEQ_FILE</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
-    <span class="n">all_correctors</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\s\-\+=](kq[^fsx][.a-z0-9]+)&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+    <span class="n">all_correctors</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[\s\-\+=](kq[^fsx][.a-z0-9]+)"</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="n">corrector</span> <span class="k">for</span> <span class="n">corrector</span> <span class="ow">in</span> <span class="n">all_correctors</span> <span class="k">if</span> <span class="n">corrector</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;b1&quot;</span><span class="p">)},</span>
-        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="n">corrector</span> <span class="k">for</span> <span class="n">corrector</span> <span class="ow">in</span> <span class="n">all_correctors</span> <span class="k">if</span> <span class="n">corrector</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;b2&quot;</span><span class="p">)},</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="n">corrector</span> <span class="k">for</span> <span class="n">corrector</span> <span class="ow">in</span> <span class="n">all_correctors</span> <span class="k">if</span> <span class="n">corrector</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"b1"</span><span class="p">)},</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="n">corrector</span> <span class="k">for</span> <span class="n">corrector</span> <span class="ow">in</span> <span class="n">all_correctors</span> <span class="k">if</span> <span class="n">corrector</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"b2"</span><span class="p">)},</span>
     <span class="p">}</span></div>
 
 
@@ -291,13 +291,13 @@
 <div class="viewcode-block" id="get_lhc_correctors">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.get_lhc_correctors">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_lhc_correctors</span><span class="p">(</span><span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get the correctors that are used in the variables.</span>
+<span class="w">    </span><span class="sd">""" Get the correctors that are used in the variables.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        variables (list[str]): List of variable names.</span>
 <span class="sd">        beam (int): Beam to use.</span>
 <span class="sd">        year (str): Year of the optics (or hllhc1.x version).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">lhc</span> <span class="o">=</span> <span class="n">Lhc</span><span class="p">(</span><span class="n">beam</span><span class="o">=</span><span class="n">beam</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">)</span>
     <span class="n">used_correctors</span> <span class="o">=</span> <span class="n">lhc</span><span class="o">.</span><span class="n">get_variables</span><span class="p">(</span><span class="n">classes</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">used_correctors</span><span class="p">)</span></div>
@@ -307,13 +307,13 @@
 <div class="viewcode-block" id="check_variables">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.check_variables">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_variables</span><span class="p">(</span><span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">year</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Main function to check the corrector lists.</span>
+<span class="w">    </span><span class="sd">""" Main function to check the corrector lists.</span>
 <span class="sd">    Runs both beams and prints out the remaining correctors.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        variables (list[str]): List of variable names.</span>
 <span class="sd">        year (str): Year of the optics (or hllhc1.x version).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">lhc_correctors</span> <span class="o">=</span> <span class="n">parse_lhc_sequence</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
@@ -325,10 +325,10 @@
         <span class="n">unused_correctors</span> <span class="o">=</span> <span class="n">lhc_correctors</span><span class="p">[</span><span class="n">beam</span><span class="p">]</span> <span class="o">-</span> <span class="n">used_correctors</span>
         <span class="n">unknown_correctors</span> <span class="o">=</span> <span class="n">used_correctors</span> <span class="o">-</span> <span class="n">lhc_correctors</span><span class="p">[</span><span class="n">beam</span><span class="p">]</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variables: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unused correctors: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unused_correctors</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown correctors: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unknown_correctors</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Variables: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unused correctors: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unused_correctors</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown correctors: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unknown_correctors</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">()</span></div>
 
 
@@ -336,20 +336,20 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Main function with argument parsing. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Main function with argument parsing. """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--year&quot;</span><span class="p">,</span>
+        <span class="s2">"--year"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Year of the optics (or hllhc1.x version).&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Year of the optics (or hllhc1.x version)."</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--variables&quot;</span><span class="p">,</span>
+        <span class="s2">"--variables"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Variables to check.&quot;</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Variables to check."</span>
     <span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="n">check_variables</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">year</span><span class="p">)</span></div>
@@ -359,24 +359,24 @@
 <div class="viewcode-block" id="example">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.lhc_corrector_list_check.example">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">example</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Example usage, comparing INJ and TOP correctors for 2024 and 2025.&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">mqms</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MQM_INJ_2024&quot;</span><span class="p">,</span> <span class="s2">&quot;MQM_TOP_2024&quot;</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">""" Example usage, comparing INJ and TOP correctors for 2024 and 2025."""</span>
+    <span class="k">for</span> <span class="n">mqms</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"MQM_INJ_2024"</span><span class="p">,</span> <span class="s2">"MQM_TOP_2024"</span><span class="p">]:</span>
         <span class="n">check_variables</span><span class="p">(</span>
-            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">mqms</span><span class="p">,</span> <span class="s2">&quot;MQT&quot;</span><span class="p">,</span> <span class="s2">&quot;MQTL&quot;</span><span class="p">,</span> <span class="s2">&quot;MQY&quot;</span><span class="p">],</span>
-            <span class="n">year</span><span class="o">=</span><span class="s2">&quot;2024&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">mqms</span><span class="p">,</span> <span class="s2">"MQT"</span><span class="p">,</span> <span class="s2">"MQTL"</span><span class="p">,</span> <span class="s2">"MQY"</span><span class="p">],</span>
+            <span class="n">year</span><span class="o">=</span><span class="s2">"2024"</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------------------</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"--------------------</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">mqms</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MQM_INJ&quot;</span><span class="p">,</span> <span class="s2">&quot;MQM_TOP&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">mqms</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"MQM_INJ"</span><span class="p">,</span> <span class="s2">"MQM_TOP"</span><span class="p">]:</span>
         <span class="n">check_variables</span><span class="p">(</span>
-            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">mqms</span><span class="p">,</span> <span class="s2">&quot;MQT&quot;</span><span class="p">,</span> <span class="s2">&quot;MQTL&quot;</span><span class="p">,</span> <span class="s2">&quot;MQY&quot;</span><span class="p">],</span>
-            <span class="n">year</span><span class="o">=</span><span class="s2">&quot;2025&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">mqms</span><span class="p">,</span> <span class="s2">"MQT"</span><span class="p">,</span> <span class="s2">"MQTL"</span><span class="p">,</span> <span class="s2">"MQY"</span><span class="p">],</span>
+            <span class="n">year</span><span class="o">=</span><span class="s2">"2025"</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
     <span class="c1"># example()</span>
 </pre></div>

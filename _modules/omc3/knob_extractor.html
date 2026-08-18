@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.knob_extractor</h1><div class="highlight"><pre>
-<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">Knob Extractor</span>
 <span class="sd">--------------</span>
 
@@ -257,8 +257,8 @@
 <span class="sd">- **knob_definitions** *(PathOrStrOrDataFrame)*:</span>
 
 <span class="sd">    User defined path to the knob-definitions, or (via python) a dataframe</span>
-<span class="sd">    containing the knob definitions with the columns &#39;madx&#39;, &#39;lsa&#39; and</span>
-<span class="sd">    &#39;scaling&#39;.</span>
+<span class="sd">    containing the knob definitions with the columns 'madx', 'lsa' and</span>
+<span class="sd">    'scaling'.</span>
 
 
 <span class="sd">- **knobs** *(str)*:</span>
@@ -266,7 +266,7 @@
 <span class="sd">    A list of knob names or categories to extract. Available categories</span>
 <span class="sd">    are: sep, xing, chroma, ip_offset, disp, mo.</span>
 
-<span class="sd">    default: ``[&#39;sep&#39;, &#39;xing&#39;, &#39;chroma&#39;, &#39;ip_offset&#39;, &#39;disp&#39;, &#39;mo&#39;]``</span>
+<span class="sd">    default: ``['sep', 'xing', 'chroma', 'ip_offset', 'disp', 'mo']``</span>
 
 
 <span class="sd">- **output** *(PathOrStr)*:</span>
@@ -285,7 +285,7 @@
 <span class="sd">- **time** *(str)*:</span>
 
 <span class="sd">    At what time to extract the knobs. Accepts ISO-format (YYYY-MM-</span>
-<span class="sd">    DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. Timezone must be</span>
+<span class="sd">    DDThh:mm:ss) with timezone, timestamp or 'now'. Timezone must be</span>
 <span class="sd">    specified for ISO-format (e.g. +00:00 for UTC).</span>
 
 <span class="sd">    default: ``now``</span>
@@ -294,31 +294,31 @@
 <span class="sd">- **timedelta** *(str)*:</span>
 
 <span class="sd">    Add this timedelta to the given time. The format of timedelta is</span>
-<span class="sd">    &#39;((\d+)(\w))+&#39; with the second token being one of s(seconds),</span>
+<span class="sd">    '((\d+)(\w))+' with the second token being one of s(seconds),</span>
 <span class="sd">    m(minutes), h(hours), d(days), w(weeks), M(months) e.g 7m = 7 minutes,</span>
-<span class="sd">    1d = 1day, 7m30s = 7 min 30 secs. A prefix &#39;_&#39; specifies a negative</span>
+<span class="sd">    1d = 1day, 7m30s = 7 min 30 secs. A prefix '_' specifies a negative</span>
 <span class="sd">    timedelta. This allows for easily getting the setting e.g. 2h ago:</span>
-<span class="sd">    &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).</span>
+<span class="sd">    '_2h' while setting the `time` argument to 'now' (default).</span>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="c1">####### WORKAROUND FOR JAVA ISSUES WITH LHCOP ##################################</span>
 <span class="c1"># Move `/mcr/bin` to the end of the Path.</span>
 <span class="c1"># Fixes:</span>
-<span class="c1"># &#39;Error: Could not find or load main class (...) aircompressor-0.26.jar&#39;</span>
+<span class="c1"># 'Error: Could not find or load main class (...) aircompressor-0.26.jar'</span>
 <span class="c1">#</span>
 <span class="c1"># This ia a hack, please remove at the earliest convenience. For updates see:</span>
 <span class="c1"># https://cern.service-now.com/service-portal?id=ticket&amp;table=incident&amp;n=INC3768823</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="k">if</span> <span class="s2">&quot;PATH&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span> <span class="ow">and</span> <span class="s2">&quot;/mcr/bin&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]:</span>
-    <span class="n">parts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;/mcr/bin&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;/mcr/bin&quot;</span><span class="p">)</span>  <span class="c1"># probably not neccesary</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+<span class="k">if</span> <span class="s2">"PATH"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span> <span class="ow">and</span> <span class="s2">"/mcr/bin"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]:</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">"/mcr/bin"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"/mcr/bin"</span><span class="p">)</span>  <span class="c1"># probably not neccesary</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PATH"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">":"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
 <span class="c1">################################################################################</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
@@ -340,124 +340,124 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="n">pytimber</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pytimber&quot;</span><span class="p">)</span>
+<span class="n">pytimber</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pytimber"</span><span class="p">)</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
-    <span class="s2">&quot;/afs/cern.ch/eng/acc-models/lhc/current&quot;</span>
-<span class="p">)</span>  <span class="c1"># make sure &#39;current&#39; linked correctly!</span>
-<span class="n">ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;acc-models-lhc&quot;</span><span class="p">)</span>
-<span class="n">KNOBS_FILE_ACC_MODELS</span> <span class="o">=</span> <span class="n">ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">&quot;operation&quot;</span> <span class="o">/</span> <span class="s2">&quot;knobs.txt&quot;</span>
-<span class="n">KNOBS_FILE_AFS</span> <span class="o">=</span> <span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">&quot;operation&quot;</span> <span class="o">/</span> <span class="s2">&quot;knobs.txt&quot;</span>
+    <span class="s2">"/afs/cern.ch/eng/acc-models/lhc/current"</span>
+<span class="p">)</span>  <span class="c1"># make sure 'current' linked correctly!</span>
+<span class="n">ACC_MODELS_LHC</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"acc-models-lhc"</span><span class="p">)</span>
+<span class="n">KNOBS_FILE_ACC_MODELS</span> <span class="o">=</span> <span class="n">ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">"operation"</span> <span class="o">/</span> <span class="s2">"knobs.txt"</span>
+<span class="n">KNOBS_FILE_AFS</span> <span class="o">=</span> <span class="n">AFS_ACC_MODELS_LHC</span> <span class="o">/</span> <span class="s2">"operation"</span> <span class="o">/</span> <span class="s2">"knobs.txt"</span>
 
 <span class="n">STATE_VARIABLES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;opticName&quot;</span><span class="p">:</span> <span class="s2">&quot;Optics&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;beamProcess&quot;</span><span class="p">:</span> <span class="s2">&quot;Beam Process&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;opticId&quot;</span><span class="p">:</span> <span class="s2">&quot;Optics ID&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hyperCycle&quot;</span><span class="p">:</span> <span class="s2">&quot;HyperCycle&quot;</span><span class="p">,</span>
-    <span class="c1"># &#39;secondsInBeamProcess &#39;: &#39;Beam Process running (s)&#39;,</span>
+    <span class="s2">"opticName"</span><span class="p">:</span> <span class="s2">"Optics"</span><span class="p">,</span>
+    <span class="s2">"beamProcess"</span><span class="p">:</span> <span class="s2">"Beam Process"</span><span class="p">,</span>
+    <span class="s2">"opticId"</span><span class="p">:</span> <span class="s2">"Optics ID"</span><span class="p">,</span>
+    <span class="s2">"hyperCycle"</span><span class="p">:</span> <span class="s2">"HyperCycle"</span><span class="p">,</span>
+    <span class="c1"># 'secondsInBeamProcess ': 'Beam Process running (s)',</span>
 <span class="p">}</span>
 
 
 <div class="viewcode-block" id="Col">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.Col">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Col</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;DataFrame Columns used in this script.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""DataFrame Columns used in this script."""</span>
 
-    <span class="n">madx</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;madx&quot;</span>
-    <span class="n">lsa</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lsa&quot;</span>
-    <span class="n">scaling</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;scaling&quot;</span>
-    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span></div>
+    <span class="n">madx</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"madx"</span>
+    <span class="n">lsa</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lsa"</span>
+    <span class="n">scaling</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"scaling"</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"value"</span></div>
 
 
 
 <div class="viewcode-block" id="Head">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.Head">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Head</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;TFS Headers used in this script.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""TFS Headers used in this script."""</span>
 
-    <span class="n">time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EXTRACTION_TIME&quot;</span></div>
+    <span class="n">time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"EXTRACTION_TIME"</span></div>
 
 
 
 <span class="n">KNOB_CATEGORIES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;sep&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;LHCBEAM:IP1-SEP-H-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP1-SEP-V-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-SEP-H-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-SEP-V-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP2-SEP-H-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP2-SEP-V-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP8-SEP-H-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP8-SEP-V-MM&quot;</span><span class="p">,</span>
+    <span class="s2">"sep"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"LHCBEAM:IP1-SEP-H-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP1-SEP-V-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-SEP-H-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-SEP-V-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP2-SEP-H-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP2-SEP-V-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP8-SEP-H-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP8-SEP-V-MM"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="s2">&quot;xing&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;LHCBEAM:IP1-XING-V-MURAD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP1-XING-H-MURAD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-XING-V-MURAD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-XING-H-MURAD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP2-XING-V-MURAD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP2-XING-H-MURAD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP8-XING-V-MURAD&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP8-XING-H-MURAD&quot;</span><span class="p">,</span>
+    <span class="s2">"xing"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"LHCBEAM:IP1-XING-V-MURAD"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP1-XING-H-MURAD"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-XING-V-MURAD"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-XING-H-MURAD"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP2-XING-V-MURAD"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP2-XING-H-MURAD"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP8-XING-V-MURAD"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP8-XING-H-MURAD"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="s2">&quot;chroma&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;LHCBEAM1:QPH&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:QPV&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:QPH&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:QPV&quot;</span><span class="p">,</span>
+    <span class="s2">"chroma"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"LHCBEAM1:QPH"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:QPV"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:QPH"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:QPV"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="s2">&quot;ip_offset&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;LHCBEAM:IP1-OFFSET-V-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP2-OFFSET-V-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-OFFSET-H-MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP8-OFFSET-H-MM&quot;</span><span class="p">,</span>
+    <span class="s2">"ip_offset"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"LHCBEAM:IP1-OFFSET-V-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP2-OFFSET-V-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-OFFSET-H-MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP8-OFFSET-H-MM"</span><span class="p">,</span>
         <span class="c1"># hint: knobs for the other planes do not exist</span>
     <span class="p">],</span>
-    <span class="s2">&quot;disp&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-SEP&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-SEP&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-XING-H&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP1-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-XING-H&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP5-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
-        <span class="c1"># &quot;LHCBEAM:IP2-SDISP-CORR-XING-H&quot;,  # does not exist in knobs.txt</span>
-        <span class="s2">&quot;LHCBEAM:IP2-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP8-SDISP-CORR-XING-H&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM:IP8-SDISP-CORR-XING-V&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP-SDISP-QPBUMP&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP-SDISP-QPBUMP&quot;</span><span class="p">,</span>
+    <span class="s2">"disp"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"LHCBEAM:IP1-SDISP-CORR-SEP"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-SDISP-CORR-SEP"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP1-SDISP-CORR-XING-H"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP1-SDISP-CORR-XING-V"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-SDISP-CORR-XING-H"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP5-SDISP-CORR-XING-V"</span><span class="p">,</span>
+        <span class="c1"># "LHCBEAM:IP2-SDISP-CORR-XING-H",  # does not exist in knobs.txt</span>
+        <span class="s2">"LHCBEAM:IP2-SDISP-CORR-XING-V"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP8-SDISP-CORR-XING-H"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM:IP8-SDISP-CORR-XING-V"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP-SDISP-QPBUMP"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP-SDISP-QPBUMP"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="s2">&quot;mo&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;LHCBEAM1:LANDAU_DAMPING&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:LANDAU_DAMPING&quot;</span><span class="p">,</span>
+    <span class="s2">"mo"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"LHCBEAM1:LANDAU_DAMPING"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:LANDAU_DAMPING"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="s2">&quot;lumi_scan&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;LHCBEAM1:IP1_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP1_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP1_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP1_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP2_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP2_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP2_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP2_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP5_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP5_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP5_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP5_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP8_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM1:IP8_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP8_SEPSCAN_X_MM&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;LHCBEAM2:IP8_SEPSCAN_Y_MM&quot;</span><span class="p">,</span>
+    <span class="s2">"lumi_scan"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">"LHCBEAM1:IP1_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP1_SEPSCAN_Y_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP1_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP1_SEPSCAN_Y_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP2_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP2_SEPSCAN_Y_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP2_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP2_SEPSCAN_Y_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP5_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP5_SEPSCAN_Y_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP5_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP5_SEPSCAN_Y_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP8_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM1:IP8_SEPSCAN_Y_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP8_SEPSCAN_X_MM"</span><span class="p">,</span>
+        <span class="s2">"LHCBEAM2:IP8_SEPSCAN_Y_MM"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="c1"># &quot;dpp&quot;: [  % maybe extract at injection?</span>
-    <span class="c1">#     &quot;LHCBEAM1:DP_TRIM_PERMIL&quot;,</span>
-    <span class="c1">#     &quot;LHCBEAM2:DP_TRIM_PERMIL&quot;</span>
+    <span class="c1"># "dpp": [  % maybe extract at injection?</span>
+    <span class="c1">#     "LHCBEAM1:DP_TRIM_PERMIL",</span>
+    <span class="c1">#     "LHCBEAM2:DP_TRIM_PERMIL"</span>
     <span class="c1"># ],</span>
 <span class="p">}</span>
 
-<span class="n">USAGE_EXAMPLES</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Usage Examples:</span>
+<span class="n">USAGE_EXAMPLES</span> <span class="o">=</span> <span class="s2">"""Usage Examples:</span>
 
 <span class="s2">python -m omc3.knob_extractor --knobs disp chroma --time 2022-05-04T14:00+00:00</span>
 <span class="s2">    extracts the chromaticity and dispersion knobs at 14h on May 4th 2022</span>
@@ -470,7 +470,7 @@
 
 <span class="s2">python -m omc3.knob_extractor --knobs disp sep xing chroma ip_offset mo --time now</span>
 <span class="s2">    extracts the current settings for all the knobs</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 
 <div class="viewcode-block" id="get_params">
@@ -478,50 +478,50 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">knobs</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;nargs&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;A list of knob names or categories to extract. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Available categories are: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"nargs"</span><span class="p">:</span> <span class="s2">"*"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"A list of knob names or categories to extract. "</span>
+                <span class="sa">f</span><span class="s2">"Available categories are: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">),</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
         <span class="p">},</span>
         <span class="n">time</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;At what time to extract the knobs. &quot;</span>
-                <span class="s2">&quot;Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or &#39;now&#39;. &quot;</span>
-                <span class="s2">&quot;Timezone must be specified for ISO-format (e.g. +00:00 for UTC).&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"At what time to extract the knobs. "</span>
+                <span class="s2">"Accepts ISO-format (YYYY-MM-DDThh:mm:ss) with timezone, timestamp or 'now'. "</span>
+                <span class="s2">"Timezone must be specified for ISO-format (e.g. +00:00 for UTC)."</span>
             <span class="p">),</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;now&quot;</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"now"</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">timedelta</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Add this timedelta to the given time. &quot;</span>
-                <span class="s2">&quot;The format of timedelta is &#39;((</span><span class="se">\\</span><span class="s2">d+)(</span><span class="se">\\</span><span class="s2">w))+&#39; &quot;</span>
-                <span class="s2">&quot;with the second token being one of &quot;</span>
-                <span class="s2">&quot;s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) &quot;</span>
-                <span class="s2">&quot;e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. &quot;</span>
-                <span class="s2">&quot;A prefix &#39;_&#39; specifies a negative timedelta. &quot;</span>
-                <span class="s2">&quot;This allows for easily getting the setting &quot;</span>
-                <span class="s2">&quot;e.g. 2h ago: &#39;_2h&#39; while setting the `time` argument to &#39;now&#39; (default).&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"Add this timedelta to the given time. "</span>
+                <span class="s2">"The format of timedelta is '((</span><span class="se">\\</span><span class="s2">d+)(</span><span class="se">\\</span><span class="s2">w))+' "</span>
+                <span class="s2">"with the second token being one of "</span>
+                <span class="s2">"s(seconds), m(minutes), h(hours), d(days), w(weeks), M(months) "</span>
+                <span class="s2">"e.g 7m = 7 minutes, 1d = 1day, 7m30s = 7 min 30 secs. "</span>
+                <span class="s2">"A prefix '_' specifies a negative timedelta. "</span>
+                <span class="s2">"This allows for easily getting the setting "</span>
+                <span class="s2">"e.g. 2h ago: '_2h' while setting the `time` argument to 'now' (default)."</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="n">state</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Prints the state of the StateTracker. Does not extract anything else.&quot;</span><span class="p">),</span>
+            <span class="s2">"action"</span><span class="p">:</span> <span class="s2">"store_true"</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Prints the state of the StateTracker. Does not extract anything else."</span><span class="p">),</span>
         <span class="p">},</span>
         <span class="n">output</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Specify user-defined output path. This should probably be `model_dir/knobs.madx`&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Specify user-defined output path. This should probably be `model_dir/knobs.madx`"</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">knob_definitions</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;User defined path to the knob-definitions, &quot;</span>
-                <span class="s2">&quot;or (via python) a dataframe containing the knob definitions &quot;</span>
-                <span class="s2">&quot;with the columns &#39;madx&#39;, &#39;lsa&#39; and &#39;scaling&#39;.&quot;</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"User defined path to the knob-definitions, "</span>
+                <span class="s2">"or (via python) a dataframe containing the knob definitions "</span>
+                <span class="s2">"with the columns 'madx', 'lsa' and 'scaling'."</span>
             <span class="p">),</span>
         <span class="p">},</span>
     <span class="p">)</span></div>
@@ -534,17 +534,17 @@
     <span class="n">get_params</span><span class="p">(),</span>
     <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">argument_parser_args</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;epilog&quot;</span><span class="p">:</span> <span class="n">USAGE_EXAMPLES</span><span class="p">,</span>
-        <span class="s2">&quot;formatter_class&quot;</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
-        <span class="s2">&quot;prog&quot;</span><span class="p">:</span> <span class="s2">&quot;Knob Extraction Tool.&quot;</span><span class="p">,</span>
+        <span class="s2">"epilog"</span><span class="p">:</span> <span class="n">USAGE_EXAMPLES</span><span class="p">,</span>
+        <span class="s2">"formatter_class"</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
+        <span class="s2">"prog"</span><span class="p">:</span> <span class="s2">"Knob Extraction Tool."</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main knob extracting function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Main knob extracting function."""</span>
     <span class="n">ldb</span> <span class="o">=</span> <span class="n">pytimber</span><span class="o">.</span><span class="n">LoggingDB</span><span class="p">(</span>
-        <span class="n">source</span><span class="o">=</span><span class="s2">&quot;nxcals&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="s2">"nxcals"</span><span class="p">,</span>
         <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
-        <span class="n">sparkprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spark.ui.showConsoleProgress&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">},</span>
+        <span class="n">sparkprops</span><span class="o">=</span><span class="p">{</span><span class="s2">"spark.ui.showConsoleProgress"</span><span class="p">:</span> <span class="s2">"false"</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">parse_time</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">)</span>
 
@@ -568,7 +568,7 @@
 <div class="viewcode-block" id="get_state">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.get_state">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_state</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Standalone function to gather and log state data from  the StateTracker.</span>
 
 <span class="sd">    Args:</span>
@@ -577,20 +577,20 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict[str, str]: Dictionary of state-variable and the extracted state value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">state_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---- STATE @ </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2"> ----&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"---- STATE @ </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2"> ----"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">STATE_VARIABLES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">tracker_variable</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;LhcStateTracker:State:</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">tracker_variable</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"LhcStateTracker:State:</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">state</span> <span class="o">=</span> <span class="n">ldb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tracker_variable</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())[</span><span class="n">tracker_variable</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">:&#39;</span><span class="si">:</span><span class="s2">&lt;13s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">:'</span><span class="si">:</span><span class="s2">&lt;13s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">state_dict</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
     <span class="k">return</span> <span class="n">state_dict</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_state_as_df</span><span class="p">(</span><span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert extracted StateTracker state-data into a TfsDataFrame</span>
 <span class="sd">    To be consistent with the main functions output.</span>
 
@@ -600,7 +600,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.DataFrame: States packed into dataframe with readable index.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">state_df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span>
         <span class="n">index</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">STATE_VARIABLES</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
         <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">],</span>
@@ -618,9 +618,9 @@
 <div class="viewcode-block" id="extract">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.extract">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">knobs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Standalone function to gather data from  the StateTracker.</span>
-<span class="sd">    Extracts data via pytimber&#39;s LoggingDB for the knobs given</span>
+<span class="sd">    Extracts data via pytimber's LoggingDB for the knobs given</span>
 <span class="sd">    (either by name or by category) in knobs.</span>
 
 <span class="sd">    Args:</span>
@@ -632,33 +632,33 @@
 <span class="sd">        Dict[str, float]: Contains all the extracted knobs.</span>
 <span class="sd">        When extraction was not possible, the value is None.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---- EXTRACTING KNOBS @ </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2"> ----&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"---- EXTRACTING KNOBS @ </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2"> ----"</span><span class="p">)</span>
     <span class="n">knobs_extracted</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">knobs</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[</span><span class="n">category</span><span class="p">]):</span>
-            <span class="n">knobkey</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;LhcStateTracker:</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">:target&quot;</span>
+            <span class="n">knobkey</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"LhcStateTracker:</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2">:target"</span>
             <span class="n">knobs_extracted</span><span class="p">[</span><span class="n">knob</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to log that this was tried to be extracted.</span>
 
             <span class="n">knobvalue</span> <span class="o">=</span> <span class="n">ldb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">knobkey</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
             <span class="p">)</span>  <span class="c1"># use timestamp to preserve timezone info</span>
             <span class="k">if</span> <span class="n">knobkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">knobvalue</span><span class="p">:</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> not found in StateTracker&quot;</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> not found in StateTracker"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">_timestamps</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">knobvalue</span><span class="p">[</span><span class="n">knobkey</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> found&quot;</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> found"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> is not a number or infinite&quot;</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> is not a number or infinite"</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Knob value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> extracted: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (unscaled)&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Knob value for </span><span class="si">{</span><span class="n">knob</span><span class="si">}</span><span class="s2"> extracted: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (unscaled)"</span><span class="p">)</span>
             <span class="n">knobs_extracted</span><span class="p">[</span><span class="n">knob</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">return</span> <span class="n">knobs_extracted</span></div>
@@ -668,7 +668,7 @@
 <div class="viewcode-block" id="check_for_undefined_knobs">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.check_for_undefined_knobs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_for_undefined_knobs</span><span class="p">(</span><span class="n">knobs_definitions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">knob_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that all knobs are actually defined in the knobs-definitions.</span>
+<span class="w">    </span><span class="sd">"""Check that all knobs are actually defined in the knobs-definitions.</span>
 
 
 <span class="sd">    Args:</span>
@@ -676,17 +676,17 @@
 <span class="sd">        knob_categories (Sequence[str]): Knob Categories or Knob-Names to extract.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If one or more of the knobs don&#39;t have a definition.</span>
+<span class="sd">        KeyError: If one or more of the knobs don't have a definition.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">knob_names</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">knob</span> <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">knob_categories</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">KNOB_CATEGORIES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="p">[</span><span class="n">category</span><span class="p">])</span>
     <span class="p">]</span>
     <span class="n">undefined_knobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">knob</span> <span class="k">for</span> <span class="n">knob</span> <span class="ow">in</span> <span class="n">knob_names</span> <span class="k">if</span> <span class="n">knob</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">knobs_definitions</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">undefined_knobs</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="s2">&quot;The following knob(s) could not be found &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;in the knob-definitions: &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">undefined_knobs</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="s2">"The following knob(s) could not be found "</span>
+            <span class="sa">f</span><span class="s2">"in the knob-definitions: '</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">undefined_knobs</span><span class="p">)</span><span class="si">}</span><span class="s2">'"</span>
         <span class="p">)</span></div>
 
 
@@ -694,7 +694,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_extract_and_gather</span><span class="p">(</span>
     <span class="n">ldb</span><span class="p">,</span> <span class="n">knobs_definitions</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">knob_categories</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Main function to gather data from the StateTracker and the knob-definitions.</span>
 <span class="sd">    All given knobs (either in categories or as knob names) to be extracted</span>
 <span class="sd">    are checked for being present in the ``knob_definitions``.</span>
@@ -712,7 +712,7 @@
 <span class="sd">        their madx-name, lsa-name, scaling and extracted value.</span>
 <span class="sd">        When extraction was not possible, the value of the respective entry is NAN.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">check_for_undefined_knobs</span><span class="p">(</span><span class="n">knobs_definitions</span><span class="p">,</span> <span class="n">knob_categories</span><span class="p">)</span>
     <span class="n">extracted_knobs</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">ldb</span><span class="p">,</span> <span class="n">knobs</span><span class="o">=</span><span class="n">knob_categories</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
 
@@ -728,7 +728,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_knobsfile</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">collected_knobs</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes the collected knobs and writes them out into a text-file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Takes the collected knobs and writes them out into a text-file."""</span>
     <span class="n">collected_knobs</span> <span class="o">=</span> <span class="n">collected_knobs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># to not modify the df</span>
 
     <span class="c1"># Sort the knobs by category</span>
@@ -742,48 +742,48 @@
         <span class="n">collected_knobs</span> <span class="o">=</span> <span class="n">collected_knobs</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">collected_knobs</span><span class="p">):</span>  <span class="c1"># leftover knobs without category</span>
-        <span class="n">category_knobs</span><span class="p">[</span><span class="s2">&quot;Other Knobs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">collected_knobs</span>
+        <span class="n">category_knobs</span><span class="p">[</span><span class="s2">"Other Knobs"</span><span class="p">]</span> <span class="o">=</span> <span class="n">collected_knobs</span>
 
     <span class="c1"># Write them out</span>
-    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
-        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;!! --- knobs extracted by knob_extractor</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!! --- extracted knobs for time </span><span class="si">{</span><span class="n">collected_knobs</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">Head</span><span class="o">.</span><span class="n">time</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"!! --- knobs extracted by knob_extractor</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"!! --- extracted knobs for time </span><span class="si">{</span><span class="n">collected_knobs</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">Head</span><span class="o">.</span><span class="n">time</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">knobs_df</span> <span class="ow">in</span> <span class="n">category_knobs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!! --- </span><span class="si">{</span><span class="n">category</span><span class="si">:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> --------------------</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">outfile</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">get_madx_command</span><span class="p">(</span><span class="n">knob_entry</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">knob</span><span class="p">,</span> <span class="n">knob_entry</span> <span class="ow">in</span> <span class="n">knobs_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">())</span>
-            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"!! --- </span><span class="si">{</span><span class="n">category</span><span class="si">:</span><span class="s2">10</span><span class="si">}</span><span class="s2"> --------------------</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">get_madx_command</span><span class="p">(</span><span class="n">knob_entry</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span> <span class="k">for</span> <span class="n">knob</span><span class="p">,</span> <span class="n">knob_entry</span> <span class="ow">in</span> <span class="n">knobs_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">())</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
 
 <span class="c1"># Knobs Definitions ------------------------------------------------------------</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_knobs_def_file</span><span class="p">(</span><span class="n">user_defined</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check which knobs-definition file is appropriate to take.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Check which knobs-definition file is appropriate to take."""</span>
     <span class="k">if</span> <span class="n">user_defined</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using user knobs-definition file: &#39;</span><span class="si">{</span><span class="n">user_defined</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Using user knobs-definition file: '</span><span class="si">{</span><span class="n">user_defined</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">user_defined</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">KNOBS_FILE_ACC_MODELS</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Using given acc-models folder&#39;s knobs.txt as knobsdefinition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_ACC_MODELS</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Using given acc-models folder's knobs.txt as knobsdefinition file: '</span><span class="si">{</span><span class="n">KNOBS_FILE_ACC_MODELS</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">KNOBS_FILE_ACC_MODELS</span>
 
     <span class="k">if</span> <span class="n">KNOBS_FILE_AFS</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="c1"># if all fails, fall back to lhc acc-models</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Using afs-fallback acc-models folder&#39;s knobs.txt as knobs-definition file: &#39;</span><span class="si">{</span><span class="n">KNOBS_FILE_AFS</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="sa">f</span><span class="s2">"Using afs-fallback acc-models folder's knobs.txt as knobs-definition file: '</span><span class="si">{</span><span class="n">KNOBS_FILE_AFS</span><span class="si">}</span><span class="s2">'"</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">KNOBS_FILE_AFS</span>
 
-    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;None of the knobs-definition files are available.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">"None of the knobs-definition files are available."</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="load_knobs_definitions">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.load_knobs_definitions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_knobs_definitions</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the knobs-definition file and convert into a DataFrame.</span>
+<span class="w">    </span><span class="sd">"""Load the knobs-definition file and convert into a DataFrame.</span>
 <span class="sd">    Each line in this file should consist of at least three comma separated</span>
 <span class="sd">    entries in the following order: madx-name, lsa-name, scaling factor.</span>
 <span class="sd">    Other columns are ignored.</span>
@@ -795,8 +795,8 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Dataframe with LSA names (but with colon instead of /) as</span>
 <span class="sd">        keys and KnobEntries (without values) as value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.tfs&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">".tfs"</span><span class="p">:</span>
         <span class="c1"># just in case someone wants to give tfs files (hidden feature)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read_tfs</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -806,7 +806,7 @@
         <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
             <span class="n">file_path</span><span class="p">,</span>
-            <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;#&quot;</span><span class="p">,</span>
+            <span class="n">comment</span><span class="o">=</span><span class="s2">"#"</span><span class="p">,</span>
             <span class="n">usecols</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))),</span>  <span class="c1"># only read the first columns</span>
             <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtypes</span><span class="p">,</span>
@@ -817,18 +817,18 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_to_knobs_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adapts a DataFrame to the conventions used here:</span>
+<span class="w">    </span><span class="sd">"""Adapts a DataFrame to the conventions used here:</span>
 <span class="sd">    StateTracker variable name as index, all columns lower-case.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        df (pd.DataFrame): DataFrame containing at least the columns</span>
-<span class="sd">                           &#39;lsa&#39;, &#39;madx&#39;, &#39;scaling&#39; (upper or lowercase)</span>
+<span class="sd">                           'lsa', 'madx', 'scaling' (upper or lowercase)</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dataframe with LSA names (but with colon instead of /) as</span>
-<span class="sd">        keys and &#39;lsa&#39;, &#39;madx&#39;, &#39;scaling&#39; and (empty) &#39;value&#39; columns.</span>
+<span class="sd">        keys and 'lsa', 'madx', 'scaling' and (empty) 'value' columns.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">,</span> <span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">Col</span><span class="o">.</span><span class="n">lsa</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">lsa2name</span><span class="p">)</span>
@@ -836,7 +836,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_knobs_defintions</span><span class="p">(</span><span class="n">knobs_def_input</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the given knob-definitions either from a csv-file or from a DataFrame.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Parse the given knob-definitions either from a csv-file or from a DataFrame."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">knobs_def_input</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_to_knobs_dataframe</span><span class="p">(</span><span class="n">knobs_def_input</span><span class="p">)</span>
 
@@ -850,12 +850,12 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_madx_command</span><span class="p">(</span><span class="n">knob_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">Col</span><span class="o">.</span><span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">knob_data</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="s2">&quot;Value entry not found in extracted knob_data. &quot;</span>
-            <span class="s2">&quot;Something went wrong as it should at least be NaN.&quot;</span>
+            <span class="s2">"Value entry not found in extracted knob_data. "</span>
+            <span class="s2">"Something went wrong as it should at least be NaN."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;! </span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">]</span><span class="si">}</span><span class="s2"> : No Value extracted&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">]</span><span class="si">}</span><span class="s2"> := </span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">]</span><span class="si">}</span><span class="s2">;&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"! </span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">]</span><span class="si">}</span><span class="s2"> : No Value extracted"</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">madx</span><span class="p">]</span><span class="si">}</span><span class="s2"> := </span><span class="si">{</span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">value</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">knob_data</span><span class="p">[</span><span class="n">Col</span><span class="o">.</span><span class="n">scaling</span><span class="p">]</span><span class="si">}</span><span class="s2">;"</span></div>
 
 
 
@@ -865,20 +865,20 @@
 <div class="viewcode-block" id="lsa2name">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.lsa2name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lsa2name</span><span class="p">(</span><span class="n">lsa_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;LSA name -&gt; Variable in Timber/StateTracker conversion.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">lsa_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">)</span></div>
+<span class="w">    </span><span class="sd">"""LSA name -&gt; Variable in Timber/StateTracker conversion."""</span>
+    <span class="k">return</span> <span class="n">lsa_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="s2">":"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="name2lsa">
 <a class="viewcode-back" href="../../entrypoints/other.html#omc3.knob_extractor.name2lsa">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">name2lsa</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Variable in Timber/StateTracker -&gt; LSA name conversion.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span></div>
+<span class="w">    </span><span class="sd">"""Variable in Timber/StateTracker -&gt; LSA name conversion."""</span>
+    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">)</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

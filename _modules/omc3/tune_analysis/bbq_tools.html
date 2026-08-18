@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.tune_analysis.bbq_tools</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">BBQ Tools</span>
 <span class="sd">---------</span>
 
 <span class="sd">Tools to handle BBQ data.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
@@ -268,12 +268,12 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.OutlierFilterOpt">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutlierFilterOpt</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for moving average with outlier filter.</span>
+<span class="w">    </span><span class="sd">"""Options for moving average with outlier filter.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window: length of the averaging window.</span>
 <span class="sd">        limit: cleaning limit, i.e. points with deviating less than this limit from the average will not be cleaned</span>
-<span class="sd">     &quot;&quot;&quot;</span>
+<span class="sd">     """</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.</span></div>
 
@@ -283,7 +283,7 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.MinMaxFilterOpt">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MinMaxFilterOpt</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for moving average with min/max filter.</span>
+<span class="w">    </span><span class="sd">"""Options for moving average with min/max filter.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window: length of the averaging window.</span>
@@ -291,7 +291,7 @@
 <span class="sd">        max: maximum value (for filtering).</span>
 <span class="sd">        fine_window: length of the averaging window for fine cleaning.</span>
 <span class="sd">        fine_cut: allowed deviation for fine cleaning.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">int</span>
     <span class="nb">min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="nb">max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
@@ -306,7 +306,7 @@
 <div class="viewcode-block" id="get_moving_average">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.get_moving_average">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">MinMaxFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">ArrayLike</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries. The data can be filtered</span>
 <span class="sd">    beforehand. The values are shifted, so that the averaged value takes ceil((length-1)/2)</span>
 <span class="sd">    values previous and floor((length-1)/2) following values into account.</span>
@@ -317,12 +317,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A filtered and averaged `Series`, another `Series` with the error and the mask used for filtering data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cutting data and calculating moving average of length </span><span class="si">{</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cutting data and calculating moving average of length </span><span class="si">{</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_window</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">fine_cut</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;To activate fine cleaning, both &quot;</span>
-                                  <span class="s2">&quot;&#39;fine_window&#39; and &#39;fine_cut&#39; are needed.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"To activate fine cleaning, both "</span>
+                                  <span class="s2">"'fine_window' and 'fine_cut' are needed."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">min_mask</span> <span class="o">=</span> <span class="n">data_series</span> <span class="o">&lt;=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">min</span>
@@ -352,7 +352,7 @@
 <div class="viewcode-block" id="clean_outliers_moving_average">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.bbq_tools.clean_outliers_moving_average">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">clean_outliers_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">OutlierFilterOpt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get a moving average of the ``data_series`` over ``length`` entries, by means of</span>
 <span class="sd">    :func:`outlier filter &lt;omc3.utils.outliers.get_filter_mask&gt;`.</span>
 <span class="sd">    The values are shifted, so that the averaged value takes ceil((length-1)/2) values previous</span>
@@ -361,8 +361,8 @@
 <span class="sd">    Args:</span>
 <span class="sd">        data_series: `Series` of data.</span>
 <span class="sd">        filter_opt: Options for the filtering, see :class:`omc3.tune_analysis.bbq_tools.OutlierFilterOpt`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filtering and calculating moving average of length </span><span class="si">{</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Filtering and calculating moving average of length </span><span class="si">{</span><span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">window</span><span class="p">,</span> <span class="n">limit</span> <span class="o">=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">limit</span>
     <span class="n">init_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">data_series</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">init_mask</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -379,9 +379,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_interpolated_moving_average</span><span class="p">(</span><span class="n">data_series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">clean_mask</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the moving average of data series with a window of length and interpolated ``NaNs``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data_series</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">is_datetime_index</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">datetime</span><span class="p">)</span>
 
@@ -398,11 +398,11 @@
     <span class="n">data</span><span class="p">[</span><span class="n">clean_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># &#39;interpolate&#39; fills nan based on index/values of neighbours</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
+        <span class="c1"># 'interpolate' fills nan based on index/values of neighbours</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="s2">"index"</span><span class="p">)</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Interpolation failed. &quot;</span>
-                        <span class="s2">&quot;Usually due to a dtype format that is not properly recognised.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Interpolation failed. "</span>
+                        <span class="s2">"Usually due to a dtype format that is not properly recognised."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="n">shift</span> <span class="o">=</span> <span class="o">-</span><span class="nb">int</span><span class="p">((</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Shift average to middle value</span>
 
@@ -423,9 +423,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_almost_empty_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">av_length</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if masked data could be used to calculate moving average.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Checks if masked data could be used to calculate moving average."""</span>
     <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">av_length</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many points have been filtered. Maybe wrong filtering parameters?&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Too many points have been filtered. Maybe wrong filtering parameters?"</span><span class="p">)</span>
 </pre></div>
 
            </div>

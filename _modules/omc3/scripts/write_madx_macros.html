@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.write_madx_macros</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Write MAD-X Macros</span>
 <span class="sd">------------------</span>
 
@@ -256,7 +256,7 @@
 <span class="sd">- **twissfile**:</span>
 
 <span class="sd">    Path to twissfile with observationspoint in the NAME column.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -272,14 +272,14 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;twissfile&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"twissfile"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to twissfile with observationspoint in the NAME column.&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path to twissfile with observationspoint in the NAME column."</span>
         <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"outputdir"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Directory where the </span><span class="si">{</span><span class="n">OBS_POINTS</span><span class="si">}</span><span class="s2"> will be put.&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Directory where the </span><span class="si">{</span><span class="n">OBS_POINTS</span><span class="si">}</span><span class="s2"> will be put."</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
@@ -288,21 +288,21 @@
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.write_madx_macros.read_twiss_and_return_obs">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_twiss_and_return_obs</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
-    <span class="n">tracking_macros</span><span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s1">&#39;twissfile&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s1">&#39;outputdir&#39;</span><span class="p">]))</span></div>
+    <span class="n">tracking_macros</span><span class="p">(</span><span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s1">'twissfile'</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="s1">'NAME'</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s1">'outputdir'</span><span class="p">]))</span></div>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="n">path_to_call</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;call, file = &#39;</span><span class="si">{</span><span class="n">path_to_call</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"call, file = '</span><span class="si">{</span><span class="n">path_to_call</span><span class="si">}</span><span class="s2">';</span><span class="se">\n</span><span class="s2">"</span>
 
 
 <div class="viewcode-block" id="define_observation_points_macros">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.write_madx_macros.define_observation_points_macros">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">define_observation_points_macros</span><span class="p">(</span><span class="n">list_of_bpms</span><span class="p">):</span>
-    <span class="n">macro</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;ptc&quot;</span><span class="p">,</span> <span class="s2">&quot;ptc_&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;madx&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)):</span>
-        <span class="n">macro</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;define_</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2">_observation_points(): macro = </span><span class="se">{{\n</span><span class="s2">&quot;</span>
-        <span class="n">macro</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">observe, place=&#39;</span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s2">&#39;;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">list_of_bpms</span><span class="p">])</span>
-        <span class="n">macro</span> <span class="o">+=</span> <span class="s2">&quot;};</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">macro</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="k">for</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"ptc"</span><span class="p">,</span> <span class="s2">"ptc_"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"madx"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)):</span>
+        <span class="n">macro</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"define_</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2">_observation_points(): macro = </span><span class="se">{{\n</span><span class="s2">"</span>
+        <span class="n">macro</span> <span class="o">+=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"    </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">observe, place='</span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s2">';</span><span class="se">\n</span><span class="s2">"</span> <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">list_of_bpms</span><span class="p">])</span>
+        <span class="n">macro</span> <span class="o">+=</span> <span class="s2">"};</span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">return</span> <span class="n">macro</span></div>
 
 
@@ -313,13 +313,13 @@
     <span class="n">obs_macro_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span> <span class="o">/</span> <span class="n">OBS_POINTS</span>
     <span class="n">obs_macro_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">define_observation_points_macros</span><span class="p">(</span><span class="n">list_of_bpms</span><span class="p">))</span>
     <span class="n">track_macros</span> <span class="o">=</span> <span class="n">_call</span><span class="p">(</span><span class="n">obs_macro_file</span><span class="p">)</span>
-    <span class="n">track_macros</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">track_macros</span> <span class="o">+=</span> <span class="s2">"""</span>
 <span class="s2">    /*</span>
 <span class="s2">    * Performs a single particle tracking of the active sequence.</span>
 <span class="s2">    * @param hkick: Horizontal kick magnitude in meters.</span>
 <span class="s2">    * @param vkick: Vertical kick magnitude in meters.</span>
 <span class="s2">    * @param num_turns: Number of turns to simulate.</span>
-<span class="s2">    * @param output_path: Path to the output file, will add &quot;one&quot; at the end of the file name.</span>
+<span class="s2">    * @param output_path: Path to the output file, will add "one" at the end of the file name.</span>
 <span class="s2">    */</span>
 <span class="s2">    ptc_track_single_particle(hkick, vkick, num_turns, output_path): macro = {</span>
 <span class="s2">    PTC_CREATE_UNIVERSE;</span>
@@ -339,7 +339,7 @@
 <span class="s2">    * @param start_px: Particle horizontal start momentum.</span>
 <span class="s2">    * @param start_py: Particle vertical start momentum.</span>
 <span class="s2">    * @param num_turns: Number of turns to simulate.</span>
-<span class="s2">    * @param output_path: Path to the output file, will add &quot;one&quot; at the end of the file name.</span>
+<span class="s2">    * @param output_path: Path to the output file, will add "one" at the end of the file name.</span>
 <span class="s2">    */</span>
 <span class="s2">    madx_track_single_particle(start_x, start_y, start_px, start_py, num_turns, output_path): macro = {</span>
 <span class="s2">    TRACK, DELTAP=0.0, ONETABLE, DUMP, FILE=output_path;</span>
@@ -348,12 +348,12 @@
 <span class="s2">    RUN, TURNS=num_turns;</span>
 <span class="s2">    ENDTRACK;</span>
 <span class="s2">    }</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+<span class="s2">    """</span>
     <span class="k">return</span> <span class="n">track_macros</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">read_twiss_and_return_obs</span><span class="p">()</span>
 </pre></div>
 

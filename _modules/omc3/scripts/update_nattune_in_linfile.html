@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.update_nattune_in_linfile</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Update Natural Tune in Lin-Files</span>
 <span class="sd">--------------------------------</span>
 
@@ -252,7 +252,7 @@
 <span class="sd">*--Required--*</span>
 
 <span class="sd">- **files**: List of paths to the spectrum files.</span>
-<span class="sd">  The files need to be given without their &#39;.lin&#39;/&#39;.amps[xy]&#39;,&#39;.freqs[xy]&#39; endings.</span>
+<span class="sd">  The files need to be given without their '.lin'/'.amps[xy]','.freqs[xy]' endings.</span>
 <span class="sd">  (So usually the path of the TbT-Data file.)</span>
 
 <span class="sd">- **interval** *(float)*: Frequency interval in which the highest peak should be found.</span>
@@ -263,21 +263,21 @@
 <span class="sd">- **bpms**: List of BPMs which need to be updated. If not given it will be all of them.</span>
 
 <span class="sd">- **not_found_action** *(str)*: Defines what to do, if no line was found in given interval.</span>
-<span class="sd">  &#39;error&#39;: throws a ValueError; &#39;remove&#39;: removes the bpm; &#39;ignore&#39;: keeps the old values.</span>
+<span class="sd">  'error': throws a ValueError; 'remove': removes the bpm; 'ignore': keeps the old values.</span>
 
-<span class="sd">  Choices: ``[&#39;error&#39;, &#39;remove&#39;, &#39;ignore&#39;]``</span>
+<span class="sd">  Choices: ``['error', 'remove', 'ignore']``</span>
 <span class="sd">  Default: ``error``</span>
 <span class="sd">- **planes** *(str)*: Which planes.</span>
 
-<span class="sd">  Choices: ``(&#39;X&#39;, &#39;Y&#39;)``</span>
-<span class="sd">  Default: ``[&#39;X&#39;, &#39;Y&#39;]``</span>
+<span class="sd">  Choices: ``('X', 'Y')``</span>
+<span class="sd">  Default: ``['X', 'Y']``</span>
 <span class="sd">- **rename_suffix** *(str)*: Additional suffix for output lin-file.</span>
 <span class="sd">  Will be inserted between filename and extension.</span>
 <span class="sd">  If empty, the original file is overwritten - unless they are old files,</span>
 <span class="sd">  then the omc3 filename convention will be used.</span>
 
 <span class="sd">  Default: ``None``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
@@ -303,46 +303,46 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_params</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="n">files</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;List of paths to the spectrum files. The files need to be given&quot;</span>
-                  <span class="s2">&quot; without their &#39;.lin&#39;/&#39;.amps[xy]&#39;,&#39;.freqs[xy]&#39; endings. &quot;</span>
-                  <span class="s2">&quot; (So usually the path of the TbT-Data file.)&quot;</span><span class="p">)</span>
+            <span class="s1">'required'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">'nargs'</span><span class="p">:</span> <span class="s1">'+'</span><span class="p">,</span>
+            <span class="s1">'help'</span><span class="p">:</span> <span class="p">(</span><span class="s2">"List of paths to the spectrum files. The files need to be given"</span>
+                  <span class="s2">" without their '.lin'/'.amps[xy]','.freqs[xy]' endings. "</span>
+                  <span class="s2">" (So usually the path of the TbT-Data file.)"</span><span class="p">)</span>
         <span class="p">},</span>
         <span class="n">interval</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="s2">&quot;Frequency interval in which the highest peak should be found.&quot;</span>
+            <span class="s1">'required'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">'nargs'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">'type'</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s1">'help'</span><span class="p">:</span> <span class="s2">"Frequency interval in which the highest peak should be found."</span>
         <span class="p">},</span>
         <span class="n">bpms</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;List of BPMs which need to be updated. &#39;</span>
-                  <span class="s1">&#39;If not given it will be all of them.&#39;</span><span class="p">)</span>
+            <span class="s1">'nargs'</span><span class="p">:</span> <span class="s1">'+'</span><span class="p">,</span>
+            <span class="s1">'help'</span><span class="p">:</span> <span class="p">(</span><span class="s1">'List of BPMs which need to be updated. '</span>
+                  <span class="s1">'If not given it will be all of them.'</span><span class="p">)</span>
         <span class="p">},</span>
         <span class="n">planes</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;nargs&#39;</span><span class="p">:</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="s2">&quot;Which planes.&quot;</span><span class="p">,</span>
-            <span class="s1">&#39;choices&#39;</span><span class="p">:</span> <span class="n">PLANES</span><span class="p">,</span>
-            <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">PLANES</span><span class="p">),</span>
+            <span class="s1">'nargs'</span><span class="p">:</span> <span class="s1">'+'</span><span class="p">,</span>
+            <span class="s1">'type'</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s1">'help'</span><span class="p">:</span> <span class="s2">"Which planes."</span><span class="p">,</span>
+            <span class="s1">'choices'</span><span class="p">:</span> <span class="n">PLANES</span><span class="p">,</span>
+            <span class="s1">'default'</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">PLANES</span><span class="p">),</span>
         <span class="p">},</span>
         <span class="n">rename_suffix</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Additional suffix for output lin-file. &quot;</span>
-                  <span class="s2">&quot;Will be inserted between filename and extension. &quot;</span>
-                  <span class="s2">&quot;If empty, the original file is overwritten - unless they &quot;</span>
-                  <span class="s2">&quot;are old files, then the omc3 filename convention will be &quot;</span>
-                  <span class="s2">&quot;used.&quot;</span><span class="p">),</span>
-            <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+            <span class="s1">'type'</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s1">'help'</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Additional suffix for output lin-file. "</span>
+                  <span class="s2">"Will be inserted between filename and extension. "</span>
+                  <span class="s2">"If empty, the original file is overwritten - unless they "</span>
+                  <span class="s2">"are old files, then the omc3 filename convention will be "</span>
+                  <span class="s2">"used."</span><span class="p">),</span>
+            <span class="s1">'default'</span><span class="p">:</span> <span class="s1">''</span>
         <span class="p">},</span>
         <span class="n">not_found_action</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s1">&#39;choices&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">],</span>
-            <span class="s1">&#39;help&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Defines what to do, if no line was found in given interval.&#39;</span>
-                  <span class="s2">&quot;&#39;error&#39;: throws a ValueError; &#39;remove&#39;: removes the bpm; &quot;</span>
-                  <span class="s2">&quot;&#39;ignore&#39;: keeps the old values.&quot;</span><span class="p">),</span>
-            <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;error&#39;</span>
+            <span class="s1">'type'</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s1">'choices'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'error'</span><span class="p">,</span> <span class="s1">'remove'</span><span class="p">,</span> <span class="s1">'ignore'</span><span class="p">],</span>
+            <span class="s1">'help'</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Defines what to do, if no line was found in given interval.'</span>
+                  <span class="s2">"'error': throws a ValueError; 'remove': removes the bpm; "</span>
+                  <span class="s2">"'ignore': keeps the old values."</span><span class="p">),</span>
+            <span class="s1">'default'</span><span class="p">:</span> <span class="s1">'error'</span>
         <span class="p">},</span>
     <span class="p">)</span></div>
 
@@ -353,7 +353,7 @@
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
     <span class="n">_save_options_to_config</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating Natural Tunes in Lin-Files.&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Updating Natural Tunes in Lin-Files."</span><span class="p">)</span>
 
     <span class="n">gathered</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">idx_file</span><span class="p">,</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">files</span><span class="p">):</span>
@@ -377,29 +377,29 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_update_lin_columns</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bpms</span><span class="p">,</span> <span class="n">planes</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">not_found_action</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">planes</span><span class="p">:</span>
-        <span class="n">col_nattune</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_NATTUNE</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">col_natamp</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">COL_NATAMP</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">col_nattune</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">COL_NATTUNE</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+        <span class="n">col_natamp</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">COL_NATAMP</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
 
         <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">[</span><span class="n">plane</span><span class="p">]:</span>
             <span class="n">freqs</span><span class="p">,</span> <span class="n">amps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">FREQS</span><span class="p">][</span><span class="n">plane</span><span class="p">][</span><span class="n">bpm</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">AMPS</span><span class="p">][</span><span class="n">plane</span><span class="p">][</span><span class="n">bpm</span><span class="p">]</span>
             <span class="n">peak</span> <span class="o">=</span> <span class="n">_get_peak_in_interval</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">amps</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">peak</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No lines found for bpm </span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s1"> in plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1"> &#39;</span>
-                       <span class="sa">f</span><span class="s1">&#39;in interval </span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span><span class="si">}</span><span class="s1"> for file-id &quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">not_found_action</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">'No lines found for bpm </span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s1"> in plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1"> '</span>
+                       <span class="sa">f</span><span class="s1">'in interval </span><span class="si">{</span><span class="n">list2str</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span><span class="si">}</span><span class="s1"> for file-id "</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">".'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">not_found_action</span> <span class="o">==</span> <span class="s1">'error'</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">not_found_action</span> <span class="o">==</span> <span class="s1">&#39;remove&#39;</span><span class="p">:</span>
-                    <span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">bpm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">not_found_action</span> <span class="o">==</span> <span class="s1">'remove'</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">bpm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">freq_peak</span><span class="p">,</span> <span class="n">amp_peak</span> <span class="o">=</span> <span class="n">peak</span>
                 <span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm</span><span class="p">,</span> <span class="n">col_nattune</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq_peak</span>
                 <span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">bpm</span><span class="p">,</span> <span class="n">col_natamp</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_peak</span>
-                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2"> nattune set to&quot;</span>
-                          <span class="sa">f</span><span class="s2">&quot;f=</span><span class="si">{</span><span class="n">freq_peak</span><span class="si">}</span><span class="s2">, A=</span><span class="si">{</span><span class="n">amp_peak</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">bpm</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2"> nattune set to"</span>
+                          <span class="sa">f</span><span class="s2">"f=</span><span class="si">{</span><span class="n">freq_peak</span><span class="si">}</span><span class="s2">, A=</span><span class="si">{</span><span class="n">amp_peak</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
@@ -416,7 +416,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_update_lin_header</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">planes</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">planes</span><span class="p">:</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating headers for </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Updating headers for </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_compute_headers</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">LIN</span><span class="p">][</span><span class="n">plane</span><span class="p">]))</span>
     <span class="k">return</span> <span class="n">data</span>
 
@@ -426,7 +426,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_save_linfiles</span><span class="p">(</span><span class="n">lin_data</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">planes</span><span class="p">,</span> <span class="n">id_suffix</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">planes</span><span class="p">:</span>
-        <span class="n">out_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">id_suffix</span><span class="si">}{</span><span class="n">FILE_LIN_EXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">out_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">id_suffix</span><span class="si">}{</span><span class="n">FILE_LIN_EXT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">),</span> <span class="n">lin_data</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">save_index</span><span class="o">=</span><span class="n">COL_NAME</span><span class="p">)</span>
 
 
@@ -438,7 +438,7 @@
 <span class="c1"># Script Mode ------------------------------------------------------------------</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

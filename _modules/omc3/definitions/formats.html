@@ -239,26 +239,26 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.definitions.formats</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Formats</span>
 <span class="sd">-------</span>
 
 <span class="sd">Recurring formats are defined here.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;%Y_%m_</span><span class="si">%d</span><span class="s2">@%H_%M_%S_</span><span class="si">%f</span><span class="s2">&quot;</span>  <span class="c1"># CERN default</span>
-<span class="n">CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{script:s}</span><span class="s2">_</span><span class="si">{time:s}</span><span class="s2">.ini&quot;</span>
-<span class="n">BACKUP_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{basefile}</span><span class="s2">_backup</span><span class="si">{counter}</span><span class="s2">&quot;</span>
+<span class="n">TIME</span> <span class="o">=</span> <span class="s2">"%Y_%m_</span><span class="si">%d</span><span class="s2">@%H_%M_%S_</span><span class="si">%f</span><span class="s2">"</span>  <span class="c1"># CERN default</span>
+<span class="n">CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{script:s}</span><span class="s2">_</span><span class="si">{time:s}</span><span class="s2">.ini"</span>
+<span class="n">BACKUP_FILENAME</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{basefile}</span><span class="s2">_backup</span><span class="si">{counter}</span><span class="s2">"</span>
 
 
 <div class="viewcode-block" id="get_config_filename">
 <a class="viewcode-back" href="../../../modules/definitions.html#omc3.definitions.formats.get_config_filename">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_config_filename</span><span class="p">(</span><span class="n">script</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default Filename for config-files. Call from script with ``__file__``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Default Filename for config-files. Call from script with ``__file__``."""</span>
     <span class="k">return</span> <span class="n">CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">script</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">script</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span>
         <span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">TIME</span><span class="p">)</span>

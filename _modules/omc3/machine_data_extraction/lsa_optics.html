@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.lsa_optics</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">LSA Optics</span>
 <span class="sd">----------</span>
 
 <span class="sd">This module contains functions to extract the used optics from LSA.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -257,8 +257,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 
-<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
-<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
+<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"jpype"</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pjlsa"</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pjlsa</span><span class="w"> </span><span class="kn">import</span> <span class="n">LSAClient</span>
@@ -274,7 +274,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_optics_for_beamprocess_at_time</span><span class="p">(</span>
     <span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">beamprocess</span><span class="p">:</span> <span class="n">BeamProcessInfo</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OpticsInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the optics information for the given beamprocess at the specified time.</span>
+<span class="w">    </span><span class="sd">"""Get the optics information for the given beamprocess at the specified time.</span>
 
 <span class="sd">    Note:</span>
 <span class="sd">       This function has been derived from old implementations and returns the right optics,</span>
@@ -287,13 +287,13 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        OpticsInfo: The corresponding OpticsInfo dataclass instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting optics for </span><span class="si">{</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> at time </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Getting optics for </span><span class="si">{</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> at time </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">optics_table</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">getOpticTable</span><span class="p">(</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="c1"># Note: Times in optics table are relative to beamprocess start time</span>
     <span class="k">if</span> <span class="n">beamprocess</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beamprocess </span><span class="si">{</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has no valid start time.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Beamprocess </span><span class="si">{</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has no valid start time."</span><span class="p">)</span>
 
     <span class="n">time_rel</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">-</span> <span class="n">beamprocess</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">optics_table</span><span class="p">):</span>
@@ -301,7 +301,7 @@
             <span class="k">break</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No optics found for beamprocess </span><span class="si">{</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> at time </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"No optics found for beamprocess </span><span class="si">{</span><span class="n">beamprocess</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> at time </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
 
     <span class="n">optics_info</span> <span class="o">=</span> <span class="n">OpticsInfo</span><span class="p">(</span>
@@ -314,7 +314,7 @@
         <span class="n">beamprocess</span><span class="o">=</span><span class="n">beamprocess</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optics </span><span class="si">{</span><span class="n">optics_info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> extracted.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Optics </span><span class="si">{</span><span class="n">optics_info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> extracted."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">optics_info</span></div>
 
 </pre></div>

@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.accelerators.psbooster</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">PS Booster</span>
 <span class="sd">----------</span>
 
@@ -260,7 +260,7 @@
 
 <span class="sd">        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)</span>
 
-<span class="sd">        choices: ``(&#39;acd&#39;, &#39;adt&#39;)``</span>
+<span class="sd">        choices: ``('acd', 'adt')``</span>
 
 
 <span class="sd">    - **drv_tunes** *(float)*:</span>
@@ -300,7 +300,7 @@
 <span class="sd">        If True, x-ing angles will be applied to model</span>
 
 <span class="sd">        action: ``store_true``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -328,13 +328,13 @@
 <div class="viewcode-block" id="Psbooster">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.psbooster.Psbooster">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Psbooster</span><span class="p">(</span><span class="n">PsBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parent Class for Psbooster-types.&quot;&quot;&quot;</span>
-    <span class="n">NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;psbooster&quot;</span>
-    <span class="n">LOCAL_REPO_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;acc-models-psb&quot;</span>
+<span class="w">    </span><span class="sd">"""Parent Class for Psbooster-types."""</span>
+    <span class="n">NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"psbooster"</span>
+    <span class="n">LOCAL_REPO_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"acc-models-psb"</span>
     <span class="n">RE_DICT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BR\d\.BPM[^T]&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;BR\d\.BPM[^T]&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"BR\d\.BPM[^T]"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">".*"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"BR\d\.BPM[^T]"</span><span class="p">,</span>
     <span class="p">}</span>
 
 <div class="viewcode-block" id="Psbooster.get_parameters">
@@ -343,11 +343,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">():</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Psbooster</span><span class="p">,</span> <span class="n">Psbooster</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ring&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"ring"</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Ring to use.&quot;</span><span class="p">)</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">"Ring to use."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -360,14 +360,14 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;The accelerator definition is incomplete, ring &quot;</span>
-                                             <span class="s2">&quot;has to be specified (--ring option missing?).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">"The accelerator definition is incomplete, ring "</span>
+                                             <span class="s2">"has to be specified (--ring option missing?)."</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span>
 
     <span class="nd">@ring</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Ring parameter has to be one of (1, 2, 3, 4)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">"Ring parameter has to be one of (1, 2, 3, 4)"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="Psbooster.verify_object">
@@ -382,11 +382,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_exciter_bpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">bpms</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">bpms_to_find</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;BR</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ring</span><span class="si">}</span><span class="s2">.BPM3L3&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;BR</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ring</span><span class="si">}</span><span class="s2">.BPM4L3&quot;</span><span class="p">]</span>
+        <span class="n">bpms_to_find</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"BR</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ring</span><span class="si">}</span><span class="s2">.BPM3L3"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"BR</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ring</span><span class="si">}</span><span class="s2">.BPM4L3"</span><span class="p">]</span>
         <span class="n">found_bpms</span> <span class="o">=</span> <span class="p">[</span><span class="n">bpm</span> <span class="k">for</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms_to_find</span> <span class="k">if</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">bpms</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">KeyError</span>
-        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP&quot;</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bpms</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">found_bpms</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PLANE_TO_HV</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">ACMAP"</span></div>
 </div>
 
 </pre></div>

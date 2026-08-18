@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.kmod_lumi_imbalance</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">K-Mod Luminosity Imbalance</span>
 <span class="sd">--------------------------</span>
 
@@ -254,7 +254,7 @@
 <span class="sd">and data for both beams needs to be available.</span>
 
 <span class="sd">.. warning::</span>
-<span class="sd">        You need to provide the data for exactly two of the four IP&#39;s.</span>
+<span class="sd">        You need to provide the data for exactly two of the four IP's.</span>
 
 
 <span class="sd">**Arguments:**</span>
@@ -290,7 +290,7 @@
 
 <span class="sd">    Path to the directory where to write the output files.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
@@ -318,29 +318,29 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">generic_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">DotDict</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">IPS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ip1&quot;</span><span class="p">,</span> <span class="s2">&quot;ip2&quot;</span><span class="p">,</span> <span class="s2">&quot;ip5&quot;</span><span class="p">,</span> <span class="s2">&quot;ip8&quot;</span><span class="p">)</span>
+<span class="n">IPS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"ip1"</span><span class="p">,</span> <span class="s2">"ip2"</span><span class="p">,</span> <span class="s2">"ip5"</span><span class="p">,</span> <span class="s2">"ip8"</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A function to initialize and return parameters for kmod luminosity calculation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">IPS</span><span class="p">:</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Path or DataFrame of the averaged beta-star results of </span><span class="si">{</span><span class="n">ip</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Path or DataFrame of the averaged beta-star results of </span><span class="si">{</span><span class="n">ip</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;betastar&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"betastar"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Model beta-star values (x, y) of measurements. Only used for filename.&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Model beta-star values (x, y) of measurements. Only used for filename."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_dir&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"output_dir"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the directory where to write the output files.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path to the directory where to write the output files."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
@@ -349,7 +349,7 @@
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.calculate_lumi_imbalance">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_lumi_imbalance</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Perform the luminosity imbalance calculation. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Perform the luminosity imbalance calculation. """</span>
     <span class="n">output_path</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span>
     <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
@@ -357,7 +357,7 @@
         <span class="n">opt_cp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">IPS</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">],</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;(was provided as DataFrame)&quot;</span>
+                <span class="n">opt_cp</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"(was provided as DataFrame)"</span>
         <span class="n">save_config</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">opt_cp</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
 
     <span class="n">dfs</span> <span class="o">=</span> <span class="n">_read_and_check_dataframes</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
@@ -365,7 +365,7 @@
 
     <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Betastar not given. Cannot write out results.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Betastar not given. Cannot write out results."</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span> <span class="o">=</span> <span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
 
@@ -376,16 +376,16 @@
                 <span class="n">betastar_x</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="n">betastar_y</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_and_check_dataframes</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read the given DataFrames if needed, check them for validity and return a dictionary.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dfs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">IPS</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -397,9 +397,9 @@
                 <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">BEAM</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Dataframe &#39;</span><span class="si">{</span><span class="n">df</span><span class="si">}</span><span class="s2">&#39; does not contain a &#39;</span><span class="si">{</span><span class="n">BEAM</span><span class="si">}</span><span class="s2">&#39; column.&quot;</span>
-                    <span class="s2">&quot;You need to run the `kmod_average` script on data for both beams &quot;</span>
-                    <span class="s2">&quot;before you can calulate the luminosity imbalance.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Dataframe '</span><span class="si">{</span><span class="n">df</span><span class="si">}</span><span class="s2">' does not contain a '</span><span class="si">{</span><span class="n">BEAM</span><span class="si">}</span><span class="s2">' column."</span>
+                    <span class="s2">"You need to run the `kmod_average` script on data for both beams "</span>
+                    <span class="s2">"before you can calulate the luminosity imbalance."</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
@@ -409,9 +409,9 @@
         <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">beam</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Dataframe &#39;</span><span class="si">{</span><span class="n">df</span><span class="si">}</span><span class="s2">&#39; does not seem to contain data per beam.&quot;</span>
-                    <span class="s2">&quot;You need to run the `kmod_average` script on data for both beams &quot;</span>
-                    <span class="s2">&quot;before you can calulate the luminosity imbalance.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Dataframe '</span><span class="si">{</span><span class="n">df</span><span class="si">}</span><span class="s2">' does not seem to contain data per beam."</span>
+                    <span class="s2">"You need to run the `kmod_average` script on data for both beams "</span>
+                    <span class="s2">"before you can calulate the luminosity imbalance."</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -419,8 +419,8 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;Lumi inbalance can only be calculated for exactly two IPs, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;but instead </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span><span class="si">}</span><span class="s2"> were given.&quot;</span>
+            <span class="s2">"Lumi inbalance can only be calculated for exactly two IPs, "</span>
+            <span class="sa">f</span><span class="s2">"but instead </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span><span class="si">}</span><span class="s2"> were given."</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -430,7 +430,7 @@
 <div class="viewcode-block" id="get_lumi_imbalance_df">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_lumi_imbalance_df">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_lumi_imbalance_df</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate the effective beta stars and the luminosity imbalance from the input dataframes.</span>
 
 <span class="sd">    Args:</span>
@@ -440,12 +440,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tfs.TfsDataFrame with effective beta stars per IP and the luminosity imbalance added to the header.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculating luminosity imbalance for ips </span><span class="si">{</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Calculating luminosity imbalance for ips </span><span class="si">{</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">df_effective_betas</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ip</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
     <span class="n">ip_a</span><span class="p">,</span> <span class="n">ip_b</span> <span class="o">=</span> <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">index</span>
     <span class="n">lumi_imb</span><span class="p">,</span> <span class="n">lumi_imb_err</span> <span class="o">=</span> <span class="n">get_imbalance_w_err</span><span class="p">(</span>
@@ -453,10 +453,10 @@
         <span class="o">*</span><span class="nb">tuple</span><span class="p">(</span><span class="n">df_effective_betas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_b</span><span class="p">,</span> <span class="p">:]),</span>
     <span class="p">)</span>
 
-    <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">LUMINOSITY</span><span class="si">}{</span><span class="n">IMBALANCE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lumi_imb</span>
-    <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">LUMINOSITY</span><span class="si">}{</span><span class="n">IMBALANCE</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lumi_imb_err</span>
+    <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">LUMINOSITY</span><span class="si">}{</span><span class="n">IMBALANCE</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">lumi_imb</span>
+    <span class="n">df_effective_betas</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">LUMINOSITY</span><span class="si">}{</span><span class="n">IMBALANCE</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">lumi_imb_err</span>
 
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Imbalance: </span><span class="si">{</span><span class="n">lumi_imb</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">lumi_imb_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Imbalance: </span><span class="si">{</span><span class="n">lumi_imb</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">lumi_imb_err</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df_effective_betas</span></div>
 
 
@@ -466,11 +466,11 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_imbalance_w_err</span><span class="p">(</span>
         <span class="n">beta_ip_a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta_err_ip_a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta_ip_b</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta_err_ip_b</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate the luminosity imbalance IP_A / IP_B  and its error, based on the effective betas for IP_A and IP_B.</span>
 <span class="sd">    This implies that all the other beam parameters (see Eq (17) in https://cds.cern.ch/record/941318/files/p361.pdf)</span>
 <span class="sd">    are the same for both IPs.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">beta_ip_b</span> <span class="o">/</span> <span class="n">beta_ip_a</span>  <span class="c1"># inverse due to beta in the denominator for lumi</span>
     <span class="n">err</span> <span class="o">=</span> <span class="n">result</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">beta_err_ip_b</span><span class="o">/</span><span class="n">beta_ip_b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta_err_ip_a</span><span class="o">/</span><span class="n">beta_ip_a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">err</span></div>
@@ -480,10 +480,10 @@
 <div class="viewcode-block" id="get_effective_beta_star_w_err">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_lumi_imbalance.get_effective_beta_star_w_err">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_effective_beta_star_w_err</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculates the effective beta*, i.e. the denominator of the luminosity as given in</span>
+<span class="w">    </span><span class="sd">""" Calculates the effective beta*, i.e. the denominator of the luminosity as given in</span>
 <span class="sd">    Eq(17) of https://cds.cern.ch/record/941318/files/p361.pdf without any constants</span>
 <span class="sd">    as we assume here that these are equal for both IPs, and we only care about the ratio.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">b1x</span><span class="p">,</span> <span class="n">b1y</span><span class="p">,</span> <span class="n">b2x</span><span class="p">,</span> <span class="n">b2y</span> <span class="o">=</span> <span class="n">_get_betastar_beams</span><span class="p">(</span><span class="n">df_ip</span><span class="p">)</span>
     <span class="n">db1x</span><span class="p">,</span> <span class="n">db2x</span><span class="p">,</span> <span class="n">db1y</span><span class="p">,</span> <span class="n">db2y</span> <span class="o">=</span> <span class="n">_get_betastar_beams</span><span class="p">(</span><span class="n">df_ip</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -506,20 +506,20 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_betastar_beams</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get betastar x and y for both beam 1 and beam 2. Order: b1x, b1y, b2x, b2y &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Get betastar x and y for both beam 1 and beam 2. Order: b1x, b1y, b2x, b2y """</span>
     <span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="n">_get_betastar_xy</span><span class="p">(</span><span class="n">df_ip</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="p">),</span> <span class="o">*</span><span class="n">_get_betastar_xy</span><span class="p">(</span><span class="n">df_ip</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">errors</span><span class="p">))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_betastar_xy</span><span class="p">(</span><span class="n">df_ip</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get betastar x and y for the given beam. &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Get betastar x and y for the given beam. """</span>
     <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">df_ip</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">]])</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">df_ip</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">X&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">Y&#39;</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">df_ip</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">X'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">Y'</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">df_ip</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">X'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}</span><span class="s1">Y'</span><span class="p">]])</span>
 
 
 <span class="c1"># Commandline Entry Point ------------------------------------------------------</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">calculate_lumi_imbalance</span><span class="p">()</span>
 </pre></div>
 

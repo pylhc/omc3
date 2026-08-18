@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.model_creators.ps_model_creator</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">PS Model Creator</span>
 <span class="sd">----------------</span>
 
 <span class="sd">This module provides convenience functions for model creation of the ``PS``.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -270,15 +270,15 @@
         <span class="n">accel</span><span class="p">:</span> <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;PS model creation currently relies on manual Energy management. Please provide the --energy ENERGY flag&quot;</span>
+                <span class="s2">"PS model creation currently relies on manual Energy management. Please provide the --energy ENERGY flag"</span>
             <span class="p">)</span>
         <span class="n">madx_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_base_madx_script</span><span class="p">()</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)),</span>
-            <span class="s2">&quot;DPP&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="p">,</span>
-            <span class="s2">&quot;OUTPUT&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">),</span>
+            <span class="s2">"USE_ACD"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span><span class="p">)),</span>
+            <span class="s2">"DPP"</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">dpp</span><span class="p">,</span>
+            <span class="s2">"OUTPUT"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">),</span>
         <span class="p">}</span>
-        <span class="n">madx_template</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;twiss.mask&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+        <span class="n">madx_template</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">"twiss.mask"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="n">madx_script</span> <span class="o">+=</span> <span class="n">madx_template</span> <span class="o">%</span> <span class="n">replace_dict</span>
         <span class="k">return</span> <span class="n">madx_script</span></div>
 
@@ -289,34 +289,34 @@
         <span class="n">accel</span><span class="p">:</span> <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span>
         <span class="n">use_acd</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">excitation</span> <span class="o">==</span> <span class="n">AccExcitationMode</span><span class="o">.</span><span class="n">ACD</span>
         <span class="n">replace_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;FILES_DIR&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()),</span>
-            <span class="s2">&quot;USE_ACD&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">use_acd</span><span class="p">)),</span>
-            <span class="s2">&quot;NAT_TUNE_X&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="s2">&quot;NAT_TUNE_Y&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="s2">&quot;KINETICENERGY&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
-            <span class="s2">&quot;USE_CUSTOM_PC&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ACC_MODELS_DIR&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">),</span>
-            <span class="s2">&quot;BEAM_FILE&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">beam_file</span><span class="p">),</span>
-            <span class="s2">&quot;STR_FILE&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">str_file</span><span class="p">),</span>
-            <span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;MODIFIERS&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;USE_MACROS&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span>
-            <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">&quot;2018&quot;</span>
-            <span class="k">else</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>  <span class="c1"># 2018 doesn&#39;t provide a macros file</span>
-            <span class="s2">&quot;PS_TUNE_METHOD&quot;</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">tune_method</span><span class="p">,</span>
+            <span class="s2">"FILES_DIR"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_dir</span><span class="p">()),</span>
+            <span class="s2">"USE_ACD"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">use_acd</span><span class="p">)),</span>
+            <span class="s2">"NAT_TUNE_X"</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">"NAT_TUNE_Y"</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">nat_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">"KINETICENERGY"</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
+            <span class="s2">"USE_CUSTOM_PC"</span><span class="p">:</span> <span class="s2">"0"</span> <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">energy</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"1"</span><span class="p">,</span>
+            <span class="s2">"ACC_MODELS_DIR"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">acc_model_path</span><span class="p">),</span>
+            <span class="s2">"BEAM_FILE"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">beam_file</span><span class="p">),</span>
+            <span class="s2">"STR_FILE"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">str_file</span><span class="p">),</span>
+            <span class="s2">"DRV_TUNE_X"</span><span class="p">:</span> <span class="s2">"0"</span><span class="p">,</span>
+            <span class="s2">"DRV_TUNE_Y"</span><span class="p">:</span> <span class="s2">"0"</span><span class="p">,</span>
+            <span class="s2">"MODIFIERS"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"USE_MACROS"</span><span class="p">:</span> <span class="s2">"0"</span>
+            <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="s2">"2018"</span>
+            <span class="k">else</span> <span class="s2">"1"</span><span class="p">,</span>  <span class="c1"># 2018 doesn't provide a macros file</span>
+            <span class="s2">"PS_TUNE_METHOD"</span><span class="p">:</span> <span class="n">accel</span><span class="o">.</span><span class="n">tune_method</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span><span class="p">:</span>
-            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;MODIFIERS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">"MODIFIERS"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="sa">f</span><span class="s2">&quot; call, file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">" call, file = '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_path_for_madx</span><span class="p">(</span><span class="n">modifier</span><span class="p">)</span><span class="si">}</span><span class="s2">'; </span><span class="si">{</span><span class="n">MODIFIER_TAG</span><span class="si">}</span><span class="s2">"</span>
                     <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="n">accel</span><span class="o">.</span><span class="n">modifiers</span>
                 <span class="p">]</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">use_acd</span><span class="p">:</span>
-            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_X&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">&quot;DRV_TUNE_Y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;base.madx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">"DRV_TUNE_X"</span><span class="p">]</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="s2">"DRV_TUNE_Y"</span><span class="p">]</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">drv_tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">"base.madx"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">mask</span> <span class="o">%</span> <span class="n">replace_dict</span></div>
 
 
@@ -325,7 +325,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare_run</span><span class="p">()</span>
         <span class="c1"># get path of file from PS model directory (without year at the end)</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">&quot;error_deff.txt&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="s2">"error_deff.txt"</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">accel</span><span class="o">.</span><span class="n">model_dir</span> <span class="o">/</span> <span class="n">ERROR_DEFFS_TXT</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.segment_by_segment.segments</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Segments</span>
 <span class="sd">--------</span>
 
 <span class="sd">Classes to hold the information of the segments in the sbs definition.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
@@ -291,8 +291,8 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_element_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">init_from_element_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">element_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialise from the string representation for elements</span>
-<span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" Initialise from the string representation for elements</span>
+<span class="sd">        as used in inputs."""</span>
         <span class="n">segment</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">element_name</span><span class="p">)</span>
         <span class="n">segment</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">element_name</span>
         <span class="k">return</span> <span class="n">segment</span></div>
@@ -302,17 +302,17 @@
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_segment_definition">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">init_from_segment_definition</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">segment</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialise from the string representation for segments</span>
-<span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">segment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span></div>
+<span class="w">        </span><span class="sd">""" Initialise from the string representation for segments</span>
+<span class="sd">        as used in inputs."""</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">segment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="Segment.init_from_input">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.init_from_input">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">init_from_input</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialise from the string representation for segments or elements</span>
-<span class="sd">        as used in inputs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" Initialise from the string representation for segments or elements</span>
+<span class="sd">        as used in inputs."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">init_from_segment_definition</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -322,22 +322,22 @@
 <div class="viewcode-block" id="Segment.to_input_string">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.Segment.to_input_string">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_input_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; String representation of the segment as used in inputs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" String representation of the segment as used in inputs."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">"</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;String representation of the segment.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+<span class="w">        </span><span class="sd">"""String representation of the segment."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">)"</span></div>
 
 
 
 <div class="viewcode-block" id="SegmentModels">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentModels">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SegmentModels</span><span class="p">(</span><span class="n">TfsCollection</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class to hold and load the models of the segments created by MAD-X.</span>
 <span class="sd">    The filenames need to be the same as in</span>
 <span class="sd">    :class:`omc3.model.model_creators.abstract_model_creator.SegmentCreator`.</span>
@@ -345,7 +345,7 @@
 <span class="sd">    Arguments:</span>
 <span class="sd">        directory: The path where to find the models.</span>
 <span class="sd">        segment: A segment instance corresponding to the model to load.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">forward</span><span class="p">:</span> <span class="n">TfsDataFrame</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">TWISS_FORWARD</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># whenever used, these are TfsDataFrames</span>
     <span class="n">backward</span><span class="p">:</span> <span class="n">TfsDataFrame</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">TWISS_BACKWARD</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">forward_corrected</span><span class="p">:</span> <span class="n">TfsDataFrame</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="n">TWISS_FORWARD_CORRECTED</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -363,26 +363,26 @@
 <div class="viewcode-block" id="SegmentDiffs">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SegmentDiffs">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SegmentDiffs</span><span class="p">(</span><span class="n">TfsCollection</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    TfsCollection of segment-by-segment outputfiles for the differences</span>
 <span class="sd">    between propagated model and measurements.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        directory: The path where to write the files to/find the files.</span>
 <span class="sd">        segment_name: Name of the segment corresponding to the model to load.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">PREFIX</span> <span class="o">=</span> <span class="s2">&quot;sbs_&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">PREFIX</span> <span class="o">=</span> <span class="s2">"sbs_"</span>
 
-    <span class="n">phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">PHASE_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">beta_phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">BETA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">alpha_phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">ALPHA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">beta_kmod</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">KMOD_BETA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">beta_amp</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">AMP_BETA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">DISPERSION_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">momentum_dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">MOMENTUM_DISPERSION_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">norm_dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">NORM_DISP_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">f1001</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">F1001_NAME</span><span class="si">}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">f1010</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">F1010_NAME</span><span class="si">}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">PHASE_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">beta_phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">BETA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">alpha_phase</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">ALPHA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">beta_kmod</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">KMOD_BETA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">beta_amp</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">AMP_BETA_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">DISPERSION_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">momentum_dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">MOMENTUM_DISPERSION_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">norm_dispersion</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">NORM_DISP_NAME</span><span class="si">}</span><span class="se">{{</span><span class="s2">plane</span><span class="se">}}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">f1001</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">F1001_NAME</span><span class="si">}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">f1010</span> <span class="o">=</span> <span class="n">Tfs</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">PREFIX</span><span class="si">}{</span><span class="n">F1010_NAME</span><span class="si">}</span><span class="s2">_</span><span class="se">{{</span><span class="s2">name</span><span class="se">}}</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">two_planes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">segment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -398,7 +398,7 @@
 <div class="viewcode-block" id="SbsDefinitionError">
 <a class="viewcode-back" href="../../../modules/segment_by_segment.html#omc3.segment_by_segment.segments.SbsDefinitionError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SbsDefinitionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Exception to be raised when the sbs definition is invalid.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">""" Exception to be raised when the sbs definition is invalid."""</span></div>
 
 </pre></div>
 

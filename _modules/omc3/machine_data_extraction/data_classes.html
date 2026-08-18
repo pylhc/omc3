@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.data_classes</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">DataClasses for Machine Data</span>
 <span class="sd">----------------------------</span>
 
@@ -249,7 +249,7 @@
 <span class="sd">Most of them are purely to hold the data in a structured way,</span>
 <span class="sd">some have minor functionality to convert the data into different formats</span>
 <span class="sd">such as TFS and MADX.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -265,8 +265,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 
-<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
-<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
+<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"jpype"</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pjlsa"</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">cern.lsa.domain.settings.spi</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandAloneBeamProcessImpl</span>
@@ -278,7 +278,7 @@
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.MachineSettingsInfo">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MachineSettingsInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass to hold the extracted Machine Settings Info.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Dataclass to hold the extracted Machine Settings Info."""</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span>
     <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">fill</span><span class="p">:</span> <span class="n">FillInfo</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -296,12 +296,12 @@
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.FillInfo">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FillInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass to hold Fill information.</span>
+<span class="w">    </span><span class="sd">"""Dataclass to hold Fill information.</span>
 
 <span class="sd">    This contains only the relevant fields for OMC,</span>
 <span class="sd">    extracted from the Java Fill object.</span>
 <span class="sd">    Add more fields if needed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">no</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span>
@@ -318,11 +318,11 @@
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.BeamProcessInfo">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BeamProcessInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass to hold BeamProcess information.</span>
+<span class="w">    </span><span class="sd">"""Dataclass to hold BeamProcess information.</span>
 
 <span class="sd">    This contains only the relevant fields for OMC, extracted from the Java BeamProcess object.</span>
 <span class="sd">    Add more fields if needed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">context_category</span><span class="p">:</span> <span class="nb">str</span>
@@ -336,14 +336,14 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_java_beamprocess</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">bp</span><span class="p">:</span> <span class="n">StandAloneBeamProcessImpl</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BeamProcessInfo</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a BeamProcessInfo from a StandAloneBeamProcessImpl object.</span>
+<span class="w">        </span><span class="sd">"""Create a BeamProcessInfo from a StandAloneBeamProcessImpl object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            bp (StandAloneBeamProcessImpl): The BeamProcess object (Java).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            BeamProcessInfo: The corresponding BeamProcessInfo dataclass instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span>
             <span class="n">accelerator</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">getAccelerator</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span>
@@ -362,7 +362,7 @@
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.OpticsInfo">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OpticsInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass to hold Optics information.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Dataclass to hold Optics information."""</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span>
@@ -376,24 +376,24 @@
 <div class="viewcode-block" id="TrimHistoryColumn">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryColumn">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TrimHistoryColumn</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Columns for Trim History TFS files.&quot;&quot;&quot;</span>
-    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;TIME&quot;</span>
-    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">&quot;TIMESTAMP&quot;</span>
-    <span class="n">DATA</span> <span class="o">=</span> <span class="s2">&quot;DATA&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Columns for Trim History TFS files."""</span>
+    <span class="n">TIME</span> <span class="o">=</span> <span class="s2">"TIME"</span>
+    <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s2">"TIMESTAMP"</span>
+    <span class="n">DATA</span> <span class="o">=</span> <span class="s2">"DATA"</span></div>
 
 
 
 <div class="viewcode-block" id="TrimHistoryHeader">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistoryHeader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TrimHistoryHeader</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Headers for Trim History TFS files.&quot;&quot;&quot;</span>
-    <span class="n">ACCEL</span> <span class="o">=</span> <span class="s2">&quot;ACCELERATOR&quot;</span>
-    <span class="n">BEAMPROCESS</span> <span class="o">=</span> <span class="s2">&quot;BEAMPROCESS&quot;</span>
-    <span class="n">START_TIME</span> <span class="o">=</span> <span class="s2">&quot;START_TIME&quot;</span>
-    <span class="n">END_TIME</span> <span class="o">=</span> <span class="s2">&quot;END_TIME&quot;</span>
-    <span class="n">KNOB_NAME</span> <span class="o">=</span> <span class="s2">&quot;KNOB_NAME&quot;</span>
-    <span class="n">OPTICS</span> <span class="o">=</span> <span class="s2">&quot;OPTICS&quot;</span>  <span class="c1"># set in machine settings info</span>
-    <span class="n">FILL</span> <span class="o">=</span> <span class="s2">&quot;FILL&quot;</span>      <span class="c1"># set in machine settings info</span></div>
+<span class="w">    </span><span class="sd">"""Headers for Trim History TFS files."""</span>
+    <span class="n">ACCEL</span> <span class="o">=</span> <span class="s2">"ACCELERATOR"</span>
+    <span class="n">BEAMPROCESS</span> <span class="o">=</span> <span class="s2">"BEAMPROCESS"</span>
+    <span class="n">START_TIME</span> <span class="o">=</span> <span class="s2">"START_TIME"</span>
+    <span class="n">END_TIME</span> <span class="o">=</span> <span class="s2">"END_TIME"</span>
+    <span class="n">KNOB_NAME</span> <span class="o">=</span> <span class="s2">"KNOB_NAME"</span>
+    <span class="n">OPTICS</span> <span class="o">=</span> <span class="s2">"OPTICS"</span>  <span class="c1"># set in machine settings info</span>
+    <span class="n">FILL</span> <span class="o">=</span> <span class="s2">"FILL"</span>      <span class="c1"># set in machine settings info</span></div>
 
 
 
@@ -401,7 +401,7 @@
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TrimHistories</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass to hold Knob Trim History information.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Dataclass to hold Knob Trim History information."""</span>
     <span class="n">beamprocess</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="n">end_time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span>
@@ -413,7 +413,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_tfs_header</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_tfs_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate common TFS headers for TrimHistory.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate common TFS headers for TrimHistory."""</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">TrimHistoryHeader</span><span class="o">.</span><span class="n">BEAMPROCESS</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">beamprocess</span><span class="p">,</span>
             <span class="n">TrimHistoryHeader</span><span class="o">.</span><span class="n">ACCEL</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator</span><span class="p">,</span>
@@ -427,7 +427,7 @@
 <div class="viewcode-block" id="TrimHistories.trim_tuple_to_tfs">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.trim_tuple_to_tfs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">trim_tuple_to_tfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">knob_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">trim_tuple</span><span class="p">:</span> <span class="n">TrimTuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert KnobTrimHistory to TfsDataFrame.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Convert KnobTrimHistory to TfsDataFrame."""</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="n">TrimHistoryColumn</span><span class="o">.</span><span class="n">TIMESTAMP</span><span class="p">:</span> <span class="n">trim_tuple</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
@@ -443,7 +443,7 @@
 <div class="viewcode-block" id="TrimHistories.to_tfs_dict">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.TrimHistories.to_tfs_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tfs_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert all trims to a dictionary of TfsDataFrames.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Convert all trims to a dictionary of TfsDataFrames."""</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">knob_to_output_name</span><span class="p">(</span><span class="n">knob_name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">trim_tuple_to_tfs</span><span class="p">(</span><span class="n">knob_name</span><span class="p">,</span> <span class="n">trim_tuple</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">knob_name</span><span class="p">,</span> <span class="n">trim_tuple</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trims</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -456,21 +456,21 @@
 <div class="viewcode-block" id="DefinitionColumn">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionColumn">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DefinitionColumn</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Columns for Knob Definition TFS files.&quot;&quot;&quot;</span>
-    <span class="n">CIRCUIT</span> <span class="o">=</span> <span class="s2">&quot;CIRCUIT&quot;</span>
-    <span class="n">TYPE</span> <span class="o">=</span> <span class="s2">&quot;TYPE&quot;</span>
-    <span class="n">FACTOR</span> <span class="o">=</span> <span class="s2">&quot;FACTOR&quot;</span>
-    <span class="n">MADX_NAME</span> <span class="o">=</span> <span class="s2">&quot;NAME&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Columns for Knob Definition TFS files."""</span>
+    <span class="n">CIRCUIT</span> <span class="o">=</span> <span class="s2">"CIRCUIT"</span>
+    <span class="n">TYPE</span> <span class="o">=</span> <span class="s2">"TYPE"</span>
+    <span class="n">FACTOR</span> <span class="o">=</span> <span class="s2">"FACTOR"</span>
+    <span class="n">MADX_NAME</span> <span class="o">=</span> <span class="s2">"NAME"</span></div>
 
 
 
 <div class="viewcode-block" id="DefinitionHeader">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.DefinitionHeader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DefinitionHeader</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Headers for Knob Definition TFS files.&quot;&quot;&quot;</span>
-    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;KNOB_NAME&quot;</span>
-    <span class="n">OPTICS</span> <span class="o">=</span> <span class="s2">&quot;OPTICS&quot;</span>
-    <span class="n">OUTPUT_NAME</span> <span class="o">=</span> <span class="s2">&quot;OUTPUT_NAME&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Headers for Knob Definition TFS files."""</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">"KNOB_NAME"</span>
+    <span class="n">OPTICS</span> <span class="o">=</span> <span class="s2">"OPTICS"</span>
+    <span class="n">OUTPUT_NAME</span> <span class="o">=</span> <span class="s2">"OUTPUT_NAME"</span></div>
 
 
 
@@ -478,14 +478,14 @@
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobPart">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">KnobPart</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass to hold Knob Part information.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Dataclass to hold Knob Part information."""</span>
     <span class="n">circuit</span><span class="p">:</span> <span class="nb">str</span>
     <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">madx_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">madx_name</span><span class="si">}</span><span class="s2">, factor=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">factor</span><span class="si">}</span><span class="s2">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">madx_name</span><span class="si">}</span><span class="s2">, factor=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">factor</span><span class="si">}</span><span class="s2">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&gt;"</span></div>
 
 
 
@@ -493,27 +493,27 @@
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">KnobDefinition</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass to hold Knob Definition information.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Dataclass to hold Knob Definition information."""</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">optics</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">KnobPart</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">output_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a safe knob name for output files.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generates a safe knob name for output files."""</span>
         <span class="k">return</span> <span class="n">knob_to_output_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="KnobDefinition.to_madx">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.to_madx">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_madx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;add2expr&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the knob definition to madx code.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_madx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"add2expr"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Converts the knob definition to madx code."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Knob </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has no parts defined!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Knob </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has no parts defined!"</span><span class="p">)</span>
 
         <span class="n">line_template</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;assign&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{var}</span><span class="s2"> = </span><span class="si">{var}</span><span class="s2"> + </span><span class="si">{value:e}</span><span class="s2"> * </span><span class="si">{knob}</span><span class="s2">;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;add2expr&quot;</span><span class="p">:</span> <span class="s2">&quot;add2expr, var=</span><span class="si">{var}</span><span class="s2">, expr=</span><span class="si">{value:e}</span><span class="s2"> * </span><span class="si">{knob}</span><span class="s2">;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;defer&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{var}</span><span class="s2"> := </span><span class="si">{value:e}</span><span class="s2"> * </span><span class="si">{knob}</span><span class="s2">;&quot;</span><span class="p">,</span>
+            <span class="s2">"assign"</span><span class="p">:</span> <span class="s2">"</span><span class="si">{var}</span><span class="s2"> = </span><span class="si">{var}</span><span class="s2"> + </span><span class="si">{value:e}</span><span class="s2"> * </span><span class="si">{knob}</span><span class="s2">;"</span><span class="p">,</span>
+            <span class="s2">"add2expr"</span><span class="p">:</span> <span class="s2">"add2expr, var=</span><span class="si">{var}</span><span class="s2">, expr=</span><span class="si">{value:e}</span><span class="s2"> * </span><span class="si">{knob}</span><span class="s2">;"</span><span class="p">,</span>
+            <span class="s2">"defer"</span><span class="p">:</span> <span class="s2">"</span><span class="si">{var}</span><span class="s2"> := </span><span class="si">{value:e}</span><span class="s2"> * </span><span class="si">{knob}</span><span class="s2">;"</span><span class="p">,</span>
         <span class="p">}[</span><span class="n">template</span><span class="p">]</span>
 
         <span class="n">string_parts</span> <span class="o">=</span> <span class="p">[]</span>
@@ -526,15 +526,15 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;No MAD-X name for circuit </span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">circuit</span><span class="si">}</span><span class="s2"> (factor=</span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">factor</span><span class="si">}</span><span class="s2">) in knob </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"No MAD-X name for circuit </span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">circuit</span><span class="si">}</span><span class="s2"> (factor=</span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">factor</span><span class="si">}</span><span class="s2">) in knob </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
                 <span class="n">string_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;! WARNING: No MAD-X name for circuit </span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">circuit</span><span class="si">}</span><span class="s2"> (factor=</span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">factor</span><span class="si">}</span><span class="s2">) in knob </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"! WARNING: No MAD-X name for circuit </span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">circuit</span><span class="si">}</span><span class="s2"> (factor=</span><span class="si">{</span><span class="n">part</span><span class="o">.</span><span class="n">factor</span><span class="si">}</span><span class="s2">) in knob </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-            <span class="sa">f</span><span class="s2">&quot;! Knob Definition: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> for optics </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">,</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="sa">f</span><span class="s2">"! Knob Definition: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> for optics </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optics</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">;"</span><span class="p">,</span>
             <span class="p">]</span> <span class="o">+</span> <span class="n">string_parts</span><span class="p">)</span></div>
 
 
@@ -542,7 +542,7 @@
 <div class="viewcode-block" id="KnobDefinition.to_tfs">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.data_classes.KnobDefinition.to_tfs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tfs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert KnobDefinition to TfsDataFrame.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Convert KnobDefinition to TfsDataFrame."""</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">DefinitionColumn</span><span class="o">.</span><span class="n">CIRCUIT</span><span class="p">:</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">circuit</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">],</span>
             <span class="n">DefinitionColumn</span><span class="o">.</span><span class="n">MADX_NAME</span><span class="p">:</span> <span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">madx_name</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">],</span>

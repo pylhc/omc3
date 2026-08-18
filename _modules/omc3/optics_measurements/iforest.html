@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.optics_measurements.iforest</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Isolation Forest</span>
 <span class="sd">----------------</span>
 
@@ -251,7 +251,7 @@
 <span class="sd">its current form, as the binning of the frequencies in Harpy automatically leads to</span>
 <span class="sd">some clustering, which might then trigger wrong tune-filtering in here.</span>
 <span class="sd">This should be tested and possibly mitigated. (jdilly, 2024)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -278,7 +278,7 @@
 <span class="n">IRS_CONT</span> <span class="o">=</span> <span class="mf">0.025</span>
 
 <span class="c1"># Columns ---</span>
-<span class="n">FEATURE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FEATURE&quot;</span>
+<span class="n">FEATURE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"FEATURE"</span>
 
 
 <div class="viewcode-block" id="clean_with_isolation_forest">
@@ -286,7 +286,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">clean_with_isolation_forest</span><span class="p">(</span>
     <span class="n">input_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Runs isolation forest anomaly detection and removes flagged BPMs from input files.</span>
 <span class="sd">    For every file where a cleaning is performed, a TfsDataFrame with information on</span>
 <span class="sd">    the identified and cleaned BPMs is written to disk in an adjacent location in the</span>
@@ -299,12 +299,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The input files with anomalous BPMs removed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">bad_bpms</span> <span class="o">=</span> <span class="n">identify_bad_bpms</span><span class="p">(</span><span class="n">meas_input</span><span class="p">,</span> <span class="n">input_files</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="n">input_files</span> <span class="o">=</span> <span class="n">remove_bad_bpms</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bad_bpms</span><span class="o">.</span><span class="n">NAME</span><span class="p">)),</span> <span class="n">plane</span><span class="p">)</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bad_bpms</span><span class="o">.</span><span class="n">NAME</span><span class="p">))))</span>
     <span class="k">if</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span><span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;bad_bpms_iforest_</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.tfs&quot;</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span><span class="o">/</span> <span class="sa">f</span><span class="s2">"bad_bpms_iforest_</span><span class="si">{</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.tfs"</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">input_files</span></div>
 
 
@@ -316,7 +316,7 @@
     <span class="n">input_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Identifies anomalous BPMs across arc and IR regions using isolation forest.</span>
 
 <span class="sd">    Args:</span>
@@ -326,9 +326,9 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A `DataFrame` listing the detected bad BPMs with their significant features and scores.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">bpm_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-                            <span class="p">[</span><span class="n">tfs_df</span><span class="p">[[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;NOISE_SCALED&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span>
+                            <span class="p">[</span><span class="n">tfs_df</span><span class="p">[[</span><span class="s2">"NAME"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"NOISE_SCALED"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">]]</span>
                             <span class="k">for</span> <span class="n">tfs_df</span> <span class="ow">in</span> <span class="n">input_files</span><span class="p">]</span>
                         <span class="p">)</span>
     <span class="n">arc_bpm_data</span><span class="p">,</span> <span class="n">ir_bpm_data</span> <span class="o">=</span> <span class="n">get_data_for_clustering</span><span class="p">(</span><span class="n">bpm_data</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="p">)</span>
@@ -345,7 +345,7 @@
     <span class="n">data_for_clustering</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Runs isolation forest on a single cluster and returns the significant features of detected anomalies.</span>
+<span class="w">    </span><span class="sd">"""Runs isolation forest on a single cluster and returns the significant features of detected anomalies.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bpm_tfs_data: concatenated BPM data from all input files.</span>
@@ -355,14 +355,14 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A `DataFrame` with anomalous BPM names, their most significant feature, and anomaly scores.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span><span class="p">,</span> <span class="n">bad_bpms_scores</span> <span class="o">=</span> <span class="n">detect_anomalies</span><span class="p">(</span><span class="n">cont</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
     <span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">reassign_index</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="p">(</span><span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span> <span class="n">good_bpms</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">signif_feature</span> <span class="o">=</span> <span class="n">get_significant_features</span><span class="p">(</span><span class="n">bpm_tfs_data</span><span class="p">,</span> <span class="n">data_for_clustering</span><span class="p">,</span> <span class="n">bad_bpms</span><span class="p">,</span>
                                               <span class="n">good_bpms</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span>
-    <span class="n">signif_feature</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;SCORE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_bpms_scores</span>
+    <span class="n">signif_feature</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"SCORE"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_bpms_scores</span>
     <span class="k">return</span> <span class="n">signif_feature</span></div>
 
 
@@ -370,9 +370,9 @@
 <div class="viewcode-block" id="reassign_index">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.iforest.reassign_index">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reassign_index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resets the index of the DataFrame to a sequential integer range.&quot;&quot;&quot;</span>
-    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;NEW_INDEX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">NAME</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;NEW_INDEX&quot;</span><span class="p">)</span></div>
+<span class="w">    </span><span class="sd">"""Resets the index of the DataFrame to a sequential integer range."""</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">"NEW_INDEX"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">NAME</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"NEW_INDEX"</span><span class="p">)</span></div>
 
 
 
@@ -385,7 +385,7 @@
     <span class="n">good_bpms</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determines the most significant feature for each anomalous BPM.</span>
+<span class="w">    </span><span class="sd">"""Determines the most significant feature for each anomalous BPM.</span>
 
 <span class="sd">    For each bad BPM, finds the feature (tune, noise, or amplitude) with the</span>
 <span class="sd">    largest deviation from the mean of good BPMs.</span>
@@ -399,17 +399,17 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A `DataFrame` indexed like ``bad_bpms`` with columns NAME, FEATURE, VALUE, and AVG.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">features_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">bad_bpms</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">bad_bpms</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
         <span class="n">max_dist</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([(</span><span class="nb">abs</span><span class="p">(</span><span class="n">data_for_clustering</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">-</span>
                              <span class="n">good_bpms</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="n">col</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;NOISE_SCALED&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]])</span>
+                        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"NOISE_SCALED"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">]])</span>
         <span class="n">max_dist</span><span class="p">,</span> <span class="n">sig_col</span> <span class="o">=</span> <span class="n">max_dist</span>
-        <span class="n">features_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_bpms</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">]</span>
+        <span class="n">features_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">"NAME"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_bpms</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">"NAME"</span><span class="p">]</span>
         <span class="n">features_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">FEATURE</span><span class="p">]</span> <span class="o">=</span> <span class="n">sig_col</span>
-        <span class="n">features_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;VALUE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">sig_col</span><span class="p">]</span>
-        <span class="n">features_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;AVG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">good_bpms</span><span class="o">.</span><span class="n">index</span><span class="p">][</span><span class="n">sig_col</span><span class="p">])</span>
+        <span class="n">features_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">"VALUE"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">sig_col</span><span class="p">]</span>
+        <span class="n">features_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="s2">"AVG"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">good_bpms</span><span class="o">.</span><span class="n">index</span><span class="p">][</span><span class="n">sig_col</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">features_df</span></div>
 
 
@@ -419,7 +419,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">detect_anomalies</span><span class="p">(</span>
     <span class="n">contamination</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fits an isolation forest and separates data into anomalous and normal BPMs.</span>
+<span class="w">    </span><span class="sd">"""Fits an isolation forest and separates data into anomalous and normal BPMs.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        contamination: expected proportion of outliers in the data.</span>
@@ -428,11 +428,11 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A tuple of (bad_bpms, good_bpms, bad_bpms_scores).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">iforest</span> <span class="o">=</span> <span class="n">IsolationForest</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+<span class="sd">    """</span>
+    <span class="n">iforest</span> <span class="o">=</span> <span class="n">IsolationForest</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">,</span>
                               <span class="n">contamination</span><span class="o">=</span><span class="n">contamination</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                               <span class="n">bootstrap</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="sa">f</span><span class="s2">&quot;TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;NOISE_SCALED&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="sa">f</span><span class="s2">"TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"NOISE_SCALED"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">]]</span>
     <span class="n">iforest</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">iforest</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
     <span class="n">bad_bpms</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -447,7 +447,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_data_for_clustering</span><span class="p">(</span>
     <span class="n">bpm_tfs_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">:</span> <span class="n">Accelerator</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Splits BPM data into arc and IR subsets and normalises features for clustering.</span>
+<span class="w">    </span><span class="sd">"""Splits BPM data into arc and IR subsets and normalises features for clustering.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bpm_tfs_data: concatenated BPM data from all input files.</span>
@@ -456,11 +456,11 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A tuple of (arc_bpm_data, ir_bpm_data) with normalised features.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">arc_bpm_mask</span> <span class="o">=</span> <span class="n">accelerator</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;arc_bpm&quot;</span><span class="p">])</span>
+<span class="sd">    """</span>
+    <span class="n">arc_bpm_mask</span> <span class="o">=</span> <span class="n">accelerator</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s2">"arc_bpm"</span><span class="p">])</span>
     <span class="n">ir_bpm_data_for_clustering</span> <span class="o">=</span> <span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">~</span><span class="n">arc_bpm_mask</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">arc_bpm_data_for_clustering</span> <span class="o">=</span> <span class="n">bpm_tfs_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">arc_bpm_mask</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;NOISE_SCALED&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"NOISE_SCALED"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"AMP</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">]:</span>
         <span class="n">ir_bpm_data_for_clustering</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">_normalize_parameter</span><span class="p">(</span><span class="n">ir_bpm_data_for_clustering</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">])</span>
         <span class="n">arc_bpm_data_for_clustering</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">_normalize_parameter</span><span class="p">(</span><span class="n">arc_bpm_data_for_clustering</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">arc_bpm_data_for_clustering</span><span class="p">,</span> <span class="n">ir_bpm_data_for_clustering</span></div>
@@ -468,7 +468,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_parameter</span><span class="p">(</span><span class="n">column_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rescales a Series to the [0, 1] range via min-max normalisation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Rescales a Series to the [0, 1] range via min-max normalisation."""</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">column_data</span> <span class="o">-</span> <span class="n">column_data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">column_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">column_data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 
 
@@ -477,7 +477,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">remove_bad_bpms</span><span class="p">(</span>
     <span class="n">tfs_dfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">bad_bpm_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes flagged BPMs from all input file DataFrames and recalculates tune statistics.</span>
+<span class="w">    </span><span class="sd">"""Removes flagged BPMs from all input file DataFrames and recalculates tune statistics.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        tfs_dfs: list of measurement DataFrames.</span>
@@ -486,12 +486,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of the input TfsDataFrames with bad BPMs filtered out.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cleaned</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">tfs_dfs</span><span class="p">:</span>
         <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">bad_bpm_names</span><span class="p">)]</span>
-        <span class="n">filtered_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Q</span><span class="si">{</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
-        <span class="n">filtered_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Q</span><span class="si">{</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">RMS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+        <span class="n">filtered_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">"Q</span><span class="si">{</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">])</span>
+        <span class="n">filtered_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">"Q</span><span class="si">{</span><span class="n">PLANE_TO_NUM</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="si">}</span><span class="s2">RMS"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"TUNE</span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">])</span>
         <span class="n">cleaned</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filtered_df</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cleaned</span></div>
 

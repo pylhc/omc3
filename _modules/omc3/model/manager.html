@@ -239,13 +239,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.manager</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Manager</span>
 <span class="sd">-------</span>
 
 <span class="sd">This module provides high-level functions to manage most functionality of ``model``.</span>
 <span class="sd">It contains entrypoint wrappers to get accelerator classes or their instances.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -263,7 +263,7 @@
     <span class="n">esrf</span><span class="o">.</span><span class="n">Esrf</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">esrf</span><span class="o">.</span><span class="n">Esrf</span><span class="p">,</span>
     <span class="n">psbooster</span><span class="o">.</span><span class="n">Psbooster</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">psbooster</span><span class="o">.</span><span class="n">Psbooster</span><span class="p">,</span>
     <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="p">,</span>
-    <span class="s2">&quot;JPARC&quot;</span><span class="p">:</span> <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="p">,</span>
+    <span class="s2">"JPARC"</span><span class="p">:</span> <span class="n">skekb</span><span class="o">.</span><span class="n">SKekB</span><span class="p">,</span>
     <span class="n">petra</span><span class="o">.</span><span class="n">Petra</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">petra</span><span class="o">.</span><span class="n">Petra</span><span class="p">,</span>
     <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">iota</span><span class="o">.</span><span class="n">Iota</span><span class="p">,</span>
     <span class="n">sps</span><span class="o">.</span><span class="n">Sps</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">sps</span><span class="o">.</span><span class="n">Sps</span><span class="p">,</span>
@@ -274,10 +274,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;accel&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"accel"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ACCELS</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the accelerator to use.Can be the class already.&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Choose the accelerator to use.Can be the class already."</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
@@ -286,12 +286,12 @@
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_accelerator</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Accelerator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns (opt.accel, help_requested):</span>
 <span class="sd">        `opt.accel` is the `Accelerator` instance of the desired accelerator, as given at the commandline.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="c1"># if it&#39;s the class already, we just return it</span>
+        <span class="c1"># if it's the class already, we just return it</span>
         <span class="k">return</span> <span class="n">opt</span><span class="o">.</span><span class="n">accel</span>
 
     <span class="k">return</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">](</span><span class="n">other_opt</span><span class="p">)</span></div>
@@ -302,10 +302,10 @@
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_accelerator_class">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_accelerator_class</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Accelerator</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns only the accelerator-class (non-instanciated).</span>
 <span class="sd">    Only opt.accel is needed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">]</span></div>
 
 
@@ -314,7 +314,7 @@
 <a class="viewcode-back" href="../../../modules/model.html#omc3.model.manager.get_parsed_opt">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">())</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_parsed_opt</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">other_opt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all accelerator related options as a `dict`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get all accelerator related options as a `dict`."""</span>
     <span class="n">accel</span> <span class="o">=</span> <span class="n">ACCELS</span><span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">accel</span><span class="p">]</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">accel</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">accel_opt</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">other_opt</span><span class="p">)</span>

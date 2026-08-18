@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.model.accelerators.skekb</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">SuperKEKB</span>
 <span class="sd">---------</span>
 
@@ -253,7 +253,7 @@
 
 <span class="sd">        HER or LER ring.</span>
 
-<span class="sd">        choices: ``(&#39;ler&#39;, &#39;her&#39;)``</span>
+<span class="sd">        choices: ``('ler', 'her')``</span>
 
 
 <span class="sd">    *--Optional--*</span>
@@ -269,7 +269,7 @@
 
 <span class="sd">        Denotes driven excitation by `AC-dipole` (acd) or by `ADT` (adt)</span>
 
-<span class="sd">        choices: ``(&#39;acd&#39;, &#39;adt&#39;)``</span>
+<span class="sd">        choices: ``('acd', 'adt')``</span>
 
 
 <span class="sd">    - **drv_tunes** *(float)*:</span>
@@ -302,7 +302,7 @@
 <span class="sd">        If True, x-ing angles will be applied to model</span>
 
 <span class="sd">        action: ``store_true``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -326,13 +326,13 @@
 <div class="viewcode-block" id="SKekB">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.skekb.SKekB">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SKekB</span><span class="p">(</span><span class="n">Accelerator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;KEK&#39;s SuperKEKB accelerator.&quot;&quot;&quot;</span>
-    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">&quot;skekb&quot;</span>
-    <span class="n">RINGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ler&quot;</span><span class="p">,</span> <span class="s2">&quot;her&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""KEK's SuperKEKB accelerator."""</span>
+    <span class="n">NAME</span> <span class="o">=</span> <span class="s2">"skekb"</span>
+    <span class="n">RINGS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"ler"</span><span class="p">,</span> <span class="s2">"her"</span><span class="p">)</span>
     <span class="n">RE_DICT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;^M*&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;.*&quot;</span><span class="p">,</span>
-        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;^M*&quot;</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"^M*"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">MAGNETS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">".*"</span><span class="p">,</span>
+        <span class="n">AccElementTypes</span><span class="o">.</span><span class="n">ARC_BPMS</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"^M*"</span><span class="p">,</span>
     <span class="p">}</span>
 
 <div class="viewcode-block" id="SKekB.get_parameters">
@@ -341,11 +341,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SKekB</span><span class="p">,</span> <span class="n">SKekB</span><span class="p">)</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
         <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ring&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"ring"</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">RINGS</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;HER or LER ring.&quot;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">"HER or LER ring."</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">params</span></div>
 
@@ -355,28 +355,28 @@
         <span class="n">opt</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ring</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">ring</span>
-        <span class="n">ring_to_beam_direction</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ler&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;her&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+        <span class="n">ring_to_beam_direction</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"ler"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"her"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beam_direction</span> <span class="o">=</span> <span class="n">ring_to_beam_direction</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ring</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;The accelerator definition is incomplete, ring &quot;</span>
-                                             <span class="s2">&quot;has to be specified (--ring option missing?).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">"The accelerator definition is incomplete, ring "</span>
+                                             <span class="s2">"has to be specified (--ring option missing?)."</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span>
 
     <span class="nd">@ring</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RINGS</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;Ring parameter has to be one of (&#39;ler&#39;, &#39;her&#39;)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">"Ring parameter has to be one of ('ler', 'her')"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="SKekB.verify_object">
 <a class="viewcode-back" href="../../../../modules/model.html#omc3.model.accelerators.skekb.SKekB.verify_object">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">verify_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># is the class is used to create full response?</span>
-            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">&quot;SuperKEKB doesn&#39;t have a model creation, &quot;</span>
-                                             <span class="s2">&quot;calling it this way is most probably wrong.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">AcceleratorDefinitionError</span><span class="p">(</span><span class="s2">"SuperKEKB doesn't have a model creation, "</span>
+                                             <span class="s2">"calling it this way is most probably wrong."</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

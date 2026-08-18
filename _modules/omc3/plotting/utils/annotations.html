@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.plotting.utils.annotations</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Plotting Utilities: Annotations</span>
 <span class="sd">-------------------------------</span>
 
 <span class="sd">Helper functions to create annotations, legends as well as style labels in plots.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
@@ -264,34 +264,34 @@
 
 <span class="c1"># List of common y-labels. Sorry for the ugly.</span>
 <span class="n">ylabels</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;alpha&quot;</span><span class="p">:</span>              <span class="sa">r</span><span class="s1">&#39;$\alpha_{{</span><span class="si">{0}</span><span class="s1">}} \quad [m]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;beta&quot;</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">&#39;$\beta_{{</span><span class="si">{0}</span><span class="s1">}} \quad [m]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;betabeat&quot;</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">&#39;$\Delta \beta_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \beta_{{</span><span class="si">{0}</span><span class="s1">}}$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;betabeat_permil&quot;</span><span class="p">:</span>   <span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">Delta </span><span class="se">\\</span><span class="s1">beta_{{</span><span class="si">{0}</span><span class="s1">}} </span><span class="se">\\</span><span class="s1">; / </span><span class="se">\\</span><span class="s1">; </span><span class="se">\\</span><span class="s1">beta_{{</span><span class="si">{0}</span><span class="s1">}} </span><span class="se">\\</span><span class="s1">; [</span><span class="se">\u2030</span><span class="s1">]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;dbeta&quot;</span><span class="p">:</span>              <span class="sa">r</span><span class="s2">&quot;$\beta&#39;_{{</span><span class="si">{0}</span><span class="s2">}} \quad [m]$&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dbetabeat&quot;</span><span class="p">:</span>          <span class="sa">r</span><span class="s1">&#39;$1 \; / \; \beta_{{</span><span class="si">{0}</span><span class="s1">}} \cdot \partial\beta_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \partial\delta_{{</span><span class="si">{0}</span><span class="s1">}}$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;norm_dispersion&quot;</span><span class="p">:</span>    <span class="sa">r</span><span class="s1">&#39;D$_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \sqrt{{\beta_{{</span><span class="si">{0}</span><span class="s1">}}}} \quad \left[\sqrt{{\rm m}}\right]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;norm_dispersion_mu&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;D$_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \sqrt{{\beta_{{</span><span class="si">{0}</span><span class="s1">}}}} \quad \left[\sqrt{{\rm \mu m}}\right]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;phase&quot;</span><span class="p">:</span>              <span class="sa">r</span><span class="s1">&#39;$\phi_{{</span><span class="si">{0}</span><span class="s1">}} \quad [2\pi]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;phasetot&quot;</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">&#39;$\phi_{{</span><span class="si">{0}</span><span class="s1">}} \quad [2\pi]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;phase_milli&quot;</span><span class="p">:</span>        <span class="sa">r</span><span class="s1">&#39;$\phi_{{</span><span class="si">{0}</span><span class="s1">}} \quad [2\pi\cdot10^{{-3}}]$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;dispersion&quot;</span><span class="p">:</span>         <span class="sa">r</span><span class="s1">&#39;D$_{{</span><span class="si">{0}</span><span class="s1">}}$ [m]&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;dispersion_mm&quot;</span><span class="p">:</span>      <span class="sa">r</span><span class="s1">&#39;D$_{{</span><span class="si">{0}</span><span class="s1">}}$ [mm]&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;co&quot;</span><span class="p">:</span>                 <span class="sa">r</span><span class="s1">&#39;Orbit </span><span class="si">{0}</span><span class="s1"> [m]&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;co_mm&quot;</span><span class="p">:</span>              <span class="sa">r</span><span class="s1">&#39;Orbit </span><span class="si">{0}</span><span class="s1"> [mm]&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;tune&quot;</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">&#39;Q$_{{</span><span class="si">{0}</span><span class="s1">}}$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;nattune&quot;</span><span class="p">:</span>            <span class="sa">r</span><span class="s1">&#39;Nat. Q$_{{</span><span class="si">{0}</span><span class="s1">}}$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;chromamp&quot;</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">&#39;W$_{{</span><span class="si">{0}</span><span class="s1">}}$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;real&quot;</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">&#39;$\Re(</span><span class="si">{0}</span><span class="s1">)$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;imag&quot;</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">&#39;$\Im(</span><span class="si">{0}</span><span class="s1">)$&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;absolute&quot;</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">&#39;$\left|</span><span class="si">{0}</span><span class="s1">\right|$&#39;</span><span class="p">,</span>
+    <span class="s2">"alpha"</span><span class="p">:</span>              <span class="sa">r</span><span class="s1">'$\alpha_{{</span><span class="si">{0}</span><span class="s1">}} \quad [m]$'</span><span class="p">,</span>
+    <span class="s2">"beta"</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">'$\beta_{{</span><span class="si">{0}</span><span class="s1">}} \quad [m]$'</span><span class="p">,</span>
+    <span class="s2">"betabeat"</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">'$\Delta \beta_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \beta_{{</span><span class="si">{0}</span><span class="s1">}}$'</span><span class="p">,</span>
+    <span class="s2">"betabeat_permil"</span><span class="p">:</span>   <span class="s1">'$</span><span class="se">\\</span><span class="s1">Delta </span><span class="se">\\</span><span class="s1">beta_{{</span><span class="si">{0}</span><span class="s1">}} </span><span class="se">\\</span><span class="s1">; / </span><span class="se">\\</span><span class="s1">; </span><span class="se">\\</span><span class="s1">beta_{{</span><span class="si">{0}</span><span class="s1">}} </span><span class="se">\\</span><span class="s1">; [</span><span class="se">\u2030</span><span class="s1">]$'</span><span class="p">,</span>
+    <span class="s2">"dbeta"</span><span class="p">:</span>              <span class="sa">r</span><span class="s2">"$\beta'_{{</span><span class="si">{0}</span><span class="s2">}} \quad [m]$"</span><span class="p">,</span>
+    <span class="s2">"dbetabeat"</span><span class="p">:</span>          <span class="sa">r</span><span class="s1">'$1 \; / \; \beta_{{</span><span class="si">{0}</span><span class="s1">}} \cdot \partial\beta_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \partial\delta_{{</span><span class="si">{0}</span><span class="s1">}}$'</span><span class="p">,</span>
+    <span class="s2">"norm_dispersion"</span><span class="p">:</span>    <span class="sa">r</span><span class="s1">'D$_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \sqrt{{\beta_{{</span><span class="si">{0}</span><span class="s1">}}}} \quad \left[\sqrt{{\rm m}}\right]$'</span><span class="p">,</span>
+    <span class="s2">"norm_dispersion_mu"</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'D$_{{</span><span class="si">{0}</span><span class="s1">}} \; / \; \sqrt{{\beta_{{</span><span class="si">{0}</span><span class="s1">}}}} \quad \left[\sqrt{{\rm \mu m}}\right]$'</span><span class="p">,</span>
+    <span class="s2">"phase"</span><span class="p">:</span>              <span class="sa">r</span><span class="s1">'$\phi_{{</span><span class="si">{0}</span><span class="s1">}} \quad [2\pi]$'</span><span class="p">,</span>
+    <span class="s2">"phasetot"</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">'$\phi_{{</span><span class="si">{0}</span><span class="s1">}} \quad [2\pi]$'</span><span class="p">,</span>
+    <span class="s2">"phase_milli"</span><span class="p">:</span>        <span class="sa">r</span><span class="s1">'$\phi_{{</span><span class="si">{0}</span><span class="s1">}} \quad [2\pi\cdot10^{{-3}}]$'</span><span class="p">,</span>
+    <span class="s2">"dispersion"</span><span class="p">:</span>         <span class="sa">r</span><span class="s1">'D$_{{</span><span class="si">{0}</span><span class="s1">}}$ [m]'</span><span class="p">,</span>
+    <span class="s2">"dispersion_mm"</span><span class="p">:</span>      <span class="sa">r</span><span class="s1">'D$_{{</span><span class="si">{0}</span><span class="s1">}}$ [mm]'</span><span class="p">,</span>
+    <span class="s2">"co"</span><span class="p">:</span>                 <span class="sa">r</span><span class="s1">'Orbit </span><span class="si">{0}</span><span class="s1"> [m]'</span><span class="p">,</span>
+    <span class="s2">"co_mm"</span><span class="p">:</span>              <span class="sa">r</span><span class="s1">'Orbit </span><span class="si">{0}</span><span class="s1"> [mm]'</span><span class="p">,</span>
+    <span class="s2">"tune"</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">'Q$_{{</span><span class="si">{0}</span><span class="s1">}}$'</span><span class="p">,</span>
+    <span class="s2">"nattune"</span><span class="p">:</span>            <span class="sa">r</span><span class="s1">'Nat. Q$_{{</span><span class="si">{0}</span><span class="s1">}}$'</span><span class="p">,</span>
+    <span class="s2">"chromamp"</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">'W$_{{</span><span class="si">{0}</span><span class="s1">}}$'</span><span class="p">,</span>
+    <span class="s2">"real"</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">'$\Re(</span><span class="si">{0}</span><span class="s1">)$'</span><span class="p">,</span>
+    <span class="s2">"imag"</span><span class="p">:</span>               <span class="sa">r</span><span class="s1">'$\Im(</span><span class="si">{0}</span><span class="s1">)$'</span><span class="p">,</span>
+    <span class="s2">"absolute"</span><span class="p">:</span>           <span class="sa">r</span><span class="s1">'$\left|</span><span class="si">{0}</span><span class="s1">\right|$'</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <div class="viewcode-block" id="set_yaxis_label">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.set_yaxis_label">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_yaxis_label</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">chromcoup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># plot x and plot y</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Set y-axis labels.</span>
 
 <span class="sd">    Args:</span>
@@ -299,22 +299,22 @@
 <span class="sd">        plane: Usually x or y, but can be any string actually to be placed into the label ({0}).</span>
 <span class="sd">        ax: Axes to put the label on. Defaults to `` gca()``.</span>
 <span class="sd">        delta: If True adds a Delta before the label. Defaults to ``False``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">ylabels</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Label &#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Label '</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">' not found."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">delta</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;norm&quot;</span><span class="p">)):</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;$\Delta(</span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)$&#39;</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"beta"</span><span class="p">,</span> <span class="s2">"norm"</span><span class="p">)):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">'$\Delta(</span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)$'</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;$\Delta </span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">'$\Delta </span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s1">'</span>
 
     <span class="k">if</span> <span class="n">chromcoup</span><span class="p">:</span>
-        <span class="n">label</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="si">}</span><span class="s1">/\Delta\delta$&#39;</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">'</span><span class="si">{</span><span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="si">}</span><span class="s1">/\Delta\delta$'</span>
 
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
@@ -323,38 +323,38 @@
 <div class="viewcode-block" id="set_xaxis_label">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.set_xaxis_label">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_xaxis_label</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Sets the standard x-axis label</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        ax: Axes to put the label on. Defaults to ``gca()``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Longitudinal location [m]&#39;</span><span class="p">)</span></div>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Longitudinal location [m]'</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="show_ir">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.show_ir">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">show_ir</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;inside&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_ir</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"inside"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plots the interaction regions into the background of the plot.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        ip_dict: `dict`, `dataframe` or `series` containing ``IPLABEL`` : ``IP_POSITION``.</span>
 <span class="sd">        ax:  Axes to put the irs on. Defaults to gca()``.</span>
 <span class="sd">        mode: ``inside``, ``outside`` + ``nolines`` or just ``lines``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
     <span class="n">xlim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
     <span class="n">ylim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
 
-    <span class="n">lines</span> <span class="o">=</span> <span class="s1">&#39;nolines&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span>
-    <span class="n">inside</span> <span class="o">=</span> <span class="s1">&#39;inside&#39;</span> <span class="ow">in</span> <span class="n">mode</span>
-    <span class="n">lines_only</span> <span class="o">=</span> <span class="s1">&#39;inside&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="s1">&#39;outside&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="s1">&#39;lines&#39;</span> <span class="ow">in</span> <span class="n">mode</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="s1">'nolines'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span>
+    <span class="n">inside</span> <span class="o">=</span> <span class="s1">'inside'</span> <span class="ow">in</span> <span class="n">mode</span>
+    <span class="n">lines_only</span> <span class="o">=</span> <span class="s1">'inside'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="s1">'outside'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="s1">'lines'</span> <span class="ow">in</span> <span class="n">mode</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
@@ -369,12 +369,12 @@
             <span class="n">xpos</span> <span class="o">=</span> <span class="n">ip_dict</span><span class="p">[</span><span class="n">ip</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">lines</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">':'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'grey'</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">lines_only</span><span class="p">:</span>
                 <span class="n">ypos</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="ow">not</span> <span class="n">inside</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.01</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;grey&#39;</span> <span class="k">if</span> <span class="n">inside</span> <span class="k">else</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;text.color&quot;</span><span class="p">]</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="s1">'grey'</span> <span class="k">if</span> <span class="n">inside</span> <span class="k">else</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">"text.color"</span><span class="p">]</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">'bottom'</span><span class="p">)</span>
 
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span></div>
@@ -384,13 +384,13 @@
 <div class="viewcode-block" id="move_ip_labels">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.move_ip_labels">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">move_ip_labels</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Moves IP labels according to max y * value.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Moves IP labels according to max y * value."""</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
     <span class="n">y_max</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">texts</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^IP\s*\d$&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">get_text</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^IP\s*\d$"</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">get_text</span><span class="p">()):</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_position</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">t</span><span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">*</span> <span class="n">value</span><span class="p">))</span></div>
 
@@ -399,15 +399,15 @@
 <div class="viewcode-block" id="get_ip_positions">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.get_ip_positions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_ip_positions</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a `dict` of IP positions from tfs-file of path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (str): `Path` to the tfs-file containing IP-positions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read_tfs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
-    <span class="n">ip_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;IP</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)]</span>
-    <span class="n">ip_pos</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_names</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="sd">    """</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read_tfs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'NAME'</span><span class="p">)</span>
+    <span class="n">ip_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"IP</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)]</span>
+    <span class="n">ip_pos</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ip_names</span><span class="p">,</span> <span class="s1">'S'</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ip_names</span><span class="p">,</span> <span class="n">ip_pos</span><span class="p">))</span></div>
 
 
@@ -415,14 +415,14 @@
 <div class="viewcode-block" id="set_name">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.set_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fig_or_ax</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Sets the name of the figure or axes.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name (str): string to set as name.</span>
 <span class="sd">        fig_or_ax: `Figure` or `Axes` to to use. If ``None`` is given, takes the current figure.</span>
 <span class="sd">            Defaults to ``None``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fig_or_ax</span><span class="p">:</span>
         <span class="n">fig_or_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
@@ -435,13 +435,13 @@
 <div class="viewcode-block" id="get_name">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.get_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_name</span><span class="p">(</span><span class="n">fig_or_ax</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the name of the figure or axes.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        fig_or_ax: `Figure` or `Axes` to to use.If ``None`` is given, takes the current figure.</span>
 <span class="sd">            Defaults to ``None``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fig_or_ax</span><span class="p">:</span>
         <span class="n">fig_or_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
@@ -453,8 +453,8 @@
 
 <div class="viewcode-block" id="set_annotation">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.set_annotation">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_annotation</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_annotation</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"right"</span><span class="p">,</span> <span class="n">pad</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Writes an annotation on the top right of the axes.</span>
 
 <span class="sd">    Args:</span>
@@ -463,20 +463,20 @@
 <span class="sd">            to ``None``.</span>
 <span class="sd">        position: ``left`` or ``right``.</span>
 <span class="sd">        pad: padding to the axes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
     <span class="n">annotation</span> <span class="o">=</span> <span class="n">get_annotation</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">by_reference</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">xpos</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">position</span> <span class="o">==</span> <span class="s1">&#39;right&#39;</span><span class="p">)</span>
+    <span class="n">xpos</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">position</span> <span class="o">==</span> <span class="s1">'right'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">annotation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">pad</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span>
                 <span class="n">ha</span><span class="o">=</span><span class="n">position</span><span class="p">,</span>
-                <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s1">'bottom'</span><span class="p">,</span>
                 <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
-                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;plot_style_annotation&#39;</span><span class="p">)</span>
+                <span class="n">label</span><span class="o">=</span><span class="s1">'plot_style_annotation'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">annotation</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">annotation</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">xpos</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.0</span><span class="o">+</span><span class="n">pad</span><span class="p">)</span></div>
@@ -486,7 +486,7 @@
 <div class="viewcode-block" id="get_annotation">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.get_annotation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_annotation</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">by_reference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the annotation set by ``set_annotation()``.</span>
 
 <span class="sd">    Args:</span>
@@ -494,12 +494,12 @@
 <span class="sd">            Defaults to ``None``.</span>
 <span class="sd">        by_reference (bool): If ``True``, returns the reference to the annotation, otherwise the</span>
 <span class="sd">            text as string. Defaults to ``True``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_children</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;plot_style_annotation&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'plot_style_annotation'</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">by_reference</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">c</span>
             <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
@@ -510,29 +510,29 @@
 <div class="viewcode-block" id="small_title">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.small_title">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">small_title</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Alternative to annotation, which lets you use the title-functions.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        ax: `Axes` to use. If ``None`` is given, takes the current axes. Defaults to ``None``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
     <span class="c1"># could not get set_title() to work properly, so one parameter at a time</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">])</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.weight&#39;</span><span class="p">])</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_verticalalignment</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_horizontalalignment</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span></div>
+    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">'font.size'</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">'font.weight'</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_verticalalignment</span><span class="p">(</span><span class="s1">'bottom'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_horizontalalignment</span><span class="p">(</span><span class="s1">'right'</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="figure_title">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.figure_title">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">figure_title</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pad</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Set the title all the way to the top.</span>
 
 <span class="sd">    Args:</span>
@@ -540,23 +540,23 @@
 <span class="sd">        ax: `Axes` to use. If ``None`` is given, takes the current axes. Defaults to ``None``.</span>
 <span class="sd">        pad: Padding from border.</span>
 <span class="sd">        kwargs: passed on to fontdict.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
     <span class="c1"># could not get set_title() to work properly, so one parameter at a time</span>
-    <span class="n">fdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fontsize&quot;</span><span class="p">:</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">],</span> <span class="s2">&quot;fontweight&quot;</span><span class="p">:</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.weight&#39;</span><span class="p">],</span> <span class="s2">&quot;va&quot;</span><span class="p">:</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;ha&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">}</span>
+    <span class="n">fdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"fontsize"</span><span class="p">:</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">'font.size'</span><span class="p">],</span> <span class="s2">"fontweight"</span><span class="p">:</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">'font.weight'</span><span class="p">],</span> <span class="s2">"va"</span><span class="p">:</span> <span class="s2">"top"</span><span class="p">,</span> <span class="s2">"ha"</span><span class="p">:</span> <span class="s2">"center"</span><span class="p">}</span>
     <span class="n">fdict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">transFigure</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="n">fdict</span><span class="p">)</span>
 
-    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="mf">.5</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">fdict</span><span class="p">[</span><span class="s1">&#39;va&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;top&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pad</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">fdict</span><span class="p">[</span><span class="s1">&#39;va&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;top&#39;</span><span class="p">)])</span></div>
+    <span class="n">ax</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="mf">.5</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">fdict</span><span class="p">[</span><span class="s1">'va'</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"top"</span><span class="p">)</span> <span class="o">+</span> <span class="n">pad</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">fdict</span><span class="p">[</span><span class="s1">'va'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'top'</span><span class="p">)])</span></div>
 
 
 
 <div class="viewcode-block" id="get_legend_ncols">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.get_legend_ncols">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_legend_ncols</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">78</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the number of columns in legend dynamically.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Calculate the number of columns in legend dynamically."""</span>
     <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">max_length</span><span class="o">/</span><span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]),</span> <span class="mi">1</span><span class="p">])</span></div>
 
 
@@ -564,8 +564,8 @@
 <div class="viewcode-block" id="transpose_legend_order">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.transpose_legend_order">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">transpose_legend_order</span><span class="p">(</span><span class="n">ncol</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">handles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reorder handles and labels, so that the legend order is transposed,</span>
-<span class="sd">    i.e. the entries are row-first instead of column-first.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Reorder handles and labels, so that the legend order is transposed,</span>
+<span class="sd">    i.e. the entries are row-first instead of column-first."""</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">reorder</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">::</span><span class="n">ncol</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncol</span><span class="p">)]))</span>
 
@@ -589,7 +589,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">make_top_legend</span><span class="p">(</span>
     <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span> <span class="n">ncol</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">handles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pad</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">transposed</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a legend on top of the plot.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create a legend on top of the plot."""</span>
     <span class="k">if</span> <span class="n">ncol</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -599,7 +599,7 @@
     <span class="n">leg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
         <span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span>
         <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
-        <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">,</span>
+        <span class="n">loc</span><span class="o">=</span><span class="s2">"lower right"</span><span class="p">,</span>
         <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">+</span><span class="n">pad</span><span class="p">),</span>
         <span class="n">fancybox</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
         <span class="n">shadow</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
@@ -611,7 +611,7 @@
     <span class="n">legend_width</span> <span class="o">=</span> <span class="n">leg</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">transformed</span><span class="p">(</span><span class="n">leg</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">transAxes</span><span class="o">.</span><span class="n">inverted</span><span class="p">())</span><span class="o">.</span><span class="n">width</span>
     <span class="k">if</span> <span class="n">legend_width</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">x_shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">legend_width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">'lower right'</span><span class="p">,</span>
                   <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">x_shift</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">+</span><span class="n">pad</span><span class="p">),</span>
                   <span class="n">fancybox</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">)</span>
 
@@ -622,15 +622,15 @@
 <div class="viewcode-block" id="OOMFormatter">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.OOMFormatter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OOMFormatter</span><span class="p">(</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">ScalarFormatter</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Order of Magnitude Formatter.</span>
 
 <span class="sd">    To set a fixed order of magnitude and fixed significant numbers.</span>
 <span class="sd">    As seen on: https://stackoverflow.com/a/42658124/5609590</span>
 
 <span class="sd">    See: set_sci_magnitude</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%1.1f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">math_text</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="s2">"</span><span class="si">%1.1f</span><span class="s2">"</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">math_text</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oom</span> <span class="o">=</span> <span class="n">order</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fformat</span> <span class="o">=</span> <span class="n">fformat</span>
         <span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">ScalarFormatter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">useOffset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">useMathText</span><span class="o">=</span><span class="n">math_text</span><span class="p">)</span>
@@ -641,14 +641,14 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fformat</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_useMathText</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;$</span><span class="si">{</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">_mathdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">)</span><span class="si">}</span><span class="s1">$&#39;</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'$</span><span class="si">{</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">_mathdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">)</span><span class="si">}</span><span class="s1">$'</span></div>
 
 
 
 <div class="viewcode-block" id="set_sci_magnitude">
 <a class="viewcode-back" href="../../../../modules/plotting.html#omc3.plotting.utils.annotations.set_sci_magnitude">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_sci_magnitude</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%1.1f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">math_text</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_sci_magnitude</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">"both"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="s2">"</span><span class="si">%1.1f</span><span class="s2">"</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">math_text</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Uses the OMMFormatter to set the scientific limits on axes.</span>
 
 <span class="sd">    Args:</span>
@@ -658,16 +658,16 @@
 <span class="sd">        fformat (str): Format to use.</span>
 <span class="sd">        offset (bool): Formatter offset.</span>
 <span class="sd">        math_text (bool): Whether to use mathText.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">oomf</span> <span class="o">=</span> <span class="n">OOMFormatter</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="n">fformat</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">math_text</span><span class="o">=</span><span class="n">math_text</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">"x"</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">"both"</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">oomf</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">"y"</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">==</span> <span class="s2">"both"</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">oomf</span><span class="p">)</span>
 
-    <span class="n">ax</span><span class="o">.</span><span class="n">ticklabel_format</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sci&quot;</span><span class="p">,</span> <span class="n">scilimits</span><span class="o">=</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span> <span class="n">useMathText</span><span class="o">=</span><span class="n">math_text</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">ticklabel_format</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">"sci"</span><span class="p">,</span> <span class="n">scilimits</span><span class="o">=</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span> <span class="n">useMathText</span><span class="o">=</span><span class="n">math_text</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ax</span></div>
 
@@ -678,19 +678,19 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_fontsize_as_float</span><span class="p">(</span><span class="n">font_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">scale</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;xx-small&#39;</span><span class="p">:</span> <span class="mf">0.579</span><span class="p">,</span>
-            <span class="s1">&#39;x-small&#39;</span><span class="p">:</span> <span class="mf">0.694</span><span class="p">,</span>
-            <span class="s1">&#39;small&#39;</span><span class="p">:</span> <span class="mf">0.833</span><span class="p">,</span>
-            <span class="s1">&#39;medium&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-            <span class="s1">&#39;large&#39;</span><span class="p">:</span> <span class="mf">1.200</span><span class="p">,</span>
-            <span class="s1">&#39;x-large&#39;</span><span class="p">:</span> <span class="mf">1.440</span><span class="p">,</span>
-            <span class="s1">&#39;xx-large&#39;</span><span class="p">:</span> <span class="mf">1.728</span><span class="p">,</span>
-            <span class="s1">&#39;larger&#39;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
-            <span class="s1">&#39;smaller&#39;</span><span class="p">:</span> <span class="mf">0.833</span><span class="p">,</span>
+            <span class="s1">'xx-small'</span><span class="p">:</span> <span class="mf">0.579</span><span class="p">,</span>
+            <span class="s1">'x-small'</span><span class="p">:</span> <span class="mf">0.694</span><span class="p">,</span>
+            <span class="s1">'small'</span><span class="p">:</span> <span class="mf">0.833</span><span class="p">,</span>
+            <span class="s1">'medium'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s1">'large'</span><span class="p">:</span> <span class="mf">1.200</span><span class="p">,</span>
+            <span class="s1">'x-large'</span><span class="p">:</span> <span class="mf">1.440</span><span class="p">,</span>
+            <span class="s1">'xx-large'</span><span class="p">:</span> <span class="mf">1.728</span><span class="p">,</span>
+            <span class="s1">'larger'</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+            <span class="s1">'smaller'</span><span class="p">:</span> <span class="mf">0.833</span><span class="p">,</span>
             <span class="kc">None</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}[</span><span class="n">font_size</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">font_size</span>
-    <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">'font.size'</span><span class="p">]</span></div>
 
 </pre></div>
 

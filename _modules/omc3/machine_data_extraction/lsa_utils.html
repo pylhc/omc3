@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.lsa_utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">LSA Utilities</span>
 <span class="sd">-------------</span>
 
 <span class="sd">This module contains utility functions for working with LSA and data extracted from it.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -253,7 +253,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 
-<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;jpype&quot;</span><span class="p">)</span>
+<span class="n">jpype</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"jpype"</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pjlsa</span><span class="w"> </span><span class="kn">import</span> <span class="n">LSAClient</span>
@@ -267,7 +267,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">calc_k_from_iref</span><span class="p">(</span>
     <span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span> <span class="n">currents</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate K values in the LHC from IREF using the LSA service.</span>
 
 <span class="sd">    Args:</span>
@@ -277,18 +277,18 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict[str, float]: Dictionary of K values keyed by variable name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># 1) Use the **instance** PJLSA already created</span>
     <span class="n">lhc_service</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_lhcService</span>
 
     <span class="c1"># 2) Build a java.util.HashMap&lt;String, Double&gt; (not a Python dict)</span>
-    <span class="n">j_hash_map</span> <span class="o">=</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JClass</span><span class="p">(</span><span class="s2">&quot;java.util.HashMap&quot;</span><span class="p">)</span>
-    <span class="n">j_double</span> <span class="o">=</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JClass</span><span class="p">(</span><span class="s2">&quot;java.lang.Double&quot;</span><span class="p">)</span>
+    <span class="n">j_hash_map</span> <span class="o">=</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JClass</span><span class="p">(</span><span class="s2">"java.util.HashMap"</span><span class="p">)</span>
+    <span class="n">j_double</span> <span class="o">=</span> <span class="n">jpype</span><span class="o">.</span><span class="n">JClass</span><span class="p">(</span><span class="s2">"java.lang.Double"</span><span class="p">)</span>
 
     <span class="n">jmap</span> <span class="o">=</span> <span class="n">j_hash_map</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">power_converter</span><span class="p">,</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">currents</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current for </span><span class="si">{</span><span class="n">power_converter</span><span class="si">}</span><span class="s2"> is None&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Current for </span><span class="si">{</span><span class="n">power_converter</span><span class="si">}</span><span class="s2"> is None"</span><span class="p">)</span>
         <span class="c1"># ensure primitive-compatible double values</span>
         <span class="n">jmap</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">power_converter</span><span class="p">,</span> <span class="n">j_double</span><span class="o">.</span><span class="n">valueOf</span><span class="p">(</span><span class="n">current</span><span class="p">))</span>  <span class="c1"># boxed; Java unboxes internally</span>
 

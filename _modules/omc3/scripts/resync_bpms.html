@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.resync_bpms</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">SuperKEKB BPM Synchronization</span>
 <span class="sd">-----------------------------</span>
 
@@ -263,35 +263,35 @@
 <span class="sd">    Input turn by turn data to be resynchronized.</span>
 <span class="sd">    Can take the form of a `Path` or `str` to a file or directly a `TbtData` object.</span>
 
-<span class="sd">    flags: **[&#39;--input&#39;]**</span>
+<span class="sd">    flags: **['--input']**</span>
 
 <span class="sd">- **optics_dir** *(Path,str)*:</span>
 
 <span class="sd">    Optics analysis path of the unsynchronized data, must contain the `total_phase_{x,y}.tfs` files.</span>
 
-<span class="sd">    flags: **[&#39;--optics_dir&#39;]**</span>
+<span class="sd">    flags: **['--optics_dir']**</span>
 
 <span class="sd">- **output_file** *(Path,str)*:</span>
 
 <span class="sd">    Output file path where to write the synchronized turn by turn data.</span>
 <span class="sd">    The directory will be created if necessary.</span>
 
-<span class="sd">    flags: **[&#39;--output_file&#39;]**</span>
+<span class="sd">    flags: **['--output_file']**</span>
 
 <span class="sd">- **ring** *(str)*:</span>
 
 <span class="sd">    Ring name, either `LER` or `HER`.</span>
 
-<span class="sd">    flags: **[&#39;--ring&#39;]**</span>
+<span class="sd">    flags: **['--ring']**</span>
 
-<span class="sd">    choices: ``(&#39;LER&#39;, &#39;HER&#39;)``</span>
+<span class="sd">    choices: ``('LER', 'HER')``</span>
 
 <span class="sd">*--Optional--*</span>
 
 <span class="sd">- **tbt_datatype** *(str)*:</span>
 <span class="sd">    Datatype of the `turn_by_turn` data provided as input.</span>
 
-<span class="sd">    flags: **[&#39;--tbt_datatype&#39;]**</span>
+<span class="sd">    flags: **['--tbt_datatype']**</span>
 
 <span class="sd">    choices: list of datatypes supported by `turn_by_turn`, in `turn_by_turn.io.TBT_MODULES`</span>
 
@@ -300,19 +300,19 @@
 <span class="sd">- ** overwrite** *(bool)*:</span>
 <span class="sd">    Whether to overwrite the output file if it already exists.</span>
 
-<span class="sd">    flags: **[&#39;--overwrite&#39;]**</span>
+<span class="sd">    flags: **['--overwrite']**</span>
 
 <span class="sd">    default: ``False``</span>
 
 <span class="sd">- **planes** *(str)*:</span>
 <span class="sd">    Planes to process in the order given. Usually `X`, `Y`, `XY` or `YX`.</span>
 
-<span class="sd">    flags: **[&#39;--planes&#39;]**</span>
+<span class="sd">    flags: **['--planes']**</span>
 
-<span class="sd">    choices: ``(&#39;X&#39;, &#39;Y&#39;, &#39;XY&#39;, &#39;YX&#39;)``</span>
+<span class="sd">    choices: ``('X', 'Y', 'XY', 'YX')``</span>
 
 <span class="sd">    default: ``X``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -349,72 +349,72 @@
 <span class="c1"># ----- Some very specific constants -----</span>
 
 <span class="c1"># Available rings</span>
-<span class="n">RINGS</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;LER&quot;</span><span class="p">,</span> <span class="s2">&quot;HER&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LER&quot;</span><span class="p">,</span> <span class="s2">&quot;HER&quot;</span><span class="p">}</span>
+<span class="n">RINGS</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">"LER"</span><span class="p">,</span> <span class="s2">"HER"</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"LER"</span><span class="p">,</span> <span class="s2">"HER"</span><span class="p">}</span>
 
 <span class="c1"># Phase file containing the phase advance of the BPMs</span>
 <span class="n">PHASE_FILE</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TOTAL_PHASE_NAME</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{plane}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="p">)</span>  <span class="c1"># to be formatted by &#39;plane&#39;</span>
-<span class="n">DEFAULT_DATATYPE</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span>
+    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TOTAL_PHASE_NAME</span><span class="si">}</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"</span><span class="si">{plane}</span><span class="s2">"</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span>
+<span class="p">)</span>  <span class="c1"># to be formatted by 'plane'</span>
+<span class="n">DEFAULT_DATATYPE</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="s2">"lhc"</span>
 
 
 <span class="c1"># ----- Entrypoint parsing ----- #</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parse Commandline Arguments and return them as options.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">EntryPointParameters</span><span class="p">(</span>
         <span class="nb">input</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Input turn by turn data to be resynchronized. Can take the form of a `Path` to&quot;</span>
-            <span class="s2">&quot;a file or directly a `TbtData` object.&quot;</span><span class="p">,</span>
+            <span class="s2">"required"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Input turn by turn data to be resynchronized. Can take the form of a `Path` to"</span>
+            <span class="s2">"a file or directly a `TbtData` object."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">optics_dir</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Optics path, must contain the `total_phase_{x,y}.tfs` files.&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">"required"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Optics path, must contain the `total_phase_{x,y}.tfs` files."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">output_file</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
-            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Output file path where to write the turn by turn data. The directory will be&quot;</span>
-            <span class="s2">&quot;created if necessary.&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="n">PathOrStr</span><span class="p">,</span>
+            <span class="s2">"required"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Output file path where to write the turn by turn data. The directory will be"</span>
+            <span class="s2">"created if necessary."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">ring</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="n">RINGS</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ring name, from </span><span class="si">{</span><span class="n">RINGS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"required"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"choices"</span><span class="p">:</span> <span class="n">RINGS</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"Ring name, from </span><span class="si">{</span><span class="n">RINGS</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
         <span class="p">},</span>
         <span class="n">tbt_datatype</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">TBT_MODULES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">DEFAULT_DATATYPE</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Datatype of the TurnByTurn data&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"required"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"choices"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">TBT_MODULES</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="n">DEFAULT_DATATYPE</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Datatype of the TurnByTurn data"</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Whether to overwrite the output file if it already exists.&quot;</span><span class="p">,</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="s2">"required"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Whether to overwrite the output file if it already exists."</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">planes</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="p">[</span>  <span class="c1"># create all the possible permutations from the planes list</span>
-                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s2">"required"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"choices"</span><span class="p">:</span> <span class="p">[</span>  <span class="c1"># create all the possible permutations from the planes list</span>
+                <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">PLANES</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">(</span><span class="n">PLANES</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
             <span class="p">],</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">PLANES</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Planes to process in the given order.&quot;</span><span class="p">,</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="n">PLANES</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">"help"</span><span class="p">:</span> <span class="s2">"Planes to process in the given order."</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
 
@@ -427,37 +427,37 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">sync_tbt</span><span class="p">(</span>
     <span class="n">original_tbt</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">optics_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">ring</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">planes</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resynchronize the BPMS in the the turn by turn data based on the phase advance.</span>
+<span class="w">    </span><span class="sd">"""Resynchronize the BPMS in the the turn by turn data based on the phase advance.</span>
 <span class="sd">    Args:</span>
 <span class="sd">        original_tbt (tbt.TbtData): Original turn by turn data to be synchronized.</span>
 <span class="sd">        optics_dir (Path): Original optics directory containing the phase advance files.</span>
 <span class="sd">        ring (str): Ring name, either `LER` or `HER`.</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        tbt.TbtData: Resynchronized turn by turn data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Copy the original turn by turn data</span>
     <span class="n">synced_tbt</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">original_tbt</span><span class="p">)</span>
 
     <span class="c1"># HER and LER are in opposite direction for the phase</span>
-    <span class="n">ring_dir</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">ring</span> <span class="o">==</span> <span class="s2">&quot;HER&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">ring_dir</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">ring</span> <span class="o">==</span> <span class="s2">"HER"</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="c1"># Some BPMs can exist in a plane but not the other, we need to check both planes to be sure</span>
     <span class="n">already_processed</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing planes </span><span class="si">{</span><span class="n">planes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing planes </span><span class="si">{</span><span class="n">planes</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">planes</span><span class="p">):</span>
         <span class="n">phase_df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">optics_dir</span> <span class="o">/</span> <span class="n">PHASE_FILE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="n">plane</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
-        <span class="n">qx</span> <span class="o">=</span> <span class="n">phase_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1&quot;</span><span class="p">]</span>
-        <span class="n">qy</span> <span class="o">=</span> <span class="n">phase_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2&quot;</span><span class="p">]</span>
+        <span class="n">qx</span> <span class="o">=</span> <span class="n">phase_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">1"</span><span class="p">]</span>
+        <span class="n">qy</span> <span class="o">=</span> <span class="n">phase_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TUNE</span><span class="si">}</span><span class="s2">2"</span><span class="p">]</span>
         <span class="n">bpms</span><span class="p">:</span> <span class="n">Series</span> <span class="o">=</span> <span class="n">phase_df</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span>  <span class="c1"># using omc3 constants</span>
-        <span class="n">dphase</span><span class="p">:</span> <span class="n">Series</span> <span class="o">=</span> <span class="n">phase_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">dphase</span><span class="p">:</span> <span class="n">Series</span> <span class="o">=</span> <span class="n">phase_df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DELTA</span><span class="si">}{</span><span class="n">PHASE</span><span class="si">}{</span><span class="n">plane</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
 
-        <span class="n">tune</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">qx</span><span class="p">)</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">qy</span><span class="p">)</span>
+        <span class="n">tune</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">qx</span><span class="p">)</span> <span class="k">if</span> <span class="n">plane</span> <span class="o">==</span> <span class="s2">"X"</span> <span class="k">else</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">qy</span><span class="p">)</span>
 
         <span class="c1"># The phase advance divided by the tune will tell us how off the BPM is</span>
         <span class="n">ntune</span><span class="p">:</span> <span class="n">Series</span> <span class="o">=</span> <span class="n">dphase</span> <span class="o">/</span> <span class="n">tune</span>
         <span class="n">abs_ntune</span><span class="p">:</span> <span class="n">Series</span> <span class="o">=</span> <span class="n">ntune</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
 
-        <span class="c1"># If the ratio ntune is close to 1, that&#39;s one turn, otherwise, it&#39;s likely -2 turns</span>
+        <span class="c1"># If the ratio ntune is close to 1, that's one turn, otherwise, it's likely -2 turns</span>
         <span class="n">mag</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
             <span class="p">[</span><span class="n">abs_ntune</span> <span class="o">&gt;=</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">abs_ntune</span> <span class="o">&gt;=</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span>
@@ -466,7 +466,7 @@
 
         <span class="c1"># Iterate through all the BPMs and check their phase advance</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bpms</span><span class="p">):</span>
-            <span class="c1"># Check if we&#39;ve seen that BPM before in the other plane</span>
+            <span class="c1"># Check if we've seen that BPM before in the other plane</span>
             <span class="k">if</span> <span class="n">bpm</span> <span class="ow">in</span> <span class="n">already_processed</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">already_processed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bpm</span><span class="p">)</span>
@@ -476,7 +476,7 @@
 
             <span class="c1"># Shift the data</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">bpm</span><span class="si">:</span><span class="s2">15s</span><span class="si">}</span><span class="s2"> -&gt; turn correction of </span><span class="si">{</span><span class="n">bpm_correction</span><span class="si">}</span><span class="s2"> (ntune=</span><span class="si">{</span><span class="n">ntune</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">bpm</span><span class="si">:</span><span class="s2">15s</span><span class="si">}</span><span class="s2"> -&gt; turn correction of </span><span class="si">{</span><span class="n">bpm_correction</span><span class="si">}</span><span class="s2"> (ntune=</span><span class="si">{</span><span class="n">ntune</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)"</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
                 <span class="n">matrix</span> <span class="o">=</span> <span class="n">synced_tbt</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span>
@@ -500,20 +500,20 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">):</span>
         <span class="n">original_tbt</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">input</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ArgumentError</span><span class="p">(</span><span class="s2">&quot;input must be either a Path, str or a TbtData object&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ArgumentError</span><span class="p">(</span><span class="s2">"input must be either a Path, str or a TbtData object"</span><span class="p">)</span>
 
     <span class="n">opt</span><span class="o">.</span><span class="n">optics_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_dir</span><span class="p">)</span>
     <span class="n">opt</span><span class="o">.</span><span class="n">output_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="p">)</span>
 
     <span class="c1"># Check the overwrite flag</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opt</span><span class="o">.</span><span class="n">overwrite</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="si">}</span><span class="s2"> already exists, aborting.&quot;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="si">}</span><span class="s2"> already exists, aborting.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="si">}</span><span class="s2"> already exists, aborting."</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="si">}</span><span class="s2"> already exists, aborting."</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">opt</span><span class="o">.</span><span class="n">overwrite</span><span class="p">:</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Overwriting file </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Overwriting file </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">output_file</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 
     <span class="c1"># Synchronise TbT</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resynchronizing </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_dir</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Resynchronizing </span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">optics_dir</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
     <span class="n">synced_tbt</span> <span class="o">=</span> <span class="n">sync_tbt</span><span class="p">(</span><span class="n">original_tbt</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics_dir</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">ring</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">planes</span><span class="p">)</span>
 
     <span class="c1"># Save the resynced turn by turn data</span>
@@ -522,7 +522,7 @@
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

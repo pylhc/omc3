@@ -239,13 +239,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.machine_data_extraction.lsa_beamprocesses</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">LSA Beamprocesses</span>
 <span class="sd">-----------------</span>
 
 <span class="sd">This module contains functions to extract beamprocess - and related - information</span>
 <span class="sd">from LSA.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -260,7 +260,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_tools</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">omc3.utils.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">cern_network_import</span>
 
-<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">&quot;pjlsa&quot;</span><span class="p">)</span>
+<span class="n">pjlsa</span> <span class="o">=</span> <span class="n">cern_network_import</span><span class="p">(</span><span class="s2">"pjlsa"</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
@@ -272,12 +272,12 @@
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">RELEVANT_BP_CONTEXTS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;OPERATIONAL&quot;</span><span class="p">,</span> <span class="s2">&quot;MD&quot;</span><span class="p">)</span>
-<span class="n">RELEVANT_BP_CATEGORIES</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DISCRETE&quot;</span><span class="p">,)</span>
-<span class="n">KNOBS_BP_GROUP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;POWERCONVERTERS&quot;</span>  <span class="c1"># the Beamprocesses relevant for OMC</span>
-<span class="n">BP_CONTEXT_FAMILY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;beamprocess&quot;</span>
+<span class="n">RELEVANT_BP_CONTEXTS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"OPERATIONAL"</span><span class="p">,</span> <span class="s2">"MD"</span><span class="p">)</span>
+<span class="n">RELEVANT_BP_CATEGORIES</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"DISCRETE"</span><span class="p">,)</span>
+<span class="n">KNOBS_BP_GROUP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"POWERCONVERTERS"</span>  <span class="c1"># the Beamprocesses relevant for OMC</span>
+<span class="n">BP_CONTEXT_FAMILY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"beamprocess"</span>
 
-<span class="n">FILL_VARIABLE</span> <span class="o">=</span> <span class="s2">&quot;HX:FILLN&quot;</span>
+<span class="n">FILL_VARIABLE</span> <span class="o">=</span> <span class="s2">"HX:FILLN"</span>
 
 
 <div class="viewcode-block" id="get_active_beamprocess_at_time">
@@ -285,10 +285,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_active_beamprocess_at_time</span><span class="p">(</span>
     <span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
-    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lhc"</span><span class="p">,</span>
     <span class="n">bp_group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">KNOBS_BP_GROUP</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BeamProcessInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Find the active beam process at the time given.</span>
 
 <span class="sd">    Note: This function has been derived from the original KnobExtractor implementation in the Java Online Model.</span>
@@ -297,14 +297,14 @@
 <span class="sd">        lsa_client (LSAClient): The LSA client instance.</span>
 <span class="sd">        time (datetime): The time at which to find the active beam process.</span>
 <span class="sd">        accelerator (str): Name of the accelerator.</span>
-<span class="sd">        bp_group (str): BeamProcess Group, choices : &#39;POWERCONVERTERS&#39;, &#39;ADT&#39;, &#39;KICKERS&#39;, &#39;SPOOLS&#39;, &#39;COLLIMATORS&#39;</span>
+<span class="sd">        bp_group (str): BeamProcess Group, choices : 'POWERCONVERTERS', 'ADT', 'KICKERS', 'SPOOLS', 'COLLIMATORS'</span>
 
 
 <span class="sd">    Returns:</span>
 <span class="sd">        BeamProcessInfo: The corresponding BeamProcessInfo dataclass instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">accelerator</span> <span class="o">!=</span> <span class="s2">&quot;lhc&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Active-Beamprocess retrieval is only implemented for LHC&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">accelerator</span> <span class="o">!=</span> <span class="s2">"lhc"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Active-Beamprocess retrieval is only implemented for LHC"</span><span class="p">)</span>
 
     <span class="n">beamprocessmap</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_lhcService</span><span class="o">.</span><span class="n">findResidentStandAloneBeamProcessesByTime</span><span class="p">(</span>
         <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># java timestamps are in milliseconds</span>
@@ -312,9 +312,9 @@
     <span class="n">beamprocess</span> <span class="o">=</span> <span class="n">beamprocessmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bp_group</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">beamprocess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No active BeamProcess found for group &#39;</span><span class="si">{</span><span class="n">bp_group</span><span class="si">}</span><span class="s2">&#39; at time </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"No active BeamProcess found for group '</span><span class="si">{</span><span class="n">bp_group</span><span class="si">}</span><span class="s2">' at time </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Active BeamProcess at time &#39;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">beamprocess</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Active BeamProcess at time '</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">beamprocess</span><span class="si">!s}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">BeamProcessInfo</span><span class="o">.</span><span class="n">from_java_beamprocess</span><span class="p">(</span><span class="n">beamprocess</span><span class="p">)</span></div>
 
 
@@ -325,7 +325,7 @@
     <span class="n">lsa_client</span><span class="p">:</span> <span class="n">LSAClient</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BeamProcessInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the BeamProcess by its name.</span>
 
 <span class="sd">    Args:</span>
@@ -334,9 +334,9 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        BeamProcessInfo: The corresponding BeamProcessInfo dataclass instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracting Beamprocess </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> from ContextService&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Extracting Beamprocess </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> from ContextService"</span><span class="p">)</span>
     <span class="n">beamprocess</span> <span class="o">=</span> <span class="n">lsa_client</span><span class="o">.</span><span class="n">_contextService</span><span class="o">.</span><span class="n">findStandAloneBeamProcess</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">BeamProcessInfo</span><span class="o">.</span><span class="n">from_java_beamprocess</span><span class="p">(</span><span class="n">beamprocess</span><span class="p">)</span></div>
 
@@ -349,9 +349,9 @@
     <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
     <span class="n">data_retrieval_days</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># assumes fills are not longer than 1 day</span>
-    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lhc"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FillInfo</span><span class="p">,</span> <span class="n">BeamProcessInfo</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the info about the active beamprocess at ``time``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get the info about the active beamprocess at ``time``."""</span>
 
     <span class="c1"># Beamprocess -</span>
     <span class="n">bp_info</span> <span class="o">=</span> <span class="n">get_active_beamprocess_at_time</span><span class="p">(</span><span class="n">lsa_client</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">)</span>
@@ -371,11 +371,11 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">_find_beamprocess_start</span><span class="p">(</span><span class="n">fill_info</span><span class="o">.</span><span class="n">beamprocesses</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">bp_info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In fill </span><span class="si">{</span><span class="n">fill_info</span><span class="o">.</span><span class="n">no</span><span class="si">}</span><span class="s2"> the </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"In fill </span><span class="si">{</span><span class="n">fill_info</span><span class="o">.</span><span class="n">no</span><span class="si">}</span><span class="s2"> the </span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
     <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Beamprocess </span><span class="si">{</span><span class="n">bp_info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in fill </span><span class="si">{</span><span class="n">fill_info</span><span class="o">.</span><span class="n">no</span><span class="si">}</span><span class="s2"> started at time </span><span class="si">{</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="sa">f</span><span class="s2">"Beamprocess </span><span class="si">{</span><span class="n">bp_info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in fill </span><span class="si">{</span><span class="n">fill_info</span><span class="o">.</span><span class="n">no</span><span class="si">}</span><span class="s2"> started at time </span><span class="si">{</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">."</span>
     <span class="p">)</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replacing beamprocess start time </span><span class="si">{</span><span class="n">bp_info</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Replacing beamprocess start time </span><span class="si">{</span><span class="n">bp_info</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">bp_info</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span>
 
     <span class="k">return</span> <span class="n">fill_info</span><span class="p">,</span> <span class="n">bp_info</span></div>
@@ -385,23 +385,23 @@
 <div class="viewcode-block" id="beamprocess_to_dict">
 <a class="viewcode-back" href="../../../modules/machine_data_extraction.html#omc3.machine_data_extraction.lsa_beamprocesses.beamprocess_to_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">beamprocess_to_dict</span><span class="p">(</span><span class="n">bp</span><span class="p">:</span> <span class="n">StandAloneBeamProcessImpl</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert all ``get``- fields of the beamprocess (java) to a dictionary.</span>
+<span class="w">    </span><span class="sd">"""Convert all ``get``- fields of the beamprocess (java) to a dictionary.</span>
 
-<span class="sd">    Will contain the original Beamprocess object under the key &#39;object&#39;</span>
-<span class="sd">    and its string representation under &#39;name&#39;.</span>
+<span class="sd">    Will contain the original Beamprocess object under the key 'object'</span>
+<span class="sd">    and its string representation under 'name'.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bp (StandAloneBeamProcessImpl): Beamprocess object (Java).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: Dictionary representation of the beamprocess.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">bp</span><span class="o">.</span><span class="n">toString</span><span class="p">(),</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="n">bp</span><span class="p">}</span>
+<span class="sd">    """</span>
+    <span class="n">bp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">bp</span><span class="o">.</span><span class="n">toString</span><span class="p">(),</span> <span class="s2">"object"</span><span class="p">:</span> <span class="n">bp</span><span class="p">}</span>
     <span class="n">bp_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
             <span class="n">getXY</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="nb">str</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">getXY</span><span class="p">)())</span>  <span class="c1"># note: __getattr__ does not exist</span>
             <span class="k">for</span> <span class="n">getXY</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">getXY</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;get&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;Attribute&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">getXY</span>
+            <span class="k">if</span> <span class="n">getXY</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"get"</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"Attribute"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">getXY</span>
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">bp_dict</span></div>
@@ -417,11 +417,11 @@
     <span class="n">spark</span><span class="p">:</span> <span class="n">SparkSession</span><span class="p">,</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
     <span class="n">data_retrieval_days</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"lhc"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FillInfo</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieves fills with their associated beamprocesses between the specified time window.</span>
-<span class="sd">    Adapted from pjlsa&#39;s FindBeamProcessHistory.</span>
+<span class="sd">    Adapted from pjlsa's FindBeamProcessHistory.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        lsa_client (LSAClient): The LSA client instance used to query beamprocess history.</span>
@@ -433,7 +433,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        List of FillInfo objects, each containing the fill number, accelerator, start time, and beam processes.</span>
 <span class="sd">        They are sorted by fill number.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># get fill numbers from nxcals</span>
     <span class="n">fills_results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NXCALSResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_raw_vars</span><span class="p">(</span>
         <span class="n">spark</span><span class="p">,</span>
@@ -442,7 +442,7 @@
         <span class="n">data_retrieval_days</span><span class="o">=</span><span class="n">data_retrieval_days</span><span class="p">,</span>
         <span class="n">latest_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">fills_results</span><span class="p">)</span><span class="si">}</span><span class="s2"> fills aqcuired.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">fills_results</span><span class="p">)</span><span class="si">}</span><span class="s2"> fills aqcuired."</span><span class="p">)</span>
     <span class="n">map_fill_times</span> <span class="o">=</span> <span class="p">{</span><span class="n">fr</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span> <span class="n">fr</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">fr</span> <span class="ow">in</span> <span class="n">fills_results</span><span class="p">}</span>
     <span class="n">fill_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">map_fill_times</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
@@ -471,7 +471,7 @@
                 <span class="n">beamprocesses</span><span class="o">=</span><span class="p">[(</span><span class="n">bp_datetime</span><span class="p">,</span> <span class="n">bp_name</span><span class="p">)]</span>
             <span class="p">)</span>
 
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Beamprocess History extracted.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Beamprocess History extracted."</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">fills_and_beamprocesses</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">fi</span><span class="p">:</span> <span class="n">fi</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span></div>
 
 
@@ -479,15 +479,15 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_find_beamprocess_start</span><span class="p">(</span>
     <span class="n">beamprocesses</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">bp_name</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the last time the given beamprocess occurs in the list of beamprocesses before the given time.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Looking for beamprocess &#39;</span><span class="si">{</span><span class="n">bp_name</span><span class="si">}</span><span class="s2">&#39; in fill before &#39;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Looking for beamprocess '</span><span class="si">{</span><span class="n">bp_name</span><span class="si">}</span><span class="s2">' in fill before '</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ts</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">beamprocesses</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ts</span> <span class="o">&lt;=</span> <span class="n">time</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="n">bp_name</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found start for beamprocess &#39;</span><span class="si">{</span><span class="n">bp_name</span><span class="si">}</span><span class="s2">&#39; at </span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Found start for beamprocess '</span><span class="si">{</span><span class="n">bp_name</span><span class="si">}</span><span class="s2">' at </span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">ts</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beamprocess &#39;</span><span class="si">{</span><span class="n">bp_name</span><span class="si">}</span><span class="s2">&#39; was not found.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Beamprocess '</span><span class="si">{</span><span class="n">bp_name</span><span class="si">}</span><span class="s2">' was not found."</span><span class="p">)</span>
 </pre></div>
 
            </div>

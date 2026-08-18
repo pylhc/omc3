@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.plotting.plot_kmod_results</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Plot K-Modulation Results</span>
 <span class="sd">-------------------------</span>
 
@@ -288,7 +288,7 @@
 <span class="sd">    Which plotting styles to use, either from plotting.styles.*.mplstyles</span>
 <span class="sd">    or default mpl.</span>
 
-<span class="sd">    default: ``[&#39;standard&#39;, &#39;kmod_results&#39;]``</span>
+<span class="sd">    default: ``['standard', 'kmod_results']``</span>
 
 
 <span class="sd">- **show**:</span>
@@ -296,7 +296,7 @@
 <span class="sd">    Show the plots.</span>
 
 <span class="sd">    action: ``store_true``</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -318,14 +318,14 @@
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">PARAM_BETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;beta&quot;</span>
-<span class="n">PARAM_BETABEAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;betabeat&quot;</span>
-<span class="n">PARAM_WAIST</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;waist&quot;</span>
+<span class="n">PARAM_BETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"beta"</span>
+<span class="n">PARAM_BETABEAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"betabeat"</span>
+<span class="n">PARAM_WAIST</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"waist"</span>
 
 <span class="n">AXIS_LABELS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">PARAM_BETA</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;$\beta_</span><span class="si">{plane}</span><span class="s1">$ [m]&#39;</span><span class="p">,</span>
-    <span class="n">PARAM_BETABEAT</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;$\Delta\beta_</span><span class="si">{plane}</span><span class="s1">/\beta_</span><span class="si">{plane}</span><span class="s1">$ %&#39;</span><span class="p">,</span>
-    <span class="n">PARAM_WAIST</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Waist </span><span class="si">{plane}</span><span class="s1"> [m]&#39;</span><span class="p">,</span>
+    <span class="n">PARAM_BETA</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'$\beta_</span><span class="si">{plane}</span><span class="s1">$ [m]'</span><span class="p">,</span>
+    <span class="n">PARAM_BETABEAT</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'$\Delta\beta_</span><span class="si">{plane}</span><span class="s1">/\beta_</span><span class="si">{plane}</span><span class="s1">$ %'</span><span class="p">,</span>
+    <span class="n">PARAM_WAIST</span><span class="p">:</span> <span class="sa">r</span><span class="s1">'Waist </span><span class="si">{plane}</span><span class="s1"> [m]'</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -333,53 +333,53 @@
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="c1"># Data Related ---</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"data"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStrOrDataFrame</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the K-Mod DataFrame (i.e. `results.tfs`), &quot;</span>
-             <span class="s2">&quot;e.g. from `omc3.kmod_averages`, or the DataFrame itself.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path to the K-Mod DataFrame (i.e. `results.tfs`), "</span>
+             <span class="s2">"e.g. from `omc3.kmod_averages`, or the DataFrame itself."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"ip"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;IP this result is from (for plot label and filename only).&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"IP this result is from (for plot label and filename only)."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;betastar&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"betastar"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Model beta-star values (x, y) for reference.&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Model beta-star values (x, y) for reference."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;waist&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"waist"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Model waist values (x, y) for reference.&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Model waist values (x, y) for reference."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_dir&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"output_dir"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to save the plots into. If not given, no plots will be saved.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path to save the plots into. If not given, no plots will be saved."</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Plotting Related ---</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;plot_styles&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"plot_styles"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;kmod_results&#39;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.&#39;</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">'standard'</span><span class="p">,</span> <span class="s1">'kmod_results'</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Which plotting styles to use, either from plotting.styles.*.mplstyles or default mpl.'</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;manual_style&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"manual_style"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">DictAsString</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional style rcParameters which update the set of predefined ones.&#39;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Additional style rcParameters which update the set of predefined ones.'</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;show&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show the plots.&quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"show"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Show the plots."</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
@@ -388,10 +388,10 @@
 <a class="viewcode-back" href="../../../entrypoints/plotting.html#omc3.plotting.plot_kmod_results.plot_kmod_results">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_kmod_results</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function to plot the beta-beating and waist from K-Modulation data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting K-Mod results.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Plotting K-Mod results."</span><span class="p">)</span>
 
     <span class="c1"># Loading ---</span>
     <span class="n">df_kmod</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">data</span>
@@ -413,13 +413,13 @@
         <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># don&#39;t save if called with DataFrames</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># don't save if called with DataFrames</span>
             <span class="n">save_config</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="vm">__file__</span><span class="p">)</span>
 
-        <span class="n">ip_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ip</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">ip</span><span class="si">}</span><span class="s2">_&quot;</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">ip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ip_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ip</span><span class="si">{</span><span class="n">opt</span><span class="o">.</span><span class="n">ip</span><span class="si">}</span><span class="s2">_"</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">ip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">""</span>
         <span class="k">for</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">fig</span> <span class="ow">in</span> <span class="n">figs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">out_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ip_str</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;savefig.format&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2"> plot to </span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">out_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ip_str</span><span class="si">}{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">'savefig.format'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2"> plot to </span><span class="si">{</span><span class="n">out_file</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
@@ -437,14 +437,14 @@
     <span class="n">reference</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
     <span class="n">ip</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function to plot the resulting parameter, beta function or waist.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        results (tfs.TfsDataFrame):</span>
 <span class="sd">            The results to plot.</span>
 <span class="sd">        parameter (str):</span>
-<span class="sd">            Parameter to plot. Either &#39;beta&#39; or &#39;waist&#39;.</span>
+<span class="sd">            Parameter to plot. Either 'beta' or 'waist'.</span>
 <span class="sd">        reference (list[float]):</span>
 <span class="sd">            Reference values to plot.</span>
 <span class="sd">        ip (str|None):</span>
@@ -453,15 +453,15 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        The created figure.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">parameter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">PARAM_BETA</span><span class="p">,</span> <span class="n">PARAM_WAIST</span><span class="p">,</span> <span class="n">PARAM_BETABEAT</span><span class="p">]:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Parameter must be either &#39;</span><span class="si">{</span><span class="n">PARAM_BETA</span><span class="si">}</span><span class="s2">&#39;, &#39;</span><span class="si">{</span><span class="n">PARAM_WAIST</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;or &#39;</span><span class="si">{</span><span class="n">PARAM_BETABEAT</span><span class="si">}</span><span class="s2">&#39;, instead got &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="sa">f</span><span class="s2">"Parameter must be either '</span><span class="si">{</span><span class="n">PARAM_BETA</span><span class="si">}</span><span class="s2">', '</span><span class="si">{</span><span class="n">PARAM_WAIST</span><span class="si">}</span><span class="s2">' "</span>
+            <span class="sa">f</span><span class="s2">"or '</span><span class="si">{</span><span class="n">PARAM_BETABEAT</span><span class="si">}</span><span class="s2">', instead got '</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">'"</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plotting parameter </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Plotting parameter </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">_get_square_axes</span><span class="p">()</span>
 
     <span class="c1"># Plot reference ---</span>
@@ -470,44 +470,44 @@
             <span class="n">reference</span> <span class="o">=</span> <span class="p">[</span><span class="n">reference</span><span class="p">,</span> <span class="n">reference</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">parameter</span> <span class="o">!=</span> <span class="n">PARAM_BETABEAT</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">reference</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">reference</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Model"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span>
 
     <span class="c1"># Plot data ---</span>
     <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">beam</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df_kmod</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> not found in DataFrame. Skipping.&quot;</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2"> not found in DataFrame. Skipping."</span><span class="p">)</span>
             <span class="k">continue</span>
 
         <span class="k">if</span> <span class="n">parameter</span> <span class="o">==</span> <span class="n">PARAM_BETA</span><span class="p">:</span>
-            <span class="n">x</span><span class="p">,</span> <span class="n">xerr</span> <span class="o">=</span> <span class="n">_get_beta_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">)</span>
-            <span class="n">y</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_get_beta_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">xerr</span> <span class="o">=</span> <span class="n">_get_beta_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">'X'</span><span class="p">)</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_get_beta_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">'Y'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">parameter</span> <span class="o">==</span> <span class="n">PARAM_BETABEAT</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">reference</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;To plot betabeating, please give a betastar for reference!&quot;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"To plot betabeating, please give a betastar for reference!"</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-            <span class="n">x</span><span class="p">,</span> <span class="n">xerr</span> <span class="o">=</span> <span class="n">_get_beat_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">reference</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">y</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_get_beat_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="n">reference</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">xerr</span> <span class="o">=</span> <span class="n">_get_beat_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">'X'</span><span class="p">,</span> <span class="n">reference</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_get_beat_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">'Y'</span><span class="p">,</span> <span class="n">reference</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">parameter</span> <span class="o">==</span> <span class="n">PARAM_WAIST</span><span class="p">:</span>
-            <span class="n">x</span><span class="p">,</span> <span class="n">xerr</span> <span class="o">=</span> <span class="n">_get_waist_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">)</span>
-            <span class="n">y</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_get_waist_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">xerr</span> <span class="o">=</span> <span class="n">_get_waist_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">'X'</span><span class="p">)</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">yerr</span> <span class="o">=</span> <span class="n">_get_waist_and_err</span><span class="p">(</span><span class="n">df_kmod</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="s1">'Y'</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
                     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">xerr</span><span class="o">=</span><span class="n">xerr</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span>
-                    <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;C</span><span class="si">{</span><span class="n">beam</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s1"> IP</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">ip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s1">'C</span><span class="si">{</span><span class="n">beam</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">'B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s1"> IP</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">ip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'B</span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
 
     <span class="c1"># Decorate axes ---</span>
     <span class="n">label</span> <span class="o">=</span> <span class="n">AXIS_LABELS</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s1">'x'</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plane</span><span class="o">=</span><span class="s1">'y'</span><span class="p">))</span>
     <span class="n">_set_square_limits</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
 
-    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span>
 
     <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">fig</span></div>
@@ -516,7 +516,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_square_axes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]:</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span>  <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">'equal'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span>
 
 
@@ -527,20 +527,20 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_waist_and_err</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-    <span class="n">waist</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">WAIST</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">WAIST</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+    <span class="n">waist</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">WAIST</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">WAIST</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">waist</span><span class="p">,</span> <span class="n">err</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_beta_and_err</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-    <span class="n">beta</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">beta</span><span class="p">,</span> <span class="n">err</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_beat_and_err</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">beam</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-    <span class="n">beat</span> <span class="o">=</span> <span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">model</span><span class="p">)</span> <span class="o">/</span> <span class="n">model</span> <span class="o">*</span> <span class="mi">100</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">model</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">beat</span> <span class="o">=</span> <span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">-</span> <span class="n">model</span><span class="p">)</span> <span class="o">/</span> <span class="n">model</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">BETASTAR</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">/</span> <span class="n">model</span> <span class="o">*</span> <span class="mi">100</span>
     <span class="k">return</span> <span class="n">beat</span><span class="p">,</span> <span class="n">err</span>
 </pre></div>
 

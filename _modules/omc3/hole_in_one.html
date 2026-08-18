@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.hole_in_one</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Hole in One</span>
 <span class="sd">-----------</span>
 
@@ -269,7 +269,7 @@
 <span class="sd">+--------------------------+--------+---------------------------+------+-----------------------+</span>
 
 <span class="sd">To run either of the two or both steps, see options ``--harpy`` and ``--optics``.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -303,17 +303,17 @@
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging_tools</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">DEFAULT_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;analysis_</span><span class="si">{time:s}</span><span class="s2">.ini&quot;</span>
-<span class="n">DATATYPE_TBT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tbt_data&quot;</span>
+<span class="n">DEFAULT_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">"analysis_</span><span class="si">{time:s}</span><span class="s2">.ini"</span>
+<span class="n">DATATYPE_TBT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"tbt_data"</span>
 
 
 <div class="viewcode-block" id="hole_in_one_params">
 <a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.hole_in_one.hole_in_one_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">hole_in_one_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the entry point parameters for hole_in_one.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create the entry point parameters for hole_in_one."""</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;harpy&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Runs frequency analysis&quot;</span><span class="p">)</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;optics&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Measures the lattice optics&quot;</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"harpy"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Runs frequency analysis"</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"optics"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Measures the lattice optics"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
 
@@ -322,7 +322,7 @@
 <a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.hole_in_one.hole_in_one_entrypoint">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">hole_in_one_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hole_in_one_entrypoint</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">rest</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Runs frequency analysis and measures lattice optics.</span>
 
 
@@ -338,7 +338,7 @@
 
 <span class="sd">    Harpy Kwargs:</span>
 <span class="sd">      - **files**: TbT files to analyse.</span>
-<span class="sd">        Can also be the TbtData objects directly, if &#39;tbt_data&#39; is chosen as datatype.</span>
+<span class="sd">        Can also be the TbtData objects directly, if 'tbt_data' is chosen as datatype.</span>
 
 <span class="sd">        Flags: **--files**</span>
 <span class="sd">        Required: ``True``</span>
@@ -352,8 +352,8 @@
 <span class="sd">      - **to_write**: Choose the type of output.</span>
 
 <span class="sd">        Flags: **--to_write**</span>
-<span class="sd">        Choices: ``(&#39;lin&#39;, &#39;spectra&#39;, &#39;full_spectra&#39;, &#39;bpm_summary&#39;)``</span>
-<span class="sd">        Default: ``[&#39;lin&#39;, &#39;bpm_summary&#39;]``</span>
+<span class="sd">        Choices: ``('lin', 'spectra', 'full_spectra', 'bpm_summary')``</span>
+<span class="sd">        Default: ``['lin', 'bpm_summary']``</span>
 <span class="sd">      - **turns** *(int)*: Turn index to start and first turn index to be ignored.</span>
 
 <span class="sd">        Flags: **--turns**</span>
@@ -369,10 +369,10 @@
 
 <span class="sd">        Flags: **--n_jobs**</span>
 <span class="sd">        Default: ``0``</span>
-<span class="sd">      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in &#39;m&#39;.</span>
+<span class="sd">      - **unit** *(str)*: A unit of TbT BPM orbit data. All cuts and output are in 'm'.</span>
 
 <span class="sd">        Flags: **--unit**</span>
-<span class="sd">        Choices: ``(&#39;m&#39;, &#39;cm&#39;, &#39;mm&#39;, &#39;um&#39;)``</span>
+<span class="sd">        Choices: ``('m', 'cm', 'mm', 'um')``</span>
 <span class="sd">        Default: ``m``</span>
 <span class="sd">      - **tbt_datatype** *(str)*: Choose datatype from which to import (e.g LHC binary SDDS, numpy npz).</span>
 
@@ -437,7 +437,7 @@
 <span class="sd">        frequency spectrum: Synchrotron tune below ~0.03, betatron tunes above ~0.03.</span>
 
 <span class="sd">        Flags: **--autotunes**</span>
-<span class="sd">        Choices: ``(&#39;all&#39;, &#39;transverse&#39;)``</span>
+<span class="sd">        Choices: ``('all', 'transverse')``</span>
 <span class="sd">      - **is_free_kick**: If present, it will perform the free kick phase correction</span>
 
 <span class="sd">        Flags: **--free_kick**</span>
@@ -478,7 +478,7 @@
 <span class="sd">      - **window** *(str)*: Windowing function to be used for frequency analysis.</span>
 
 <span class="sd">        Flags: **--window**</span>
-<span class="sd">        Choices: ``(&#39;rectangle&#39;, &#39;welch&#39;, &#39;triangle&#39;, &#39;hann&#39;, &#39;hamming&#39;, &#39;nuttal3&#39;, &#39;nuttal4&#39;)``</span>
+<span class="sd">        Choices: ``('rectangle', 'welch', 'triangle', 'hann', 'hamming', 'nuttal3', 'nuttal4')``</span>
 <span class="sd">        Default: ``hann``</span>
 <span class="sd">      - **resonances** *(int)*: Maximum magnet order of resonance lines to calculate.</span>
 
@@ -506,7 +506,7 @@
 <span class="sd">      - **compensation** *(str)*: Mode of compensation for the analysis after driven beam excitation.</span>
 
 <span class="sd">        Flags: **-compensation**</span>
-<span class="sd">        Choices: ``(&quot;model&quot;, &quot;equation&quot;, &quot;none&quot;)``</span>
+<span class="sd">        Choices: ``("model", "equation", "none")``</span>
 <span class="sd">        Default: ``model``</span>
 <span class="sd">      - **coupling_method** *(int)*: Coupling analysis option: disabled, 1 BPM or 2 BPMs method</span>
 
@@ -582,11 +582,11 @@
 <span class="sd">      - For the rest, please see get_parameters() methods in child Accelerator classes,</span>
 <span class="sd">        which are declared in ``omc3/model/accelerators/*.py``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">opt</span><span class="o">.</span><span class="n">harpy</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">&quot;No module has been chosen.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">"No module has been chosen."</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">rest</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">&quot;No input has been set.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="s2">"No input has been set."</span><span class="p">)</span>
     <span class="n">harpy_opt</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">,</span> <span class="n">accel_opt</span> <span class="o">=</span> <span class="n">_get_suboptions</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span>
     <span class="n">_write_config_file</span><span class="p">(</span><span class="n">harpy_opt</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">,</span> <span class="n">accel_opt</span><span class="p">)</span>
     <span class="n">lins</span> <span class="o">=</span> <span class="p">[]</span>
@@ -600,7 +600,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_suboptions</span><span class="p">(</span>
     <span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">rest</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse suboptions for harpy and optics modules.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Parse suboptions for harpy and optics modules."""</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">harpy</span><span class="p">:</span>
         <span class="n">harpy_opt</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">_harpy_entrypoint</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">optics</span><span class="p">:</span>
@@ -614,7 +614,7 @@
             <span class="k">if</span> <span class="n">harpy_opt</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">rest</span> <span class="o">=</span> <span class="n">add_to_arguments</span><span class="p">(</span>
                     <span class="n">rest</span><span class="p">,</span>
-                    <span class="n">entry_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model_dir&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;flags&quot;</span><span class="p">:</span> <span class="s2">&quot;--model_dir&quot;</span><span class="p">}},</span>
+                    <span class="n">entry_params</span><span class="o">=</span><span class="p">{</span><span class="s2">"model_dir"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"flags"</span><span class="p">:</span> <span class="s2">"--model_dir"</span><span class="p">}},</span>
                     <span class="n">model_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
                 <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -624,8 +624,8 @@
         <span class="n">optics_opt</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">_optics_entrypoint</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
         <span class="n">accel_opt</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_parsed_opt</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
         <span class="n">optics_opt</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">and</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">compensation</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Compensation requested and no driven model was provided.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">excitation</span> <span class="ow">and</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">compensation</span> <span class="o">!=</span> <span class="s2">"none"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"Compensation requested and no driven model was provided."</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">optics_opt</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">accel_opt</span> <span class="o">=</span> <span class="kc">None</span>
@@ -637,22 +637,22 @@
     <span class="n">optics_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">accelerator_opt</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the parsed options into a config file for later use.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Write the parsed options into a config file for later use."""</span>
     <span class="n">all_options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">if</span> <span class="n">harpy_opt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">all_options</span><span class="p">[</span><span class="s2">&quot;harpy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">all_options</span><span class="p">[</span><span class="s2">"harpy"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">all_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">harpy_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
     <span class="k">if</span> <span class="n">optics_opt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">optics_opt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">optics_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
-        <span class="n">optics_opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;accelerator&quot;</span><span class="p">)</span>
+        <span class="n">optics_opt</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"accelerator"</span><span class="p">)</span>
 
-        <span class="n">all_options</span><span class="p">[</span><span class="s2">&quot;optics&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">all_options</span><span class="p">[</span><span class="s2">"optics"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">all_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">optics_opt</span><span class="p">)</span>
         <span class="n">all_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">accelerator_opt</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
-    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">all_options</span><span class="p">[</span><span class="s2">&quot;outputdir&quot;</span><span class="p">])</span>
+    <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">all_options</span><span class="p">[</span><span class="s2">"outputdir"</span><span class="p">])</span>
     <span class="n">file_name</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">formats</span><span class="o">.</span><span class="n">TIME</span><span class="p">)</span>
     <span class="p">)</span>
@@ -661,9 +661,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_run_harpy</span><span class="p">(</span><span class="n">harpy_options</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run frequency analysis on turn-by-turn data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Run frequency analysis on turn-by-turn data."""</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">harpy_options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time for Harpy: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
+    <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Total time for Harpy: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">"</span><span class="p">)):</span>
         <span class="n">tbt_datas</span> <span class="o">=</span> <span class="n">_parse_tbt_data</span><span class="p">(</span><span class="n">harpy_options</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">harpy_options</span><span class="o">.</span><span class="n">tbt_datatype</span><span class="p">)</span>
         <span class="n">bunch_tasks</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="n">bunch_data</span><span class="p">,</span> <span class="n">name_for_bunch</span><span class="p">)</span>
@@ -677,14 +677,14 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_tbt_data</span><span class="p">(</span><span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">],</span> <span class="n">tbt_datatype</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the turn-by-turn data reading given files or TbtData objects.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Parse the turn-by-turn data reading given files or TbtData objects."""</span>
     <span class="k">if</span> <span class="n">tbt_datatype</span> <span class="o">==</span> <span class="n">DATATYPE_TBT</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[(</span><span class="n">file</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">file</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">"file"</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                <span class="s2">&quot;To determine output naming for hole-in-one, &quot;</span>
-                <span class="s2">&quot;the given TbT objects must contain a &#39;file&#39; entry in their meta-data.&quot;</span>
+                <span class="s2">"To determine output naming for hole-in-one, "</span>
+                <span class="s2">"the given TbT objects must contain a 'file' entry in their meta-data."</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="k">return</span> <span class="p">[(</span><span class="n">tbt</span><span class="o">.</span><span class="n">read_tbt</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">tbt_datatype</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
@@ -693,13 +693,13 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_add_suffix_and_iter_bunches</span><span class="p">(</span>
     <span class="n">tbt_data</span><span class="p">:</span> <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the additional suffix (if given by user) to output files and</span>
-<span class="sd">    split the TbT data into bunches to analyse them individually.&quot;&quot;&quot;</span>
-    <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Add the additional suffix (if given by user) to output files and</span>
+<span class="sd">    split the TbT data into bunches to analyse them individually."""</span>
+    <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="s2">""</span>
 
     <span class="c1"># Single bunch</span>
     <span class="k">if</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">file_name_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">file_name_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">yield</span> <span class="n">tbt_data</span><span class="p">,</span> <span class="n">file_name_out</span>
         <span class="k">return</span>
 
@@ -707,15 +707,15 @@
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">bunch_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">unknown_bunches</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">unknown_bunches</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bunch IDs </span><span class="si">{</span><span class="n">unknown_bunches</span><span class="si">}</span><span class="s2"> not present in multi-bunch file </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bunch IDs </span><span class="si">{</span><span class="n">unknown_bunches</span><span class="si">}</span><span class="s2"> not present in multi-bunch file </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">nbunches</span><span class="p">):</span>
         <span class="n">bunch_id</span> <span class="o">=</span> <span class="n">tbt_data</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">bunch_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bunch_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">bunch_ids</span><span class="p">:</span>
             <span class="k">continue</span>
 
-        <span class="n">bunch_id_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_bunchID</span><span class="si">{</span><span class="n">bunch_id</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">file_name_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">bunch_id_str</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bunch_id_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_bunchID</span><span class="si">{</span><span class="n">bunch_id</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">file_name_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">file_name</span><span class="si">}{</span><span class="n">bunch_id_str</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">yield</span> <span class="p">(</span>
             <span class="n">tbt</span><span class="o">.</span><span class="n">TbtData</span><span class="p">(</span>
                 <span class="n">matrices</span><span class="o">=</span><span class="p">[</span><span class="n">tbt_data</span><span class="o">.</span><span class="n">matrices</span><span class="p">[</span><span class="n">index</span><span class="p">]],</span>
@@ -728,12 +728,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_measure_optics</span><span class="p">(</span><span class="n">lins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]],</span> <span class="n">optics_opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measure lattice optics from frequency spectra or files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Measure lattice optics from frequency spectra or files."""</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">lins</span> <span class="o">=</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">files</span>
 
     <span class="k">if</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No accelerator model was provided. Cannot perform optics analysis.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"No accelerator model was provided. Cannot perform optics analysis."</span><span class="p">)</span>
 
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">InputFiles</span><span class="p">(</span><span class="n">lins</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
     <span class="n">iotools</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">(</span><span class="n">optics_opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
@@ -741,34 +741,34 @@
         <span class="n">optics_opt</span><span class="o">.</span><span class="n">outputdir</span><span class="p">,</span> <span class="n">optics_opt</span><span class="o">.</span><span class="n">calibrationdir</span>
     <span class="p">)</span>
     <span class="n">inputs</span><span class="o">.</span><span class="n">calibrate</span><span class="p">(</span><span class="n">calibrations</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time for optics measurements: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
+    <span class="k">with</span> <span class="n">timeit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">spanned</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Total time for optics measurements: </span><span class="si">{</span><span class="n">spanned</span><span class="si">}</span><span class="s2">"</span><span class="p">)):</span>
         <span class="n">measure_optics</span><span class="o">.</span><span class="n">measure_optics</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">optics_opt</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_harpy_entrypoint</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DotDict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse harpy entry point parameters.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Parse harpy entry point parameters."""</span>
     <span class="n">options</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">harpy_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">natdeltas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">nattunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Colliding options found: --nattunes and --natdeltas. Choose only one&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"Colliding options found: --nattunes and --natdeltas. Choose only one"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">tunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">autotunes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Colliding options found: --tunes and --autotunes. Choose only one&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"Colliding options found: --tunes and --autotunes. Choose only one"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">tunes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">autotunes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;One of the options --tunes and --autotunes has to be used.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"One of the options --tunes and --autotunes has to be used."</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">svd_dominance_limit</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;SVD dominance limit should be positive&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">"SVD dominance limit should be positive"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">bad_bpms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">bad_bpms</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">wrong_polarity_bpms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">options</span><span class="o">.</span><span class="n">wrong_polarity_bpms</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">is_free_kick</span><span class="p">:</span>
-        <span class="n">options</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="s2">&quot;rectangle&quot;</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="s2">"rectangle"</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">resonances</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-            <span class="s2">&quot;The magnet order for resonance lines calculation should be between 2 and 8 (inclusive).&quot;</span>
+            <span class="s2">"The magnet order for resonance lines calculation should be between 2 and 8 (inclusive)."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-            <span class="s2">&quot;n_jobs must be &gt;= 0 (0 = automatic, 1 = serial, N = N worker processes).&quot;</span>
+            <span class="s2">"n_jobs must be &gt;= 0 (0 = automatic, 1 = serial, N = N worker processes)."</span>
         <span class="p">)</span>
     <span class="n">options</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">outputdir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">rest</span>
@@ -777,222 +777,222 @@
 <div class="viewcode-block" id="harpy_params">
 <a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.hole_in_one.harpy_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">harpy_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the entry point parameters for harpy.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create the entry point parameters for harpy."""</span>
     <span class="c1"># fmt: off</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"files"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;TbT files to analyse. Can also be the TbtData objects directly, if &#39;tbt_data&#39; is chosen as datatype.&quot;</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"TbT files to analyse. Can also be the TbtData objects directly, if 'tbt_data' is chosen as datatype."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"outputdir"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory.&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Output directory."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;suffix&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"suffix"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;User-defined suffix for output filenames.&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"User-defined suffix for output filenames."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Model for BPM locations&quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"model"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Model for BPM locations"</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"unit"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">],</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;cm&quot;</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">,</span> <span class="s2">&quot;um&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;A unit of TbT BPM orbit data. All cuts and output are in &#39;m&#39;.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">],</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"m"</span><span class="p">,</span> <span class="s2">"cm"</span><span class="p">,</span> <span class="s2">"mm"</span><span class="p">,</span> <span class="s2">"um"</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"A unit of TbT BPM orbit data. All cuts and output are in 'm'."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;turns&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"turns"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;turns&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Turn index to start and first turn index to be ignored.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"turns"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Turn index to start and first turn index to be ignored."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bunch_ids&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"bunch_ids"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Bunches to process in multi-bunch file. If not specified, all bunches are processed.&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Bunches to process in multi-bunch file. If not specified, all bunches are processed."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;to_write&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;to_write&quot;</span><span class="p">],</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;lin&quot;</span><span class="p">,</span> <span class="s2">&quot;spectra&quot;</span><span class="p">,</span> <span class="s2">&quot;full_spectra&quot;</span><span class="p">,</span> <span class="s2">&quot;bpm_summary&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the type of output.&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"to_write"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"to_write"</span><span class="p">],</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"lin"</span><span class="p">,</span> <span class="s2">"spectra"</span><span class="p">,</span> <span class="s2">"full_spectra"</span><span class="p">,</span> <span class="s2">"bpm_summary"</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Choose the type of output."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;tbt_datatype&quot;</span><span class="p">],</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"tbt_datatype"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"tbt_datatype"</span><span class="p">],</span>
         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">tbt</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">TBT_MODULES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="n">DATATYPE_TBT</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose the datatype from which to import. &quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Choose the datatype from which to import. "</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Cleaning parameters</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;clean&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If present, the data are first cleaned.&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"clean"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"If present, the data are first cleaned."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sing_val&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"sing_val"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;sing_val&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Keep this amount of largest singular values.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"sing_val"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Keep this amount of largest singular values."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;peak_to_peak&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"peak_to_peak"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;peak_to_peak&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Peak to peak amplitude cut. This removes BPMs, &quot;</span>
-        <span class="s2">&quot;where abs(max(turn values) - min(turn values)) &lt;= threshold.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"peak_to_peak"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Peak to peak amplitude cut. This removes BPMs, "</span>
+        <span class="s2">"where abs(max(turn values) - min(turn values)) &lt;= threshold."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_peak&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"max_peak"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;max_peak&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Removes BPMs where the maximum orbit &gt; limit.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"max_peak"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Removes BPMs where the maximum orbit &gt; limit."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;svd_dominance_limit&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"svd_dominance_limit"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;svd_dominance_limit&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Limit for single BPM dominating a mode.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"svd_dominance_limit"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Limit for single BPM dominating a mode."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;num_svd_iterations&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"num_svd_iterations"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;num_svd_iterations&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximal number of iterations of U matrix elements removal &quot;</span>
-        <span class="s2">&quot;and renormalisation in iterative SVD cleaning of dominant BPMs.&quot;</span>
-        <span class="s2">&quot; This is also equal to maximal number of BPMs removed per SVD mode.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"num_svd_iterations"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Maximal number of iterations of U matrix elements removal "</span>
+        <span class="s2">"and renormalisation in iterative SVD cleaning of dominant BPMs."</span>
+        <span class="s2">" This is also equal to maximal number of BPMs removed per SVD mode."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bad_bpms&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Bad BPMs to clean.&quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"bad_bpms"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Bad BPMs to clean."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;wrong_polarity_bpms&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;BPMs with swapped polarity in both planes.&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"wrong_polarity_bpms"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"BPMs with swapped polarity in both planes."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;keep_exact_zeros&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If present, will not remove BPMs with exact zeros in TbT data.&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"keep_exact_zeros"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"If present, will not remove BPMs with exact zeros in TbT data."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;first_bpm&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"first_bpm"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;First BPM in the measurement. Used to resynchronise the TbT data with model.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"First BPM in the measurement. Used to resynchronise the TbT data with model."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;opposite_direction&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If present, beam in the opposite direction to model&quot;</span>
-        <span class="s2">&quot; is assumed for resynchronisation of BPMs.&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"opposite_direction"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"If present, beam in the opposite direction to model"</span>
+        <span class="s2">" is assumed for resynchronisation of BPMs."</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Harmonic analysis parameters</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tunes&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"tunes"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Guess for the main tunes [x, y, z]. Tunez is disabled when set to 0"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nattunes&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"nattunes"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Guess for the natural tunes (x, y, z).  Disabled when set to 0.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Guess for the natural tunes (x, y, z).  Disabled when set to 0."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;natdeltas&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"natdeltas"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Guess for the offsets of natural tunes from the driven tunes&quot;</span>
-        <span class="s2">&quot; (x, y, z). Disabled when set to 0.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Guess for the offsets of natural tunes from the driven tunes"</span>
+        <span class="s2">" (x, y, z). Disabled when set to 0."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;autotunes&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"autotunes"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;transverse&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The main tunes are guessed as &quot;</span>
-        <span class="s2">&quot;the strongest line in SV^T matrix frequency spectrum: &quot;</span>
-        <span class="s2">&quot;Synchrotron tune below ~0.03, betatron tunes above ~0.03.&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"all"</span><span class="p">,</span> <span class="s2">"transverse"</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"The main tunes are guessed as "</span>
+        <span class="s2">"the strongest line in SV^T matrix frequency spectrum: "</span>
+        <span class="s2">"Synchrotron tune below ~0.03, betatron tunes above ~0.03."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tune_clean_limit&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"tune_clean_limit"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;tune_clean_limit&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The tune cleaning wont remove BPMs because of measured tune outliers&quot;</span>
-        <span class="s2">&quot; closer to the average tune than this limit.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"tune_clean_limit"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"The tune cleaning wont remove BPMs because of measured tune outliers"</span>
+        <span class="s2">" closer to the average tune than this limit."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tolerance&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"tolerance"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tolerance specifying an interval in frequency domain, where to look for the tunes.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"tolerance"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Tolerance specifying an interval in frequency domain, where to look for the tunes."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;is_free_kick&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If present, it will perform the free kick phase correction&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"is_free_kick"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"If present, it will perform the free kick phase correction"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;window&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"window"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;window&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"window"</span><span class="p">],</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;rectangle&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;triangle&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;welch&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;hamming&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;nuttal3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;nuttal4&quot;</span><span class="p">,</span>
+            <span class="s2">"rectangle"</span><span class="p">,</span>
+            <span class="s2">"hann"</span><span class="p">,</span>
+            <span class="s2">"triangle"</span><span class="p">,</span>
+            <span class="s2">"welch"</span><span class="p">,</span>
+            <span class="s2">"hamming"</span><span class="p">,</span>
+            <span class="s2">"nuttal3"</span><span class="p">,</span>
+            <span class="s2">"nuttal4"</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Windowing function to be used for frequency analysis.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Windowing function to be used for frequency analysis."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;turn_bits&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"turn_bits"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;turn_bits&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number (frequency, complex coefficient) pairs in the calculation&quot;</span>
-        <span class="s2">&quot; is 2 ** turn_bits, i.e. the difference between &quot;</span>
-        <span class="s2">&quot;two neighbouring frequencies is 2 ** (- turn_bits - 1).&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"turn_bits"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Number (frequency, complex coefficient) pairs in the calculation"</span>
+        <span class="s2">" is 2 ** turn_bits, i.e. the difference between "</span>
+        <span class="s2">"two neighbouring frequencies is 2 ** (- turn_bits - 1)."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_bits&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"output_bits"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;output_bits&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number (frequency, complex coefficient) pairs in the output &quot;</span>
-        <span class="s2">&quot;is up to 2 ** output_bits (maximal in case full spectra is output). &quot;</span>
-        <span class="s2">&quot;There is one pair (with maximal amplitude of complex coefficient) &quot;</span>
-        <span class="s2">&quot;per interval of size 2 ** (- output_bits - 1).&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"output_bits"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Number (frequency, complex coefficient) pairs in the output "</span>
+        <span class="s2">"is up to 2 ** output_bits (maximal in case full spectra is output). "</span>
+        <span class="s2">"There is one pair (with maximal amplitude of complex coefficient) "</span>
+        <span class="s2">"per interval of size 2 ** (- output_bits - 1)."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;resonances&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"resonances"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;resonances&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum magnet order of resonance lines to calculate.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"resonances"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Maximum magnet order of resonance lines to calculate."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;n_jobs&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"n_jobs"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;n_jobs&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of worker processes for the per-bunch frequency analysis. &quot;</span>
-        <span class="s2">&quot;0 (default) chooses automatically: min(usable cores, number of bunches, &quot;</span>
-        <span class="s2">&quot;RAM budget), and falls back to serial if the available RAM cannot be &quot;</span>
-        <span class="s2">&quot;determined. 1 runs serially. A positive N caps the pool at N processes &quot;</span>
-        <span class="s2">&quot;(still clamped to what fits in RAM, when that can be determined).&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">HARPY_DEFAULTS</span><span class="p">[</span><span class="s2">"n_jobs"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Number of worker processes for the per-bunch frequency analysis. "</span>
+        <span class="s2">"0 (default) chooses automatically: min(usable cores, number of bunches, "</span>
+        <span class="s2">"RAM budget), and falls back to serial if the available RAM cannot be "</span>
+        <span class="s2">"determined. 1 runs serially. A positive N caps the pool at N processes "</span>
+        <span class="s2">"(still clamped to what fits in RAM, when that can be determined)."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># fmt: on</span>
     <span class="k">return</span> <span class="n">params</span></div>
@@ -1000,12 +1000,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_optics_entrypoint</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DotDict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse optics entry point parameters.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Parse optics entry point parameters."""</span>
     <span class="n">options</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">EntryPoint</span><span class="p">(</span><span class="n">optics_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;rdt&quot;</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">nonlinear</span> <span class="ow">and</span> <span class="ow">not</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">rdt_magnet_order</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"rdt"</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">nonlinear</span> <span class="ow">and</span> <span class="ow">not</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">options</span><span class="o">.</span><span class="n">rdt_magnet_order</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-            <span class="s2">&quot;The magnet order for RDT calculation should be between 2 and 8 (inclusive).&quot;</span>
+            <span class="s2">"The magnet order for RDT calculation should be between 2 and 8 (inclusive)."</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">options</span><span class="p">,</span> <span class="n">rest</span>
@@ -1014,109 +1014,109 @@
 <div class="viewcode-block" id="optics_params">
 <a class="viewcode-back" href="../../entrypoints/analysis.html#omc3.hole_in_one.optics_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">optics_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the entry point parameters for optics.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create the entry point parameters for optics."""</span>
     <span class="c1"># fmt: off</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"files"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Files for analysis&quot;</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Files for analysis"</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;outputdir&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"outputdir"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Output directory"</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;calibrationdir&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"calibrationdir"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to calibration files directory.&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path to calibration files directory."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;coupling_method&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"coupling_method"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;coupling_method&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Analysis option for coupling: disabled, 1 BPM or 2 BPMs method&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">"coupling_method"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Analysis option for coupling: disabled, 1 BPM or 2 BPMs method"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;coupling_pairing&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"coupling_pairing"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;coupling_pairing&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Pairing mode for 2 BPM coupling method. If 0 is given, omc3 will try to &quot;</span>
-        <span class="s2">&quot;determine the best candidate. If a number n&gt;=1 is given, then some BPMs are skipped &quot;</span>
-        <span class="s2">&quot;and the n-th following BPM downstream is used for the pairing.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">"coupling_pairing"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Pairing mode for 2 BPM coupling method. If 0 is given, omc3 will try to "</span>
+        <span class="s2">"determine the best candidate. If a number n&gt;=1 is given, then some BPMs are skipped "</span>
+        <span class="s2">"and the n-th following BPM downstream is used for the pairing."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;range_of_bpms&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"range_of_bpms"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;range_of_bpms&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Range of BPMs for beta from phase calculation&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">"range_of_bpms"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Range of BPMs for beta from phase calculation"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;union&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If present, the phase advances are calculate for union of BPMs &quot;</span>
-        <span class="s2">&quot;with at least 3 valid measurements, instead of intersection .&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"union"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"If present, the phase advances are calculate for union of BPMs "</span>
+        <span class="s2">"with at least 3 valid measurements, instead of intersection ."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nonlinear&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"nonlinear"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;rdt&quot;</span><span class="p">,</span> <span class="s2">&quot;crdt&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose which rdt analysis is conducted.&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"rdt"</span><span class="p">,</span> <span class="s2">"crdt"</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Choose which rdt analysis is conducted."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rdt_magnet_order&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"rdt_magnet_order"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;rdt_magnet_order&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum magnet order for the RDT calculation.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">"rdt_magnet_order"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Maximum magnet order for the RDT calculation."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;three_bpm_method&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use 3 BPM method in beta from phase&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"three_bpm_method"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Use 3 BPM method in beta from phase"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;only_coupling&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate only coupling. &quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"only_coupling"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Calculate only coupling. "</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;compensation&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"compensation"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;compensation&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">"compensation"</span><span class="p">],</span>
         <span class="n">choices</span><span class="o">=</span><span class="n">phase</span><span class="o">.</span><span class="n">CompensationMode</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Mode of compensation for the analysis after driven beam excitation&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Mode of compensation for the analysis after driven beam excitation"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;three_d_excitation&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use 3D kicks to calculate dispersion&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"three_d_excitation"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Use 3D kicks to calculate dispersion"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;isolation_forest&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Remove outlying BPMs with isolation forest&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"isolation_forest"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Remove outlying BPMs with isolation forest"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;second_order_dispersion&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate second order dispersion&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"second_order_dispersion"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Calculate second order dispersion"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;chromatic_beating&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Calculate chromatic beatings: W, PHI and coupling&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"chromatic_beating"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Calculate chromatic beatings: W, PHI and coupling"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;analyse_dpp&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"analyse_dpp"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">iotools</span><span class="o">.</span><span class="n">OptionalFloat</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">&quot;analyse_dpp&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt). &quot;</span>
-        <span class="s2">&quot;Use `None` for no filtering&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">OPTICS_DEFAULTS</span><span class="p">[</span><span class="s2">"analyse_dpp"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Filter files to analyse by this value (in analysis for tune, phase, rdt and crdt). "</span>
+        <span class="s2">"Use `None` for no filtering"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># fmt: on</span>
     <span class="k">return</span> <span class="n">params</span></div>
@@ -1124,35 +1124,35 @@
 
 
 <span class="n">HARPY_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;turns&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50000</span><span class="p">],</span>
-    <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sing_val&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-    <span class="s2">&quot;peak_to_peak&quot;</span><span class="p">:</span> <span class="mf">1e-8</span><span class="p">,</span>
-    <span class="s2">&quot;max_peak&quot;</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
-    <span class="s2">&quot;svd_dominance_limit&quot;</span><span class="p">:</span> <span class="mf">0.925</span><span class="p">,</span>
-    <span class="s2">&quot;num_svd_iterations&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="s2">&quot;tolerance&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
-    <span class="s2">&quot;tune_clean_limit&quot;</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">,</span>
-    <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;turn_bits&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-    <span class="s2">&quot;output_bits&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-    <span class="s2">&quot;to_write&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;lin&quot;</span><span class="p">,</span> <span class="s2">&quot;bpm_summary&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;tbt_datatype&quot;</span><span class="p">:</span> <span class="s2">&quot;lhc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;resonances&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s2">&quot;n_jobs&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"turns"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50000</span><span class="p">],</span>
+    <span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"m"</span><span class="p">,</span>
+    <span class="s2">"sing_val"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">"peak_to_peak"</span><span class="p">:</span> <span class="mf">1e-8</span><span class="p">,</span>
+    <span class="s2">"max_peak"</span><span class="p">:</span> <span class="mf">0.02</span><span class="p">,</span>
+    <span class="s2">"svd_dominance_limit"</span><span class="p">:</span> <span class="mf">0.925</span><span class="p">,</span>
+    <span class="s2">"num_svd_iterations"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">"tolerance"</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+    <span class="s2">"tune_clean_limit"</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">,</span>
+    <span class="s2">"window"</span><span class="p">:</span> <span class="s2">"hann"</span><span class="p">,</span>
+    <span class="s2">"turn_bits"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">"output_bits"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">"to_write"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"lin"</span><span class="p">,</span> <span class="s2">"bpm_summary"</span><span class="p">],</span>
+    <span class="s2">"tbt_datatype"</span><span class="p">:</span> <span class="s2">"lhc"</span><span class="p">,</span>
+    <span class="s2">"resonances"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">"n_jobs"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">OPTICS_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;coupling_method&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="s2">&quot;coupling_pairing&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;range_of_bpms&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-    <span class="s2">&quot;compensation&quot;</span><span class="p">:</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rdt_magnet_order&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-    <span class="s2">&quot;analyse_dpp&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"coupling_method"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"coupling_pairing"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"range_of_bpms"</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="s2">"compensation"</span><span class="p">:</span> <span class="s2">"model"</span><span class="p">,</span>
+    <span class="s2">"rdt_magnet_order"</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">"analyse_dpp"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">}</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">hole_in_one_entrypoint</span><span class="p">()</span>
 </pre></div>
 

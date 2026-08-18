@@ -239,12 +239,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.tune_analysis.kick_file_modifiers</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Kick File Modifiers</span>
 <span class="sd">-------------------</span>
 
 <span class="sd">Functions to add data to or extract data from **kick_ac** files.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -300,14 +300,14 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_odr_headers</span><span class="p">(</span><span class="n">corrected</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return Headers needed for ODR.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return Headers needed for ODR."""</span>
     <span class="k">if</span> <span class="n">corrected</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_odr_header_coeff_corrected</span><span class="p">,</span> <span class="n">get_odr_header_err_coeff_corrected</span>
     <span class="k">return</span> <span class="n">get_odr_header_coeff</span><span class="p">,</span> <span class="n">get_odr_header_err_coeff</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_ampdet_columns</span><span class="p">(</span><span class="n">corrected</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get columns needed for amplitude detuning.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get columns needed for amplitude detuning."""</span>
     <span class="k">if</span> <span class="n">corrected</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_natq_corr_col</span><span class="p">,</span> <span class="n">get_corr_natq_err_col</span>
     <span class="k">return</span> <span class="n">get_natq_col</span><span class="p">,</span> <span class="n">get_natq_err_col</span>
@@ -319,7 +319,7 @@
 <div class="viewcode-block" id="add_bbq_data">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_bbq_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_bbq_data</span><span class="p">(</span><span class="n">kick_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bbq_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Add BBQ values from column to kickac dataframe into same column.</span>
 
 <span class="sd">    Args:</span>
@@ -331,7 +331,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Modified kick `Dataframe`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">bbq_column</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bbq_column</span> <span class="o">=</span> <span class="n">column</span>
     <span class="n">kick_indx</span> <span class="o">=</span> <span class="n">get_timestamp_index</span><span class="p">(</span><span class="n">kick_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
@@ -339,7 +339,7 @@
 
     <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">kick_indx</span><span class="p">:</span>
-        <span class="n">nearest_bbq_index</span> <span class="o">=</span> <span class="n">bbq_indx</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">([</span><span class="n">time</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">nearest_bbq_index</span> <span class="o">=</span> <span class="n">bbq_indx</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">([</span><span class="n">time</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">[</span><span class="n">bbq_column</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">nearest_bbq_index</span><span class="p">])</span>
     <span class="n">kick_df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
     <span class="k">return</span> <span class="n">kick_df</span></div>
@@ -350,8 +350,8 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_moving_average">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_moving_average</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">bbq_df</span><span class="p">:</span> <span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">:</span> <span class="n">FilterOpts</span><span class="p">,</span>
                        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds the moving average of the bbq data to kickac_df and bbq_df.&quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calculating moving average.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Adds the moving average of the bbq data to kickac_df and bbq_df."""</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Calculating moving average."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_opt</span><span class="p">,</span> <span class="n">OutlierFilterOpt</span><span class="p">):</span>
         <span class="n">bbq_df</span> <span class="o">=</span> <span class="n">_filter_bbq_outliers</span><span class="p">(</span><span class="n">bbq_df</span><span class="p">,</span> <span class="n">filter_opt</span><span class="p">)</span>
@@ -377,7 +377,7 @@
             <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">col</span> <span class="ow">in</span> <span class="n">bbq_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PLANES</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">(</span>
                     <span class="n">get_mav_col</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">get_mav_err_col</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">get_used_in_mav_col</span><span class="p">(</span><span class="n">p</span><span class="p">)))</span>
     <span class="p">):</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BBQ data has already been filtered with the same parameters. Using data from file.&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"BBQ data has already been filtered with the same parameters. Using data from file."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bbq_df</span>
 
     <span class="n">bbq_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">header_window</span><span class="p">]</span> <span class="o">=</span> <span class="n">filter_opt</span><span class="o">.</span><span class="n">window</span>
@@ -411,7 +411,7 @@
 <div class="viewcode-block" id="add_corrected_natural_tunes">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_corrected_natural_tunes">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_corrected_natural_tunes</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Adds the corrected natural tunes to ``kickac_df``.</span>
 <span class="sd">    Add also the total standard deviation of the natural tune to the kickac dataframe.</span>
 <span class="sd">    The total standard deviation is here defined as the standard deviation of</span>
@@ -422,7 +422,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Modified kick_ac.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
         <span class="c1"># NATQ</span>
         <span class="n">kickac_df</span><span class="p">[</span><span class="n">get_natq_corr_col</span><span class="p">(</span><span class="n">plane</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
@@ -442,7 +442,7 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.add_odr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_odr</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">odr_fit</span><span class="p">:</span> <span class="n">odrpack</span><span class="o">.</span><span class="n">OdrResult</span><span class="p">,</span>
             <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Adds the odr fit of the (un)corrected data to the header of the ``kickac_df``.</span>
 
 <span class="sd">    Args:</span>
@@ -454,7 +454,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Modified kick_ac.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">header_val</span><span class="p">,</span> <span class="n">header_err</span> <span class="o">=</span> <span class="n">_get_odr_headers</span><span class="p">(</span><span class="n">corrected</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">odr_fit</span><span class="o">.</span><span class="n">beta</span><span class="p">)):</span>
         <span class="n">kickac_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">header_val</span><span class="p">(</span><span class="n">j_plane</span><span class="o">=</span><span class="n">action_plane</span><span class="p">,</span> <span class="n">q_plane</span><span class="o">=</span><span class="n">tune_plane</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">odr_fit</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
@@ -469,7 +469,7 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_odr_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_odr_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FakeOdrOutput</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extract the data from kickac.</span>
 
 <span class="sd">    Args:</span>
@@ -481,7 +481,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        `Dictionary` containing fit data from odr.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">header_val</span><span class="p">,</span> <span class="n">header_err</span> <span class="o">=</span> <span class="n">_get_odr_headers</span><span class="p">(</span><span class="n">corrected</span><span class="p">)</span>
     <span class="n">odr_data</span> <span class="o">=</span> <span class="n">FakeOdrOutput</span><span class="p">(</span><span class="n">beta</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">sd_beta</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
@@ -490,7 +490,7 @@
             <span class="n">odr_data</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">kickac_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">header_val</span><span class="p">(</span><span class="n">q_plane</span><span class="o">=</span><span class="n">tune_plane</span><span class="p">,</span> <span class="n">j_plane</span><span class="o">=</span><span class="n">action_plane</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">idx</span><span class="p">)]</span>
             <span class="n">odr_data</span><span class="o">.</span><span class="n">sd_beta</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">kickac_df</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">header_err</span><span class="p">(</span><span class="n">q_plane</span><span class="o">=</span><span class="n">tune_plane</span><span class="p">,</span> <span class="n">j_plane</span><span class="o">=</span><span class="n">action_plane</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">idx</span><span class="p">)]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fit data for order </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2"> not found. (</span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Fit data for order </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2"> not found. (</span><span class="si">{</span><span class="n">e</span><span class="si">!s}</span><span class="s2">)"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">odr_data</span></div>
 
 
@@ -499,7 +499,7 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.get_ampdet_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_ampdet_data</span><span class="p">(</span><span class="n">kickac_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">action_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tune_plane</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                     <span class="n">corrected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dropna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AmpDetData</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extract the data needed for the (un)corrected amplitude detuning from ``kickac_df``.</span>
 
 <span class="sd">    Args:</span>
@@ -513,18 +513,18 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        `Dataframe` containing `action`, `tune`, `action_err` and `tune_err` columns.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">col_natq</span><span class="p">,</span> <span class="n">col_natq_std</span> <span class="o">=</span> <span class="n">_get_ampdet_columns</span><span class="p">(</span><span class="n">corrected</span><span class="p">)</span>
 
-    <span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">get_action_col</span><span class="p">(</span><span class="n">action_plane</span><span class="p">),</span>
-               <span class="s2">&quot;action_err&quot;</span><span class="p">:</span> <span class="n">get_action_err_col</span><span class="p">(</span><span class="n">action_plane</span><span class="p">),</span>
-               <span class="s2">&quot;tune&quot;</span><span class="p">:</span> <span class="n">col_natq</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">),</span>
-               <span class="s2">&quot;tune_err&quot;</span><span class="p">:</span> <span class="n">col_natq_std</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">),</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"action"</span><span class="p">:</span> <span class="n">get_action_col</span><span class="p">(</span><span class="n">action_plane</span><span class="p">),</span>
+               <span class="s2">"action_err"</span><span class="p">:</span> <span class="n">get_action_err_col</span><span class="p">(</span><span class="n">action_plane</span><span class="p">),</span>
+               <span class="s2">"tune"</span><span class="p">:</span> <span class="n">col_natq</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">),</span>
+               <span class="s2">"tune_err"</span><span class="p">:</span> <span class="n">col_natq_std</span><span class="p">(</span><span class="n">tune_plane</span><span class="p">),</span>
                <span class="p">}</span>
 
     <span class="n">not_found</span> <span class="o">=</span> <span class="p">[</span><span class="n">cv</span> <span class="k">for</span> <span class="n">cv</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">cv</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kickac_df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">not_found</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following columns were not found in kick-file: &#39;</span><span class="si">{</span><span class="n">not_found</span><span class="si">!s}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The following columns were not found in kick-file: '</span><span class="si">{</span><span class="n">not_found</span><span class="si">!s}</span><span class="s2">'"</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">kickac_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="nb">list</span><span class="p">(</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
     <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -533,10 +533,10 @@
         <span class="c1"># could be on purpose,</span>
         <span class="c1"># for manually filtering kick points in one plane, but not in the other</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Amplitude Detuning data for Q</span><span class="si">{</span><span class="n">tune_plane</span><span class="si">}</span><span class="s2"> and J</span><span class="si">{</span><span class="n">action_plane</span><span class="si">}</span><span class="s2"> contains NaNs&quot;</span>
+            <span class="sa">f</span><span class="s2">"Amplitude Detuning data for Q</span><span class="si">{</span><span class="n">tune_plane</span><span class="si">}</span><span class="s2"> and J</span><span class="si">{</span><span class="n">action_plane</span><span class="si">}</span><span class="s2"> contains NaNs"</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">dropna</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;NaN&#39;s are being dropped.&quot;</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"NaN's are being dropped."</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">AmpDetData</span><span class="p">(</span>
@@ -579,7 +579,7 @@
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.read_two_kick_files_from_folder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_two_kick_files_from_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">merge_two_plane_kick_dfs</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">[</span><span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">folder</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">KICK_NAME</span><span class="si">}{</span><span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">.tfs&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">]</span>
+        <span class="o">*</span><span class="p">[</span><span class="n">read_timed_dataframe</span><span class="p">(</span><span class="n">folder</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">KICK_NAME</span><span class="si">}{</span><span class="n">p</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">.tfs'</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">]</span>
     <span class="p">)</span></div>
 
 
@@ -587,9 +587,9 @@
 <div class="viewcode-block" id="merge_two_plane_kick_dfs">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.merge_two_plane_kick_dfs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">merge_two_plane_kick_dfs</span><span class="p">(</span><span class="n">df_x</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">,</span> <span class="n">df_y</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-    <span class="n">df_xy</span> <span class="o">=</span> <span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_x</span><span class="p">,</span> <span class="n">df_y</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="n">PLANES</span><span class="p">))</span>
+    <span class="n">df_xy</span> <span class="o">=</span> <span class="n">TfsDataFrame</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_x</span><span class="p">,</span> <span class="n">df_y</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'outer'</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="n">PLANES</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_xy</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_x</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_xy</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_y</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The kick-files for each plane seem to have different indices.&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"The kick-files for each plane seem to have different indices."</span><span class="p">)</span>
     <span class="n">df_xy</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">df_x</span><span class="o">.</span><span class="n">headers</span>
     <span class="n">df_xy</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">df_y</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df_xy</span></div>
@@ -601,8 +601,8 @@
 <div class="viewcode-block" id="convert_bbs_kickfile">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickfile">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_bbs_kickfile</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Wrapper for :meth:`omc3.tune_analysis.kick_file_modifiers.convert_old_kickdataframe`</span>
-<span class="sd">    with read/write capabilities.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">""" Wrapper for :meth:`omc3.tune_analysis.kick_file_modifiers.convert_old_kickdataframe`</span>
+<span class="sd">    with read/write capabilities."""</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">convert_bbs_kickdataframe</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
     <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">get_kick_out_name</span><span class="p">()),</span> <span class="n">df</span><span class="p">)</span></div>
@@ -612,8 +612,8 @@
 <div class="viewcode-block" id="convert_bbs_kickdataframe">
 <a class="viewcode-back" href="../../../modules/tune_analysis.html#omc3.tune_analysis.kick_file_modifiers.convert_bbs_kickdataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_bbs_kickdataframe</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a kick-dataframe created with the python2 amplitude detuning</span>
-<span class="sd">    analysis into a dataframe compatible with omc3&#39;s detuning analysis.</span>
+<span class="w">    </span><span class="sd">"""Converts a kick-dataframe created with the python2 amplitude detuning</span>
+<span class="sd">    analysis into a dataframe compatible with omc3's detuning analysis.</span>
 <span class="sd">    Beware that the old files may not contain the error coefficients for</span>
 <span class="sd">    the corrected data in the header (the uncorrected errors are used here),</span>
 <span class="sd">    as well as no corrected natural tune error columns.</span>
@@ -622,7 +622,7 @@
 <span class="sd">    The action unit is converted from um to m.</span>
 <span class="sd">    !!! Be also aware, that due to a bug the Action and Tune planes might be switched !!!</span>
 <span class="sd">    This is not taken into account here.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Header ---</span>
     <span class="n">df</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="n">_rename_old_header</span><span class="p">(</span><span class="n">key</span><span class="p">):</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
@@ -632,7 +632,7 @@
 
         <span class="c1"># # use uncorrected error columns for corrected data</span>
         <span class="c1"># if ERR in key:</span>
-        <span class="c1">#     new_key = key.replace(ERR, f&quot;{ERR}{CORRECTED}&quot;)</span>
+        <span class="c1">#     new_key = key.replace(ERR, f"{ERR}{CORRECTED}")</span>
         <span class="c1">#     df.headers[new_key] = df.headers[key]</span>
 
     <span class="c1"># add err headers for coefficient 0 (offset)</span>
@@ -652,9 +652,9 @@
             <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span>  <span class="c1"># um to m</span>
 
     <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
-        <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">CORRECTED</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}{</span><span class="n">CORRECTED</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">NAT_TUNE</span><span class="si">}{</span><span class="n">plane</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">df</span></div>
 
 
@@ -662,26 +662,26 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_rename_old_header</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">tune</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">PLANES</span><span class="p">:</span>
-            <span class="n">old</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ODR_J</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">Q</span><span class="si">{</span><span class="n">tune</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">old</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ODR_J</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">Q</span><span class="si">{</span><span class="n">tune</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">new</span> <span class="o">=</span> <span class="n">get_odr_header_default</span><span class="p">(</span><span class="n">q_plane</span><span class="o">=</span><span class="n">tune</span><span class="p">,</span> <span class="n">j_plane</span><span class="o">=</span><span class="n">action</span><span class="p">)</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;OFFSET&quot;</span><span class="p">,</span> <span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;SLOPE&quot;</span><span class="p">,</span> <span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"OFFSET"</span><span class="p">,</span> <span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"SLOPE"</span><span class="p">,</span> <span class="n">COEFFICIENT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
     <span class="c1"># CORR was the last prefix in the old file, so replace this first</span>
-    <span class="k">if</span> <span class="s2">&quot;_CORR&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">CORRECTED</span><span class="si">}{</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">"_CORR"</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">"_"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">CORRECTED</span><span class="si">}{</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="c1"># and then remove also STD and add ERR</span>
-    <span class="k">if</span> <span class="s2">&quot;_STD&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">"_STD"</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">"_"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">key</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_rename_old_column</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s2">&quot;STD&quot;</span> <span class="ow">in</span> <span class="n">column</span> <span class="ow">or</span> <span class="s2">&quot;RMS&quot;</span> <span class="ow">in</span> <span class="n">column</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">column</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;STD&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;RMS&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="s2">"STD"</span> <span class="ow">in</span> <span class="n">column</span> <span class="ow">or</span> <span class="s2">"RMS"</span> <span class="ow">in</span> <span class="n">column</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">column</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'STD'</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'RMS'</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">return</span> <span class="n">column</span>
 </pre></div>
 

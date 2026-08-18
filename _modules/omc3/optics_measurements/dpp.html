@@ -239,13 +239,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.optics_measurements.dpp</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Dpp</span>
 <span class="sd">---</span>
 
 <span class="sd">This module contains deltap over p calculations related functionality of ``optics_measurements``.</span>
 <span class="sd">It provides functions to computes and arrange dp over p.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -273,7 +273,7 @@
 <div class="viewcode-block" id="arrange_dpps">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dpp.arrange_dpps">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">arrange_dpps</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DPP_BIN_TOLERANCE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Grouping of dpp-values and averaging them in the bins, also zeroes the bin closest to zero.</span>
 
 <span class="sd">    Args:</span>
@@ -284,23 +284,23 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Array of arranged dp/p values, same length as *dpps*, where each</span>
 <span class="sd">        entry is the bin-averaged value with the zero-bin offset subtracted.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">closest_to_zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dpps</span><span class="p">))</span>
     <span class="n">ranges</span> <span class="o">=</span> <span class="n">_compute_ranges</span><span class="p">(</span><span class="n">dpps</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">)</span>
     <span class="n">zero_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">_values_in_range</span><span class="p">(</span><span class="n">_find_range_with_element</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">closest_to_zero</span><span class="p">),</span> <span class="n">dpps</span><span class="p">))</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dp/p closest to zero is </span><span class="si">{</span><span class="n">dpps</span><span class="p">[</span><span class="n">closest_to_zero</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dp/p closest to zero is </span><span class="si">{</span><span class="n">dpps</span><span class="p">[</span><span class="n">closest_to_zero</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="c1"># We re-centre the dp/p values so the bin closest to 0 becomes 0, but the &#39;zero_offset&#39;</span>
-    <span class="c1"># is the actual mean dp/p of that &quot;on-momentum&quot; bin. Warning below is emitted when</span>
-    <span class="c1"># &#39;zero_offset&#39; is large, which mean that even the &quot;on-momentum&quot; were taken with</span>
+    <span class="c1"># We re-centre the dp/p values so the bin closest to 0 becomes 0, but the 'zero_offset'</span>
+    <span class="c1"># is the actual mean dp/p of that "on-momentum" bin. Warning below is emitted when</span>
+    <span class="c1"># 'zero_offset' is large, which mean that even the "on-momentum" were taken with</span>
     <span class="c1"># significant momentum deviation from the design closed orbit (aka when we do off-momentum</span>
     <span class="c1"># measurements). Or it could be that the optics parameters are wrong.</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">zero_offset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tolerance</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysed files have large momentum deviation </span><span class="si">{</span><span class="n">zero_offset</span><span class="si">}</span><span class="s2">. &quot;</span>
-            <span class="s2">&quot;Optics parameters might be wrong.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysed files have large momentum deviation </span><span class="si">{</span><span class="n">zero_offset</span><span class="si">}</span><span class="s2">. "</span>
+            <span class="s2">"Optics parameters might be wrong."</span>
         <span class="p">)</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected dpp differences, aranging as: </span><span class="si">{</span><span class="n">ranges</span><span class="si">}</span><span class="s2">, zero offset: </span><span class="si">{</span><span class="n">zero_offset</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Detected dpp differences, aranging as: </span><span class="si">{</span><span class="n">ranges</span><span class="si">}</span><span class="s2">, zero offset: </span><span class="si">{</span><span class="n">zero_offset</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">arranged_dpps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dpps</span><span class="p">)):</span>
         <span class="n">dpps_from_range</span> <span class="o">=</span> <span class="n">_values_in_range</span><span class="p">(</span><span class="n">_find_range_with_element</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">idx</span><span class="p">),</span> <span class="n">dpps</span><span class="p">)</span>
@@ -318,7 +318,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_ranges</span><span class="p">(</span><span class="n">dpps</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Groups the indices of dpps in bins of tolerance.</span>
 <span class="sd">    The function first sorts the indices by their dpp value,</span>
 <span class="sd">    adds a new group whenever the dpp of the next index is larger</span>
@@ -327,7 +327,7 @@
 <span class="sd">    Works for now, but we could improve by using the mean dpp of the group to</span>
 <span class="sd">    check against, i.e. `abs(np.mean(dpps[ranges[-1]]) - dpps[idx]) &lt; tolerance`.</span>
 <span class="sd">    Only neccessary if we have some weird outliers. (jdilly)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">ordered_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">dpps</span><span class="p">)</span>
     <span class="n">ranges</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ordered_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ordered_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -345,12 +345,12 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">append_amp_dpp</span><span class="p">(</span>
     <span class="n">list_of_tfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">dpp_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Add the dpp values to the DPP-header of the tfs files, if larger than the DPP-tolerance,</span>
 <span class="sd">    otherwise set to zero. This is intended to set the DPP value for on-momentum files to zero.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dpp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dpp_values</span><span class="p">):</span>
-        <span class="n">list_of_tfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;DPPAMP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">list_of_tfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">"DPPAMP"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">dpp</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">dpp</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dpp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">DPP_TOLERANCE</span><span class="p">)</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">list_of_tfs</span></div>
@@ -362,9 +362,9 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">append_dpp</span><span class="p">(</span>
     <span class="n">list_of_tfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">],</span> <span class="n">dpp_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the dpp values to the DPP-header of the tfs dataframes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Add the dpp values to the DPP-header of the tfs dataframes."""</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dpp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dpp_values</span><span class="p">):</span>
-        <span class="n">list_of_tfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;DPP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp</span>
+        <span class="n">list_of_tfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">"DPP"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpp</span>
     <span class="k">return</span> <span class="n">list_of_tfs</span></div>
 
 
@@ -372,7 +372,7 @@
 <div class="viewcode-block" id="calculate_dpoverp">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dpp.calculate_dpoverp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_dpoverp</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates dp/p from closed orbit and model dispersion at arc BPMs.</span>
 
 <span class="sd">    Args:</span>
@@ -381,26 +381,26 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Scalar dp/p for a single file, or an array of dp/p values per file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;DX&quot;</span><span class="p">]]</span>
+<span class="sd">    """</span>
+    <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">"S"</span><span class="p">,</span> <span class="s2">"DX"</span><span class="p">]]</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
         <span class="n">df_orbit</span><span class="p">,</span>
-        <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;CO&quot;</span><span class="p">,</span> <span class="s2">&quot;CORMS&quot;</span><span class="p">]),</span>
-        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span>
+        <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="s2">"X"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"CO"</span><span class="p">,</span> <span class="s2">"CORMS"</span><span class="p">]),</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">"inner"</span><span class="p">,</span>
         <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">df_orbit</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;arc_bpm&quot;</span><span class="p">])</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">df_orbit</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="s2">"arc_bpm"</span><span class="p">])</span>
     <span class="n">df_filtered</span> <span class="o">=</span> <span class="n">df_orbit</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">dispersions</span> <span class="o">=</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;DX&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">dispersions</span> <span class="o">=</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">"DX"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="n">denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dispersions</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot compute dpp probably no arc BPMs.&quot;</span><span class="p">)</span>
-    <span class="n">amps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">&quot;CO&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot compute dpp probably no arc BPMs."</span><span class="p">)</span>
+    <span class="n">amps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">"CO"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">amps</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dispersions</span> <span class="o">*</span> <span class="n">amps</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span>
 
-    <span class="n">numer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dispersions</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">&quot;CO&quot;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">numer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dispersions</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">"CO"</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span></div>
 
 
@@ -408,7 +408,7 @@
 <div class="viewcode-block" id="calculate_amp_dpoverp">
 <a class="viewcode-back" href="../../../modules/optics_measurements.html#omc3.optics_measurements.dpp.calculate_amp_dpoverp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_amp_dpoverp</span><span class="p">(</span><span class="n">input_files</span><span class="p">:</span> <span class="n">InputFiles</span><span class="p">,</span> <span class="n">meas_input</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates dp/p amplitude from synchrotron sideband amplitudes and model dispersion.</span>
 
 <span class="sd">    Args:</span>
@@ -417,26 +417,26 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Scalar dp/p amplitude for a single file, or an array of values per file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;DX&quot;</span><span class="p">]]</span>
+<span class="sd">    """</span>
+    <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">"S"</span><span class="p">,</span> <span class="s2">"DX"</span><span class="p">]]</span>
     <span class="n">df_orbit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
         <span class="n">df_orbit</span><span class="p">,</span>
-        <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;AMPX&quot;</span><span class="p">,</span> <span class="s2">&quot;AMPZ&quot;</span><span class="p">]),</span>
-        <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span>
+        <span class="n">input_files</span><span class="o">.</span><span class="n">joined_frame</span><span class="p">(</span><span class="s2">"X"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"AMPX"</span><span class="p">,</span> <span class="s2">"AMPZ"</span><span class="p">]),</span>
+        <span class="n">how</span><span class="o">=</span><span class="s2">"inner"</span><span class="p">,</span>
         <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># TODO often missing AMPZ causes FutureWarning in future will be KeyError</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="s2">&quot;AMPZ&quot;</span><span class="p">))):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]))</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">df_orbit</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;arc_bpm&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_orbit</span><span class="p">,</span> <span class="s2">"AMPZ"</span><span class="p">))):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="p">[</span><span class="s2">"X"</span><span class="p">]))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">meas_input</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">get_element_types_mask</span><span class="p">(</span><span class="n">df_orbit</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">[</span><span class="s2">"arc_bpm"</span><span class="p">])</span>
     <span class="n">df_filtered</span> <span class="o">=</span> <span class="n">df_orbit</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">amps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">&quot;AMPX&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">&quot;AMPZ&quot;</span><span class="p">)</span>
+    <span class="n">amps</span> <span class="o">=</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">"AMPX"</span><span class="p">)</span> <span class="o">*</span> <span class="n">input_files</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">,</span> <span class="s2">"AMPZ"</span><span class="p">)</span>
     <span class="n">mask_zeros</span> <span class="o">=</span> <span class="p">(</span><span class="n">amps</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">amps</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">amps</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">dispersions</span> <span class="o">=</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask_zeros</span><span class="p">,</span> <span class="s2">&quot;DX&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">dispersions</span> <span class="o">=</span> <span class="n">df_filtered</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask_zeros</span><span class="p">,</span> <span class="s2">"DX"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
     <span class="n">denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dispersions</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">denom</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot compute dpp probably no arc BPMs.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot compute dpp probably no arc BPMs."</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">amps</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">numer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dispersions</span> <span class="o">*</span> <span class="n">amps</span><span class="p">[</span><span class="n">mask_zeros</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>

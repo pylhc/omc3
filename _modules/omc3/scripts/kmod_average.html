@@ -239,7 +239,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for omc3.scripts.kmod_average</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Average K-Modulation Results</span>
 <span class="sd">----------------------------</span>
 
@@ -285,7 +285,7 @@
 
 <span class="sd">    action: ``store_true``</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -326,42 +326,42 @@
 <span class="n">COLUMNS_NO_AVERAGE</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">LABEL</span><span class="p">,</span> <span class="n">NAME</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_params</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">EntryPointParameters</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A function to create and return EntryPointParameters for K-modulation average.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">EntryPointParameters</span><span class="p">()</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;meas_paths&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"meas_paths"</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directories of K-modulation results to average.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Directories of K-modulation results to average."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ip&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"ip"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;IP this result is from. Only used for filename and plot.&quot;</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"IP this result is from. Only used for filename and plot."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;betastar&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"betastar"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Model beta-star values (x, y) of measurements. Only used for filename and plot.&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Model beta-star values (x, y) of measurements. Only used for filename and plot."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_dir&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"output_dir"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PathOrStr</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the directory where to write the output files.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path to the directory where to write the output files."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;plot&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plot the averaged results.&quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"plot"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Plot the averaged results."</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;show_plots&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show the plots.&quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"show_plots"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Show the plots."</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">params</span>
 
@@ -370,7 +370,7 @@
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_average.average_kmod_results">[docs]</a>
 <span class="nd">@entrypoint</span><span class="p">(</span><span class="n">_get_params</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">average_kmod_results</span><span class="p">(</span><span class="n">opt</span><span class="p">:</span> <span class="n">DotDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Reads kmod results and averages over the different measurements.</span>
 
 <span class="sd">    Args:</span>
@@ -398,14 +398,14 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary of averaged kmod-result DataFrames by beams for the</span>
 <span class="sd">        bpm-data and with key `0` for the beta-star data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting K-mod averaging.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Starting K-mod averaging."</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Betastar not given. Cannot write out results.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Betastar not given. Cannot write out results."</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">ip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;IP not given. Cannot write out results.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"IP not given. Cannot write out results."</span><span class="p">)</span>
 
         <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -422,11 +422,11 @@
             <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span> <span class="o">=</span> <span class="p">[</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
 
         <span class="n">filename</span> <span class="o">=</span> <span class="n">AVERAGED_BETASTAR_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span> <span class="n">betastar_x</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">betastar_y</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">averaged_results</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">BEAM</span><span class="p">)</span>
+        <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">averaged_results</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">BEAM</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">beam</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">averaged_bpm_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">AVERAGED_BPM_FILENAME</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">beam</span><span class="o">=</span><span class="n">beam</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span> <span class="n">betastar_x</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">betastar_y</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">betastar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+            <span class="n">tfs</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filename</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">save_index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">plot</span><span class="p">:</span>
         <span class="n">plot_kmod_results</span><span class="p">(</span>
@@ -445,7 +445,7 @@
 <div class="viewcode-block" id="get_average_betastar_results">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_average.get_average_betastar_results">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_average_betastar_results</span><span class="p">(</span><span class="n">meas_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate the average betastar results for the given measurements.</span>
 
 <span class="sd">    Args:</span>
@@ -453,22 +453,22 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The final results as a DataFrame; both beams merged.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Averaging beta-star results.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Averaging beta-star results."</span><span class="p">)</span>
     <span class="n">final_results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">all_dfs</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BEAM_DIR</span><span class="si">}{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">RESULTS_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BEAM_DIR</span><span class="si">}{</span><span class="n">beam</span><span class="si">}</span><span class="s2">"</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">RESULTS_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">dir_path</span> <span class="ow">in</span> <span class="n">meas_paths</span>
             <span class="p">]</span>
         <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find all results for beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">. Skipping.&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not find all results for beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">. Skipping."</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
             <span class="k">continue</span>
 
         <span class="n">mean_df</span> <span class="o">=</span>  <span class="n">_get_averaged_df</span><span class="p">(</span><span class="n">all_dfs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">LABEL</span> <span class="ow">in</span> <span class="n">mean_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">mean_df</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_df</span><span class="p">[</span><span class="n">LABEL</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;IP</span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">mean_df</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_df</span><span class="p">[</span><span class="n">LABEL</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"IP</span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">mean_df</span> <span class="o">=</span> <span class="n">mean_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">LABEL</span><span class="p">])</span>
 
         <span class="n">mean_df</span><span class="p">[</span><span class="n">BEAM</span><span class="p">]</span> <span class="o">=</span> <span class="n">beam</span>
@@ -480,7 +480,7 @@
 <div class="viewcode-block" id="get_average_bpm_results">
 <a class="viewcode-back" href="../../../entrypoints/scripts.html#omc3.scripts.kmod_average.get_average_bpm_results">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_average_bpm_results</span><span class="p">(</span><span class="n">meas_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">tfs</span><span class="o">.</span><span class="n">TfsDataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate the average results for BPMs/IPs for the given measurements.</span>
 
 <span class="sd">    Args:</span>
@@ -488,18 +488,18 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        final_results: A dictionary containing the average bpm betas results for each beam.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Averaging bpm results.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Averaging bpm results."</span><span class="p">)</span>
     <span class="n">final_results</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">beam</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">all_dfs</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BEAM_DIR</span><span class="si">}{</span><span class="n">beam</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LSA_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
+                <span class="n">tfs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">dir_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BEAM_DIR</span><span class="si">}{</span><span class="n">beam</span><span class="si">}</span><span class="s2">"</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">LSA_FILE_NAME</span><span class="si">}{</span><span class="n">EXT</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">NAME</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">dir_path</span> <span class="ow">in</span> <span class="n">meas_paths</span>
             <span class="p">]</span>
         <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find all results for beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">. Skipping.&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not find all results for beam </span><span class="si">{</span><span class="n">beam</span><span class="si">}</span><span class="s2">. Skipping."</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
             <span class="k">continue</span>
 
         <span class="n">final_results</span><span class="p">[</span><span class="n">beam</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_averaged_df</span><span class="p">(</span><span class="n">all_dfs</span><span class="p">)</span>
@@ -508,7 +508,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_averaged_df</span><span class="p">(</span><span class="n">dfs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Calculate the average over the data in the given dfs.</span>
+<span class="w">    </span><span class="sd">""" Calculate the average over the data in the given dfs.</span>
 
 <span class="sd">    This function calculates the means and errors over the given dataframes,</span>
 <span class="sd">    using the weighted_mean and weighted_error functions from the `stats` module,</span>
@@ -520,7 +520,7 @@
 <span class="sd">    The order of rows and columns is irrelevant.</span>
 
 <span class="sd">    In case only a single dataframe is given, this frame is returned, instead of doing calculations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Select columns for averaging, determines column order of output</span>
     <span class="n">columns</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span>
     <span class="n">no_average_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">columns</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">COLUMNS_NO_AVERAGE</span><span class="p">))</span>
@@ -528,7 +528,7 @@
 
     <span class="c1"># Check if we actually need to average</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Only single DataFrame given for averaging -&gt; Returning it.&quot;</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Only single DataFrame given for averaging -&gt; Returning it."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dfs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">drop_cols</span><span class="p">)</span>
 
     <span class="c1"># Check indices, which also determines row order of output</span>
@@ -537,7 +537,7 @@
         <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot perform averaging as the files all have no common indices.&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Cannot perform averaging as the files all have no common indices."</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
 
@@ -550,7 +550,7 @@
     <span class="n">avg_df</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">no_average_cols</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">data_col</span> <span class="ow">in</span> <span class="n">data_cols</span><span class="p">:</span>
-        <span class="n">err_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">data_col</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">err_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ERR</span><span class="si">}{</span><span class="n">data_col</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">err_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
             <span class="n">err_col</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -567,7 +567,7 @@
     <span class="k">return</span> <span class="n">avg_df</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">average_kmod_results</span><span class="p">()</span>
 </pre></div>
 
