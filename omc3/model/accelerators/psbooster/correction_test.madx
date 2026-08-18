@@ -74,7 +74,7 @@
  * for non-relativistic machines, like the PSB
  ************************************************************/
  select, flag=twiss, clear;
- select, flag=twiss, pattern="^BR.*BPM", column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ select, flag=twiss, pattern="^BR.*BPM", column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dy, dpx,dpy,px,py,phix,phiy;
  twiss, centre, DELTAP = %(DPP)s, sequence=psb%(RING)s, file="%(PATH)s/twiss_no.dat";
 
  %(COR)s
@@ -94,6 +94,6 @@
  k1lBR%(RING)sQSK210L3 := k1lQSK210L3;
 
  select, flag=twiss, clear;
- select, flag=twiss, pattern="^BR.*BPM", column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dpx,dpy,px,py,phix,phiy;
+ select, flag=twiss, pattern="^BR.*BPM", column=name, s, l, betx, bety, mux, muy, angle, k1l, k2l,k3l, x,y, r11, r12, r21, r22, alfx, alfy, dx, dy, dpx,dpy,px,py,phix,phiy;
  twiss, centre, DELTAP = %(DPP)s, sequence=psb%(RING)s, file="%(PATH)s/twiss_cor.dat";
 
