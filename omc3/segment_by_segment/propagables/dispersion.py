@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from pandas import Series
 
-from omc3.optics_measurements.constants import DISPERSION, MOMENTUM_DISPERSION
+from omc3.optics_measurements.constants import BETA, DISPERSION, MOMENTUM_DISPERSION
 from omc3.segment_by_segment import math as sbs_math
 from omc3.segment_by_segment.propagables.abstract import Propagable
 from omc3.segment_by_segment.propagables.phase import Phase
@@ -117,10 +117,11 @@ class Dispersion(Propagable):
         init_condition = self._init_start(plane) if forward else self._init_end(plane)
 
         model_disp = seg_model.loc[:, f"{DISPERSION}{plane}"]
+        model_beta = seg_model.loc[:, f"{BETA}{plane}"]
 
         # propagate the error
         model_phase = Phase.get_segment_phase(seg_model, plane, forward)
-        propagated_err = sbs_math.propagate_error_dispersion(model_disp, model_phase, init_condition)
+        propagated_err = sbs_math.propagate_error_dispersion(model_beta, model_phase, init_condition)
         return model_disp, propagated_err
 
 
