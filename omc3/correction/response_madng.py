@@ -393,13 +393,6 @@ tws_coupling, _ = twiss {
             columns=variables,
         )
 
-    if accel_inst.beam_direction == -1:
-        # Change the sign of the coupling responses for reverse beam direction
-        # In all honesty, I don't know why this has to be done, but it works... (jgray 2026)
-        for coupling_param in COUPLING_VARMAP.values():
-            response_dict[f"{coupling_param}R"] *= -1
-            response_dict[f"{coupling_param}I"] *= -1
-
     # Check for any NaNs in the response matrices
     for key, df in response_dict.items():
         if df.isna().any().any():
