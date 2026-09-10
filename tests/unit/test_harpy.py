@@ -12,6 +12,7 @@ from pandas.testing import assert_frame_equal
 from tfs.testing import assert_dict_equal
 
 from omc3.harpy import _parallel, handler
+from omc3.harpy.kicker import _get_damping
 from omc3.hole_in_one import _add_suffix_and_iter_bunches, hole_in_one_entrypoint
 from tests.accuracy.test_harpy import _get_model_dataframe
 
@@ -240,6 +241,37 @@ def _run_harpy_multibunch(
         n_jobs=n_jobs,
     )
     return tbt_file
+
+
+@pytest.mark.basic
+def test_get_damping_recovers_known_decay_rate():
+    """`_get_damping()` (`omc3.harpy.kicker`) is supposed to estimate the per-BPM
+    exponential damping (decay) rate of a kicked beam by, for each BPM, looking at
+    the oscillation envelope *over turns*: reverse the turn order, take a running
+    max (cumulative max) over turns to get the decaying envelope, then fit
+    log(envelope) vs. turn index.
+
+    This builds synthetic multi-BPM turn-by-turn data with a known, identical
+    damping rate for every BPM (only the amplitude differs per BPM, as in real
+    data) and checks that the estimate is close to the known rate.
+    """
+    rng = np.random.default_rng(0)
+    n_bpms, n_turns = 8, 300
+    true_damping = 0.004  # amplitude(turn) ~ exp(-true_damping * turn)
+    tune = 0.28
+    amplitudes = np.array([1, 2, 5, 10, 20, 50, 100, 200])
+    phases = rng.uniform(0, 2 * np.pi, n_bpms)
+
+    turns = np.arange(n_turns)
+    bpm_matrix = np.array([
+        amplitudes[i] * np.exp(-true_damping * turns) * np.cos(2 * np.pi * tune * turns + phases[i])
+        for i in range(n_bpms)
+    ])
+    bpm_data = pd.DataFrame(bpm_matrix, index=[f"BPM{i}" for i in range(n_bpms)])
+
+    damping, _ = _get_damping(bpm_data)
+
+    assert damping == pytest.approx(true_damping, rel=0.05)
 
 
 def create_tbt_data(
