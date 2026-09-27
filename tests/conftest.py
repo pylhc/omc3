@@ -239,6 +239,11 @@ def acc_models_ps_2021(tmp_path_factory: TempPathFactory) -> Path:
     return clone_acc_models(tmp_path_factory, "ps", 2021)
 
 
+@pytest.fixture(scope="session")
+def acc_models_ps_2023(tmp_path_factory: TempPathFactory) -> Path:
+    return clone_acc_models(tmp_path_factory, "ps", 2023)
+
+
 def clone_acc_models(tmp_path_factory: TempPathFactory, accel: str, year: int) -> Path:
     """ Clone the acc-models directory for the specified accelerator from github into a temporary directory. """
     tmp_path = tmp_path_factory.mktemp(f"acc-models-{accel}-{year}")

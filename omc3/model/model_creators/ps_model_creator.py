@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import shutil
+from pathlib import Path
 
 from omc3.model.accelerators.accelerator import AccExcitationMode
 from omc3.model.accelerators.ps import Ps
@@ -58,6 +59,16 @@ class PsModelCreator(PsBaseModelCreator):
             else "1",  # 2018 doesn't provide a macros file
             "PS_TUNE_METHOD": accel.tune_method,
         }
+        if (Path(accel.acc_model_path) / "ps.seq").is_file():
+            # Since 2023, acc-models-ps provides a single unified sequence file.
+            sequence_call = f'call, file="{replace_dict["ACC_MODELS_DIR"]}/ps.seq";'
+        else:
+            # Older years (<=2022) still provide two separate sequence files.
+            sequence_call = (
+                f'call, file="{replace_dict["ACC_MODELS_DIR"]}/ps_mu.seq";\n'
+                f'call, file="{replace_dict["ACC_MODELS_DIR"]}/ps_ss.seq";'
+            )
+        replace_dict["SEQUENCE_CALL"] = sequence_call
         if accel.modifiers:
             replace_dict["MODIFIERS"] = "\n".join(
                 [
