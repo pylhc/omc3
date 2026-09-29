@@ -47,6 +47,9 @@ def calculate(measure_input: DotDict, input_files: InputFiles) -> TuneDict:
         tune_rms_list = [df.headers[f"Q{PLANE_TO_NUM[plane]}RMS"] for df in input_files.dpp_frames(plane, dpp_value)]
         measured_tune = stats.weighted_mean(np.array(tune_list), errors=np.array(tune_rms_list))
         tune_d[plane]["Q"], tune_d[plane]["QF"] = measured_tune, measured_tune
+        # statistical error of the (weighted) mean tune over the files; Q_F inherits it
+        tune_d[plane]["QFERR"] = (np.std(tune_list, ddof=1) / np.sqrt(len(tune_list))
+                                  if len(tune_list) > 1 else 0.0)
         tune_d[plane]["QFM"] = accelerator.nat_tunes[PLANE_TO_NUM[plane] - 1]
         if accelerator.excitation:
             tune_d[plane]["QM"] = accelerator.drv_tunes[PLANE_TO_NUM[plane] - 1]
@@ -64,8 +67,8 @@ class TuneDict(dict):
     """
     # TODO: detail each key
     def __init__(self):
-        super().__init__(zip(PLANES, ({"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None},
-                                                    {"Q": 0.0, "QF": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None})))
+        super().__init__(zip(PLANES, ({"Q": 0.0, "QF": 0.0, "QFERR": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None},
+                                                    {"Q": 0.0, "QF": 0.0, "QFERR": 0.0, "QM": 0.0, "QFM": 0.0, "ac2bpm": None})))
 
     def get_lambda(self, plane: str) -> float:
         """

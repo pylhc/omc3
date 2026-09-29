@@ -46,6 +46,7 @@ FREE: str = "FREE"  # Suffix for an RDT converted from forced (AC-dipole driven)
 DECOMP: str = "DECOMP"  # Suffix for a single multipole order separated out of a shared line
 LINE_RESIDUAL: str = "LINERESIDUAL"  # Fraction of a shared line unexplained by its decomposition
 N_CONTRIBUTORS: str = "NCONTRIBUTORS"  # Number of RDTs sharing one spectral line
+LOCATION: str = "LOC"  # AC-dipole location factor columns (LOCAMP, LOCPHASE)
 CROSS_FRACTION: str = "CROSSFRACTION"  # Fraction of a forced line attributed to delta_+ cross-terms
 
 # Names

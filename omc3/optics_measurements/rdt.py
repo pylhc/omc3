@@ -28,6 +28,7 @@ from omc3.optics_measurements.constants import (
     AMPLITUDE,
     COUNT,
     CROSS_FRACTION,
+    LOCATION,
     DECOMP,
     ERR,
     EXT,
@@ -186,7 +187,7 @@ def calculate(
                 if dfs is None:
                     continue
                 for rdt, df in dfs.items():
-                    write(df, add_freq_to_header(header, plane, rdt), meas_input, plane, rdt)
+                    write(df, add_freq_to_header(header, plane, rdt, tunes), meas_input, plane, rdt)
 
 
 def write(df: pd.DataFrame, header: dict[str, Any], meas_input: DotDict, plane: str, rdt: RDTTuple) -> None:
@@ -312,11 +313,23 @@ def _group_rdts_by_line(rdts: list[RDTTuple], plane: str) -> dict[LineTuple, lis
     return {line: sorted(group, key=sum) for line, group in groups.items()}
 
 
-def add_freq_to_header(header: dict[str, Any], plane: str, rdt: RDTTuple) -> dict[str, Any]:
+def add_freq_to_header(
+    header: dict[str, Any], plane: str, rdt: RDTTuple, tunes: TuneDict | None = None
+) -> dict[str, Any]:
+    """
+    Adds the (folded) frequency of the RDT's spectral line: ``FREQ`` at the measured tunes, i.e.
+    the frequency the line was actually extracted at (the drive tunes under AC-dipole
+    excitation), and ``FREQFREE`` at the free tunes (``Q1``/``Q2`` of the header).
+    """
+    def fold(q1, q2):
+        freq = np.mod(np.array(line) @ np.array([q1, q2, 0]), 1)
+        return freq if freq <= 0.5 else 1 - freq
+
     mod_header = header.copy()
     line = _determine_line(rdt, plane)
-    freq = np.mod(line @ np.array([header["Q1"], header["Q2"], 0]), 1)
-    mod_header["FREQ"] = freq if freq <= 0.5 else 1 - freq
+    mod_header["FREQFREE"] = fold(header["Q1"], header["Q2"])
+    mod_header["FREQ"] = (fold(tunes["X"]["Q"], tunes["Y"]["Q"]) if tunes is not None
+                          else mod_header["FREQFREE"])
     return mod_header
 
 
@@ -498,6 +511,7 @@ def _process_line(
     rdt_angles = stats.circular_mean(rdt_phases_per_file, period=1, axis=1) % 1
     err_rdt_angles = stats.circular_error(rdt_phases_per_file, period=1, axis=1)
     conversion = _forced_to_free_factor(line, plane, tunes)
+    sig_abs, sig_arg = _forced_to_free_factor_error(line, plane, tunes, meas_input)
 
     dfs = {}
     for rdt in rdts_on_line:
@@ -510,16 +524,26 @@ def _process_line(
         rdt_df[REAL] = np.cos(2 * np.pi * rdt_angles) * rdt_df.loc[:, AMPLITUDE].to_numpy()
         rdt_df[IMAG] = np.sin(2 * np.pi * rdt_angles) * rdt_df.loc[:, AMPLITUDE].to_numpy()
 
+        loc = None
+        if meas_input.get("rdt_location_correction"):
+            loc = _location_factor(meas_input, plane, line, rdt, tunes, df.index)
+            if loc is None:
+                LOGGER.warning(
+                    f"Location correction for {_rdt_to_str(rdt)} skipped: the model carries no "
+                    "sources for it or no AC-dipole element."
+                )
+        factor = conversion if loc is None else conversion / loc
         amp_free, err_amp_free, phase_free = _apply_forced_to_free(
             rdt_df.loc[:, AMPLITUDE].to_numpy(),
             rdt_df.loc[:, f"{ERR}{AMPLITUDE}"].to_numpy(),
             rdt_angles,
-            conversion,
+            factor,
         )
         rdt_df[f"{AMPLITUDE}{FREE}"] = amp_free
-        rdt_df[f"{ERR}{AMPLITUDE}{FREE}"] = err_amp_free
+        # the conversion depends on the free tunes, known only to sigma(Q_F): propagate
+        rdt_df[f"{ERR}{AMPLITUDE}{FREE}"] = np.sqrt(err_amp_free ** 2 + (amp_free * sig_abs) ** 2)
         rdt_df[f"{PHASE}{FREE}"] = phase_free
-        rdt_df[f"{ERR}{PHASE}{FREE}"] = err_rdt_angles  # a deterministic rotation/scaling: no added noise
+        rdt_df[f"{ERR}{PHASE}{FREE}"] = np.sqrt(err_rdt_angles ** 2 + (sig_arg / (2 * np.pi)) ** 2)
         rdt_df[f"{REAL}{FREE}"] = np.cos(2 * np.pi * phase_free) * amp_free
         rdt_df[f"{IMAG}{FREE}"] = np.sin(2 * np.pi * phase_free) * amp_free
 
@@ -532,6 +556,10 @@ def _process_line(
             with np.errstate(invalid="ignore"):
                 rdt_df[CROSS_FRACTION] = np.nanmean(cross_fraction, axis=1)
             columns.append(CROSS_FRACTION)
+        if loc is not None:
+            rdt_df[f"{LOCATION}{AMPLITUDE}"] = np.abs(loc)
+            rdt_df[f"{LOCATION}{PHASE}"] = (np.angle(loc) / (2 * np.pi)) % 1
+            columns += [f"{LOCATION}{AMPLITUDE}", f"{LOCATION}{PHASE}"]
 
         # in old files there was "EAMP" and "PHASE_STD"
         dfs[rdt] = rdt_df.loc[:, columns]
@@ -591,6 +619,38 @@ def _forced_to_free_factor(line: LineTuple, plane: str, tunes: TuneDict) -> comp
     ratio = np.sin(np.pi * theta_forced) / sin_free
     half_phase = np.exp(1j * np.pi * (theta_free - theta_forced))
     return ratio * half_phase
+
+
+def _forced_to_free_factor_error(
+    line: LineTuple, plane: str, tunes: TuneDict, meas_input: DotDict | None = None
+) -> tuple[float, float]:
+    """
+    Uncertainty of the forced-to-free factor from the uncertainty of the free tunes Q_F
+    (the drive tunes are known precisely). Q_F is reconstructed as the measured driven tune
+    shifted by the model's driven-to-free offset, so its uncertainty is dominated by how well
+    the drive was placed relative to the real (amplitude-detuned) natural tune: a systematic
+    `rdt_free_tune_error` (per plane) is added in quadrature to the statistical `QFERR`.
+    The factor is very sensitive near a resonance (d ln|F|/dQ ~ pi cot(pi Theta)).
+
+    Returns:
+        `(sigma(|F|)/|F|, sigma(arg F))`, the latter in radians; `(0, 0)` without excitation.
+    """
+    sys_err = float((meas_input or {}).get("rdt_free_tune_error") or 0.0)
+    sig = {p: np.hypot(tunes[p].get("QFERR", 0.0), sys_err) for p in PLANES}
+    if all(tunes[p]["Q"] == tunes[p]["QF"] for p in PLANES) or not any(sig.values()):
+        return 0.0, 0.0
+    f0 = _forced_to_free_factor(line, plane, tunes)
+    var_abs = var_arg = 0.0
+    step = 1e-6
+    for p in PLANES:
+        if not sig[p]:
+            continue
+        shifted = deepcopy(tunes)
+        shifted[p]["QF"] = tunes[p]["QF"] + step
+        f1 = _forced_to_free_factor(line, plane, shifted)
+        var_abs += ((np.abs(f1) - np.abs(f0)) / step / np.abs(f0) * sig[p]) ** 2
+        var_arg += (np.angle(f1 / f0) / step * sig[p]) ** 2
+    return float(np.sqrt(var_abs)), float(np.sqrt(var_arg))
 
 
 def _apply_forced_to_free(
@@ -842,6 +902,188 @@ def _model_h_arr(elements: pd.DataFrame, j: int, k: int, l: int, m: int, n: int)
     return np.where(knl != 0, h, 0.0)
 
 
+def _elements_in_beam_direction(meas_input: DotDict) -> pd.DataFrame | None:
+    """
+    The model element table with MUX/MUY expressed as phase advances *along the beam's direction
+    of travel*. LHC Beam 2 models are ordered in the Beam 1 frame (``beam_direction == -1``): their
+    MU increases against the beam, so the beam-direction phase is Q_full - MU. Every "forward"
+    propagation (source -> BPM, AC dipole -> source) below relies on this.
+    """
+    elements = getattr(meas_input.accelerator, "elements", None)
+    if elements is None or getattr(meas_input.accelerator, "beam_direction", 1) != -1:
+        return elements
+    headers = getattr(elements, "headers", {})
+    if not {"Q1", "Q2"} <= set(headers):
+        return elements
+    flipped = elements.copy()
+    flipped["MUX"] = float(headers["Q1"]) - elements["MUX"]
+    flipped["MUY"] = float(headers["Q2"]) - elements["MUY"]
+    return flipped
+
+
+def _ac_dipole_mu(meas_input: DotDict, elements: pd.DataFrame, index: pd.Index) -> tuple[float, float] | None:
+    """
+    Model phase advances (MUX, MUY) of the AC dipole (exciter) element, or `None` if the
+    accelerator cannot name it or the model element table does not contain it.
+    """
+    accel = meas_input.accelerator
+    try:
+        _bpm, exciter = accel.get_exciter_bpm("X", list(index))
+        return float(elements.loc[exciter, "MUX"]), float(elements.loc[exciter, "MUY"])
+    except (AttributeError, KeyError, TypeError):
+        return None
+
+
+def _forced_line_model(
+    meas_input: DotDict,
+    plane: str,
+    line: LineTuple,
+    tunes: TuneDict,
+    deltas: dict[str, tuple[str, np.ndarray, np.ndarray]],
+    n_kicks: int,
+    index: pd.Index,
+    nmax: int,
+) -> tuple[np.ndarray, np.ndarray] | None:
+    """
+    First-order model prediction of the forced (AC-dipole driven) spectral `line` at every BPM
+    in `index` and for every kick file, split into its clean part (the all-delta_- partitions)
+    and the delta_+ cross-terms (every other partition landing on the line).
+
+    Bookkeeping (validated against tracking with the AC dipole mid-ring, see the unit tests):
+
+    - Everything is referred to the exit of the AC dipole, where the driven orbit is continuous
+      for one full turn. Past the AC dipole the driven components jump by one drive period
+      relative to free propagation -- delta_- by exp(2i pi (Q_D - Q)), delta_+ by
+      exp(-2i pi (Q_D + Q)) -- so propagating delta_+- freely from a reference BPM around the
+      whole ring is only correct up to the AC dipole.
+    - Turn-by-turn data count turns from the model start (MU = 0); a point upstream of the AC
+      dipole in that turn was last driven one turn earlier, so its complex coefficient at
+      frequency omega carries exp(-i omega) relative to the AC-dipole frame.
+    - A kick emitted at source w reaches BPM b in the same AC-dipole turn if w precedes b, else
+      in the next one (exp(-i omega)).
+    - The measured complex line (`complex_line` in :func:`_process_line`) is the h^- line
+      coefficient divided by the *amplitude* of the local tune line, with an absolute phase: the
+      prediction is divided by |delta_-(b)| only.
+
+    Returns `(clean, cross)`, each a `(len(index), n_kicks)` complex array in those measured
+    units, or `None` when the model lacks the data needed (no MUX/MUY/BETX/BETY, no Q1/Q2
+    headers, or BPMs missing). Beam direction is handled by :func:`_elements_in_beam_direction`.
+    """
+    elements = _elements_in_beam_direction(meas_input)
+    if elements is None or not {"MUX", "MUY", "BETX", "BETY"} <= set(elements.columns):
+        return None
+    headers = getattr(elements, "headers", {})
+    try:
+        q_full_x, q_full_y = float(headers["Q1"]), float(headers["Q2"])
+    except KeyError:
+        LOGGER.info("Forced-line model skipped: model element table has no Q1/Q2 header.")
+        return None
+
+    (ref_x, dxm, dxp), (ref_y, dym, dyp) = deltas["X"], deltas["Y"]
+    qx_free, qy_free = tunes["X"]["QF"], tunes["Y"]["QF"]
+    qdx, qdy = tunes["X"]["Q"], tunes["Y"]["Q"]
+    two_pi = 2 * np.pi
+
+    try:
+        mux_b = elements.loc[index, "MUX"].to_numpy()
+        muy_b = elements.loc[index, "MUY"].to_numpy()
+        mux_refx, muy_refy = elements.loc[ref_x, "MUX"], elements.loc[ref_y, "MUY"]
+    except KeyError:
+        LOGGER.info("Forced-line model skipped: BPMs not found in the model's element table.")
+        return None
+
+    ac = _ac_dipole_mu(meas_input, elements, index)
+    if ac is None:
+        LOGGER.warning(
+            "AC-dipole element not found in the model: assuming it sits just upstream of the "
+            "reference BPM. Sources and BPMs across the real AC dipole then get a wrong phase."
+        )
+        ac = (mux_refx, elements.loc[ref_x, "MUY"])
+    mux_ac, muy_ac = ac
+
+    def pos(mux):  # position within the AC-dipole turn, as the x phase from the AC-dipole exit
+        return _wrapped_phase(mux_ac, np.asarray(mux, dtype=float), q_full_x)
+
+    def upstream_of_ac(mux):  # upstream of the AC dipole within a data turn (starting at MU = 0)
+        return np.asarray(mux, dtype=float) < mux_ac
+
+    # driven components at the AC-dipole exit, in the AC-dipole turn frame
+    def at_exit(dm, dp, mu_ref, mu_ac_plane, q_full, qd, ref_is_up):
+        k = -1.0 if ref_is_up else 0.0
+        back = np.exp(-1j * two_pi * _wrapped_phase(mu_ac_plane, np.array([mu_ref]), q_full)[0])
+        return dm * np.exp(-1j * two_pi * qd * k) * back, dp * np.exp(1j * two_pi * qd * k) * back
+
+    dxm0, dxp0 = at_exit(dxm, dxp, mux_refx, mux_ac, q_full_x, qdx, upstream_of_ac(mux_refx))
+    dym0, dyp0 = at_exit(
+        dym, dyp, muy_refy, muy_ac, q_full_y, qdy, upstream_of_ac(elements.loc[ref_y, "MUX"])
+    )
+
+    pos_b = pos(mux_b)
+    k_b = np.where(upstream_of_ac(mux_b), -1.0, 0.0)
+    target = round(float(_alias(line[0] * qdx + line[1] * qdy)), 9)
+    need = (lambda t: t[0] >= 1) if plane == "X" else (lambda t: t[2] >= 1)
+    terms = [
+        (j, k, l, m)  # noqa: E741
+        for j, k, l, m in product(range(nmax + 1), repeat=4)  # noqa: E741
+        if 3 <= j + k + l + m <= nmax and (l + m) % 2 == 0 and need((j, k, l, m))
+    ]
+
+    clean = np.zeros((len(index), n_kicks), dtype=complex)
+    cross = np.zeros((len(index), n_kicks), dtype=complex)
+    for (j, k, l, m) in terms:  # noqa: E741
+        h_w = _model_h_arr(elements, j, k, l, m, j + k + l + m)
+        if h_w is None or not np.any(h_w):
+            continue
+        mask = h_w != 0
+        h_src = h_w[mask]
+        mux_w = elements.loc[mask, "MUX"].to_numpy()
+        muy_w = elements.loc[mask, "MUY"].to_numpy()
+        p_x = _wrapped_phase(mux_ac, mux_w, q_full_x)  # AC-dipole exit -> source w
+        p_y = _wrapped_phase(muy_ac, muy_w, q_full_y)
+        if plane == "X":
+            nux_term, nuy_term = k - j + 1, m - l
+            out_phase = _wrapped_phase_matrix(mux_w, mux_b, q_full_x)  # source w -> BPM b
+            coeff, q_r, ax_range, ay_range = -2j * j, qx_free, range(j), range(l + 1)
+        else:
+            nux_term, nuy_term = k - j, m - l + 1
+            out_phase = _wrapped_phase_matrix(muy_w, muy_b, q_full_y)
+            coeff, q_r, ax_range, ay_range = -2j * l, qy_free, range(j + 1), range(l)
+        # the reduced monomial's spatial phase is the same for every partition: both driven
+        # components are transported by the same linear map between the AC dipole and the source
+        src = h_src * np.exp(1j * two_pi * (nux_term * p_x + nuy_term * p_y))
+        later = pos(mux_w)[None, :] >= pos_b[:, None]  # (n_bpms, n_src): kick reaches b next turn
+        prop = np.exp(1j * two_pi * out_phase)
+        same_turn, next_turn = np.where(later, 0, prop) @ src, np.where(later, prop, 0) @ src
+
+        for ax_ in ax_range:
+            for bx in range(k + 1):
+                for ay in ay_range:
+                    for by in range(m + 1):
+                        if plane == "X":
+                            nux, nuy = (2 * ax_ - (j - 1)) + (2 * bx - k), (2 * ay - l) + (2 * by - m)
+                            binom = comb(j - 1, ax_) * comb(k, bx) * comb(l, ay) * comb(m, by)
+                            xp = np.conj(dxm0) ** (j - 1 - ax_) * np.conj(dxp0) ** ax_
+                            yp = np.conj(dym0) ** (l - ay) * np.conj(dyp0) ** ay
+                        else:
+                            nux, nuy = (2 * ax_ - j) + (2 * bx - k), (2 * ay - (l - 1)) + (2 * by - m)
+                            binom = comb(j, ax_) * comb(k, bx) * comb(l - 1, ay) * comb(m, by)
+                            xp = np.conj(dxm0) ** (j - ax_) * np.conj(dxp0) ** ax_
+                            yp = np.conj(dym0) ** (l - 1 - ay) * np.conj(dyp0) ** ay
+                        if round(float(_alias(nux * qdx + nuy * qdy)), 9) != target:
+                            continue
+                        mix = binom * xp * yp * dxm0 ** bx * dxp0 ** (k - bx) * dym0 ** by * dyp0 ** (m - by)
+                        om = two_pi * (nux * qdx + nuy * qdy)
+                        # (n_bpms,), data-turn frame
+                        spatial = (same_turn + np.exp(-1j * om) * next_turn) * np.exp(1j * om * k_b)
+                        c = coeff / (1 - np.exp(1j * (two_pi * q_r - om))) * spatial[:, None] * mix[None, :]
+                        if (ax_, bx, ay, by) == (0, k, 0, m):
+                            clean += c
+                        else:
+                            cross += c
+    readout = np.abs(dxm0 if plane == "X" else dym0)[None, :]
+    return clean / readout, cross / readout
+
+
 def _delta_plus_correction(
     meas_input: DotDict,
     plane: str,
@@ -853,148 +1095,65 @@ def _delta_plus_correction(
     nmax: int,
 ) -> np.ndarray:
     """
-    Model-assisted delta_+ cross-term correction A^(cross) (Eq. 33 of the companion paper) for
-    the spectral `line`, per BPM (`index`) and per kick file.
-
-    Every possible source term (j,k,l,m) up to magnet order `nmax` carrying at least one power of
-    the readout plane's own "+" component (the same constraint any term needs to produce a line
-    in `plane` at all) is expanded over every binomial partition of its driven monomial into
-    co-/counter-rotating (delta_-, delta_+) pieces; the ones whose net frequency lands on `line`
-    -- other than the single all-delta_- partition, which is the clean part the plain conversion
-    already accounts for -- contaminate the measured line and are summed here. This includes the
-    target RDT's own term (its non-clean partitions) as well as genuine neighbours in index space.
-
-    The phase advance used throughout is the model's (`meas_input.accelerator.elements`), from
-    the reference BPM where `deltas` was measured, forward to every magnet source (setting up the
-    driven orbit each source sees), and from every source forward to each observation BPM in
-    `index` (propagating the resulting kick) -- the direct generalization, to an arbitrary
-    observation point, of the single-fixed-point formula validated by tracking.
-
-    Requires the model's element table to carry the relevant K_nL and BETX/BETY/MUX/MUY columns;
-    silently returns an all-zero correction (a no-op) wherever that data is absent.
-
-    Returns:
-        A `(len(index), n_kicks)` complex array, in the same harpy ratio-space convention as
-        the measured complex line (see `complex_line` in :func:`_process_line`), to be subtracted
-        from it before extracting the RDT.
+    Model-assisted delta_+ cross-term correction A^(cross) for the spectral `line`, per BPM
+    (`index`) and per kick file: the cross-term part of :func:`_forced_line_model`, in the units
+    of the measured complex line, to be subtracted from it before extracting the RDT. A no-op
+    (zeros) when the model lacks the needed data.
     """
-    zero = np.zeros((len(index), n_kicks), dtype=complex)
-    elements = getattr(meas_input.accelerator, "elements", None)
+    model = _forced_line_model(meas_input, plane, line, tunes, deltas, n_kicks, index, nmax)
+    if model is None:
+        return np.zeros((len(index), n_kicks), dtype=complex)
+    return model[1]
+
+
+def _location_factor(
+    meas_input: DotDict, plane: str, line: LineTuple, rdt: RDTTuple, tunes: TuneDict, index: pd.Index,
+) -> np.ndarray | None:
+    """
+    Model-assisted AC-dipole location factor L(b) per BPM: the plain forced-to-free conversion
+    (:func:`_forced_to_free_factor`) assumes every source lies between the AC dipole and the
+    observation point (as for a BPM right after the AC dipole). A source between the BPM and the
+    AC dipole instead contributes to the forced RDT with an extra exp(2i pi (nu_x Q_x- + nu_y Q_y-))
+    relative to that assumption, so f_free(b) = f'(b) * factor / L(b) with
+
+        L(b) = [sum_{w in (b, AC)} N_w(b) + exp(2i pi (nu_x Q_x- + nu_y Q_y-)) sum_{other w} N_w(b)]
+               / sum_w N_w(b),
+
+    N_w(b) the source's forward-propagated free-RDT term. Needs the target RDT's own sources in
+    the model (K_{n-1}L column); returns `None` otherwise.
+    """
+    elements = _elements_in_beam_direction(meas_input)
     if elements is None or not {"MUX", "MUY", "BETX", "BETY"} <= set(elements.columns):
-        return zero
-
-    (ref_x, dxm, dxp), (ref_y, dym, dyp) = deltas["X"], deltas["Y"]
-    qx_free, qy_free = tunes["X"]["QF"], tunes["Y"]["QF"]
-    qdx, qdy = tunes["X"]["Q"], tunes["Y"]["Q"]
-
-    # MUX/MUY (model, twiss_elements.dat) accumulate the FULL, unreduced phase advance over a
-    # turn (0 to Q_full, e.g. 62.28 for the LHC, not just the fractional tune 0.28): that full
-    # tune -- not the fractional qx_free/qy_free used for the resonance condition below -- is
-    # the correct period to wrap phase-advance differences by.
+        return None
+    j, k, l, m = rdt  # noqa: E741
+    h_w = _model_h_arr(elements, j, k, l, m, j + k + l + m)
+    if h_w is None or not np.any(h_w):
+        return None
     headers = getattr(elements, "headers", {})
     try:
         q_full_x, q_full_y = float(headers["Q1"]), float(headers["Q2"])
-    except KeyError:
-        LOGGER.info(
-            "delta_+ correction skipped: model element table has no Q1/Q2 header to determine "
-            "the full (unreduced) tune needed to wrap phase advances."
-        )
-        return zero
-
-    try:
         mux_b = elements.loc[index, "MUX"].to_numpy()
         muy_b = elements.loc[index, "MUY"].to_numpy()
-        mux_refx, muy_refy = elements.loc[ref_x, "MUX"], elements.loc[ref_y, "MUY"]
     except KeyError:
-        LOGGER.info(
-            "delta_+ correction skipped: reference or observation BPMs not found in the "
-            "model's element table."
-        )
-        return zero
-
-    # `complex_line` (what this correction is subtracted from) is harpy's ratio-space secondary
-    # line reading: the *readout* plane's own secondary line divided by that same plane's tune
-    # line, evaluated locally at each BPM (see _delta_pm_at_reference's docstring). The
-    # Hamiltonian formalism below instead predicts the absolute normalized-coordinate line
-    # amplitude; converting to the same ratio convention means dividing by the readout plane's
-    # own driven-mode complex amplitude, propagated in phase from the reference BPM (where it was
-    # measured) to every observation BPM.
-    if plane == "X":
-        ref_mu, obs_mu, delta_ref, q_full_plane = mux_refx, mux_b, dxm, q_full_x
-    else:
-        ref_mu, obs_mu, delta_ref, q_full_plane = muy_refy, muy_b, dym, q_full_y
-    phase_ref_to_obs = _wrapped_phase(ref_mu, obs_mu, q_full_plane)
-    delta_minus_local = np.exp(2j * np.pi * phase_ref_to_obs)[:, None] * delta_ref[None, :]
-
-    target = round(float(_alias(line[0] * qdx + line[1] * qdy)), 9)
-    need = (lambda t: t[0] >= 1) if plane == "X" else (lambda t: t[2] >= 1)
-    terms = [
-        (j, k, l, m)  # noqa: E741
-        for j, k, l, m in product(range(nmax + 1), repeat=4)  # noqa: E741
-        if 3 <= j + k + l + m <= nmax and (l + m) % 2 == 0 and need((j, k, l, m))
-    ]
-
-    two_pi = 2 * np.pi
-    a_cross = np.zeros((len(index), n_kicks), dtype=complex)
-
-    for (j, k, l, m) in terms:  # noqa: E741
-        n = j + k + l + m
-        h_w = _model_h_arr(elements, j, k, l, m, n)
-        if h_w is None or not np.any(h_w):
-            continue
-        mask = h_w != 0
-        h_src = h_w[mask]
-        mux_w, muy_w = elements.loc[mask, "MUX"].to_numpy(), elements.loc[mask, "MUY"].to_numpy()
-        p_x = _wrapped_phase(mux_refx, mux_w, q_full_x)  # reference_x -> source w
-        p_y = _wrapped_phase(muy_refy, muy_w, q_full_y)  # reference_y -> source w
-
-        # the term's OWN (fixed) resonance indices, i.e. the line this term would produce on
-        # its own all-delta_- partition -- NOT to be confused with a specific partition's own
-        # (nux, nuy) frequency below, even though both are called nu_x/nu_y in the paper.
-        if plane == "X":
-            nux_term, nuy_term = k - j + 1, m - l
-            out_phase = _wrapped_phase_matrix(mux_w, mux_b, q_full_x)  # source w -> observation b
-            coeff, q_r, ax_range, ay_range = -2j * j, qx_free, range(j), range(l + 1)
-        else:
-            nux_term, nuy_term = k - j, m - l + 1
-            out_phase = _wrapped_phase_matrix(muy_w, muy_b, q_full_y)
-            coeff, q_r, ax_range, ay_range = -2j * l, qy_free, range(j + 1), range(l)
-        out_factor = np.exp(1j * two_pi * out_phase)  # (n_bpms, n_src)
-        # this term's spatial phase (Phi_w(b), Eq. 33) is the SAME for every partition of it:
-        # it only depends on the term's own (j,k,l,m), not on which powers of delta_-/delta_+
-        # a given partition assigns.
-        phi_term = nux_term * p_x + nuy_term * p_y  # (n_src,)
-        spatial = out_factor @ (h_src * np.exp(1j * two_pi * phi_term))  # (n_bpms,)
-
-        for ax_ in ax_range:
-            for bx in range(k + 1):
-                for ay in ay_range:
-                    for by in range(m + 1):
-                        if plane == "X":
-                            nux, nuy = (2 * ax_ - (j - 1)) + (2 * bx - k), (2 * ay - l) + (2 * by - m)
-                            binom = comb(j - 1, ax_) * comb(k, bx) * comb(l, ay) * comb(m, by)
-                            xp = np.conj(dxm) ** (j - 1 - ax_) * np.conj(dxp) ** ax_
-                            yp = np.conj(dym) ** (l - ay) * np.conj(dyp) ** ay
-                        else:
-                            nux, nuy = (2 * ax_ - j) + (2 * bx - k), (2 * ay - (l - 1)) + (2 * by - m)
-                            binom = comb(j, ax_) * comb(k, bx) * comb(l - 1, ay) * comb(m, by)
-                            xp = np.conj(dxm) ** (j - ax_) * np.conj(dxp) ** ax_
-                            yp = np.conj(dym) ** (l - 1 - ay) * np.conj(dyp) ** ay
-                        if round(float(_alias(nux * qdx + nuy * qdy)), 9) != target:
-                            continue
-                        if (ax_, bx, ay, by) == (0, k, 0, m):  # the clean, all-delta_- partition
-                            continue
-                        mix = (
-                            binom * xp * yp
-                            * dxm ** bx * dxp ** (k - bx) * dym ** by * dyp ** (m - by)
-                        )  # (n_kicks,)
-                        om = two_pi * (nux * qdx + nuy * qdy)
-                        resonance = 1 - np.exp(1j * (two_pi * q_r - om))
-                        a_cross += (
-                            coeff * np.exp(-1j * om) / resonance
-                            * spatial[:, None] * mix[None, :]
-                        )
-    return a_cross / delta_minus_local
+        return None
+    ac = _ac_dipole_mu(meas_input, elements, index)
+    if ac is None:
+        return None
+    mask = h_w != 0
+    mux_w, muy_w = elements.loc[mask, "MUX"].to_numpy(), elements.loc[mask, "MUY"].to_numpy()
+    n_w = h_w[mask][None, :] * np.exp(2j * np.pi * (
+        (j - k) * _wrapped_phase_matrix(mux_w, mux_b, q_full_x)
+        + (l - m) * _wrapped_phase_matrix(muy_w, muy_b, q_full_y)
+    ))  # (n_bpms, n_src)
+    nux, nuy = line[0], line[1]
+    jump = np.exp(2j * np.pi * (nux * (tunes["X"]["Q"] - tunes["X"]["QF"])
+                                + nuy * (tunes["Y"]["Q"] - tunes["Y"]["QF"])))
+    pos_w = _wrapped_phase(ac[0], mux_w, q_full_x)
+    pos_b = _wrapped_phase(ac[0], mux_b, q_full_x)
+    between = pos_w[None, :] > pos_b[:, None]  # source between the BPM and the AC dipole
+    total = n_w.sum(axis=1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return (np.where(between, n_w, jump * n_w).sum(axis=1)) / total
 
 
 def _add_tunes_if_in_second_turn(

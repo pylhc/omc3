@@ -286,6 +286,21 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
 
         Flags: **--rdt_delta_plus_correction**
         Action: ``store_true``
+      - **rdt_location_correction**: Correct the forced-to-free conversion, per BPM, for the
+        AC-dipole location (sources between a BPM and the AC dipole see the driven orbit one drive
+        period later). Model-assisted: needs the RDT's own sources in the model; adds the
+        LOCAMP/LOCPHASE columns and applies the factor to the FREE columns.
+
+        Flags: **--rdt_location_correction**
+        Action: ``store_true``
+      - **rdt_free_tune_error**: Systematic uncertainty (tune units, per plane) of the free tunes
+        entering the forced-to-free conversion, propagated into ERRAMPFREE/ERRPHASEFREE together
+        with the statistical tune error. The free tune is reconstructed from the drive tune and
+        the model offset, so ~1e-3 is realistic; near a resonance the conversion changes by
+        ~10% per 1e-3.
+
+        Flags: **--rdt_free_tune_error**
+        Default: ``0.0``
       - **only_coupling**: Calculate only coupling.
 
         Flags: **--only_coupling**
@@ -817,6 +832,19 @@ def optics_params() -> EntryPointParameters:
         help="Correct forced RDTs for delta_+ cross-term contamination (model-assisted, see "
         "the forced-to-free conversion) before converting to free. No-op if the model does "
         "not carry the relevant magnet strengths.",
+    )
+    params.add_parameter(
+        name="rdt_location_correction",
+        action="store_true",
+        help="Correct the forced-to-free conversion per BPM for the AC-dipole location "
+        "(model-assisted; needs the RDT's sources in the model).",
+    )
+    params.add_parameter(
+        name="rdt_free_tune_error",
+        type=float,
+        default=0.0,
+        help="Systematic uncertainty of the free tunes used in the forced-to-free conversion, "
+        "propagated into the FREE error columns.",
     )
     params.add_parameter(
         name="three_bpm_method",
