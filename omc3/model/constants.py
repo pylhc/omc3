@@ -16,6 +16,7 @@ PLANE_TO_HV: dict[str, str] = {"X": "H", "Y": "V"}
 # Job Creation Files ---
 OBS_POINTS: str = "observation_points.def"
 MODIFIERS_MADX: str = 'modifiers.madx'
+KNOBS_MADX: str = "knobs.madx"  # optional, e.g. extracted MQT/MCD trims (see machine_data_extraction)
 ERROR_DEFFS_TXT: str = "error_deffs.txt"
 JOB_MODEL_MADX_MASK: str = "job.create_model_{}.madx"
 JOB_MODEL_MADX_NOMINAL: str = JOB_MODEL_MADX_MASK.format("nominal")

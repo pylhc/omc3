@@ -177,7 +177,10 @@ def calculate_amp_dpoverp(input_files: InputFiles, meas_input: DotDict) -> float
     mask = meas_input.accelerator.get_element_types_mask(df_orbit.index, ["arc_bpm"])
     df_filtered = df_orbit.loc[mask, :]
     amps = input_files.get_data(df_filtered, "AMPX") * input_files.get_data(df_filtered, "AMPZ")
-    mask_zeros = (amps > 0) if amps.ndim == 1 else (np.sum(amps, axis=1) > 0)
+    # nansum/nanmean: a file with no AMPZ (no synchrotron sideband found for it) is an all-NaN
+    # column here, and a plain sum would poison every BPM's row-sum (hence mask_zeros, hence
+    # denom) to NaN even though the other files are perfectly usable.
+    mask_zeros = (amps > 0) if amps.ndim == 1 else (np.nansum(amps, axis=1) > 0)
     dispersions = df_filtered.loc[mask_zeros, "DX"].to_numpy()
     denom = np.sum(dispersions**2)
     if denom == 0.0:
@@ -185,5 +188,5 @@ def calculate_amp_dpoverp(input_files: InputFiles, meas_input: DotDict) -> float
     if amps.ndim == 1:
         numer = np.sum(dispersions * amps[mask_zeros])
     else:
-        numer = np.sum(dispersions[:, None] * amps[mask_zeros, :], axis=0)
+        numer = np.nansum(dispersions[:, None] * amps[mask_zeros, :], axis=0)
     return numer / denom

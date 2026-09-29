@@ -276,6 +276,16 @@ def hole_in_one_entrypoint(opt: DotDict, rest: list[str]) -> None:
         Flags: **--rdt_magnet_order**
         Choices: ``(2 <= n <= 8)``
         Default: ``4``
+      - **rdt_delta_plus_correction**: Correct forced RDTs for the delta_+ (counter-rotating
+        AC-dipole component) cross-term contamination before converting to free, using the
+        model's magnet strengths/beta functions/phase advances. Needs a model with the relevant
+        multipole strengths assigned (K_nL/K_nSL in the elements twiss); has no effect (and no
+        cost beyond a fast no-op check) when the model does not carry them, as is typical for
+        LHC optics-measurement models which do not encode the unknown higher-order field errors
+        being measured.
+
+        Flags: **--rdt_delta_plus_correction**
+        Action: ``store_true``
       - **only_coupling**: Calculate only coupling.
 
         Flags: **--only_coupling**
@@ -800,6 +810,13 @@ def optics_params() -> EntryPointParameters:
         type=int,
         default=OPTICS_DEFAULTS["rdt_magnet_order"],
         help="Maximum magnet order for the RDT calculation.",
+    )
+    params.add_parameter(
+        name="rdt_delta_plus_correction",
+        action="store_true",
+        help="Correct forced RDTs for delta_+ cross-term contamination (model-assisted, see "
+        "the forced-to-free conversion) before converting to free. No-op if the model does "
+        "not carry the relevant magnet strengths.",
     )
     params.add_parameter(
         name="three_bpm_method",

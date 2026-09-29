@@ -26,6 +26,7 @@ from omc3.model.constants import (
     GENERAL_MACROS,
     JOB_MODEL_MADX_BEST_KNOWLEDGE,
     JOB_MODEL_MADX_NOMINAL,
+    KNOBS_MADX,
     LHC_MACROS,
     LHC_MACROS_RUN3,
     LHC_REMOVE_TRIPLET_SYMMETRY_RELPATH,
@@ -265,6 +266,15 @@ class LhcModelCreator(ModelCreator):
             madx_script += "".join(
                 f"call, file = '{self.resolve_path_for_madx(modifier)}'; {MODIFIER_TAG}\n"
                 for modifier in accel.modifiers
+            )
+
+        knobs_madx_path = accel.model_dir / KNOBS_MADX
+        if knobs_madx_path.is_file():
+            # optional: e.g. MQT/MCD trims extracted via omc3.machine_data_extraction, or any
+            # other user-supplied knob assignments to apply on top of the modifiers above.
+            madx_script += (
+                "\n! ----- Knobs (e.g. extracted MQT/MCD trims) -----\n"
+                f"call, file = '{self.resolve_path_for_madx(knobs_madx_path)}';\n"
             )
 
         if accel.year in ["2012", "2015", "2016", "2017", "2018", "2021", "hllhc1.3"]:

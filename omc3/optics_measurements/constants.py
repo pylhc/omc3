@@ -42,6 +42,11 @@ MDL: str = "MDL"  # Model
 REAL: str = "REAL"
 IMAG: str = "IMAG"
 MASKED: str = "MASKED"
+FREE: str = "FREE"  # Suffix for an RDT converted from forced (AC-dipole driven) to free motion
+DECOMP: str = "DECOMP"  # Suffix for a single multipole order separated out of a shared line
+LINE_RESIDUAL: str = "LINERESIDUAL"  # Fraction of a shared line unexplained by its decomposition
+N_CONTRIBUTORS: str = "NCONTRIBUTORS"  # Number of RDTs sharing one spectral line
+CROSS_FRACTION: str = "CROSSFRACTION"  # Fraction of a forced line attributed to delta_+ cross-terms
 
 # Names
 S: str = "S"
