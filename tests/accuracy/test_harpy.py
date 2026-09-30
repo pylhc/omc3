@@ -155,10 +155,11 @@ def test_harpy_run(
 
 
 @pytest.mark.extended
-def test_freekick_harpy(_test_file: Path, _model_file: Path):
+@pytest.mark.parametrize("nturns", [NTURNS, NTURNS - 1])
+def test_freekick_harpy(_test_file: Path, _model_file: Path, nturns: int):
     model_df = _get_model_dataframe()
     tfs.write(_model_file, model_df, save_index="NAME")
-    _write_tbt_file(model_df, _test_file.parent)
+    _write_tbt_file(model_df, _test_file.parent, nturns)
     hole_in_one_entrypoint(
         harpy=True,
         clean=True,
@@ -219,6 +220,47 @@ def test_harpy_3d(_test_file: Path, _model_file: Path):
         < LIMITS["A2"]
     )
     assert _rms(_angle_diff(linfiles["X"].loc[:, "MUZ"], MUZ)) < LIMITS["P2"]
+
+
+
+@pytest.mark.basic
+@pytest.mark.parametrize("nturns", [NTURNS, NTURNS - 1])
+def test_harpy_aliased_resonance_line_phase(tmp_path: Path, nturns: int):
+    """
+    A resonance line outside [0, 0.5] (here the (0, 4) line in X, at 4 Q_y = 1.24, which the FFT finds
+    at 0.24) must keep its phase relation to the tune lines for any number of turns: its phase minus
+    4 x the vertical tune phase is independent of the reference turn. An odd number of turns used to
+    shift it by half a turn (a sign flip of e.g. f1004).
+    """
+    rng = np.random.default_rng(20260930)
+    qx, qy, line_amp = 0.28, 0.31, 0.1
+    names = [f"BPM{i}" for i in range(20)]
+    mux, muy, mu_line = (rng.random(len(names)) for _ in range(3))  # phases at turn 0
+    turns = np.arange(nturns)
+    wave = lambda mu, freq: BASEAMP * np.cos(2 * np.pi * (mu[:, None] + freq * turns[None, :]))
+    data_x = wave(mux, qx) + line_amp * wave(mu_line, 4 * qy) + rng.normal(0, NOISE, (len(names), nturns))
+    data_y = wave(muy, qy) + rng.normal(0, NOISE, (len(names), nturns))
+    matrices = [tbt.TransverseData(X=pd.DataFrame(data_x, index=names), Y=pd.DataFrame(data_y, index=names))]
+    tbt.write(tmp_path / "test_file", tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=nturns))
+
+    hole_in_one_entrypoint(
+        harpy=True,
+        clean=False,
+        autotunes="transverse",
+        resonances=5,
+        outputdir=tmp_path,
+        files=[tmp_path / "test_file.sdds"],
+        to_write=["lin"],
+        turn_bits=18,
+        unit="m",
+    )
+    lin_x = tfs.read(tmp_path / "test_file.sdds.linx", index="NAME")
+    lin_y = tfs.read(tmp_path / "test_file.sdds.liny", index="NAME")
+
+    assert np.allclose(lin_x.loc[names, "FREQ04"], 4 * qy - 1, atol=LIMITS["F2"])
+    measured = lin_x.loc[names, "PHASE04"] - 4 * lin_y.loc[names, "MUY"]
+    expected = mu_line - 4 * muy
+    assert _rms((measured - expected + 0.5) % 1 - 0.5) < LIMITS["P2"]
 
 
 def _assert_spectra(linfiles: dict[str, tfs.TfsDataFrame], model_df: tfs.TfsDataFrame):
@@ -286,8 +328,8 @@ def _get_model_dataframe() -> pd.DataFrame:
     )
 
 
-def _write_tbt_file(model: tfs.TfsDataFrame, dir_path: Path) -> None:
-    ints = np.arange(NTURNS) - NTURNS / 2
+def _write_tbt_file(model: tfs.TfsDataFrame, dir_path: Path, nturns: int = NTURNS) -> None:
+    ints = np.arange(nturns) - nturns // 2  # phases in the model are at harpy's reference turn
     data_x = model.loc[:, "AMPX"].to_numpy()[:, None] * np.cos(
         2
         * np.pi
@@ -315,19 +357,19 @@ def _write_tbt_file(model: tfs.TfsDataFrame, dir_path: Path) -> None:
     matrices = [
         tbt.TransverseData(
             X=pd.DataFrame(
-                data=np.random.randn(model.index.size, NTURNS) * NOISE
+                data=np.random.randn(model.index.size, nturns) * NOISE
                 + data_x
                 + COUPLING * data_y
                 + data_z,
                 index=model.index,
             ),
             Y=pd.DataFrame(
-                data=np.random.randn(model.index.size, NTURNS) * NOISE + data_y + COUPLING * data_x,
+                data=np.random.randn(model.index.size, nturns) * NOISE + data_y + COUPLING * data_x,
                 index=model.index,
             ),
         )
     ]
-    tbt_data = tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=NTURNS)  # let date default
+    tbt_data = tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=nturns)  # let date default
     tbt.write(dir_path / "test_file", tbt_data)
 
 

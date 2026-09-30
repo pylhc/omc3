@@ -45,7 +45,7 @@ def phase_correction(
     tune = lin_frame.loc[:, f"{COL_TUNE}{plane}"].to_numpy() * PI2
     phase = lin_frame.loc[:, f"{COL_MU}{plane}"].to_numpy() * PI2
     damp_range = damp * int_range
-    phase_range = np.outer(tune, int_range - bpm_data.shape[1] / 2) + np.outer(
+    phase_range = np.outer(tune, int_range - bpm_data.shape[1] // 2) + np.outer(
         phase, np.ones(bpm_data.shape[1])
     )
 
