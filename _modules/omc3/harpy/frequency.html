@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>omc3.harpy.frequency &mdash; omc3 0.29.0 documentation</title>
+  <title>omc3.harpy.frequency &mdash; omc3 0.29.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=178c8cd6" />
@@ -13,7 +13,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=fcb1757e"></script>
+      <script src="../../../_static/documentation_options.js?v=58c9f167"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -574,7 +574,8 @@
 <span class="sd">    """</span>
     <span class="n">phase_data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">phase_col</span><span class="p">]</span>
     <span class="n">freq_data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">tune_col</span><span class="p">]</span>
-    <span class="n">mid_phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase_data</span> <span class="o">+</span> <span class="n">freq_data</span> <span class="o">*</span> <span class="n">nturns</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="c1"># integer turn: freq is the aliased frequency, so a half-integer turn shifts odd-aliased lines by 0.5</span>
+    <span class="n">mid_phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase_data</span> <span class="o">+</span> <span class="n">freq_data</span> <span class="o">*</span> <span class="p">(</span><span class="n">nturns</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1</span>
     <span class="n">realigned_phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">mid_phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">mid_phase</span><span class="p">),</span> <span class="n">mid_phase</span><span class="p">)</span>
     <span class="c1"># Return a new DataFrame to avoid modifying the original one, with the updated phase column</span>
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">phase_col</span><span class="p">:</span> <span class="n">realigned_phases</span><span class="p">})</span>
