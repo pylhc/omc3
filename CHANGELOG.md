@@ -1,6 +1,6 @@
 # OMC3 Changelog
 
-#### 2026-09-30 - v0.29.1 - _mlegarre_
+#### 2026-10-29 - v0.29.1 - _mlegarre_
 
 - Fixed:
     - `harpy` referred all spectral-line phases to turn `nturns / 2`, which is a half-integer for an odd number of turns. A line found at an aliased frequency (true frequency outside `[0, 1)`, e.g. the `(0, 4)` line at `4 Q_y ~ 1.29` from which `f1004` is read) was then shifted by half a turn relative to the tune lines, flipping the sign of the RDTs read from it. An odd number of turns arises for instance from `first_bpm` resynchronisation, which drops one turn. Phases are now referred to the integer turn `nturns // 2` (unchanged for an even number of turns), and the free-kick phase correction uses the same reference turn.
