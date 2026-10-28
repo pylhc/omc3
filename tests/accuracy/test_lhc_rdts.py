@@ -129,7 +129,7 @@ def test_lhc_rdts(beam: int, rdt: str, rdts_from_optics_analysis):
 
     # Compare omc3 vs MAD-NG phases
     ng_phase_diff = np.angle(ng_complex / omc_complex)
-    assert ng_phase_diff.max() < PHASE_TOLERANCES[beam][order]
+    assert np.abs(ng_phase_diff).max() < PHASE_TOLERANCES[beam][order]  # abs: a sign flip sits at -pi
 
     # Check amplitude and phase vs real and imaginary calculations in omc3 is correct
     omc_phase = np.angle(omc_complex) / PI2
@@ -157,4 +157,4 @@ def test_lhc_rdts(beam: int, rdt: str, rdts_from_optics_analysis):
 
         # Compare the phases
         analytical_phase_diff = np.angle(analytical_complex / omc_complex)
-        assert analytical_phase_diff.max() < 6e-2
+        assert np.abs(analytical_phase_diff).max() < 6e-2
