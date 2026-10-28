@@ -222,7 +222,6 @@ def test_harpy_3d(_test_file: Path, _model_file: Path):
     assert _rms(_angle_diff(linfiles["X"].loc[:, "MUZ"], MUZ)) < LIMITS["P2"]
 
 
-
 @pytest.mark.basic
 @pytest.mark.parametrize("nturns", [NTURNS, NTURNS - 1])
 def test_harpy_aliased_resonance_line_phase(tmp_path: Path, nturns: int):
@@ -241,7 +240,7 @@ def test_harpy_aliased_resonance_line_phase(tmp_path: Path, nturns: int):
     data_x = wave(mux, qx) + line_amp * wave(mu_line, 4 * qy) + rng.normal(0, NOISE, (len(names), nturns))
     data_y = wave(muy, qy) + rng.normal(0, NOISE, (len(names), nturns))
     matrices = [tbt.TransverseData(X=pd.DataFrame(data_x, index=names), Y=pd.DataFrame(data_y, index=names))]
-    tbt.write(tmp_path / "test_file", tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=nturns))
+    tbt_data = tbt.TbtData(matrices=matrices, bunch_ids=[0], nturns=nturns, meta={"file": "test_file.sdds"})
 
     hole_in_one_entrypoint(
         harpy=True,
@@ -249,7 +248,8 @@ def test_harpy_aliased_resonance_line_phase(tmp_path: Path, nturns: int):
         autotunes="transverse",
         resonances=5,
         outputdir=tmp_path,
-        files=[tmp_path / "test_file.sdds"],
+        files=[tbt_data],
+        tbt_datatype="tbt_data",
         to_write=["lin"],
         turn_bits=18,
         unit="m",
