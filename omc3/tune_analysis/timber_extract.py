@@ -30,7 +30,7 @@ from omc3.utils.mock import cern_network_import
 from omc3.utils.time_tools import CERNDatetime
 
 if TYPE_CHECKING:
-    import datetime
+    import datetime as dt
     from collections.abc import Sequence
 
 TIME_COL = const.get_time_col()
@@ -158,7 +158,7 @@ def get_tune_and_coupling_variables(db) -> list[str]:
 
 def get_fill_times(
     db, fill_number: int
-) -> tuple[datetime.datetime | float, datetime.datetime | float]:
+) -> tuple[dt.datetime | float, dt.datetime | float]:
     """
     Returns start and end time of fill with fill number.
 

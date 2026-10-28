@@ -7,7 +7,7 @@ It provides functions to compute various lattice optics parameters from frequenc
 """
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 import sys
 from copy import deepcopy
 from pathlib import Path
@@ -162,7 +162,7 @@ def _get_header(meas_input: DotDict, tune_dict: tune.TuneDict) -> dict[str, Any]
         "Measure_optics:version": VERSION,
         "Command": f"{sys.executable} {' '.join(sys.argv)}",
         "CWD": Path.cwd().absolute(),
-        "Date": datetime.datetime.now(tz=datetime.UTC).strftime("%d. %B %Y, %H:%M:%S"),
+        "Date": dt.datetime.now(tz=dt.UTC).strftime("%d. %B %Y, %H:%M:%S"),
         MODEL_DIRECTORY: meas_input.accelerator.model_dir,
         "Compensation": meas_input.compensation,
         "Q1": tune_dict["X"]["QF"],

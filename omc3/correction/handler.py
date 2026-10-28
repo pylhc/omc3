@@ -7,7 +7,7 @@ This module contains high-level functions to manage most functionality of the co
 from __future__ import annotations
 
 import copy
-import datetime
+import datetime as dt
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -423,7 +423,7 @@ def write_knob(knob_path: Path, delta: pd.DataFrame) -> None:
         delta (pd.DataFrame): DataFrame containing a DELTA column and
                               the corrector names as index.
     """
-    a = datetime.datetime.fromtimestamp(time.time(), tz=datetime.UTC)
+    a = dt.datetime.fromtimestamp(time.time(), tz=dt.UTC)
     delta_out = -delta.loc[:, [DELTA]]
     delta_out.headers["PATH"] = str(knob_path.parent)
     delta_out.headers["DATE"] = str(a.ctime())
