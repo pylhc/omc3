@@ -88,8 +88,7 @@ BRHO      := BEAM->PC * 3.3356;
 // ---- Call lattice files ------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 
-call, file="%(ACC_MODELS_DIR)s/ps_mu.seq";
-call, file="%(ACC_MODELS_DIR)s/ps_ss.seq";
+%(SEQUENCE_CALL)s
 call, file="%(STR_FILE)s";
 
 if (%(USE_MACROS)s == 1) {
