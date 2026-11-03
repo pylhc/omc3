@@ -59,9 +59,6 @@ def phase_correction(
 
 
 def _get_damping(bpm_data):
-    coefs = np.polyfit(
-        np.arange(bpm_data.shape[1]),
-        np.maximum.accumulate(np.log(np.abs(bpm_data[::-1]))).T,
-        1,
-    )
+    envelope = np.maximum.accumulate(np.log(np.abs(bpm_data.iloc[:, ::-1])), axis=1)
+    coefs = np.polyfit(np.arange(bpm_data.shape[1]), envelope.to_numpy().T, 1)
     return np.mean(coefs[0, :]), np.std(coefs[0, :])
