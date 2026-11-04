@@ -1,5 +1,16 @@
 # OMC3 Changelog
 
+#### 2026-11-04 - v0.29.2 - _mlegarre_
+
+- Fixed:
+    - `resync_bpms`: the turn offsets are fitted to the phase error within a new `tolerance` parameter, instead of fixed cuts. BPMs no offset explains are left as they are, with a warning.
+    - `resync_bpms`: BPMs that are not in the optics are dropped, as their offset can't be checked.
+
+- Changed:
+    - `resync_bpms`: the shifted turns are cropped instead of padded with zeros.
+    - `resync_bpms`: all bunches are resynchronised, not only the first one.
+    - `resync_bpms`: without `planes`, the plane with the smallest median phase error bar is used instead of `X`.
+
 #### 2026-10-29 - v0.29.1 - _mlegarre_
 
 - Fixed:
